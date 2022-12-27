@@ -29,14 +29,3 @@ export const JOB_BEFORE_TOKEN_EXPIRE_MINUTE = 'job.beforeTokenExpire.minute';
 export const DEFAULT_JOB_BEFORE_TOKEN_EXPIRE_MINUTE = 2880; // 2 days
 export const MAIN_PAGE_SEARCH_OFFICIAL_POST_ONLY = 'page.main.searchOfficialPostOnly';
 export const DEFAULT_MAIN_PAGE_SEARCH_OFFICIAL_POST_ONLY = false;
-
-export const SEARCH_CONFIG_NAME = {
-    LIMIT_CONFIG: 'search.limit'
-};
-
-export const DEFAULT_SEARCH_CONFIG_VALUE = {
-    LIMIT: 200,
-    OFFSET: 0
-};
-export const LIMIT_USER_REPORT_CONTENT_CONFIG_NAME = 'limit.user.report.content';
-export const DEFAULT_LIMIT_USER_REPORT_CONTENT_CONFIG_VALUE = 1;

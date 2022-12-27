@@ -118,6 +118,7 @@ export class UserService {
                     };
                 }
                 const checkPageUsername: any = await this.pageRepository.findOne(checkPageUsernameQuey);
+
                 if ((checkUniqueIdUser !== null && checkUniqueIdUser !== undefined) || (checkPageUsername !== null && checkPageUsername !== undefined)) {
                     resolve(true);
                 } else {

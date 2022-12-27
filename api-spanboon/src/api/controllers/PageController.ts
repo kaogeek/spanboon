@@ -336,7 +336,7 @@ export class PageController {
         const ipAddress = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress).split(',')[0];
         const clientId = req.headers['client-id'];
 
-        const pageSocialFb = await this.pageSocialAccountService.findOne({where:{providerName:PROVIDER.TWITTER,providerPageId:socialBinding.twitterUserId}});
+        const pageSocialFb = await this.pageSocialAccountService.findOne({where:{providerName:PROVIDER.FACEBOOK,providerPageId:socialBinding.twitterUserId}});
         if(pageSocialFb !== undefined && pageSocialFb !==null){
             const errorResponse = ResponseUtil.getErrorResponse('Unable create Page', undefined);
             return res.status(400).send(errorResponse);
@@ -434,28 +434,31 @@ export class PageController {
     public async autoSyncPageFB(@Body({ validate: true }) socialBinding: PageSocialFBBindingRequest, @Res() res: any, @Req() req: any): Promise<any> {
         const userId = new ObjectID(req.user.id);
         const getUser = await this.userService.findOne({ _id: userId });
-        const { request } = await axios.get('https://graph.facebook.com/v14.0/' + socialBinding.facebookPageId + '/picture?type=large');
+        const authenFB = await this.authenService.findOne({ where: { user: userId, providerName: 'FACEBOOK' } });
+        const pageFB = await this.facebookService.getFBPageAccounts(authenFB.storedCredentials);
+        const { request } = await axios.get('https://graph.facebook.com/v14.0/' + pageFB.data[0].id + '/picture?type=large');
         const ipAddress = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress).split(',')[0];
         const clientId = req.headers['client-id'];
         let createCate = undefined;
+
         const pageSocialFb = await this.pageSocialAccountService.findOne({where:{providerName:PROVIDER.FACEBOOK,providerPageId:socialBinding.facebookPageId}});
         if(pageSocialFb !== undefined && pageSocialFb !==null){
             const errorResponse = ResponseUtil.getErrorResponse('Unable create Page', undefined);
             return res.status(400).send(errorResponse);
         }
-        const assetPic = await this.assetService.createAssetFromURL(request.socket._httpMessage.res.responseUrl, userId);
+        const assetPic = await this.assetService.createAssetFromURL(request.socket._httpMessage.res.responseUrl, pageFB.ownerUser);
         // create category 
-        const checkPageCate = await this.pageCategoryService.findOne({ name: socialBinding.facebookCategory });
+        const checkPageCate = await this.pageCategoryService.findOne({ name: pageFB.data[0].category });
         if (checkPageCate === undefined) {
             const cate: PageCategory = new PageCategory();
-            cate.name = socialBinding.facebookCategory;
+            cate.name = pageFB.data[0].category;
             cate.description = null;
             cate.iconURL = null;
             createCate = await this.pageCategoryService.create(cate);
         }
         if (assetPic) {
             const pageCreate: Page = new Page();
-            pageCreate.name = socialBinding.facebookPageName;
+            pageCreate.name = pageFB.data[0].name;
             pageCreate.pageUsername = null;
             pageCreate.subTitle = null;
             pageCreate.backgroundStory = null;

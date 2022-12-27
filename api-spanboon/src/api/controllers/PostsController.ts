@@ -249,339 +249,337 @@ export class PostsController {
         filter.whereConditions.isDraft = false;
         filter.whereConditions.startDateTime = { $lte: today };
 
-        const postLists: any[] = await this.postsService.search(filter);
+        const postLists: any = await this.postsService.search(filter);
         const userLikeMap: any = {};
         const likeAsPageMap: any = {};
         const postsCommentMap: any = {};
-        let result: any[] = [];
+        let result = [];
 
         if (postLists !== null && postLists !== undefined) {
             const postIdList = [];
             const referencePostList = [];
             const repostCountMap: any = {};
 
-            if (typeof postLists === 'object') {
-                for (const post of postLists) {
-                    const referencePost = post.referencePost;
-                    postIdList.push(new ObjectID(post.id));
+            for (const post of postLists) {
+                const referencePost = post.referencePost;
+                postIdList.push(new ObjectID(post.id));
 
-                    if (referencePost !== '' && referencePost !== null && referencePost !== undefined) {
-                        referencePostList.push(new ObjectID(referencePost));
-                    }
+                if (referencePost !== '' && referencePost !== null && referencePost !== undefined) {
+                    referencePostList.push(new ObjectID(referencePost));
                 }
+            }
 
-                if (postIdList !== null && postIdList !== undefined && postIdList.length > 0) {
-                    result = await this.postsService.aggregate([
-                        { $match: { _id: { $in: postIdList }, hidden: false, deleted: false, isDraft: false, startDateTime: { $lte: today } } },
-                        {
-                            $lookup: {
-                                from: 'Page',
-                                localField: 'pageId',
-                                foreignField: '_id',
-                                as: 'page'
-                            }
-                        },
-                        {
-                            $lookup: {
-                                from: 'PostsComment',
-                                localField: '_id',
-                                foreignField: 'post',
-                                as: 'comment'
-                            }
-                        },
-                        {
-                            $lookup: {
-                                from: 'PostsGallery',
-                                localField: '_id',
-                                foreignField: 'post',
-                                as: 'gallery'
-                            }
-                        },
-                        {
-                            $lookup: {
-                                from: 'Needs',
-                                localField: '_id',
-                                foreignField: 'post',
-                                as: 'needs'
-                            }
-                        },
-                        {
-                            $lookup: {
-                                from: 'Fulfillment',
-                                localField: '_id',
-                                foreignField: 'post',
-                                as: 'fulfillment'
-                            }
-                        },
-                        {
-                            $lookup: {
-                                from: 'Fulfillment',
-                                localField: '_id',
-                                foreignField: 'casePost',
-                                as: 'caseFulfillment'
-                            }
-                        },
-                        {
-                            $lookup: {
-                                from: 'FulfillmentCase',
-                                localField: '_id',
-                                foreignField: 'fulfillmentPost',
-                                as: 'case'
-                            }
-                        },
-                        {
-                            $addFields: {
-                                requesterId: {
-                                    '$arrayElemAt': ['$case.requester', 0],
-                                },
-                                fulfillmentPage: {
-                                    '$arrayElemAt': ['$case.pageId', 0]
-                                },
-                                casePostId: {
-                                    '$arrayElemAt': ['$case.postId', 0]
-                                }
-                            }
-                        },
-                        {
-                            $lookup: {
-                                from: 'Needs',
-                                localField: 'casePostId',
-                                foreignField: 'post',
-                                as: 'caseNeeds'
-                            }
-                        },
-                        {
-                            $lookup: {
-                                from: 'User',
-                                localField: 'requesterId',
-                                foreignField: '_id',
-                                as: 'requester'
-                            }
-                        },
-                        {
-                            $unwind: {
-                                path: '$requester',
-                                preserveNullAndEmptyArrays: true
-                            }
-                        },
-                        {
-                            $lookup: {
-                                from: 'Page',
-                                localField: 'fulfillmentPage',
-                                foreignField: '_id',
-                                as: 'fulfillmentPage'
-                            }
-                        },
-                        {
-                            $unwind: {
-                                path: '$fulfillmentPage',
-                                preserveNullAndEmptyArrays: true
-                            }
-                        },
-                        {
-                            $lookup: {
-                                from: 'SocialPost',
-                                localField: '_id',
-                                foreignField: 'postId',
-                                as: 'socialPosts'
-                            }
-                        },
-                        {
-                            $project: {
-                                'case': 0,
-                                'requesterId': 0,
-                                'requester.password': 0,
-                                'requester.birthdate': 0,
-                                'requester.customGender': 0,
-                                'requester.gender': 0,
-                                'requester.createdDate': 0,
-                                'requester.coverURL': 0,
-                                'requester.address': 0,
-                                'requester.facebookURL': 0,
-                                'requester.instagramURL': 0,
-                                'requester.lineId': 0,
-                                'requester.mobileNo': 0,
-                                'requester.websiteURL': 0,
-                                'requester.twitterURL': 0,
-                                'fulfillmentPage.subTitle': 0,
-                                'fulfillmentPage.backgroundStory': 0,
-                                'fulfillmentPage.detail': 0,
-                                'fulfillmentPage.ownerUser': 0,
-                                'fulfillmentPage.color': 0,
-                                'fulfillmentPage.category': 0,
-                                'fulfillmentPage.banned': 0,
-                                'fulfillmentPage.createdDate': 0,
-                                'fulfillmentPage.updateDate': 0,
-                                'socialPosts': {
-                                    '_id': 0,
-                                    'pageId': 0,
-                                    'postId': 0,
-                                    'postBy': 0,
-                                    'postByType': 0
-                                }
-                            }
-                        },
-                        {
-                            $lookup: {
-                                from: 'EmergencyEvent',
-                                localField: 'emergencyEvent',
-                                foreignField: '_id',
-                                as: 'emergencyEvent'
-                            }
-                        },
-                        {
-                            $unwind: {
-                                path: '$emergencyEvent',
-                                preserveNullAndEmptyArrays: true
-                            }
-                        },
-                        {
-                            $project: {
-                                // 'emergencyEvent._id': 0,
-                                'emergencyEvent.title': 0,
-                                'emergencyEvent.detail': 0,
-                                'emergencyEvent.coverPageURL': 0,
-                                'emergencyEvent.createdDate': 0,
-                                'emergencyEvent.isClose': 0,
-                                'emergencyEvent.isPin': 0
-                            }
-                        },
-                        {
-                            $lookup: {
-                                from: 'PageObjective',
-                                localField: 'objective',
-                                foreignField: '_id',
-                                as: 'objective'
-                            }
-                        },
-                        {
-                            $unwind: {
-                                path: '$objective',
-                                preserveNullAndEmptyArrays: true
-                            }
-                        },
-                        {
-                            $project: {
-                                // 'objective._id': 0,
-                                'objective.pageId': 0,
-                                'objective.title': 0,
-                                'objective.detail': 0,
-                                'objective.iconURL': 0,
-                                'objective.createdDate': 0
-                            }
-                        },
-                        {
-                            $lookup: {
-                                from: 'User',
-                                localField: 'ownerUser',
-                                foreignField: '_id',
-                                as: 'ownerUser'
-                            }
-                        },
-                        {
-                            $unwind: {
-                                path: '$ownerUser',
-                                preserveNullAndEmptyArrays: true
-                            }
-                        },
-                        {
-                            $project: {
-                                'ownerUser.username': 0,
-                                'ownerUser.password': 0,
-                                'ownerUser.coverURL': 0,
-                                'ownerUser.coverPosition': 0,
-                                'ownerUser.isSubAdmin': 0,
-                                'ownerUser.banned': 0,
-                                'ownerUser.email': 0,
-                                'ownerUser.firstName': 0,
-                                'ownerUser.lastName': 0,
-                                'ownerUser.birthdate': 0,
-                                'ownerUser.isAdmin': 0,
-                                'ownerUser.gender': 0,
-                                'ownerUser.customGender': 0,
-                                'ownerUser.createdDate': 0
-                            }
-                        },
-                        {
-                            $lookup: {
-                                from: 'HashTag',
-                                let: { hashTagId: { $ifNull: ['$postsHashTags', []] } },
-                                pipeline: [
-                                    {
-                                        $match: {
-                                            $expr: {
-                                                $in: ['$_id', '$$hashTagId']
-                                            }
-                                        }
-                                    }
-                                ],
-                                as: 'postsHashTags'
-                            }
-                        },
-                        {
-                            $addFields: {
-                                hashTags: {
-                                    $map: {
-                                        input: '$postsHashTags',
-                                        as: 'hashTags',
-                                        in: { name: '$$hashTags.name' }
-                                    }
-                                }
-                            }
-                        },
-                        { $project: { postsHashTags: 0 } }
-                    ]);
-
-                    let userObjId;
-                    const uId = req.headers.userid;
-
-                    if (uId !== null && uId !== undefined && uId !== '') {
-                        userObjId = new ObjectID(uId);
-
-                        const userLikes: UserLike[] = await this.userLikeService.find({ userId: userObjId, subjectId: { $in: postIdList }, subjectType: LIKE_TYPE.POST });
-                        if (userLikes !== null && userLikes !== undefined && userLikes.length > 0) {
-                            for (const like of userLikes) {
-                                const postId = like.subjectId;
-                                const likeAsPage = like.likeAsPage;
-
-                                if (postId !== null && postId !== undefined && postId !== '') {
-                                    if (likeAsPage !== null && likeAsPage !== undefined && likeAsPage !== '') {
-                                        likeAsPageMap[postId] = like;
-                                    } else {
-                                        userLikeMap[postId] = like;
-                                    }
-                                }
+            if (postIdList !== null && postIdList !== undefined && postIdList.length > 0) {
+                result = await this.postsService.aggregate([
+                    { $match: { _id: { $in: postIdList }, hidden: false, deleted: false, isDraft: false, startDateTime: { $lte: today } } },
+                    {
+                        $lookup: {
+                            from: 'Page',
+                            localField: 'pageId',
+                            foreignField: '_id',
+                            as: 'page'
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'PostsComment',
+                            localField: '_id',
+                            foreignField: 'post',
+                            as: 'comment'
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'PostsGallery',
+                            localField: '_id',
+                            foreignField: 'post',
+                            as: 'gallery'
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'Needs',
+                            localField: '_id',
+                            foreignField: 'post',
+                            as: 'needs'
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'Fulfillment',
+                            localField: '_id',
+                            foreignField: 'post',
+                            as: 'fulfillment'
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'Fulfillment',
+                            localField: '_id',
+                            foreignField: 'casePost',
+                            as: 'caseFulfillment'
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'FulfillmentCase',
+                            localField: '_id',
+                            foreignField: 'fulfillmentPost',
+                            as: 'case'
+                        }
+                    },
+                    {
+                        $addFields: {
+                            requesterId: {
+                                '$arrayElemAt': ['$case.requester', 0],
+                            },
+                            fulfillmentPage: {
+                                '$arrayElemAt': ['$case.pageId', 0]
+                            },
+                            casePostId: {
+                                '$arrayElemAt': ['$case.postId', 0]
                             }
                         }
-
-                        const postComments: PostsComment[] = await this.postsCommentService.find({ user: userObjId, post: { $in: postIdList }, deleted: false });
-                        if (postComments !== null && postComments !== undefined && postComments.length > 0) {
-                            for (const comment of postComments) {
-                                const postId = comment.post;
-                                postsCommentMap[postId] = comment;
+                    },
+                    {
+                        $lookup: {
+                            from: 'Needs',
+                            localField: 'casePostId',
+                            foreignField: 'post',
+                            as: 'caseNeeds'
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'User',
+                            localField: 'requesterId',
+                            foreignField: '_id',
+                            as: 'requester'
+                        }
+                    },
+                    {
+                        $unwind: {
+                            path: '$requester',
+                            preserveNullAndEmptyArrays: true
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'Page',
+                            localField: 'fulfillmentPage',
+                            foreignField: '_id',
+                            as: 'fulfillmentPage'
+                        }
+                    },
+                    {
+                        $unwind: {
+                            path: '$fulfillmentPage',
+                            preserveNullAndEmptyArrays: true
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'SocialPost',
+                            localField: '_id',
+                            foreignField: 'postId',
+                            as: 'socialPosts'
+                        }
+                    },
+                    {
+                        $project: {
+                            'case': 0,
+                            'requesterId': 0,
+                            'requester.password': 0,
+                            'requester.birthdate': 0,
+                            'requester.customGender': 0,
+                            'requester.gender': 0,
+                            'requester.createdDate': 0,
+                            'requester.coverURL': 0,
+                            'requester.address': 0,
+                            'requester.facebookURL': 0,
+                            'requester.instagramURL': 0,
+                            'requester.lineId': 0,
+                            'requester.mobileNo': 0,
+                            'requester.websiteURL': 0,
+                            'requester.twitterURL': 0,
+                            'fulfillmentPage.subTitle': 0,
+                            'fulfillmentPage.backgroundStory': 0,
+                            'fulfillmentPage.detail': 0,
+                            'fulfillmentPage.ownerUser': 0,
+                            'fulfillmentPage.color': 0,
+                            'fulfillmentPage.category': 0,
+                            'fulfillmentPage.banned': 0,
+                            'fulfillmentPage.createdDate': 0,
+                            'fulfillmentPage.updateDate': 0,
+                            'socialPosts': {
+                                '_id': 0,
+                                'pageId': 0,
+                                'postId': 0,
+                                'postBy': 0,
+                                'postByType': 0
                             }
                         }
-
-                        // search repost
-                        if (postIdList.length > 0) {
-                            // search for one if has repost
-                            const repostAggress: any = [
+                    },
+                    {
+                        $lookup: {
+                            from: 'EmergencyEvent',
+                            localField: 'emergencyEvent',
+                            foreignField: '_id',
+                            as: 'emergencyEvent'
+                        }
+                    },
+                    {
+                        $unwind: {
+                            path: '$emergencyEvent',
+                            preserveNullAndEmptyArrays: true
+                        }
+                    },
+                    {
+                        $project: {
+                            // 'emergencyEvent._id': 0,
+                            'emergencyEvent.title': 0,
+                            'emergencyEvent.detail': 0,
+                            'emergencyEvent.coverPageURL': 0,
+                            'emergencyEvent.createdDate': 0,
+                            'emergencyEvent.isClose': 0,
+                            'emergencyEvent.isPin': 0
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'PageObjective',
+                            localField: 'objective',
+                            foreignField: '_id',
+                            as: 'objective'
+                        }
+                    },
+                    {
+                        $unwind: {
+                            path: '$objective',
+                            preserveNullAndEmptyArrays: true
+                        }
+                    },
+                    {
+                        $project: {
+                            // 'objective._id': 0,
+                            'objective.pageId': 0,
+                            'objective.title': 0,
+                            'objective.detail': 0,
+                            'objective.iconURL': 0,
+                            'objective.createdDate': 0
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'User',
+                            localField: 'ownerUser',
+                            foreignField: '_id',
+                            as: 'ownerUser'
+                        }
+                    },
+                    {
+                        $unwind: {
+                            path: '$ownerUser',
+                            preserveNullAndEmptyArrays: true
+                        }
+                    },
+                    {
+                        $project: {
+                            'ownerUser.username': 0,
+                            'ownerUser.password': 0,
+                            'ownerUser.coverURL': 0,
+                            'ownerUser.coverPosition': 0,
+                            'ownerUser.isSubAdmin': 0,
+                            'ownerUser.banned': 0,
+                            'ownerUser.email': 0,
+                            'ownerUser.firstName': 0,
+                            'ownerUser.lastName': 0,
+                            'ownerUser.birthdate': 0,
+                            'ownerUser.isAdmin': 0,
+                            'ownerUser.gender': 0,
+                            'ownerUser.customGender': 0,
+                            'ownerUser.createdDate': 0
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'HashTag',
+                            let: { hashTagId: { $ifNull: ['$postsHashTags', []] } },
+                            pipeline: [
                                 {
                                     $match: {
-                                        ownerUser: userObjId, referencePost: { $in: postIdList }, deleted: false, hidden: false,
-                                        $or: [
-                                            { postAsPage: { $exists: false } },
-                                            { postAsPage: null }
-                                        ]
+                                        $expr: {
+                                            $in: ['$_id', '$$hashTagId']
+                                        }
                                     }
-                                },
-                                { $group: { _id: '$referencePost', count: { $sum: 1 } } },
-                            ];
-                            const postRepostsAggs: any = await this.postsService.aggregate(repostAggress);
-                            if (postRepostsAggs) {
-                                for (const aggRow of postRepostsAggs) {
-                                    repostCountMap[aggRow._id + ''] = aggRow.count;
                                 }
+                            ],
+                            as: 'postsHashTags'
+                        }
+                    },
+                    {
+                        $addFields: {
+                            hashTags: {
+                                $map: {
+                                    input: '$postsHashTags',
+                                    as: 'hashTags',
+                                    in: { name: '$$hashTags.name' }
+                                }
+                            }
+                        }
+                    },
+                    { $project: { postsHashTags: 0 } }
+                ]);
+
+                let userObjId;
+                const uId = req.headers.userid;
+
+                if (uId !== null && uId !== undefined && uId !== '') {
+                    userObjId = new ObjectID(uId);
+
+                    const userLikes: UserLike[] = await this.userLikeService.find({ userId: userObjId, subjectId: { $in: postIdList }, subjectType: LIKE_TYPE.POST });
+                    if (userLikes !== null && userLikes !== undefined && userLikes.length > 0) {
+                        for (const like of userLikes) {
+                            const postId = like.subjectId;
+                            const likeAsPage = like.likeAsPage;
+
+                            if (postId !== null && postId !== undefined && postId !== '') {
+                                if (likeAsPage !== null && likeAsPage !== undefined && likeAsPage !== '') {
+                                    likeAsPageMap[postId] = like;
+                                } else {
+                                    userLikeMap[postId] = like;
+                                }
+                            }
+                        }
+                    }
+
+                    const postComments: PostsComment[] = await this.postsCommentService.find({ user: userObjId, post: { $in: postIdList }, deleted: false });
+                    if (postComments !== null && postComments !== undefined && postComments.length > 0) {
+                        for (const comment of postComments) {
+                            const postId = comment.post;
+                            postsCommentMap[postId] = comment;
+                        }
+                    }
+
+                    // search repost
+                    if (postIdList.length > 0) {
+                        // search for one if has repost
+                        const repostAggress: any = [
+                            {
+                                $match: {
+                                    ownerUser: userObjId, referencePost: { $in: postIdList }, deleted: false, hidden: false,
+                                    $or: [
+                                        { postAsPage: { $exists: false } },
+                                        { postAsPage: null }
+                                    ]
+                                }
+                            },
+                            { $group: { _id: '$referencePost', count: { $sum: 1 } } },
+                        ];
+                        const postRepostsAggs: any = await this.postsService.aggregate(repostAggress);
+                        if (postRepostsAggs) {
+                            for (const aggRow of postRepostsAggs) {
+                                repostCountMap[aggRow._id + ''] = aggRow.count;
                             }
                         }
                     }
@@ -594,61 +592,59 @@ export class PostsController {
             const isUploadToS3 = await this._isUploadToS3();
 
             if (result !== null && result !== undefined) {
-                if (typeof result === 'object') {
-                    for (const data of result) {
-                        const story = data.story;
-                        if (!isHideStory) {
-                            if (story !== null && story !== undefined && data.story.story !== null && data.story.story !== undefined) {
-                                const parseFileLinkStory = await PostUtil.parseImagePostStory(data.story.story, this.assetService, isUploadToS3);
-                                data.story.story = parseFileLinkStory;
-                            }
+                for (const data of result) {
+                    const story = data.story;
+                    if (!isHideStory) {
+                        if (story !== null && story !== undefined && data.story.story !== null && data.story.story !== undefined) {
+                            const parseFileLinkStory = await PostUtil.parseImagePostStory(data.story.story, this.assetService, isUploadToS3);
+                            data.story.story = parseFileLinkStory;
+                        }
+                    }
+                }
+
+                result.map((data) => {
+                    const postId = data._id;
+                    const story = data.story;
+
+                    if (isHideStory === true) {
+                        if (story !== null && story !== undefined) {
+                            data.story = {};
+                        } else {
+                            data.story = null;
                         }
                     }
 
-                    result.map((data) => {
-                        const postId = data._id;
-                        const story = data.story;
-
-                        if (isHideStory === true) {
-                            if (story !== null && story !== undefined) {
-                                data.story = {};
-                            } else {
-                                data.story = null;
-                            }
-                        }
-
-                        if (postId !== null && postId !== undefined && postId !== '') {
-                            if (repostCountMap[postId]) {
-                                data.isRepost = true;
-                            } else {
-                                data.isRepost = false;
-                            }
-
-                            if (userLikeMap[postId]) {
-                                data.isLike = true;
-                            } else {
-                                data.isLike = false;
-                            }
-
-                            if (likeAsPageMap[postId]) {
-                                data.likeAsPage = true;
-                            } else {
-                                data.likeAsPage = false;
-                            }
-
-                            if (postsCommentMap[postId]) {
-                                data.isComment = true;
-                            } else {
-                                data.isComment = false;
-                            }
+                    if (postId !== null && postId !== undefined && postId !== '') {
+                        if (repostCountMap[postId]) {
+                            data.isRepost = true;
                         } else {
                             data.isRepost = false;
+                        }
+
+                        if (userLikeMap[postId]) {
+                            data.isLike = true;
+                        } else {
                             data.isLike = false;
+                        }
+
+                        if (likeAsPageMap[postId]) {
+                            data.likeAsPage = true;
+                        } else {
                             data.likeAsPage = false;
+                        }
+
+                        if (postsCommentMap[postId]) {
+                            data.isComment = true;
+                        } else {
                             data.isComment = false;
                         }
-                    });
-                }
+                    } else {
+                        data.isRepost = false;
+                        data.isLike = false;
+                        data.likeAsPage = false;
+                        data.isComment = false;
+                    }
+                });
 
                 return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Search Posts', result));
             } else {

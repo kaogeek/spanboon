@@ -31,13 +31,12 @@ export class EmailTemplate extends BaseModel {
     public isActive: number;
 
     @BeforeInsert()
-    public createDetails(): any {
+    public async createDetails(): Promise<void> {
         this.createdDate = moment().toDate();
-        this.createdTime = moment().toDate();
     }
 
     @BeforeUpdate()
-    public updateDetails(): any {
+    public async updateDetails(): Promise<void> {
         this.updateDate = moment().toDate();
     }
 }

@@ -15,6 +15,4 @@ export class PageSocialFBBindingRequest {
     public facebookPageName: string;
 
     public pageAccessToken: string;
-
-    public facebookCategory:string;
 }

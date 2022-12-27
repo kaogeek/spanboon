@@ -1007,18 +1007,28 @@ export class MainPageController {
                 }
             }
 
+            const lookupPipelineStmt: any = { $and: [{ $eq: ['$$pageId', '$_id'] }] };
+
+            if (isOfficial !== null && isOfficial !== undefined) {
+                lookupPipelineStmt['$and'].push({ isOfficial });
+            }
+
             // const queryDb = [{$match:{"pageId":{$ne:null}}},{$lookup:{from:"Page",as:"page",let:{pageId:"$pageId"},pipeline:[{$match:{$expr:{$and:[{$eq:["$$pageId","$_id"]}]}}}]}},{$match:{"page.isOfficial" : false}}]
-            const postsLookupStmt: any[] = [
+            const postsLookupStmt = [
                 {
                     $lookup: {
                         from: 'Page',
-                        let: { pageId: '$pageId' },
+                        as: 'page',
+                        let: {
+                            pageId: '$pageId'
+                        },
                         pipeline: [
                             {
-                                $match: { $expr: { $and: [{ $eq: ['$$pageId', '$_id'] }] } }
+                                $match: {
+                                    $expr: lookupPipelineStmt
+                                }
                             }
                         ],
-                        as: 'page'
                     },
                 },
                 {
@@ -1248,10 +1258,6 @@ export class MainPageController {
                     $skip: filter.offset
                 }
             ];
-
-            if (isOfficial !== null && isOfficial !== undefined) {
-                postsLookupStmt.splice(1, 0, { $match: { 'page.isOfficial': isOfficial } });
-            }
 
             searchPostStmt = postStmt.concat(postsLookupStmt);
             const userMap = {};

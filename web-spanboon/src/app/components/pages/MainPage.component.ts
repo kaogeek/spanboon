@@ -14,7 +14,6 @@ import { MatDialog } from '@angular/material';
 import { DialogPost } from '../shares/shares';
 import { AuthenManager } from '../../services/AuthenManager.service';
 import { UserAccessFacade } from '../../services/facade/UserAccessFacade.service';
-import { Observable } from 'rxjs';
 import { filter } from 'rxjs/internal/operators/filter';
 
 declare var $: any;
@@ -42,7 +41,7 @@ export class MainPage extends AbstractPage implements OnInit {
   public data: any;
   public isDev: boolean = true;
   public isDirty: boolean = false;
-  public hidebar: boolean = false;
+  public hidebar: boolean = true;
 
   public redirection: string;
 
@@ -103,14 +102,14 @@ export class MainPage extends AbstractPage implements OnInit {
     this.isLogin();
     this.searchAccessPage();
 
-    this.route.queryParams.subscribe(params => {
-      var hidebars = params['hidebar'];
-      if (hidebars !== undefined && hidebars !== null) {
-        this.hidebar = false;
-      } else {
-        this.hidebar = true;
-      }
-    });
+    // this.route.queryParams.subscribe(params => {
+    //   let hidebars = params['hidebar'];
+    //   if (hidebars !== undefined && hidebars !== null) {
+    //     this.hidebar = false;
+    //   } else {
+    //     this.hidebar = true;
+    //   }
+    // });
 
 
     const dev = sessionStorage.getItem('isDev');
@@ -182,6 +181,7 @@ export class MainPage extends AbstractPage implements OnInit {
     //   this.observManager.publish('scroll.buttom', null);
     // }
     // var scrolltotop = document.getElementById("menubottom"); 
+
     if ($(window).scrollTop() + $(window).height() > ($(document).height() - 250)) {
       this.observManager.publish('scroll.buttom', null);
     }
@@ -276,18 +276,24 @@ export class MainPage extends AbstractPage implements OnInit {
 
   public isLogin(): boolean {
     this.user = this.authenManager.getCurrentUser();
+    console.log("c ++++++", this.user);
     return this.user !== undefined && this.user !== null;
   }
 
   public async dialogPost() {
     if (this.isLogin()) {
+      console.log("ctt ++++++", this.user);
       let dataName;
+      console.log("e +++", dataName);
       if (this.user && this.user.name) {
         dataName = this.user.name
+        console.log("a +++", dataName);
       } else if (this.user && this.user.uniqueId) {
-        dataName = this.user.uniqueId
+        dataName = this.user.displayName
+        console.log("es +++", dataName);
       } else if (this.user.displayName) {
         dataName = this.user.displayName
+        console.log("edd +++", dataName);
       }
       this.data.isListPage = true;
       this.data.isHeaderPage = true;
@@ -337,7 +343,6 @@ export * from './main.internal/HomePage.component';
 export * from './main.internal/HomePageV2.component';
 export * from './main.internal/Redirect.component';
 export * from './main.internal/LoginPage.component';
-export * from './main.internal/LoginPageTest.component';
 export * from './main.internal/ForgotPasswordPage.component';
 export * from './main.internal/ProfilePage.component';
 export * from './main.internal/FanPage.component';
@@ -353,3 +358,4 @@ export * from './main.internal/fanpage.internal/fanpage';
 export * from './main.internal/fulfill.internal/fulfill';
 export * from './main.internal/timeline.internal/timeline';
 export * from './main.internal/NotificationAllPage.component';
+export * from './main.internal/TOS.component';
