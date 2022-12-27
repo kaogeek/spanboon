@@ -122,4 +122,20 @@ export class UserBlockContentService {
             }
         });
     }
+
+    public async findContent(userId: ObjectID, subjectType: string): Promise<UserBlockContent[]> {
+        const contentIdBlockedList: ObjectID[] = [];
+
+        if (userId !== null && userId !== undefined && userId !== '') {
+            const contentBlockedList: UserBlockContent[] = await this.find({ userId, subjectType });
+
+            if (contentBlockedList !== null && contentBlockedList !== undefined && contentBlockedList.length > 0) {
+                for (const contentBlocked of contentBlockedList) {
+                    contentIdBlockedList.push(new ObjectID(contentBlocked.subjectId));
+                }
+            }
+        }
+
+        return contentIdBlockedList;
+    }
 }

@@ -186,8 +186,6 @@ export class UserBlockContentController {
                 resultStmt.push({ $count: 'count' });
             }
 
-            console.log('resultStmt >>>>> ', JSON.stringify(resultStmt));
-
             const userBlockContentList: any[] = await this.userBlockContentService.aggregate(resultStmt);
 
             if (userBlockContentList !== null && userBlockContentList !== undefined && userBlockContentList.length > 0) {
