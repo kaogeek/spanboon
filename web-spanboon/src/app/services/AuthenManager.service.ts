@@ -24,7 +24,7 @@ const REGISTERED_SUBJECT: string = 'authen.registered';
 // only page user can login
 @Injectable()
 export class AuthenManager {
-  
+
   public static readonly TOKEN_KEY: string = TOKEN_KEY;
   public static readonly TOKEN_MODE_KEY: string = TOKEN_MODE_KEY;
 
@@ -36,7 +36,7 @@ export class AuthenManager {
   protected twitterMode: boolean;
   protected googleMode: boolean;
   protected observManager: ObservableManager;
-  
+
   deviceInfo = null;
   isDesktopDevice: boolean;
   isTablet: boolean;
@@ -97,16 +97,16 @@ export class AuthenManager {
   }
 
 
-  public loginWithGoogle(idToken: string, authToken: string,tokenFCM_GG, mode?: string): Promise<any> {
+  public loginWithGoogle(idToken: string, authToken: string, tokenFCM_GG, mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/login';
-      let body: any = { 
-        idToken, 
+      let body: any = {
+        idToken,
         authToken,
         tokenFCM_GG
-       };
-      let headers = new HttpHeaders({ 
-        'Content-Type': 'application/json' 
+      };
+      let headers = new HttpHeaders({
+        'Content-Type': 'application/json'
       });
       if (mode !== undefined || mode !== "") {
         headers = headers.set('mode', mode);
@@ -176,15 +176,15 @@ export class AuthenManager {
       });
     });
   }
-  public syncWithTwitter(twitter: PageSocialTW,mode?:string):Promise<any>{
-    return new Promise((resolve,reject) =>{
-      let url: string = this.baseURL + '/sync/fb';
+  public syncWithTwitter(twitter: PageSocialTW, mode?: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/sync/tw';
       let options = this.getDefaultOptions();
       let body: any = {
-        "twitterOauthToken":twitter.twitterOauthToken,
-        "twitterTokenSecret":twitter.twitterTokenSecret,
-        "twitterUserId":twitter.twitterUserId,
-        "twitterPageName":twitter.twitterPageName
+        "twitterOauthToken": twitter.twitterOauthToken,
+        "twitterTokenSecret": twitter.twitterTokenSecret,
+        "twitterUserId": twitter.twitterUserId,
+        "twitterPageName": twitter.twitterPageName
       }
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response);
@@ -193,14 +193,14 @@ export class AuthenManager {
       });
     })
   }
-  public syncWithFacebook(facebook: PageSoialFB,mode?: string): Promise<any> {
+  public syncWithFacebook(facebook: PageSoialFB, mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/page/sync/fb';
       let options = this.getDefaultOptions();
       let body: any = {
-        "facebookPageId":facebook.facebookPageId,
-        "facebookPageName":facebook.facebookPageName,
-        "pageAccessToken":facebook.pageAccessToken
+        "facebookPageId": facebook.facebookPageId,
+        "facebookPageName": facebook.facebookPageName,
+        "pageAccessToken": facebook.pageAccessToken
       }
 
       this.http.post(url, body, options).toPromise().then((response: any) => {
@@ -211,11 +211,11 @@ export class AuthenManager {
     });
   }
 
-  public loginWithFacebook(token: string,tokenFCM_FB:any,mode?: string): Promise<any> {
+  public loginWithFacebook(token: string, tokenFCM_FB: any, mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/login';
       let body: any = {
-        "token":token,
+        "token": token,
         tokenFCM_FB
       };
       let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
@@ -240,7 +240,7 @@ export class AuthenManager {
 
         resolve(result);
       }).catch((error: any) => {
-        console.log('error',error);
+        console.log('error', error);
         reject(error);
       });
     });
@@ -502,7 +502,7 @@ export class AuthenManager {
           fbMode = true;
           this.facebookMode = true;
         }
-        if(response.data.mode === 'GG'){
+        if (response.data.mode === 'GG') {
           ggMode = true;
           this.googleMode = true;
         }

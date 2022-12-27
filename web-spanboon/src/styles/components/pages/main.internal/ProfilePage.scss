@@ -379,6 +379,13 @@
                   > .mat-tab-label-active {
                     color: $brandcolor2;
                   }
+                  
+                  >.mat-icon-button {
+                    float: right;
+                    height: 40px;
+                    right: -50px;
+                    margin-top: 10px;
+                  }
                 }
               }
             }

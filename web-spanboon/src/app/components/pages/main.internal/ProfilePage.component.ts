@@ -445,10 +445,13 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
         this.resProfile = res.data;
         if (this.resProfile && this.resProfile.name) {
           this.name = this.resProfile.name
+          console.log("1 +++ ", this.name);
         } else if (this.resProfile && this.resProfile.uniqueId) {
           this.name = this.resProfile.uniqueId
+          console.log("2 +++ ", this.name);
         } else if (this.resProfile.displayName) {
           this.name = this.resProfile.displayName
+          console.log("3 +++ ", this.name);
         }
 
         if (this.resProfile.imageURL !== '' && this.resProfile.imageURL !== null && this.resProfile.imageURL !== undefined) {
@@ -1167,5 +1170,45 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     }).catch((err: any) => {
       console.log('err ', err)
     })
+  }
+
+  public blockUser() {
+    let dialog = this.dialog.open(DialogAlert, {
+      disableClose: true,
+      data: {
+        text: 'คุณต้องการบล็อกผู้ใช้นี้ใช่หรือไม่',
+      },
+    });
+    dialog.afterClosed().subscribe((res) => {
+      if (res) {
+        // if(localStorage.getItem('blockUser') == null) {
+        //   localStorage.setItem('blockUser','[]');
+        // } 
+
+        // var add_data = JSON.parse(localStorage.getItem('blockUser'));
+        // add_data.push(this.resProfile.id);
+
+        // localStorage.setItem('blockUser', JSON.stringify(add_data));
+        // let show_blockUser = localStorage.getItem('blockUser');
+        // console.log("Super EIDOL",show_blockUser);
+
+        // this.router.navigate(['home']);
+        this.showAlertDevelopDialog('ระบบอยู่ในระหว่างการพัฒนา');
+      }
+    });
+  }
+
+  public reportUser() {
+    let dialog = this.dialog.open(DialogAlert, {
+      disableClose: true,
+      data: {
+        text: 'คุณต้องการรายงานผู้ใช้นี้ใช่หรือไม่',
+      },
+    });
+    dialog.afterClosed().subscribe((res) => {
+      if (res) {
+        this.showAlertDevelopDialog('ระบบอยู่ในระหว่างการพัฒนา');
+      }
+    });
   }
 }

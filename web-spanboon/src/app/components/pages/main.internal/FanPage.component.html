@@ -220,7 +220,28 @@
                             <div class="btn-follow-about btn_fa">
                                 เกี่ยวกับ
                             </div>
-
+                            <ng-container>
+                                <button mat-icon-button [matMenuTriggerFor]="menu" [disableRipple]="'false'"
+                                    class="dropdown">
+                                    <span class="material-icons">
+                                        more_horiz
+                                    </span>
+                                </button>
+                                <mat-menu #menu="matMenu" xPosition="before">
+                                    <div>
+                                        <button mat-menu-item [disableRipple]="'true'" class="list-dropdown"
+                                            (click)="reportUser()">
+                                            <mat-icon>warning</mat-icon>
+                                            <span>รายงานผู้ใช้นี้</span>
+                                        </button>
+                                        <button mat-menu-item [disableRipple]="'true'" class="list-dropdown"
+                                            (click)="blockUser()">
+                                            <mat-icon>block</mat-icon>
+                                            <span>บล็อกผู้ใช้นี้</span>
+                                        </button>
+                                    </div>
+                                </mat-menu>
+                            </ng-container>
                         </div>
                         <div class="wrapper-looking-for">
                             <div class="wrapper-header">
@@ -662,7 +683,7 @@
                                                     (comment)="createComment($event,index)" [pageUser]="pageUser"
                                                     [isPage]="isNotAccess" (userpage)="getAaaPost($event,index)"
                                                     (delete)="deletePost($event,index)" (update)="editPost($event)"
-                                                    (engagement)="engagement($event)">
+                                                    (engagement)="engagement($event)" (hide)="hidePost($event,index)">
                                                 </post-data>
                                             </ng-container>
                                             <Preload-card *ngIf="isLoadingPost" [isShowCard1]="true"

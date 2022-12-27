@@ -83,6 +83,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
   public genderTxt: string;
   public account_twitter: any;
   public isCheckDate: any;
+  public checkedCon: boolean = false;
 
   constructor(authenManager: AuthenManager,
     private authService: SocialAuthService,
@@ -628,4 +629,8 @@ export class RegisterPage extends AbstractPage implements OnInit {
     this.router.navigateByUrl('/login');
   } 
   
+  public checkedClick() {
+    this.checkedCon = !this.checkedCon;
+  }
+
 }

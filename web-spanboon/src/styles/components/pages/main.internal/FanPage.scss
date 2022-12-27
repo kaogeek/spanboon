@@ -312,14 +312,14 @@
             > .btn-follow-about {
               display: flex;
               align-self: stretch;
-              width: 33.33%;
+              width: 25%;
               justify-content: center;
               align-items: center;
               @include font-size-9($font-head-500);
 
               &:nth-child(1) {
                 margin: 0 8pt;
-                width: calc(33.33% - 16pt);
+                width: calc(38% - 16pt);
               }
 
               &:nth-child(2) {
@@ -1579,7 +1579,7 @@
                 }
 
                 &.btn_fa {
-                  width: 50% !important;
+                  width: 33% !important;
                   height: 36pt;
                   margin-top: 5pt;
                 }
@@ -1589,6 +1589,10 @@
                     width: 280px !important;
                   }
                 }
+              }
+              
+              >.dropdown {
+                width: 33.33%;
               }
             }
           }

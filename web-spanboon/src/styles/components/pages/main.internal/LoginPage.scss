@@ -15,9 +15,9 @@
 
 //     >.background {
 //       // position: fixed;
-      // height: 120%;
-      // left: 0%;
-      // top: -5%;
+// height: 120%;
+// left: 0%;
+// top: -5%;
 //     }
 //   }
 
@@ -142,16 +142,21 @@
         }
       }
 
-      >.policy {
+      >.policy-terms {
         display: flex;
+        align-items: center;
         justify-content: center;
-        @include font-size-10($font-head-500);
-        padding-top: 5px;
-        @include pointer();
-        color: $color-gray;
+        gap: 18px;
 
-        &:hover {
-          color: rgba($brandcolor2, 0.95);
+        >.policy {
+          @include font-size-10($font-head-500);
+          padding-top: 5px;
+          @include pointer();
+          color: $color-gray;
+
+          &:hover {
+            color: rgba($brandcolor2, 0.95);
+          }
         }
       }
     }
@@ -202,6 +207,7 @@
                 object-fit: cover;
                 border-radius: 100%;
               }
+
               >.icon-social {
                 position: absolute;
                 right: 0px;
@@ -213,19 +219,20 @@
                 align-items: center;
                 justify-content: center;
                 box-shadow: 5px 7px 25px -1px rgba($black, 0.3);
-  
+
                 &.facebook {
                   background-color: #2851a3;
                 }
-  
+
                 &.twitter {
                   background-color: #1da1f3;
                 }
-  
-                &.google,&.email {
+
+                &.google,
+                &.email {
                   background-color: #f8f7f2;
                 }
-  
+
                 >img {
                   width: 70%;
                   height: 70%;
@@ -344,6 +351,7 @@
           display: inline-flex;
           align-items: center;
           justify-content: center;
+          cursor: pointer;
           width: 250px;
           transition-duration: .22s;
           transition-property: transform;
@@ -355,8 +363,7 @@
             color: #444444;
           }
 
-          >.refresh-icon {
-          }
+          >.refresh-icon {}
 
           >.box-refresh-otp {
             @include font-size-8($font-head-500);
@@ -378,15 +385,15 @@
         >.verify-otp {
           display: block;
           margin-top: 40px;
-          
+
           >.spanboon-button {
             width: 50%;
           }
         }
-        }
       }
     }
   }
+}
 
 @media (max-width: $xxlarge) {
   .wrapper-page {
@@ -416,8 +423,7 @@
       >.box-detail {
         margin: 50pt auto;
 
-        >.merge-user {
-        }
+        >.merge-user {}
 
         >.wrapper-user-to-user {
           margin-top: 40px;
@@ -467,9 +473,9 @@
 
         >.otp-box-details {
           width: 400px;
-          
+
           >.otp-box {
-  
+
             >ng-otp-input {
               .otp-input {
                 width: 48px;
@@ -515,6 +521,7 @@
 @media (max-width: $medium) {
   .wrapper-page {
     >.wrapper-login-page {}
+
     >.wrapper-mergeuser-page {
       >.box-detail {
         >.merge-user {}
@@ -548,6 +555,7 @@
         }
 
         >.description {}
+
         >.next-merge {}
       }
     }
@@ -629,4 +637,3 @@
     }
   }
 }
-

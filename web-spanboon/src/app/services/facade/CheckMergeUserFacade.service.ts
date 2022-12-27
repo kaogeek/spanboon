@@ -9,7 +9,7 @@ import { Injectable } from "@angular/core";
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthenManager } from '../AuthenManager.service';
 import { AbstractFacade } from "./AbstractFacade";
-import { Observable, Subject,BehaviorSubject } from "rxjs";
+import { Observable, Subject, BehaviorSubject } from "rxjs";
 import { tap } from "rxjs/operators";
 import { ObservableManager } from "../ObservableManager.service";
 import { LoginPage } from "src/app/components/components";
@@ -23,25 +23,25 @@ const REGISTERED_SUBJECT: string = 'authen.registered';
 @Injectable()
 export class CheckMergeUserFacade extends AbstractFacade {
 
-    public router: Router;
-    public redirection: string;
-    public loginPage: LoginPage;
-    protected baseURL: string;
-    protected http: HttpClient;
-    protected token: string;
-    protected user: any;
-    protected facebookMode: boolean;
-    protected twitterMode: boolean;
-    protected googleMode: boolean;
-    protected observManager: ObservableManager;
+  public router: Router;
+  public redirection: string;
+  public loginPage: LoginPage;
+  protected baseURL: string;
+  protected http: HttpClient;
+  protected token: string;
+  protected user: any;
+  protected facebookMode: boolean;
+  protected twitterMode: boolean;
+  protected googleMode: boolean;
+  protected observManager: ObservableManager;
 
-    deviceInfo = null;
-    isDesktopDevice: boolean;
-    isTablet: boolean;
-    isMobile: boolean;
+  deviceInfo = null;
+  isDesktopDevice: boolean;
+  isTablet: boolean;
+  isMobile: boolean;
   constructor(http: HttpClient, authMgr: AuthenManager,
     observManager: ObservableManager,
-    ) {
+  ) {
     super(http, authMgr);
     this.http = http;
     this.observManager = observManager;
@@ -52,7 +52,7 @@ export class CheckMergeUserFacade extends AbstractFacade {
     // create obsvr subject
     this.observManager.createSubject(REGISTERED_SUBJECT);
 
-    
+
   }
 
   // check merge user
@@ -101,7 +101,7 @@ export class CheckMergeUserFacade extends AbstractFacade {
 
   public confirmMergeOtp(email: any): Promise<any> {
     return new Promise((resolve, reject) => {
-      let url: string = this.baseURL + '/test_send_otp';
+      let url: string = this.baseURL + '/send_otp';
       let body: any = {
         "email": email
       };
@@ -123,11 +123,11 @@ export class CheckMergeUserFacade extends AbstractFacade {
       });
     });
   };
-  public loginWithFacebook(token: string,tokenFCM_FB,mode?: string): Promise<any> {
+  public loginWithFacebook(token: string, tokenFCM_FB, mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/check_email_user';
       let body: any = {
-        "token":token,
+        "token": token,
         tokenFCM_FB
       };
       let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
@@ -153,21 +153,21 @@ export class CheckMergeUserFacade extends AbstractFacade {
 
         resolve(result);
       }).catch((error: any) => {
-        console.log('error',error);
+        console.log('error', error);
         reject(error);
       });
     });
   }
-  public loginWithGoogle(idToken: string, authToken: string,tokenFCM_GG, mode?: string): Promise<any> {
+  public loginWithGoogle(idToken: string, authToken: string, tokenFCM_GG, mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/check_email_user';
-      let body: any = { 
-        idToken, 
+      let body: any = {
+        idToken,
         authToken,
         tokenFCM_GG
-       };
-      let headers = new HttpHeaders({ 
-        'Content-Type': 'application/json' 
+      };
+      let headers = new HttpHeaders({
+        'Content-Type': 'application/json'
       });
       if (mode !== undefined || mode !== "") {
         headers = headers.set('mode', mode);
@@ -196,7 +196,7 @@ export class CheckMergeUserFacade extends AbstractFacade {
         reject(error);
       });
     });
-  }  
+  }
   public loginWithTwitter(data: any, mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/check_email_user';
@@ -236,34 +236,34 @@ export class CheckMergeUserFacade extends AbstractFacade {
       });
     });
   }
-     // check merge user
-     public checkOtp(email: any,facebookObject:any ,otp: number,mode:string): Promise<any> {
-      return new Promise((resolve, reject) => {
-          const tokenFCM = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
-          let url: string = this.baseURL + '/check_otp';
-          let body: any = {
-              "email": email,
-              "otp": Number(otp),
-              "facebookObject":facebookObject,
-              "tokenFCM": tokenFCM
-          };
-          let headers = new HttpHeaders({
-              "Access-Control-Allow-Origin": "http://localhost:4300",
-              "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept",
-              // "Access-Control-Request-Method": "GET,PUT,OPTIONS,POST",
-              "mode": mode
-          });
-
-          let httpOptions = {
-              headers: headers
-          };
-
-          this.http.post(url, body, httpOptions).toPromise().then((response: any) => {
-              resolve(response);
-          }).catch((error: any) => {
-              reject(error);
-          });
+  // check merge user
+  public checkOtp(email: any, facebookObject: any, otp: number, mode: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const tokenFCM = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
+      let url: string = this.baseURL + '/check_otp';
+      let body: any = {
+        "email": email,
+        "otp": Number(otp),
+        "facebookObject": facebookObject,
+        "tokenFCM": tokenFCM
+      };
+      let headers = new HttpHeaders({
+        "Access-Control-Allow-Origin": "http://localhost:4300",
+        "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept",
+        // "Access-Control-Request-Method": "GET,PUT,OPTIONS,POST",
+        "mode": mode
       });
+
+      let httpOptions = {
+        headers: headers
+      };
+
+      this.http.post(url, body, httpOptions).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
   };
   public checkAccountStatus(token: string, mode?: string, options?: any): Promise<any> {
     if (token === undefined || token === null || token === '') {
@@ -313,7 +313,7 @@ export class CheckMergeUserFacade extends AbstractFacade {
           fbMode = true;
           this.facebookMode = true;
         }
-        if(response.data.mode === 'GG'){
+        if (response.data.mode === 'GG') {
           ggMode = true;
           this.googleMode = true;
         }
