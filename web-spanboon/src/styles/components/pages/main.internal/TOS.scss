@@ -1,0 +1,39 @@
+.terms-of-service {
+    min-height: calc(100vh - 55pt);
+    background: #f5f5f5;
+
+    > .container {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 10px;
+
+        > .body-terms-of-service {
+            display: flex;
+            flex-direction: column;
+            padding: 15px 0;
+
+            > .topic {
+                @include font-size-8($font-head-500);
+            }
+
+            > .detail-topic {
+                @include font-size-9($font-content2-medium);
+            }
+
+            > .detail-terms {
+                @include font-size-9($font-content-light);
+                font-family: "Anakotmai-Light";
+
+                > .links {
+                    color: rgb(101, 101, 101);
+                    font-family: "Anakotmai-Medium";
+
+                    &:hover {
+                        color: rgba($brandcolor2, 0.95);
+                    }
+                }
+            }
+        }
+    }
+}
+

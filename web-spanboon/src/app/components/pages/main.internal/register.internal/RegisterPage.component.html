@@ -94,6 +94,17 @@
                 <mat-datepicker-toggle matSuffix [for]="dp3"></mat-datepicker-toggle>
                 <mat-datepicker #dp3 disabled="false"></mat-datepicker>
             </mat-form-field>
+            <div class="header-agreement">
+                 <div class="check-true" (click)="checkedClick()">
+                    <mat-checkbox [(ngModel)]="checkedCon">
+                    <span class="policy" [routerLink]="'/policy'" > นโยบายความเป็นส่วนตัว </span>
+                    <span class="policy" [routerLink]="'/tos'"> ข้อกำหนดในการใช้บริการ </span>
+                    <span>ฉันได้อ่านข้อความที่กล่าวมา
+                        และยินยอมตามข้อกำหนดของ{{PLATFORM_NAME_TH}}</span>
+                    </mat-checkbox>
+                </div>
+            </div>
+
 
             <!-- <div for="male female custom" class="title-label">เพศ</div>
             <mat-radio-group class="custom-control-input" name="gender" [(ngModel)]="data.gender ">
@@ -111,14 +122,23 @@
                     <spanboon-button [text]="'ยกเลิก'" [height]="'35pt'" [bgColor]="'rgb(248, 247, 242)'"
                         [color]="'#000'" [fontSize]="'16px'" (click)="clickBlack()"></spanboon-button>
                     <spanboon-button [text]="'สมัครสมาชิก'" [height]="'35pt'" (click)="onClickregister(register.value)"
-                         [color]="'#F8F7F2'" [fontSize]="'16px'"></spanboon-button>
+                         [color]="'#F8F7F2'" [fontSize]="'16px'" [ngClass]="checkedCon ? 'deactive' : 'active'"></spanboon-button>
                 </div>
             </ng-container>
             <ng-template #btnComfirm>
                 <div class="wrapper-policy">
                     <span>สร้างรหัสผ่าน</span> บนแฟลตฟอร์ม{{PLATFORM_NAME_TH}} <a class="btn-spanboon" (click)="onShowDialog()">คลิกที่นี่</a>
                 </div> 
-                <span class="policy" [routerLink]="'/policy'"> นโยบายความเป็นส่วนตัว</span>
+                <div class="header-agreement">
+                    <div class="check-true" (click)="checkedClick()">
+                       <mat-checkbox [(ngModel)]="checkedCon">
+                       <span class="policy" [routerLink]="'/policy'" > นโยบายความเป็นส่วนตัว </span>
+                       <span class="policy" [routerLink]="'/tos'"> ข้อกำหนดในการใช้บริการ </span>
+                       <span>ฉันได้อ่านข้อความที่กล่าวมา
+                           และยินยอมตามข้อกำหนดของ{{PLATFORM_NAME_TH}}</span>
+                       </mat-checkbox>
+                   </div>
+               </div>
                 <div class="div-btn">
                     <spanboon-button [text]="'ยกเลิก'" [height]="'35pt'" [bgColor]="'rgb(248, 247, 242)'"
                         [color]="'#000'" [fontSize]="'16px'" (click)="clickBlack()"></spanboon-button>

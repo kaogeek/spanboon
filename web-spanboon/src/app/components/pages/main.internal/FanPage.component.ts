@@ -860,11 +860,15 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         }
         this.resDataPage = res.data;
         if (this.resDataPage && this.resDataPage.name) {
-          this.name = this.resDataPage.name
+          this.name = this.resDataPage.name;
+          console.log("cdcasdasd ====", this.resDataPage);
+          console.log("1 +++ ", this.name);
         } else if (this.resDataPage && this.resDataPage.pageUsername) {
           this.name = this.resDataPage.pageUsername
+          console.log("2 +++ ", this.name);
         } else if (this.resDataPage.displayName) {
           this.name = this.resDataPage.displayName
+          console.log("3 +++ ", this.name);
         }
         this.seoService.updateTitle(this.resDataPage.name);
         if (this.router.url.split('/')[3] !== 'post') {
@@ -1069,7 +1073,6 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     canCelEventEmitter.subscribe(() => {
       this.submitCanCelDialog.emit();
     });
-
     let dialog = this.showDialogWarming("คุณต้องการลบโพสต์นี้ ", "ยกเลิก", "ตกลง", confirmEventEmitter, canCelEventEmitter);
     dialog.afterClosed().subscribe((res) => {
       if (res) {
@@ -1078,6 +1081,25 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
           this.initPage(this.subPage);
         }).catch((err: any) => {
         })
+      }
+    });
+  }
+
+  public hidePost(post: any, index: number) {
+    console.log("index", index);
+    const confirmEventEmitter = new EventEmitter<any>();
+    confirmEventEmitter.subscribe(() => {
+      this.submitDialog.emit();
+    });
+    const canCelEventEmitter = new EventEmitter<any>();
+    canCelEventEmitter.subscribe(() => {
+      this.submitCanCelDialog.emit();
+    });
+
+    let dialog = this.showDialogWarming("คุณต้องการซ่อนโพสต์นี้ใช่หรือไม่ ", "ยกเลิก", "ตกลง", confirmEventEmitter, canCelEventEmitter);
+    dialog.afterClosed().subscribe((res) => {
+      if (res) {
+        this.resPost.posts.splice(index, 1);
       }
     });
   }
@@ -1454,6 +1476,34 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     }).catch((err: any) => {
       console.log('err ', err)
     })
+  }
+
+  public blockUser() {
+    let dialog = this.dialog.open(DialogAlert, {
+      disableClose: true,
+      data: {
+        text: 'คุณต้องการบล็อกผู้ใช้นี้ใช่หรือไม่',
+      },
+    });
+    dialog.afterClosed().subscribe((res) => {
+      if (res) {
+        this.showAlertDialog('ระบบอยู่ในระหว่างการพัฒนา');
+      }
+    });
+  }
+
+  public reportUser() {
+    let dialog = this.dialog.open(DialogAlert, {
+      disableClose: true,
+      data: {
+        text: 'คุณต้องการรายงานผู้ใช้นี้ใช่หรือไม่',
+      },
+    });
+    dialog.afterClosed().subscribe((res) => {
+      if (res) {
+        this.showAlertDialog('ระบบอยู่ในระหว่างการพัฒนา');
+      }
+    });
   }
 
 }

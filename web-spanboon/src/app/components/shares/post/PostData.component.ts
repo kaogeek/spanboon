@@ -12,7 +12,6 @@ import { NeedsFacade } from '../../../services/facade/NeedsFacade.service';
 import { AssetFacade } from '../../../services/facade/AssetFacade.service';
 import { PageFacade } from '../../../services/facade/PageFacade.service';
 import { SearchFilter } from '../../../models/SearchFilter';
-import { DialogMedia } from '../dialog/DialogMedia.component';
 import { MatDialog } from '@angular/material';
 import { ValidBase64ImageUtil } from '../../../utils/ValidBase64ImageUtil';
 import { DialogAlert } from '../dialog/DialogAlert.component';
@@ -89,6 +88,8 @@ export class PostData {
   public userpage: EventEmitter<any> = new EventEmitter();
   @Output()
   public engagement: EventEmitter<any> = new EventEmitter();
+  @Output()
+  public hide: EventEmitter<any> = new EventEmitter();
 
   public value: any
   public isLoading: Boolean;
@@ -517,6 +518,38 @@ export class PostData {
   public fulfillEngagement(event, postId: string) {
     let data = this.engagementService.getEngagement(event, postId, "fulfillment");
     this.engagement.emit(data);
+  }
+
+  public hidePost(post) {
+    this.hide.emit(post);
+  }
+
+  public reportPost() {
+    let dialog = this.dialog.open(DialogAlert, {
+      disableClose: true,
+      data: {
+        text: 'คุณต้องการรายงานโพสต์นี้ใช่หรือไม่',
+      },
+    });
+    dialog.afterClosed().subscribe((res) => {
+      if (res) {
+        this.showAlertDialog();
+      }
+    });
+  }
+
+  public blockUser() {
+    let dialog = this.dialog.open(DialogAlert, {
+      disableClose: true,
+      data: {
+        text: 'คุณต้องการบล็อกผู้ใช้นี้ใช่หรือไม่',
+      },
+    });
+    dialog.afterClosed().subscribe((res) => {
+      if (res) {
+        this.showAlertDialog();
+      }
+    });
   }
 
 }
