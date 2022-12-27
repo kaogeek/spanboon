@@ -14,10 +14,10 @@
                         เข้าสู่ระบบ
                     </div>
                     <div class="form-group">
-                        <input type="text" #email class="input-text" id="firstName" name="firstName" placeholder="อีเมล"
-                            required matInput>
-                        <input type="password" #password class="input-text" id="password" name="password"
-                            placeholder="รหัสผ่าน" (keyup.enter)="onClickLogin()" required matInput>
+                        <input type="text" #email class="input-text" id="firstName" name="firstName" placeholder="อีเมล" required
+                            matInput>
+                        <input type="password" #password class="input-text" id="password" name="password" placeholder="รหัสผ่าน"
+                            (keyup.enter)="onClickLogin()" required matInput>
                     </div>
                     <div class="wrapper-forget-password">
                         <div class="forget" [routerLink]="'/forgotpassword'">
@@ -34,10 +34,9 @@
                             <span class="border-span"></span>
                         </div>
 
-                        <button-social class="button-social" [btnName]="'Facebook'" [height]="'34pt'"
-                            [fontSize]="'18px'" [iconSocial]="'../../../../assets/img/facebook-logo.svg'"
-                            [bgColor]="'#2851a3'" [imgsize]="'20pt'" [color]="'#F8F7F2'" (click)="clickLoginFB()"
-                            [param]="{mode: 'facebook'}"></button-social>
+                        <button-social class="button-social" [btnName]="'Facebook'" [height]="'34pt'" [fontSize]="'18px'"
+                            [iconSocial]="'../../../../assets/img/facebook-logo.svg'" [bgColor]="'#2851a3'" [imgsize]="'20pt'"
+                            [color]="'#F8F7F2'" (click)="clickLoginFB()" [param]="{mode: 'facebook'}"></button-social>
 
                         <button-social class="button-social" [btnName]="'Twitter'" [height]="'34pt'" [fontSize]="'18px'"
                             [iconSocial]="'../../../../assets/img/twitter.svg'" [bgColor]="'#1da1f3'" [imgsize]="'20pt'"
@@ -54,13 +53,10 @@
                     </div>
 
                     <div class="wrapper-footer-login">
-                        มาร่วม{{PLATFORM_FULFILL_TEXT}}กับเรา <span class="wrapper-register"
-                            [routerLinkActive]="['active-link']" [routerLink]="'/register/menu'"> สมัครสมาชิก </span>
+                        มาร่วม{{PLATFORM_FULFILL_TEXT}}กับเรา <span class="wrapper-register" [routerLinkActive]="['active-link']"
+                            [routerLink]="'/register/menu'"> สมัครสมาชิก </span> 
                     </div>
-                    <div class="policy-terms">
-                        <span class="policy" [routerLink]="'/policy'"> นโยบายความเป็นส่วนตัว </span>
-                        <span class="policy" [routerLink]="'/tos'"> ข้อกำหนดในการใช้บริการ </span>
-                    </div>
+                    <span class="policy" [routerLink]="'/policy'" > นโยบายความเป็นส่วนตัว </span>
                 </div>
             </div>
         </ng-container>
@@ -73,11 +69,11 @@
                             <div class="profile-box">
                                 <div class="wrapper-img">
                                     <div class="icon-social"
-                                        [ngClass]="{'facebook': mockDataMergeSocial.social === 'FACEBOOK' , 'twitter': mockDataMergeSocial.social === 'TWITTER', 'google': mockDataMergeSocial.social === 'GOOGLE', 'email': mockDataMergeSocial.social === 'EMAIL'}">
-                                        <img class="icon-social-pic"
-                                            [src]="mockDataMergeSocial.social === 'FACEBOOK' ? '../../../../assets/img/facebook-logo.svg' : (mockDataMergeSocial.social === 'TWITTER' ? '../../../../assets/img/twitter.svg' : (mockDataMergeSocial.social === 'GOOGLE' ? '../../../../assets/img/google.svg' : '../../../../assets/img/logo/logo.svg'))">
+                                    [ngClass]="{'facebook': mockDataMergeSocial.social === 'FACEBOOK' , 'twitter': mockDataMergeSocial.social === 'TWITTER', 'google': mockDataMergeSocial.social === 'GOOGLE', 'email': mockDataMergeSocial.social === 'EMAIL'}">
+                                    <img class="icon-social-pic"
+                                        [src]="mockDataMergeSocial.social === 'FACEBOOK' ? '../../../../assets/img/facebook-logo.svg' : (mockDataMergeSocial.social === 'TWITTER' ? '../../../../assets/img/twitter.svg' : (mockDataMergeSocial.social === 'GOOGLE' ? '../../../../assets/img/google.svg' : '../../../../assets/img/logo/logo.svg'))">
                                     </div>
-                                    <img class="social-pic" src="http://placekitten.com/600/900" />
+                                    <img class="social-pic" src= {{pictureSocial}} />
                                 </div>
                             </div>
                             <div class="label">
@@ -93,30 +89,36 @@
                             <div class="profile-box">
                                 <div class="wrapper-img">
                                     <div class="icon-social"
-                                        [ngClass]="{'facebook': social.socialLogin === 'FACEBOOK' , 'twitter': social.socialLogin === 'TWITTER', 'google': social.socialLogin === 'GOOGLE', 'email': social.socialLogin === 'EMAIL'}">
-                                        <img class="icon-social-pic"
-                                            [src]="social.socialLogin === 'FACEBOOK' ? '../../../../assets/img/facebook-logo.svg' : (social.socialLogin === 'TWITTER' ? '../../../../assets/img/twitter.svg' : (social.socialLogin === 'GOOGLE' ? '../../../../assets/img/google.svg' : '../../../../assets/img/logo/logo.svg'))">
+                                    [ngClass]="{'facebook': social.socialLogin === 'FACEBOOK' , 'twitter': social.socialLogin === 'TWITTER', 'google': social.socialLogin === 'GOOGLE', 'email': social.socialLogin === 'EMAIL'}">
+                                    <img class="icon-social-pic"
+                                        [src]="social.socialLogin === 'FACEBOOK' ? '../../../../assets/img/facebook-logo.svg' : (social.socialLogin === 'TWITTER' ? '../../../../assets/img/twitter.svg' : (social.socialLogin === 'GOOGLE' ? '../../../../assets/img/google.svg' : '../../../../assets/img/logo/logo.svg'))">
                                     </div>
-                                    <img class="social-pic" [src]="apiBaseURL+dataUser.data.imageURL+'/image'" />
+                                    <ng-container *ngIf="dataUser.data.imageURL !== '' && dataUser.data.imageURL !== undefined && dataUser.data.imageURL !== null ; else elsePhoto">
+                                        <img class="social-pic" [src]="apiBaseURL+dataUser.data.imageURL+'/image'"/>
+                                    </ng-container>
+                                    <ng-template #elsePhoto>
+                                        <div class="not-image">
+                                            {{dataUser.data.displayName || dataUser.data.name | slice: 0:1 }}
+                                        </div>
+                                    </ng-template>
                                 </div>
                             </div>
                             <div class="label">
                                 {{dataUser.data.firstName}} {{dataUser.data.lastName}}
                                 <div class="label-tag">
-                                    @{{dataUser.data.uniqueId}}
+                                @{{dataUser.data.uniqueId}}
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="description"> กรุณากดปุ่มถัดไปเพื่อรับ OTP สำหรับรวมบัญชีของคุณ</div>
+                    <div class="description"> กรุณากดปุ่มด้านล่าง กรุณาตรวจสอบ OTP ในกล่องอีเมลของคุณ</div>
                     <spanboon-button class="next-merge" [height]="'34pt'" [text]="'ถัดไป'" [fontSize]="'18px'"
                         [bgColor]="''" (click)="dialogConfirmMerge()">
                     </spanboon-button>
                     <spanboon-button class="back-merge" [height]="'34pt'" [text]="'ย้อนกลับ'" [fontSize]="'18px'"
-                        [bgColor]="''" (click)="modeSwitch === 'mergeuser' ? modeSwitch = 'login' : null">
-                    </spanboon-button>
+                        [bgColor]="''" (click)="modeSwitch === 'mergeuser' ? modeSwitch = 'login' : null"></spanboon-button>
                 </div>
-            </div>
+            </div>        
         </ng-container>
         <ng-container *ngIf="modeSwitch === 'otp'">
             <div class="wrapper-otp-page">
