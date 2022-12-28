@@ -240,9 +240,7 @@ export class AuthenManager {
         headers = headers.set('mode', mode);
       }
       let httpOptions = { headers };
-      console.log('bodyFB',body);
       this.http.post(url, body, httpOptions).toPromise().then((response: any) => {
-        console.log('responseFB',response);
         let result: any = {
           token: response.data.token,
           user: response.data.user,
