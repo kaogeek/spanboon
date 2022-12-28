@@ -732,7 +732,6 @@ export class LoginPage extends AbstractPage implements OnInit {
     }else if(mode === 'FACEBOOK'){
       this.checkMergeUserFacade.checkOtpFB(this.emailOtp,this.accessToken,this.countOtp,mode).then((res)=>{
         if (res.message === "Loggedin successful" && res.authUser === 'FACEBOOK') {
-          console.log('res_data',res);
           this.authenManager.loginWithFacebook(res.data ,res.authUser).then((data) => {
             if (data) {
               let dialog = this.dialog.open(DialogAlert, {
