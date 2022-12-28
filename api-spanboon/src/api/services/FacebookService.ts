@@ -353,6 +353,24 @@ export class FacebookService {
             // console.log('Error publishPageId :'+ err);
         }
     }
+
+    public async coverImagePage(fbUserId:string,accessToken:string): Promise<any>{
+        try{
+            const {data} = await axios.get(`https://graph.facebook.com/v14.0/${fbUserId}?fields=cover&access_token=${accessToken}`);
+            return data;
+        }catch(err){
+            console.log('Error CoverImagePage :'+ err);
+        }
+    }
+
+    public async subScribeWebhook(fbUserId:string,accessToken:string): Promise<any>{
+        try{
+            const {data} = await axios.post('https://graph.facebook.com/' + fbUserId + '/subscribed_apps?subscribed_fields=feed&access_token=' + accessToken);
+            return data;
+        }catch(err){
+            console.log('Error SubScribeWebhooks :'+ err);
+        }
+    }
     public publishPost(fbUserId: string, accessToken: string, message: string, assets?: Asset[]): Promise<any> {
         return new Promise(async (resolve, reject) => {
             if (fbUserId === undefined || fbUserId === null || fbUserId === '') {

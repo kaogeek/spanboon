@@ -183,10 +183,10 @@ export const APP_ROUTES: Routes = [
         path: LoginPage.PAGE_NAME,
         component: LoginPage,
       },
-      // {
-      //   path: LoginPageTest.PAGE_NAME,
-      //   component: LoginPageTest,
-      // },
+      {
+        path: LoginPageTest.PAGE_NAME,
+        component: LoginPageTest,
+      },
       {
         path: forgotPasswordPage.PAGE_NAME,
         component: forgotPasswordPage,

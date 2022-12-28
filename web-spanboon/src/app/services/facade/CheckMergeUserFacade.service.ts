@@ -123,12 +123,11 @@ export class CheckMergeUserFacade extends AbstractFacade {
       });
     });
   };
-  public loginWithFacebook(token: string,tokenFCM:string,mode?: string): Promise<any> {
+  public loginWithFacebook(token: string,mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/check_email_user';
       let body: any = {
         "token":token,
-        tokenFCM
       };
       let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
       if (mode !== undefined || mode !== "") {
@@ -159,13 +158,12 @@ export class CheckMergeUserFacade extends AbstractFacade {
       });
     });
   }
-  public loginWithGoogle(idToken: string, authToken: string,tokenFCM_GG, mode?: string): Promise<any> {
+  public loginWithGoogle(idToken: string, authToken: string, mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/check_email_user';
       let body: any = { 
         idToken, 
         authToken,
-        tokenFCM_GG
        };
       let headers = new HttpHeaders({ 
         'Content-Type': 'application/json' 
@@ -242,7 +240,6 @@ export class CheckMergeUserFacade extends AbstractFacade {
      // check merge user
      public checkOtp(email: any,otp:number,mode?:string): Promise<any> {
       return new Promise((resolve, reject) => {
-          const tokenFCM = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
           let url: string = this.baseURL + '/check_otp';
           let body: any = {
               "email": email,
@@ -266,12 +263,10 @@ export class CheckMergeUserFacade extends AbstractFacade {
   };
   public checkOtpGG(email: any,idToken?: string, authToken?: string ,otp?: number,mode?:string): Promise<any> {
     return new Promise((resolve, reject) => {
-        const tokenFCM = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
         let url: string = this.baseURL + '/check_otp';
         let body: any = {
             "email": email,
             "otp": Number(otp),
-            "tokenFCM": tokenFCM,
             "idToken":idToken,
             "authToken":authToken
         };
@@ -292,13 +287,11 @@ export class CheckMergeUserFacade extends AbstractFacade {
 };
 public checkOtpFB(email: any,facebookObject:any,otp:number,mode?:string): Promise<any> {
   return new Promise((resolve, reject) => {
-      const tokenFCM = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
       let url: string = this.baseURL + '/check_otp';
       let body: any = {
           "email": email,
           "facebook": facebookObject,
           "otp":Number(otp),
-          "tokenFCM": tokenFCM,
       };
       let headers = new HttpHeaders({ 
         'Content-Type': 'application/json' 

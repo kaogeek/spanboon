@@ -228,13 +228,10 @@ export class LoginPage extends AbstractPage implements OnInit {
   }
   public loginTwitter(token: string, token_secret: string, userId: string) {
     let mode = 'TWITTER';
-    const tokenFCM = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
     let twitter = {
       twitterOauthToken: token,
       twitterOauthTokenSecret: token_secret,
       twitterUserId: userId,
-      "tokenFCM": tokenFCM,
-      "deviceName": "TWITTER",
     }
     this.authenManager.loginWithTwitter(twitter, mode).then((data: any) => {
       // login success redirect to main page
@@ -307,12 +304,7 @@ export class LoginPage extends AbstractPage implements OnInit {
 
   private loginGoogle() {
     let mode = 'GOOGLE';
-    const tokenFCM = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
-    let tokenFCM_GG = {
-      "tokenFCM": tokenFCM,
-      "deviceName": "GOOGLE",
-    }
-    this.checkMergeUserFacade.loginWithGoogle(this.googleToken.idToken, this.googleToken.authToken,tokenFCM_GG,mode).then((data: any) => {
+    this.checkMergeUserFacade.loginWithGoogle(this.googleToken.idToken, this.googleToken.authToken,mode).then((data: any) => {
       // login success redirect to main page  
       if ( data.data.status === 2 ) {
         this.pictureSocial = data.pic;
@@ -347,7 +339,7 @@ export class LoginPage extends AbstractPage implements OnInit {
           }
         }
       }else if(data.data.status === 1 ){
-        this.authenManager.loginWithGoogle(this.googleToken.idToken, this.googleToken.authToken,tokenFCM, mode).then((data: any) => {
+        this.authenManager.loginWithGoogle(this.googleToken.idToken, this.googleToken.authToken, mode).then((data: any) => {
           // login success redirect to main page
           this.observManager.publish('authen.check', null);
           if (this.redirection) {
@@ -449,9 +441,8 @@ export class LoginPage extends AbstractPage implements OnInit {
 
   private loginFB() {
     let mode = 'FACEBOOK'
-    const tokenFCM = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
 
-    this.checkMergeUserFacade.loginWithFacebook(this.accessToken.fbtoken,tokenFCM,mode).then((data: any) => {
+    this.checkMergeUserFacade.loginWithFacebook(this.accessToken.fbtoken,mode).then((data: any) => {
       // login success redirect to main page
       if ( data.data.status === 2) {
         this.pictureSocial = data.pic;
@@ -486,7 +477,7 @@ export class LoginPage extends AbstractPage implements OnInit {
           }
         }
       }else if(data.data.status === 1){
-        this.authenManager.loginWithFacebook(this.accessToken.fbtoken,tokenFCM, mode).then((data: any) => {
+        this.authenManager.loginWithFacebook(this.accessToken.fbtoken, mode).then((data: any) => {
           // login success redirect to main page
           this.observManager.publish('authen.check', null);
           if (this.redirection) {
@@ -699,8 +690,7 @@ export class LoginPage extends AbstractPage implements OnInit {
     if(mode === 'GOOGLE'){
         this.checkMergeUserFacade.checkOtpGG(this.emailOtp,this.googleToken.idToken, this.googleToken.authToken ,this.countOtp,mode).then((res)=>{
           if (res.message === "Loggedin successful" && res.authUser === 'GOOGLE') {
-            const tokenFCM = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
-            this.authenManager.loginWithGoogle(this.googleToken.idToken, this.googleToken.authToken,tokenFCM, mode).then((data) => {
+            this.authenManager.loginWithGoogle(this.googleToken.idToken, this.googleToken.authToken, mode).then((data) => {
               if (data) {
                 let dialog = this.dialog.open(DialogAlert, {
                   disableClose: true,
@@ -743,8 +733,7 @@ export class LoginPage extends AbstractPage implements OnInit {
     }else if(mode === 'FACEBOOK'){
       this.checkMergeUserFacade.checkOtpFB(this.emailOtp,this.accessToken,this.countOtp,mode).then((res)=>{
         if (res.message === "Loggedin successful" && res.authUser === 'FACEBOOK') {
-          const tokenFCM = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
-          this.authenManager.loginWithFacebook(res.data,tokenFCM ,res.authUser).then((data) => {
+          this.authenManager.loginWithFacebook(res.data ,res.authUser).then((data) => {
             if (data) {
               let dialog = this.dialog.open(DialogAlert, {
                 disableClose: true,

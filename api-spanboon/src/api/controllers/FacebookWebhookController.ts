@@ -90,7 +90,7 @@ export class FacebookWebhookController {
                 const checkPost = await this.socialPostService.findOne({ socialId: body.entry[0].changes[0].value.post_id, postByType: 'add' });
                 if (checkPost === undefined) {
                     const postPage: Posts = new Posts();
-                    postPage.title = 'Webhooks Feed';
+                    postPage.title = 'โพสต์จากเฟสบุ๊ค';
                     postPage.detail = body.entry[0].changes[0].value.message;
                     postPage.isDraft = false;
                     postPage.hidden = false;
@@ -131,7 +131,7 @@ export class FacebookWebhookController {
                 const checkPost = await this.socialPostService.findOne({ socialId: body.entry[0].changes[0].value.post_id, postByType: 'add' });
                 if (checkPost === undefined && assetPic !== undefined) {
                     const postPage: Posts = new Posts();
-                    postPage.title = 'Webhooks Feed';
+                    postPage.title = 'โพสต์จากเฟสบุ๊ค';
                     postPage.detail = body.entry[0].changes[0].value.message;
                     postPage.isDraft = false;
                     postPage.hidden = false;
@@ -194,7 +194,7 @@ export class FacebookWebhookController {
                 const checkPost = await this.socialPostService.findOne({ socialId: body.entry[0].changes[0].value.post_id, postByType: 'add' });
                 if (checkPost === undefined) {
                     const postPage: Posts = new Posts();
-                    postPage.title = 'Webhooks Feed';
+                    postPage.title = 'โพสต์จากเฟสบุ๊ค';
                     postPage.detail = body.entry[0].changes[0].value.message;
                     postPage.isDraft = false;
                     postPage.hidden = false;

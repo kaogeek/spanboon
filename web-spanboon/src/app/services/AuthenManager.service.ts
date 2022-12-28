@@ -76,7 +76,7 @@ export class AuthenManager {
       };
 
       this.http.post(url, body, httpOptions).toPromise().then((response: any) => {
-
+        console.log('response.data.user',response.data.user);
         let result: any = {
           token: response.data.token,
           user: response.data.user
@@ -97,11 +97,12 @@ export class AuthenManager {
   }
 
 
-  public loginWithGoogle(idToken: string, authToken: string, tokenFCM_GG: string, mode?: string): Promise<any> {
+  public loginWithGoogle(idToken: string, authToken: string, mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/login';
-      let body: any = {
-        idToken,
+      const tokenFCM_GG = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
+      let body: any = { 
+        idToken, 
         authToken,
         tokenFCM_GG
       };
@@ -211,7 +212,22 @@ export class AuthenManager {
     });
   }
 
-  public loginWithFacebook(token: string, tokenFCM?: string, mode?: string): Promise<any> {
+  public userIsSyncPage(isSyncpage:boolean):Promise<any>{
+    return new Promise((resolve,reject) =>{
+      let url: string = this.baseURL + '/page/user/sync';
+      let options = this.getDefaultOptions();
+      let body: any ={
+        "isSyncpage":isSyncpage,
+      }
+
+      this.http.post(url,body,options).toPromise().then((response:any) =>{
+        resolve(response);
+      }).catch((error:any)=>{
+        reject(error);
+      })
+    })
+  }
+  public loginWithFacebook(token: string,tokenFCM?:string,mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/login';
       const tokenFCM_FB = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';

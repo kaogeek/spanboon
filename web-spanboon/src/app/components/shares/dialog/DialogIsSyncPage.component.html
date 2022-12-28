@@ -1,0 +1,37 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<div class="dialog customize-alert">
+    <div class="newcon-alert-dialog">
+        <div class="edit-h">
+            <span class="edit-head-one">{{data.title}}</span>
+            <div class="dialog-image-title-right">
+                <i class="material-icons" (click)="onClose()">
+                    clear
+                </i>
+            </div>
+        </div>
+        <div class="wrapper-page-create">
+            <div class = "social-list-page">
+                <button-social class="button-social" [btnName]="'Facebook'" [height]="'34pt'" [fontSize]="'18px'"
+                [iconSocial]="'../../../../assets/img/facebook-logo.svg'" [bgColor]="'#2851a3'" [imgsize]="'20pt'"
+                [color]="'#F8F7F2'" (click)="openTabFb()" [param]="{mode: 'facebook'}"></button-social>
+
+            <button-social class="button-social" [btnName]="'Twitter'" [height]="'34pt'" [fontSize]="'18px'"
+                [iconSocial]="'../../../../assets/img/twitter.svg'" [bgColor]="'#1da1f3'" [imgsize]="'20pt'"
+                [color]="'#F8F7F2'" (click)="clickSyncTw()" [param]="{mode: 'twitter'}">
+            </button-social>
+            </div>
+        </div>
+        <div class="dialog-footer">
+            <div class="butt but-cancel" [ngStyle]="{'display': data.btDisplay1}" (click)="onClose() ">
+                {{data.bottomText1 ? data.bottomText1 : "ปิด"}}</div>
+            <div class="butt but-submit" [ngStyle]="{'display': data.btDisplay2}" appDebounceClick
+                (debounceClick)="onConfirm() ">{{data.bottomText2 ? data.bottomText2 : "ยืนยัน"}}</div>
+        </div>
+    </div>
+</div>
