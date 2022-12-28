@@ -99,8 +99,11 @@ export class MainPage extends AbstractPage implements OnInit {
   }
 
   public ngOnInit(): void {
-    this.isLogin();
-    this.searchAccessPage();
+    const isLogin: boolean = this.isLogin();
+
+    if (isLogin) {
+      this.searchAccessPage();
+    }
 
     // this.route.queryParams.subscribe(params => {
     //   let hidebars = params['hidebar'];
