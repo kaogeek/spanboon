@@ -81,8 +81,8 @@ export class LoginPage extends AbstractPage implements OnInit {
   public pictureSocial: any;
   public social: any = {
     socialLogin: undefined,
-
   };
+
   public mockDataMergeSocial: any = {
     social: "EMAIL",
     socialFB: "FACEBOOK",
@@ -536,6 +536,9 @@ export class LoginPage extends AbstractPage implements OnInit {
     }
     this.checkMergeUserFacade.checkMergeUser(mode, body).then((data) => {
       if (data.data.status === 2) {
+        let socialIcon = this.social.socialLogin[0];
+        console.log("zazazaza === ", data);
+        console.log("trtrtrtrtr", socialIcon);
         this.login = false;
         this.modeSwitch = "mergeuser";
         this.emailOtp = body.email;
@@ -598,6 +601,7 @@ export class LoginPage extends AbstractPage implements OnInit {
       }
     })
       .catch((err) => {
+        console.log("asdasdasdawd", err);
         if (err.error.message === "Invalid Password" && err.status === 400) {
           let dialog = this.dialog.open(DialogAlert, {
             disableClose: true,
