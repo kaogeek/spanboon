@@ -957,6 +957,7 @@ export class GuestController {
                 const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
                 return res.status(400).send(errorUserNameResponse);
             } else {
+                console.log('fbUser',fbUser);
                 const userExrTime = await this.getUserLoginExpireTime();
                 const currentDateTime = moment().toDate();
                 const authTime = currentDateTime;
@@ -1289,8 +1290,7 @@ export class GuestController {
                 const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', user, stackAuth);
                 return res.status(200).send(successResponse);
             } else if (userFb && authenticaTionFB !== undefined) {
-                const tokenFcmFB = req.body.tokenFCM_FB.tokenFCM;
-                const deviceFB = req.body.tokenFCM_FB.deviceName;
+
                 // find email then -> authentication -> mode FB
                 if (fbUser === null || fbUser === undefined && authenticaTionFB === null || authenticaTionFB === undefined) {
                     const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
@@ -1306,7 +1306,6 @@ export class GuestController {
                     const updateAuth = await this.authenticationIdService.update(query, newValue);
                     if (updateAuth) {
                         const updatedAuth = await this.authenticationIdService.findOne({ where: query });
-                        await this.deviceToken.createDeviceToken({ deviceName: deviceFB, token: tokenFcmFB, userId: updatedAuth.user });
                         loginUser = await this.userService.findOne({ where: { _id: ObjectID(updatedAuth.user) } });
                         loginToken = updatedAuth.storedCredentials;
                         loginToken = jwt.sign({ token: loginToken }, env.SECRET_KEY);

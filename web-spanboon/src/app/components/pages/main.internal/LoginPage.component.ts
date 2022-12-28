@@ -441,9 +441,9 @@ export class LoginPage extends AbstractPage implements OnInit {
 
   private loginFB() {
     let mode = 'FACEBOOK'
-
     this.checkMergeUserFacade.loginWithFacebook(this.accessToken.fbtoken,mode).then((data: any) => {
       // login success redirect to main page
+      console.log('data',data.data.status);
       if ( data.data.status === 2) {
         this.pictureSocial = data.pic;
         this.modeSwitch = "mergeuser";
@@ -477,8 +477,10 @@ export class LoginPage extends AbstractPage implements OnInit {
           }
         }
       }else if(data.data.status === 1){
+        console.log('???????');
         this.authenManager.loginWithFacebook(this.accessToken.fbtoken, mode).then((data: any) => {
           // login success redirect to main page
+          console.log('dataLogin',data);
           this.observManager.publish('authen.check', null);
           if (this.redirection) {
             this.router.navigateByUrl(this.redirection);
