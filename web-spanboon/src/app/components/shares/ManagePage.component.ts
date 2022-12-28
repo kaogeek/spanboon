@@ -111,7 +111,7 @@ export class ManagePage extends AbstractPage implements OnInit {
   }
   public isLogin(): boolean {
     let user = this.authenManager.getCurrentUser();
-    setTimeout(() =>{
+    /* setTimeout(() =>{
       if(user.isSyncPage !== false && user.isSyncPage !== true){
         let dialog = this.dialog.open(DialogIsSyncPage, {
           disableClose: true,
@@ -123,12 +123,12 @@ export class ManagePage extends AbstractPage implements OnInit {
           },
         }); 
       }
-    },5000);
+    },5000); */
     return user !== undefined && user !== null;
   }
 
   public ngOnInit(): void {    
-    this.isLogin();
+    // this.isLogin();
     this.searchAllPage();
   }
 

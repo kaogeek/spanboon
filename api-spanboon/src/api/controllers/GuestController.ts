@@ -883,7 +883,6 @@ export class GuestController {
                         const currentDateTime = moment().toDate();
                         // find user
                         const userExrTime = await this.getUserLoginExpireTime();
-                        console.log('userExrTime',userExrTime);
                         const checkAuthen: AuthenticationId = await this.authenticationIdService.findOne({ where: { user: userLogin.id, providerName: PROVIDER.EMAIL } });
                         const newToken = new AuthenticationId();
                         newToken.user = userLogin.id;
@@ -896,7 +895,6 @@ export class GuestController {
                         if (checkAuthen !== null && checkAuthen !== undefined) {
                             const updateQuery = { user: userLogin.id, providerName: PROVIDER.EMAIL };
                             const newValue = { $set: { lastAuthenTime: currentDateTime, storedCredentials: token, expirationDate: newToken.expirationDate } };
-                            console.log('newValue',newValue);
                             await this.authenticationIdService.update(updateQuery, newValue);
                         } else {
                             await this.authenticationIdService.create(newToken);
