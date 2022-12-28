@@ -883,6 +883,7 @@ export class GuestController {
                         const currentDateTime = moment().toDate();
                         // find user
                         const userExrTime = await this.getUserLoginExpireTime();
+                        console.log('userExrTime',userExrTime);
                         const checkAuthen: AuthenticationId = await this.authenticationIdService.findOne({ where: { user: userLogin.id, providerName: PROVIDER.EMAIL } });
                         const newToken = new AuthenticationId();
                         newToken.user = userLogin.id;
@@ -895,6 +896,7 @@ export class GuestController {
                         if (checkAuthen !== null && checkAuthen !== undefined) {
                             const updateQuery = { user: userLogin.id, providerName: PROVIDER.EMAIL };
                             const newValue = { $set: { lastAuthenTime: currentDateTime, storedCredentials: token, expirationDate: newToken.expirationDate } };
+                            console.log('newValue',newValue);
                             await this.authenticationIdService.update(updateQuery, newValue);
                         } else {
                             await this.authenticationIdService.create(newToken);
@@ -1930,6 +1932,7 @@ export class GuestController {
         // check expire token
         const today = moment().toDate();
         if (isMode !== undefined && isMode === 'FB') {
+
             if (user.fbAccessExpirationTime < today.getDate()) {
                 const errorUserNameResponse: any = { status: 0, message: 'User token expired.' };
                 await this.deviceToken.delete({ userId: user });
@@ -1938,7 +1941,7 @@ export class GuestController {
         }
         // check expire token GG
         if (isMode !== undefined && isMode === 'GG') {
-            const authenExpira = await this.authenticationIdService.findOne({ user: user.id });
+            const authenExpira = await this.authenticationIdService.findOne({ user: user.id,providerName:PROVIDER.GOOGLE });
             if (authenExpira < today.getDate()) {
                 const errorUserNameResponse: any = { status: 0, message: 'User token expired.' };
                 await this.deviceToken.delete({ userId: user });
@@ -1947,13 +1950,12 @@ export class GuestController {
         }
         else {
             // normal mode
-            const authenId: AuthenticationId = await this.authenticationIdService.findOne({ where: { user: user.id } });
+            const authenId: AuthenticationId = await this.authenticationIdService.findOne({ where: { user: user.id,providerName:PROVIDER.EMAIL} });
             if (authenId === undefined) {
                 const errorUserNameResponse: any = { status: 0, message: 'User token invalid.' };
                 return response.status(400).send(errorUserNameResponse);
             }
             const expiresAt = authenId.expirationDate;
-
             if (expiresAt !== undefined && expiresAt !== null && expiresAt.getTime() <= today.getTime()) {
                 const errorUserNameResponse: any = { status: 0, message: 'User token expired.' };
                 await this.deviceToken.delete({ userId: user.id });
