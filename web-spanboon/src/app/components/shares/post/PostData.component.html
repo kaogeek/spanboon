@@ -6,7 +6,6 @@
 -->
 
 <div class="card-feed-post">
-    <ng-container *ngIf="isNotAccess">
         <ng-container *ngIf="itemPost">
             <button mat-icon-button [matMenuTriggerFor]="menu" [disableRipple]="'false'" class="dropdown">
                 <span class="material-icons">
@@ -14,17 +13,34 @@
                 </span>
             </button>
             <mat-menu #menu="matMenu" xPosition="before">
-                <button mat-menu-item [disableRipple]="'true'" class="list-dropdown" (click)="editPost(itemPost)">
-                    <mat-icon>edit</mat-icon>
-                    <span>แก้ไข</span>
-                </button>
-                <button mat-menu-item [disableRipple]="'true'" class="list-dropdown" (click)="deletePost(itemPost)">
-                    <mat-icon>delete</mat-icon>
-                    <span>ลบ</span>
-                </button>
+                <ng-container *ngIf="isNotAccess; else elseTemplateIsNotAccess">
+                    <button mat-menu-item [disableRipple]="'true'" class="list-dropdown" (click)="editPost(itemPost)">
+                        <mat-icon>edit</mat-icon>
+                        <span>แก้ไข</span>
+                    </button>
+                    <button mat-menu-item [disableRipple]="'true'" class="list-dropdown" (click)="deletePost(itemPost)">
+                        <mat-icon>delete</mat-icon>
+                        <span>ลบ</span>
+                    </button>
+                </ng-container>
+                <ng-template #elseTemplateIsNotAccess>
+                    <button mat-menu-item [disableRipple]="'true'" class="list-dropdown" (click)="hidePost(itemPost)">
+                        <mat-icon>close</mat-icon>
+                        <span>ซ่อนโพสต์นี้</span>
+                    </button>
+                    <button mat-menu-item [disableRipple]="'true'" class="list-dropdown" (click)="reportPost()">
+                        <mat-icon>warning</mat-icon>
+                        <span>รายงานโพสต์นี้</span>
+                    </button>
+                    <button mat-menu-item [disableRipple]="'true'" class="list-dropdown" (click)="blockUser()">
+                        <mat-icon>block</mat-icon>
+                        <span>บล็อกผู้ใช้นี้</span>
+                    </button>
+                </ng-template>
             </mat-menu>
         </ng-container>
-    </ng-container>
+
+        <!-- *ngIf="isNotAccess" -->
 
     <div class="header-post" [class.active]="itemPost.referencePostObject && itemPost.referencePostObject.ownerUser">
         <div class="left"

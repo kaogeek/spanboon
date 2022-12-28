@@ -4,7 +4,7 @@ import { ObjectIdColumn, Column, BeforeInsert, BeforeUpdate, Entity } from 'type
 import { BaseModel } from './BaseModel';
 import { ObjectID } from 'mongodb';
 
-@Entity('UserHiddencontent')
+@Entity('UserHiddenContent')
 export class UserHiddenContent extends BaseModel {
 
     @ObjectIdColumn({ name: '_id' })

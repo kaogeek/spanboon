@@ -269,6 +269,22 @@
           }
         }
       }
+      .mat-checkbox-layout {
+        .mat-checkbox-label {
+          text-align: center;
+          @include font-size-10($font-head-500);
+          white-space: initial;
+          
+          >.policy {
+            @include pointer();
+            color: $color-gray;
+
+            &:hover {
+              color: rgba($brandcolor2, 0.95);
+            }
+          }
+        }
+      }
 
       > .wrapper-policy {
         color: $color-gray;
@@ -290,20 +306,25 @@
         }
       }
 
-      > .policy {
-        display: flex;
-        justify-content: center;
-        @include font-size-10($font-head-300);
-        padding-top: 5px;
-        @include pointer();
-        color: $color-gray;
-        &:hover {
-          color: rgba($brandcolor2, 0.95);
+      .mat-checkbox-layout {
+        .mat-checkbox-label {
+          text-align: center;
+          @include font-size-10($font-head-500);
+          white-space: initial;
+          
+          >.policy {
+            @include pointer();
+            color: $color-gray;
+
+            &:hover {
+              color: rgba($brandcolor2, 0.95);
+            }
+          }
         }
       }
 
       > .div-btn {
-        margin-top: 30pt;
+        margin-top: 18pt;
         display: flex;
         flex-direction: row;
         justify-content: space-between;
@@ -311,6 +332,17 @@
 
         > spanboon-button {
           width: 48%;
+
+          &.active {
+              opacity: 0.7;
+              pointer-events: none;
+          }
+          &.deactive {
+            color: $white;
+            background: $brandcolor2;
+            border-radius: 25pt;
+            pointer-events: auto;
+          }
         }
       }
     }

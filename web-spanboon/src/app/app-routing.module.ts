@@ -19,14 +19,13 @@ import {
   PageHashTag,
   PageRecommended,
   SettingsFanPage, forgotPasswordPage, FulfillPage, ObjectiveTimeline,
-  EmergencyEventTimeline, Redirect, SettingAccount, AboutPage, SettingsAdminRoles, SecurityInfo, Policy,
+  EmergencyEventTimeline, Redirect, SettingAccount, AboutPage, SettingsAdminRoles, SecurityInfo, Policy, TOS,
   NotificationAllPage,
 } from './components/components';
 
 import { TestComponent } from './components/TestComponent.component';
 import { RegisterPageTestComponent } from './components/RegisterPageTestComponent.component';
 import { DirtyCheckGuard } from './dirty-check.guard';
-import { LoginPageTest } from './components/pages/main.internal/LoginPageTest.component';
 
 export const APP_ROUTES: Routes = [
   {
@@ -45,10 +44,6 @@ export const APP_ROUTES: Routes = [
       {
         path: HomePage.PAGE_NAME,
         component: HomePage,
-      },
-      {
-        path: HomePageV2.PAGE_NAME,
-        component: HomePageV2,
       },
       {
         path: ProfilePage.PAGE_NAME + "/:id",
@@ -225,6 +220,10 @@ export const APP_ROUTES: Routes = [
       {
         path: Policy.PAGE_NAME,
         component: Policy,
+      },
+      {
+        path: TOS.PAGE_NAME,
+        component: TOS,
       },
       {
         path: NotificationAllPage.PAGE_NAME,

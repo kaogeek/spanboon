@@ -22,15 +22,11 @@ import { ASSET_PATH } from '../../constants/AssetScope';
 import { facebook_setup } from '../../env';
 import { SocialPostLogsService } from '../services/SocialPostLogsService';
 import { ObjectID } from 'mongodb';
-import { ResponseUtil } from '../../utils/ResponseUtil';
 @JsonController('/fb_webhook')
 export class FacebookWebhookController {
     constructor(
-        private pageService: PageService,
-        private postsService: PostsService,
-        private socialPostService: SocialPostService,
-        private assetService: AssetService,
-        private postsGalleryService: PostsGalleryService,
+        private pageService: PageService, private postsService: PostsService, private socialPostService: SocialPostService,
+        private assetService: AssetService, private postsGalleryService: PostsGalleryService,
         private socialPostLogsService: SocialPostLogsService
     ) { }
 
@@ -63,13 +59,12 @@ export class FacebookWebhookController {
                 return res.status(200).send(challenge);
             } else {
                 // Responds with '403 Forbidden' if verify tokens do not match
-                return res.status(403).send(ResponseUtil.getErrorResponse('Token Invalid', undefined));
+                return res.sendStatus(403);
             }
         }
     }
-
     @Post('/page_feeds')
-    public async postPageFeedWebhook(@QueryParams() params: any, @Body({ validate: true }) body: any, @Res() res: any): Promise<any> {
+    public async PostPageFeedWebhook(@QueryParams() params: any, @Body({ validate: true }) body: any, @Res() res: any): Promise<any> {
         const VERIFY_TOKEN = facebook_setup.FACEBOOK_VERIFY_TOKEN;
         // Parse the query params
         const mode = params['hub.mode'];
@@ -83,7 +78,7 @@ export class FacebookWebhookController {
                 return res.status(200).send(challenge);
             } else {
                 // Responds with '403 Forbidden' if verify tokens do not match
-                return res.status(403).send(ResponseUtil.getErrorResponse('Token Invalid', undefined));
+                return res.sendStatus(403);
             }
         }
         console.log('req.body', body.entry[0].changes[0]);
@@ -127,10 +122,9 @@ export class FacebookWebhookController {
                     newSocialPost.socialId = body.entry[0].changes[0].value.post_id;
                     newSocialPost.socialType = PROVIDER.FACEBOOK;
                     await this.socialPostService.create(newSocialPost);
-
-                    return res.status(200).send(ResponseUtil.getSuccessResponse('SuccessFul Webhooks', createPostPageData));
+                    return res.status(200).send('SuccessFul Webhooks');
                 } else {
-                    return res.status(400).send(ResponseUtil.getErrorResponse('This values is removes from webhooks', undefined));
+                    return res.status(400).send('this values is removes from webhooks');
                 }
             } else if (body.entry[0].changes[0].value.verb === 'add' && body.entry[0].changes[0].value.link !== undefined && body.entry[0].changes[0].value.photos === undefined) {
                 const assetPic = await this.assetService.createAssetFromURL(body.entry[0].changes[0].value.link, pageIdFB.ownerUser);
@@ -187,13 +181,10 @@ export class FacebookWebhookController {
                                 const postsGalleryCreate: PostsGallery = await this.postsGalleryService.create(postsGallery);
                                 if (postsGalleryCreate) {
                                     await this.assetService.update({ _id: assetObj.id, userId: pageIdFB.ownerUser }, { $set: { expirationDate: null } });
+                                    return res.status(200).send('SuccessFul Webhooks');
                                 }
                             }
                         }
-
-                        return res.status(200).send(ResponseUtil.getSuccessResponse('SuccessFul Webhooks', createPostPageData));
-                    } else {
-                        return res.status(400).send(ResponseUtil.getErrorResponse('Webhooks Failed', undefined));
                     }
                 }
             } else if (body.entry[0].changes[0].value.verb === 'add' && body.entry[0].changes[0].value.link === undefined && body.entry[0].changes[0].value.photos !== undefined) {
@@ -247,11 +238,8 @@ export class FacebookWebhookController {
                         if (postsGalleryCreate) {
                             await this.assetService.update({ _id: findAssets[j].id, userId: pageIdFB.ownerUser }, { $set: { expirationDate: null } });
                         }
+                        return res.status(200).send('SuccessFul Webhooks');
                     }
-
-                    return res.status(200).send(ResponseUtil.getSuccessResponse('SuccessFul Webhooks', createPostPageData));
-                } else {
-                    return res.status(400).send(ResponseUtil.getSuccessResponse('Webhooks Failed', undefined));
                 }
             } else if (body.entry[0].changes[0].value.verb === 'edit') {
                 const socialPost = await this.socialPostService.findOne({ postBy: body.entry[0].changes[0].value.post_id });
@@ -259,13 +247,13 @@ export class FacebookWebhookController {
                     const queryFB = { _id: socialPost.postId };
                     const setValue = { detail: body.entry[0].changes[0].value.message };
                     await this.postsService.update(queryFB, setValue);
+                    return res.status(200).send('SuccessFul Webhooks');
 
-                    return res.status(200).send(ResponseUtil.getSuccessResponse('SuccessFul Webhooks', socialPost));
                 } else {
-                    return res.status(400).send(ResponseUtil.getErrorResponse('Social Post Not Found', undefined));
+                    console.log('cannot update values');
                 }
             } else {
-                return res.status(400).send(ResponseUtil.getErrorResponse('This values is removes from webhooks', undefined));
+                return res.status(400).send('this values is removes from webhooks');
             }
         }
     }

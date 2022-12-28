@@ -341,6 +341,10 @@ export class PageController {
 
         const pageSocialFb = await this.pageSocialAccountService.findOne({where:{providerName:PROVIDER.TWITTER,providerPageId:socialBinding.twitterUserId,ownerPage:userId}});
 
+<<<<<<< HEAD
+=======
+        const pageSocialFb = await this.pageSocialAccountService.findOne({where:{providerName:PROVIDER.FACEBOOK,providerPageId:socialBinding.twitterUserId}});
+>>>>>>> 6d5c6c033bcc3de0fef653795b1e8a0a2383e71c
         if(pageSocialFb !== undefined && pageSocialFb !==null){
             const errorResponse = ResponseUtil.getErrorResponse('Unable create Page', undefined);
             return res.status(400).send(errorResponse);
@@ -439,20 +443,31 @@ export class PageController {
     public async autoSyncPageFB(@Body({ validate: true }) socialBinding: PageSocialFBBindingRequest, @Res() res: any, @Req() req: any): Promise<any> {
         const userId = new ObjectID(req.user.id);
         const getUser = await this.userService.findOne({ _id: userId });
+<<<<<<< HEAD
         const query = {_id:userId};
         const newValue = {$set:{isSyncPage:true}};
         let assetCover:any;
         const { request } = await axios.get('https://graph.facebook.com/v14.0/' + socialBinding.facebookPageId + '/picture?type=large');
         const { data } = await axios.get('https://graph.facebook.com/v14.0/'+socialBinding.facebookPageId + '?fields=cover&access_token=' +socialBinding.pageAccessToken);
+=======
+        const authenFB = await this.authenService.findOne({ where: { user: userId, providerName: 'FACEBOOK' } });
+        const pageFB = await this.facebookService.getFBPageAccounts(authenFB.storedCredentials);
+        const { request } = await axios.get('https://graph.facebook.com/v14.0/' + pageFB.data[0].id + '/picture?type=large');
+>>>>>>> 6d5c6c033bcc3de0fef653795b1e8a0a2383e71c
         const ipAddress = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress).split(',')[0];
         const clientId = req.headers['client-id'];
         let createCate = undefined;
 
+<<<<<<< HEAD
         const pageSocialFb = await this.pageSocialAccountService.findOne({where:{providerName:PROVIDER.FACEBOOK,providerPageId:socialBinding.facebookPageId,ownerPage:userId}});
+=======
+        const pageSocialFb = await this.pageSocialAccountService.findOne({where:{providerName:PROVIDER.FACEBOOK,providerPageId:socialBinding.facebookPageId}});
+>>>>>>> 6d5c6c033bcc3de0fef653795b1e8a0a2383e71c
         if(pageSocialFb !== undefined && pageSocialFb !==null){
             const errorResponse = ResponseUtil.getErrorResponse('Unable create Page', undefined);
             return res.status(400).send(errorResponse);
         }
+<<<<<<< HEAD
         const assetPic = await this.assetService.createAssetFromURL(request.socket._httpMessage.res.responseUrl, userId);
         if(data.cover !== undefined){
             assetCover = await this.assetService.createAssetFromURL(data.cover.source,userId);
@@ -462,9 +477,14 @@ export class PageController {
         await this.userService.update(query,newValue);
 
         const checkPageCate = await this.pageCategoryService.findOne({ name: socialBinding.facebookCategory });
+=======
+        const assetPic = await this.assetService.createAssetFromURL(request.socket._httpMessage.res.responseUrl, pageFB.ownerUser);
+        // create category 
+        const checkPageCate = await this.pageCategoryService.findOne({ name: pageFB.data[0].category });
+>>>>>>> 6d5c6c033bcc3de0fef653795b1e8a0a2383e71c
         if (checkPageCate === undefined) {
             const cate: PageCategory = new PageCategory();
-            cate.name = socialBinding.facebookCategory;
+            cate.name = pageFB.data[0].category;
             cate.description = null;
             cate.iconURL = null;
             createCate = await this.pageCategoryService.create(cate);
@@ -472,7 +492,7 @@ export class PageController {
         if (assetPic) {
 
             const pageCreate: Page = new Page();
-            pageCreate.name = socialBinding.facebookPageName;
+            pageCreate.name = pageFB.data[0].name;
             pageCreate.pageUsername = null;
             pageCreate.subTitle = null;
             pageCreate.backgroundStory = null;

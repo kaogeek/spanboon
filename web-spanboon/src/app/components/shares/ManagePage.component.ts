@@ -15,8 +15,7 @@ import {
   HostListener,
 } from "@angular/core";
 import { PageUserInfo } from "../../services/PageUserInfo.service";
-import { FormControl } from "@angular/forms";
-import { MatDialog, MatDrawer, MatDrawerContainer } from "@angular/material";
+import { MatDialog, MatDrawer } from "@angular/material";
 import {
   PageFacade,
   AssetFacade,
@@ -24,7 +23,6 @@ import {
   ObservableManager,
   UserAccessFacade,
 } from "../../services/services";
-import { SearchFilter } from "../../models/models";
 import { AbstractPage } from "../pages/AbstractPage";
 import { Router, NavigationExtras } from "@angular/router";
 import { DialogCreatePage } from "./dialog/DialogCreatePage.component";
@@ -188,16 +186,16 @@ export class ManagePage extends AbstractPage implements OnInit {
               })
               .catch((err: any) => {
                 const statusMsg = err.error.message;
-                if (statusMsg === "Unable create Page") {
-                    let dialog = this.dialog.open(DialogAlert, {
-                        disableClose: true,
-                        data: {
-                          text: "คุณมีเพจอยู่แล้ว",
-                          bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-                          bottomColorText2: "black",
-                          btDisplay1: "none",
-                        },
-                    });
+                if (statusMsg === "Unable create Page" && statusMsg === 400) {
+                  let dialog = this.dialog.open(DialogAlert, {
+                    disableClose: true,
+                    data: {
+                      text: "คุณมีเพจอยู่แล้ว",
+                      bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+                      bottomColorText2: "black",
+                      btDisplay1: "none",
+                    },
+                  });
                 }
                 if (
                   err.error.message ===
@@ -293,7 +291,6 @@ export class ManagePage extends AbstractPage implements OnInit {
     facebook.facebookPageId = access.id;
     facebook.pageAccessToken = access.access_token;
     facebook.facebookPageName = access.name;
-    facebook.facebookCategory = access.category;
     let mode = "FACEBOOK";
 
     this.authenManager
@@ -312,16 +309,16 @@ export class ManagePage extends AbstractPage implements OnInit {
       })
       .catch((err) => {
         const statusMsg = err.error.message;
-        if (statusMsg === "Unable create Page") {
-            let dialog = this.dialog.open(DialogAlert, {
-                disableClose: true,
-                data: {
-                  text: "คุณมีเพจอยู่แล้ว",
-                  bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-                  bottomColorText2: "black",
-                  btDisplay1: "none",
-                },
-            });
+        if (statusMsg === "Unable create Page" && statusMsg === 400) {
+          let dialog = this.dialog.open(DialogAlert, {
+            disableClose: true,
+            data: {
+              text: "คุณมีเพจอยู่แล้ว",
+              bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+              bottomColorText2: "black",
+              btDisplay1: "none",
+            },
+          });
         }
         if (statusMsg === "User was not found.") {
           let navigationExtras: NavigationExtras = {
@@ -350,7 +347,7 @@ export class ManagePage extends AbstractPage implements OnInit {
     const dialogRef = this.dialog.open(DialogCreatePage, {
       autoFocus: false,
     });
-    dialogRef.afterClosed().subscribe((res) => {});
+    dialogRef.afterClosed().subscribe((res) => { });
   }
 
   public clickSystemDevelopment(): void {
@@ -363,7 +360,7 @@ export class ManagePage extends AbstractPage implements OnInit {
         btDisplay1: "none",
       },
     });
-    dialog.afterClosed().subscribe((res) => {});
+    dialog.afterClosed().subscribe((res) => { });
   }
 
   public clickMenu() {
@@ -457,9 +454,9 @@ export class ManagePage extends AbstractPage implements OnInit {
   @HostListener("window:scroll", ["$event"]) // for window scroll events
   public onScrollCreatePage(event) {
     if (event.srcElement.scrollTop > 1) {
-        this.isScrollingCreatePage = true;
+      this.isScrollingCreatePage = true;
     } else {
-        this.isScrollingCreatePage = false;
+      this.isScrollingCreatePage = false;
     }
   }
 }

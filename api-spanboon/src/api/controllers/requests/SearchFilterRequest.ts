@@ -22,4 +22,5 @@ export class SearchFilter {
     public orderBy: any;
     
     public count: boolean;
+
 }

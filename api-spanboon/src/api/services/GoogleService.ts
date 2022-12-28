@@ -30,7 +30,7 @@ export class GoogleService {
     return new google.auth.OAuth2(this.CLIENT_ID, this.CLIENT_SECRET, this.REDIRECT_URL);
   }
 
-  public async verifyIdToken(idToken: string, modHeaders?: string): Promise<any> {
+  public async verifyIdToken(idToken: string, modHeaders: string): Promise<any> {
     return new Promise(async (resolve, reject) => {
       let ticket;
       if (modHeaders !== undefined && modHeaders !== null) {

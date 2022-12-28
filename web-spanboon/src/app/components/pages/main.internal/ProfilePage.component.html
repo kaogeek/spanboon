@@ -327,6 +327,25 @@
                                 [active]="activeLink == link.label">
                                 {{link.label}}
                             </a>
+                            <ng-container *ngIf="!isNotAccess">
+                                <button mat-icon-button [matMenuTriggerFor]="menu" [disableRipple]="'false'" class="dropdown">
+                                    <span class="material-icons">
+                                        more_horiz
+                                    </span>
+                                </button>
+                                <mat-menu #menu="matMenu" xPosition="before">
+                                    <div>
+                                        <button mat-menu-item [disableRipple]="'true'" class="list-dropdown" (click)="reportUser()">
+                                            <mat-icon>warning</mat-icon>
+                                            <span>รายงานผู้ใช้นี้</span>
+                                        </button>
+                                        <button mat-menu-item [disableRipple]="'true'" class="list-dropdown" (click)="blockUser()">
+                                            <mat-icon>block</mat-icon>
+                                            <span>บล็อกผู้ใช้นี้</span>
+                                        </button>
+                                    </div>
+                                </mat-menu>
+                            </ng-container>
                         </nav>
                     </div>
                     <box-post *ngIf="isLogin() && isNotAccess && !showLoading && CheckPost" #boxPost id="boxPost"

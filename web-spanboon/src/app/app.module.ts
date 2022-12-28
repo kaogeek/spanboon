@@ -23,20 +23,19 @@ import localeFrExtra from '@angular/common/locales/extra/fr'
 import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { DragDropModule } from '@angular/cdk/drag-drop';
-import { MentionModule } from 'angular-mentions';
 import { NgxTributeModule } from 'ngx-tribute';
 import { environment } from '../environments/environment';
 import { Ng5SliderModule } from 'ng5-slider';
 
-import { NgOtpInputModule } from  'ng-otp-input';
+import { NgOtpInputModule } from 'ng-otp-input';
 import { CountdownModule } from 'ngx-countdown';
 
 
-import { 
-  SocialLoginModule, 
-  GoogleLoginProvider, 
-  SocialAuthService,
-  SocialAuthServiceConfig } from "angularx-social-login";
+import {
+  SocialLoginModule,
+  GoogleLoginProvider,
+  SocialAuthService
+} from "angularx-social-login";
 
 import { OverlayModule } from '@angular/cdk/overlay';
 import { initializeApp } from "firebase/app";
@@ -74,7 +73,6 @@ import {
 import { AppComponent } from './app.component';
 import { APP_ROUTES } from './app-routing.module'
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { AutocompleteLibModule } from 'angular-ng-autocomplete';
 
 import {
   HeaderTop,
@@ -85,7 +83,6 @@ import {
   HomePage,
   HomePageV2,
   LoginPage,
-  LoginPageTest,
   ProfilePage,
   NotificationAllPage,
   forgotPasswordPage,
@@ -107,6 +104,7 @@ import {
   SecurityInfo,
   AboutPage,
   Policy,
+  TOS,
   // timeline 
   ObjectiveTimeline,
   EmergencyEventTimeline,
@@ -268,8 +266,8 @@ const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
 const cliendId = environment.googleClientId;
 const googleLoginOptions = {
   scope: 'profile email',
-  plugin_name:'login' //you can use any name here
-}; 
+  plugin_name: 'login' //you can use any name here
+};
 
 let socialConfig = new SocialAuthService({
   autoLogin: true,
@@ -278,7 +276,7 @@ let socialConfig = new SocialAuthService({
       id: GoogleLoginProvider.PROVIDER_ID,
       provider: new GoogleLoginProvider(environment.googleClientId,
         googleLoginOptions
-        ), 
+      ),
     }
   ]
 });
@@ -300,7 +298,6 @@ const COMPONENTS: any[] = [
   HomePageV2,
   NotificationAllPage,
   LoginPage,
-  LoginPageTest,
   RegisterPage,
   ProfilePage,
   forgotPasswordPage,
@@ -310,6 +307,7 @@ const COMPONENTS: any[] = [
   SettingsFanPage,
   AboutPage,
   Policy,
+  TOS,
   SettingsInfo,
   SettingsAdminRoles,
   SecurityInfo,

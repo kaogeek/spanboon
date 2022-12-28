@@ -112,12 +112,13 @@ export class User extends BaseModel {
     @Column({ name: 'banned' })
     public banned: boolean;
 
-    @Column({ name: 'mergeFB' })
-    public mergeFB: boolean;
+    @Column({ name: 'mergeFB'})
+    public mergeFB:boolean;
 
-    @Column({ name: 'mergeTW' })
-    public mergeTW: boolean;
+    @Column({ name: 'mergeTW'})
+    public mergeTW:boolean;
 
+<<<<<<< HEAD
     @Column({ name: 'mergeGG' })
     public mergeGG: boolean;
 
@@ -126,7 +127,14 @@ export class User extends BaseModel {
 
     @Column({ name: 'isSyncPage' })
     public isSyncPage: boolean;
+=======
+    @Column({ name: 'mergeGG'})
+    public mergeGG:boolean;
+>>>>>>> 6d5c6c033bcc3de0fef653795b1e8a0a2383e71c
 
+    @Column({ name: 'mergeAP'})
+    public mergeAP:boolean;
+    
     @Column(type => AuthenticationId)
     public authenticationId: AuthenticationId;
 
@@ -146,13 +154,12 @@ export class User extends BaseModel {
     public Fulfillments: Fulfillment[];
 
     @BeforeInsert()
-    public createDetails(): any {
+    public async createDetails(): Promise<void> {
         this.createdDate = moment().toDate();
-        this.createdTime = moment().toDate();
     }
 
     @BeforeUpdate()
-    public updateDetails(): any {
+    public async updateDetails(): Promise<void> {
         this.updateDate = moment().toDate();
     }
 }

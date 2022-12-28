@@ -10,7 +10,7 @@ import { OrmRepository } from 'typeorm-typedi-extensions';
 import { SearchUtil } from '../../utils/SearchUtil';
 import { Config } from '../models/Config';
 import { ConfigRepository } from '../repositories/ConfigRepository';
-import { MAIN_PAGE_SEARCH_OFFICIAL_POST_ONLY, DEFAULT_MAIN_PAGE_SEARCH_OFFICIAL_POST_ONLY, USER_EXPIRED_TIME_CONFIG, DEFAULT_USER_EXPIRED_TIME, JOB_BEFORE_TOKEN_EXPIRE_MINUTE, DEFAULT_JOB_BEFORE_TOKEN_EXPIRE_MINUTE, ASSET_CONFIG_NAME, DEFAULT_ASSET_CONFIG_VALUE, SEARCH_ENGAGEMENT_ACCESSIBLE_DATE, DEFAULT_SEARCH_ENGAGEMENT_ACCESSIBLE_DATE, SEARCH_CONFIG_NAME, DEFAULT_SEARCH_CONFIG_VALUE, LIMIT_USER_REPORT_CONTENT_CONFIG_NAME, DEFAULT_LIMIT_USER_REPORT_CONTENT_CONFIG_VALUE } from '../../constants/SystemConfig';
+import { MAIN_PAGE_SEARCH_OFFICIAL_POST_ONLY, DEFAULT_MAIN_PAGE_SEARCH_OFFICIAL_POST_ONLY, USER_EXPIRED_TIME_CONFIG, DEFAULT_USER_EXPIRED_TIME, JOB_BEFORE_TOKEN_EXPIRE_MINUTE, DEFAULT_JOB_BEFORE_TOKEN_EXPIRE_MINUTE, ASSET_CONFIG_NAME, DEFAULT_ASSET_CONFIG_VALUE, SEARCH_ENGAGEMENT_ACCESSIBLE_DATE, DEFAULT_SEARCH_ENGAGEMENT_ACCESSIBLE_DATE } from '../../constants/SystemConfig';
 
 @Service()
 export class ConfigService {
@@ -111,7 +111,7 @@ export class ConfigService {
             this.create(config);
         }
 
-        const assetS3ExpireCfg = await this.getConfig(ASSET_CONFIG_NAME.S3_SIGN_EXPIRING_SEC);
+        const assetS3ExpireCfg = await this.getConfig(ASSET_CONFIG_NAME.EXPIRE_MINUTE);
 
         if (assetS3ExpireCfg === null || assetS3ExpireCfg === undefined) {
             const config: Config = new Config();
@@ -128,28 +128,6 @@ export class ConfigService {
             const config: Config = new Config();
             config.name = SEARCH_ENGAGEMENT_ACCESSIBLE_DATE;
             config.value = DEFAULT_SEARCH_ENGAGEMENT_ACCESSIBLE_DATE + '';
-            config.type = 'number';
-
-            this.create(config);
-        }
-
-        const searchLimitCfg = await this.getConfig(SEARCH_CONFIG_NAME.LIMIT_CONFIG);
-
-        if (searchLimitCfg === null || searchLimitCfg === undefined) {
-            const config: Config = new Config();
-            config.name = SEARCH_CONFIG_NAME.LIMIT_CONFIG;
-            config.value = DEFAULT_SEARCH_CONFIG_VALUE.LIMIT + '';
-            config.type = 'number';
-
-            this.create(config);
-        }
-
-        const userReportContentCfg = await this.getConfig(LIMIT_USER_REPORT_CONTENT_CONFIG_NAME);
-
-        if (userReportContentCfg === null || userReportContentCfg === undefined) {
-            const config: Config = new Config();
-            config.name = LIMIT_USER_REPORT_CONTENT_CONFIG_NAME;
-            config.value = DEFAULT_LIMIT_USER_REPORT_CONTENT_CONFIG_VALUE + '';
             config.type = 'number';
 
             this.create(config);
