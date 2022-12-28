@@ -70,7 +70,6 @@ export class FacebookWebhookController {
         const mode = params['hub.mode'];
         const token = params['hub.verify_token'];
         const challenge = params['hub.challenge'];
-        let multiPic = undefined;
         if (mode && token) {
             // Checks the mode and token sent is correct
             if (mode === 'subscribe' && token === VERIFY_TOKEN) {
@@ -188,8 +187,13 @@ export class FacebookWebhookController {
                     }
                 }
             } else if (body.entry[0].changes[0].value.verb === 'add' && body.entry[0].changes[0].value.link === undefined && body.entry[0].changes[0].value.photos !== undefined) {
+                const multiPics =[];
                 for (let i = 0; i < body.entry[0].changes[0].value.photos.length; i++) {
-                    multiPic = await this.assetService.createAssetFromURL(body.entry[0].changes[0].value.photos[i], pageIdFB.ownerUser);
+                    if(i === 4){
+                        break;
+                    }
+                    const multiPic = await this.assetService.createAssetFromURL(body.entry[0].changes[0].value.photos[i], pageIdFB.ownerUser);
+                    multiPics.push(multiPic);
                 }
                 const checkPost = await this.socialPostService.findOne({ socialId: body.entry[0].changes[0].value.post_id, postByType: 'add' });
                 if (checkPost === undefined) {
@@ -226,20 +230,20 @@ export class FacebookWebhookController {
                     newSocialPost.socialId = body.entry[0].changes[0].value.post_id;
                     newSocialPost.socialType = PROVIDER.FACEBOOK;
                     await this.socialPostService.create(newSocialPost);
-                    const findAssets = await this.assetService.find({ _id: multiPic.id });
-                    for (let j = 0; j < findAssets.length; j++) {
+                    
+                    for (let j = 0; j < multiPics.length; j++) {
                         const postsGallery = new PostsGallery();
                         postsGallery.post = createPostPageData.id;
-                        postsGallery.fileId = new ObjectID(findAssets[j].id);
-                        postsGallery.imageURL = ASSET_PATH + new ObjectID(findAssets[j].id);
-                        postsGallery.s3ImageURL = findAssets[j].s3FilePath;
-                        postsGallery.ordering = body.entry[0].changes[0].value.published;
+                        postsGallery.fileId = new ObjectID(multiPics[j].id);
+                        postsGallery.imageURL = ASSET_PATH + new ObjectID(multiPics[j].id);
+                        postsGallery.s3ImageURL = multiPics[j].s3FilePath;
+                        postsGallery.ordering = j+1;
                         const postsGalleryCreate: PostsGallery = await this.postsGalleryService.create(postsGallery);
                         if (postsGalleryCreate) {
-                            await this.assetService.update({ _id: findAssets[j].id, userId: pageIdFB.ownerUser }, { $set: { expirationDate: null } });
+                            await this.assetService.update({ _id: multiPics[j].id, userId: pageIdFB.ownerUser }, { $set: { expirationDate: null } });
                         }
-                        return res.status(200).send('SuccessFul Webhooks');
                     }
+                    return res.status(200).send('SuccessFul Webhooks');
                 }
             } else if (body.entry[0].changes[0].value.verb === 'edit') {
                 const socialPost = await this.socialPostService.findOne({ postBy: body.entry[0].changes[0].value.post_id });
