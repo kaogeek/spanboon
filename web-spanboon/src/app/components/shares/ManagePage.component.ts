@@ -35,6 +35,7 @@ import { TwitterService } from "../../services/services";
 import { PageSocialTW } from "../../models/models";
 import { PageSoialFB } from "../../models/models";
 import { DialogListFacebook } from "./shares";
+import { DialogIsSyncPage } from "./shares";
 const SEARCH_LIMIT: number = 10;
 const SEARCH_OFFSET: number = 0;
 declare const window: any;
@@ -59,6 +60,7 @@ export class ManagePage extends AbstractPage implements OnInit {
   private assetFacade: AssetFacade;
   private userAccessFacade: UserAccessFacade;
   protected observManager: ObservableManager;
+  public userCloneDatas: any
   public dialog: MatDialog;
   public resListPage: any;
   public apiBaseURL = environment.apiBaseURL;
@@ -111,10 +113,24 @@ export class ManagePage extends AbstractPage implements OnInit {
   }
   public isLogin(): boolean {
     let user = this.authenManager.getCurrentUser();
+    setTimeout(() =>{
+      if(user.isSyncPage !== false && user.isSyncPage !== true){
+        let dialog = this.dialog.open(DialogIsSyncPage, {
+          disableClose: true,
+          data: {
+            title:"สร้างเพจของคุณโดยการเชื่อมแพลตฟอร์ม",
+            bottomText2: MESSAGE.TEXT_BUTTON_SKIP,
+            bottomColorText2: "black",
+            btDisplay1: "none",
+          },
+        }); 
+      }
+    },5000);
     return user !== undefined && user !== null;
   }
 
-  public ngOnInit(): void {
+  public ngOnInit(): void {    
+    this.isLogin();
     this.searchAllPage();
   }
 
@@ -273,7 +289,6 @@ export class ManagePage extends AbstractPage implements OnInit {
     });
   }
   private checkBoxBindingPageFacebook(access: any) {
-    console.log('access_token_facebook',access);
     const facebook = new PageSoialFB();
     facebook.facebookPageId = access.id;
     facebook.pageAccessToken = access.access_token;

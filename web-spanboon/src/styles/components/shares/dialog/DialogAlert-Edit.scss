@@ -64,6 +64,23 @@
         .text-item {
             color: $brandcolor2;
         }
+
+    }
+    > .wrapper-page-create{
+        padding: 20pt 15pt 10pt 15pt;
+        flex: 0 0 auto;
+        position: sticky;
+        bottom: 0;
+        z-index: 99;
+        background: #fff;
+        >.social-list-page {
+            gap: 10px;
+            display: flex;
+            flex-direction: column;
+            margin-top: 10px;
+
+
+        }
     }
     ckeditor {
         width: 100%;

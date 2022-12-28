@@ -30,3 +30,4 @@ export * from './DialogPreview.component';
 export * from './DialogAlertAllocate.component';
 export * from './DialogListFacebook.component';
 export * from './DialogPostCrad.component';
+export * from './DialogIsSyncPage.component';
