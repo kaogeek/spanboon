@@ -5,8 +5,8 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-import { Component, ViewChild, OnInit,NgZone, EventEmitter, Input, Output, ElementRef, Renderer2, QueryList } from '@angular/core';
-import { Router, NavigationExtras, ActivatedRoute  } from '@angular/router';
+import { Component, ViewChild, OnInit, NgZone, EventEmitter, Input, Output, ElementRef, Renderer2, QueryList } from '@angular/core';
+import { Router, NavigationExtras, ActivatedRoute } from '@angular/router';
 import { AuthenManager, ObservableManager, EditProfileUserPageFacade } from '../../../services/services';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { MatDialog } from '@angular/material';
@@ -16,7 +16,7 @@ import * as $ from 'jquery';
 import { environment } from 'src/environments/environment';
 import { DialogAlert } from '../../components';
 import { DialogListFacebook } from '../../components';
-import { PageSoialFB } from 'src/app/models/PageSocialFB'; 
+import { PageSoialFB } from 'src/app/models/PageSocialFB';
 import { TwitterService } from '../../../services/services';
 import { PageSocialTW } from 'src/app/models/PageSocialTW';
 
@@ -63,7 +63,7 @@ export class HeaderTop extends AbstractPage implements OnInit {
   private activatedRoute: ActivatedRoute;
   public redirection: string;
   public accessTokenLink = '';
-    //twitter
+  //twitter
   public authorizeLink = 'https://api.twitter.com/oauth/authorize';
   public authenticateLink = 'https://api.twitter.com/oauth/authenticate';
   public accountTwitter = 'https://api.twitter.com/1.1/account/verify_credentials.json';
@@ -73,7 +73,7 @@ export class HeaderTop extends AbstractPage implements OnInit {
   // }  
 
   constructor(router: Router, authenManager: AuthenManager, observManager: ObservableManager,
-    editProfileFacade: EditProfileUserPageFacade, dialog: MatDialog, private renderer: Renderer2,_ngZone: NgZone,
+    editProfileFacade: EditProfileUserPageFacade, dialog: MatDialog, private renderer: Renderer2, _ngZone: NgZone,
     activatedRoute: ActivatedRoute,
     twitterService: TwitterService,) {
     super(PAGE_NAME, authenManager, dialog, router);
@@ -169,57 +169,57 @@ export class HeaderTop extends AbstractPage implements OnInit {
       if (this.redirection) {
         this.router.navigateByUrl(this.redirection);
       } else {
-        this.router.navigateByUrl("/home");
+        // this.router.navigateByUrl("/home");
       }
     }
   }
-  public clickSyncTw(text: string, bind?: boolean){
+  public clickSyncTw(text: string, bind?: boolean) {
     this.isPreLoadIng = true;
     this.isLoadingTwitter = true;
     let callback = environment.webBaseURL + "/callback";
     this.twitterService.requestToken(callback).then((result: any) => {
-        this.authorizeLink += '?' + result;
-        window.open(this.authorizeLink, '_blank');
-        // this.popup(this.authorizeLink, '', 600, 200, 'yes');
-        this.isPreLoadIng = false;
+      this.authorizeLink += '?' + result;
+      window.open(this.authorizeLink, '_blank');
+      // this.popup(this.authorizeLink, '', 600, 200, 'yes');
+      this.isPreLoadIng = false;
 
-        window.bindTwitter = (resultTwitter) => {
-            if (resultTwitter !== undefined && resultTwitter !== null) {
-                const twitter = new PageSocialTW();
-                twitter.twitterOauthToken = resultTwitter.token;
-                twitter.twitterTokenSecret = resultTwitter.token_secret;
-                twitter.twitterUserId = resultTwitter.userId;
-                twitter.twitterPageName = resultTwitter.name;
+      window.bindTwitter = (resultTwitter) => {
+        if (resultTwitter !== undefined && resultTwitter !== null) {
+          const twitter = new PageSocialTW();
+          twitter.twitterOauthToken = resultTwitter.token;
+          twitter.twitterTokenSecret = resultTwitter.token_secret;
+          twitter.twitterUserId = resultTwitter.userId;
+          twitter.twitterPageName = resultTwitter.name;
 
-                this.authenManager.syncWithTwitter(twitter).then((res: any) => {
-                  if (res.data) {
-                    this.connectTwitter = res.data;
-                    this.isLoadingTwitter = false;
-                    let check = {
-                        checked: true
-                    }
-                  }
-                }).catch((err: any) => {
-                    if (err.error.message === 'This page was binding with Twitter Account.') {
-                        this.showAlertDialog('บัญชีนี้ได้ทำการเชื่อมต่อ Twitter แล้ว');
-                    } else {
-                        this.showAlertDialog('เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้ง');
-                    }
-                    this.connectTwitter = false;
-                });
+          this.authenManager.syncWithTwitter(twitter).then((res: any) => {
+            if (res.data) {
+              this.connectTwitter = res.data;
+              this.isLoadingTwitter = false;
+              let check = {
+                checked: true
+              }
             }
+          }).catch((err: any) => {
+            if (err.error.message === 'This page was binding with Twitter Account.') {
+              this.showAlertDialog('บัญชีนี้ได้ทำการเชื่อมต่อ Twitter แล้ว');
+            } else {
+              this.showAlertDialog('เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้ง');
+            }
+            this.connectTwitter = false;
+          });
         }
+      }
     }).catch((error: any) => {
-        this.showAlertDialog('เกิดข้อมูลผิดพลาด กรุณาลองใหม่อีกครั้ง');
-        this.isPreLoadIng = false;
-        this.isLoadingTwitter = false;
+      this.showAlertDialog('เกิดข้อมูลผิดพลาด กรุณาลองใหม่อีกครั้ง');
+      this.isPreLoadIng = false;
+      this.isLoadingTwitter = false;
     });
   }
   public fbLibrary() {
     (window as any).fbAsyncInit = function () {
       window['FB'].init({
         appId: environment.facebookAppId,
-        cookie: true, 
+        cookie: true,
         xfbml: true,
         version: 'v14.0'
       });
@@ -228,59 +228,59 @@ export class HeaderTop extends AbstractPage implements OnInit {
   }
   public clickLoginFB() {
     window['FB'].login((response) => {
-        if (response.authResponse) {
-            let accessToken = {
-                fbid: response.authResponse.userID,
-                fbtoken: response.authResponse.accessToken,
-                fbexptime: response.authResponse.data_access_expiration_time,
-                fbsignedRequest: response.authResponse.signedRequest
-            }
-            this.accessToken = accessToken;
-            this._ngZone.run(() => this.listPageFacebook());
-
-        } else {
-            this.isLoading = false;
+      if (response.authResponse) {
+        let accessToken = {
+          fbid: response.authResponse.userID,
+          fbtoken: response.authResponse.accessToken,
+          fbexptime: response.authResponse.data_access_expiration_time,
+          fbsignedRequest: response.authResponse.signedRequest
         }
+        this.accessToken = accessToken;
+        this._ngZone.run(() => this.listPageFacebook());
+
+      } else {
+        this.isLoading = false;
+      }
     }, { scope: 'public_profile, email, pages_manage_metadata ,pages_manage_posts, pages_show_list, pages_read_engagement' });
   }
   public listPageFacebook() {
     this.isLoading = false;
     window['FB'].api("/me/accounts?access_token=" + this.accessToken.fbtoken, (response) => {
-        if (response && !response.error) {
-            /* handle the result */
-            this.responseFacabook = response;
-            if (this.responseFacabook && this.responseFacabook.data.length > 0 && this.responseFacabook !== undefined) {
-                Object.assign(this.responseFacabook.data[0], { selected: true });
-                this.getListFacebook(this.responseFacabook);
-            } else {
-                this.connect = false;
-                this.showAlertDialog('ไม่พบเพจ');
-            }
+      if (response && !response.error) {
+        /* handle the result */
+        this.responseFacabook = response;
+        if (this.responseFacabook && this.responseFacabook.data.length > 0 && this.responseFacabook !== undefined) {
+          Object.assign(this.responseFacabook.data[0], { selected: true });
+          this.getListFacebook(this.responseFacabook);
+        } else {
+          this.connect = false;
+          this.showAlertDialog('ไม่พบเพจ');
         }
+      }
     });
   }
   public getListFacebook(data) {
     let dialog = this.dialog.open(DialogListFacebook, {
-        disableClose: true,
-        panelClass: 'customize-dialog',
-        data: data
+      disableClose: true,
+      panelClass: 'customize-dialog',
+      data: data
     });
     dialog.afterClosed().subscribe((res) => {
-        if (res) {
-            this.checkBoxBindingPageFacebook(res);
-        } 
+      if (res) {
+        this.checkBoxBindingPageFacebook(res);
+      }
     });
-}
+  }
   private checkBoxBindingPageFacebook(access: any) {
     const facebook = new PageSoialFB();
     facebook.facebookPageId = access.id;
     facebook.pageAccessToken = access.access_token;
     facebook.facebookPageName = access.name;
     let mode = 'FACEBOOK'
-    
-    this.authenManager.syncWithFacebook(facebook,mode).then((data: any) => {
+
+    this.authenManager.syncWithFacebook(facebook, mode).then((data: any) => {
       // login success redirect to main page
-      if(data){
+      if (data) {
         this.observManager.publish('authen.check', null);
         this.showAlertDialog('บัญชีนี้ได้ทำการเชื่อมต่อ Facebook สำเร็จ');
         if (this.redirection) {
