@@ -154,8 +154,6 @@ export class ManagePage extends AbstractPage implements OnInit {
     return page && page.length > 0;
   }
   public clickSyncTw(text: string, bind?: boolean) {
-    this.isPreLoadIng = true;
-    this.isLoadingTwitter = true;
     let callback = environment.webBaseURL + "/callback";
     this.twitterService
       .requestToken(callback)
@@ -163,20 +161,23 @@ export class ManagePage extends AbstractPage implements OnInit {
         this.authorizeLink += "?" + result;
         window.open(this.authorizeLink, "_blank");
         // this.popup(this.authorizeLink, '', 600, 200, 'yes');
-        this.isPreLoadIng = false;
 
         window.bindTwitter = (resultTwitter) => {
+          this.openLoading();
           if (resultTwitter !== undefined && resultTwitter !== null) {
             const twitter = new PageSocialTW();
             twitter.twitterOauthToken = resultTwitter.token;
             twitter.twitterTokenSecret = resultTwitter.token_secret;
             twitter.twitterUserId = resultTwitter.userId;
             twitter.twitterPageName = resultTwitter.name;
-
             this.authenManager
               .syncWithTwitter(twitter)
               .then((res: any) => {
+                setTimeout(() => {
+                  this.closeLoading();
+                }, 1000);
                 if (res.data) {
+                  this.observManager.publish("authen.check", null);
                   this.connectTwitter = res.data;
                   this.isLoadingTwitter = false;
                   let check = {
@@ -283,6 +284,7 @@ export class ManagePage extends AbstractPage implements OnInit {
     dialog.afterClosed().subscribe((res) => {
       if (res) {
         this.checkBoxBindingPageFacebook(res);
+        this.openLoading();
       }
     });
   }
@@ -294,19 +296,22 @@ export class ManagePage extends AbstractPage implements OnInit {
     let mode = "FACEBOOK";
 
     this.authenManager
-      .syncWithFacebook(facebook, mode)
-      .then((data: any) => {
-        // login success redirect to main page
-        if (data) {
-          this.observManager.publish("authen.check", null);
-          this.showAlertDialog("บัญชีนี้ได้ทำการเชื่อมต่อ Facebook สำเร็จ");
-          if (this.redirection) {
-            this.router.navigateByUrl(this.redirection);
-          } else {
-            this.router.navigate(["home"]);
-          }
+    .syncWithFacebook(facebook, mode)
+    .then((data: any) => {
+      // login success redirect to main page
+      if (data) {
+        setTimeout(() => {
+          this.closeLoading();
+        }, 1000);
+        this.observManager.publish("authen.check", null);
+        this.showAlertDialog("บัญชีนี้ได้ทำการเชื่อมต่อ Facebook สำเร็จ");
+        if (this.redirection) {
+          this.router.navigateByUrl(this.redirection);
+        } else {
+          this.router.navigate(["home"]);
         }
-      })
+      }
+    })
       .catch((err) => {
         const statusMsg = err.error.message;
         if (statusMsg === "Unable create Page" && statusMsg === 400) {
@@ -341,6 +346,13 @@ export class ManagePage extends AbstractPage implements OnInit {
           });
         }
       });
+  }
+    private openLoading() {
+    this.isLoading = true;
+  }
+
+  private closeLoading() {
+    this.isLoading = false;
   }
   public createPage() {
     this.hideScroll();

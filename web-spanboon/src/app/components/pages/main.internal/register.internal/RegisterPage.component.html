@@ -94,16 +94,18 @@
                 <mat-datepicker-toggle matSuffix [for]="dp3"></mat-datepicker-toggle>
                 <mat-datepicker #dp3 disabled="false"></mat-datepicker>
             </mat-form-field>
-            <div class="header-agreement">
-                 <div class="check-true" (click)="checkedClick()">
-                    <mat-checkbox [(ngModel)]="checkedCon">
-                    <span class="policy" [routerLink]="'/policy'" > นโยบายความเป็นส่วนตัว </span>
-                    <span class="policy" [routerLink]="'/tos'"> ข้อกำหนดในการใช้บริการ </span>
-                    <span>ฉันได้อ่านข้อความที่กล่าวมา
-                        และยินยอมตามข้อกำหนดของ{{PLATFORM_NAME_TH}}</span>
-                    </mat-checkbox>
-                </div>
-            </div>
+            <ng-container *ngIf="mode === 'normal'">
+                <div class="header-agreement">
+                    <div class="check-true" (click)="checkedClick()">
+                       <mat-checkbox [(ngModel)]="checkedCon">
+                       <span class="policy" [routerLink]="'/policy'" > นโยบายความเป็นส่วนตัว </span>
+                       <span class="policy" [routerLink]="'/tos'"> ข้อกำหนดในการใช้บริการ </span>
+                       <span>ฉันได้อ่านข้อความที่กล่าวมา
+                           และยินยอมตามข้อกำหนดของ{{PLATFORM_NAME_TH}}</span>
+                       </mat-checkbox>
+                   </div>
+               </div>
+            </ng-container>
 
 
             <!-- <div for="male female custom" class="title-label">เพศ</div>

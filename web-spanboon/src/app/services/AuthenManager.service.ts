@@ -104,7 +104,9 @@ export class AuthenManager {
       let body: any = { 
         idToken, 
         authToken,
-        tokenFCM_GG
+        tokenFCM_GG,
+        "deviceName": "Chrome",
+
       };
       let headers = new HttpHeaders({
         'Content-Type': 'application/json'
@@ -233,7 +235,9 @@ export class AuthenManager {
       const tokenFCM_FB = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
       let body: any = {
         "token": token,
-        tokenFCM_FB
+        "tokenFCM":tokenFCM_FB,
+        "deviceName": "Chrome",
+
       };
       let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
       if (mode !== undefined || mode !== "") {

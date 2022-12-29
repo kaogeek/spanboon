@@ -609,6 +609,16 @@ export class LoginPage extends AbstractPage implements OnInit {
       }
     })
     .catch((err) => {
+      if(err.error.message === "User was not found." && err.status === 400){
+        let dialog = this.dialog.open(DialogAlert, {
+          disableClose: true,
+          data: {
+            text: "ไม่พบบัญชีผู้ใช้ในระบบ",
+            bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+            bottomColorText2: "black",
+            btDisplay1: "none",
+          },
+        });      }
       if (err.error.message === "Invalid Password" && err.status === 400) {
         let dialog = this.dialog.open(DialogAlert, {
           disableClose: true,
