@@ -203,7 +203,6 @@ export class GuestController {
         } else if (mode === PROVIDER.FACEBOOK) {
             const resultUser: User = await this.userService.findOne({ where: { email: users.email } });
             const activationCode = GenerateUUIDUtil.getUUID();
-            console.log('activationCode',activationCode);
             const registerFbPassword = await User.hashPassword(activationCode);
             const fbUserId = users.fbUserId;
             const fbToken = users.fbToken;
@@ -383,7 +382,6 @@ export class GuestController {
                 const currentAuthenId = await this.authenticationIdService.find({ user: resultUser.id, providerName: PROVIDER.APPLE });
                 if (currentAuthenId !== undefined) {
                     const errorResponse = ResponseUtil.getErrorResponse('Apple was registered.', undefined);
-                    console.log('pass3');
                     return res.status(400).send(errorResponse);
                 }
                 userData = this.userService.cleanUserField(resultUser);
@@ -966,10 +964,8 @@ export class GuestController {
                 const updateAuth = await this.authenticationIdService.update(query, newValue);
                 if (updateAuth) {
                     const updatedAuth = await this.authenticationIdService.findOne({ where: query });
-                    console.log('updatedAuth',updatedAuth);
                     await this.deviceToken.createDeviceToken({ deviceName: deviceFB, token: tokenFcmFB, userId: updatedAuth.user });
                     loginUser = await this.userService.findOne({ where: { _id: ObjectID(updatedAuth.user) } });
-                    console.log('loginUser',loginUser);
                     loginToken = updatedAuth.storedCredentials;
                     loginToken = jwt.sign({ token: loginToken }, env.SECRET_KEY);
                 }
@@ -1263,7 +1259,6 @@ export class GuestController {
                     const updateAuth = await this.authenticationIdService.update(query, newValue);
                     if (updateAuth) {
                         const updatedAuth = await this.authenticationIdService.findOne({ where: query });
-                        console.log('updatedAuth',updatedAuth);
                         loginUser = await this.userService.findOne({ where: { _id: ObjectID(updatedAuth.user) } });
                         loginToken = updatedAuth.storedCredentials;
                         loginToken = jwt.sign({ token: loginToken }, env.SECRET_KEY);
@@ -1870,7 +1865,6 @@ export class GuestController {
                 }
                 const fbUser = await this.facebookService.getFacebookUserFromToken(decryptToken.token);
                 const findUser = await this.userService.findOne({_id:ObjectID(fbUser.user.id)});
-                console.log('findUser',findUser);
                 user = findUser;
             } catch (ex: any) {
                 const errorResponse: any = { status: 0, message: ex.message };
