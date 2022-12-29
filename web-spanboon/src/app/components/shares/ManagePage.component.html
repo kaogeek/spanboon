@@ -80,6 +80,9 @@
                             </div>
                         </div>
                     </div>
+                    <ng-container *ngIf="isLoading">
+                        <loading></loading>
+                    </ng-container>
                     <div class="wrapper-page-create" [ngClass]="isScrollingCreatePage ? 'show-shadow' : 'hide-shadow'">
                         <div class="title-page-create">
                             สร้างเพจจาก

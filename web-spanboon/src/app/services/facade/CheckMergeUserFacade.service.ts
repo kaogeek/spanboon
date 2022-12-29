@@ -139,7 +139,7 @@ export class CheckMergeUserFacade extends AbstractFacade {
           token: response.data.token,
           user: response.data.user,
           data: response,
-          pic:response.pic ?  response.pic[0] : ''
+          pic:response.picture ?  response.picture[0] : ''
         };
 
         this.token = result.token;
@@ -179,7 +179,7 @@ export class CheckMergeUserFacade extends AbstractFacade {
           token: response.data.token,
           user: response.data.user,
           data: response,
-          pic:response.pic ? response.pic[0] : ''
+          pic:response.picture ? response.picture[0] : ''
         };
 
         this.token = result.token;
