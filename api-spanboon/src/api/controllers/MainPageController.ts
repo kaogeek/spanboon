@@ -1007,14 +1007,8 @@ export class MainPageController {
                 }
             }
 
-            const lookupPipelineStmt: any = { $and: [{ $eq: ['$$pageId', '$_id'] }] };
-
-            if (isOfficial !== null && isOfficial !== undefined) {
-                lookupPipelineStmt['$and'].push({ isOfficial });
-            }
-
             // const queryDb = [{$match:{"pageId":{$ne:null}}},{$lookup:{from:"Page",as:"page",let:{pageId:"$pageId"},pipeline:[{$match:{$expr:{$and:[{$eq:["$$pageId","$_id"]}]}}}]}},{$match:{"page.isOfficial" : false}}]
-            const postsLookupStmt = [
+            const postsLookupStmt: any[] = [
                 {
                     $lookup: {
                         from: 'Page',
@@ -1025,7 +1019,7 @@ export class MainPageController {
                         pipeline: [
                             {
                                 $match: {
-                                    $expr: lookupPipelineStmt
+                                    $expr: { $and: [{ $eq: ['$$pageId', '$_id'] }] }
                                 }
                             }
                         ],
@@ -1259,7 +1253,12 @@ export class MainPageController {
                 }
             ];
 
+            if (isOfficial !== null && isOfficial !== undefined) {
+                postsLookupStmt.splice(2, 0, { $match: { 'page.isOfficial': isOfficial } });
+            }
+
             searchPostStmt = postStmt.concat(postsLookupStmt);
+
             const userMap = {};
             const postResult = await this.postsService.aggregate(searchPostStmt, { allowDiskUse: true }); // allowDiskUse: true to fix an Exceeded memory limit for $group.
             if (postResult !== null && postResult !== undefined && postResult.length > 0) {
