@@ -127,7 +127,7 @@ export class ManagePage extends AbstractPage implements OnInit {
     return user !== undefined && user !== null;
   }
 
-  public ngOnInit(): void {    
+  public ngOnInit(): void {
     // this.isLogin();
     this.searchAllPage();
   }
