@@ -308,7 +308,6 @@ export class FacebookService {
             });
         });
     }
-
     public publishMessage(fbPageId: string, accessToken: string, message: string, imageIds?: string[]): Promise<any> {
         return new Promise(async (resolve, reject) => {
             if (fbPageId === undefined || fbPageId === null || fbPageId === '') {
@@ -327,7 +326,6 @@ export class FacebookService {
             
             const facebook = this.createFB();
             facebook.setAccessToken(accessToken);
-            // const PageSocialFb = await this.pageSocialAccountService.findOne({providerName:'FACEBOOK',providerPageId:fbPageId,storedCredentials:accessToken});
 
             const formData: any = { message };
             if (imageIds !== null && imageIds !== undefined && imageIds.length > 0) {

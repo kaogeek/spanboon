@@ -314,6 +314,7 @@ export class ManagePage extends AbstractPage implements OnInit {
     })
       .catch((err) => {
         const statusMsg = err.error.message;
+        this.closeLoading();
         if (statusMsg === "Unable create Page" && statusMsg === 400) {
           let dialog = this.dialog.open(DialogAlert, {
             disableClose: true,

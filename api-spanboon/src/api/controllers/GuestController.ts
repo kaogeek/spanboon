@@ -1930,9 +1930,7 @@ export class GuestController {
                 await this.deviceToken.delete({ userId: user });
                 return response.status(400).send(errorUserNameResponse);
             }
-        }
-        // check expire token GG
-        if (isMode !== undefined && isMode === 'GG') {
+        } else if (isMode !== undefined && isMode === 'GG') {
             const authenId = await this.authenticationIdService.findOne({ user: user.id, providerName: PROVIDER.GOOGLE });
             if (authenId === undefined) {
                 const errorUserNameResponse: any = { status: 0, message: 'User token invalid.' };
@@ -1944,8 +1942,7 @@ export class GuestController {
                 await this.deviceToken.delete({ userId: user });
                 return response.status(400).send(errorUserNameResponse);
             }
-        }
-        else {
+        } else {
             // normal mode
             const authenId: AuthenticationId = await this.authenticationIdService.findOne({ where: { user: user.id, providerName: PROVIDER.EMAIL } });
             if (authenId === undefined) {
