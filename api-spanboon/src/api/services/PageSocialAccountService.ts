@@ -233,7 +233,6 @@ export class PageSocialAccountService {
         }
 
         if (postFacebook) {
-            console.log('postFbpass????');
             const fbAccount = await this.getFacebookPageAccount(pageId);
             if (fbAccount !== undefined) {
                 const fbUserId = fbAccount.providerPageId;

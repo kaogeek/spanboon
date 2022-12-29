@@ -219,6 +219,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     this.setTab();
     this.checkLoginAndRedirection();
     this.getRecommend();
+    this.openLoading();
     if (this.isLogin()) {
       this.getProfileImage();
     }
@@ -445,13 +446,10 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
         this.resProfile = res.data;
         if (this.resProfile && this.resProfile.name) {
           this.name = this.resProfile.name
-          console.log("1 +++ ", this.name);
         } else if (this.resProfile && this.resProfile.uniqueId) {
           this.name = this.resProfile.uniqueId
-          console.log("2 +++ ", this.name);
         } else if (this.resProfile.displayName) {
           this.name = this.resProfile.displayName
-          console.log("3 +++ ", this.name);
         }
 
         if (this.resProfile.imageURL !== '' && this.resProfile.imageURL !== null && this.resProfile.imageURL !== undefined) {
@@ -1190,7 +1188,6 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
 
         // localStorage.setItem('blockUser', JSON.stringify(add_data));
         // let show_blockUser = localStorage.getItem('blockUser');
-        // console.log("Super EIDOL",show_blockUser);
 
         // this.router.navigate(['home']);
         this.showAlertDevelopDialog('ระบบอยู่ในระหว่างการพัฒนา');
@@ -1210,5 +1207,9 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
         this.showAlertDevelopDialog('ระบบอยู่ในระหว่างการพัฒนา');
       }
     });
+  }
+
+  private openLoading() {
+    this.isLoading = true;
   }
 }

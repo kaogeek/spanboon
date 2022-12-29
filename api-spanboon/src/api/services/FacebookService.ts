@@ -17,7 +17,7 @@ import { User } from '../models/User';
 import { Asset } from '../models/Asset';
 import moment from 'moment';
 import axios from 'axios';
-;
+
 @Service()
 export class FacebookService {
     constructor(private authenIdService: AuthenticationIdService, private userService: UserService,
@@ -308,8 +308,7 @@ export class FacebookService {
             });
         });
     }
-
-    public async publishMessage(fbPageId: string, accessToken: string, message: string, imageIds?: string[]): Promise<any> {
+    public publishMessage(fbPageId: string, accessToken: string, message: string, imageIds?: string[]): Promise<any> {
         return new Promise(async (resolve, reject) => {
             if (fbPageId === undefined || fbPageId === null || fbPageId === '') {
                 reject('Facebook User id is required.');
@@ -327,7 +326,6 @@ export class FacebookService {
             
             const facebook = this.createFB();
             facebook.setAccessToken(accessToken);
-            // const PageSocialFb = await this.pageSocialAccountService.findOne({providerName:'FACEBOOK',providerPageId:fbPageId,storedCredentials:accessToken});
 
             const formData: any = { message };
             if (imageIds !== null && imageIds !== undefined && imageIds.length > 0) {
@@ -362,7 +360,6 @@ export class FacebookService {
                         });
                     }else{
                         axios.post(`https://graph.facebook.com/${res.id}/feed?message=${encodeURI(message)}!&access_token=${res.access_token}`).then((resFacebook)=>{
-                            console.log('resFacebook',resFacebook.data);
                             resolve(resFacebook.data);
                         });
                     }

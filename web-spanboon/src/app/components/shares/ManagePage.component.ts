@@ -127,7 +127,7 @@ export class ManagePage extends AbstractPage implements OnInit {
     return user !== undefined && user !== null;
   }
 
-  public ngOnInit(): void {    
+  public ngOnInit(): void {
     // this.isLogin();
     this.searchAllPage();
   }
@@ -314,6 +314,7 @@ export class ManagePage extends AbstractPage implements OnInit {
     })
       .catch((err) => {
         const statusMsg = err.error.message;
+        this.closeLoading();
         if (statusMsg === "Unable create Page" && statusMsg === 400) {
           let dialog = this.dialog.open(DialogAlert, {
             disableClose: true,
