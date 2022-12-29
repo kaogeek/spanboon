@@ -57,6 +57,25 @@ export class EmergencyStartPostProcessor extends AbstractTypeSectionProcessor {
                     { $limit: 1 },
                     {
                         $lookup: {
+                            from: 'SocialPost',
+                            localField: '_id',
+                            foreignField: 'postId',
+                            as: 'socialPosts'
+                        }
+                    },
+                    {
+                        $project: {
+                            'socialPosts': {
+                                '_id': 0,
+                                'pageId': 0,
+                                'postId': 0,
+                                'postBy': 0,
+                                'postByType': 0
+                            }
+                        }
+                    },
+                    {
+                        $lookup: {
                             from: 'PostsGallery',
                             localField: '_id',
                             foreignField: 'post',
