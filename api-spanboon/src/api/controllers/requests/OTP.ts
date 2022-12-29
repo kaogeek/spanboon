@@ -14,4 +14,5 @@ export class OtpRequest {
     public twitterUserId: string; // ! remove when fix a bug when verify
     public apple: string;
     public facebookObject: any;
+    public facebook:any;
 }

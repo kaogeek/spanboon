@@ -227,13 +227,12 @@ export class AuthenManager {
       })
     })
   }
-  public loginWithFacebook(token: string,tokenFCM?:string,mode?: string): Promise<any> {
+  public loginWithFacebook(token: string,mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/login';
       const tokenFCM_FB = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
       let body: any = {
         "token": token,
-        tokenFCM,
         tokenFCM_FB
       };
       let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
