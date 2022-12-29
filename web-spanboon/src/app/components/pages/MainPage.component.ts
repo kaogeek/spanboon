@@ -279,24 +279,18 @@ export class MainPage extends AbstractPage implements OnInit {
 
   public isLogin(): boolean {
     this.user = this.authenManager.getCurrentUser();
-    console.log("c ++++++", this.user);
     return this.user !== undefined && this.user !== null;
   }
 
   public async dialogPost() {
     if (this.isLogin()) {
-      console.log("ctt ++++++", this.user);
       let dataName;
-      console.log("e +++", dataName);
       if (this.user && this.user.name) {
         dataName = this.user.name
-        console.log("a +++", dataName);
       } else if (this.user && this.user.uniqueId) {
         dataName = this.user.displayName
-        console.log("es +++", dataName);
       } else if (this.user.displayName) {
         dataName = this.user.displayName
-        console.log("edd +++", dataName);
       }
       this.data.isListPage = true;
       this.data.isHeaderPage = true;

@@ -861,14 +861,10 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         this.resDataPage = res.data;
         if (this.resDataPage && this.resDataPage.name) {
           this.name = this.resDataPage.name;
-          console.log("cdcasdasd ====", this.resDataPage);
-          console.log("1 +++ ", this.name);
         } else if (this.resDataPage && this.resDataPage.pageUsername) {
           this.name = this.resDataPage.pageUsername
-          console.log("2 +++ ", this.name);
         } else if (this.resDataPage.displayName) {
           this.name = this.resDataPage.displayName
-          console.log("3 +++ ", this.name);
         }
         this.seoService.updateTitle(this.resDataPage.name);
         if (this.router.url.split('/')[3] !== 'post') {
@@ -1086,7 +1082,6 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   }
 
   public hidePost(post: any, index: number) {
-    console.log("index", index);
     const confirmEventEmitter = new EventEmitter<any>();
     confirmEventEmitter.subscribe(() => {
       this.submitDialog.emit();
