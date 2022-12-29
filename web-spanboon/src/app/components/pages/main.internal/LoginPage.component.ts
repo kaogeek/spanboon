@@ -81,8 +81,8 @@ export class LoginPage extends AbstractPage implements OnInit {
   public pictureSocial: any;
   public social: any = {
     socialLogin: undefined,
-
   };
+
   public mockDataMergeSocial: any = {
     social: "EMAIL",
     socialFB: "FACEBOOK",
@@ -196,33 +196,21 @@ export class LoginPage extends AbstractPage implements OnInit {
     }
   }
   public dialogConfirmMerge() {
-    let dialog = this.dialog.open(DialogAlert, {
-      disableClose: true,
-      data: {
-        text: 'ยืนยันการ merge user',
-      },
-    });
-
-    dialog.afterClosed().subscribe((res) => {
-      console.log('data', res);
-      if (res) {
-        this.modeSwitch = "otp";
-        let mode = "EMAIL";
-        this.checkMergeUserFacade.confirmMergeOtp(this.emailOtp).then((res) => {
-          this.limitOtpCount = res.limit;
-        }).catch((err) => {
-          if (err.error.message === "The Otp have been send more than 3 times, Please try add your OTP again") {
-            let dialog = this.dialog.open(DialogAlert, {
-              disableClose: true,
-              data: {
-                text: "คุณส่งรหัส OTP เกิน 3 ครั้ง",
-                bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-                bottomColorText2: "black",
-                btDisplay1: "none",
-              },
-            });
-          }
-        });
+    let mode = "EMAIL";
+    this.checkMergeUserFacade.confirmMergeOtp(this.emailOtp).then((res) => {
+      this.limitOtpCount = res.limit;
+      this.modeSwitch = "otp";
+    }).catch((err) => {
+      if (err.error.message === "The Otp have been send more than 3 times, Please try add your OTP again") {
+        let dialog = this.dialog.open(DialogAlert, {
+          disableClose: true,
+          data: {
+            text: "คุณส่งรหัส OTP เกิน 3 ครั้ง",
+            bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+            bottomColorText2: "black",
+            btDisplay1: "none",
+          },
+        })
       }
     });
   }
@@ -233,7 +221,7 @@ export class LoginPage extends AbstractPage implements OnInit {
       twitterOauthTokenSecret: token_secret,
       twitterUserId: userId,
     }
-    this.authenManager.loginWithTwitter(twitter, mode).then((data: any) => {
+    this.checkMergeUserFacade.loginWithTwitter(twitter, mode).then((data: any) => {
       // login success redirect to main page
       this.observManager.publish('authen.check', null);
       if (this.redirection) {
@@ -441,6 +429,7 @@ export class LoginPage extends AbstractPage implements OnInit {
 
   private loginFB() {
     let mode = 'FACEBOOK'
+
     this.checkMergeUserFacade.loginWithFacebook(this.accessToken.fbtoken, mode).then((data: any) => {
       // login success redirect to main page
       if (data.data.status === 2) {
@@ -547,6 +536,9 @@ export class LoginPage extends AbstractPage implements OnInit {
     }
     this.checkMergeUserFacade.checkMergeUser(mode, body).then((data) => {
       if (data.data.status === 2) {
+        let socialIcon = this.social.socialLogin[0];
+        console.log("zazazaza === ", data);
+        console.log("trtrtrtrtr", socialIcon);
         this.login = false;
         this.modeSwitch = "mergeuser";
         this.emailOtp = body.email;
@@ -609,6 +601,7 @@ export class LoginPage extends AbstractPage implements OnInit {
       }
     })
       .catch((err) => {
+        console.log("asdasdasdawd", err);
         if (err.error.message === "Invalid Password" && err.status === 400) {
           let dialog = this.dialog.open(DialogAlert, {
             disableClose: true,
