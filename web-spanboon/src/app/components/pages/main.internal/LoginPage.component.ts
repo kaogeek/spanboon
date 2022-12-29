@@ -41,12 +41,12 @@ export class LoginPage extends AbstractPage implements OnInit {
     length: 6,
     isPasswordInput: false,
     disableAutoFocus: false,
-    inputStyles: {  
+    inputStyles: {
       'border-radius': '15px',
       'text-align': 'center',
       'margin-right': '10px',
       'color': 'rgb(35, 35, 35)',
-      'border-color':'rgb(12, 52, 85)',
+      'border-color': 'rgb(12, 52, 85)',
       'box-shadow': '5px 5px 10px #cacaca',
     },
   };
@@ -63,7 +63,7 @@ export class LoginPage extends AbstractPage implements OnInit {
   private activatedRoute: ActivatedRoute;
   private twitterService: TwitterService;
   private checkMergeUserFacade: CheckMergeUserFacade;
-  public imageProfile:string;
+  public imageProfile: string;
   public static readonly PAGE_NAME: string = PAGE_NAME;
   public authenManager: AuthenManager;
   public router: Router;
@@ -77,12 +77,12 @@ export class LoginPage extends AbstractPage implements OnInit {
   public auth2: any;
   public emailOtp: string;
   public limitOtpCount: number;
-  public socialMode:any;
-  public pictureSocial:any;
+  public socialMode: any;
+  public pictureSocial: any;
   public social: any = {
     socialLogin: undefined,
-
   };
+
   public mockDataMergeSocial: any = {
     social: "EMAIL",
     socialFB: "FACEBOOK",
@@ -93,7 +93,7 @@ export class LoginPage extends AbstractPage implements OnInit {
   public dataUser: any;
   public passwordOtp: string;
   public countOtp: number;
-  public configCountdown: CountdownConfig = { leftTime: 5 , format: 'mm:ss'};
+  public configCountdown: CountdownConfig = { leftTime: 180, format: 'mm:ss' };
 
   //twitter
   public authorizeLink = 'https://api.twitter.com/oauth/authorize';
@@ -103,7 +103,7 @@ export class LoginPage extends AbstractPage implements OnInit {
   constructor(authenManager: AuthenManager, private socialAuthService: SocialAuthService, activatedRoute: ActivatedRoute, router: Router, _ngZone: NgZone,
     observManager: ObservableManager, cacheConfigInfo: CacheConfigInfo, dialog: MatDialog, twitterService: TwitterService,
     checkMergeUserFacade: CheckMergeUserFacade,
-    ) {
+  ) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.authenManager = authenManager;
     this.activatedRoute = activatedRoute;
@@ -196,33 +196,21 @@ export class LoginPage extends AbstractPage implements OnInit {
     }
   }
   public dialogConfirmMerge() {
-    let dialog = this.dialog.open(DialogAlert, {
-      disableClose: true,
-      data: {
-        text: 'ยืนยันการ merge user',
-      },
-    });
-
-    dialog.afterClosed().subscribe((res) => {
-      console.log('data',res);
-      if (res){
-        this.modeSwitch = "otp";
-        let mode = "EMAIL";
-        this.checkMergeUserFacade.confirmMergeOtp(this.emailOtp).then((res)=>{
-        this.limitOtpCount = res.limit;
-        }).catch((err) => {
-          if (err.error.message === "The Otp have been send more than 3 times, Please try add your OTP again") {
-            let dialog = this.dialog.open(DialogAlert, {
-              disableClose: true,
-              data: {
-                text: "คุณส่งรหัส OTP เกิน 3 ครั้ง",
-                bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-                bottomColorText2: "black",
-                btDisplay1: "none",
-              },
-            });
-          }
-        });
+    let mode = "EMAIL";
+    this.checkMergeUserFacade.confirmMergeOtp(this.emailOtp).then((res) => {
+      this.limitOtpCount = res.limit;
+      this.modeSwitch = "otp";
+    }).catch((err) => {
+      if (err.error.message === "The Otp have been send more than 3 times, Please try add your OTP again") {
+        let dialog = this.dialog.open(DialogAlert, {
+          disableClose: true,
+          data: {
+            text: "คุณส่งรหัส OTP เกิน 3 ครั้ง",
+            bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+            bottomColorText2: "black",
+            btDisplay1: "none",
+          },
+        })
       }
     });
   }
@@ -233,7 +221,7 @@ export class LoginPage extends AbstractPage implements OnInit {
       twitterOauthTokenSecret: token_secret,
       twitterUserId: userId,
     }
-    this.authenManager.loginWithTwitter(twitter, mode).then((data: any) => {
+    this.checkMergeUserFacade.loginWithTwitter(twitter, mode).then((data: any) => {
       // login success redirect to main page
       this.observManager.publish('authen.check', null);
       if (this.redirection) {
@@ -287,15 +275,15 @@ export class LoginPage extends AbstractPage implements OnInit {
     this.socialAuthService.signIn(GoogleLoginProvider.PROVIDER_ID).then((result) => {
       if (result !== null && result !== undefined) {
         let googleToken = {
-        googleUserId: result.id,
-        authToken: result.authToken,
-        idToken: result.idToken
-      };
+          googleUserId: result.id,
+          authToken: result.authToken,
+          idToken: result.idToken
+        };
 
-      this.googleToken = googleToken;
+        this.googleToken = googleToken;
 
-      this._ngZone.run(() => this.loginGoogle());
-        }
+        this._ngZone.run(() => this.loginGoogle());
+      }
     }).catch((error) => {
       console.log('error >>> ', error);
     });
@@ -304,33 +292,33 @@ export class LoginPage extends AbstractPage implements OnInit {
 
   private loginGoogle() {
     let mode = 'GOOGLE';
-    this.checkMergeUserFacade.loginWithGoogle(this.googleToken.idToken, this.googleToken.authToken,mode).then((data: any) => {
+    this.checkMergeUserFacade.loginWithGoogle(this.googleToken.idToken, this.googleToken.authToken, mode).then((data: any) => {
       // login success redirect to main page  
-      if ( data.data.status === 2 ) {
+      if (data.data.status === 2) {
         this.pictureSocial = data.pic;
         this.modeSwitch = "mergeuser";
         const queue = data.data.authUser;
-        for(let i = 0; i<queue.length; i++){
-          const current = queue.shift()  
-          if(current === 'EMAIL'){
+        for (let i = 0; i < queue.length; i++) {
+          const current = queue.shift()
+          if (current === 'EMAIL') {
             this.social.socialLogin = current;
             this.login = false;
             this.emailOtp = data.data.data.email;
             this.dataUser = data.data;
             this.socialMode = 'GOOGLE';
-          }else if( current === 'GOOGLE'){
+          } else if (current === 'GOOGLE') {
             this.social.socialLogin = current;
             this.login = false;
             this.emailOtp = data.data.data.email;
             this.dataUser = data.data;
             this.socialMode = 'GOOGLE';
-          }else if( current === 'FACEBOOK'){
+          } else if (current === 'FACEBOOK') {
             this.social.socialLogin = current;
             this.login = false;
             this.emailOtp = data.data.data.email;
             this.dataUser = data.data;
             this.socialMode = 'GOOGLE';
-          }else if( current === 'TWITTER'){
+          } else if (current === 'TWITTER') {
             this.social.socialLogin = current;
             this.login = false;
             this.emailOtp = data.data.data.email;
@@ -338,7 +326,7 @@ export class LoginPage extends AbstractPage implements OnInit {
             this.socialMode = 'GOOGLE';
           }
         }
-      }else if(data.data.status === 1 ){
+      } else if (data.data.status === 1) {
         this.authenManager.loginWithGoogle(this.googleToken.idToken, this.googleToken.authToken, mode).then((data: any) => {
           // login success redirect to main page
           this.observManager.publish('authen.check', null);
@@ -382,7 +370,7 @@ export class LoginPage extends AbstractPage implements OnInit {
           },
           queryParams: { mode: 'google' }
         }
-        
+
         this.router.navigate(['/register'], navigationExtras);
       } else if (statusMsg === 'Baned PageUser.') {
         this.dialog.open(DialogAlert, {
@@ -402,7 +390,7 @@ export class LoginPage extends AbstractPage implements OnInit {
     (window as any).fbAsyncInit = function () {
       window['FB'].init({
         appId: environment.facebookAppId,
-        cookie: true, 
+        cookie: true,
         xfbml: true,
         version: 'v14.0'
       });
@@ -441,33 +429,34 @@ export class LoginPage extends AbstractPage implements OnInit {
 
   private loginFB() {
     let mode = 'FACEBOOK'
-    this.checkMergeUserFacade.loginWithFacebook(this.accessToken.fbtoken,mode).then((data: any) => {
+
+    this.checkMergeUserFacade.loginWithFacebook(this.accessToken.fbtoken, mode).then((data: any) => {
       // login success redirect to main page
-      if ( data.data.status === 2) {
+      if (data.data.status === 2) {
         this.pictureSocial = data.pic;
         this.modeSwitch = "mergeuser";
         const queue = data.data.authUser;
-        for(let i = 0; i<queue.length; i++){
+        for (let i = 0; i < queue.length; i++) {
           const current = queue.shift()
-          if(current === 'EMAIL'){
+          if (current === 'EMAIL') {
             this.social.socialLogin = current;
             this.login = false;
             this.emailOtp = data.data.data.email;
             this.dataUser = data.data;
             this.socialMode = 'FACEBOOK';
-          }else if( current === 'GOOGLE'){
+          } else if (current === 'GOOGLE') {
             this.social.socialLogin = current;
             this.login = false;
             this.emailOtp = data.data.data.email;
             this.dataUser = data.data;
             this.socialMode = 'FACEBOOK';
-          }else if( current === 'FACEBOOK'){
+          } else if (current === 'FACEBOOK') {
             this.social.socialLogin = current;
             this.login = false;
             this.emailOtp = data.data.data.email;
             this.dataUser = data;
             this.socialMode = 'FACEBOOK';
-          }else if( current === 'TWITTER'){
+          } else if (current === 'TWITTER') {
             this.social.socialLogin = current;
             this.login = false;
             this.emailOtp = data.data.data.email;
@@ -475,7 +464,7 @@ export class LoginPage extends AbstractPage implements OnInit {
             this.socialMode = 'FACEBOOK';
           }
         }
-      }else if(data.data.status === 1){
+      } else if (data.data.status === 1) {
         this.authenManager.loginWithFacebook(this.accessToken.fbtoken, mode).then((data: any) => {
           // login success redirect to main page
           this.observManager.publish('authen.check', null);
@@ -547,6 +536,9 @@ export class LoginPage extends AbstractPage implements OnInit {
     }
     this.checkMergeUserFacade.checkMergeUser(mode, body).then((data) => {
       if (data.data.status === 2) {
+        let socialIcon = this.social.socialLogin[0];
+        console.log("zazazaza === ", data);
+        console.log("trtrtrtrtr", socialIcon);
         this.login = false;
         this.modeSwitch = "mergeuser";
         this.emailOtp = body.email;
@@ -608,54 +600,45 @@ export class LoginPage extends AbstractPage implements OnInit {
           });
       }
     })
-    .catch((err) => {
-      if(err.error.message === "User was not found." && err.status === 400){
-        let dialog = this.dialog.open(DialogAlert, {
-          disableClose: true,
-          data: {
-            text: "ไม่พบบัญชีผู้ใช้ในระบบ",
-            bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-            bottomColorText2: "black",
-            btDisplay1: "none",
-          },
-        });      }
-      if (err.error.message === "Invalid Password" && err.status === 400) {
-        let dialog = this.dialog.open(DialogAlert, {
-          disableClose: true,
-          data: {
-            text: "รหัสผ่านไม่ถูกต้อง",
-            bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-            bottomColorText2: "black",
-            btDisplay1: "none",
-          },
-        });
-        dialog.afterClosed().subscribe((res) => {
-        });
-      } else {
-        console.log(err);
-      }
-      if (
-        err.error.message === "Cannot read properties of undefined (reading 'id')" &&
-        err.status === 500
-      ) {
-        let dialog = this.dialog.open(DialogAlert, {
-          disableClose: true,
-          data: {
-            text: "ไม่พบบัญชีผู้ใช้ในระบบ",
-            bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-            bottomColorText2: "black",
-            btDisplay1: "none",
-          },
-        });
-        dialog.afterClosed().subscribe((res) => {
-          if (res) {
-            this.router.navigate(["/register"]);
-          }
-        });
-      } else {
-        console.log(err);
-      }
-    });
+      .catch((err) => {
+        console.log("asdasdasdawd", err);
+        if (err.error.message === "Invalid Password" && err.status === 400) {
+          let dialog = this.dialog.open(DialogAlert, {
+            disableClose: true,
+            data: {
+              text: "รหัสผ่านไม่ถูกต้อง",
+              bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+              bottomColorText2: "black",
+              btDisplay1: "none",
+            },
+          });
+          dialog.afterClosed().subscribe((res) => {
+          });
+        } else {
+          console.log(err);
+        }
+        if (
+          err.error.message === "Cannot read properties of undefined (reading 'id')" &&
+          err.status === 500
+        ) {
+          let dialog = this.dialog.open(DialogAlert, {
+            disableClose: true,
+            data: {
+              text: "ไม่พบบัญชีผู้ใช้ในระบบ",
+              bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+              bottomColorText2: "black",
+              btDisplay1: "none",
+            },
+          });
+          dialog.afterClosed().subscribe((res) => {
+            if (res) {
+              this.router.navigate(["/register"]);
+            }
+          });
+        } else {
+          console.log(err);
+        }
+      });
   }
 
   public clickSystemDevelopment(): void {
@@ -678,9 +661,9 @@ export class LoginPage extends AbstractPage implements OnInit {
   }
   public sendNewOtp() {
     this.otpResendIcon = "hide";
-    this.checkMergeUserFacade.confirmMergeOtp(this.emailOtp).then((res)=>{
-    this.limitOtpCount = res.limit;
-    }).catch((err) => {     
+    this.checkMergeUserFacade.confirmMergeOtp(this.emailOtp).then((res) => {
+      this.limitOtpCount = res.limit;
+    }).catch((err) => {
       if (err.error.message === "The Otp have been send more than 3 times, Please try add your OTP again") {
         let dialog = this.dialog.open(DialogAlert, {
           disableClose: true,
@@ -694,55 +677,12 @@ export class LoginPage extends AbstractPage implements OnInit {
       }
     });
   }
-  public clickCheckOtp(){
+  public clickCheckOtp() {
     let mode = this.socialMode;
-    if(mode === 'GOOGLE'){
-        this.checkMergeUserFacade.checkOtpGG(this.emailOtp,this.googleToken.idToken, this.googleToken.authToken ,this.countOtp,mode).then((res)=>{
-          if (res.message === "Loggedin successful" && res.authUser === 'GOOGLE') {
-            this.authenManager.loginWithGoogle(this.googleToken.idToken, this.googleToken.authToken, mode).then((data) => {
-              if (data) {
-                let dialog = this.dialog.open(DialogAlert, {
-                  disableClose: true,
-                  data: {
-                    text: MESSAGE.TEXT_LOGIN_SUCCESS,
-                    bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-                    bottomColorText2: "black",
-                    btDisplay1: "none",
-                  },
-                });
-                dialog.afterClosed().subscribe((res) => {
-                  if (res) {
-                    this.observManager.publish("authen.check", null);
-                    this.observManager.publish("authen.profileUser", data.user);
-                    if (this.redirection) {
-                      this.router.navigateByUrl(this.redirection);
-                    } else {
-                      this.router.navigate(["home"]);
-                    }
-                  }
-                });
-              }
-            })
-          }
-        }).catch((err) => {
-          if (err.error.message === "The OTP is not correct.") {
-            let dialog = this.dialog.open(DialogAlert, {
-              disableClose: true,
-              data: {
-                text: "รหัส OTP ของท่านไม่ถูกต้อง",
-                bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-                bottomColorText2: "black",
-                btDisplay1: "none",
-              },
-            });
-            dialog.afterClosed().subscribe((res) => {
-            });
-          }
-        });
-    }else if(mode === 'FACEBOOK'){
-      this.checkMergeUserFacade.checkOtpFB(this.emailOtp,this.accessToken,this.countOtp,mode).then((res)=>{
-        if (res.message === "Loggedin successful" && res.authUser === 'FACEBOOK') {
-          this.authenManager.loginWithFacebook(res.data ,res.authUser).then((data) => {
+    if (mode === 'GOOGLE') {
+      this.checkMergeUserFacade.checkOtpGG(this.emailOtp, this.googleToken.idToken, this.googleToken.authToken, this.countOtp, mode).then((res) => {
+        if (res.message === "Loggedin successful" && res.authUser === 'GOOGLE') {
+          this.authenManager.loginWithGoogle(this.googleToken.idToken, this.googleToken.authToken, mode).then((data) => {
             if (data) {
               let dialog = this.dialog.open(DialogAlert, {
                 disableClose: true,
@@ -782,34 +722,77 @@ export class LoginPage extends AbstractPage implements OnInit {
           });
         }
       });
-    }else if(mode === 'EMAIL'){
-      this.checkMergeUserFacade.checkOtp(this.emailOtp,this.countOtp,mode).then((res)=>{
-          if (res.message === "Loggedin successful" && res.authUser === 'EMAIL') {
-            this.authenManager.login(this.emailOtp, this.passwordOtp, mode).then((data) => {
-              if (data) {
-                let dialog = this.dialog.open(DialogAlert, {
-                  disableClose: true,
-                  data: {
-                    text: MESSAGE.TEXT_LOGIN_SUCCESS,
-                    bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-                    bottomColorText2: "black",
-                    btDisplay1: "none",
-                  },
-                });
-                dialog.afterClosed().subscribe((res) => {
-                  if (res) {
-                    this.observManager.publish("authen.check", null);
-                    this.observManager.publish("authen.profileUser", data.user);
-                    if (this.redirection) {
-                      this.router.navigateByUrl(this.redirection);
-                    } else {
-                      this.router.navigate(["home"]);
-                    }
+    } else if (mode === 'FACEBOOK') {
+      this.checkMergeUserFacade.checkOtpFB(this.emailOtp, this.accessToken, this.countOtp, mode).then((res) => {
+        if (res.message === "Loggedin successful" && res.authUser === 'FACEBOOK') {
+          this.authenManager.loginWithFacebook(res.data, res.authUser).then((data) => {
+            if (data) {
+              let dialog = this.dialog.open(DialogAlert, {
+                disableClose: true,
+                data: {
+                  text: MESSAGE.TEXT_LOGIN_SUCCESS,
+                  bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+                  bottomColorText2: "black",
+                  btDisplay1: "none",
+                },
+              });
+              dialog.afterClosed().subscribe((res) => {
+                if (res) {
+                  this.observManager.publish("authen.check", null);
+                  this.observManager.publish("authen.profileUser", data.user);
+                  if (this.redirection) {
+                    this.router.navigateByUrl(this.redirection);
+                  } else {
+                    this.router.navigate(["home"]);
                   }
-                });
-              }
-            })
-          }
+                }
+              });
+            }
+          })
+        }
+      }).catch((err) => {
+        if (err.error.message === "The OTP is not correct.") {
+          let dialog = this.dialog.open(DialogAlert, {
+            disableClose: true,
+            data: {
+              text: "รหัส OTP ของท่านไม่ถูกต้อง",
+              bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+              bottomColorText2: "black",
+              btDisplay1: "none",
+            },
+          });
+          dialog.afterClosed().subscribe((res) => {
+          });
+        }
+      });
+    } else if (mode === 'EMAIL') {
+      this.checkMergeUserFacade.checkOtp(this.emailOtp, this.countOtp, mode).then((res) => {
+        if (res.message === "Loggedin successful" && res.authUser === 'EMAIL') {
+          this.authenManager.login(this.emailOtp, this.passwordOtp, mode).then((data) => {
+            if (data) {
+              let dialog = this.dialog.open(DialogAlert, {
+                disableClose: true,
+                data: {
+                  text: MESSAGE.TEXT_LOGIN_SUCCESS,
+                  bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+                  bottomColorText2: "black",
+                  btDisplay1: "none",
+                },
+              });
+              dialog.afterClosed().subscribe((res) => {
+                if (res) {
+                  this.observManager.publish("authen.check", null);
+                  this.observManager.publish("authen.profileUser", data.user);
+                  if (this.redirection) {
+                    this.router.navigateByUrl(this.redirection);
+                  } else {
+                    this.router.navigate(["home"]);
+                  }
+                }
+              });
+            }
+          })
+        }
       }).catch((err) => {
         if (err.error.message === "The OTP is not correct.") {
           let dialog = this.dialog.open(DialogAlert, {
