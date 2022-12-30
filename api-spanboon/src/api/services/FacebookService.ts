@@ -192,6 +192,24 @@ export class FacebookService {
         });
     }
 
+    public async appAccessToken():Promise<any>{
+        try{
+            const { data } = await axios.get('https://graph.facebook.com/oauth/access_token?client_id=' + facebook_setup.FACEBOOK_APP_ID + '&client_secret=' + facebook_setup.FACEBOOK_APP_SECRET + '&grant_type=client_credentials');
+            return data;
+        }catch(err){
+            console.log('Cannot get AppAccessToken',err);
+            return err;
+        }
+    }
+    public async expireToken(inputToken:string,appAccessToken:any): Promise<any>{
+        try{
+            const { data } = await axios.get('https://graph.facebook.com/v14.0/debug_token?fields=data,expires_at,data_access_expires_at&input_token=' + inputToken + '&access_token=' +appAccessToken);
+            return data;
+        }catch(err){
+            console.log('Cannot debug token',err);
+            return err;
+        }
+    }
     public checkAccessToken(inputToken: string): Promise<any> {
         return new Promise((resolve, reject) => {
             this.getAppAccessToken().then((result: any) => {
@@ -339,8 +357,10 @@ export class FacebookService {
                 }
             }
             // xaxios.post('https://graph.facebook.com/'+ accessToken + '/feed');
-
+            console.log('fbPageId',fbPageId);
+            console.log('accessToken',accessToken);
             this.publishPageId(fbPageId,accessToken).then((res)=>{
+                console.log('res_facebook',res);
                 try{
                     if(imageIds !== null && imageIds !== undefined && imageIds.length > 0 && imageIds.length === 1){
                         axios.post(`https://graph.facebook.com/${res.id}/feed?message=${encodeURI(message)}&attached_media[0]={media_fbid:${imageIds[0]}}&access_token=${res.access_token}`).then((resFacebook)=>{
@@ -373,6 +393,7 @@ export class FacebookService {
     public async publishPageId(fbUserId:string,accessToken:string): Promise<any>{
         try{
             const {data} = await axios.get(`https://graph.facebook.com/${fbUserId}?fields=access_token&access_token=${accessToken}`);
+            console.log('publishPageId',data);
             return data;
         }catch(err){
             // console.log('Error publishPageId :'+ err);

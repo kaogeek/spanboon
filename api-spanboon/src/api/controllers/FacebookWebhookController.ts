@@ -82,11 +82,14 @@ export class FacebookWebhookController {
         }
         console.log('req.body', body.entry[0].changes[0]);
         const pageSubscribe = await this.socialPostLogsService.findOne({ providerUserId: String(body.entry[0].changes[0].value.from.id) });
+        if(pageSubscribe === undefined){
+            return res.status(400).send('Another Reaction with webhooks.');
+        }
         const pageIdFB = await this.pageService.findOne({ _id: pageSubscribe.pageId });
         if (body !== undefined && pageIdFB !== undefined && pageIdFB !== null && pageSubscribe.enable === true) {
             // verb type -> 3 types -> add,edit,remove
             if (body.entry[0].changes[0].value.verb === 'add' && body.entry[0].changes[0].value.link === undefined && body.entry[0].changes[0].value.photos === undefined) {
-                const checkPost = await this.socialPostService.findOne({ socialId: body.entry[0].changes[0].value.post_id, postByType: 'add' });
+                const checkPost = await this.socialPostService.findOne({ socialId: body.entry[0].changes[0].value.post_id});
                 if (checkPost === undefined) {
                     const postPage: Posts = new Posts();
                     postPage.title = 'โพสต์จากเฟสบุ๊ค';
@@ -127,7 +130,7 @@ export class FacebookWebhookController {
                 }
             } else if (body.entry[0].changes[0].value.verb === 'add' && body.entry[0].changes[0].value.link !== undefined && body.entry[0].changes[0].value.photos === undefined) {
                 const assetPic = await this.assetService.createAssetFromURL(body.entry[0].changes[0].value.link, pageIdFB.ownerUser);
-                const checkPost = await this.socialPostService.findOne({ socialId: body.entry[0].changes[0].value.post_id, postByType: 'add' });
+                const checkPost = await this.socialPostService.findOne({ socialId: body.entry[0].changes[0].value.post_id});
                 if (checkPost === undefined && assetPic !== undefined) {
                     const postPage: Posts = new Posts();
                     postPage.title = 'โพสต์จากเฟสบุ๊ค';
@@ -195,7 +198,7 @@ export class FacebookWebhookController {
                     const multiPic = await this.assetService.createAssetFromURL(body.entry[0].changes[0].value.photos[i], pageIdFB.ownerUser);
                     multiPics.push(multiPic);
                 }
-                const checkPost = await this.socialPostService.findOne({ socialId: body.entry[0].changes[0].value.post_id, postByType: 'add' });
+                const checkPost = await this.socialPostService.findOne({ socialId: body.entry[0].changes[0].value.post_id });
                 if (checkPost === undefined) {
                     const postPage: Posts = new Posts();
                     postPage.title = 'โพสต์จากเฟสบุ๊ค';
@@ -261,66 +264,4 @@ export class FacebookWebhookController {
             }
         }
     }
-
-    /* private createPagePostModel(pageObjId: ObjectID, userObjId: ObjectID, title: string, detail: string, photoLinks: string[]): Posts {
-        const today = moment().toDate();
-
-        const post = new Posts();
-        post.deleted = false;
-        post.pageId = pageObjId;
-        post.referencePost = null;
-        post.rootReferencePost = null;
-        post.visibility = null;
-        post.ranges = null;
-        post.title = title;
-        post.detail = detail;
-        post.isDraft = false;
-        post.hidden = false;
-        post.type = POST_TYPE.GENERAL;
-        post.userTags = [];
-        post.coverImage = '';
-        post.pinned = false;
-        post.deleted = false;
-        post.ownerUser = userObjId;
-        post.commentCount = 0;
-        post.repostCount = 0;
-        post.shareCount = 0;
-        post.likeCount = 0;
-        post.viewCount = 0;
-        post.createdDate = today;
-        post.startDateTime = today;
-        post.story = null;
-
-        return post;
-    }
-
-    /* private async isFetchPage(pageId: ObjectID): Promise<boolean> {
-        if (pageId === undefined) {
-            return PAGE_CONFIGS.DEFAULT_PAGE_SOCIAL_FACEBOOK_FETCHPOST;
-        }
-
-        const config = await this.pageConfigService.getConfig(PAGE_CONFIGS.PAGE_SOCIAL_FACEBOOK_FETCHPOST, pageId);
-        if (config !== undefined && config.value !== undefined) {
-            if (typeof config.value === 'string') {
-                const valueString = config.value.toUpperCase();
-
-                return (valueString === 'TRUE') ? true : false;
-            } else if (typeof config.value === 'boolean') {
-                return config.value;
-            }
-
-            return config.value;
-        } else {
-            // auto create page config
-            const pageConfig = new PageConfig();
-            pageConfig.page = pageId;
-            pageConfig.name = PAGE_CONFIGS.PAGE_SOCIAL_FACEBOOK_FETCHPOST;
-            pageConfig.type = 'boolean';
-            pageConfig.value = PAGE_CONFIGS.DEFAULT_PAGE_SOCIAL_FACEBOOK_FETCHPOST ? 'TRUE' : 'FALSE';
-
-            await this.pageConfigService.create(pageConfig);
-        }
-
-        return PAGE_CONFIGS.DEFAULT_PAGE_SOCIAL_FACEBOOK_FETCHPOST;
-    } */
 }

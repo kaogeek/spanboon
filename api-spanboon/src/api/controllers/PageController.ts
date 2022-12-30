@@ -442,12 +442,8 @@ export class PageController {
         const query = {_id:userId};
         const newValue = {$set:{isSyncPage:true}};
         let assetCover:any;
-        console.log('socialBinding.facebookPageId',socialBinding.facebookPageId);
-        console.log('socialBinding.pageAccessToken',socialBinding.pageAccessToken);
         const { request } = await axios.get('https://graph.facebook.com/v14.0/' + socialBinding.facebookPageId + '/picture?type=large');
-        console.log('request_pic',request);
         const { data } = await axios.get('https://graph.facebook.com/v14.0/'+socialBinding.facebookPageId + '?fields=cover&access_token=' +socialBinding.pageAccessToken);
-        console.log('data_pic',data)
         const ipAddress = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress).split(',')[0];
         const clientId = req.headers['client-id'];
         let createCate = undefined;

@@ -299,6 +299,8 @@ export class PagePostController {
     public async createPagePost(@Body({ validate: true }) pagePost: PagePostRequest, @Param('pageId') pageId: string, @QueryParams() options: any, @Res() res: any, @Req() req: any): Promise<any> {
         const userObjId = new ObjectID(req.user.id);
         const clientId = req.headers['client-id'];
+        const mode = req.headers.mode;
+        console.log('mode',mode);
         const ipAddress = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress).split(',')[0];
         const userIdList = [];
         const userTags = [];
@@ -848,7 +850,7 @@ export class PagePostController {
                         }
 
                         if (isPostFacebook) {
-                            const isValid = await this.pageSocialAccountService.pagePostToFacebook(createResult.posts.id, pageId);
+                            const isValid = await this.pageSocialAccountService.pagePostToFacebook(createResult.posts.id, pageId,userObjId,mode);
                             createResult.facebookValid = isValid;
                         }
                     }
