@@ -29,10 +29,13 @@ import { UserLikeService } from '../services/UserLikeService';
 import { PostsComment } from '../models/PostsComment';
 import { SUBJECT_TYPE } from '../../constants/FollowType';
 import { PostsCommentService } from '../services/PostsCommentService';
+import { AuthenticationId } from '../models/AuthenticationId';
+import { AuthenticationIdService } from '../services/AuthenticationIdService';
 
 @JsonController('/profile')
 export class UserProfileController {
     constructor(
+        private authenIdService: AuthenticationIdService,
         private userService: UserService,
         private userLikeService: UserLikeService,
         private userFollowService: UserFollowService,
@@ -57,53 +60,41 @@ export class UserProfileController {
      */
     @Get('/:id')
     public async getUserPageProfile(@Param('id') userId: string, @Req() req: any, @Res() res: any): Promise<any> {
-        let user: User[];
         let result: any;
+        let userObjId: ObjectID;
+        let userStmt: any;
 
         try {
-            const uid = new ObjectID(userId);
-            user = await this.userService.aggregate(
-                [
-                    {
-                        $match: {
-                            _id: uid,
-                        }
-                    },
-                    {
-                        $lookup: {
-                            from: 'UserProvideItems',
-                            localField: '_id',
-                            foreignField: 'user',
-                            as: 'provideItems'
-                        }
-                    },
-                    {
-                        $project: { uniqueId: 1, username: 1, email: 1, firstName: 1, lastName: 1, displayName: 1, birthdate: 1, customGender: 1, gender: 1, imageURL: 1, coverURL: 1, coverPosition: 1, provideItems: 1 }
-                    }
-                ]
-            );
+            userObjId = new ObjectID(userId);
+            userStmt = { _id: userObjId };
         } catch (ex) {
-            user = await this.userService.aggregate(
-                [
-                    {
-                        $match: {
-                            uniqueId: userId,
-                        }
-                    },
-                    {
-                        $lookup: {
-                            from: 'UserProvideItems',
-                            localField: '_id',
-                            foreignField: 'user',
-                            as: 'provideItems'
-                        }
-                    },
-                    {
-                        $project: { uniqueId: 1, username: 1, email: 1, firstName: 1, lastName: 1, displayName: 1, birthdate: 1, customGender: 1, gender: 1, imageURL: 1, coverURL: 1, coverPosition: 1, provideItems: 1 }
-                    }
-                ]
-            );
+            userStmt = { uniqueId: userId };
+        } finally {
+            if (userObjId === undefined || userObjId === 'undefined') {
+                userObjId = null;
+            }
+
+            userStmt = { $or: [{ _id: userObjId }, { uniqueId: userId }] };
         }
+
+        const user: User[] = await this.userService.aggregate(
+            [
+                {
+                    $match: userStmt
+                },
+                {
+                    $lookup: {
+                        from: 'UserProvideItems',
+                        localField: '_id',
+                        foreignField: 'user',
+                        as: 'provideItems'
+                    }
+                },
+                {
+                    $project: { uniqueId: 1, username: 1, email: 1, firstName: 1, lastName: 1, displayName: 1, birthdate: 1, customGender: 1, gender: 1, imageURL: 1, coverURL: 1, coverPosition: 1, provideItems: 1 }
+                }
+            ]
+        );
 
         if (user !== null && user !== undefined && user.length > 0) {
             result = await this.userService.cleanAdminUserField(user[0]);
@@ -123,9 +114,18 @@ export class UserProfileController {
                 isUserFollow = await this.userFollowService.findOne(isUserFollowStmt);
             }
 
+            const userAuthList: AuthenticationId[] = await this.authenIdService.find({ where: { user: usrObjId } });
             const userFollowing = await this.userFollowService.find({ where: { userId: usrObjId, subjectType: SUBJECT_TYPE.USER } });
             const userFollower = await this.userFollowService.find({ where: { subjectId: usrObjId, subjectType: SUBJECT_TYPE.USER } });
+            const authProviderList: string[] = [];
 
+            if (userAuthList !== null && userAuthList !== undefined && userAuthList.length > 0) {
+                for (const userAuth of userAuthList) {
+                    authProviderList.push(userAuth.providerName);
+                }
+            }
+
+            result.authUser = authProviderList;
             result.following = userFollowing.length;
             result.followers = userFollower.length;
 
