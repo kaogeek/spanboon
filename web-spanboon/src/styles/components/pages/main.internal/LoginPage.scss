@@ -413,100 +413,123 @@
       }
     }
   }
+}
 
-  @media (max-width: $xxlarge) {
-    .wrapper-page {
-      >.background {
-        left: -115pt;
-      }
 
-      >.wrapper-login-page {}
-
+@media (max-width: $xxlarge) {
+  .wrapper-page {
+    >.background {
+      left: -115pt;
     }
+
+    >.wrapper-login-page {}
+
   }
+}
 
-  @media (max-width: $large) {
-    .wrapper-page {
-      >.background {
-        display: none;
-      }
+@media (max-width: $large) {
+  .wrapper-page {
+    >.background {
+      display: none;
+    }
 
-      >.wrapper-login-page {
-        >.wrapper-box-detail {
-          margin: 50pt auto;
-          justify-content: center;
-        }
-      }
-
-      >.wrapper-mergeuser-page {
-        >.box-detail {
-          margin: 50pt auto;
-
-          >.merge-user {}
-
-          >.wrapper-user-to-user {
-            margin-top: 40px;
-            column-gap: 50px;
-
-            >.profile-card {
-              width: 158px;
-
-              >.profile-box {
-                margin-bottom: 0px;
-
-                >.wrapper-img {
-                  width: 130px;
-                  height: 130px;
-
-                  >.icon-social {
-                    width: 37px;
-                    height: 37px;
-                  }
-                }
-              }
-
-              >.label {
-                >.label-tag {}
-              }
-            }
-
-            >.arrow {
-              height: calc(150px + 1px);
-            }
-          }
-
-          >.description {
-            margin-top: 40px;
-          }
-
-          >.next-merge {}
-        }
-      }
-
-      >.wrapper-otp-page {
+    >.wrapper-login-page {
+      >.wrapper-box-detail {
         margin: 50pt auto;
         justify-content: center;
+      }
+    }
 
-        >.otp-box-border {
-          margin-right: 0px;
+    >.wrapper-mergeuser-page {
+      >.box-detail {
+        margin: 50pt auto;
 
-          >.otp-box-details {
-            width: 400px;
+        >.merge-user {}
 
-            >.otp-box {
+        >.wrapper-user-to-user {
+          margin-top: 40px;
+          column-gap: 50px;
 
-              >ng-otp-input {
-                .otp-input {
-                  width: 48px;
-                  height: 48px;
-                  font-size: 28px;
+          >.profile-card {
+            width: 158px;
+
+            >.profile-box {
+              margin-bottom: 0px;
+
+              >.wrapper-img {
+                width: 130px;
+                height: 130px;
+
+                >.icon-social {
+                  width: 37px;
+                  height: 37px;
                 }
               }
             }
 
-            >.verify-otp {
-              .spanboon-button {
-                width: 90%;
+            >.label {
+              >.label-tag {}
+            }
+          }
+
+          >.arrow {
+            height: calc(150px + 1px);
+          }
+        }
+
+        >.description {
+          margin-top: 40px;
+        }
+
+        >.next-merge {}
+      }
+    }
+
+    >.wrapper-otp-page {
+      margin: 50pt auto;
+      justify-content: center;
+
+      >.otp-box-border {
+        margin-right: 0px;
+
+        >.otp-box-details {
+          width: 400px;
+
+          >.otp-box {
+
+            >ng-otp-input {
+              .otp-input {
+                width: 48px;
+                height: 48px;
+                font-size: 28px;
+              }
+            }
+          }
+
+          >.verify-otp {
+            .spanboon-button {
+              width: 90%;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: $lmedium) {
+  .wrapper-page {
+    >.wrapper-otp-page {
+      >.otp-box-border {
+        >.otp-box-details {
+          width: 370px;
+
+          >.otp-box {
+            >ng-otp-input {
+              .otp-input {
+                width: 45px;
+                height: 45px;
+                font-size: 24px;
               }
             }
           }
@@ -514,141 +537,117 @@
       }
     }
   }
+}
 
-  @media (max-width: $lmedium) {
-    .wrapper-page {
-      >.wrapper-otp-page {
-        >.otp-box-border {
-          >.otp-box-details {
-            width: 370px;
+@media (max-width: $medium) {
+  .wrapper-page {
+    >.wrapper-mergeuser-page {
+      >.box-detail {
+        >.merge-user {}
 
-            >.otp-box {
-              >ng-otp-input {
-                .otp-input {
-                  width: 45px;
-                  height: 45px;
-                  font-size: 24px;
+        >.wrapper-user-to-user {
+          column-gap: 20px;
+
+          >.profile-card {
+            width: 140px;
+
+            >.profile-box {
+              >.wrapper-img {
+                width: 110px;
+                height: 110px;
+
+                >.icon-social {
+                  width: 35px;
+                  height: 35px;
                 }
               }
             }
+
+            >.label {
+              >.label-tag {}
+            }
           }
+
+          >.arrow {
+            height: calc(120px + 1px);
+          }
+        }
+
+        >.description {}
+
+        >.next-merge {}
+      }
+    }
+
+  }
+}
+
+@media (max-width: $small) {
+  .wrapper-page {
+    >.wrapper-login-page {
+      min-height: calc(100vh - 39pt);
+
+      >.wrapper-box-detail {
+        width: 80%;
+      }
+    }
+
+    >.wrapper-mergeuser-page {
+      >.box-detail {
+        >.merge-user {}
+
+        >.wrapper-user-to-user {
+          margin-top: 30px;
+
+          >.profile-card {
+            >.profile-box {
+              >.wrapper-img {
+                width: 90px;
+                height: 90px;
+
+                >.icon-social {
+                  width: 30px;
+                  height: 30px;
+                }
+              }
+            }
+
+            >.label {
+              >.label-tag {}
+            }
+          }
+
+          >.arrow {}
+        }
+
+        >.description {
+          margin-top: 30px;
+        }
+
+        >.next-merge,
+        >.back-merge {
+          width: 90%;
         }
       }
     }
-  }
 
-  @media (max-width: $medium) {
-    .wrapper-page {
-      >.wrapper-login-page {}
+    >.wrapper-otp-page {
+      justify-content: center;
 
-      >.wrapper-mergeuser-page {
-        >.box-detail {
-          >.merge-user {}
+      >.otp-box-border {
+        >.otp-box-details {
+          width: 300px;
 
-          >.wrapper-user-to-user {
-            column-gap: 20px;
-
-            >.profile-card {
-              width: 140px;
-
-              >.profile-box {
-                >.wrapper-img {
-                  width: 110px;
-                  height: 110px;
-
-                  >.icon-social {
-                    width: 35px;
-                    height: 35px;
-                  }
-                }
-              }
-
-              >.label {
-                >.label-tag {}
-              }
-            }
-
-            >.arrow {
-              height: calc(120px + 1px);
-            }
+          >.title {
+            @include font-size-7($font-head-500);
           }
 
-          >.description {}
-
-          >.next-merge {}
-        }
-      }
-
-    }
-  }
-
-  @media (max-width: $small) {
-    .wrapper-page {
-      >.wrapper-login-page {
-        min-height: calc(100vh - 39pt);
-
-        >.wrapper-box-detail {
-          width: 80%;
-        }
-      }
-
-      >.wrapper-mergeuser-page {
-        >.box-detail {
-          >.merge-user {}
-
-          >.wrapper-user-to-user {
-            margin-top: 30px;
-
-            >.profile-card {
-              >.profile-box {
-                >.wrapper-img {
-                  width: 90px;
-                  height: 90px;
-
-                  >.icon-social {
-                    width: 30px;
-                    height: 30px;
-                  }
-                }
-              }
-
-              >.label {
-                >.label-tag {}
-              }
-            }
-
-            >.arrow {}
-          }
-
-          >.description {
-            margin-top: 30px;
-          }
-
-          >.next-merge,
-          >.back-merge {
-            width: 90%;
-          }
-        }
-      }
-
-      >.wrapper-otp-page {
-        justify-content: center;
-
-        >.otp-box-border {
-          >.otp-box-details {
-            width: 300px;
-
-            >.title {
-              @include font-size-7($font-head-500);
-            }
-
-            >.otp-box {
-              >ng-otp-input {
-                .otp-input {
-                  width: 34px;
-                  height: 34px;
-                  font-size: 20px;
-                }
+          >.otp-box {
+            >ng-otp-input {
+              .otp-input {
+                width: 34px;
+                height: 34px;
+                font-size: 20px;
               }
             }
           }
