@@ -1025,7 +1025,8 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result !== undefined) {
+      if (result !== null && result !== undefined) {
+        this.resPost.posts[index] = result;
       }
       this.stopLoading();
     });
