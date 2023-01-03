@@ -1,10 +1,6 @@
 {
     "extends": "tslint:recommended",
     "rules": {
-        "max-line-length": [
-            true,
-            400
-        ],
         "prefer-for-of": false,
         "no-unnecessary-initializer": false,
         "no-var-requires": true,

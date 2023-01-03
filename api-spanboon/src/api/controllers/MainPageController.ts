@@ -1012,13 +1012,17 @@ export class MainPageController {
                 {
                     $lookup: {
                         from: 'Page',
-                        let: { pageId: '$pageId' },
+                        as: 'page',
+                        let: {
+                            pageId: '$pageId'
+                        },
                         pipeline: [
                             {
-                                $match: { $expr: { $and: [{ $eq: ['$$pageId', '$_id'] }] } }
+                                $match: {
+                                    $expr: { $and: [{ $eq: ['$$pageId', '$_id'] }] }
+                                }
                             }
                         ],
-                        as: 'page'
                     },
                 },
                 {
@@ -1250,10 +1254,11 @@ export class MainPageController {
             ];
 
             if (isOfficial !== null && isOfficial !== undefined) {
-                postsLookupStmt.splice(1, 0, { $match: { 'page.isOfficial': isOfficial } });
+                postsLookupStmt.splice(2, 0, { $match: { 'page.isOfficial': isOfficial } });
             }
 
             searchPostStmt = postStmt.concat(postsLookupStmt);
+
             const userMap = {};
             const postResult = await this.postsService.aggregate(searchPostStmt, { allowDiskUse: true }); // allowDiskUse: true to fix an Exceeded memory limit for $group.
             if (postResult !== null && postResult !== undefined && postResult.length > 0) {

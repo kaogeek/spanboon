@@ -83,6 +83,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
   public genderTxt: string;
   public account_twitter: any;
   public isCheckDate: any;
+  public checkedCon: boolean = false;
 
   constructor(authenManager: AuthenManager,
     private authService: SocialAuthService,
@@ -414,7 +415,6 @@ export class RegisterPage extends AbstractPage implements OnInit {
           });
         }
         else if(value.status === 2 ){
-          console.log('correct FACEBOOK register');
           this.fbLibrary();
           window['FB'].login((response) => {
             if (response.authResponse) {
@@ -628,4 +628,8 @@ export class RegisterPage extends AbstractPage implements OnInit {
     this.router.navigateByUrl('/login');
   } 
   
+  public checkedClick() {
+    this.checkedCon = !this.checkedCon;
+  }
+
 }

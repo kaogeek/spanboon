@@ -335,8 +335,12 @@ export class PageController {
         const verifyObject = await this.twitterService.verifyCredentials(socialBinding.twitterOauthToken, socialBinding.twitterTokenSecret);
         const ipAddress = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress).split(',')[0];
         const clientId = req.headers['client-id'];
+        const query = {_id:userId};
+        const newValue = {$set:{isSyncPage:true}};   
+        await this.userService.update(query,newValue);
 
-        const pageSocialFb = await this.pageSocialAccountService.findOne({where:{providerName:PROVIDER.FACEBOOK,providerPageId:socialBinding.twitterUserId}});
+        const pageSocialFb = await this.pageSocialAccountService.findOne({where:{providerName:PROVIDER.TWITTER,providerPageId:socialBinding.twitterUserId,ownerPage:userId}});
+
         if(pageSocialFb !== undefined && pageSocialFb !==null){
             const errorResponse = ResponseUtil.getErrorResponse('Unable create Page', undefined);
             return res.status(400).send(errorResponse);
@@ -376,6 +380,7 @@ export class PageController {
                 pageSocialAccount.providerPageId = socialBinding.twitterUserId;
                 pageSocialAccount.storedCredentials = socialBinding.twitterOauthToken;
                 pageSocialAccount.providerPageName = socialBinding.twitterPageName;
+                pageSocialAccount.ownerPage = userId;
                 const page = await this.pageSocialAccountService.create(pageSocialAccount);
                 if (page) {
                     const config = new PageConfig();
@@ -434,29 +439,42 @@ export class PageController {
     public async autoSyncPageFB(@Body({ validate: true }) socialBinding: PageSocialFBBindingRequest, @Res() res: any, @Req() req: any): Promise<any> {
         const userId = new ObjectID(req.user.id);
         const getUser = await this.userService.findOne({ _id: userId });
-        const authenFB = await this.authenService.findOne({ where: { user: userId, providerName: 'FACEBOOK' } });
-        const pageFB = await this.facebookService.getFBPageAccounts(authenFB.storedCredentials);
+        const query = {_id:userId};
+        const newValue = {$set:{isSyncPage:true}};
+        let assetCover:any;
+        console.log('socialBinding.facebookPageId',socialBinding.facebookPageId);
+        console.log('socialBinding.pageAccessToken',socialBinding.pageAccessToken);
         const { request } = await axios.get('https://graph.facebook.com/v14.0/' + socialBinding.facebookPageId + '/picture?type=large');
+        console.log('request_pic',request);
+        const { data } = await axios.get('https://graph.facebook.com/v14.0/'+socialBinding.facebookPageId + '?fields=cover&access_token=' +socialBinding.pageAccessToken);
+        console.log('data_pic',data)
         const ipAddress = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress).split(',')[0];
         const clientId = req.headers['client-id'];
         let createCate = undefined;
-        const pageSocialFb = await this.pageSocialAccountService.findOne({where:{providerName:PROVIDER.FACEBOOK,providerPageId:socialBinding.facebookPageId}});
+
+        const pageSocialFb = await this.pageSocialAccountService.findOne({where:{providerName:PROVIDER.FACEBOOK,providerPageId:socialBinding.facebookPageId,ownerPage:userId}});
         if(pageSocialFb !== undefined && pageSocialFb !==null){
             const errorResponse = ResponseUtil.getErrorResponse('Unable create Page', undefined);
-            console.log('errorResponse',errorResponse);
             return res.status(400).send(errorResponse);
         }
-        const assetPic = await this.assetService.createAssetFromURL(request.socket._httpMessage.res.responseUrl, pageFB.ownerUser);
+        const assetPic = await this.assetService.createAssetFromURL(request.socket._httpMessage.res.responseUrl, userId);
+        if(data.cover !== undefined){
+            assetCover = await this.assetService.createAssetFromURL(data.cover.source,userId);
+        }
         // create category 
+
+        await this.userService.update(query,newValue);
+
         const checkPageCate = await this.pageCategoryService.findOne({ name: socialBinding.facebookCategory });
         if (checkPageCate === undefined) {
             const cate: PageCategory = new PageCategory();
-            cate.name = socialBinding.facebookCategory;
+            cate.name = socialBinding.facebookCategory ;
             cate.description = null;
             cate.iconURL = null;
             createCate = await this.pageCategoryService.create(cate);
         }
         if (assetPic) {
+
             const pageCreate: Page = new Page();
             pageCreate.name = socialBinding.facebookPageName;
             pageCreate.pageUsername = null;
@@ -479,7 +497,8 @@ export class PageController {
             // if page created then auto fetch and webhook
             if (result) {
                 const properties = {
-                    pageId: socialBinding.facebookPageId
+                    pageId: socialBinding.facebookPageId,
+                    ownerPage:userId
                 };
                 const currentDateTime = moment().toDate();
                 const authTime = currentDateTime;
@@ -490,11 +509,12 @@ export class PageController {
                 pageSocialAccount.providerPageId = socialBinding.facebookPageId;
                 pageSocialAccount.storedCredentials = socialBinding.pageAccessToken;
                 pageSocialAccount.providerPageName = socialBinding.facebookPageName;
+                pageSocialAccount.ownerPage = userId;
                 const page = await this.pageSocialAccountService.create(pageSocialAccount);
                 // subscribe webhook
                 if (page) {
-                    const { data } = await axios.post('https://graph.facebook.com/' + socialBinding.facebookPageId + '/subscribed_apps?subscribed_fields=feed&access_token=' + socialBinding.pageAccessToken);
-                    console.log('webhook', data);
+                    const webHooks = await this.facebookService.subScribeWebhook(socialBinding.facebookPageId,socialBinding.pageAccessToken);
+                    console.log('webhook', webHooks);
                     const config = new PageConfig();
                     config.page = result.id;
                     config.name = 'page.social.facebook.autopost';
@@ -534,10 +554,20 @@ export class PageController {
                         } else {
                             engagement.isFirst = true;
                         }
-
-                        await this.userEngagementService.create(engagement);
-                        const successResponse = ResponseUtil.getSuccessResponse('Successfully create Page', result);
-                        return res.status(200).send(successResponse);
+                        if(assetCover){
+                            const queryPic = {_id:result.id};
+                            const newValuePic = {$set:{ coverURL: ASSET_PATH + assetCover.id, s3CoverURL: assetCover.s3FilePath }};
+                            const updatePageCoverPic = await this.pageService.update(queryPic,newValuePic);
+                            if(updatePageCoverPic){
+                                await this.userEngagementService.create(engagement);
+                                const successResponse = ResponseUtil.getSuccessResponse('Successfully create Page', result);
+                                return res.status(200).send(successResponse);
+                            }
+                        }else{
+                            await this.userEngagementService.create(engagement);
+                            const successResponse = ResponseUtil.getSuccessResponse('Successfully create Page', result);
+                            return res.status(200).send(successResponse);
+                        }
                     }
                 } else {
                     const errorResponse = ResponseUtil.getErrorResponse('Unable create Page', undefined);
@@ -547,6 +577,23 @@ export class PageController {
         }
     }
 
+    @Post('/user/sync')
+    @Authorized('user')
+    public async getUserSyncPage(@Res() res: any,@Req() req: any): Promise<any>{
+        const userId = new ObjectID(req.user.id);
+        const syncFlag:boolean = req.body.isSyncpage;
+        console.log('syncFlag',syncFlag);
+        const query = { _id: userId };
+        const newValue = {$set:{isSyncPage:syncFlag}};
+        const updateUser = await this.userService.update(query,newValue);
+        if(updateUser){
+            const successResponse = ResponseUtil.getSuccessResponse('Skip successful.', userId);
+            return res.status(200).send(successResponse);
+        }else{
+            const errorResponse: any = { status: 0, message: 'undefined' };
+            return res.status(400).send(errorResponse);
+        }   
+    }
     /**
      * @api {get} /api/page/:id/needs Get Page Needs API
      * @apiGroup Page
@@ -669,6 +716,7 @@ export class PageController {
             pageSocialAccount.providerPageId = socialBinding.facebookPageId;
             pageSocialAccount.storedCredentials = pageAccessToken.token;
             pageSocialAccount.providerPageName = socialBinding.facebookPageName;
+            pageSocialAccount.ownerPage = userId;
             await this.pageSocialAccountService.create(pageSocialAccount);
 
             return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Binding Page Facebook Social.', true));
@@ -743,7 +791,7 @@ export class PageController {
             pageSocialAccount.providerPageId = socialBinding.twitterUserId;
             pageSocialAccount.storedCredentials = storedCredentials;
             pageSocialAccount.providerPageName = socialBinding.twitterPageName;
-
+            pageSocialAccount.ownerPage = userId;
             await this.pageSocialAccountService.create(pageSocialAccount);
 
             return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Binding Page Social.', true));

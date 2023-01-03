@@ -111,7 +111,7 @@ export class ConfigService {
             this.create(config);
         }
 
-        const assetS3ExpireCfg = await this.getConfig(ASSET_CONFIG_NAME.S3_SIGN_EXPIRING_SEC);
+        const assetS3ExpireCfg = await this.getConfig(ASSET_CONFIG_NAME.EXPIRE_MINUTE);
 
         if (assetS3ExpireCfg === null || assetS3ExpireCfg === undefined) {
             const config: Config = new Config();

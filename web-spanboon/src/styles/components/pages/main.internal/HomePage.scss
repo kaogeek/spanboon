@@ -678,7 +678,8 @@
                     > .date-time {
                       > span {
                         cursor: pointer;
-                        @include font-size-11($font-head-500);
+                        @include font-size-11($font-head-100);
+                        font-weight: lighter;
                         color: gray;
                         &:hover {
                           color: rgba($brandcolor2, 0.95);

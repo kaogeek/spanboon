@@ -1482,7 +1482,6 @@ export class PagePostController {
     @Authorized('user')
     public async updatePostPage(@Body({ validate: true }) postPages: PagePostRequest, @Param('pageId') pageId: string, @Param('postId') postId: string, @Res() res: any, @Req() req: any): Promise<any> {
         try {
-            console.log('ok');
             const pagePostsObjId = new ObjectID(postId);
             const ownerUser = new ObjectID(req.user.id);
             const clientId = req.headers['client-id'];

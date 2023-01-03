@@ -759,14 +759,14 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
               let dialog = this.showAlertDialogWarming("คุณต้องการเลิกติดตาม " + data.recommed.displayName, "none");
               dialog.afterClosed().subscribe((res) => {
                 if (res) {
-                  Object.assign(this.dataRecommend[index], { follow: followUser.data.isFollow });
+                  Object.assign(this.dataRecommend[index], { isFollowed: followUser.data.isFollow });
                 } else {
-                  Object.assign(this.dataRecommend[index], { follow: true });
+                  Object.assign(this.dataRecommend[index], { isFollowed: true });
                 }
                 this.dialog.closeAll();
               });
             } else {
-              Object.assign(this.dataRecommend[index], { follow: followUser.data.isFollow });
+              Object.assign(this.dataRecommend[index], { isFollowed: followUser.data.isFollow });
             }
           }
         }
@@ -781,14 +781,14 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
               let dialog = this.showAlertDialogWarming("คุณต้องการเลิกติดตาม " + data.recommed.name, "none");
               dialog.afterClosed().subscribe((res) => {
                 if (res) {
-                  Object.assign(this.dataRecommend[index], { follow: followPage.data.isFollow });
+                  Object.assign(this.dataRecommend[index], { isFollowed: followPage.data.isFollow });
                 } else {
-                  Object.assign(this.dataRecommend[index], { follow: true });
+                  Object.assign(this.dataRecommend[index], { isFollowed: true });
                 }
                 this.dialog.closeAll();
               });
             } else {
-              Object.assign(this.dataRecommend[index], { follow: followPage.data.isFollow });
+              Object.assign(this.dataRecommend[index], { isFollowed: followPage.data.isFollow });
             }
           }
         }
@@ -860,7 +860,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         }
         this.resDataPage = res.data;
         if (this.resDataPage && this.resDataPage.name) {
-          this.name = this.resDataPage.name
+          this.name = this.resDataPage.name;
         } else if (this.resDataPage && this.resDataPage.pageUsername) {
           this.name = this.resDataPage.pageUsername
         } else if (this.resDataPage.displayName) {
@@ -1069,7 +1069,6 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     canCelEventEmitter.subscribe(() => {
       this.submitCanCelDialog.emit();
     });
-
     let dialog = this.showDialogWarming("คุณต้องการลบโพสต์นี้ ", "ยกเลิก", "ตกลง", confirmEventEmitter, canCelEventEmitter);
     dialog.afterClosed().subscribe((res) => {
       if (res) {
@@ -1078,6 +1077,24 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
           this.initPage(this.subPage);
         }).catch((err: any) => {
         })
+      }
+    });
+  }
+
+  public hidePost(post: any, index: number) {
+    const confirmEventEmitter = new EventEmitter<any>();
+    confirmEventEmitter.subscribe(() => {
+      this.submitDialog.emit();
+    });
+    const canCelEventEmitter = new EventEmitter<any>();
+    canCelEventEmitter.subscribe(() => {
+      this.submitCanCelDialog.emit();
+    });
+
+    let dialog = this.showDialogWarming("คุณต้องการซ่อนโพสต์นี้ใช่หรือไม่ ", "ยกเลิก", "ตกลง", confirmEventEmitter, canCelEventEmitter);
+    dialog.afterClosed().subscribe((res) => {
+      if (res) {
+        this.resPost.posts.splice(index, 1);
       }
     });
   }
@@ -1454,6 +1471,34 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     }).catch((err: any) => {
       console.log('err ', err)
     })
+  }
+
+  public blockUser() {
+    let dialog = this.dialog.open(DialogAlert, {
+      disableClose: true,
+      data: {
+        text: 'คุณต้องการบล็อกผู้ใช้นี้ใช่หรือไม่',
+      },
+    });
+    dialog.afterClosed().subscribe((res) => {
+      if (res) {
+        this.showAlertDialog('ระบบอยู่ในระหว่างการพัฒนา');
+      }
+    });
+  }
+
+  public reportUser() {
+    let dialog = this.dialog.open(DialogAlert, {
+      disableClose: true,
+      data: {
+        text: 'คุณต้องการรายงานผู้ใช้นี้ใช่หรือไม่',
+      },
+    });
+    dialog.afterClosed().subscribe((res) => {
+      if (res) {
+        this.showAlertDialog('ระบบอยู่ในระหว่างการพัฒนา');
+      }
+    });
   }
 
 }

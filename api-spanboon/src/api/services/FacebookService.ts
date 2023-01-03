@@ -17,9 +17,12 @@ import { User } from '../models/User';
 import { Asset } from '../models/Asset';
 import moment from 'moment';
 import axios from 'axios';
+
 @Service()
 export class FacebookService {
-    constructor(private authenIdService: AuthenticationIdService, private userService: UserService) { }
+    constructor(private authenIdService: AuthenticationIdService, private userService: UserService,
+
+) { }
 
     public createFB(): Facebook {
         const options = FB.options();
@@ -305,10 +308,9 @@ export class FacebookService {
             });
         });
     }
-
-    public publishMessage(fbUserId: string, accessToken: string, message: string, imageIds?: string[]): Promise<any> {
+    public publishMessage(fbPageId: string, accessToken: string, message: string, imageIds?: string[]): Promise<any> {
         return new Promise(async (resolve, reject) => {
-            if (fbUserId === undefined || fbUserId === null || fbUserId === '') {
+            if (fbPageId === undefined || fbPageId === null || fbPageId === '') {
                 reject('Facebook User id is required.');
                 return;
             }
@@ -321,7 +323,7 @@ export class FacebookService {
             if (message === undefined || message === null) {
                 message = '';
             }
-
+            
             const facebook = this.createFB();
             facebook.setAccessToken(accessToken);
 
@@ -337,20 +339,61 @@ export class FacebookService {
                 }
             }
             // xaxios.post('https://graph.facebook.com/'+ accessToken + '/feed');
-            this.publishPageId(fbUserId,accessToken).then((res)=>{
-                axios.post(`https://graph.facebook.com/${res.id}/feed?message=${encodeURI(message)}!&access_token=${res.access_token}`).then((resFacebook)=>{
-                    resolve(resFacebook.data);
-                });
+
+            this.publishPageId(fbPageId,accessToken).then((res)=>{
+                try{
+                    if(imageIds !== null && imageIds !== undefined && imageIds.length > 0 && imageIds.length === 1){
+                        axios.post(`https://graph.facebook.com/${res.id}/feed?message=${encodeURI(message)}&attached_media[0]={media_fbid:${imageIds[0]}}&access_token=${res.access_token}`).then((resFacebook)=>{
+                            resolve(resFacebook.data);
+                        });
+                    }else if(imageIds !== null && imageIds !== undefined && imageIds.length > 0 && imageIds.length === 2){
+                        axios.post(`https://graph.facebook.com/${res.id}/feed?message=${encodeURI(message)}&attached_media[0]={media_fbid:${imageIds[0]}}&attached_media[1]={media_fbid:${imageIds[1]}}&access_token=${res.access_token}`).then((resFacebook)=>{
+                            resolve(resFacebook.data);
+                        });
+                    }else if(imageIds !== null && imageIds !== undefined && imageIds.length > 0 && imageIds.length === 3){
+                        axios.post(`https://graph.facebook.com/${res.id}/feed?message=${encodeURI(message)}&attached_media[0]={media_fbid:${imageIds[0]}}&attached_media[1]={media_fbid:${imageIds[1]}}&attached_media[2]={media_fbid:${imageIds[2]}}&access_token=${res.access_token}`).then((resFacebook)=>{
+                            resolve(resFacebook.data);
+                        });
+                    }else if(imageIds !== null && imageIds !== undefined && imageIds.length > 0 && imageIds.length === 4){
+                        axios.post(`https://graph.facebook.com/${res.id}/feed?message=${encodeURI(message)}&attached_media[0]={media_fbid:${imageIds[0]}}&attached_media[1]={media_fbid:${imageIds[1]}}&attached_media[2]={media_fbid:${imageIds[2]}}&attached_media[3]={media_fbid:${imageIds[3]}}&access_token=${res.access_token}`).then((resFacebook)=>{
+                            resolve(resFacebook.data);
+                        });
+                    }else{
+                        axios.post(`https://graph.facebook.com/${res.id}/feed?message=${encodeURI(message)}!&access_token=${res.access_token}`).then((resFacebook)=>{
+                            resolve(resFacebook.data);
+                        });
+                    }
+                }catch(err){
+                    console.log('Error Feed Message',err);
+                }
             });
         });
     }
-
+    
     public async publishPageId(fbUserId:string,accessToken:string): Promise<any>{
         try{
             const {data} = await axios.get(`https://graph.facebook.com/${fbUserId}?fields=access_token&access_token=${accessToken}`);
             return data;
         }catch(err){
             // console.log('Error publishPageId :'+ err);
+        }
+    }
+
+    public async coverImagePage(fbUserId:string,accessToken:string): Promise<any>{
+        try{
+            const {data} = await axios.get(`https://graph.facebook.com/v14.0/${fbUserId}?fields=cover&access_token=${accessToken}`);
+            return data;
+        }catch(err){
+            console.log('Error CoverImagePage :'+ err);
+        }
+    }
+
+    public async subScribeWebhook(fbUserId:string,accessToken:string): Promise<any>{
+        try{
+            const {data} = await axios.post('https://graph.facebook.com/' + fbUserId + '/subscribed_apps?subscribed_fields=feed&access_token=' + accessToken);
+            return data;
+        }catch(err){
+            console.log('Error SubScribeWebhooks :'+ err);
         }
     }
     public publishPost(fbUserId: string, accessToken: string, message: string, assets?: Asset[]): Promise<any> {

@@ -219,6 +219,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     this.setTab();
     this.checkLoginAndRedirection();
     this.getRecommend();
+    this.openLoading();
     if (this.isLogin()) {
       this.getProfileImage();
     }
@@ -849,14 +850,14 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
               let dialog = this.showAlertDialogWarming("คุณต้องการเลิกติดตาม " + data.recommed.displayName, "none");
               dialog.afterClosed().subscribe((res) => {
                 if (res) {
-                  Object.assign(this.dataRecommend[index], { follow: followUser.data.isFollow });
+                  Object.assign(this.dataRecommend[index], { isFollowed: followUser.data.isFollow });
                 } else {
-                  Object.assign(this.dataRecommend[index], { follow: true });
+                  Object.assign(this.dataRecommend[index], { isFollowed: true });
                 }
                 this.dialog.closeAll();
               });
             } else {
-              Object.assign(this.dataRecommend[index], { follow: followUser.data.isFollow });
+              Object.assign(this.dataRecommend[index], { isFollowed: followUser.data.isFollow });
             }
           }
         }
@@ -871,14 +872,14 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
               let dialog = this.showAlertDialogWarming("คุณต้องการเลิกติดตาม " + data.recommed.name, "none");
               dialog.afterClosed().subscribe((res) => {
                 if (res) {
-                  Object.assign(this.dataRecommend[index], { follow: followPage.data.isFollow });
+                  Object.assign(this.dataRecommend[index], { isFollowed: followPage.data.isFollow });
                 } else {
-                  Object.assign(this.dataRecommend[index], { follow: true });
+                  Object.assign(this.dataRecommend[index], { isFollowed: true });
                 }
                 this.dialog.closeAll();
               });
             } else {
-              Object.assign(this.dataRecommend[index], { follow: followPage.data.isFollow });
+              Object.assign(this.dataRecommend[index], { isFollowed: followPage.data.isFollow });
             }
           }
         }
@@ -1024,7 +1025,8 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result !== undefined) {
+      if (result !== null && result !== undefined) {
+        this.resPost.posts[index] = result;
       }
       this.stopLoading();
     });
@@ -1167,5 +1169,48 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     }).catch((err: any) => {
       console.log('err ', err)
     })
+  }
+
+  public blockUser() {
+    let dialog = this.dialog.open(DialogAlert, {
+      disableClose: true,
+      data: {
+        text: 'คุณต้องการบล็อกผู้ใช้นี้ใช่หรือไม่',
+      },
+    });
+    dialog.afterClosed().subscribe((res) => {
+      if (res) {
+        // if(localStorage.getItem('blockUser') == null) {
+        //   localStorage.setItem('blockUser','[]');
+        // } 
+
+        // var add_data = JSON.parse(localStorage.getItem('blockUser'));
+        // add_data.push(this.resProfile.id);
+
+        // localStorage.setItem('blockUser', JSON.stringify(add_data));
+        // let show_blockUser = localStorage.getItem('blockUser');
+
+        // this.router.navigate(['home']);
+        this.showAlertDevelopDialog('ระบบอยู่ในระหว่างการพัฒนา');
+      }
+    });
+  }
+
+  public reportUser() {
+    let dialog = this.dialog.open(DialogAlert, {
+      disableClose: true,
+      data: {
+        text: 'คุณต้องการรายงานผู้ใช้นี้ใช่หรือไม่',
+      },
+    });
+    dialog.afterClosed().subscribe((res) => {
+      if (res) {
+        this.showAlertDevelopDialog('ระบบอยู่ในระหว่างการพัฒนา');
+      }
+    });
+  }
+
+  private openLoading() {
+    this.isLoading = true;
   }
 }

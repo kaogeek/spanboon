@@ -24,7 +24,7 @@ const REGISTERED_SUBJECT: string = 'authen.registered';
 // only page user can login
 @Injectable()
 export class AuthenManager {
-  
+
   public static readonly TOKEN_KEY: string = TOKEN_KEY;
   public static readonly TOKEN_MODE_KEY: string = TOKEN_MODE_KEY;
 
@@ -36,7 +36,7 @@ export class AuthenManager {
   protected twitterMode: boolean;
   protected googleMode: boolean;
   protected observManager: ObservableManager;
-  
+
   deviceInfo = null;
   isDesktopDevice: boolean;
   isTablet: boolean;
@@ -76,7 +76,7 @@ export class AuthenManager {
       };
 
       this.http.post(url, body, httpOptions).toPromise().then((response: any) => {
-
+        console.log('response.data.user',response.data.user);
         let result: any = {
           token: response.data.token,
           user: response.data.user
@@ -97,23 +97,25 @@ export class AuthenManager {
   }
 
 
-  public loginWithGoogle(idToken: string, authToken: string,tokenFCM_GG, mode?: string): Promise<any> {
+  public loginWithGoogle(idToken: string, authToken: string, mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/login';
+      const tokenFCM_GG = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
       let body: any = { 
         idToken, 
         authToken,
-        tokenFCM_GG
-       };
-      let headers = new HttpHeaders({ 
-        'Content-Type': 'application/json' 
+        tokenFCM_GG,
+        "deviceName": "Chrome",
+
+      };
+      let headers = new HttpHeaders({
+        'Content-Type': 'application/json'
       });
       if (mode !== undefined || mode !== "") {
         headers = headers.set('mode', mode);
       }
 
       let httpOptions = { headers };
-
       this.http.post(url, body, httpOptions).toPromise().then((response: any) => {
         let result: any = {
           token: response.data.token,
@@ -176,15 +178,15 @@ export class AuthenManager {
       });
     });
   }
-  public syncWithTwitter(twitter: PageSocialTW,mode?:string):Promise<any>{
-    return new Promise((resolve,reject) =>{
-      let url: string = this.baseURL + '/sync/fb';
+  public syncWithTwitter(twitter: PageSocialTW, mode?: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/page/sync/tw';
       let options = this.getDefaultOptions();
       let body: any = {
-        "twitterOauthToken":twitter.twitterOauthToken,
-        "twitterTokenSecret":twitter.twitterTokenSecret,
-        "twitterUserId":twitter.twitterUserId,
-        "twitterPageName":twitter.twitterPageName
+        "twitterOauthToken": twitter.twitterOauthToken,
+        "twitterTokenSecret": twitter.twitterTokenSecret,
+        "twitterUserId": twitter.twitterUserId,
+        "twitterPageName": twitter.twitterPageName
       }
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response);
@@ -193,15 +195,15 @@ export class AuthenManager {
       });
     })
   }
-  public syncWithFacebook(facebook: PageSoialFB,mode?: string): Promise<any> {
+  public syncWithFacebook(facebook: PageSoialFB, mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/page/sync/fb';
       let options = this.getDefaultOptions();
       let body: any = {
-        "facebookPageId":facebook.facebookPageId,
-        "facebookPageName":facebook.facebookPageName,
-        "pageAccessToken":facebook.pageAccessToken,
-        "facebookCategory":facebook.facebookCategory
+        "facebookPageId": facebook.facebookPageId,
+        "facebookPageName": facebook.facebookPageName,
+        "pageAccessToken": facebook.pageAccessToken,
+        "facebookCategory": facebook.facebookCategory
       }
 
       this.http.post(url, body, options).toPromise().then((response: any) => {
@@ -212,12 +214,30 @@ export class AuthenManager {
     });
   }
 
-  public loginWithFacebook(token: string,tokenFCM_FB:any,mode?: string): Promise<any> {
+  public userIsSyncPage(isSyncpage:boolean):Promise<any>{
+    return new Promise((resolve,reject) =>{
+      let url: string = this.baseURL + '/page/user/sync';
+      let options = this.getDefaultOptions();
+      let body: any ={
+        "isSyncpage":isSyncpage,
+      }
+
+      this.http.post(url,body,options).toPromise().then((response:any) =>{
+        resolve(response);
+      }).catch((error:any)=>{
+        reject(error);
+      })
+    })
+  }
+  public loginWithFacebook(token: string,mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/login';
+      const tokenFCM_FB = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
       let body: any = {
-        "token":token,
-        tokenFCM_FB
+        "token": token,
+        "tokenFCM":tokenFCM_FB,
+        "deviceName": "Chrome",
+
       };
       let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
       if (mode !== undefined || mode !== "") {
@@ -229,7 +249,6 @@ export class AuthenManager {
           token: response.data.token,
           user: response.data.user,
         };
-
         this.token = result.token;
         this.user = result.user;
         this.facebookMode = true;
@@ -241,7 +260,7 @@ export class AuthenManager {
 
         resolve(result);
       }).catch((error: any) => {
-        console.log('error',error);
+        console.log('error', error);
         reject(error);
       });
     });
@@ -321,7 +340,6 @@ export class AuthenManager {
 
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/register';
-
       this.http.post(url, registSocial, httpOptions).toPromise().then((response: any) => {
         if (response.data !== null && response.data !== undefined) {
           let result: any = {
@@ -378,7 +396,6 @@ export class AuthenManager {
       let httpOptions = {
         headers: headers
       };
-
       this.http.post(url, registEmail, httpOptions).toPromise().then((response: any) => {
         resolve(response);
       }).catch((error: any) => {
@@ -503,7 +520,7 @@ export class AuthenManager {
           fbMode = true;
           this.facebookMode = true;
         }
-        if(response.data.mode === 'GG'){
+        if (response.data.mode === 'GG') {
           ggMode = true;
           this.googleMode = true;
         }

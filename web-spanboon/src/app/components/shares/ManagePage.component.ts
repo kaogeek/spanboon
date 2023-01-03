@@ -15,8 +15,7 @@ import {
   HostListener,
 } from "@angular/core";
 import { PageUserInfo } from "../../services/PageUserInfo.service";
-import { FormControl } from "@angular/forms";
-import { MatDialog, MatDrawer, MatDrawerContainer } from "@angular/material";
+import { MatDialog, MatDrawer } from "@angular/material";
 import {
   PageFacade,
   AssetFacade,
@@ -24,7 +23,6 @@ import {
   ObservableManager,
   UserAccessFacade,
 } from "../../services/services";
-import { SearchFilter } from "../../models/models";
 import { AbstractPage } from "../pages/AbstractPage";
 import { Router, NavigationExtras } from "@angular/router";
 import { DialogCreatePage } from "./dialog/DialogCreatePage.component";
@@ -35,6 +33,7 @@ import { TwitterService } from "../../services/services";
 import { PageSocialTW } from "../../models/models";
 import { PageSoialFB } from "../../models/models";
 import { DialogListFacebook } from "./shares";
+import { DialogIsSyncPage } from "./shares";
 const SEARCH_LIMIT: number = 10;
 const SEARCH_OFFSET: number = 0;
 declare const window: any;
@@ -59,6 +58,7 @@ export class ManagePage extends AbstractPage implements OnInit {
   private assetFacade: AssetFacade;
   private userAccessFacade: UserAccessFacade;
   protected observManager: ObservableManager;
+  public userCloneDatas: any
   public dialog: MatDialog;
   public resListPage: any;
   public apiBaseURL = environment.apiBaseURL;
@@ -111,10 +111,24 @@ export class ManagePage extends AbstractPage implements OnInit {
   }
   public isLogin(): boolean {
     let user = this.authenManager.getCurrentUser();
+    /* setTimeout(() =>{
+      if(user.isSyncPage !== false && user.isSyncPage !== true){
+        let dialog = this.dialog.open(DialogIsSyncPage, {
+          disableClose: true,
+          data: {
+            title:"สร้างเพจของคุณโดยการเชื่อมแพลตฟอร์ม",
+            bottomText2: MESSAGE.TEXT_BUTTON_SKIP,
+            bottomColorText2: "black",
+            btDisplay1: "none",
+          },
+        }); 
+      }
+    },5000); */
     return user !== undefined && user !== null;
   }
 
   public ngOnInit(): void {
+    // this.isLogin();
     this.searchAllPage();
   }
 
@@ -140,8 +154,6 @@ export class ManagePage extends AbstractPage implements OnInit {
     return page && page.length > 0;
   }
   public clickSyncTw(text: string, bind?: boolean) {
-    this.isPreLoadIng = true;
-    this.isLoadingTwitter = true;
     let callback = environment.webBaseURL + "/callback";
     this.twitterService
       .requestToken(callback)
@@ -149,20 +161,23 @@ export class ManagePage extends AbstractPage implements OnInit {
         this.authorizeLink += "?" + result;
         window.open(this.authorizeLink, "_blank");
         // this.popup(this.authorizeLink, '', 600, 200, 'yes');
-        this.isPreLoadIng = false;
 
         window.bindTwitter = (resultTwitter) => {
+          this.openLoading();
           if (resultTwitter !== undefined && resultTwitter !== null) {
             const twitter = new PageSocialTW();
             twitter.twitterOauthToken = resultTwitter.token;
             twitter.twitterTokenSecret = resultTwitter.token_secret;
             twitter.twitterUserId = resultTwitter.userId;
             twitter.twitterPageName = resultTwitter.name;
-
             this.authenManager
               .syncWithTwitter(twitter)
               .then((res: any) => {
+                setTimeout(() => {
+                  this.closeLoading();
+                }, 1000);
                 if (res.data) {
+                  this.observManager.publish("authen.check", null);
                   this.connectTwitter = res.data;
                   this.isLoadingTwitter = false;
                   let check = {
@@ -172,16 +187,16 @@ export class ManagePage extends AbstractPage implements OnInit {
               })
               .catch((err: any) => {
                 const statusMsg = err.error.message;
-                if (statusMsg === "Unable create Page") {
-                    let dialog = this.dialog.open(DialogAlert, {
-                        disableClose: true,
-                        data: {
-                          text: "คุณมีเพจอยู่แล้ว",
-                          bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-                          bottomColorText2: "black",
-                          btDisplay1: "none",
-                        },
-                    });
+                if (statusMsg === "Unable create Page" && statusMsg === 400) {
+                  let dialog = this.dialog.open(DialogAlert, {
+                    disableClose: true,
+                    data: {
+                      text: "คุณมีเพจอยู่แล้ว",
+                      bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+                      bottomColorText2: "black",
+                      btDisplay1: "none",
+                    },
+                  });
                 }
                 if (
                   err.error.message ===
@@ -269,44 +284,47 @@ export class ManagePage extends AbstractPage implements OnInit {
     dialog.afterClosed().subscribe((res) => {
       if (res) {
         this.checkBoxBindingPageFacebook(res);
+        this.openLoading();
       }
     });
   }
   private checkBoxBindingPageFacebook(access: any) {
-    console.log('access_token_facebook',access);
     const facebook = new PageSoialFB();
     facebook.facebookPageId = access.id;
     facebook.pageAccessToken = access.access_token;
     facebook.facebookPageName = access.name;
-    facebook.facebookCategory = access.category;
     let mode = "FACEBOOK";
 
     this.authenManager
-      .syncWithFacebook(facebook, mode)
-      .then((data: any) => {
-        // login success redirect to main page
-        if (data) {
-          this.observManager.publish("authen.check", null);
-          this.showAlertDialog("บัญชีนี้ได้ทำการเชื่อมต่อ Facebook สำเร็จ");
-          if (this.redirection) {
-            this.router.navigateByUrl(this.redirection);
-          } else {
-            this.router.navigate(["home"]);
-          }
+    .syncWithFacebook(facebook, mode)
+    .then((data: any) => {
+      // login success redirect to main page
+      if (data) {
+        setTimeout(() => {
+          this.closeLoading();
+        }, 1000);
+        this.observManager.publish("authen.check", null);
+        this.showAlertDialog("บัญชีนี้ได้ทำการเชื่อมต่อ Facebook สำเร็จ");
+        if (this.redirection) {
+          this.router.navigateByUrl(this.redirection);
+        } else {
+          this.router.navigate(["home"]);
         }
-      })
+      }
+    })
       .catch((err) => {
         const statusMsg = err.error.message;
-        if (statusMsg === "Unable create Page") {
-            let dialog = this.dialog.open(DialogAlert, {
-                disableClose: true,
-                data: {
-                  text: "คุณมีเพจอยู่แล้ว",
-                  bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-                  bottomColorText2: "black",
-                  btDisplay1: "none",
-                },
-            });
+        this.closeLoading();
+        if (statusMsg === "Unable create Page" && statusMsg === 400) {
+          let dialog = this.dialog.open(DialogAlert, {
+            disableClose: true,
+            data: {
+              text: "คุณมีเพจอยู่แล้ว",
+              bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+              bottomColorText2: "black",
+              btDisplay1: "none",
+            },
+          });
         }
         if (statusMsg === "User was not found.") {
           let navigationExtras: NavigationExtras = {
@@ -330,12 +348,19 @@ export class ManagePage extends AbstractPage implements OnInit {
         }
       });
   }
+    private openLoading() {
+    this.isLoading = true;
+  }
+
+  private closeLoading() {
+    this.isLoading = false;
+  }
   public createPage() {
     this.hideScroll();
     const dialogRef = this.dialog.open(DialogCreatePage, {
       autoFocus: false,
     });
-    dialogRef.afterClosed().subscribe((res) => {});
+    dialogRef.afterClosed().subscribe((res) => { });
   }
 
   public clickSystemDevelopment(): void {
@@ -348,7 +373,7 @@ export class ManagePage extends AbstractPage implements OnInit {
         btDisplay1: "none",
       },
     });
-    dialog.afterClosed().subscribe((res) => {});
+    dialog.afterClosed().subscribe((res) => { });
   }
 
   public clickMenu() {
@@ -442,9 +467,9 @@ export class ManagePage extends AbstractPage implements OnInit {
   @HostListener("window:scroll", ["$event"]) // for window scroll events
   public onScrollCreatePage(event) {
     if (event.srcElement.scrollTop > 1) {
-        this.isScrollingCreatePage = true;
+      this.isScrollingCreatePage = true;
     } else {
-        this.isScrollingCreatePage = false;
+      this.isScrollingCreatePage = false;
     }
   }
 }
