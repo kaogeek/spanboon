@@ -442,12 +442,8 @@ export class PageController {
         const query = { _id: userId };
         const newValue = { $set: { isSyncPage: true } };
         let assetCover: any;
-        console.log('socialBinding.facebookPageId', socialBinding.facebookPageId);
-        console.log('socialBinding.pageAccessToken', socialBinding.pageAccessToken);
         const { request } = await axios.get('https://graph.facebook.com/v14.0/' + socialBinding.facebookPageId + '/picture?type=large');
-        console.log('request_pic', request);
         const { data } = await axios.get('https://graph.facebook.com/v14.0/' + socialBinding.facebookPageId + '?fields=cover&access_token=' + socialBinding.pageAccessToken);
-        console.log('data_pic', data);
         const ipAddress = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress).split(',')[0];
         const clientId = req.headers['client-id'];
         let createCate = undefined;
@@ -1036,7 +1032,7 @@ export class PageController {
             idStmt = { $or: [{ _id: pageObjId }, { pageUsername: id }] };
         }
 
-        const page: any = this.pageService.findOne(idStmt);
+        const page: any = await this.pageService.findOne(idStmt);
 
         if (page) {
             const userObjId = req.user.id;
@@ -1097,41 +1093,37 @@ export class PageController {
     @Get('/:id/access')
     @Authorized('user')
     public async getUserPageAccess(@Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
-        const userId = req.user.id;
         let pageObjId: ObjectID;
         const result: PageAccessLevelResponse[] = [];
         let idStmt: any;
-        const whereConditions: any = { user: new ObjectID(userId) };
 
         try {
             pageObjId = new ObjectID(id);
             idStmt = { where: { _id: pageObjId } };
-            whereConditions['pageId'] = pageObjId;
         } catch (ex) {
             idStmt = { where: { pageUsername: id } };
-            whereConditions['pageUsername'] = id;
         } finally {
             if (pageObjId === undefined || pageObjId === 'undefined') {
                 pageObjId = null;
             }
 
             idStmt = { $or: [{ _id: pageObjId }, { pageUsername: id }] };
-
-            whereConditions['$or'] = [{ _id: pageObjId }, { pageUsername: id }];
         }
 
         const page: any = await this.pageService.findOne(idStmt);
 
-        if (page !== null && page !== undefined) {
+        if (page) {
+            const userObjId = req.user.id;
+
             let canSeeList = false;
 
             // only owner & admin & editor & moderator can do this action
-            if (page.ownerUser.equals(userId)) {
+            if (page.ownerUser.equals(userObjId)) {
                 canSeeList = true;
             }
 
             const searchFilter = new SearchFilter();
-            searchFilter.whereConditions = whereConditions;
+            searchFilter.whereConditions = { user: new ObjectID(userObjId), page: new ObjectID(page.id) };
             const userPageAccessResult: any[] = await this.pageAccessLevelService.search(searchFilter);
             if (userPageAccessResult.length >= 1) {
                 if (userPageAccessResult[0].level === PAGE_ACCESS_LEVEL.ADMIN ||
@@ -1156,7 +1148,7 @@ export class PageController {
             // }
 
             const accSearchFilter = new SearchFilter();
-            accSearchFilter.whereConditions = { page: new ObjectID(page.id) };
+            accSearchFilter.whereConditions = { page: new ObjectID(id) };
             const pageAccessResult: any[] = await this.pageAccessLevelService.search(accSearchFilter);
 
             for (const pg of pageAccessResult) {
@@ -1274,9 +1266,9 @@ export class PageController {
             idStmt = { $or: [{ _id: pageObjId }, { pageUsername: id }] };
         }
 
-        const page: any = this.pageService.findOne(idStmt);
+        const page: any = await this.pageService.findOne(idStmt);
 
-        if (page !== null && page !== undefined) {
+        if (page) {
             const userObjId = req.user.id;
             let canDoAction = false;
 
@@ -1468,9 +1460,9 @@ export class PageController {
             idStmt = { $or: [{ _id: pageObjId }, { pageUsername: id }] };
         }
 
-        const page: any = this.pageService.findOne(idStmt);
+        const page: any = await this.pageService.findOne(idStmt);
 
-        if (page !== null && page !== undefined) {
+        if (page) {
             const userObjId = req.user.id;
             let canDoAction = false;
 
@@ -1561,9 +1553,9 @@ export class PageController {
             idStmt = { $or: [{ _id: pageObjId }, { pageUsername: id }] };
         }
 
-        const page: any = this.pageService.findOne(idStmt);
+        const page: any = await this.pageService.findOne(idStmt);
 
-        if (page !== null && page !== undefined) {
+        if (page) {
             const userObjId = req.user.id;
             let canDoAction = false;
 
@@ -1712,9 +1704,9 @@ export class PageController {
             idStmt = { $or: [{ _id: pageObjId }, { pageUsername: id }] };
         }
 
-        const page: any = this.pageService.findOne(idStmt);
+        const page: any = await this.pageService.findOne(idStmt);
 
-        if (page !== null && page !== undefined) {
+        if (page) {
             const userObjId = req.user.id;
             let canDoAction = false;
 
@@ -1765,7 +1757,7 @@ export class PageController {
                 }
             }
 
-            const editUserAccessLV = await this.pageAccessLevelService.findOne({ _id: new ObjectID(accessid), page: new ObjectID(page.id) });
+            const editUserAccessLV = await this.pageAccessLevelService.findOne({ _id: new ObjectID(accessid), page: new ObjectID(id) });
 
             if (editUserAccessLV) {
                 // edit if exist

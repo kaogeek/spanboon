@@ -1144,7 +1144,7 @@ export class GuestController {
                     if (await User.comparePassword(data, loginPassword)) {
                         const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', user, modeAuthen);
                         return res.status(200).send(successResponse);
-                    }else{
+                    } else {
                         const errorResponse = ResponseUtil.getErrorResponse('Invalid Password', undefined);
                         return res.status(400).send(errorResponse);
                     }
@@ -1213,7 +1213,7 @@ export class GuestController {
                             return res.status(400).send(errorUserNameResponse);
                         }
                     }
-                }else{
+                } else {
                     const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
                     return res.status(400).send(errorUserNameResponse);
                 }
@@ -1240,7 +1240,7 @@ export class GuestController {
                 user.isAdmin = userFb[0].isAdmin;
                 user.isSubAdmin = userFb[0].isSubAdmin;
                 user.banned = userFb[0].banned;
-                const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', user, stackAuth,pic);
+                const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', user, stackAuth, pic);
                 return res.status(200).send(successResponse);
             } else if (userFb && authenticaTionFB !== undefined) {
 
@@ -1410,7 +1410,7 @@ export class GuestController {
                 stackAuth.push(authens.providerName);
             }
             if (userGG && authenGG === undefined) {
-                const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', user, stackAuth,pic);
+                const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', user, stackAuth, pic);
                 return res.status(200).send(successResponse);
             } else if (userGG !== undefined && authenGG !== undefined) {
 
@@ -1582,113 +1582,122 @@ export class GuestController {
         const mode = req.headers.mode;
         const emailRes: string = username.toLowerCase();
         const user: User = await this.userService.findOne({ username: emailRes });
-        const getCache = await cache.get(user.id.toString());
+        const getCache = cache.get(user.id.toString());
         const userExrTime = await this.getUserLoginExpireTime();
         let loginUser: any;
-        if (user && mode === PROVIDER.EMAIL) {
-            if (otp === getCache[0].otpGet) {
-                const token = jwt.sign({ id: user.id }, env.SECRET_KEY);
-                const authenId = new AuthenticationId();
-                authenId.user = user.id;
-                authenId.lastAuthenTime = moment().toDate();
-                authenId.providerUserId = user.id;
-                authenId.providerName = PROVIDER.EMAIL;
-                authenId.storedCredentials = token;
-                authenId.expirationDate = moment().add(userExrTime, 'days').toDate();
-                const authIdCreate = await this.authenticationIdService.create(authenId);
-                if (authIdCreate) {
 
-                    cache.del(user.id.toString());
-                    const successResponse = ResponseUtil.getSuccessResponseAuth('Loggedin successful', user.id, mode);
-                    return res.status(200).send(successResponse);
+        console.log('getCache >>> ', getCache);
+
+        if (getCache !== null && getCache !== undefined) {
+            if (user && mode === PROVIDER.EMAIL) {
+                if (otp === getCache[0].otpGet) {
+                    const token = jwt.sign({ id: user.id }, env.SECRET_KEY);
+                    const authenId = new AuthenticationId();
+                    authenId.user = user.id;
+                    authenId.lastAuthenTime = moment().toDate();
+                    authenId.providerUserId = user.id;
+                    authenId.providerName = PROVIDER.EMAIL;
+                    authenId.storedCredentials = token;
+                    authenId.expirationDate = moment().add(userExrTime, 'days').toDate();
+                    const authIdCreate = await this.authenticationIdService.create(authenId);
+                    if (authIdCreate) {
+                        cache.del(user.id.toString());
+                        const successResponse = ResponseUtil.getSuccessResponseAuth('Loggedin successful', user.id, mode);
+                        return res.status(200).send(successResponse);
+                    }
+                } else {
+                    const errorResponse = ResponseUtil.getErrorResponse('The OTP is not correct.', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+            } else if (user && mode === PROVIDER.FACEBOOK) {
+                if (otp === getCache[0].otpGet) {
+                    const properties = { fbAccessExpTime: otpRequest.facebook.fbexptime, fbSigned: otpRequest.facebook.fbsignedRequest };
+                    const userFB = await this.userService.findOne({ email: otpRequest.email });
+                    const authenId = new AuthenticationId();
+                    authenId.user = userFB.id;
+                    authenId.lastAuthenTime = moment().toDate();
+                    authenId.providerUserId = otpRequest.facebook.fbid;
+                    authenId.providerName = PROVIDER.FACEBOOK;
+                    authenId.storedCredentials = otpRequest.facebook.fbtoken;
+                    authenId.properties = properties;
+                    authenId.expirationDate = moment().add(userExrTime, 'days').toDate();
+                    const authIdCreate = await this.authenticationIdService.create(authenId);
+                    if (authIdCreate) {
+                        loginUser = await this.userService.findOne({ where: { _id: authIdCreate.user } });
+                        cache.del(user.id.toString());
+                        if (loginUser === undefined) {
+                            const errorResponse: any = { status: 0, message: 'Cannot login please try again.' };
+                            return res.status(400).send(errorResponse);
+                        }
+
+                        if (loginUser.banned === true) {
+                            const errorResponse = ResponseUtil.getErrorResponse('User Banned', undefined);
+                            return res.status(400).send(errorResponse);
+                        }
+
+                        const userFollowings = await this.userFollowService.find({ where: { userId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
+                        const userFollowers = await this.userFollowService.find({ where: { subjectId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
+
+                        loginUser = await this.userService.cleanUserField(loginUser);
+                        loginUser.followings = userFollowings.length;
+                        loginUser.followers = userFollowers.length;
+
+                        const successResponse = ResponseUtil.getSuccessResponseAuth('Loggedin successful', otpRequest.facebook.fbtoken, PROVIDER.FACEBOOK);
+                        return res.status(200).send(successResponse);
+
+                    }
+
+                } else {
+                    const errorResponse = ResponseUtil.getErrorResponse('The OTP is not correct.', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+            } else if (user && mode === PROVIDER.GOOGLE) {
+                if (otp === getCache[0].otpGet) {
+                    const modHeaders = req.headers.mod_headers;
+                    const checkIdToken = await this.googleService.verifyIdToken(otpRequest.idToken, modHeaders);
+                    const authenId = new AuthenticationId();
+                    authenId.user = user.id;
+                    authenId.lastAuthenTime = moment().toDate();
+                    authenId.providerUserId = checkIdToken.userId;
+                    authenId.providerName = PROVIDER.GOOGLE;
+                    authenId.storedCredentials = otpRequest.authToken;
+                    authenId.properties = { userId: checkIdToken.userId, token: otpRequest.idToken, expiraToken: checkIdToken.expire };
+                    authenId.expirationDate = moment().add(userExrTime, 'days').toDate();
+                    const authIdCreate = await this.authenticationIdService.create(authenId);
+                    if (authIdCreate) {
+                        loginUser = await this.userService.findOne({ where: { _id: authIdCreate.user } });
+                        cache.del(user.id.toString());
+                        if (loginUser === undefined) {
+                            const errorResponse: any = { status: 0, message: 'Cannot login please try again.' };
+                            return res.status(400).send(errorResponse);
+                        }
+
+                        if (loginUser.banned === true) {
+                            const errorResponse = ResponseUtil.getErrorResponse('User Banned', undefined);
+                            return res.status(400).send(errorResponse);
+                        }
+
+                        const userFollowings = await this.userFollowService.find({ where: { userId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
+                        const userFollowers = await this.userFollowService.find({ where: { subjectId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
+
+                        loginUser = await this.userService.cleanUserField(loginUser);
+                        loginUser.followings = userFollowings.length;
+                        loginUser.followers = userFollowers.length;
+
+                        const successResponse = ResponseUtil.getSuccessResponseAuth('Loggedin successful', otpRequest.idToken, PROVIDER.GOOGLE);
+                        return res.status(200).send(successResponse);
+                    }
+                } else {
+                    const errorResponse = ResponseUtil.getErrorResponse('The OTP is not correct.', undefined);
+                    return res.status(400).send(errorResponse);
                 }
             } else {
-                const errorResponse = ResponseUtil.getErrorResponse('The OTP is not correct.', undefined);
-                return res.status(400).send(errorResponse);
+                const errorResponse = ResponseUtil.getErrorResponse('Request Invalid', undefined);
+                return res.status(404).send(errorResponse);
             }
-
-        } else if (user && mode === PROVIDER.FACEBOOK) {
-            if (otp === getCache[0].otpGet) {
-                const properties = { fbAccessExpTime: otpRequest.facebook.fbexptime, fbSigned: otpRequest.facebook.fbsignedRequest };
-                const userFB = await this.userService.findOne({ email: otpRequest.email });
-                const authenId = new AuthenticationId();
-                authenId.user = userFB.id;
-                authenId.lastAuthenTime = moment().toDate();
-                authenId.providerUserId = otpRequest.facebook.fbid;
-                authenId.providerName = PROVIDER.FACEBOOK;
-                authenId.storedCredentials = otpRequest.facebook.fbtoken;
-                authenId.properties = properties;
-                authenId.expirationDate = moment().add(userExrTime, 'days').toDate();
-                const authIdCreate = await this.authenticationIdService.create(authenId);
-                if (authIdCreate) {
-                    loginUser = await this.userService.findOne({ where: { _id: authIdCreate.user } });
-                    cache.del(user.id.toString());
-                    if (loginUser === undefined) {
-                        const errorResponse: any = { status: 0, message: 'Cannot login please try again.' };
-                        return res.status(400).send(errorResponse);
-                    }
-
-                    if (loginUser.banned === true) {
-                        const errorResponse = ResponseUtil.getErrorResponse('User Banned', undefined);
-                        return res.status(400).send(errorResponse);
-                    }
-
-                    const userFollowings = await this.userFollowService.find({ where: { userId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
-                    const userFollowers = await this.userFollowService.find({ where: { subjectId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
-
-                    loginUser = await this.userService.cleanUserField(loginUser);
-                    loginUser.followings = userFollowings.length;
-                    loginUser.followers = userFollowers.length;
-
-                    const successResponse = ResponseUtil.getSuccessResponseAuth('Loggedin successful', otpRequest.facebook.fbtoken, PROVIDER.FACEBOOK);
-                    return res.status(200).send(successResponse);
-
-                }
-
-            } else {
-                const errorResponse = ResponseUtil.getErrorResponse('The OTP is not correct.', undefined);
-                return res.status(400).send(errorResponse);
-            }
-        } else if (user && mode === PROVIDER.GOOGLE) {
-            if (otp === getCache[0].otpGet) {
-                const modHeaders = req.headers.mod_headers;
-                const checkIdToken = await this.googleService.verifyIdToken(otpRequest.idToken, modHeaders);
-                const authenId = new AuthenticationId();
-                authenId.user = user.id;
-                authenId.lastAuthenTime = moment().toDate();
-                authenId.providerUserId = checkIdToken.userId;
-                authenId.providerName = PROVIDER.GOOGLE;
-                authenId.storedCredentials = otpRequest.authToken;
-                authenId.properties = { userId: checkIdToken.userId, token: otpRequest.idToken, expiraToken: checkIdToken.expire };
-                authenId.expirationDate = moment().add(userExrTime, 'days').toDate();
-                const authIdCreate = await this.authenticationIdService.create(authenId);
-                if (authIdCreate) {
-                    loginUser = await this.userService.findOne({ where: { _id: authIdCreate.user } });
-                    cache.del(user.id.toString());
-                    if (loginUser === undefined) {
-                        const errorResponse: any = { status: 0, message: 'Cannot login please try again.' };
-                        return res.status(400).send(errorResponse);
-                    }
-
-                    if (loginUser.banned === true) {
-                        const errorResponse = ResponseUtil.getErrorResponse('User Banned', undefined);
-                        return res.status(400).send(errorResponse);
-                    }
-
-                    const userFollowings = await this.userFollowService.find({ where: { userId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
-                    const userFollowers = await this.userFollowService.find({ where: { subjectId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
-
-                    loginUser = await this.userService.cleanUserField(loginUser);
-                    loginUser.followings = userFollowings.length;
-                    loginUser.followers = userFollowers.length;
-
-                    const successResponse = ResponseUtil.getSuccessResponseAuth('Loggedin successful', otpRequest.idToken, PROVIDER.GOOGLE);
-                    return res.status(200).send(successResponse);
-                }
-            } else {
-                const errorResponse = ResponseUtil.getErrorResponse('The OTP is not correct.', undefined);
-                return res.status(400).send(errorResponse);
-            }
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot Get OTP Please Try again.', undefined);
+            return res.status(400).send(errorResponse);
         }
     }
     // autoSyncPage
@@ -1864,7 +1873,7 @@ export class GuestController {
                     return response.status(400).send(errorUserNameResponse);
                 }
                 const fbUser = await this.facebookService.getFacebookUserFromToken(decryptToken.token);
-                const findUser = await this.userService.findOne({_id:ObjectID(fbUser.user.id)});
+                const findUser = await this.userService.findOne({ _id: ObjectID(fbUser.user.id) });
                 user = findUser;
             } catch (ex: any) {
                 const errorResponse: any = { status: 0, message: ex.message };
@@ -1925,7 +1934,7 @@ export class GuestController {
                 return response.status(400).send(errorUserNameResponse);
             }
             const expiresAt = authenId.expirationDate;
-            if (expiresAt !== undefined && expiresAt !== null &&  expiresAt.getTime() <= today.getTime()) {
+            if (expiresAt !== undefined && expiresAt !== null && expiresAt.getTime() <= today.getTime()) {
                 const errorUserNameResponse: any = { status: 0, message: 'User token expired.' };
                 await this.deviceToken.delete({ userId: user });
                 return response.status(400).send(errorUserNameResponse);

@@ -25,13 +25,16 @@ import { SocialPost } from '../models/SocialPost';
 import { TwitterUtils } from '../../utils/TwitterUtils';
 import { FacebookUtils } from '../../utils/FacebookUtils';
 import { Asset } from '../models/Asset';
+import { AuthenticationIdService } from './AuthenticationIdService';
 
 @Service()
 export class PageSocialAccountService {
 
     constructor(@OrmRepository() private pageSocialAccountRepository: PageSocialAccountRepository,
         private twitterService: TwitterService, private facebookService: FacebookService, private socialPostService: SocialPostService,
-        private postsService: PostsService, private postsGalleryService: PostsGalleryService, private assetService: AssetService) { }
+        private postsService: PostsService, private postsGalleryService: PostsGalleryService, private assetService: AssetService,
+        private authenticationIdService:AuthenticationIdService
+        ) { }
 
     // find PageSocialAccount
     public find(findCondition: any): Promise<PageSocialAccount[]> {
@@ -252,26 +255,51 @@ export class PageSocialAccountService {
         return await this.pageSocialAccountRepository.findOne({ page: new ObjectID(pageId), providerName: PROVIDER.FACEBOOK });
     }
 
-    public async pagePostMessageToFacebook(pageId: string, message: string, assets?: Asset[]): Promise<any> {
+    public async pagePostMessageToFacebook(pageId: string, message: string, assets?: Asset[],userId?:any,mode?:any): Promise<any> {
         const facebookAccount = await this.getFacebookPageAccount(pageId);
-
-        if (facebookAccount !== undefined) {
-            const fbUserId = facebookAccount.providerPageId;
-            const accessToken = facebookAccount.storedCredentials;
-
-            try {
-                const result = await this.facebookService.publishPost(fbUserId, accessToken, message, assets);
-
-                return result;
-            } catch (error) {
-                console.log(error);
-            }
+        let modeHeader = undefined;
+        let debugToken = undefined;
+        if(mode === 'FB'){
+            modeHeader = PROVIDER.FACEBOOK;
+        }
+        const appAccessToken = await this.facebookService.appAccessToken();
+        if(appAccessToken){
+            debugToken = await this.facebookService.expireToken(facebookAccount.storedCredentials,appAccessToken.access_token);
         }
 
+        if(debugToken.expires_at < debugToken.data_access_expires_at){
+            if (facebookAccount !== undefined) {
+                const fbUserId = facebookAccount.providerPageId;
+                const accessToken = facebookAccount.storedCredentials;
+
+                try {
+                    const result = await this.facebookService.publishPost(fbUserId, accessToken, message, assets);
+
+                    return result;
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+        }else{
+            // get refresh token 
+            const authen = await this.authenticationIdService.findOne({user:userId,providerName:modeHeader});
+            if (facebookAccount !== undefined) {
+                const fbUserId = facebookAccount.providerPageId;
+                const accessToken = authen.storedCredentials;
+
+                try {
+                    const result = await this.facebookService.publishPost(fbUserId, accessToken, message, assets);
+
+                    return result;
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+        }
         return undefined;
     }
 
-    public async pagePostToFacebook(postId: string, postByPageId?: string): Promise<boolean> {
+    public async pagePostToFacebook(postId: string, postByPageId?: string,userId?:any,mode?:any): Promise<boolean> {
         if (postId === undefined || postId === null || postId === '') {
             return false;
         }
@@ -324,8 +352,7 @@ export class PageSocialAccountService {
         const messageForFB = FacebookUtils.generateFacebookText(posts.title, posts.detail, postLink, undefined, posts.emergencyEventTag, posts.objectiveTag);
 
         try {
-            const facebookPost = await this.pagePostMessageToFacebook(postByPageId, messageForFB, assets);
-
+            const facebookPost = await this.pagePostMessageToFacebook(postByPageId, messageForFB, assets,userId,mode);
             // create social post log
             if (facebookPost !== undefined && facebookPost.error === undefined) {
                 const socialPost = new SocialPost();
