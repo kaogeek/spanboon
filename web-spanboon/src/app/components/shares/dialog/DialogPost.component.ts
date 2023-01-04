@@ -208,7 +208,9 @@ export class DialogPost extends AbstractPage {
               this.showAlertDialogWarming(alertMessages, "none");
               this.observManager.publish(REFRESH_DATA, data.type);
               this.boxPost.clearDataAll();
-              this.dialogRef.close();
+              delete res.data.id;
+              res.data._id = this.data._id;
+              this.dialogRef.close(res.data);
             }
           }
         }).catch((err: any) => {
@@ -225,7 +227,7 @@ export class DialogPost extends AbstractPage {
       }
     } else {
       if (data.title) {
-        let pageId = data.id;
+        let pageId = this.data.pageId;
         this.isPostLoading = true;
         this.pageFacade.createPost(pageId, data).then((res) => {
           let alertMessages: string;
@@ -239,11 +241,11 @@ export class DialogPost extends AbstractPage {
                 }
                 this.showAlertDialogWarming(alertMessages, "none");
               }
+              this.dialogRef.close(res.data);
               this.postFacade.nextMessageTopic('');
               this.postFacade.nextMessage('');
               this.boxPost.clearDataAll();
               this.observManager.publish(REFRESH_DATA, data.type);
-              this.dialogRef.close();
             }
           }
         }).catch((err: any) => {
