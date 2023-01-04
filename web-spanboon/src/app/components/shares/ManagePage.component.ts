@@ -296,22 +296,22 @@ export class ManagePage extends AbstractPage implements OnInit {
     let mode = "FACEBOOK";
 
     this.authenManager
-    .syncWithFacebook(facebook, mode)
-    .then((data: any) => {
-      // login success redirect to main page
-      if (data) {
-        setTimeout(() => {
-          this.closeLoading();
-        }, 1000);
-        this.observManager.publish("authen.check", null);
-        this.showAlertDialog("บัญชีนี้ได้ทำการเชื่อมต่อ Facebook สำเร็จ");
-        if (this.redirection) {
-          this.router.navigateByUrl(this.redirection);
-        } else {
-          this.router.navigate(["home"]);
+      .syncWithFacebook(facebook, mode)
+      .then((data: any) => {
+        // login success redirect to main page
+        if (data) {
+          setTimeout(() => {
+            this.closeLoading();
+          }, 1000);
+          this.observManager.publish("authen.check", null);
+          this.showAlertDialog("บัญชีนี้ได้ทำการเชื่อมต่อ Facebook สำเร็จ");
+          if (this.redirection) {
+            this.router.navigateByUrl(this.redirection);
+          } else {
+            this.router.navigate(["home"]);
+          }
         }
-      }
-    })
+      })
       .catch((err) => {
         const statusMsg = err.error.message;
         if (statusMsg === "Unable create Page" && statusMsg === 400) {
@@ -347,7 +347,7 @@ export class ManagePage extends AbstractPage implements OnInit {
         }
       });
   }
-    private openLoading() {
+  private openLoading() {
     this.isLoading = true;
   }
 
@@ -449,6 +449,7 @@ export class ManagePage extends AbstractPage implements OnInit {
   }
 
   public clickSetting(item: any) {
+    console.log("qwerqwrqwrqw", item);
     document.body.style.overflowY = "auto";
     if (
       item.page.pageUsername &&

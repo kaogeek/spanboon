@@ -50,7 +50,38 @@ export class AuthenManager {
     this.googleMode = false;
     // create obsvr subject
     this.observManager.createSubject(REGISTERED_SUBJECT);
+  }
 
+  myBrowser() {
+    if ((navigator.userAgent.indexOf("Opera") || navigator.userAgent.indexOf('OPR')) != -1) {
+      return 'Opera';
+    } else if (navigator.userAgent.indexOf("Chrome") != -1) {
+      return 'Chrome';
+    } else if (navigator.userAgent.indexOf("Safari") != -1) {
+      return 'Safari';
+    } else if (navigator.userAgent.indexOf("Firefox") != -1) {
+      return 'Firefox';
+    } else if ((navigator.userAgent.indexOf("MSIE") != -1) || (!!document.DOCUMENT_NODE == true)) {
+      return 'IE';
+    } else {
+      return 'unknown';
+    }
+  }
+
+  public getBrowserVersion() {
+    var userAgent = navigator.userAgent, tem,
+      matchTest = userAgent.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
+    if (/trident/i.test(matchTest[1])) {
+      tem = /\brv[ :]+(\d+)/g.exec(userAgent) || [];
+      return 'IE ' + (tem[1] || '');
+    }
+    if (matchTest[1] === 'Chrome') {
+      tem = userAgent.match(/\b(OPR|Edge)\/(\d+)/);
+      if (tem != null) return tem.slice(1).join(' ').replace('OPR', 'Opera');
+    }
+    matchTest = matchTest[2] ? [matchTest[1], matchTest[2]] : [navigator.appName, navigator.appVersion, '-?'];
+    if ((tem = userAgent.match(/version\/(\d+)/i)) != null) matchTest.splice(1, 1, tem[1]);
+    return matchTest.join(' ');
   }
 
   public login(username: string, password: string, mode?: string): Promise<any> {
@@ -58,10 +89,10 @@ export class AuthenManager {
       let url: string = this.baseURL + '/login';
       const tokenFCM = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
       let body: any = {
-        "username": username,
-        "password": password,
-        "tokenFCM": tokenFCM,
-        "deviceName": "Chrome",
+        username: username,
+        password: password,
+        tokenFCM: tokenFCM,
+        deviceName: this.myBrowser(),
       };
       let headers = new HttpHeaders({
         'Content-Type': 'application/json',
@@ -76,7 +107,7 @@ export class AuthenManager {
       };
 
       this.http.post(url, body, httpOptions).toPromise().then((response: any) => {
-        console.log('response.data.user',response.data.user);
+        console.log('response.data.user', response.data.user);
         let result: any = {
           token: response.data.token,
           user: response.data.user
@@ -101,11 +132,11 @@ export class AuthenManager {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/login';
       const tokenFCM_GG = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
-      let body: any = { 
-        idToken, 
+      let body: any = {
+        idToken,
         authToken,
         tokenFCM_GG,
-        "deviceName": "Chrome",
+        deviceName: this.myBrowser(),
 
       };
       let headers = new HttpHeaders({
@@ -144,8 +175,8 @@ export class AuthenManager {
       let url: string = this.baseURL + '/login';
       const tokenFCM = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
       let body: any = {
-        "tokenFCM": tokenFCM,
-        "deviceName": "Chrome",
+        tokenFCM: tokenFCM,
+        deviceName: this.myBrowser(),
       };
       if (data !== null && data !== undefined) {
         body = Object.assign(data);
@@ -214,30 +245,29 @@ export class AuthenManager {
     });
   }
 
-  public userIsSyncPage(isSyncpage:boolean):Promise<any>{
-    return new Promise((resolve,reject) =>{
+  public userIsSyncPage(isSyncpage: boolean): Promise<any> {
+    return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/page/user/sync';
       let options = this.getDefaultOptions();
-      let body: any ={
-        "isSyncpage":isSyncpage,
+      let body: any = {
+        "isSyncpage": isSyncpage,
       }
 
-      this.http.post(url,body,options).toPromise().then((response:any) =>{
+      this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response);
-      }).catch((error:any)=>{
+      }).catch((error: any) => {
         reject(error);
       })
     })
   }
-  public loginWithFacebook(token: string,mode?: string): Promise<any> {
+  public loginWithFacebook(token: string, mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/login';
       const tokenFCM_FB = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
       let body: any = {
-        "token": token,
-        "tokenFCM":tokenFCM_FB,
-        "deviceName": "Chrome",
-
+        token: token,
+        tokenFCM: tokenFCM_FB,
+        deviceName: this.myBrowser(),
       };
       let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
       if (mode !== undefined || mode !== "") {

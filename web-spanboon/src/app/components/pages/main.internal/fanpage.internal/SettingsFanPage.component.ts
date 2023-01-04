@@ -55,7 +55,7 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
 
     public apiBaseURL = environment.apiBaseURL;
 
-    public pageId: string;
+    public pageId: any;
     public navLinks = [
         {
             label: "จัดการเพจ",
@@ -151,7 +151,7 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
 
         this.paramsSub = this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe((event: NavigationEnd) => {
             if (event instanceof NavigationEnd) {
-                const url: string = decodeURI(this.router.url); 
+                const url: string = decodeURI(this.router.url);
                 if (url.indexOf(URL_PATH) >= 0) {
                     const substringPath: string = url.substring(url.indexOf(URL_PATH), url.length);
                     let substringPage = substringPath.replace(URL_PATH, '');
@@ -165,8 +165,8 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
                         this.selected = 'ข้อมูลเพจ';
                     } else if (splitTextId === 'roles') {
                         this.selected = 'บทบาทในเพจ';
-                    } 
-                    if (this.pageId !== undefined && this.pageId !== '' && this.isLoadImage) { 
+                    }
+                    if (this.pageId !== undefined && this.pageId !== '' && this.isLoadImage) {
                         this.getAccessPage(this.pageId);
                     }
                 }
@@ -183,6 +183,22 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
         if (!this.isLogin()) {
             this.router.navigateByUrl("/home");
         }
+        console.log("popopopop", this.pageId);
+        this.checkAccessPage();
+    }
+
+    public checkAccessPage() {
+        console.log("UUUUUUUUUUUUUUUUUUUU");
+        this.pageFacade.getAccess(this.pageId).then((res) => {
+            if (res) {
+                console.log("oioioioi", res);
+            }
+        }).catch((err) => {
+            console.log("l;l;l;l;l;l;l;l;", err.error);
+            if (err.error.name === "AccessDeniedError") {
+                this.router.navigateByUrl("/home");
+            }
+        })
     }
 
     public ngOnDestroy(): void {
@@ -229,7 +245,7 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
         }
     }
 
-    public getAccessPage(pageId : string) {
+    public getAccessPage(pageId: string) {
         this.isLoadImage = false;
         this.pageFacade.getProfilePage(pageId).then((res) => {
             if (res.data && res.data.imageURL !== '' && res.data.imageURL !== null && res.data.imageURL !== undefined) {

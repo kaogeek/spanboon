@@ -115,7 +115,7 @@ export class PageFacade extends AbstractFacade {
       if (postSocialFB && postSocialFB !== undefined && postSocialFB !== null) {
         queryParams += "&facebookPost=true"
       }
-      
+
       if (queryParams !== null && queryParams !== undefined && queryParams !== '') {
         queryParams = queryParams.substring(1, queryParams.length);
       }
@@ -369,14 +369,14 @@ export class PageFacade extends AbstractFacade {
     });
   }
 
-  public socialBindingFacebook(pageId: string , facebookPageId: PageSoialFB): Promise<any> {
+  public socialBindingFacebook(pageId: string, facebookPageId: PageSoialFB): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/page/' + pageId + '/social/facebook';
       let options = this.getDefaultOptions();
       let body: any = {};
-      if(facebookPageId !== undefined && facebookPageId !== null){
+      if (facebookPageId !== undefined && facebookPageId !== null) {
         body = Object.assign(facebookPageId);
-      } 
+      }
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response);
       }).catch((error: any) => {
@@ -493,7 +493,7 @@ export class PageFacade extends AbstractFacade {
       let url: string = this.baseURL + '/page/' + pageId + '/twitter_fetch_enable';
       let body = {};
       let option = this.getDefaultOptions();
-      console.log('config',config);
+      console.log('config', config);
       if (config !== undefined && config !== null) {
         body = Object.assign(config);
       }
@@ -542,7 +542,7 @@ export class PageFacade extends AbstractFacade {
       let url: string = this.baseURL + '/page/' + pageId + '/facebook_fetch_enable';
       let option = this.getDefaultOptions();
       this.http.get(url, option).toPromise().then((response: any) => {
-        console.log('response_from_facebook',response);
+        console.log('response_from_facebook', response);
         resolve(response.data);
       }).catch((error: any) => {
         reject(error);

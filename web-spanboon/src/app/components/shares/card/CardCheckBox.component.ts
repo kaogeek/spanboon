@@ -75,7 +75,7 @@ export class CardCheckBox {
 
     }
 
-    ngOnInit(): void { 
+    ngOnInit(): void {
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -135,7 +135,7 @@ export class CardCheckBox {
         this.checkBoxMutiple(event, item, i)
     }
 
-    public checkBoxvalue(event, item, i) { 
+    public checkBoxvalue(event, item, i) {
         let data = {
             event,
             item
