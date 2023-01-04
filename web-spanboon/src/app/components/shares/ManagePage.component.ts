@@ -433,6 +433,7 @@ export class ManagePage extends AbstractPage implements OnInit {
   }
 
   public clickSetting(item: any) {
+    console.log("qwerqwrqwrqw", item);
     document.body.style.overflowY = "auto";
     if (
       item.page.pageUsername &&

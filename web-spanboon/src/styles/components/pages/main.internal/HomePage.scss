@@ -12,68 +12,84 @@
   justify-content: center;
   align-items: stretch;
   overflow-x: clip;
-  > .container {
+
+  >.container {
     width: calc(1200px);
     height: 100%;
     background-color: white;
-    > .secsione-list {
+
+    >.secsione-list {
       width: calc(100%);
       background-color: white;
+
       @media (max-width: 600px) {
         margin: 20px 15px;
         width: calc(100% - 30px);
       }
+
       .div-wrapper {
         width: calc(100%);
-        > .container {
+
+        >.container {
           width: calc(100%);
           max-width: 1200px;
           height: auto;
           display: flex;
-          > .col1 {
+
+          >.col1 {
             width: calc(50% - 30px);
             height: auto;
             padding: 15px;
             display: flex;
-            > .spans {
+
+            >.spans {
               @include font-size-10($font-head-500);
               color: $brandcolor2;
             }
-            > .hastags {
+
+            >.hastags {
               @include font-size-10($font-head-500);
               display: flex;
-              > .hastag {
-                > span {
+
+              >.hastag {
+                >span {
                   padding: 0px 12px;
                   border-right: solid 1px #5e5e5e;
                   cursor: pointer;
+
                   &:hover {
                     color: rgba($brandcolor2, 0.95);
                   }
                 }
               }
             }
+
             @media (max-width: 1200px) {
               display: none;
             }
           }
-          > .col2 {
+
+          >.col2 {
             width: calc(50% - 30px);
             height: auto;
             padding: 15px;
             display: flex;
-            > .spans {
+
+            >.spans {
               @include font-size-10($font-head-500);
               color: $brandcolor2;
             }
-            > .hastags {
+
+            >.hastags {
               @include font-size-10($font-head-500);
               display: flex;
-              > .hastag {
-                > span {
+
+              >.hastag {
+                >span {
                   padding: 0px 12px;
                   border-right: solid 1px #5e5e5e;
                   cursor: pointer;
+
                   &:hover {
                     color: rgba($brandcolor2, 0.95);
                   }
@@ -81,83 +97,98 @@
               }
             }
           }
+
           @media (max-width: 1900px) {
             width: 1600px;
           }
+
           @media (max-width: 1600px) {
             width: 1200px;
           }
+
           @media (max-width: 1200px) {
             width: 900px;
             flex-direction: column;
-            > .col1 {
+
+            >.col1 {
               width: calc(100% - 30px);
             }
-            > .col2 {
+
+            >.col2 {
               width: calc(100% - 30px);
             }
           }
+
           @media (max-width: 900px) {
             width: 100%;
-            > .col2 > .col2-col1 > {
+
+            >.col2>.col2-col1> {
               .posts {
                 width: 100%;
                 display: flex;
                 flex-direction: column;
               }
             }
-            > .col2 > .col2-col1 > .posts > .sub-post {
+
+            >.col2>.col2-col1>.posts>.sub-post {
               width: calc(100% - 20px);
             }
-            > .col2 > .col2-col1 > .posts > .main-post {
+
+            >.col2>.col2-col1>.posts>.main-post {
               width: calc(100% - 20px);
               margin: 15px 0px;
             }
-            > .col2 > .col2-col2 > {
+
+            >.col2>.col2-col2> {
               .posts {
                 width: 100%;
                 display: flex;
                 flex-direction: column;
               }
             }
-            > .col2 > .col2-col2 > .posts > .sub-post {
+
+            >.col2>.col2-col2>.posts>.sub-post {
               width: calc(100% - 20px);
             }
-            > .col2 > .col2-col2 > .posts > .main-post {
+
+            >.col2>.col2-col2>.posts>.main-post {
               width: calc(100% - 20px);
               margin: 15px 0px;
             }
           }
+
           @media (max-width: 620px) {
             flex-direction: column;
-            > .col1 {
+
+            >.col1 {
               width: 320px;
               padding: unset;
 
-              > .hastags {
+              >.hastags {
                 font-size: 11pt;
                 font-family: "Kanit-500";
                 display: flex;
                 overflow: auto;
               }
 
-              > .spans {
+              >.spans {
                 @include font-size-10($font-head-500);
                 color: $brandcolor2;
               }
             }
-            > .col2 {
+
+            >.col2 {
               width: 320px;
               padding: unset;
 
-              > .hastags {
+              >.hastags {
                 font-size: 11pt;
                 font-family: "Kanit-500";
                 display: flex;
                 overflow: auto;
               }
 
-              > .spans {
+              >.spans {
                 @include font-size-10($font-head-500);
                 color: $brandcolor2;
               }
@@ -166,44 +197,54 @@
         }
       }
     }
-    > .secsione-emer {
+
+    >.secsione-emer {
       width: calc(100%);
+
       .div-wrapper {
         width: calc(100%);
-        > .container {
+
+        >.container {
           width: calc(100%);
           max-width: 1600px;
           height: auto;
           display: flex;
+
           @media (max-width: 900px) {
             background-color: white;
           }
-          > .col1 {
+
+          >.col1 {
             width: calc(50% - 30px);
             height: auto;
             padding: 15px;
-            > .col1-col1 {
+
+            >.col1-col1 {
               width: 100%;
               height: auto;
               cursor: pointer;
+
               @media (max-width: 1200px) {
                 height: 600px;
               }
+
               @media (max-width: 620px) {
                 height: auto;
                 padding-bottom: 15px;
                 border-bottom: solid 1px #d9d9d9;
               }
-              > .col-img {
+
+              >.col-img {
                 width: 100%;
                 height: auto;
                 display: flex;
                 justify-content: center;
                 position: relative;
                 overflow: hidden;
-                @media (max-width: 1200px) {
-                }
-                > .teg_event {
+
+                @media (max-width: 1200px) {}
+
+                >.teg_event {
                   background-color: black;
                   position: absolute;
                   color: white;
@@ -213,7 +254,8 @@
                   @include font-size-9($font-head-500);
                   z-index: 5;
                 }
-                > .image-back {
+
+                >.image-back {
                   z-index: 1;
                   position: absolute;
                   width: 100%;
@@ -223,22 +265,26 @@
                   filter: blur(5px);
                   -webkit-filter: blur(5px);
                 }
-                > .image {
+
+                >.image {
                   width: auto;
                   width: 50%;
                   z-index: 2;
                   position: relative;
+
                   @media (max-width: 900px) {
                     width: 70%;
                   }
                 }
               }
-              > .col-detail {
+
+              >.col-detail {
                 width: calc(100% - 30px);
                 // height: calc(200px);
                 height: auto;
                 padding: 0px 15px;
-                > .title {
+
+                >.title {
                   margin-top: 10pt;
                   @include font-size-7($font-head-500);
                   display: -webkit-box;
@@ -246,43 +292,49 @@
                   overflow: hidden;
                   line-height: 30px;
                   -webkit-box-orient: vertical;
+
                   &.post {
                     @include font-size-8($font-head-500);
                   }
-                  > h3 {
+
+                  >h3 {
                     margin: 0;
+
                     &:hover {
                       color: rgba($brandcolor2, 0.95);
                     }
                   }
                 }
-                > .content {
+
+                >.content {
                   @include font-size-9($font-content-light);
-                  height: 104px;
                   color: black;
+                  line-height: 1.5;
+                  margin: 8pt 0px;
                   display: -webkit-box;
                   -webkit-line-clamp: 4;
-                  line-height: 26px;
                   -webkit-box-orient: vertical;
                   overflow: hidden;
-                  margin: 8pt 0px;
+                  word-break: break-word;
                 }
-                > .participation {
-                  > .social_control {
+
+                >.participation {
+                  >.social_control {
                     display: flex;
                     align-items: flex-end;
-                    > .amount_social {
+
+                    >.amount_social {
                       color: #000000;
                       margin-top: 5px;
                       @include font-size-11($font-head-400);
-                      > .count-aontrol {
-                      }
 
-                      > .title-control {
+                      >.count-aontrol {}
+
+                      >.title-control {
                         margin-left: 2px;
                       }
 
-                      > .drot {
+                      >.drot {
                         margin: 0 5pt;
                       }
                     }
@@ -290,14 +342,17 @@
                 }
               }
             }
-            > .col1-col2 {
+
+            >.col1-col2 {
               width: 100%;
               height: 200px;
+
               @media (max-width: 620px) {
                 width: calc(100%);
                 height: auto;
               }
-              > .col-colum-detail {
+
+              >.col-colum-detail {
                 width: calc(100% - 20px);
                 // height: calc(90px - 4px);
                 border-top: unset;
@@ -307,20 +362,24 @@
                 justify-content: space-between;
                 align-items: center;
                 padding: 10px;
-                > .colum-detail-1 {
+
+                >.colum-detail-1 {
                   display: flex;
                   width: 80%;
-                  > .image {
+
+                  >.image {
                     margin-right: 20px;
-                    > img {
+
+                    >img {
                       width: 60px;
                       height: 60px;
                       object-fit: cover;
                       border-radius: 50%;
                     }
                   }
-                  > .detail {
-                    > .title {
+
+                  >.detail {
+                    >.title {
                       @include font-size-8($font-head-400);
                       cursor: pointer;
                       line-height: 26px;
@@ -329,43 +388,50 @@
                       line-height: 26px;
                       -webkit-box-orient: vertical;
                       overflow: hidden;
+
                       &:hover {
                         color: rgba($brandcolor2, 0.95);
                       }
                     }
-                    > .content {
+
+                    >.content {
                       margin-top: 0px;
                       @include font-size-11($font-head-400);
-                      > .count-aontrol {
-                      }
 
-                      > .title-control {
+                      >.count-aontrol {}
+
+                      >.title-control {
                         margin-left: 2px;
                       }
 
-                      > .drot {
+                      >.drot {
                         margin: 0 5pt;
                       }
                     }
                   }
                 }
-                > .colum-detail-2 {
+
+                >.colum-detail-2 {
                   display: flex;
                   flex-direction: column;
                   justify-content: center;
                   align-content: space-around;
                   align-items: flex-end;
-                  > .title {
+
+                  >.title {
                     @include font-size-9($font-head-500);
                     cursor: pointer;
+
                     &:hover {
                       color: rgba($brandcolor2, 0.95);
                     }
                   }
-                  > .content {
+
+                  >.content {
                     margin-top: 0px;
                     @include font-size-11($font-head-400);
                   }
+
                   @media (max-width: 480px) {
                     display: none;
                   }
@@ -373,28 +439,33 @@
               }
             }
           }
-          > .max {
+
+          >.max {
             width: calc(100% - 30px);
+
             @media (max-width: 900px) {
-              > .col1-col1 > .col-img {
+              >.col1-col1>.col-img {
                 height: auto !important;
               }
             }
           }
-          > .col2 {
+
+          >.col2 {
             width: calc(50% - 30px);
             height: auto;
             padding: 15px;
-            > .col2-col1 {
+
+            >.col2-col1 {
               width: 100%;
               height: auto;
+
               @media (max-width: 900px) {
                 height: auto;
                 border-top: 1px solid #00000024;
                 border-bottom: 1px solid #00000024;
               }
 
-              > .title {
+              >.title {
                 width: calc(100% 30px);
                 height: 50px;
                 display: flex;
@@ -406,21 +477,25 @@
                 padding: 0px 15px;
                 position: sticky;
                 top: 0px;
+
                 @media (max-width: 620px) {
                   border-bottom: 1px solid #00000024;
                 }
-                > .text {
+
+                >.text {
                   @include font-size-9($font-head-500);
                 }
               }
-              > .posts {
+
+              >.posts {
                 width: 100%;
                 display: flex;
-                > .sub-post {
+
+                >.sub-post {
                   width: calc(50% - 20px);
                   padding: 0px 10px;
 
-                  > .post-col1 {
+                  >.post-col1 {
                     @include font-size-10($font-head-500);
                     border-bottom: solid 1px #d9d9d9;
                     padding-bottom: 30px;
@@ -431,7 +506,8 @@
                     line-height: 26px;
                     width: 100%;
                     cursor: pointer;
-                    > .top {
+
+                    >.top {
                       width: calc(100%);
                       height: 30px;
                       display: flex;
@@ -440,46 +516,55 @@
                       justify-content: space-between;
                       align-items: center;
                       display: none;
+
                       // padding: 0px 10px;
-                      > .status {
+                      >.status {
                         display: flex;
                         align-content: center;
                         align-items: center;
-                        > .status-g {
+
+                        >.status-g {
                           width: 10px;
                           height: 10px;
                           border-radius: 50px;
                           background-color: $status-post-general;
                         }
-                        > .status-n {
+
+                        >.status-n {
                           width: 10px;
                           height: 10px;
                           border-radius: 50px;
                           background-color: $status-post-need;
                         }
-                        > span {
+
+                        >span {
                           @include font-size-11($font-head-500);
                           margin-left: 6px;
                         }
                       }
-                      > .date-time {
-                        > span {
+
+                      >.date-time {
+                        >span {
                           cursor: pointer;
                           @include font-size-11($font-head-500);
                           color: gray;
+
                           &:hover {
                             color: rgba($brandcolor2, 0.95);
                           }
                         }
                       }
+
                       @media (max-width: 900px) {
                         display: flex;
                       }
                     }
-                    > .body {
+
+                    >.body {
                       width: 100%;
                       display: none;
-                      > .image-post {
+
+                      >.image-post {
                         cursor: pointer;
                         width: 100%;
                         height: 180px;
@@ -488,44 +573,52 @@
                         text-align: center;
                         background-color: #f8f8f8;
                         align-items: center;
+
                         @media (max-width: 900px) {
                           height: 300px;
                         }
-                        > span {
+
+                        >span {
                           cursor: pointer;
                           @include font-size-9($font-head-500);
                           padding: 20px 0px;
                         }
-                        > .image {
+
+                        >.image {
                           width: 100%;
                           height: 100%;
                           object-fit: cover;
                         }
                       }
 
-                      > .detail {
+                      >.detail {
                         cursor: pointer;
                         @include font-size-9($font-head-500);
                         padding: 20px 0px;
                       }
+
                       @media (max-width: 900px) {
                         display: unset;
                       }
                     }
-                    > .text {
+
+                    >.text {
                       display: -webkit-box;
                       -webkit-line-clamp: 3;
                       line-height: 26px;
                       -webkit-box-orient: vertical;
                       overflow: hidden;
+
                       @media (max-width: 900px) {
                         display: none;
                       }
                     }
-                    > .date {
+
+                    >.date {
                       @include font-size-11($font-head-500);
                       color: gray;
                       margin-top: 10px;
+
                       &:hover {
                         color: rgba($brandcolor2, 0.95);
                       }
@@ -535,7 +628,8 @@
                       }
                     }
                   }
-                  > .post-col2 {
+
+                  >.post-col2 {
                     @include font-size-10($font-head-500);
                     border-bottom: solid 1px #d9d9d9;
                     padding-bottom: 30px;
@@ -546,7 +640,8 @@
                     flex-direction: column;
                     line-height: 26px;
                     cursor: pointer;
-                    > .top {
+
+                    >.top {
                       width: calc(100%);
                       height: 30px;
                       display: flex;
@@ -555,46 +650,55 @@
                       justify-content: space-between;
                       align-items: center;
                       display: none;
+
                       // padding: 0px 10px;
-                      > .status {
+                      >.status {
                         display: flex;
                         align-content: center;
                         align-items: center;
-                        > .status-g {
+
+                        >.status-g {
                           width: 10px;
                           height: 10px;
                           border-radius: 50px;
                           background-color: $status-post-general;
                         }
-                        > .status-n {
+
+                        >.status-n {
                           width: 10px;
                           height: 10px;
                           border-radius: 50px;
                           background-color: $status-post-need;
                         }
-                        > span {
+
+                        >span {
                           @include font-size-11($font-head-500);
                           margin-left: 6px;
                         }
                       }
-                      > .date-time {
-                        > span {
+
+                      >.date-time {
+                        >span {
                           cursor: pointer;
                           @include font-size-11($font-head-500);
                           color: gray;
+
                           &:hover {
                             color: rgba($brandcolor2, 0.95);
                           }
                         }
                       }
+
                       @media (max-width: 900px) {
                         display: flex;
                       }
                     }
-                    > .body {
+
+                    >.body {
                       width: 100%;
                       display: none;
-                      > .image-post {
+
+                      >.image-post {
                         cursor: pointer;
                         width: 100%;
                         height: 180px;
@@ -603,56 +707,68 @@
                         text-align: center;
                         background-color: #f8f8f8;
                         align-items: center;
+
                         @media (max-width: 900px) {
                           height: 300px;
                         }
-                        > span {
+
+                        >span {
                           cursor: pointer;
                           @include font-size-9($font-head-500);
                           padding: 20px 0px;
                         }
-                        > .image {
+
+                        >.image {
                           width: 100%;
                           height: 100%;
                           object-fit: cover;
                         }
                       }
-                      > .detail {
+
+                      >.detail {
                         cursor: pointer;
                         @include font-size-9($font-head-500);
                         padding: 20px 0px;
                       }
+
                       @media (max-width: 900px) {
                         display: unset;
                       }
                     }
-                    > .text {
+
+                    >.text {
                       display: -webkit-box;
                       -webkit-line-clamp: 3;
                       line-height: 26px;
                       -webkit-box-orient: vertical;
                       overflow: hidden;
+
                       @media (max-width: 900px) {
                         display: none;
                       }
                     }
-                    > .date {
+
+                    >.date {
                       @include font-size-11($font-head-500);
                       color: gray;
                       margin-top: 10px;
+
                       &:hover {
                         color: rgba($brandcolor2, 0.95);
                       }
+
                       @media (max-width: 900px) {
                         display: none;
                       }
                     }
                   }
                 }
-                > .main-post {
+
+                >.main-post {
                   width: calc(50% - 20px);
                   padding: 0px 10px;
-                  > .top {
+
+                  >.top {
                     width: calc(100%);
                     height: 30px;
                     display: flex;
@@ -660,36 +776,43 @@
                     align-content: center;
                     justify-content: space-between;
                     align-items: center;
-                    > .status {
+
+                    >.status {
                       display: flex;
                       align-content: center;
                       align-items: center;
-                      > .status-g {
+
+                      >.status-g {
                         width: 10px;
                         height: 10px;
                         border-radius: 50px;
                         background-color: gray;
                       }
-                      > span {
+
+                      >span {
                         @include font-size-11($font-head-500);
                         margin-left: 6px;
                       }
                     }
-                    > .date-time {
-                      > span {
+
+                    >.date-time {
+                      >span {
                         cursor: pointer;
                         @include font-size-11($font-head-100);
                         font-weight: lighter;
                         color: gray;
+
                         &:hover {
                           color: rgba($brandcolor2, 0.95);
                         }
                       }
                     }
                   }
-                  > .body {
+
+                  >.body {
                     width: 100%;
-                    > .image-post {
+
+                    >.image-post {
                       cursor: pointer;
                       width: 100%;
                       height: 180px;
@@ -699,20 +822,24 @@
                       text-align: center;
                       justify-content: center;
                       @include font-size-9($font-head-500);
+
                       @media (max-width: 900px) {
                         height: 300px;
                       }
-                      > .image {
+
+                      >.image {
                         width: 100%;
                         height: 100%;
                         object-fit: cover;
                       }
                     }
-                    > .detail {
+
+                    >.detail {
                       cursor: pointer;
                       @include font-size-9($font-head-500);
                       padding: 20px 0px;
-                      > span {
+
+                      >span {
                         line-height: 26px;
                         display: -webkit-box;
                         -webkit-line-clamp: 3;
@@ -725,16 +852,19 @@
                 }
               }
             }
-            > .col2-col2 {
+
+            >.col2-col2 {
               width: 100%;
               height: auto;
+
               @media (max-width: 900px) {
                 // margin-top: 30px;
                 height: auto;
                 border-top: 1px solid #00000024;
                 border-bottom: 1px solid #00000024;
               }
-              > .title {
+
+              >.title {
                 width: calc(100% 30px);
                 height: 50px;
                 display: flex;
@@ -743,17 +873,21 @@
                 align-content: center;
                 align-items: center;
                 padding: 0px 15px;
-                > .text {
+
+                >.text {
                   @include font-size-9($font-head-500);
                 }
               }
-              > .posts {
+
+              >.posts {
                 width: 100%;
                 display: flex;
-                > .sub-post {
+
+                >.sub-post {
                   width: calc(50% - 20px);
                   padding: 0px 10px;
-                  > .post-col1 {
+
+                  >.post-col1 {
                     @include font-size-10($font-head-500);
                     border-bottom: solid 1px #d9d9d9;
                     padding-bottom: 30px;
@@ -764,7 +898,8 @@
                     line-height: 26px;
                     width: calc(100%);
                     cursor: pointer;
-                    > .top {
+
+                    >.top {
                       width: calc(100%);
                       height: 30px;
                       display: flex;
@@ -773,46 +908,55 @@
                       justify-content: space-between;
                       align-items: center;
                       display: none;
+
                       // padding: 0px 10px;
-                      > .status {
+                      >.status {
                         display: flex;
                         align-content: center;
                         align-items: center;
-                        > .status-g {
+
+                        >.status-g {
                           width: 10px;
                           height: 10px;
                           border-radius: 50px;
                           background-color: $status-post-general;
                         }
-                        > .status-n {
+
+                        >.status-n {
                           width: 10px;
                           height: 10px;
                           border-radius: 50px;
                           background-color: $status-post-need;
                         }
-                        > span {
+
+                        >span {
                           @include font-size-11($font-head-500);
                           margin-left: 6px;
                         }
                       }
-                      > .date-time {
-                        > span {
+
+                      >.date-time {
+                        >span {
                           cursor: pointer;
                           @include font-size-11($font-head-500);
                           color: gray;
+
                           &:hover {
                             color: rgba($brandcolor2, 0.95);
                           }
                         }
                       }
+
                       @media (max-width: 900px) {
                         display: flex;
                       }
                     }
-                    > .body {
+
+                    >.body {
                       width: 100%;
                       display: none;
-                      > .image-post {
+
+                      >.image-post {
                         cursor: pointer;
                         width: 100%;
                         height: 180px;
@@ -821,52 +965,63 @@
                         text-align: center;
                         background-color: #f8f8f8;
                         align-items: center;
+
                         @media (max-width: 900px) {
                           height: 300px;
                         }
-                        > span {
+
+                        >span {
                           cursor: pointer;
                           @include font-size-9($font-head-500);
                           padding: 20px 0px;
                         }
-                        > .image {
+
+                        >.image {
                           width: 100%;
                           height: 100%;
                           object-fit: cover;
                         }
                       }
-                      > .detail {
+
+                      >.detail {
                         cursor: pointer;
                         @include font-size-9($font-head-500);
                         padding: 20px 0px;
                       }
+
                       @media (max-width: 900px) {
                         display: unset;
                       }
                     }
-                    > .text {
+
+                    >.text {
                       display: -webkit-box;
                       -webkit-line-clamp: 3;
                       line-height: 26px;
                       -webkit-box-orient: vertical;
                       overflow: hidden;
+
                       @media (max-width: 900px) {
                         display: none;
                       }
                     }
-                    > .date {
+
+                    >.date {
                       @include font-size-11($font-head-500);
                       color: gray;
                       margin-top: 10px;
+
                       &:hover {
                         color: rgba($brandcolor2, 0.95);
                       }
+
                       @media (max-width: 900px) {
                         display: none;
                       }
                     }
                   }
-                  > .post-col2 {
+
+                  >.post-col2 {
                     @include font-size-10($font-head-500);
                     border-bottom: solid 1px #d9d9d9;
                     padding-bottom: 30px;
@@ -877,7 +1032,8 @@
                     flex-direction: column;
                     line-height: 26px;
                     cursor: pointer;
-                    > .top {
+
+                    >.top {
                       width: calc(100%);
                       height: 30px;
                       display: flex;
@@ -886,46 +1042,55 @@
                       justify-content: space-between;
                       align-items: center;
                       display: none;
+
                       // padding: 0px 10px;
-                      > .status {
+                      >.status {
                         display: flex;
                         align-content: center;
                         align-items: center;
-                        > .status-g {
+
+                        >.status-g {
                           width: 10px;
                           height: 10px;
                           border-radius: 50px;
                           background-color: $status-post-general;
                         }
-                        > .status-n {
+
+                        >.status-n {
                           width: 10px;
                           height: 10px;
                           border-radius: 50px;
                           background-color: $status-post-need;
                         }
-                        > span {
+
+                        >span {
                           @include font-size-11($font-head-500);
                           margin-left: 6px;
                         }
                       }
-                      > .date-time {
-                        > span {
+
+                      >.date-time {
+                        >span {
                           cursor: pointer;
                           @include font-size-11($font-head-500);
                           color: gray;
+
                           &:hover {
                             color: rgba($brandcolor2, 0.95);
                           }
                         }
                       }
+
                       @media (max-width: 900px) {
                         display: flex;
                       }
                     }
-                    > .body {
+
+                    >.body {
                       width: 100%;
                       display: none;
-                      > .image-post {
+
+                      >.image-post {
                         cursor: pointer;
                         width: 100%;
                         height: 180px;
@@ -934,58 +1099,70 @@
                         text-align: center;
                         background-color: #f8f8f8;
                         align-items: center;
+
                         @media (max-width: 900px) {
                           height: 300px;
                         }
-                        > .detail {
-                          > span {
+
+                        >.detail {
+                          >span {
                             cursor: pointer;
                             @include font-size-9($font-head-500);
                             padding: 20px 0px;
                           }
                         }
-                        > .image {
+
+                        >.image {
                           width: 100%;
                           height: 100%;
                           object-fit: cover;
                         }
                       }
-                      > .detail {
+
+                      >.detail {
                         cursor: pointer;
                         @include font-size-9($font-head-500);
                         padding: 20px 0px;
                       }
+
                       @media (max-width: 900px) {
                         display: unset;
                       }
                     }
-                    > .text {
+
+                    >.text {
                       display: -webkit-box;
                       -webkit-line-clamp: 3;
                       line-height: 26px;
                       -webkit-box-orient: vertical;
                       overflow: hidden;
+
                       @media (max-width: 900px) {
                         display: none;
                       }
                     }
-                    > .date {
+
+                    >.date {
                       @include font-size-11($font-head-500);
                       color: gray;
                       margin-top: 10px;
+
                       &:hover {
                         color: rgba($brandcolor2, 0.95);
                       }
+
                       @media (max-width: 900px) {
                         display: none;
                       }
                     }
                   }
                 }
-                > .main-post {
+
+                >.main-post {
                   width: calc(50% - 20px);
                   padding: 0px 10px;
-                  > .top {
+
+                  >.top {
                     width: calc(100%);
                     height: 30px;
                     display: flex;
@@ -993,36 +1170,43 @@
                     align-content: center;
                     justify-content: space-between;
                     align-items: center;
+
                     // padding: 0px 10px;
-                    > .status {
+                    >.status {
                       display: flex;
                       align-content: center;
                       align-items: center;
-                      > .status-g {
+
+                      >.status-g {
                         width: 12px;
                         height: 12px;
                         border-radius: 50px;
                         background-color: gray;
                       }
-                      > span {
+
+                      >span {
                         @include font-size-11($font-head-500);
                         margin-left: 6px;
                       }
                     }
-                    > .date-time {
-                      > span {
+
+                    >.date-time {
+                      >span {
                         @include font-size-11($font-head-500);
                         color: gray;
                         cursor: pointer;
+
                         &:hover {
                           color: rgba($brandcolor2, 0.95);
                         }
                       }
                     }
                   }
-                  > .body {
+
+                  >.body {
                     width: 100%;
-                    > .image-post {
+
+                    >.image-post {
                       cursor: pointer;
                       width: 100%;
                       height: 180px;
@@ -1031,19 +1215,23 @@
                       text-align: center;
                       background-color: #f8f8f8;
                       align-items: center;
+
                       @media (max-width: 900px) {
                         height: 300px;
                       }
-                      > span {
+
+                      >span {
                         @include font-size-9($font-head-500);
                       }
-                      > .image {
+
+                      >.image {
                         width: 100%;
                         height: 100%;
                         object-fit: cover;
                       }
                     }
-                    > .detail {
+
+                    >.detail {
                       cursor: pointer;
                       @include font-size-9($font-head-500);
                       margin: 20px 0px;
@@ -1052,7 +1240,8 @@
                       line-height: 26px;
                       -webkit-box-orient: vertical;
                       overflow: hidden;
-                      > span {
+
+                      >span {
                         line-height: 26px;
                       }
                     }
@@ -1061,62 +1250,77 @@
               }
             }
           }
+
           @media (max-width: 1600px) {
             width: 1200px;
           }
+
           @media (max-width: 1200px) {
             width: 900px;
             flex-direction: column;
-            > .col1 {
+
+            >.col1 {
               width: calc(100% - 30px);
             }
-            > .col2 {
+
+            >.col2 {
               width: calc(100% - 30px);
             }
           }
+
           @media (max-width: 900px) {
             width: 100%;
-            > .col2 > .col2-col1 > {
+
+            >.col2>.col2-col1> {
               .posts {
                 width: 100%;
                 display: flex;
                 flex-direction: column;
               }
             }
-            > .col2 > .col2-col1 > .posts > .sub-post {
+
+            >.col2>.col2-col1>.posts>.sub-post {
               width: calc(100% - 20px);
               border-top: 1px solid #00000024;
+
               @media (max-width: 620px) {
                 border-top: unset;
               }
             }
-            > .col2 > .col2-col1 > .posts > .main-post {
+
+            >.col2>.col2-col1>.posts>.main-post {
               width: calc(100% - 20px);
               margin: 15px 0px;
             }
-            > .col2 > .col2-col2 > {
+
+            >.col2>.col2-col2> {
               .posts {
                 width: 100%;
                 display: flex;
                 flex-direction: column;
               }
             }
-            > .col2 > .col2-col2 > .posts > .sub-post {
+
+            >.col2>.col2-col2>.posts>.sub-post {
               width: calc(100% - 20px);
               border-top: 1px solid #00000024;
             }
-            > .col2 > .col2-col2 > .posts > .main-post {
+
+            >.col2>.col2-col2>.posts>.main-post {
               width: calc(100% - 20px);
               margin: 15px 0px;
             }
           }
+
           @media (max-width: 620px) {
             flex-direction: column;
-            > .col1 {
+
+            >.col1 {
               width: calc(100%);
               padding: unset;
             }
-            > .col2 {
+
+            >.col2 {
               width: calc(100%);
               padding: unset;
             }
@@ -1124,44 +1328,54 @@
         }
       }
     }
-    > .other_section {
+
+    >.other_section {
       width: calc(100%);
+
       .div-wrapper {
         width: calc(100%);
-        > .container {
+
+        >.container {
           width: calc(100%);
           max-width: 1600px;
           height: auto;
           display: flex;
           flex-direction: column;
+
           @media (max-width: 900px) {
             background-color: #fafafa;
           }
-          > .section {
+
+          >.section {
             width: calc(100% - 30px);
             padding: 15px;
             display: flex;
             flex-direction: column;
             background-color: white;
+
             &.disable {
               display: none;
             }
+
             @media (max-width: 900px) {
               margin: 15px 0px;
               border-bottom: 1px solid #00000024;
               border-top: 1px solid #00000024;
             }
+
             @media (max-width: 620px) {
               width: calc(100%);
               padding: 0px;
             }
-            > .title {
+
+            >.title {
               @include font-size-6($font-head-500);
               color: $brandcolor2;
               position: relative;
               width: 100%;
               display: flex;
-              > .text {
+
+              >.text {
                 background-color: white;
                 position: relative;
                 width: auto;
@@ -1169,24 +1383,29 @@
                 padding: 0px 10px 0px 0px;
                 display: flex;
                 flex-direction: column;
-                > .subtitle {
+
+                >.subtitle {
                   @include font-size-10($font-head-500);
                   color: rgb(121, 121, 121);
                 }
+
                 &.small {
                   @include font-size-8($font-head-500);
                 }
               }
-              > .line {
+
+              >.line {
                 width: 100%;
                 height: 1px;
                 background-color: black;
                 position: absolute;
                 top: 50%;
+
                 @media (max-width: 800px) {
                   display: none;
                 }
               }
+
               @media (max-width: 620px) {
                 width: calc(100% - 20px);
                 padding: 10px;
@@ -1196,13 +1415,16 @@
                 border-bottom: 1px solid #00000024;
               }
             }
-            > .cards {
+
+            >.cards {
               margin: 15pt 0pt;
-              > .card-small-type {
+
+              >.card-small-type {
                 width: calc(100%);
                 display: flex;
                 overflow: auto;
-                > .card {
+
+                >.card {
                   cursor: pointer;
                   transition: 0.1s;
                   width: 160px;
@@ -1215,31 +1437,37 @@
                   justify-content: center;
                   align-items: center;
                   border-radius: 10px;
+
                   &:hover {
                     transition: 0.1s;
                     border: 1px solid #cdcdcd;
-                    > .text {
-                      > span {
+
+                    >.text {
+                      >span {
                         color: rgba($brandcolor2, 0.95);
                       }
                     }
                   }
-                  > img {
+
+                  >img {
                     width: 120px;
                     object-fit: cover;
                     border-radius: 50%;
                   }
-                  > .text {
+
+                  >.text {
                     width: 150px;
                     @include font-size-9($font-head-500);
                     text-align: center;
                     margin: 10pt 0pt;
-                    > span {
+
+                    >span {
                       display: -webkit-box;
                       -webkit-line-clamp: 2;
                       line-height: 26px;
                       -webkit-box-orient: vertical;
                       overflow: hidden;
+
                       &:hover {
                         color: rgba($brandcolor2, 0.95);
                       }
@@ -1247,13 +1475,16 @@
                   }
                 }
               }
-              > .card-me-type {
+
+              >.card-me-type {
                 width: calc(100%);
                 display: flex;
+
                 @media (max-width: 900px) {
                   flex-direction: column;
                 }
-                > .card {
+
+                >.card {
                   cursor: pointer;
                   transition: 0.1s;
                   width: 390px;
@@ -1263,9 +1494,11 @@
                   margin: 5px;
                   flex-direction: column;
                   border-radius: 10px;
+
                   @media (max-width: 900px) {
                     width: calc(580px - 10px);
                   }
+
                   @media (max-width: 620px) {
                     width: calc(100% - 22px);
                     margin-top: 10pt;
@@ -1274,7 +1507,8 @@
                     border-bottom: solid 1px #d9d9d9;
                     border-radius: unset;
                   }
-                  > .top {
+
+                  >.top {
                     width: calc(100%);
                     height: 30px;
                     display: flex;
@@ -1282,45 +1516,53 @@
                     align-content: center;
                     justify-content: space-between;
                     align-items: center;
+
                     // padding: 0px 10px;
-                    > .status {
+                    >.status {
                       display: flex;
                       align-content: center;
                       align-items: center;
-                      > .status-g {
+
+                      >.status-g {
                         width: 10px;
                         height: 10px;
                         border-radius: 50px;
                         background-color: $status-post-general;
                       }
-                      > .status-n {
+
+                      >.status-n {
                         width: 10px;
                         height: 10px;
                         border-radius: 50px;
                         background-color: $status-post-need;
                       }
-                      > span {
+
+                      >span {
                         @include font-size-11($font-head-500);
                         margin-left: 6px;
                       }
                     }
-                    > .date-time {
-                      > span {
+
+                    >.date-time {
+                      >span {
                         cursor: pointer;
                         @include font-size-11($font-head-500);
                         color: gray;
+
                         &:hover {
                           color: rgba($brandcolor2, 0.95);
                         }
                       }
                     }
                   }
-                  > img {
+
+                  >img {
                     width: 100%;
                     height: 260px;
                     object-fit: cover;
                   }
-                  > .content-post-img {
+
+                  >.content-post-img {
                     @include font-size-9($font-head-500);
                     height: 130px;
                     text-align: center;
@@ -1328,12 +1570,14 @@
                     padding: 130px 40px 0px 40px;
                     background-color: #00000008;
                     transition: 0.3s;
+
                     &:hover {
                       transition: 0.3s;
                       background-color: #0000001c;
                     }
                   }
-                  > .text {
+
+                  >.text {
                     width: 100%;
                     @include font-size-8($font-head-500);
                     margin: 10pt 0pt;
@@ -1341,30 +1585,36 @@
                     display: flex;
                     flex-direction: column;
                     justify-content: space-between;
-                    > .col-text {
-                      > span {
+
+                    >.col-text {
+                      >span {
                         display: -webkit-box;
                         -webkit-line-clamp: 3;
                         line-height: 26px;
                         -webkit-box-orient: vertical;
                         overflow: hidden;
+
                         &:hover {
                           color: rgba($brandcolor2, 0.95);
                         }
                       }
                     }
-                    > .more {
+
+                    >.more {
                       fill: slategray;
                       @include font-size-11($font-head-500);
                     }
-                    > .bottom {
+
+                    >.bottom {
                       width: 100%;
-                      > .owner-offical {
+
+                      >.owner-offical {
                         display: flex;
                         align-content: center;
                         align-items: stretch;
                         justify-content: flex-start;
-                        > .new-cards-offical {
+
+                        >.new-cards-offical {
                           display: flex;
                           width: 14px;
                           height: 14px;
@@ -1372,36 +1622,40 @@
                           margin: 3pt 3pt 0 0;
                           flex: 0 0 auto;
                         }
-                        > .owner {
+
+                        >.owner {
                           @include font-size-11($font-head-500);
                           color: slategray;
                           cursor: pointer;
+
                           &:hover {
                             color: rgba($brandcolor2, 0.95);
                           }
                         }
                       }
-                      > .count {
+
+                      >.count {
                         display: flex;
                         align-items: flex-end;
                         color: slategray;
                         margin-top: 5px;
                         @include font-size-11($font-head-400);
-                        > .count-aontrol {
-                        }
 
-                        > .title-control {
+                        >.count-aontrol {}
+
+                        >.title-control {
                           margin-left: 2px;
                         }
 
-                        > .drot {
+                        >.drot {
                           margin: 0 5pt;
                         }
                       }
                     }
                   }
                 }
-                > .card:nth-child(3) {
+
+                >.card:nth-child(3) {
                   border-bottom: unset;
                 }
               }
@@ -1410,19 +1664,24 @@
         }
       }
     }
+
     @media (max-width: 1200px) {
       width: calc(1000px);
     }
+
     @media (max-width: 1000px) {
       width: calc(900px);
     }
+
     @media (max-width: 900px) {
       width: calc(620px);
     }
+
     @media (max-width: 620px) {
       width: calc(100%);
     }
   }
+
   @media (max-width: 620px) {
     width: 100%;
   }
@@ -1442,23 +1701,26 @@
   justify-content: center;
   align-items: center;
 
-  > .top {
+  >.top {
     width: 80%;
     display: flex;
     margin-top: 80px;
     align-content: flex-start;
     justify-content: center;
-    > .top_for_loding {
+
+    >.top_for_loding {
       width: 50%;
       padding: 15px;
     }
   }
-  > .buttom {
+
+  >.buttom {
     width: 80%;
     display: flex;
     align-content: flex-start;
     justify-content: center;
-    > .buttom_for_loding {
+
+    >.buttom_for_loding {
       padding: 15px;
       width: calc(25% - 30px);
     }

@@ -14,12 +14,12 @@ import { Router } from "@angular/router";
 
 @Injectable()
 export class ConfirmMerge extends AbstractFacade {
-    public router: Router;
-    public redirection: string;
-    public loginPage: LoginPage;
+  public router: Router;
+  public redirection: string;
+  public loginPage: LoginPage;
 
   constructor(http: HttpClient, authMgr: AuthenManager,
-    ) {
+  ) {
     super(http, authMgr);
   }
 
@@ -28,7 +28,7 @@ export class ConfirmMerge extends AbstractFacade {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/test_send_otp';
       let body: any = {
-        "email": email
+        'email': email
       };
 
       let headers = new HttpHeaders({

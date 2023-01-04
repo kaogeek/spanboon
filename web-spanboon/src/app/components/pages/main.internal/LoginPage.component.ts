@@ -158,8 +158,8 @@ export class LoginPage extends AbstractPage implements OnInit {
         console.log('err ', err)
       ])
     }
-
   }
+
 
   public ngOnDestroy(): void {
     super.ngOnDestroy();

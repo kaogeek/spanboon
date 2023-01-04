@@ -6,7 +6,7 @@
  */
 
 import { Component, OnInit, Input, ViewChild, ElementRef, HostListener, EventEmitter, Output, OnDestroy } from '@angular/core';
-import { ObjectiveFacade, NeedsFacade, AssetFacade, AuthenManager, ObservableManager, PageFacade, PostCommentFacade, PostFacade, UserFacade, UserEngagementFacade, Engagement, RecommendFacade, AboutPageFacade, SeoService, ProfileFacade, PostActionService } from '../../../services/services';
+import { ObjectiveFacade, NeedsFacade, AssetFacade, AuthenManager, ObservableManager, PageFacade, PostCommentFacade, PostFacade, UserFacade, UserEngagementFacade, Engagement, RecommendFacade, AboutPageFacade, SeoService, ProfileFacade, PostActionService, UserAccessFacade } from '../../../services/services';
 import { MatDialog, MatDialogRef } from '@angular/material';
 import { AbstractPageImageLoader } from '../AbstractPageImageLoader';
 import { DialogImage } from '../../shares/dialog/DialogImage.component';
@@ -79,6 +79,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   private seoService: SeoService;
   private profileFacade: ProfileFacade;
   private postActionService: PostActionService;
+  private userAccessFacade: UserAccessFacade;
 
   public resDataPage: any;
   public resPost: any = {};
@@ -131,6 +132,9 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   public isPostLoading: boolean = false;
   public isDirty: boolean = false;
 
+  public resListPage: any;
+  public pageId: any;
+
   canDeactivate(): boolean {
     return this.isDirty;
   }
@@ -142,7 +146,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   files: FileHandle[] = [];
 
   constructor(router: Router, userFacade: UserFacade, dialog: MatDialog, authenManager: AuthenManager, postFacade: PostFacade, pageFacade: PageFacade, postCommentFacade: PostCommentFacade, cacheConfigInfo: CacheConfigInfo, objectiveFacade: ObjectiveFacade, needsFacade: NeedsFacade, assetFacade: AssetFacade,
-    observManager: ObservableManager, routeActivated: ActivatedRoute, userEngagementFacade: UserEngagementFacade, engagementService: Engagement, recommendFacade: RecommendFacade, aboutPageFacade: AboutPageFacade, seoService: SeoService, profileFacade: ProfileFacade, postActionService: PostActionService
+    observManager: ObservableManager, routeActivated: ActivatedRoute, userEngagementFacade: UserEngagementFacade, engagementService: Engagement, recommendFacade: RecommendFacade, aboutPageFacade: AboutPageFacade, seoService: SeoService, profileFacade: ProfileFacade, postActionService: PostActionService, userAccessFacade: UserAccessFacade,
   ) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.dialog = dialog
@@ -171,6 +175,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     this.userImage = {};
     this.labelStatus = 'ไม่พบเพจ';
     this.resPost.posts = [];
+    this.userAccessFacade = userAccessFacade;
 
     // this.seoService.removeMeta();
 
@@ -305,6 +310,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     this.checkLoginAndRedirection();
     this.setTab();
     this.setCop();
+    this.searchAllPage();
     $(window).resize(() => {
       this.setTab();
     });
@@ -1499,6 +1505,40 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         this.showAlertDialog('ระบบอยู่ในระหว่างการพัฒนา');
       }
     });
+  }
+
+  public searchAllPage() {
+    this.userAccessFacade.getPageAccess().then((res: any) => {
+      if (res.length > 0) {
+        for (let data of res) {
+          if (
+            data.page &&
+            data.page.imageURL !== "" &&
+            data.page.imageURL !== null &&
+            data.page.imageURL !== undefined
+          ) {
+            this.resListPage = res;
+          } else {
+            this.resListPage = res;
+          }
+        }
+      }
+    })
+  }
+
+  public clickSetting() {
+    let dataPage = this.resDataPage;
+    document.body.style.overflowY = "auto";
+    if (
+      dataPage.pageUsername &&
+      dataPage.pageUsername !== "" &&
+      dataPage.pageUsername !== null &&
+      dataPage.pageUsername !== undefined
+    ) {
+      this.router.navigate(["/page/" + dataPage.pageUsername + "/settings"]);
+    } else {
+      this.router.navigate(["/page/" + dataPage.id + "/settings"]);
+    }
   }
 
 }
