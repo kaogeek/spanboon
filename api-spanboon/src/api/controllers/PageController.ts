@@ -329,26 +329,26 @@ export class PageController {
     // autoSyncPageTW
     @Post('/sync/tw')
     @Authorized('user')
-    public async autoSyncPageTW( @Body({ validate: true }) socialBinding: PageSocialTWBindingRequest, @Res() res: any, @Req() req: any):Promise<any>{
+    public async autoSyncPageTW(@Body({ validate: true }) socialBinding: PageSocialTWBindingRequest, @Res() res: any, @Req() req: any): Promise<any> {
         const userId = new ObjectID(req.user.id);
         const getUser = await this.userService.findOne({ _id: userId });
         const verifyObject = await this.twitterService.verifyCredentials(socialBinding.twitterOauthToken, socialBinding.twitterTokenSecret);
         const ipAddress = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress).split(',')[0];
         const clientId = req.headers['client-id'];
-        const query = {_id:userId};
-        const newValue = {$set:{isSyncPage:true}};   
-        await this.userService.update(query,newValue);
+        const query = { _id: userId };
+        const newValue = { $set: { isSyncPage: true } };
+        await this.userService.update(query, newValue);
 
-        const pageSocialFb = await this.pageSocialAccountService.findOne({where:{providerName:PROVIDER.TWITTER,providerPageId:socialBinding.twitterUserId,ownerPage:userId}});
+        const pageSocialFb = await this.pageSocialAccountService.findOne({ where: { providerName: PROVIDER.TWITTER, providerPageId: socialBinding.twitterUserId, ownerPage: userId } });
 
-        if(pageSocialFb !== undefined && pageSocialFb !==null){
+        if (pageSocialFb !== undefined && pageSocialFb !== null) {
             const errorResponse = ResponseUtil.getErrorResponse('Unable create Page', undefined);
             return res.status(400).send(errorResponse);
         }
 
         const assetPic = await this.assetService.createAssetFromURL(verifyObject.profile_image_url_https, userId);
-        if(verifyObject && assetPic){
-            const checkPageCate = await this.pageCategoryService.findOne({ name: 'อื่นๆ'});
+        if (verifyObject && assetPic) {
+            const checkPageCate = await this.pageCategoryService.findOne({ name: 'อื่นๆ' });
             const pageCreate: Page = new Page();
             pageCreate.name = verifyObject.name;
             pageCreate.pageUsername = null;
@@ -439,36 +439,32 @@ export class PageController {
     public async autoSyncPageFB(@Body({ validate: true }) socialBinding: PageSocialFBBindingRequest, @Res() res: any, @Req() req: any): Promise<any> {
         const userId = new ObjectID(req.user.id);
         const getUser = await this.userService.findOne({ _id: userId });
-        const query = {_id:userId};
-        const newValue = {$set:{isSyncPage:true}};
-        let assetCover:any;
-        console.log('socialBinding.facebookPageId',socialBinding.facebookPageId);
-        console.log('socialBinding.pageAccessToken',socialBinding.pageAccessToken);
+        const query = { _id: userId };
+        const newValue = { $set: { isSyncPage: true } };
+        let assetCover: any;
         const { request } = await axios.get('https://graph.facebook.com/v14.0/' + socialBinding.facebookPageId + '/picture?type=large');
-        console.log('request_pic',request);
-        const { data } = await axios.get('https://graph.facebook.com/v14.0/'+socialBinding.facebookPageId + '?fields=cover&access_token=' +socialBinding.pageAccessToken);
-        console.log('data_pic',data)
+        const { data } = await axios.get('https://graph.facebook.com/v14.0/' + socialBinding.facebookPageId + '?fields=cover&access_token=' + socialBinding.pageAccessToken);
         const ipAddress = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress).split(',')[0];
         const clientId = req.headers['client-id'];
         let createCate = undefined;
 
-        const pageSocialFb = await this.pageSocialAccountService.findOne({where:{providerName:PROVIDER.FACEBOOK,providerPageId:socialBinding.facebookPageId,ownerPage:userId}});
-        if(pageSocialFb !== undefined && pageSocialFb !==null){
+        const pageSocialFb = await this.pageSocialAccountService.findOne({ where: { providerName: PROVIDER.FACEBOOK, providerPageId: socialBinding.facebookPageId, ownerPage: userId } });
+        if (pageSocialFb !== undefined && pageSocialFb !== null) {
             const errorResponse = ResponseUtil.getErrorResponse('Unable create Page', undefined);
             return res.status(400).send(errorResponse);
         }
         const assetPic = await this.assetService.createAssetFromURL(request.socket._httpMessage.res.responseUrl, userId);
-        if(data.cover !== undefined){
-            assetCover = await this.assetService.createAssetFromURL(data.cover.source,userId);
+        if (data.cover !== undefined) {
+            assetCover = await this.assetService.createAssetFromURL(data.cover.source, userId);
         }
         // create category 
 
-        await this.userService.update(query,newValue);
+        await this.userService.update(query, newValue);
 
         const checkPageCate = await this.pageCategoryService.findOne({ name: socialBinding.facebookCategory });
         if (checkPageCate === undefined) {
             const cate: PageCategory = new PageCategory();
-            cate.name = socialBinding.facebookCategory ;
+            cate.name = socialBinding.facebookCategory;
             cate.description = null;
             cate.iconURL = null;
             createCate = await this.pageCategoryService.create(cate);
@@ -498,7 +494,7 @@ export class PageController {
             if (result) {
                 const properties = {
                     pageId: socialBinding.facebookPageId,
-                    ownerPage:userId
+                    ownerPage: userId
                 };
                 const currentDateTime = moment().toDate();
                 const authTime = currentDateTime;
@@ -513,7 +509,7 @@ export class PageController {
                 const page = await this.pageSocialAccountService.create(pageSocialAccount);
                 // subscribe webhook
                 if (page) {
-                    const webHooks = await this.facebookService.subScribeWebhook(socialBinding.facebookPageId,socialBinding.pageAccessToken);
+                    const webHooks = await this.facebookService.subScribeWebhook(socialBinding.facebookPageId, socialBinding.pageAccessToken);
                     console.log('webhook', webHooks);
                     const config = new PageConfig();
                     config.page = result.id;
@@ -554,16 +550,16 @@ export class PageController {
                         } else {
                             engagement.isFirst = true;
                         }
-                        if(assetCover){
-                            const queryPic = {_id:result.id};
-                            const newValuePic = {$set:{ coverURL: ASSET_PATH + assetCover.id, s3CoverURL: assetCover.s3FilePath }};
-                            const updatePageCoverPic = await this.pageService.update(queryPic,newValuePic);
-                            if(updatePageCoverPic){
+                        if (assetCover) {
+                            const queryPic = { _id: result.id };
+                            const newValuePic = { $set: { coverURL: ASSET_PATH + assetCover.id, s3CoverURL: assetCover.s3FilePath } };
+                            const updatePageCoverPic = await this.pageService.update(queryPic, newValuePic);
+                            if (updatePageCoverPic) {
                                 await this.userEngagementService.create(engagement);
                                 const successResponse = ResponseUtil.getSuccessResponse('Successfully create Page', result);
                                 return res.status(200).send(successResponse);
                             }
-                        }else{
+                        } else {
                             await this.userEngagementService.create(engagement);
                             const successResponse = ResponseUtil.getSuccessResponse('Successfully create Page', result);
                             return res.status(200).send(successResponse);
@@ -579,20 +575,20 @@ export class PageController {
 
     @Post('/user/sync')
     @Authorized('user')
-    public async getUserSyncPage(@Res() res: any,@Req() req: any): Promise<any>{
+    public async getUserSyncPage(@Res() res: any, @Req() req: any): Promise<any> {
         const userId = new ObjectID(req.user.id);
-        const syncFlag:boolean = req.body.isSyncpage;
-        console.log('syncFlag',syncFlag);
+        const syncFlag: boolean = req.body.isSyncpage;
+        console.log('syncFlag', syncFlag);
         const query = { _id: userId };
-        const newValue = {$set:{isSyncPage:syncFlag}};
-        const updateUser = await this.userService.update(query,newValue);
-        if(updateUser){
+        const newValue = { $set: { isSyncPage: syncFlag } };
+        const updateUser = await this.userService.update(query, newValue);
+        if (updateUser) {
             const successResponse = ResponseUtil.getSuccessResponse('Skip successful.', userId);
             return res.status(200).send(successResponse);
-        }else{
+        } else {
             const errorResponse: any = { status: 0, message: 'undefined' };
             return res.status(400).send(errorResponse);
-        }   
+        }
     }
     /**
      * @api {get} /api/page/:id/needs Get Page Needs API
@@ -1022,15 +1018,21 @@ export class PageController {
         let pageObjId: ObjectID;
         let result: PageAccessLevelResponse;
         let idStmt: any;
-        let page: any;
 
         try {
             pageObjId = new ObjectID(id);
             idStmt = { where: { _id: pageObjId } };
-            page = await this.pageService.findOne(idStmt);
         } catch (ex) {
-            page = await this.pageService.findOne({ where: { pageUsername: id } });
+            idStmt = { where: { pageUsername: id } };
+        } finally {
+            if (pageObjId === undefined || pageObjId === 'undefined') {
+                pageObjId = null;
+            }
+
+            idStmt = { $or: [{ _id: pageObjId }, { pageUsername: id }] };
         }
+
+        const page: any = await this.pageService.findOne(idStmt);
 
         if (page) {
             const userObjId = req.user.id;
@@ -1056,7 +1058,7 @@ export class PageController {
             }
 
             const searchFilter = new SearchFilter();
-            searchFilter.whereConditions = { user: new ObjectID(userObjId), page: new ObjectID(id) };
+            searchFilter.whereConditions = { user: new ObjectID(userObjId), page: new ObjectID(page.id) };
 
             const pageAccessResult: any[] = await this.pageAccessLevelService.search(searchFilter);
 
@@ -1094,15 +1096,21 @@ export class PageController {
         let pageObjId: ObjectID;
         const result: PageAccessLevelResponse[] = [];
         let idStmt: any;
-        let page: any;
 
         try {
             pageObjId = new ObjectID(id);
             idStmt = { where: { _id: pageObjId } };
-            page = await this.pageService.findOne(idStmt);
         } catch (ex) {
-            page = await this.pageService.findOne({ where: { pageUsername: id } });
+            idStmt = { where: { pageUsername: id } };
+        } finally {
+            if (pageObjId === undefined || pageObjId === 'undefined') {
+                pageObjId = null;
+            }
+
+            idStmt = { $or: [{ _id: pageObjId }, { pageUsername: id }] };
         }
+
+        const page: any = await this.pageService.findOne(idStmt);
 
         if (page) {
             const userObjId = req.user.id;
@@ -1115,7 +1123,7 @@ export class PageController {
             }
 
             const searchFilter = new SearchFilter();
-            searchFilter.whereConditions = { user: new ObjectID(userObjId), page: new ObjectID(id) };
+            searchFilter.whereConditions = { user: new ObjectID(userObjId), page: new ObjectID(page.id) };
             const userPageAccessResult: any[] = await this.pageAccessLevelService.search(searchFilter);
             if (userPageAccessResult.length >= 1) {
                 if (userPageAccessResult[0].level === PAGE_ACCESS_LEVEL.ADMIN ||
@@ -1195,7 +1203,6 @@ export class PageController {
         let pageObjId: ObjectID;
         let result: PageAccessLevelResponse;
         let idStmt: any;
-        let page: any;
 
         // check user
         let user: User = undefined;
@@ -1249,10 +1256,17 @@ export class PageController {
         try {
             pageObjId = new ObjectID(id);
             idStmt = { where: { _id: pageObjId } };
-            page = await this.pageService.findOne(idStmt);
         } catch (ex) {
-            page = await this.pageService.findOne({ where: { pageUsername: id } });
+            idStmt = { where: { pageUsername: id } };
+        } finally {
+            if (pageObjId === undefined || pageObjId === 'undefined') {
+                pageObjId = null;
+            }
+
+            idStmt = { $or: [{ _id: pageObjId }, { pageUsername: id }] };
         }
+
+        const page: any = await this.pageService.findOne(idStmt);
 
         if (page) {
             const userObjId = req.user.id;
@@ -1265,7 +1279,7 @@ export class PageController {
 
             if (!canDoAction) {
                 const searchFilter = new SearchFilter();
-                searchFilter.whereConditions = { user: new ObjectID(userObjId), page: new ObjectID(id) };
+                searchFilter.whereConditions = { user: new ObjectID(userObjId), page: new ObjectID(page.id) };
 
                 const pageAccessResult: any[] = await this.pageAccessLevelService.search(searchFilter);
                 if (pageAccessResult.length > 0) {
@@ -1291,7 +1305,7 @@ export class PageController {
 
             // check if user access exist
             const usrAccessSearchFilter = new SearchFilter();
-            usrAccessSearchFilter.whereConditions = { user: new ObjectID(user.id), page: new ObjectID(id) };
+            usrAccessSearchFilter.whereConditions = { user: new ObjectID(user.id), page: new ObjectID(page.id) };
 
             const userAccessResult: any[] = await this.pageAccessLevelService.search(usrAccessSearchFilter);
 
@@ -1386,7 +1400,6 @@ export class PageController {
     public async deleteUserPageAccess(@Param('id') id: string, @Body({ validate: true }) access: CreatePageAccessLevelRequest, @Res() res: any, @Req() req: any): Promise<any> {
         let pageObjId: ObjectID;
         let idStmt: any;
-        let page: any;
 
         // check user
         let user: User = undefined;
@@ -1437,10 +1450,17 @@ export class PageController {
         try {
             pageObjId = new ObjectID(id);
             idStmt = { where: { _id: pageObjId } };
-            page = await this.pageService.findOne(idStmt);
         } catch (ex) {
-            page = await this.pageService.findOne({ where: { pageUsername: id } });
+            idStmt = { where: { pageUsername: id } };
+        } finally {
+            if (pageObjId === undefined || pageObjId === 'undefined') {
+                pageObjId = null;
+            }
+
+            idStmt = { $or: [{ _id: pageObjId }, { pageUsername: id }] };
         }
+
+        const page: any = await this.pageService.findOne(idStmt);
 
         if (page) {
             const userObjId = req.user.id;
@@ -1453,7 +1473,7 @@ export class PageController {
 
             if (!canDoAction) {
                 const searchFilter = new SearchFilter();
-                searchFilter.whereConditions = { user: new ObjectID(userObjId), page: new ObjectID(id) };
+                searchFilter.whereConditions = { user: new ObjectID(userObjId), page: new ObjectID(page.id) };
 
                 const pageAccessResult: any[] = await this.pageAccessLevelService.search(searchFilter);
                 if (pageAccessResult.length > 0) {
@@ -1473,7 +1493,7 @@ export class PageController {
 
             // check if user access exist
             const usrAccessSearchFilter = new SearchFilter();
-            usrAccessSearchFilter.whereConditions = { user: new ObjectID(user.id), page: new ObjectID(id) };
+            usrAccessSearchFilter.whereConditions = { user: new ObjectID(user.id), page: new ObjectID(page.id) };
 
             const userAccessResult: any[] = await this.pageAccessLevelService.search(usrAccessSearchFilter);
 
@@ -1519,15 +1539,21 @@ export class PageController {
         let pageObjId: ObjectID;
         let result: PageAccessLevelResponse;
         let idStmt: any;
-        let page: any;
 
         try {
             pageObjId = new ObjectID(id);
             idStmt = { where: { _id: pageObjId } };
-            page = await this.pageService.findOne(idStmt);
         } catch (ex) {
-            page = await this.pageService.findOne({ where: { pageUsername: id } });
+            idStmt = { where: { pageUsername: id } };
+        } finally {
+            if (pageObjId === undefined || pageObjId === 'undefined') {
+                pageObjId = null;
+            }
+
+            idStmt = { $or: [{ _id: pageObjId }, { pageUsername: id }] };
         }
+
+        const page: any = await this.pageService.findOne(idStmt);
 
         if (page) {
             const userObjId = req.user.id;
@@ -1540,7 +1566,7 @@ export class PageController {
 
             if (!canDoAction) {
                 const searchFilter = new SearchFilter();
-                searchFilter.whereConditions = { user: new ObjectID(userObjId), page: new ObjectID(id) };
+                searchFilter.whereConditions = { user: new ObjectID(userObjId), page: new ObjectID(page.id) };
 
                 const pageAccessResult: any[] = await this.pageAccessLevelService.search(searchFilter);
                 if (pageAccessResult.length > 0) {
@@ -1558,7 +1584,7 @@ export class PageController {
                 return res.status(401).send(errorResponse);
             }
 
-            const deleteUserAccessLV = await this.pageAccessLevelService.findOne({ _id: new ObjectID(accessid), page: new ObjectID(id) });
+            const deleteUserAccessLV = await this.pageAccessLevelService.findOne({ _id: new ObjectID(accessid), page: new ObjectID(page.id) });
 
             if (deleteUserAccessLV) {
                 if (deleteUserAccessLV.level === PAGE_ACCESS_LEVEL.OWNER) {
@@ -1614,7 +1640,6 @@ export class PageController {
         let pageObjId: ObjectID;
         let result: PageAccessLevelResponse;
         let idStmt: any;
-        let page: any;
 
         // check user
         let user: User = undefined;
@@ -1669,10 +1694,17 @@ export class PageController {
         try {
             pageObjId = new ObjectID(id);
             idStmt = { where: { _id: pageObjId } };
-            page = await this.pageService.findOne(idStmt);
         } catch (ex) {
-            page = await this.pageService.findOne({ where: { pageUsername: id } });
+            idStmt = { where: { pageUsername: id } };
+        } finally {
+            if (pageObjId === undefined || pageObjId === 'undefined') {
+                pageObjId = null;
+            }
+
+            idStmt = { $or: [{ _id: pageObjId }, { pageUsername: id }] };
         }
+
+        const page: any = await this.pageService.findOne(idStmt);
 
         if (page) {
             const userObjId = req.user.id;
@@ -1685,7 +1717,7 @@ export class PageController {
 
             if (!canDoAction) {
                 const searchFilter = new SearchFilter();
-                searchFilter.whereConditions = { user: new ObjectID(userObjId), page: new ObjectID(id) };
+                searchFilter.whereConditions = { user: new ObjectID(userObjId), page: new ObjectID(page.id) };
 
                 const pageAccessResult: any[] = await this.pageAccessLevelService.search(searchFilter);
                 if (pageAccessResult.length > 0) {
@@ -1712,7 +1744,7 @@ export class PageController {
             // check if user access exist
             const newLevel = access.level.toUpperCase();
             const usrAccessSearchFilter = new SearchFilter();
-            usrAccessSearchFilter.whereConditions = { user: new ObjectID(user.id), page: new ObjectID(id), level: newLevel };
+            usrAccessSearchFilter.whereConditions = { user: new ObjectID(user.id), page: new ObjectID(page.id), level: newLevel };
 
             const userAccessResult: any[] = await this.pageAccessLevelService.search(usrAccessSearchFilter);
 

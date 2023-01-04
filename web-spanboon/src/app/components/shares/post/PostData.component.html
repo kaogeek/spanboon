@@ -6,41 +6,41 @@
 -->
 
 <div class="card-feed-post">
-        <ng-container *ngIf="itemPost">
-            <button mat-icon-button [matMenuTriggerFor]="menu" [disableRipple]="'false'" class="dropdown">
-                <span class="material-icons">
-                    more_horiz
-                </span>
-            </button>
-            <mat-menu #menu="matMenu" xPosition="before">
-                <ng-container *ngIf="isNotAccess; else elseTemplateIsNotAccess">
-                    <button mat-menu-item [disableRipple]="'true'" class="list-dropdown" (click)="editPost(itemPost)">
-                        <mat-icon>edit</mat-icon>
-                        <span>แก้ไข</span>
-                    </button>
-                    <button mat-menu-item [disableRipple]="'true'" class="list-dropdown" (click)="deletePost(itemPost)">
-                        <mat-icon>delete</mat-icon>
-                        <span>ลบ</span>
-                    </button>
-                </ng-container>
-                <ng-template #elseTemplateIsNotAccess>
-                    <button mat-menu-item [disableRipple]="'true'" class="list-dropdown" (click)="hidePost(itemPost)">
-                        <mat-icon>close</mat-icon>
-                        <span>ซ่อนโพสต์นี้</span>
-                    </button>
-                    <button mat-menu-item [disableRipple]="'true'" class="list-dropdown" (click)="reportPost()">
-                        <mat-icon>warning</mat-icon>
-                        <span>รายงานโพสต์นี้</span>
-                    </button>
-                    <button mat-menu-item [disableRipple]="'true'" class="list-dropdown" (click)="blockUser()">
-                        <mat-icon>block</mat-icon>
-                        <span>บล็อกผู้ใช้นี้</span>
-                    </button>
-                </ng-template>
-            </mat-menu>
-        </ng-container>
+    <ng-container *ngIf="itemPost">
+        <button mat-icon-button [matMenuTriggerFor]="menu" [disableRipple]="'false'" class="dropdown">
+            <span class="material-icons">
+                more_horiz
+            </span>
+        </button>
+        <mat-menu #menu="matMenu" xPosition="before">
+            <ng-container *ngIf="isNotAccess; else elseTemplateIsNotAccess">
+                <button mat-menu-item [disableRipple]="'true'" class="list-dropdown" (click)="editPost(itemPost)">
+                    <mat-icon>edit</mat-icon>
+                    <span>แก้ไข</span>
+                </button>
+                <button mat-menu-item [disableRipple]="'true'" class="list-dropdown" (click)="deletePost(itemPost)">
+                    <mat-icon>delete</mat-icon>
+                    <span>ลบ</span>
+                </button>
+            </ng-container>
+            <ng-template #elseTemplateIsNotAccess>
+                <button mat-menu-item [disableRipple]="'true'" class="list-dropdown" (click)="hidePost(itemPost)">
+                    <mat-icon>close</mat-icon>
+                    <span>ซ่อนโพสต์นี้</span>
+                </button>
+                <button mat-menu-item [disableRipple]="'true'" class="list-dropdown" (click)="reportPost()">
+                    <mat-icon>warning</mat-icon>
+                    <span>รายงานโพสต์นี้</span>
+                </button>
+                <button mat-menu-item [disableRipple]="'true'" class="list-dropdown" (click)="blockUser()">
+                    <mat-icon>block</mat-icon>
+                    <span>บล็อกผู้ใช้นี้</span>
+                </button>
+            </ng-template>
+        </mat-menu>
+    </ng-container>
 
-        <!-- *ngIf="isNotAccess" -->
+    <!-- *ngIf="isNotAccess" -->
 
     <div class="header-post" [class.active]="itemPost.referencePostObject && itemPost.referencePostObject.ownerUser">
         <div class="left"
@@ -49,36 +49,49 @@
                 <div class="wrapper-profile-page" *ngIf="itemPost.type === 'NEEDS' || itemPost.type === 'GENERAL' ">
                     <div class="page-img">
                         <ng-container *ngIf="itemPost.page; else elseImage">
-                            <ng-container
-                                *ngIf="itemPost.page.imageURL !== '' && itemPost.page.imageURL !== null && itemPost.page.imageURL !== undefined; else elseTemplateFileImage">
-                                <img class="post-data-profile"
-                                    [src]="itemPost.page.signURL?itemPost.page.signURL:itemPost.page.imageSignURL?itemPost.page.imageSignURL:apiBaseURL+itemPost.page.imageURL+'/image'"
-                                    alt="">
-                            </ng-container>
-                            <ng-template #elseTemplateFileImage>
-                                <img class="post-data-profile" src="../../../../../../assets/img/profile1.svg" alt="">
-                            </ng-template>
+                            <a target="_blank"
+                                [href]="(itemPost.page.pageUsername !== null && itemPost.page.pageUsername !== undefined && itemPost.page.pageUsername !== '') ? 'page/'+itemPost.page.pageUsername: (itemPost.page._id !== null && itemPost.page._id !== undefined && itemPost.page._id !== '') ? 'page/'+itemPost.page._id: 'page/'+itemPost.page._id">
+                                <ng-container
+                                    *ngIf="itemPost.page.imageURL !== '' && itemPost.page.imageURL !== null && itemPost.page.imageURL !== undefined; else elseTemplateFileImage">
+                                    <img class="post-data-profile"
+                                        [src]="itemPost.page.signURL?itemPost.page.signURL:itemPost.page.imageSignURL?itemPost.page.imageSignURL:apiBaseURL+itemPost.page.imageURL+'/image'">
+                                </ng-container>
+                                <ng-template #elseTemplateFileImage>
+                                    <img class="post-data-profile" src="../../../../../../assets/img/profile1.svg"
+                                        alt="">
+                                </ng-template>
+                            </a>
                         </ng-container>
                         <ng-template #elseImage>
-                            <ng-container
-                                *ngIf="itemPost.user && itemPost.user.imageURL !== '' && itemPost.user.imageURL !== undefined && itemPost.user.imageURL !== null; else elseTemplateProfile">
-                                <img class="post-data-profile"
-                                    [src]="itemPost.user.signURL?itemPost.user.signURL:itemPost.user.imageSignURL?itemPost.user.imageSignURL:apiBaseURL+itemPost.user.imageURL+'/image'"
-                                    alt="">
-                            </ng-container>
-                            <ng-template #elseTemplateProfile>
-                                <img class="post-data-profile" src="../../../../../../assets/img/profile1.svg" alt="">
-                            </ng-template>
+                            <a target="_blank"
+                                [href]="(itemPost.user.uniqueId !== null && itemPost.user.uniqueId !== undefined && itemPost.user.uniqueId !== '') ? itemPost.user.uniqueId: (itemPost.page._id !== null && itemPost.user._id !== undefined && itemPost.user._id !== '') ? itemPost.user._id: itemPost.user._id">
+                                <ng-container
+                                    *ngIf="itemPost.user && itemPost.user.imageURL !== '' && itemPost.user.imageURL !== undefined && itemPost.user.imageURL !== null; else elseTemplateProfile">
+                                    <img class="post-data-profile"
+                                        [src]="itemPost.user.signURL?itemPost.user.signURL:itemPost.user.imageSignURL?itemPost.user.imageSignURL:apiBaseURL+itemPost.user.imageURL+'/image'"
+                                        alt="">
+                                </ng-container>
+                                <ng-template #elseTemplateProfile>
+                                    <img class="post-data-profile" src="../../../../../../assets/img/profile1.svg"
+                                        alt="">
+                                </ng-template>
+                            </a>
                         </ng-template>
 
                         <div class="post-data-name">
                             <ng-container *ngIf="itemPost.page; else elseName">
-                                {{itemPost.page.name}}
+                                <a target="_blank"
+                                    [href]="(itemPost.page.pageUsername !== null && itemPost.page.pageUsername !== undefined && itemPost.page.pageUsername !== '') ? 'page/'+itemPost.page.pageUsername: (itemPost.page._id !== null && itemPost.page._id !== undefined && itemPost.page._id !== '') ? 'page/'+itemPost.page._id: 'page/'+itemPost.page._id">
+                                    {{itemPost.page.name}}
+                                </a>
                             </ng-container>
                             <ng-template #elseName>
                                 <ng-container
                                     *ngIf="itemPost.user && itemPost.user.displayName !== '' && itemPost.user.displayName !== undefined && itemPost.user.displayName !== null">
-                                    {{itemPost.user.displayName}}
+                                    <a target="_blank"
+                                        [href]="(itemPost.user.uniqueId !== null && itemPost.user.uniqueId !== undefined && itemPost.user.uniqueId !== '') ? 'profile/'+itemPost.user.uniqueId: (itemPost.page._id !== null && itemPost.user._id !== undefined && itemPost.user._id !== '') ? 'profile/'+itemPost.user._id: 'profile/'+itemPost.user._id">
+                                        {{itemPost.user.displayName}}
+                                    </a>
                                 </ng-container>
                             </ng-template>
 
@@ -272,7 +285,7 @@
                                 <g id="SvgjsG1006">
                                     <path
                                         d="M238.986,244.034c0,6.895-3.683,13.276-9.654,16.723L28.958,427.954c-5.971,3.452-13.333,3.452-19.306,0    C3.68,424.5,0,418.13,0,411.23V76.832c0-6.892,3.675-13.27,9.652-16.723c2.988-1.723,6.321-2.583,9.655-2.583    c3.341,0,6.663,0.864,9.655,2.583l200.379,167.2C235.304,230.759,238.986,237.137,238.986,244.034z M478.429,227.314    l-200.386-167.2c-2.978-1.724-6.312-2.583-9.651-2.583s-6.653,0.864-9.654,2.583c-5.973,3.453-9.652,9.825-9.652,16.723v334.4    c0,6.893,3.68,13.271,9.652,16.721c5.976,3.447,13.33,3.447,19.306,0l200.373-167.202c5.976-3.441,9.654-9.816,9.654-16.717    C488.08,237.142,484.392,230.759,478.429,227.314z"
-                                        fill="#84b572" data-original="#000000"  />
+                                        fill="#84b572" data-original="#000000" />
                                 </g>
                             </g>
                             <g xmlns="http://www.w3.org/2000/svg">

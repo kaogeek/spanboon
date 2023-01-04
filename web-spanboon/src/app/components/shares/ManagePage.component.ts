@@ -130,6 +130,7 @@ export class ManagePage extends AbstractPage implements OnInit {
   public ngOnInit(): void {
     // this.isLogin();
     this.searchAllPage();
+    this.fbLibrary();
   }
 
   public ngOnDestroy(): void {
@@ -155,69 +156,51 @@ export class ManagePage extends AbstractPage implements OnInit {
   }
   public clickSyncTw(text: string, bind?: boolean) {
     let callback = environment.webBaseURL + "/callback";
-    this.twitterService
-      .requestToken(callback)
-      .then((result: any) => {
-        this.authorizeLink += "?" + result;
-        window.open(this.authorizeLink, "_blank");
-        // this.popup(this.authorizeLink, '', 600, 200, 'yes');
+    this.twitterService.requestToken(callback).then((result: any) => {
+      this.authorizeLink += "?" + result;
+      window.open(this.authorizeLink, "_blank");
+      // this.popup(this.authorizeLink, '', 600, 200, 'yes');
 
-        window.bindTwitter = (resultTwitter) => {
-          this.openLoading();
-          if (resultTwitter !== undefined && resultTwitter !== null) {
-            const twitter = new PageSocialTW();
-            twitter.twitterOauthToken = resultTwitter.token;
-            twitter.twitterTokenSecret = resultTwitter.token_secret;
-            twitter.twitterUserId = resultTwitter.userId;
-            twitter.twitterPageName = resultTwitter.name;
-            this.authenManager
-              .syncWithTwitter(twitter)
-              .then((res: any) => {
-                setTimeout(() => {
-                  this.closeLoading();
-                }, 1000);
-                if (res.data) {
-                  this.observManager.publish("authen.check", null);
-                  this.connectTwitter = res.data;
-                  this.isLoadingTwitter = false;
-                  let check = {
-                    checked: true,
-                  };
-                }
-              })
-              .catch((err: any) => {
-                const statusMsg = err.error.message;
-                if (statusMsg === "Unable create Page" && statusMsg === 400) {
-                  let dialog = this.dialog.open(DialogAlert, {
-                    disableClose: true,
-                    data: {
-                      text: "คุณมีเพจอยู่แล้ว",
-                      bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-                      bottomColorText2: "black",
-                      btDisplay1: "none",
-                    },
-                  });
-                }
-                if (
-                  err.error.message ===
-                  "This page was binding with Twitter Account."
-                ) {
-                  this.showAlertDialog(
-                    "บัญชีนี้ได้ทำการเชื่อมต่อ Twitter แล้ว"
-                  );
-                } else {
-                  this.showAlertDialog("เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้ง");
-                }
-                this.connectTwitter = false;
+      window.bindTwitter = (resultTwitter) => {
+        this.openLoading();
+        if (resultTwitter !== undefined && resultTwitter !== null) {
+          const twitter = new PageSocialTW();
+          twitter.twitterOauthToken = resultTwitter.token;
+          twitter.twitterTokenSecret = resultTwitter.token_secret;
+          twitter.twitterUserId = resultTwitter.userId;
+          twitter.twitterPageName = resultTwitter.name;
+          this.authenManager.syncWithTwitter(twitter).then((res: any) => {
+            setTimeout(() => {
+              this.closeLoading();
+            }, 1000);
+            if (res.data) {
+              this.observManager.publish("authen.check", null);
+              this.connectTwitter = res.data;
+              this.isLoadingTwitter = false;
+              let check = {
+                checked: true,
+              };
+            }
+          }).catch((err: any) => {
+            if (err.error.message === "Unable create Page" && err.status === 400) {
+              this.dialog.open(DialogAlert, {
+                disableClose: true,
+                data: {
+                  text: "คุณมีเพจอยู่แล้ว",
+                  bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+                  bottomColorText2: "black",
+                  btDisplay1: "none",
+                },
               });
-          }
-        };
-      })
-      .catch((error: any) => {
-        this.showAlertDialog("เกิดข้อมูลผิดพลาด กรุณาลองใหม่อีกครั้ง");
-        this.isPreLoadIng = false;
-        this.isLoadingTwitter = false;
-      });
+            }
+          });
+        }
+      };
+    }).catch((error: any) => {
+      this.showAlertDialog("เกิดข้อมูลผิดพลาด กรุณาลองใหม่อีกครั้ง");
+      this.isPreLoadIng = false;
+      this.isLoadingTwitter = false;
+    });
   }
   public fbLibrary() {
     (window as any).fbAsyncInit = function () {
@@ -313,10 +296,8 @@ export class ManagePage extends AbstractPage implements OnInit {
         }
       })
       .catch((err) => {
-        const statusMsg = err.error.message;
-        this.closeLoading();
-        if (statusMsg === "Unable create Page" && statusMsg === 400) {
-          let dialog = this.dialog.open(DialogAlert, {
+        if (err.error.message === "Unable create Page" && err.status === 400) {
+          this.dialog.open(DialogAlert, {
             disableClose: true,
             data: {
               text: "คุณมีเพจอยู่แล้ว",
@@ -326,7 +307,7 @@ export class ManagePage extends AbstractPage implements OnInit {
             },
           });
         }
-        if (statusMsg === "User was not found.") {
+        if (err.error.message === "User was not found.") {
           let navigationExtras: NavigationExtras = {
             state: {
               accessToken: this.accessToken,
@@ -335,7 +316,7 @@ export class ManagePage extends AbstractPage implements OnInit {
             queryParams: { mode: "facebook" },
           };
           this.router.navigate(["/register"], navigationExtras);
-        } else if (statusMsg === "Baned PageUser.") {
+        } else if (err.error.message === "Baned PageUser.") {
           this.dialog.open(DialogAlert, {
             disableClose: true,
             data: {
@@ -346,6 +327,8 @@ export class ManagePage extends AbstractPage implements OnInit {
             },
           });
         }
+
+        this.closeLoading();
       });
   }
   private openLoading() {
