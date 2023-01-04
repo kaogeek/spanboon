@@ -43,7 +43,7 @@ import { ObjectUtil } from '../../utils/Utils';
 import { DeviceTokenService } from '../services/DeviceToken';
 import { CheckUser } from './requests/CheckUser';
 import { AutoSynz } from './requests/AutoSynz';
-import { OtpService } from '../services/OtpService';
+const cache = new NodeCache({ stdTTL: 300 });
 @JsonController()
 export class GuestController {
     constructor(
@@ -58,7 +58,6 @@ export class GuestController {
         private twitterService: TwitterService,
         private configService: ConfigService,
         private deviceToken: DeviceTokenService,
-        private otpService:OtpService
     ) { }
 
     /**
@@ -1546,32 +1545,28 @@ export class GuestController {
         const user: User = await this.userService.findOne({ username: emailRes });
         const minm = 100000;
         const maxm = 999999;
-        const limitCount = await this.otpService.findOne({where:{email:user.email}});
+        const getCache = await cache.get(user.id.toString());
         let count = 1;
-        let saveOtp = undefined;
-        const otpRandom = Math.floor(Math.random() * (maxm - minm + 1)) + minm;
+        if (getCache !== undefined) {
+            count += getCache[0].limit;
+        }
+        const otp = Math.floor(Math.random() * (maxm - minm + 1)) + minm;
+        const object = [{ otpGet: otp, limit: count }];
         const expirationDate = moment().add(5, 'minutes').toDate().getTime();
-        if(limitCount === undefined){
-            saveOtp = await this.otpService.createOtp({email:emailRes,otp:otpRandom,limit:count,expiration:expirationDate});
-        }
-
-        if(limitCount !== undefined && limitCount.limit <= 2){
-            count += limitCount.limit;
-            const query = {email:emailRes};
-            const newValues = {$set:{limit:count,otp:otpRandom}};
-            await this.otpService.updateToken(query,newValues);
-        }
-        
-        if (saveOtp !== undefined && limitCount === undefined ) {
-            const sendMailRes = await this.sendActivateOTP(user, emailRes, saveOtp.otp, 'Send OTP');
-            if(sendMailRes.status === 1){
-                const successResponse = ResponseUtil.getSuccessOTP('The Otp have been send.', saveOtp, saveOtp.limit);
+        const getTTL = cache.getTtl(user.id.toString());
+        if (getCache === undefined && getTTL === undefined) {
+            const saveOtp = cache.set(String(user.id), object);
+            const sendMailRes = await this.sendActivateOTP(user, emailRes, otp, 'Send OTP');
+            if (saveOtp && sendMailRes.status === 1) {
+                const successResponse = ResponseUtil.getSuccessOTP('The Otp have been send.', saveOtp, object[0].limit);
                 return res.status(200).send(successResponse);
             }
-        } else if(limitCount !== undefined && limitCount.limit <= 2 && limitCount.expiration < expirationDate){
-            const sendMailRes = await this.sendActivateOTP(user, emailRes, limitCount.otp, 'Send OTP');
-            if(sendMailRes.status === 1){
-                const successResponse = ResponseUtil.getSuccessOTP('The Otp have been send.', saveOtp, limitCount.limit);
+        } else if (getCache !== undefined && getCache[0].limit <= 2 && getTTL !== undefined && getTTL < expirationDate) {
+            const saveOtp = cache.set(String(user.id), object);
+            const sendMailRes = await this.sendActivateOTP(user, emailRes, otp, 'Send OTP');
+
+            if (saveOtp && sendMailRes.status === 1) {
+                const successResponse = ResponseUtil.getSuccessOTP('The Otp have been send.', saveOtp, object[0].limit);
                 return res.status(200).send(successResponse);
             }
         } else {
@@ -1587,11 +1582,11 @@ export class GuestController {
         const mode = req.headers.mode;
         const emailRes: string = username.toLowerCase();
         const user: User = await this.userService.findOne({ username: emailRes });
-        const otpFind = await this.otpService.findOne({email:emailRes});
+        const getCache = await cache.get(user.id.toString());
         const userExrTime = await this.getUserLoginExpireTime();
         let loginUser: any;
         if (user && mode === PROVIDER.EMAIL) {
-            if (otp === otpFind.otp) {
+            if (otp === getCache[0].otpGet) {
                 const token = jwt.sign({ id: user.id }, env.SECRET_KEY);
                 const authenId = new AuthenticationId();
                 authenId.user = user.id;
@@ -1602,8 +1597,8 @@ export class GuestController {
                 authenId.expirationDate = moment().add(userExrTime, 'days').toDate();
                 const authIdCreate = await this.authenticationIdService.create(authenId);
                 if (authIdCreate) {
-                    const query = {email:emailRes};
-                    await this.otpService.delete(query);
+
+                    cache.del(user.id.toString());
                     const successResponse = ResponseUtil.getSuccessResponseAuth('Loggedin successful', user.id, mode);
                     return res.status(200).send(successResponse);
                 }
@@ -1613,7 +1608,7 @@ export class GuestController {
             }
 
         } else if (user && mode === PROVIDER.FACEBOOK) {
-            if (otp === otpFind.otp) {
+            if (otp === getCache[0].otpGet) {
                 const properties = { fbAccessExpTime: otpRequest.facebook.fbexptime, fbSigned: otpRequest.facebook.fbsignedRequest };
                 const userFB = await this.userService.findOne({ email: otpRequest.email });
                 const authenId = new AuthenticationId();
@@ -1627,8 +1622,7 @@ export class GuestController {
                 const authIdCreate = await this.authenticationIdService.create(authenId);
                 if (authIdCreate) {
                     loginUser = await this.userService.findOne({ where: { _id: authIdCreate.user } });
-                    const query = {email:emailRes};
-                    await this.otpService.delete(query);
+                    cache.del(user.id.toString());
                     if (loginUser === undefined) {
                         const errorResponse: any = { status: 0, message: 'Cannot login please try again.' };
                         return res.status(400).send(errorResponse);
@@ -1656,7 +1650,7 @@ export class GuestController {
                 return res.status(400).send(errorResponse);
             }
         } else if (user && mode === PROVIDER.GOOGLE) {
-            if (otp === otpFind.otp) {
+            if (otp === getCache[0].otpGet) {
                 const modHeaders = req.headers.mod_headers;
                 const checkIdToken = await this.googleService.verifyIdToken(otpRequest.idToken, modHeaders);
                 const authenId = new AuthenticationId();
@@ -1670,8 +1664,7 @@ export class GuestController {
                 const authIdCreate = await this.authenticationIdService.create(authenId);
                 if (authIdCreate) {
                     loginUser = await this.userService.findOne({ where: { _id: authIdCreate.user } });
-                    const query = {email:emailRes};
-                    await this.otpService.delete(query);
+                    cache.del(user.id.toString());
                     if (loginUser === undefined) {
                         const errorResponse: any = { status: 0, message: 'Cannot login please try again.' };
                         return res.status(400).send(errorResponse);
