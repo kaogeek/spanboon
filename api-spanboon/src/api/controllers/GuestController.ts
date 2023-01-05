@@ -1585,9 +1585,6 @@ export class GuestController {
         const getCache = cache.get(user.id.toString());
         const userExrTime = await this.getUserLoginExpireTime();
         let loginUser: any;
-
-        console.log('getCache >>> ', getCache);
-
         if (getCache !== null && getCache !== undefined) {
             if (user && mode === PROVIDER.EMAIL) {
                 if (otp === getCache[0].otpGet) {
