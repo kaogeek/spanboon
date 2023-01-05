@@ -133,6 +133,7 @@ export class LoginPage extends AbstractPage implements OnInit {
 
   public ngOnInit() {
     this.checkLoginAndRedirection();
+    this.fbLibrary();
 
     let doRunAccessToken = false;
     const fullURL = window.location.href;
