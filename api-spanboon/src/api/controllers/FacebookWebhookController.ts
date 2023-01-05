@@ -98,15 +98,16 @@ export class FacebookWebhookController {
                 realText = body.entry[0].changes[0].value.message.substring(0, 50) + '.....';
             }
         } else {
-            sliceArray = 'โพสต์จากเฟสบุ๊ค';
+            realText = 'โพสต์จากเฟสบุ๊ค';
         }
         const pageSubScribes = await this.socialPostLogsService.find({ providerUserId: String(body.entry[0].changes[0].value.from.id) });
         for (const pagesSubScribe of pageSubScribes) {
             const pageIdFbs = await this.pageService.find({ _id: pagesSubScribe.pageId });
             for (const pagesIdFb of pageIdFbs) {
                 if (body !== undefined && pagesIdFb !== undefined && pagesIdFb !== null && pagesSubScribe.enable === true) {
-                    if (body.entry[0].changes[0].value.verb === 'add' && body.entry[0].changes[0].value.link === undefined && body.entry[0].changes[0].value.photos === undefined && body.entry[0].changes[0].value.item !== 'share') {
-                        const checkPost = await this.socialPostService.find({ socialId: body.entry[0].changes[0].value.post_id, pageId: ObjectID(pagesSubScribe.id), socialType: PROVIDER.FACEBOOK });
+                    if (body.entry[0].changes[0].value.verb === 'add' && body.entry[0].changes[0].value.link === undefined && body.entry[0].changes[0].value.photos === undefined && body.entry[0].changes[0].value.item !== 'share' && body.entry[0].changes[0].value.item === 'status' ) {
+                        console.log('pass1');
+                        const checkPost = await this.socialPostService.find({ socialId: body.entry[0].changes[0].value.post_id});
                         const checkFeed = checkPost.shift();
                         if (checkFeed === undefined) {
                             const postPage: Posts = new Posts();
@@ -142,12 +143,11 @@ export class FacebookWebhookController {
                             newSocialPost.socialId = body.entry[0].changes[0].value.post_id;
                             newSocialPost.socialType = PROVIDER.FACEBOOK;
                             await this.socialPostService.create(newSocialPost);
-                        } else {
-                            return res.status(400).send('this values is removes from webhooks');
                         }
-                    } else if (body.entry[0].changes[0].value.verb === 'add' && body.entry[0].changes[0].value.link !== undefined && body.entry[0].changes[0].value.photos === undefined && body.entry[0].changes[0].value.item !== 'share') {
+                    } else if (body.entry[0].changes[0].value.verb === 'add' && body.entry[0].changes[0].value.link !== undefined && body.entry[0].changes[0].value.photos === undefined && body.entry[0].changes[0].value.item !== 'share' && body.entry[0].changes[0].value.item === 'photo') {
+                        console.log('pass2');
                         const assetPic = await this.assetService.createAssetFromURL(body.entry[0].changes[0].value.link, pagesIdFb.ownerUser);
-                        const checkPost = await this.socialPostService.find({ socialId: body.entry[0].changes[0].value.post_id, pageId: ObjectID(pagesSubScribe.id), socialType: PROVIDER.FACEBOOK });
+                        const checkPost = await this.socialPostService.find({ socialId: body.entry[0].changes[0].value.post_id});
                         const checkFeed = checkPost.shift();
                         if (checkFeed === undefined && assetPic !== undefined) {
                             const postPage: Posts = new Posts();
@@ -205,10 +205,9 @@ export class FacebookWebhookController {
                                     }
                                 }
                             }
-                        } else {
-                            return res.status(400).send('this values is removes from webhooks');
                         }
                     } else if (body.entry[0].changes[0].value.verb === 'add' && body.entry[0].changes[0].value.link === undefined && body.entry[0].changes[0].value.photos !== undefined && body.entry[0].changes[0].value.item !== 'share') {
+                        console.log('pass3');
                         const multiPics = [];
                         for (let i = 0; i < body.entry[0].changes[0].value.photos.length; i++) {
                             if (i === 4) {
@@ -217,7 +216,7 @@ export class FacebookWebhookController {
                             const multiPic = await this.assetService.createAssetFromURL(body.entry[0].changes[0].value.photos[i], pagesIdFb.ownerUser);
                             multiPics.push(multiPic);
                         }
-                        const checkPost = await this.socialPostService.find({ socialId: body.entry[0].changes[0].value.post_id, pageId: ObjectID(pagesSubScribe.id), socialType: PROVIDER.FACEBOOK });
+                        const checkPost = await this.socialPostService.find({ socialId: body.entry[0].changes[0].value.post_id});
                         const checkFeed = checkPost.shift();
                         if (checkFeed === undefined) {
                             const postPage: Posts = new Posts();
@@ -266,10 +265,9 @@ export class FacebookWebhookController {
                                     await this.assetService.update({ _id: multiPics[j].id, userId: pagesIdFb.ownerUser }, { $set: { expirationDate: null } });
                                 }
                             }
-                        } else {
-                            return res.status(400).send('this values is removes from webhooks');
-                        }
+                        } 
                     } else if (body.entry[0].changes[0].value.verb === 'edit') {
+                        console.log('pass4');
                         const socialPost = await this.socialPostService.findOne({ postBy: body.entry[0].changes[0].value.post_id });
                         if (socialPost) {
                             const queryFB = { _id: socialPost.postId };
@@ -279,91 +277,11 @@ export class FacebookWebhookController {
                             console.log('cannot update values');
                         }
                     } else if (body.entry[0].changes[0].value.verb === 'add' && body.entry[0].changes[0].value.item === 'share' && body.entry[0].changes[0].value.link !== undefined) {
-                        const checkPost = await this.socialPostService.find({ socialId: body.entry[0].changes[0].value.post_id, pageId: ObjectID(pagesSubScribe.id), socialType: PROVIDER.FACEBOOK });
-                        const checkFeed = checkPost.shift();
-                        const linkShare = 'https://facebook.com/' + body.entry[0].changes[0].value.link;
-                        if (checkFeed === undefined) {
-                            const postPage: Posts = new Posts();
-                            postPage.title = 'แชร์จากเฟสบุ๊ค';
-                            postPage.detail = linkShare;
-                            postPage.isDraft = false;
-                            postPage.hidden = false;
-                            postPage.type = POST_TYPE.GENERAL;
-                            postPage.userTags = [];
-                            postPage.coverImage = '';
-                            postPage.pinned = false;
-                            postPage.deleted = false;
-                            postPage.ownerUser = pagesIdFb.ownerUser;
-                            postPage.commentCount = 0;
-                            postPage.repostCount = 0;
-                            postPage.shareCount = 0;
-                            postPage.likeCount = 0;
-                            postPage.viewCount = 0;
-                            postPage.createdDate = body.entry[0].changes[0].value.created_time;
-                            postPage.startDateTime = moment().toDate();
-                            postPage.story = null;
-                            postPage.pageId = pagesIdFb.id;
-                            postPage.referencePost = null;
-                            postPage.rootReferencePost = null;
-                            postPage.visibility = null;
-                            postPage.ranges = null;
-                            const createPostPageData: Posts = await this.postsService.create(postPage);
-                            const newSocialPost = new SocialPost();
-                            newSocialPost.pageId = pagesIdFb.id;
-                            newSocialPost.postId = createPostPageData.id;
-                            newSocialPost.postBy = body.entry[0].changes[0].value.from.id;
-                            newSocialPost.postByType = body.entry[0].changes[0].value.verb;
-                            newSocialPost.socialId = body.entry[0].changes[0].value.post_id;
-                            newSocialPost.socialType = PROVIDER.FACEBOOK;
-                            await this.socialPostService.create(newSocialPost);
-                        } else {
-                            return res.status(400).send('this values is removes from webhooks');
-                        }
+                        console.log('pass5');
+                        return res.status(400).send('this values is removes from webhooks');
                     } else if (body.entry[0].changes[0].value.verb === 'edited' && body.entry[0].changes[0].value.item === 'status' && body.entry[0].changes[0].value.link === undefined) {
                         console.log('pass6');
-                        const splitArray = body.entry[0].changes[0].value.post_id.split('_');
-                        const pageId = splitArray[0];
-                        const videoId = splitArray[1];
-                        const checkPost = await this.socialPostService.find({ socialId: body.entry[0].changes[0].value.post_id, pageId: ObjectID(pagesSubScribe.id), socialType: PROVIDER.FACEBOOK });
-                        const checkFeed = checkPost.shift();
-                        const realLink = 'https://facebook.com/' + pageId + '/videos/' + videoId;
-                        if (checkFeed === undefined) {
-                            const postPage: Posts = new Posts();
-                            postPage.title = 'ไลฟ์สดจากเฟสบุ๊ค';
-                            postPage.detail = realLink;
-                            postPage.isDraft = false;
-                            postPage.hidden = false;
-                            postPage.type = POST_TYPE.GENERAL;
-                            postPage.userTags = [];
-                            postPage.coverImage = '';
-                            postPage.pinned = false;
-                            postPage.deleted = false;
-                            postPage.ownerUser = pagesIdFb.ownerUser;
-                            postPage.commentCount = 0;
-                            postPage.repostCount = 0;
-                            postPage.shareCount = 0;
-                            postPage.likeCount = 0;
-                            postPage.viewCount = 0;
-                            postPage.createdDate = body.entry[0].changes[0].value.created_time;
-                            postPage.startDateTime = moment().toDate();
-                            postPage.story = null;
-                            postPage.pageId = pagesIdFb.id;
-                            postPage.referencePost = null;
-                            postPage.rootReferencePost = null;
-                            postPage.visibility = null;
-                            postPage.ranges = null;
-                            const createPostPageData: Posts = await this.postsService.create(postPage);
-                            const newSocialPost = new SocialPost();
-                            newSocialPost.pageId = pagesIdFb.id;
-                            newSocialPost.postId = createPostPageData.id;
-                            newSocialPost.postBy = body.entry[0].changes[0].value.from.id;
-                            newSocialPost.postByType = body.entry[0].changes[0].value.verb;
-                            newSocialPost.socialId = body.entry[0].changes[0].value.post_id;
-                            newSocialPost.socialType = PROVIDER.FACEBOOK;
-                            await this.socialPostService.create(newSocialPost);
-                        } else {
-                            return res.status(400).send('this values is removes from webhooks');
-                        }
+                        return res.status(400).send('this values is removes from webhooks');
                     } else {
                         return res.status(400).send('this values is removes from webhooks');
                     }
@@ -373,6 +291,5 @@ export class FacebookWebhookController {
             }
         }
         return res.status(200).send('SuccessFul Webhooks');
-
     }
 }
