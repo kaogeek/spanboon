@@ -305,7 +305,7 @@ export class DialogCreateStory extends AbstractPage implements OnDestroy {
       if (n.htmlType === "TEXT") {
         n.value = document.getElementById(index.toString()).innerHTML
       } else if (n.htmlType === "IMAGE") {
-        document.getElementById('$##' + n.imgId).setAttribute("src", "");
+        document.getElementById('$$' + n.imgId);
       }
       n.image64 = ''
       index++

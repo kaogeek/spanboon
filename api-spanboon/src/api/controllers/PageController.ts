@@ -339,7 +339,7 @@ export class PageController {
         const newValue = { $set: { isSyncPage: true } };
         await this.userService.update(query, newValue);
 
-        const pageSocialFb = await this.pageSocialAccountService.findOne({ where: { providerName: PROVIDER.TWITTER, providerPageId: socialBinding.twitterUserId, ownerPage: userId } });
+        const pageSocialFb = await this.pageSocialAccountService.findOne({ where: { providerName: PROVIDER.TWITTER, providerPageId: socialBinding.twitterUserId }});
 
         if (pageSocialFb !== undefined && pageSocialFb !== null) {
             const errorResponse = ResponseUtil.getErrorResponse('Unable create Page', undefined);
@@ -448,7 +448,7 @@ export class PageController {
         const clientId = req.headers['client-id'];
         let createCate = undefined;
 
-        const pageSocialFb = await this.pageSocialAccountService.findOne({ where: { providerName: PROVIDER.FACEBOOK, providerPageId: socialBinding.facebookPageId, ownerPage: userId } });
+        const pageSocialFb = await this.pageSocialAccountService.findOne({ where: { providerName: PROVIDER.FACEBOOK, providerPageId: socialBinding.facebookPageId} });
         if (pageSocialFb !== undefined && pageSocialFb !== null) {
             const errorResponse = ResponseUtil.getErrorResponse('Unable create Page', undefined);
             return res.status(400).send(errorResponse);
