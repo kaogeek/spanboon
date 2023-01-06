@@ -369,6 +369,8 @@ export class PageController {
             const result: Page = await this.pageService.create(pageCreate);
             if (result) {
                 const properties = {
+                    oauthToken:socialBinding.twitterOauthToken,
+                    oauthTokenSecret:socialBinding.twitterTokenSecret,
                     pageId: socialBinding.twitterUserId
                 };
                 const currentDateTime = moment().toDate();

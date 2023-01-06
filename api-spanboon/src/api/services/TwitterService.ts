@@ -730,7 +730,7 @@ export class TwitterService {
             );
             return data;
         }catch(err){
-            // console.log('error_getTimeLineUser',err);
+            return err;
         }
     }
 

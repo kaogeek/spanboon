@@ -80,6 +80,7 @@ export class FacebookWebhookController {
                 return res.sendStatus(403);
             }
         }
+        const pageSubscribe = await this.socialPostLogsService.findOne({ providerUserId: String(body.entry[0].changes[0].value.from.id) });
         let sliceArray = undefined;
         let text1 = undefined;
         let text2 = undefined;
@@ -98,198 +99,196 @@ export class FacebookWebhookController {
                 realText = body.entry[0].changes[0].value.message.substring(0, 50) + '.....';
             }
         } else {
-            realText = 'โพสต์จากเฟสบุ๊ค';
+            realText = body.entry[0].changes[0].value.message.substring(0, 50) + '.....';
         }
-        const pageSubScribes = await this.socialPostLogsService.find({ providerUserId: String(body.entry[0].changes[0].value.from.id) });
-        for (const pagesSubScribe of pageSubScribes) {
-            const pageIdFbs = await this.pageService.find({ _id: pagesSubScribe.pageId });
-            for (const pagesIdFb of pageIdFbs) {
-                if (body !== undefined && pagesIdFb !== undefined && pagesIdFb !== null && pagesSubScribe.enable === true) {
-                    if (body.entry[0].changes[0].value.verb === 'add' && body.entry[0].changes[0].value.link === undefined && body.entry[0].changes[0].value.photos === undefined && body.entry[0].changes[0].value.item !== 'share' && body.entry[0].changes[0].value.item === 'status' ) {
-                        console.log('pass1');
-                        const checkPost = await this.socialPostService.find({ socialId: body.entry[0].changes[0].value.post_id});
-                        const checkFeed = checkPost.shift();
-                        if (checkFeed === undefined) {
-                            const postPage: Posts = new Posts();
-                            postPage.title = realText;
-                            postPage.detail = body.entry[0].changes[0].value.message;
-                            postPage.isDraft = false;
-                            postPage.hidden = false;
-                            postPage.type = POST_TYPE.GENERAL;
-                            postPage.userTags = [];
-                            postPage.coverImage = '';
-                            postPage.pinned = false;
-                            postPage.deleted = false;
-                            postPage.ownerUser = pagesIdFb.ownerUser;
-                            postPage.commentCount = 0;
-                            postPage.repostCount = 0;
-                            postPage.shareCount = 0;
-                            postPage.likeCount = 0;
-                            postPage.viewCount = 0;
-                            postPage.createdDate = body.entry[0].changes[0].value.created_time;
-                            postPage.startDateTime = moment().toDate();
-                            postPage.story = null;
-                            postPage.pageId = pagesIdFb.id;
-                            postPage.referencePost = null;
-                            postPage.rootReferencePost = null;
-                            postPage.visibility = null;
-                            postPage.ranges = null;
-                            const createPostPageData: Posts = await this.postsService.create(postPage);
-                            const newSocialPost = new SocialPost();
-                            newSocialPost.pageId = pagesIdFb.id;
-                            newSocialPost.postId = createPostPageData.id;
-                            newSocialPost.postBy = body.entry[0].changes[0].value.from.id;
-                            newSocialPost.postByType = body.entry[0].changes[0].value.verb;
-                            newSocialPost.socialId = body.entry[0].changes[0].value.post_id;
-                            newSocialPost.socialType = PROVIDER.FACEBOOK;
-                            await this.socialPostService.create(newSocialPost);
-                        }
-                    } else if (body.entry[0].changes[0].value.verb === 'add' && body.entry[0].changes[0].value.link !== undefined && body.entry[0].changes[0].value.photos === undefined && body.entry[0].changes[0].value.item !== 'share' && body.entry[0].changes[0].value.item === 'photo') {
-                        console.log('pass2');
-                        const assetPic = await this.assetService.createAssetFromURL(body.entry[0].changes[0].value.link, pagesIdFb.ownerUser);
-                        const checkPost = await this.socialPostService.find({ socialId: body.entry[0].changes[0].value.post_id});
-                        const checkFeed = checkPost.shift();
-                        if (checkFeed === undefined && assetPic !== undefined) {
-                            const postPage: Posts = new Posts();
-                            postPage.title = realText;
-                            postPage.detail = body.entry[0].changes[0].value.message;
-                            postPage.isDraft = false;
-                            postPage.hidden = false;
-                            postPage.type = POST_TYPE.GENERAL;
-                            postPage.userTags = [];
-                            postPage.coverImage = '';
-                            postPage.pinned = false;
-                            postPage.deleted = false;
-                            postPage.ownerUser = pagesIdFb.ownerUser;
-                            postPage.commentCount = 0;
-                            postPage.repostCount = 0;
-                            postPage.shareCount = 0;
-                            postPage.likeCount = 0;
-                            postPage.viewCount = 0;
-                            postPage.createdDate = body.entry[0].changes[0].value.created_time;
-                            postPage.startDateTime = moment().toDate();
-                            postPage.story = null;
-                            postPage.pageId = pagesIdFb.id;
-                            postPage.referencePost = null;
-                            postPage.rootReferencePost = null;
-                            postPage.visibility = null;
-                            postPage.ranges = null;
-                            const createPostPageData: Posts = await this.postsService.create(postPage);
-                            const newSocialPost = new SocialPost();
-                            newSocialPost.pageId = pagesIdFb.id;
-                            newSocialPost.postId = createPostPageData.id;
-                            newSocialPost.postBy = body.entry[0].changes[0].value.from.id;
-                            newSocialPost.postByType = body.entry[0].changes[0].value.verb;
-                            newSocialPost.socialId = body.entry[0].changes[0].value.post_id;
-                            newSocialPost.socialType = PROVIDER.FACEBOOK;
-                            await this.socialPostService.create(newSocialPost);
-                            if (createPostPageData) {
-                                // Asset 
-                                const photoGallery = [];
-                                if (body.entry[0].changes[0].value.photos === undefined) {
-                                    const assetObj = await this.assetService.findOne({ _id: assetPic.id });
-                                    if (assetObj.data !== undefined && assetObj.data !== null) {
-                                        photoGallery.push(assetObj.data);
-                                    }
-                                    for (const asset of photoGallery) {
-                                        const postsGallery = new PostsGallery();
-                                        postsGallery.post = createPostPageData.id;
-                                        postsGallery.fileId = new ObjectID(assetObj.id);
-                                        postsGallery.imageURL = ASSET_PATH + new ObjectID(assetObj.id);
-                                        postsGallery.s3ImageURL = asset.s3FilePath;
-                                        postsGallery.ordering = body.entry[0].changes[0].value.published;
-                                        const postsGalleryCreate: PostsGallery = await this.postsGalleryService.create(postsGallery);
-                                        if (postsGalleryCreate) {
-                                            await this.assetService.update({ _id: assetObj.id, userId: pagesIdFb.ownerUser }, { $set: { expirationDate: null } });
-                                        }
-                                    }
-                                }
+        const pageIdFB = await this.pageService.findOne({ _id: pageSubscribe.pageId });        
+        if (body !== undefined && pageIdFB !== undefined && pageIdFB !== null && pageSubscribe.enable === true) {
+            if (body.entry[0].changes[0].value.verb === 'add' && body.entry[0].changes[0].value.link === undefined && body.entry[0].changes[0].value.photos === undefined && body.entry[0].changes[0].value.item !== 'share' && body.entry[0].changes[0].value.item === 'status' ) {
+                console.log('pass1');
+                const checkPost = await this.socialPostService.find({ socialId: body.entry[0].changes[0].value.post_id});
+                const checkFeed = checkPost.shift();
+                if (checkFeed === undefined) {
+                    const postPage: Posts = new Posts();
+                    postPage.title = realText;
+                    postPage.detail = body.entry[0].changes[0].value.message;
+                    postPage.isDraft = false;
+                    postPage.hidden = false;
+                    postPage.type = POST_TYPE.GENERAL;
+                    postPage.userTags = [];
+                    postPage.coverImage = '';
+                    postPage.pinned = false;
+                    postPage.deleted = false;
+                    postPage.ownerUser = pageIdFB.ownerUser;
+                    postPage.commentCount = 0;
+                    postPage.repostCount = 0;
+                    postPage.shareCount = 0;
+                    postPage.likeCount = 0;
+                    postPage.viewCount = 0;
+                    postPage.createdDate = body.entry[0].changes[0].value.created_time;
+                    postPage.startDateTime = moment().toDate();
+                    postPage.story = null;
+                    postPage.pageId = pageIdFB.id;
+                    postPage.referencePost = null;
+                    postPage.rootReferencePost = null;
+                    postPage.visibility = null;
+                    postPage.ranges = null;
+                    const createPostPageData: Posts = await this.postsService.create(postPage);
+                    const newSocialPost = new SocialPost();
+                    newSocialPost.pageId = pageIdFB.id;
+                    newSocialPost.postId = createPostPageData.id;
+                    newSocialPost.postBy = body.entry[0].changes[0].value.from.id;
+                    newSocialPost.postByType = body.entry[0].changes[0].value.verb;
+                    newSocialPost.socialId = body.entry[0].changes[0].value.post_id;
+                    newSocialPost.socialType = PROVIDER.FACEBOOK;
+                    await this.socialPostService.create(newSocialPost);
+                    return res.status(200).send('SuccessFul Webhooks');
+                }
+            } else if (body.entry[0].changes[0].value.verb === 'add' && body.entry[0].changes[0].value.link !== undefined && body.entry[0].changes[0].value.photos === undefined && body.entry[0].changes[0].value.item !== 'share' && body.entry[0].changes[0].value.item === 'photo') {
+                console.log('pass2');
+                const assetPic = await this.assetService.createAssetFromURL(body.entry[0].changes[0].value.link, pageIdFB.ownerUser);
+                const checkPost = await this.socialPostService.find({ socialId: body.entry[0].changes[0].value.post_id});
+                const checkFeed = checkPost.shift();
+                if (checkFeed === undefined && assetPic !== undefined) {
+                    const postPage: Posts = new Posts();
+                    postPage.title = realText;
+                    postPage.detail = body.entry[0].changes[0].value.message;
+                    postPage.isDraft = false;
+                    postPage.hidden = false;
+                    postPage.type = POST_TYPE.GENERAL;
+                    postPage.userTags = [];
+                    postPage.coverImage = '';
+                    postPage.pinned = false;
+                    postPage.deleted = false;
+                    postPage.ownerUser = pageIdFB.ownerUser;
+                    postPage.commentCount = 0;
+                    postPage.repostCount = 0;
+                    postPage.shareCount = 0;
+                    postPage.likeCount = 0;
+                    postPage.viewCount = 0;
+                    postPage.createdDate = body.entry[0].changes[0].value.created_time;
+                    postPage.startDateTime = moment().toDate();
+                    postPage.story = null;
+                    postPage.pageId = pageIdFB.id;
+                    postPage.referencePost = null;
+                    postPage.rootReferencePost = null;
+                    postPage.visibility = null;
+                    postPage.ranges = null;
+                    const createPostPageData: Posts = await this.postsService.create(postPage);
+                    const newSocialPost = new SocialPost();
+                    newSocialPost.pageId = pageIdFB.id;
+                    newSocialPost.postId = createPostPageData.id;
+                    newSocialPost.postBy = body.entry[0].changes[0].value.from.id;
+                    newSocialPost.postByType = body.entry[0].changes[0].value.verb;
+                    newSocialPost.socialId = body.entry[0].changes[0].value.post_id;
+                    newSocialPost.socialType = PROVIDER.FACEBOOK;
+                    await this.socialPostService.create(newSocialPost);
+                    if (createPostPageData) {
+                        // Asset 
+                        const photoGallery = [];
+                        if (body.entry[0].changes[0].value.photos === undefined) {
+                            const assetObj = await this.assetService.findOne({ _id: assetPic.id });
+                            if (assetObj.data !== undefined && assetObj.data !== null) {
+                                photoGallery.push(assetObj.data);
                             }
-                        }
-                    } else if (body.entry[0].changes[0].value.verb === 'add' && body.entry[0].changes[0].value.link === undefined && body.entry[0].changes[0].value.photos !== undefined && body.entry[0].changes[0].value.item !== 'share') {
-                        console.log('pass3');
-                        const multiPics = [];
-                        for (let i = 0; i < body.entry[0].changes[0].value.photos.length; i++) {
-                            if (i === 4) {
-                                break;
-                            }
-                            const multiPic = await this.assetService.createAssetFromURL(body.entry[0].changes[0].value.photos[i], pagesIdFb.ownerUser);
-                            multiPics.push(multiPic);
-                        }
-                        const checkPost = await this.socialPostService.find({ socialId: body.entry[0].changes[0].value.post_id});
-                        const checkFeed = checkPost.shift();
-                        if (checkFeed === undefined) {
-                            const postPage: Posts = new Posts();
-                            postPage.title = realText;
-                            postPage.detail = body.entry[0].changes[0].value.message;
-                            postPage.isDraft = false;
-                            postPage.hidden = false;
-                            postPage.type = POST_TYPE.GENERAL;
-                            postPage.userTags = [];
-                            postPage.coverImage = '';
-                            postPage.pinned = false;
-                            postPage.deleted = false;
-                            postPage.ownerUser = pagesIdFb.ownerUser;
-                            postPage.commentCount = 0;
-                            postPage.repostCount = 0;
-                            postPage.shareCount = 0;
-                            postPage.likeCount = 0;
-                            postPage.viewCount = 0;
-                            postPage.createdDate = body.entry[0].changes[0].value.created_time;
-                            postPage.startDateTime = moment().toDate();
-                            postPage.story = null;
-                            postPage.pageId = pagesIdFb.id;
-                            postPage.referencePost = null;
-                            postPage.rootReferencePost = null;
-                            postPage.visibility = null;
-                            postPage.ranges = null;
-                            const createPostPageData: Posts = await this.postsService.create(postPage);
-                            const newSocialPost = new SocialPost();
-                            newSocialPost.pageId = pagesIdFb.id;
-                            newSocialPost.postId = createPostPageData.id;
-                            newSocialPost.postBy = body.entry[0].changes[0].value.from.id;
-                            newSocialPost.postByType = body.entry[0].changes[0].value.verb;
-                            newSocialPost.socialId = body.entry[0].changes[0].value.post_id;
-                            newSocialPost.socialType = PROVIDER.FACEBOOK;
-                            await this.socialPostService.create(newSocialPost);
-
-                            for (let j = 0; j < multiPics.length; j++) {
+                            for (const asset of photoGallery) {
                                 const postsGallery = new PostsGallery();
                                 postsGallery.post = createPostPageData.id;
-                                postsGallery.fileId = new ObjectID(multiPics[j].id);
-                                postsGallery.imageURL = ASSET_PATH + new ObjectID(multiPics[j].id);
-                                postsGallery.s3ImageURL = multiPics[j].s3FilePath;
-                                postsGallery.ordering = j + 1;
+                                postsGallery.fileId = new ObjectID(assetObj.id);
+                                postsGallery.imageURL = ASSET_PATH + new ObjectID(assetObj.id);
+                                postsGallery.s3ImageURL = asset.s3FilePath;
+                                postsGallery.ordering = body.entry[0].changes[0].value.published;
                                 const postsGalleryCreate: PostsGallery = await this.postsGalleryService.create(postsGallery);
                                 if (postsGalleryCreate) {
-                                    await this.assetService.update({ _id: multiPics[j].id, userId: pagesIdFb.ownerUser }, { $set: { expirationDate: null } });
+                                    await this.assetService.update({ _id: assetObj.id, userId: pageIdFB.ownerUser }, { $set: { expirationDate: null } });
                                 }
                             }
-                        } 
-                    } else if (body.entry[0].changes[0].value.verb === 'edit') {
-                        console.log('pass4');
-                        const socialPost = await this.socialPostService.findOne({ postBy: body.entry[0].changes[0].value.post_id });
-                        if (socialPost) {
-                            const queryFB = { _id: socialPost.postId };
-                            const setValue = { detail: body.entry[0].changes[0].value.message };
-                            await this.postsService.update(queryFB, setValue);
-                        } else {
-                            console.log('cannot update values');
+                            return res.status(200).send('SuccessFul Webhooks');
                         }
-                    } else if (body.entry[0].changes[0].value.verb === 'add' && body.entry[0].changes[0].value.item === 'share' && body.entry[0].changes[0].value.link !== undefined) {
-                        console.log('pass5');
-                        return res.status(400).send('this values is removes from webhooks');
-                    } else if (body.entry[0].changes[0].value.verb === 'edited' && body.entry[0].changes[0].value.item === 'status' && body.entry[0].changes[0].value.link === undefined) {
-                        console.log('pass6');
-                        return res.status(400).send('this values is removes from webhooks');
-                    } else {
-                        return res.status(400).send('this values is removes from webhooks');
                     }
-                } else {
-                    return res.status(400).send('this values is removes from webhooks');
                 }
+            } else if (body.entry[0].changes[0].value.verb === 'add' && body.entry[0].changes[0].value.link === undefined && body.entry[0].changes[0].value.photos !== undefined && body.entry[0].changes[0].value.item !== 'share') {
+                console.log('pass3');
+                const multiPics = [];
+                for (let i = 0; i < body.entry[0].changes[0].value.photos.length; i++) {
+                    if (i === 4) {
+                        break;
+                    }
+                    const multiPic = await this.assetService.createAssetFromURL(body.entry[0].changes[0].value.photos[i], pageIdFB.ownerUser);
+                    multiPics.push(multiPic);
+                }
+                const checkPost = await this.socialPostService.find({ socialId: body.entry[0].changes[0].value.post_id});
+                const checkFeed = checkPost.shift();
+                if (checkFeed === undefined) {
+                    const postPage: Posts = new Posts();
+                    postPage.title = realText;
+                    postPage.detail = body.entry[0].changes[0].value.message;
+                    postPage.isDraft = false;
+                    postPage.hidden = false;
+                    postPage.type = POST_TYPE.GENERAL;
+                    postPage.userTags = [];
+                    postPage.coverImage = '';
+                    postPage.pinned = false;
+                    postPage.deleted = false;
+                    postPage.ownerUser = pageIdFB.ownerUser;
+                    postPage.commentCount = 0;
+                    postPage.repostCount = 0;
+                    postPage.shareCount = 0;
+                    postPage.likeCount = 0;
+                    postPage.viewCount = 0;
+                    postPage.createdDate = body.entry[0].changes[0].value.created_time;
+                    postPage.startDateTime = moment().toDate();
+                    postPage.story = null;
+                    postPage.pageId = pageIdFB.id;
+                    postPage.referencePost = null;
+                    postPage.rootReferencePost = null;
+                    postPage.visibility = null;
+                    postPage.ranges = null;
+                    const createPostPageData: Posts = await this.postsService.create(postPage);
+                    const newSocialPost = new SocialPost();
+                    newSocialPost.pageId = pageIdFB.id;
+                    newSocialPost.postId = createPostPageData.id;
+                    newSocialPost.postBy = body.entry[0].changes[0].value.from.id;
+                    newSocialPost.postByType = body.entry[0].changes[0].value.verb;
+                    newSocialPost.socialId = body.entry[0].changes[0].value.post_id;
+                    newSocialPost.socialType = PROVIDER.FACEBOOK;
+                    await this.socialPostService.create(newSocialPost);
+
+                    for (let j = 0; j < multiPics.length; j++) {
+                        const postsGallery = new PostsGallery();
+                        postsGallery.post = createPostPageData.id;
+                        postsGallery.fileId = new ObjectID(multiPics[j].id);
+                        postsGallery.imageURL = ASSET_PATH + new ObjectID(multiPics[j].id);
+                        postsGallery.s3ImageURL = multiPics[j].s3FilePath;
+                        postsGallery.ordering = j + 1;
+                        const postsGalleryCreate: PostsGallery = await this.postsGalleryService.create(postsGallery);
+                        if (postsGalleryCreate) {
+                            await this.assetService.update({ _id: multiPics[j].id, userId: pageIdFB.ownerUser }, { $set: { expirationDate: null } });
+                        }
+                    }
+                    return res.status(200).send('SuccessFul Webhooks');
+                } 
+            } else if (body.entry[0].changes[0].value.verb === 'edit') {
+                console.log('pass4');
+                const socialPost = await this.socialPostService.findOne({ postBy: body.entry[0].changes[0].value.post_id });
+                if (socialPost) {
+                    const queryFB = { _id: socialPost.postId };
+                    const setValue = { detail: body.entry[0].changes[0].value.message };
+                    await this.postsService.update(queryFB, setValue);
+                    return res.status(200).send('SuccessFul Webhooks');
+                } else {
+                    console.log('cannot update values');
+                }
+            } else if (body.entry[0].changes[0].value.verb === 'add' && body.entry[0].changes[0].value.item === 'share' && body.entry[0].changes[0].value.link !== undefined) {
+                console.log('pass5');
+                return res.status(400).send('this values is removes from webhooks');
+            } else if (body.entry[0].changes[0].value.verb === 'edited' && body.entry[0].changes[0].value.item === 'status' && body.entry[0].changes[0].value.link === undefined) {
+                console.log('pass6');
+                return res.status(400).send('this values is removes from webhooks');
+            } else {
+                return res.status(400).send('this values is removes from webhooks');
             }
+        } else {
+            return res.status(400).send('this values is removes from webhooks');
         }
-        return res.status(200).send('SuccessFul Webhooks');
     }
 }
