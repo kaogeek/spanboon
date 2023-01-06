@@ -77,7 +77,16 @@
                                         <img class="icon-social-pic"
                                             [src]="mockDataMergeSocial.social === 'FACEBOOK' ? '../../../../assets/img/facebook-logo.svg' : (mockDataMergeSocial.social === 'TWITTER' ? '../../../../assets/img/twitter.svg' : (mockDataMergeSocial.social === 'GOOGLE' ? '../../../../assets/img/google.svg' : '../../../../assets/img/logo/logo.svg'))">
                                     </div>
-                                    <img class="social-pic" src={{pictureSocial}} />
+                                    <ng-container
+                                        *ngIf="dataUser.data.imageURL !== '' && dataUser.data.imageURL !== undefined && dataUser.data.imageURL !== null ; else elsePhotoSocial">
+                                        <img class="social-pic" src={{pictureSocial}} />
+                                    </ng-container>
+                                    <ng-template #elsePhotoSocial>
+                                        <div class="not-image">
+                                            {{dataUser.data.email | slice: 0:1 }}
+                                        </div>
+                                    </ng-template>
+                                    <!-- <img class="social-pic" src={{pictureSocial}} /> -->
                                 </div>
                             </div>
                             <div class="label">
