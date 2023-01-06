@@ -183,18 +183,14 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
         if (!this.isLogin()) {
             this.router.navigateByUrl("/home");
         }
-        console.log("popopopop", this.pageId);
         this.checkAccessPage();
     }
 
     public checkAccessPage() {
-        console.log("UUUUUUUUUUUUUUUUUUUU");
         this.pageFacade.getAccess(this.pageId).then((res) => {
             if (res) {
-                console.log("oioioioi", res);
             }
         }).catch((err) => {
-            console.log("l;l;l;l;l;l;l;l;", err.error);
             if (err.error.name === "AccessDeniedError") {
                 this.router.navigateByUrl("/home");
             }

@@ -694,7 +694,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         if (this.emergency) {
           for (let [index, tag] of cloneEmergency.entries()) {
             if (tag.value === this.objective) {
-              Object.assign(cloneEmergency[index], { selected: true })
+              Object.assign(cloneEmergency[index], { selected: false })
             }
           }
         }
@@ -785,10 +785,10 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   }
 
   public getObjective(data) {
-    if (data.item.selected) {
-      this.objective = data.item.hashTag;
-    } else {
+    if (data.item.selected == null && data.item.selected == undefined) {
       this.objective = '';
+    } else {
+      this.objective = data.item.hashTag;
     }
     this.searchTrendTag();
 

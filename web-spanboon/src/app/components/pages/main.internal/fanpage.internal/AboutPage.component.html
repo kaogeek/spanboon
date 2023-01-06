@@ -46,7 +46,7 @@
                     <label for="add-username">@</label>
                     <input #pageUsername type="text" class="input-data" id="pageUsername" placeholder="ชื่อผู้ใช้"
                         [(ngModel)]="resDataPage && resDataPage.pageUsername" style="padding: 0 28pt;"
-                        (keyup)="checkUniquePageUsername(pageUsername.value)"> 
+                        (keyup)="checkUniquePageUsername(pageUsername.value)">
                     <span class="material-icons icon-close" (click)="resetValue(pageUsername.value, 2)">
                         close
                     </span>
@@ -248,12 +248,12 @@
     <div class="card-info" (click)="clickCard('9')" [class.active]="isCard9">
         <div class="card-left">
             <div class="header">
-                เฟสบุ๊ค
+                เฟซบุ๊ค
             </div>
         </div>
         <div class="card-right">
             <div class="card-detail">
-                <input #facebookURL type="text" class="input-data" placeholder="ป้อนเฟสบุ๊ค"
+                <input #facebookURL type="text" class="input-data" placeholder="ป้อนเฟซบุ๊ค"
                     [(ngModel)]="resDataPage && resDataPage.facebookURL" (keyup)="changeActive(facebookURL.value , 9)">
                 <!-- <div class="div-checkbox">
                     <mat-checkbox [disableRipple]="'true'"></mat-checkbox>
@@ -328,7 +328,8 @@
                     [(ngModel)]="latitudeAboutPage && latitudeAboutPage.value"
                     style="display: inline-block; width: calc(50% - 16pt - 2px - 2.5pt - 2px); margin-top: 10pt; margin-right: 5pt;"
                     placeholder="ละติจูด" (keyup)="aboutPage(latitude.value , '12')">
-                <input type="text" class="input-data" #longtitude id="longtitude" [(ngModel)]="longtitudeAboutPage && longtitudeAboutPage.value"
+                <input type="text" class="input-data" #longtitude id="longtitude"
+                    [(ngModel)]="longtitudeAboutPage && longtitudeAboutPage.value"
                     style="display: inline-block; width: calc(50% - 16pt - 2px - 2.5pt - 2px); margin-top: 10pt;"
                     placeholder="ลองจิจูด" (keyup)="aboutPage(longtitude.value , '13')">
                 <!-- <div class="div-checkbox">

@@ -1541,6 +1541,17 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     }
   }
 
+  public checkPathValidation(data: any): any {
+    const result = data.search('https://');
+    let link: string = "";
+    if (result >= 0) {
+      link = data;
+    } else {
+      link = "https://" + data;
+    }
+
+    return link;
+  }
 }
 
 
