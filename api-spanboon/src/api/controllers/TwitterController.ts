@@ -132,22 +132,21 @@ export class TwitterController {
         const oAuth2Twitter = await this.twitterService.getOauth2AppAccessTokenTest();
         const socialPostLogList = await this.socialPostLogsService.find({ providerName: PROVIDER.TWITTER, enable: true, pageId: { $exists: true }, lastUpdated: { $lte: lastUpdated } });
         const newPostResult = [];
-        for (const socialPost of socialPostLogList) {
+        for (let i = 0 ; i < socialPostLogList.length ; i++) {
             // search page
-            const getUserTimeline = await this.twitterService.getTimeLineUser(socialPost.providerUserId, oAuth2Twitter);
-
-            const page = await this.pageService.find({ where: { _id: socialPost.pageId } });
+            const getUserTimeline = await this.twitterService.getTimeLineUser(socialPostLogList[i].providerUserId, oAuth2Twitter);
+            const page = await this.pageService.find({ _id: socialPostLogList[i].pageId });
             // checked enable post social log enable === true
-            if (page === undefined) {
+            if (page[i] === undefined) {
                 continue;
             }
-            if (getUserTimeline.data !== undefined) {
-                for (const dataFeedTwi of getUserTimeline.data) {
-                    const checkPostSocial = await this.socialPostService.find({ pageId: socialPost.pageId, socialType: PROVIDER.TWITTER, socialId: dataFeedTwi.id });
+            if (getUserTimeline.data[i] !== undefined) {
+                for (let j = 0 ; j<getUserTimeline.data.length; j++) {
+                    const checkPostSocial = await this.socialPostService.find({ pageId: socialPostLogList[i].pageId, socialType: PROVIDER.TWITTER, socialId: getUserTimeline.data[j].id });
                     const checkFeed = checkPostSocial.shift();
                     if (checkFeed === undefined) {
-                        const twPostId = dataFeedTwi.id;
-                        const text = dataFeedTwi.text;
+                        const twPostId = getUserTimeline.data[j].id;
+                        const text = getUserTimeline.data[j].text;
                         const today = moment().toDate();
                         const postPage: Posts = new Posts();
                         postPage.title = 'โพสต์จากทวิตเตอร์';
@@ -159,7 +158,7 @@ export class TwitterController {
                         postPage.coverImage = '';
                         postPage.pinned = false;
                         postPage.deleted = false;
-                        postPage.ownerUser = page[0].ownerUser;
+                        postPage.ownerUser = page[i].ownerUser;
                         postPage.commentCount = 0;
                         postPage.repostCount = 0;
                         postPage.shareCount = 0;
@@ -168,17 +167,16 @@ export class TwitterController {
                         postPage.createdDate = today;
                         postPage.startDateTime = today;
                         postPage.story = null;
-                        postPage.pageId = socialPost.pageId;
+                        postPage.pageId = socialPostLogList[i].pageId;
                         postPage.referencePost = null;
                         postPage.rootReferencePost = null;
                         postPage.visibility = null;
                         postPage.ranges = null;
                         const createPostPageData: Posts = await this.postsService.create(postPage);
-
                         const newSocialPost = new SocialPost();
-                        newSocialPost.pageId = socialPost.pageId;
+                        newSocialPost.pageId = socialPostLogList[j].pageId;
                         newSocialPost.postId = createPostPageData.id;
-                        newSocialPost.postBy = socialPost.pageId;
+                        newSocialPost.postBy = socialPostLogList[j].pageId;
                         newSocialPost.postByType = 'PAGE';
                         newSocialPost.socialId = twPostId;
                         newSocialPost.socialType = PROVIDER.TWITTER;
@@ -189,8 +187,7 @@ export class TwitterController {
                     }
                 }
             } else {
-                const errorResponse = ResponseUtil.getErrorResponse('This user does not had any twitter',undefined);
-                return response.status(400).send(errorResponse);           
+                continue;
             }
         }
         return response.status(200).send(newPostResult);
