@@ -2577,6 +2577,7 @@ export class BoxPost extends AbstractPage implements OnInit {
 
       var postion3 = $('.box-right');
       postion3.addClass("m-right");
+
     } else if (window.innerWidth > 1024) {
       this.isMobilePost = false;
       this.isMobileText = false;

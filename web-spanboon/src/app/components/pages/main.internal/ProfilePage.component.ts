@@ -1191,7 +1191,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
         // let show_blockUser = localStorage.getItem('blockUser');
 
         // this.router.navigate(['home']);
-        this.showAlertDevelopDialog('ระบบอยู่ในระหว่างการพัฒนา');
+        // this.showAlertDevelopDialog('ระบบอยู่ในระหว่างการพัฒนา');
       }
     });
   }
@@ -1205,7 +1205,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     });
     dialog.afterClosed().subscribe((res) => {
       if (res) {
-        this.showAlertDevelopDialog('ระบบอยู่ในระหว่างการพัฒนา');
+        // this.showAlertDevelopDialog('ระบบอยู่ในระหว่างการพัฒนา');
       }
     });
   }

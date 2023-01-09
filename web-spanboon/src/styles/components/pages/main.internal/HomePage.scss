@@ -16,11 +16,9 @@
   >.container {
     width: calc(1200px);
     height: 100%;
-    background-color: white;
 
     >.secsione-list {
       width: calc(100%);
-      background-color: white;
 
       @media (max-width: 600px) {
         margin: 20px 15px;
@@ -210,9 +208,7 @@
           height: auto;
           display: flex;
 
-          @media (max-width: 900px) {
-            background-color: white;
-          }
+          @media (max-width: 900px) {}
 
           >.col1 {
             width: calc(50% - 30px);
@@ -1351,7 +1347,6 @@
             padding: 15px;
             display: flex;
             flex-direction: column;
-            background-color: white;
 
             &.disable {
               display: none;

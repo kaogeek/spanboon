@@ -154,54 +154,66 @@ export class ManagePage extends AbstractPage implements OnInit {
     let page = document.getElementsByClassName("list-page");
     return page && page.length > 0;
   }
-  public clickSyncTw(text: string, bind?: boolean) {
+
+  public dialogShow() {
+    // this.dialog.open(DialogAlert, {
+    //   disableClose: true,
+    //   data: {
+    //     text: "คุณมีเพจอยู่แล้ว",
+    //     bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+    //     bottomColorText2: "black",
+    //     btDisplay1: "none",
+    //   },
+    // });
+
+  }
+
+  public async clickSyncTw(text: string, bind?: boolean) {
+    let isCheck: boolean = false;
     let callback = environment.webBaseURL + "/callback";
-    this.twitterService.requestToken(callback).then((result: any) => {
+    await this.twitterService.requestToken(callback).then((result: any) => {
       this.authorizeLink += "?" + result;
       window.open(this.authorizeLink, "_blank");
       // this.popup(this.authorizeLink, '', 600, 200, 'yes');
 
-      window.bindTwitter = (resultTwitter) => {
-        this.openLoading();
+      window.bindTwitter = async (resultTwitter) => {
         if (resultTwitter !== undefined && resultTwitter !== null) {
           const twitter = new PageSocialTW();
           twitter.twitterOauthToken = resultTwitter.token;
           twitter.twitterTokenSecret = resultTwitter.token_secret;
           twitter.twitterUserId = resultTwitter.userId;
           twitter.twitterPageName = resultTwitter.name;
-          this.authenManager.syncWithTwitter(twitter).then((res: any) => {
-            setTimeout(() => {
-              this.closeLoading();
-            }, 1000);
-            if (res.data) {
-              this.observManager.publish("authen.check", null);
+          await this.authenManager.syncWithTwitter(twitter).then((res) => {
+            // setTimeout(() => {
+            //   this.closeLoading();
+            // }, 1000);
+            if (res) {
+              this.showAlertDialog("บัญชีนี้ได้ทำการเชื่อมต่อ Facebook สำเร็จ");
+              this.openLoading();
               this.connectTwitter = res.data;
               this.isLoadingTwitter = false;
               let check = {
                 checked: true,
               };
             }
-          }).catch((err: any) => {
+          }).catch((err) => {
             if (err.error.message === "Unable create Page" && err.status === 400) {
-              this.dialog.open(DialogAlert, {
-                disableClose: true,
-                data: {
-                  text: "คุณมีเพจอยู่แล้ว",
-                  bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-                  bottomColorText2: "black",
-                  btDisplay1: "none",
-                },
-              });
+              isCheck = true;
             }
-          });
+          })
         }
       };
-    }).catch((error: any) => {
-      this.showAlertDialog("เกิดข้อมูลผิดพลาด กรุณาลองใหม่อีกครั้ง");
-      this.isPreLoadIng = false;
-      this.isLoadingTwitter = false;
+    }).catch((err) => {
+      if (err) {
+        console.log("err", err);
+        this.isPreLoadIng = false;
+        this.isLoadingTwitter = false;
+      }
     });
+
+    this.observManager.publish("authen.check", null);
   }
+
   public fbLibrary() {
     (window as any).fbAsyncInit = function () {
       window["FB"].init({
@@ -347,16 +359,16 @@ export class ManagePage extends AbstractPage implements OnInit {
   }
 
   public clickSystemDevelopment(): void {
-    let dialog = this.dialog.open(DialogAlert, {
-      disableClose: true,
-      data: {
-        text: MESSAGE.TEXT_DEVERLOP,
-        bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-        bottomColorText2: "black",
-        btDisplay1: "none",
-      },
-    });
-    dialog.afterClosed().subscribe((res) => { });
+    // let dialog = this.dialog.open(DialogAlert, {
+    //   disableClose: true,
+    //   data: {
+    //     text: MESSAGE.TEXT_DEVERLOP,
+    //     bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+    //     bottomColorText2: "black",
+    //     btDisplay1: "none",
+    //   },
+    // });
+    // dialog.afterClosed().subscribe((res) => { });
   }
 
   public clickMenu() {

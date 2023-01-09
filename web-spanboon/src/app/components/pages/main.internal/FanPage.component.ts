@@ -1280,7 +1280,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         }
       } else {
         if (this.pagefixHeight) {
-          this.pagefixHeight.nativeElement.style.top = '55pt';
+          this.pagefixHeight.nativeElement.style.top = '130px';
         }
       }
 
@@ -1292,7 +1292,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         }
       } else {
         if (this.sidefeedHeight) {
-          this.sidefeedHeight.nativeElement.style.top = '55pt';
+          this.sidefeedHeight.nativeElement.style.top = '130px';
         }
       }
     }
@@ -1457,17 +1457,17 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   }
 
   public clickSystemDevelopment(): void {
-    let dialog = this.dialog.open(DialogAlert, {
-      disableClose: true,
-      data: {
-        text: MESSAGE.TEXT_DEVERLOP,
-        bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-        bottomColorText2: "black",
-        btDisplay1: "none"
-      }
-    });
-    dialog.afterClosed().subscribe((res) => {
-    });
+    // let dialog = this.dialog.open(DialogAlert, {
+    //   disableClose: true,
+    //   data: {
+    //     text: MESSAGE.TEXT_DEVERLOP,
+    //     bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+    //     bottomColorText2: "black",
+    //     btDisplay1: "none"
+    //   }
+    // });
+    // dialog.afterClosed().subscribe((res) => {
+    // });
   }
 
   public engagement(event) {
@@ -1488,7 +1488,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     });
     dialog.afterClosed().subscribe((res) => {
       if (res) {
-        this.showAlertDialog('ระบบอยู่ในระหว่างการพัฒนา');
+        // this.showAlertDialog('ระบบอยู่ในระหว่างการพัฒนา');
       }
     });
   }
@@ -1502,7 +1502,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     });
     dialog.afterClosed().subscribe((res) => {
       if (res) {
-        this.showAlertDialog('ระบบอยู่ในระหว่างการพัฒนา');
+        // this.showAlertDialog('ระบบอยู่ในระหว่างการพัฒนา');
       }
     });
   }

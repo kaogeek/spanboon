@@ -17,7 +17,7 @@ export enum MESSAGE {
      TEXT_SUCCESS = 'สร้างกระทู้ สำเร็จ',
      TEXT_ERROR = 'เกิดข้อผิดพลาด',
      TEXT_DELETE_CONTENT = 'ยืนยันการลบข้อมูล ?',
-     TEXT_DEVERLOP = 'ระบบอยู่ในระหว่างการพัฒนา',
+     // TEXT_DEVERLOP = 'ระบบอยู่ในระหว่างการพัฒนา',
      TEXT_BUTTON_FULFILLMENT_CREATE = 'ไม่, เปิดคำขอเติมเต็มใหม่',
      TEXT_BUTTON_FULFILLMENT_EDIT = 'ใช่, เพิ่มเข้าคำขอเติมเต็มเดิม',
      TEXT_CONFIRM_FULFILL_CASE_EXISTS = 'คุณมีคำขอเติมเต็มเดิมที่เปิดไว้สำหรับโพสต์นี้อยู่แล้ว ต้องการเพิ่มรายการเหล่านี้เข้าคำขอเติมเต็มเดิมหรือไม่?',

@@ -493,7 +493,6 @@ export class PageFacade extends AbstractFacade {
       let url: string = this.baseURL + '/page/' + pageId + '/twitter_fetch_enable';
       let body = {};
       let option = this.getDefaultOptions();
-      console.log('config', config);
       if (config !== undefined && config !== null) {
         body = Object.assign(config);
       }
@@ -542,7 +541,6 @@ export class PageFacade extends AbstractFacade {
       let url: string = this.baseURL + '/page/' + pageId + '/facebook_fetch_enable';
       let option = this.getDefaultOptions();
       this.http.get(url, option).toPromise().then((response: any) => {
-        console.log('response_from_facebook', response);
         resolve(response.data);
       }).catch((error: any) => {
         reject(error);

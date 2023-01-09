@@ -44,24 +44,24 @@ export class RecommendCard {
   }
 
   public clickSystemDevelopment(): void {
-    let dialog = this.dialog.open(DialogAlert, {
-      disableClose: true,
-      data: {
-        text: MESSAGE.TEXT_DEVERLOP,
-        bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-        bottomColorText2: "black",
-        btDisplay1: "none"
-      }
-    });
-    dialog.afterClosed().subscribe((res) => {
-    });
+    // let dialog = this.dialog.open(DialogAlert, {
+    //   disableClose: true,
+    //   data: {
+    //     text: MESSAGE.TEXT_DEVERLOP,
+    //     bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+    //     bottomColorText2: "black",
+    //     btDisplay1: "none"
+    //   }
+    // });
+    // dialog.afterClosed().subscribe((res) => {
+    // });
   }
 
-  public onClick(index: number, recommed: any){ 
+  public onClick(index: number, recommed: any) {
     let data = {
-      index : index,
+      index: index,
       recommed
-    } 
+    }
     this.submitFollow.emit(data);
   }
 

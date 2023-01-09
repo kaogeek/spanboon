@@ -9,7 +9,7 @@ import { Injectable } from "@angular/core";
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthenManager } from '../AuthenManager.service';
 import { AbstractFacade } from "./AbstractFacade";
-import { Observable, Subject,BehaviorSubject } from "rxjs";
+import { Observable, Subject, BehaviorSubject } from "rxjs";
 import { tap } from "rxjs/operators";
 import { ObservableManager } from "../ObservableManager.service";
 import { LoginPage } from "src/app/components/components";
@@ -23,25 +23,25 @@ const REGISTERED_SUBJECT: string = 'authen.registered';
 @Injectable()
 export class CheckMergeUserFacade extends AbstractFacade {
 
-    public router: Router;
-    public redirection: string;
-    public loginPage: LoginPage;
-    protected baseURL: string;
-    protected http: HttpClient;
-    protected token: string;
-    protected user: any;
-    protected facebookMode: boolean;
-    protected twitterMode: boolean;
-    protected googleMode: boolean;
-    protected observManager: ObservableManager;
+  public router: Router;
+  public redirection: string;
+  public loginPage: LoginPage;
+  protected baseURL: string;
+  protected http: HttpClient;
+  protected token: string;
+  protected user: any;
+  protected facebookMode: boolean;
+  protected twitterMode: boolean;
+  protected googleMode: boolean;
+  protected observManager: ObservableManager;
 
-    deviceInfo = null;
-    isDesktopDevice: boolean;
-    isTablet: boolean;
-    isMobile: boolean;
+  deviceInfo = null;
+  isDesktopDevice: boolean;
+  isTablet: boolean;
+  isMobile: boolean;
   constructor(http: HttpClient, authMgr: AuthenManager,
     observManager: ObservableManager,
-    ) {
+  ) {
     super(http, authMgr);
     this.http = http;
     this.observManager = observManager;
@@ -52,7 +52,7 @@ export class CheckMergeUserFacade extends AbstractFacade {
     // create obsvr subject
     this.observManager.createSubject(REGISTERED_SUBJECT);
 
-    
+
   }
 
   // check merge user
@@ -68,9 +68,6 @@ export class CheckMergeUserFacade extends AbstractFacade {
       };
 
       let headers = new HttpHeaders({
-        "Access-Control-Allow-Origin": "http://localhost:4300",
-        "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept",
-        // "Access-Control-Request-Method": "GET,PUT,OPTIONS,POST",
         "mode": mode
       });
 
@@ -106,11 +103,7 @@ export class CheckMergeUserFacade extends AbstractFacade {
         "email": email
       };
 
-      let headers = new HttpHeaders({
-        "Access-Control-Allow-Origin": "http://localhost:4300",
-        "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept",
-        // "Access-Control-Request-Method": "GET,PUT,OPTIONS,POST",
-      });
+      let headers = this.getDefaultHeader();
 
       let httpOptions = {
         headers: headers
@@ -123,11 +116,11 @@ export class CheckMergeUserFacade extends AbstractFacade {
       });
     });
   };
-  public loginWithFacebook(token: string,mode?: string): Promise<any> {
+  public loginWithFacebook(token: string, mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/check_email_user';
       let body: any = {
-        "token":token,
+        "token": token,
       };
       let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
       if (mode !== undefined || mode !== "") {
@@ -139,7 +132,7 @@ export class CheckMergeUserFacade extends AbstractFacade {
           token: response.data.token,
           user: response.data.user,
           data: response,
-          pic:response.picture ?  response.picture[0] : ''
+          pic: response.picture ? response.picture[0] : ''
         };
 
         this.token = result.token;
@@ -153,7 +146,7 @@ export class CheckMergeUserFacade extends AbstractFacade {
 
         resolve(result);
       }).catch((error: any) => {
-        console.log('error',error);
+        console.log('error', error);
         reject(error);
       });
     });
@@ -161,12 +154,12 @@ export class CheckMergeUserFacade extends AbstractFacade {
   public loginWithGoogle(idToken: string, authToken: string, mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/check_email_user';
-      let body: any = { 
-        idToken, 
+      let body: any = {
+        idToken,
         authToken,
-       };
-      let headers = new HttpHeaders({ 
-        'Content-Type': 'application/json' 
+      };
+      let headers = new HttpHeaders({
+        'Content-Type': 'application/json'
       });
       if (mode !== undefined || mode !== "") {
         headers = headers.set('mode', mode);
@@ -179,7 +172,7 @@ export class CheckMergeUserFacade extends AbstractFacade {
           token: response.data.token,
           user: response.data.user,
           data: response,
-          pic:response.picture ? response.picture[0] : ''
+          pic: response.picture ? response.picture[0] : ''
         };
 
         this.token = result.token;
@@ -197,7 +190,7 @@ export class CheckMergeUserFacade extends AbstractFacade {
         reject(error);
       });
     });
-  }  
+  }
   public loginWithTwitter(data: any, mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/login';
@@ -237,76 +230,76 @@ export class CheckMergeUserFacade extends AbstractFacade {
       });
     });
   }
-     // check merge user
-     public checkOtp(email: any,otp:number,mode?:string): Promise<any> {
-      return new Promise((resolve, reject) => {
-          let url: string = this.baseURL + '/check_otp';
-          let body: any = {
-              "email": email,
-              "otp": Number(otp),
-              "authToken":mode
-          };
-          let headers = new HttpHeaders({ 
-            'Content-Type': 'application/json' 
-          });
-          if (mode !== undefined || mode !== "") {
-            headers = headers.set('mode', mode);
-          }
-
-          let httpOptions = { headers };
-          this.http.post(url, body, httpOptions).toPromise().then((response: any) => {
-              resolve(response);
-          }).catch((error: any) => {
-              reject(error);
-          });
-      });
-  };
-  public checkOtpGG(email: any,idToken?: string, authToken?: string ,otp?: number,mode?:string): Promise<any> {
+  // check merge user
+  public checkOtp(email: any, otp: number, mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
-        let url: string = this.baseURL + '/check_otp';
-        let body: any = {
-            "email": email,
-            "otp": Number(otp),
-            "idToken":idToken,
-            "authToken":authToken
-        };
-        let headers = new HttpHeaders({ 
-          'Content-Type': 'application/json' 
-        });
-        if (mode !== undefined || mode !== "") {
-          headers = headers.set('mode', mode);
-        }
-
-        let httpOptions = { headers };
-        this.http.post(url, body, httpOptions).toPromise().then((response: any) => {
-            resolve(response);
-        }).catch((error: any) => {
-            reject(error);
-        });
-    });
-};
-public checkOtpFB(email: any,facebookObject:any,otp:number,mode?:string): Promise<any> {
-  return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/check_otp';
       let body: any = {
-          "email": email,
-          "facebook": facebookObject,
-          "otp":Number(otp),
+        "email": email,
+        "otp": Number(otp),
+        "authToken": mode
       };
-      let headers = new HttpHeaders({ 
-        'Content-Type': 'application/json' 
+      let headers = new HttpHeaders({
+        'Content-Type': 'application/json'
+      });
+      if (mode !== undefined || mode !== "") {
+        headers = headers.set('mode', mode);
+      }
+
+      let httpOptions = { headers };
+      this.http.post(url, body, httpOptions).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  };
+  public checkOtpGG(email: any, idToken?: string, authToken?: string, otp?: number, mode?: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/check_otp';
+      let body: any = {
+        "email": email,
+        "otp": Number(otp),
+        "idToken": idToken,
+        "authToken": authToken
+      };
+      let headers = new HttpHeaders({
+        'Content-Type': 'application/json'
+      });
+      if (mode !== undefined || mode !== "") {
+        headers = headers.set('mode', mode);
+      }
+
+      let httpOptions = { headers };
+      this.http.post(url, body, httpOptions).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  };
+  public checkOtpFB(email: any, facebookObject: any, otp: number, mode?: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/check_otp';
+      let body: any = {
+        "email": email,
+        "facebook": facebookObject,
+        "otp": Number(otp),
+      };
+      let headers = new HttpHeaders({
+        'Content-Type': 'application/json'
       });
       if (mode !== undefined || mode !== "") {
         headers = headers.set('mode', mode);
       }
       let httpOptions = { headers };
       this.http.post(url, body, httpOptions).toPromise().then((response: any) => {
-          resolve(response);
+        resolve(response);
       }).catch((error: any) => {
-          reject(error);
+        reject(error);
       });
-  });
-};
+    });
+  };
   public checkAccountStatus(token: string, mode?: string, options?: any): Promise<any> {
     if (token === undefined || token === null || token === '') {
       throw 'Token is required.';
@@ -355,7 +348,7 @@ public checkOtpFB(email: any,facebookObject:any,otp:number,mode?:string): Promis
           fbMode = true;
           this.facebookMode = true;
         }
-        if(response.data.mode === 'GG'){
+        if (response.data.mode === 'GG') {
           ggMode = true;
           this.googleMode = true;
         }

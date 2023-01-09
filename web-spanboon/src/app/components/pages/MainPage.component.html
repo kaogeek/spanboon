@@ -16,31 +16,33 @@
         </span>
         <button mat-flat-button (click)="clickCloseDev()">ตกลง</button>
     </section> -->
-
-    <header-top *ngIf="hidebar" class="nav-header-top" [menutopprofile]="isprofile"></header-top>
-    <div class="icon-post-bottom" *ngIf="isPost && hidebar" matRipple [matRippleCentered]="'centered'"
-        [matRippleColor]="'#c6263420'" (click)="dialogPost()">
-        <svg class="button-post" xmlns="http://www.w3.org/2000/svg" width="39.429" height="31.264"
-            viewBox="0 0 39.429 31.264">
-            <g id="Group_1210" data-name="Group 1210" transform="translate(-4642 -13042.372)">
-                <g id="vintage" transform="translate(4652.771 13042.372)">
-                    <g id="Group_630" data-name="Group 630" transform="translate(0)">
-                        <path id="Path_376" data-name="Path 376"
-                            d="M49.341,0A25.427,25.427,0,0,0,24.054,23.132a79.631,79.631,0,0,1,8.26-9.521.651.651,0,0,1,.93.912c-.507.516-1.021,1.051-1.538,1.593-.3.309-.585.616-.869.918l-.156.169c-4.158,4.452-7.131,8.328-9.289,13.141a.652.652,0,0,0,1.189.534,35.751,35.751,0,0,1,2.664-4.848A25.383,25.383,0,0,0,46.964,12.684a.651.651,0,0,0-.574-.96H43.977L48.3,9.251A.653.653,0,0,0,48.6,8.9a25.311,25.311,0,0,0,1.4-8.247A.652.652,0,0,0,49.341,0Z"
-                            transform="translate(-21.334)" fill="#fff" />
+    <ng-container *ngIf="hidebar">
+        <header-top *ngIf="hidebar" class="nav-header-top" [menutopprofile]="isprofile"></header-top>
+        <div class="icon-post-bottom" *ngIf="isPost && hidebar" matRipple [matRippleCentered]="'centered'"
+            [matRippleColor]="'#c6263420'" (click)="dialogPost()">
+            <svg class="button-post" xmlns="http://www.w3.org/2000/svg" width="39.429" height="31.264"
+                viewBox="0 0 39.429 31.264">
+                <g id="Group_1210" data-name="Group 1210" transform="translate(-4642 -13042.372)">
+                    <g id="vintage" transform="translate(4652.771 13042.372)">
+                        <g id="Group_630" data-name="Group 630" transform="translate(0)">
+                            <path id="Path_376" data-name="Path 376"
+                                d="M49.341,0A25.427,25.427,0,0,0,24.054,23.132a79.631,79.631,0,0,1,8.26-9.521.651.651,0,0,1,.93.912c-.507.516-1.021,1.051-1.538,1.593-.3.309-.585.616-.869.918l-.156.169c-4.158,4.452-7.131,8.328-9.289,13.141a.652.652,0,0,0,1.189.534,35.751,35.751,0,0,1,2.664-4.848A25.383,25.383,0,0,0,46.964,12.684a.651.651,0,0,0-.574-.96H43.977L48.3,9.251A.653.653,0,0,0,48.6,8.9a25.311,25.311,0,0,0,1.4-8.247A.652.652,0,0,0,49.341,0Z"
+                                transform="translate(-21.334)" fill="#fff" />
+                        </g>
                     </g>
+                    <path id="plus_2_" data-name="plus (2)"
+                        d="M12.889,5.813h-4.3A.253.253,0,0,1,8.34,5.56v-4.3a1.264,1.264,0,1,0-2.527,0v4.3a.253.253,0,0,1-.253.253h-4.3a1.264,1.264,0,1,0,0,2.527h4.3a.253.253,0,0,1,.253.253v4.3a1.264,1.264,0,1,0,2.527,0v-4.3a.253.253,0,0,1,.253-.253h4.3a1.264,1.264,0,1,0,0-2.527Zm0,0"
+                        transform="translate(4642 13043.844)" fill="#fff" />
                 </g>
-                <path id="plus_2_" data-name="plus (2)"
-                    d="M12.889,5.813h-4.3A.253.253,0,0,1,8.34,5.56v-4.3a1.264,1.264,0,1,0-2.527,0v4.3a.253.253,0,0,1-.253.253h-4.3a1.264,1.264,0,1,0,0,2.527h4.3a.253.253,0,0,1,.253.253v4.3a1.264,1.264,0,1,0,2.527,0v-4.3a.253.253,0,0,1,.253-.253h4.3a1.264,1.264,0,1,0,0-2.527Zm0,0"
-                    transform="translate(4642 13043.844)" fill="#fff" />
-            </g>
-        </svg>
-    </div>
-    <div class="div-top" id="div-top" (click)="clicktotop()" *ngIf="isdivtop">
-        <i class="material-icons to-top">
-            keyboard_arrow_up
-        </i>
-    </div>
+            </svg>
+        </div>
+        <div class="div-top" id="div-top" (click)="clicktotop()" *ngIf="isdivtop">
+            <i class="material-icons to-top">
+                keyboard_arrow_up
+            </i>
+        </div>
+    </ng-container>
+
 
     <!-- contents -->
     <div class="wrapper-content-page" id="contentPage">

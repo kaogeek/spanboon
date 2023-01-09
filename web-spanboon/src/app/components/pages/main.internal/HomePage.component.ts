@@ -62,7 +62,7 @@ export class HomePage extends AbstractPage implements OnInit {
   }
 
   public ngOnInit() {
-    let user = this.authenManager.getCurrentUser()
+    let user = this.authenManager.getCurrentUser();
     this.userCloneDatas = JSON.parse(JSON.stringify(user));
     if (this.userCloneDatas !== undefined && this.userCloneDatas !== null) {
       this.getMainPageModel(this.userCloneDatas.id);
@@ -72,7 +72,6 @@ export class HomePage extends AbstractPage implements OnInit {
       this.searchPageInUser();
     }
     super.ngOnInit();
-    // type: "FULFILLMENT"
   }
 
   private async getMainPageModel(userId?) {

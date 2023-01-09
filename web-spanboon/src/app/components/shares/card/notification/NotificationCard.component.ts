@@ -36,7 +36,7 @@ export class NotificationCard extends AbstractPage implements OnInit {
     super(PAGE_NAME, authenManager, dialog, router);
   }
 
-  public ngOnInit(): void {}
+  public ngOnInit(): void { }
 
   public ngOnDestroy(): void {
     super.ngOnDestroy();
@@ -47,7 +47,6 @@ export class NotificationCard extends AbstractPage implements OnInit {
   }
 
   public navigatetopage(link) {
-    console.log('link',link);
     this.router.navigate([]).then(() => {
       window.open(link);
     });

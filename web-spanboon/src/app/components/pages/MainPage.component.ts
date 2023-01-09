@@ -105,22 +105,22 @@ export class MainPage extends AbstractPage implements OnInit {
       this.searchAccessPage();
     }
 
-    // this.route.queryParams.subscribe(params => {
-    //   let hidebars = params['hidebar'];
-    //   if (hidebars !== undefined && hidebars !== null) {
-    //     this.hidebar = false;
-    //   } else {
-    //     this.hidebar = true;
-    //   }
-    // });
+    this.route.queryParams.subscribe(params => {
+      let hidebars = params['hidebar'];
+      if (hidebars === 'true') {
+        this.hidebar = false;
+      } else {
+        this.hidebar = true;
+      }
+    });
 
 
-    const dev = sessionStorage.getItem('isDev');
-    if (dev) {
-      this.isDev = false;
-    } else {
-      this.isDev = true;
-    }
+    // const dev = sessionStorage.getItem('isDev');
+    // if (dev) {
+    //   this.isDev = false;
+    // } else {
+    //   this.isDev = true;
+    // }
   }
 
   ngAfterViewInit(): void {
