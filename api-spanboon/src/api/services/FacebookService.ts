@@ -123,15 +123,25 @@ export class FacebookService {
             const {data} = await axios.get('https://graph.facebook.com/'+pageId+'/subscribed_apps&access_token='+access_token);
             return data;
         }catch(err){
-            // console.log('fail to subscribe webhook',err);
+            console.log('fail to subscribe webhook',err);
         }
     }
+
+    public async getPagePicture(pageId:string):Promise<any>{
+        try{
+            const { data } = await axios.get('https://graph.facebook.com/v14.0/' + pageId + '/picture?redirect=0&type=large');
+            return data;
+        }catch(err){
+            return err;
+        }
+    }
+
     public async getPageId(userId:string,access_token:string):Promise<any>{
         try{
             const {data} = await axios.get('https://graph.facebook.com/'+userId+'/accounts?access_token='+access_token);
             return data;
         }catch(err){
-            // console.log('cannot get pageId from graph api',err);
+            return err;
         }
     }
     // Get post from page on facebook
@@ -140,7 +150,7 @@ export class FacebookService {
             const {data} = await axios.get('https://graph.facebook.com/'+pageId+'/feed?access_token='+access_token);
             return data;
         }catch(err){
-            // console.log('cannot get feed from facebook',err);
+            return err;
         }
     }
 
@@ -150,7 +160,7 @@ export class FacebookService {
             const {data} = await axios.get('https://graph.facebook.com/'+pageId+'/photos?url=link&access_token='+access_token);
             return data;
         }catch(err){
-            // console.log('cannot get photo from facebook',err);
+            return err;
         }
     }
     public getFacebookUserFromToken(accessToken: string): Promise<any> {

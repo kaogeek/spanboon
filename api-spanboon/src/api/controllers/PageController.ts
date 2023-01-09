@@ -444,7 +444,7 @@ export class PageController {
         const query = { _id: userId };
         const newValue = { $set: { isSyncPage: true } };
         let assetCover: any;
-        const { request } = await axios.get('https://graph.facebook.com/v14.0/' + socialBinding.facebookPageId + '/picture?type=large');
+        const pagePicture = await this.facebookService.getPagePicture(socialBinding.facebookPageId);
         const { data } = await axios.get('https://graph.facebook.com/v14.0/' + socialBinding.facebookPageId + '?fields=cover&access_token=' + socialBinding.pageAccessToken);
         const pageDetail = await this.facebookService.getPageFb(socialBinding.facebookPageId,socialBinding.pageAccessToken);
         const ipAddress = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress).split(',')[0];
@@ -461,7 +461,7 @@ export class PageController {
             const errorResponse = ResponseUtil.getErrorResponse('Unable create Page', undefined);
             return res.status(400).send(errorResponse);
         }
-        const assetPic = await this.assetService.createAssetFromURL(request.socket._httpMessage.res.responseUrl, userId);
+        const assetPic = await this.assetService.createAssetFromURL(pagePicture.data.url, userId);
         if (data.cover !== undefined) {
             assetCover = await this.assetService.createAssetFromURL(data.cover.source, userId);
         }
