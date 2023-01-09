@@ -85,7 +85,6 @@ export class FacebookWebhookController {
         let text1 = undefined;
         let text2 = undefined;
         let realText = undefined;
-        console.log('body.entry[0].changes[0]', body.entry[0].changes[0]);
         const match = /r\n|\n/.exec(body.entry[0].changes[0].value.message);
         if (match) {
             sliceArray = body.entry[0].changes[0].value.message.slice(0, match.index);
