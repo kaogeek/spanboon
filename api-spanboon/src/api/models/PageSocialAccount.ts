@@ -6,7 +6,7 @@
  */
 
 import { IsNotEmpty, IsMongoId } from 'class-validator';
-import { Column, Entity, ObjectIdColumn } from 'typeorm';
+import { Column, Entity, Index, ObjectIdColumn } from 'typeorm';
 import { ObjectID } from 'mongodb';
 
 @Entity('PageSocialAccount')
@@ -29,6 +29,7 @@ export class PageSocialAccount {
     @Column({ name: 'providerName' })
     public providerName: string;
 
+    @Index({ unique: true })
     @Column({ name: 'providerPageId' })
     public providerPageId: any;
 

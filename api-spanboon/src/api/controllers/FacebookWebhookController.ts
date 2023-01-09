@@ -104,7 +104,6 @@ export class FacebookWebhookController {
         const pageIdFB = await this.pageService.findOne({ _id: pageSubscribe.pageId });        
         if (body !== undefined && pageIdFB !== undefined && pageIdFB !== null && pageSubscribe.enable === true) {
             if (body.entry[0].changes[0].value.verb === 'add' && body.entry[0].changes[0].value.link === undefined && body.entry[0].changes[0].value.photos === undefined && body.entry[0].changes[0].value.item !== 'share' && body.entry[0].changes[0].value.item === 'status' ) {
-                console.log('pass1');
                 const checkPost = await this.socialPostService.find({ socialId: body.entry[0].changes[0].value.post_id});
                 const checkFeed = checkPost.shift();
                 if (checkFeed === undefined) {
@@ -142,9 +141,10 @@ export class FacebookWebhookController {
                     newSocialPost.socialType = PROVIDER.FACEBOOK;
                     await this.socialPostService.create(newSocialPost);
                     return res.status(200).send('SuccessFul Webhooks');
+                }else{
+                    return res.status(400);
                 }
             } else if (body.entry[0].changes[0].value.verb === 'add' && body.entry[0].changes[0].value.link !== undefined && body.entry[0].changes[0].value.photos === undefined && body.entry[0].changes[0].value.item !== 'share' && body.entry[0].changes[0].value.item === 'photo') {
-                console.log('pass2');
                 const assetPic = await this.assetService.createAssetFromURL(body.entry[0].changes[0].value.link, pageIdFB.ownerUser);
                 const checkPost = await this.socialPostService.find({ socialId: body.entry[0].changes[0].value.post_id});
                 const checkFeed = checkPost.shift();
@@ -205,9 +205,10 @@ export class FacebookWebhookController {
                             return res.status(200).send('SuccessFul Webhooks');
                         }
                     }
+                }else{
+                    return res.status(400);
                 }
             } else if (body.entry[0].changes[0].value.verb === 'add' && body.entry[0].changes[0].value.link === undefined && body.entry[0].changes[0].value.photos !== undefined && body.entry[0].changes[0].value.item !== 'share') {
-                console.log('pass3');
                 const multiPics = [];
                 for (let i = 0; i < body.entry[0].changes[0].value.photos.length; i++) {
                     if (i === 4) {
@@ -266,9 +267,10 @@ export class FacebookWebhookController {
                         }
                     }
                     return res.status(200).send('SuccessFul Webhooks');
+                }else{
+                    return res.status(400);
                 } 
             } else if (body.entry[0].changes[0].value.verb === 'edit') {
-                console.log('pass4');
                 const socialPost = await this.socialPostService.findOne({ postBy: body.entry[0].changes[0].value.post_id });
                 if (socialPost) {
                     const queryFB = { _id: socialPost.postId };
