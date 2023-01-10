@@ -81,17 +81,24 @@ export class FacebookWebhookController {
             }
         }
         const pageSubscribe = await this.socialPostLogsService.findOne({ providerUserId: String(body.entry[0].changes[0].value.from.id) });
+        if(pageSubscribe === undefined){
+            return res.status(400);
+        }
         let sliceArray = undefined;
         let text1 = undefined;
         let text2 = undefined;
         let realText = undefined;
         const match = /r\n|\n/.exec(body.entry[0].changes[0].value.message);
+        console.log('body.entry[0].changes[0].value.message',body.entry[0].changes[0].value);
+        if(body.entry[0].changes[0].value.message === undefined){
+            return res.status(400);
+        }
         if (match) {
             sliceArray = body.entry[0].changes[0].value.message.slice(0, match.index);
             text1 = sliceArray.indexOf('[');
             text2 = sliceArray.indexOf(']');
             if (text1 !== -1 && text2 !== -1) {
-                realText = body.entry[0].changes[0].value.message.substring(text1, text2 + 1);
+                realText = body.entry[0].changes[0].value.message.substring(text1+1, text2 );
             } else if (text1 !== -1 && text2 === -1) {
                 realText = body.entry[0].changes[0].value.message.slice(0, 50) + '......';
             } else {
@@ -100,7 +107,10 @@ export class FacebookWebhookController {
         } else {
             realText = body.entry[0].changes[0].value.message.substring(0, 50) + '.....';
         }
-        const pageIdFB = await this.pageService.findOne({ _id: pageSubscribe.pageId });        
+        const pageIdFB = await this.pageService.findOne({ _id: pageSubscribe.pageId }); 
+        if(pageIdFB.id === undefined){
+            return res.status(400);
+        }       
         if (body !== undefined && pageIdFB !== undefined && pageIdFB !== null && pageSubscribe.enable === true) {
             if (body.entry[0].changes[0].value.verb === 'add' && body.entry[0].changes[0].value.link === undefined && body.entry[0].changes[0].value.photos === undefined && body.entry[0].changes[0].value.item !== 'share' && body.entry[0].changes[0].value.item === 'status' ) {
                 const checkPost = await this.socialPostService.find({ socialId: body.entry[0].changes[0].value.post_id});

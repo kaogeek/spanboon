@@ -942,8 +942,10 @@ export class GuestController {
             let fbUser = undefined;
             let userFb = undefined;
             let authenticaTionFB = undefined;
+            let refreshToken = undefined;
             try {
                 fbUser = await this.facebookService.fetchFacebook(loginParam.token);
+                refreshToken = await this.facebookService.getRefreshToken(loginParam.token);
                 userFb = await this.userService.find({ email: fbUser.email });
                 for (const userFind of userFb) {
                     authenticaTionFB = await this.authenticationIdService.findOne({ where: { user: ObjectID(userFind.id), providerName: PROVIDER.FACEBOOK } });
@@ -960,7 +962,7 @@ export class GuestController {
                 const expirationDate = moment().add(userExrTime, 'days').toDate();
                 const facebookUserId = authenticaTionFB.providerUserId;
                 const query = { providerUserId: facebookUserId, providerName: PROVIDER.FACEBOOK };
-                const newValue = { $set: { providerUserId: fbUser.id, lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, storedCredentials: loginParam.token, expirationDate } };
+                const newValue = { $set: { providerUserId: fbUser.id, lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, storedCredentials: refreshToken.access_token, expirationDate } };
                 const updateAuth = await this.authenticationIdService.update(query, newValue);
                 if (updateAuth) {
                     const updatedAuth = await this.authenticationIdService.findOne({ where: query });

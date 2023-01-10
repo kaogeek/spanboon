@@ -127,9 +127,9 @@ export class FacebookService {
         }
     }
 
-    public async getPagePicture(pageId:string):Promise<any>{
+    public async getPagePicture(pageId:string,access_token:string):Promise<any>{
         try{
-            const { data } = await axios.get('https://graph.facebook.com/v14.0/' + pageId + '/picture?redirect=0&type=large');
+            const { data } = await axios.get('https://graph.facebook.com/v14.0/' + pageId + '/picture?redirect=0&type=large&access_token='+access_token);
             return data;
         }catch(err){
             return err;
@@ -201,7 +201,14 @@ export class FacebookService {
             });
         });
     }
-
+    public async getRefreshToken(accessToken:string): Promise<any>{
+        try{
+            const { data } = await axios.post('https://graph.facebook.com/v14.0/oauth/access_token?grant_type=fb_exchange_token&client_id=' + facebook_setup.FACEBOOK_APP_ID +'&client_secret=' +facebook_setup.FACEBOOK_APP_SECRET + '&fb_exchange_token=' +accessToken);
+            return data;
+        }catch(err){
+            return err;
+        }
+    }
     public async appAccessToken():Promise<any>{
         try{
             const { data } = await axios.get('https://graph.facebook.com/oauth/access_token?client_id=' + facebook_setup.FACEBOOK_APP_ID + '&client_secret=' + facebook_setup.FACEBOOK_APP_SECRET + '&grant_type=client_credentials');
@@ -367,8 +374,7 @@ export class FacebookService {
                 }
             }
             // xaxios.post('https://graph.facebook.com/'+ accessToken + '/feed');
-            console.log('fbPageId',fbPageId);
-            console.log('accessToken',accessToken);
+
             this.publishPageId(fbPageId,accessToken).then((res)=>{
                 console.log('res_facebook',res);
                 try{
