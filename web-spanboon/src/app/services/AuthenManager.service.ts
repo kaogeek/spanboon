@@ -20,6 +20,7 @@ const PAGE_USER: string = 'pageUser';
 const TOKEN_KEY: string = 'token';
 const TOKEN_MODE_KEY: string = 'mode';
 const REGISTERED_SUBJECT: string = 'authen.registered';
+const TOKEN_FCM: string = 'tokenFCM';
 
 // only page user can login
 @Injectable()
@@ -107,7 +108,6 @@ export class AuthenManager {
       };
 
       this.http.post(url, body, httpOptions).toPromise().then((response: any) => {
-        console.log('response.data.user', response.data.user);
         let result: any = {
           token: response.data.token,
           user: response.data.user
@@ -484,7 +484,7 @@ export class AuthenManager {
         this.twitterMode = false;
         this.googleMode = false;
         this.clearStorage();
-
+        sessionStorage.removeItem(PAGE_USER);
       }).catch((error: any) => {
         reject(error);
       });
@@ -500,6 +500,7 @@ export class AuthenManager {
     sessionStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(TOKEN_MODE_KEY);
     sessionStorage.removeItem(TOKEN_MODE_KEY);
+    localStorage.removeItem(TOKEN_FCM);
   }
 
   public checkAccountStatus(token: string, mode?: string, options?: any): Promise<any> {
@@ -588,6 +589,8 @@ export class AuthenManager {
 
   // return current login
   public getCurrentUser(): any {
+    let tokenS = sessionStorage.getItem(TOKEN_KEY);
+    let tokenL = localStorage.getItem(TOKEN_KEY);
     let user;
     if (this.user) {
       user = this.user;
@@ -597,6 +600,12 @@ export class AuthenManager {
         user = JSON.parse(localStorage.getItem(PAGE_USER));
       }
     }
+    if (tokenS === '' && tokenS === null && tokenS === undefined) {
+      sessionStorage.setItem('token', tokenL);
+    } else if (tokenL === '' && tokenL === null && tokenL === undefined) {
+      this.logout(user);
+    }
+
     return user;
   }
 

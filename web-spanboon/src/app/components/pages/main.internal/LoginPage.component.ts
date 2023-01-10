@@ -84,12 +84,9 @@ export class LoginPage extends AbstractPage implements OnInit {
   };
 
   public mockDataMergeSocial: any = {
-    social: "EMAIL",
-    socialFB: "FACEBOOK",
-    socialTW: "TWITTER",
-    socialGG: "GOOGLE",
-    socialAP: "APPLE"
+    social: undefined,
   };
+
   public dataUser: any;
   public passwordOtp: string;
   public countOtp: number;
@@ -296,6 +293,7 @@ export class LoginPage extends AbstractPage implements OnInit {
     this.checkMergeUserFacade.loginWithGoogle(this.googleToken.idToken, this.googleToken.authToken, mode).then((data: any) => {
       // login success redirect to main page  
       if (data.data.status === 2) {
+        this.mockDataMergeSocial.social = mode;
         this.pictureSocial = data.pic;
         this.modeSwitch = "mergeuser";
         const queue = data.data.authUser;
@@ -361,7 +359,6 @@ export class LoginPage extends AbstractPage implements OnInit {
         });
       }
     }).catch((error) => {
-      console.log('error >>> ', error.error.message);
       const statusMsg = error.error.message;
       if (statusMsg === "User was not found.") {
         let navigationExtras: NavigationExtras = {
@@ -434,6 +431,7 @@ export class LoginPage extends AbstractPage implements OnInit {
     this.checkMergeUserFacade.loginWithFacebook(this.accessToken.fbtoken, mode).then((data: any) => {
       // login success redirect to main page
       if (data.data.status === 2) {
+        this.mockDataMergeSocial.social = mode;
         this.pictureSocial = data.pic;
         this.modeSwitch = "mergeuser";
         const queue = data.data.authUser;
@@ -537,12 +535,42 @@ export class LoginPage extends AbstractPage implements OnInit {
     }
     this.checkMergeUserFacade.checkMergeUser(mode, body).then((data) => {
       if (data.data.status === 2) {
+        this.mockDataMergeSocial.social = mode;
         this.login = false;
         this.modeSwitch = "mergeuser";
         this.emailOtp = body.email;
         this.passwordOtp = body.password;
         this.dataUser = data.data;
         this.socialMode = "EMAIL";
+        const queue = data.data.authUser;
+        for (let i = 0; i < queue.length; i++) {
+          const current = queue.shift()
+          if (current === 'EMAIL') {
+            this.social.socialLogin = current;
+            this.login = false;
+            this.emailOtp = data.data.data.email;
+            this.dataUser = data.data;
+            // this.socialMode = 'GOOGLE';
+          } else if (current === 'GOOGLE') {
+            this.social.socialLogin = current;
+            this.login = false;
+            this.emailOtp = data.data.data.email;
+            this.dataUser = data.data;
+            // this.socialMode = 'GOOGLE';
+          } else if (current === 'FACEBOOK') {
+            this.social.socialLogin = current;
+            this.login = false;
+            this.emailOtp = data.data.data.email;
+            this.dataUser = data.data;
+            // this.socialMode = 'GOOGLE';
+          } else if (current === 'TWITTER') {
+            this.social.socialLogin = current;
+            this.login = false;
+            this.emailOtp = data.data.data.email;
+            this.dataUser = data.data;
+            // this.socialMode = 'GOOGLE';
+          }
+        }
       } else {
         this.authenManager
           .login(body.email, body.password, mode)
@@ -639,17 +667,17 @@ export class LoginPage extends AbstractPage implements OnInit {
   }
 
   public clickSystemDevelopment(): void {
-    let dialog = this.dialog.open(DialogAlert, {
-      disableClose: true,
-      data: {
-        text: MESSAGE.TEXT_DEVERLOP,
-        bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-        bottomColorText2: "black",
-        btDisplay1: "none"
-      }
-    });
-    dialog.afterClosed().subscribe((res) => {
-    });
+    // let dialog = this.dialog.open(DialogAlert, {
+    //   disableClose: true,
+    //   data: {
+    //     text: MESSAGE.TEXT_DEVERLOP,
+    //     bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+    //     bottomColorText2: "black",
+    //     btDisplay1: "none"
+    //   }
+    // });
+    // dialog.afterClosed().subscribe((res) => {
+    // });
   }
   public onOtpChange(event: any) {
     if (event && event.length === 6) {

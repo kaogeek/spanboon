@@ -12,25 +12,23 @@
     <ng-container *ngIf="isDetail; else elseCheckBox">
         <div class="wrapper-card">
             <ng-container *ngFor="let item of data; let i = index">
-                <ng-container *ngIf="i <= 4">
-                    <div class="card-follow">
-                        <mat-checkbox #checkbox class="item-checkbox" (click)="$event.stopPropagation()"
-                            [(ngModel)]="item.selected" (change)="checkBoxvalue($event, item , i)">
-                            <div class="description">
-                                <!-- <div class="top">{{i+1.}} {{item.topic}}</div> -->
-                                <ng-container *ngIf="item.hashTag !== '' ">
-                                    <div class="middle">{{'#'+item.hashTag}}</div>
-                                </ng-container>
+                <div class="card-follow">
+                    <mat-checkbox #checkbox class="item-checkbox" (click)="$event.stopPropagation()"
+                        [(ngModel)]="item.selected" (change)="checkBoxvalue($event, item , i)">
+                        <div class="description">
+                            <!-- <div class="top">{{i+1.}} {{item.topic}}</div> -->
+                            <ng-container *ngIf="item.hashTag !== '' ">
+                                <div class="middle">{{'#'+item.hashTag}}</div>
+                            </ng-container>
 
-                                <ng-container *ngIf="item && item.title">
-                                    <div class="trend" [innerHTML]='item.title | highlight'>
-                                    </div>
-                                </ng-container>
+                            <ng-container *ngIf="item && item.title">
+                                <div class="trend" [innerHTML]='item.title | highlight'>
+                                </div>
+                            </ng-container>
 
-                            </div>
-                        </mat-checkbox>
-                    </div>
-                </ng-container>
+                        </div>
+                    </mat-checkbox>
+                </div>
             </ng-container>
         </div>
     </ng-container>
@@ -84,7 +82,8 @@
     </ng-template>
     <ng-container
         *ngIf="!isLoadMorePageCategory || !isLoadMorePageEmergency || !isLoadMoreObjective || !isLoadMoreHashTag">
-        <div class="follow-all" *ngIf="data && data.length > 4" (click)="loadMoreData($event)">
+        <div class="follow-all" *ngIf="data && data.length > 4" (click)="loadMoreData($event)"
+            [ngStyle]="{'display': isHideMoreObjective ? 'none' : 'flex' }">
             เพิ่มเติม
         </div>
     </ng-container>

@@ -308,7 +308,7 @@
                 </ng-template>
             </div>
             <div class="body-recommended">
-                <div class="recommended-left" *ngIf="!showLoading">
+                <div class="recommended-left" [ngStyle]="{'display': showLoading ? 'none' : 'block' }">
                     <div class="feed-body-search" #feedbodysearch>
                         <div class="feed-header-search">
                             <div class="filter">
@@ -492,7 +492,9 @@
                                                             <div class="list-autocomp">
                                                                 <ng-container
                                                                     *ngIf="user.imageURL && user.imageURL !== '' && user.imageURL !== undefined && user.imageURL !== null; else imageURL">
-                                                                    <img class="img" [src]="apiBaseURL+user.imageURL+'/image'" alt="">
+                                                                    <img class="img"
+                                                                        [src]="apiBaseURL+user.imageURL+'/image'"
+                                                                        alt="">
                                                                 </ng-container>
                                                                 <ng-template #imageURL>
                                                                     <div class="img not-image">
@@ -517,7 +519,8 @@
                                                 <div class="left">
                                                     <ng-container
                                                         *ngIf="item.imageURL && item.imageURL !== '' && item.imageURL !== undefined && item.imageURL !== null ; else elsePhoto">
-                                                        <img class="page-img" [src]="apiBaseURL+item.imageURL+'/image'" alt="">
+                                                        <img class="page-img" [src]="apiBaseURL+item.imageURL+'/image'"
+                                                            alt="">
                                                     </ng-container>
                                                     <ng-template #elsePhoto>
                                                         <div class="page-img not-image">

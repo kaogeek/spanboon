@@ -6,18 +6,18 @@
  */
 
 .header-search {
-    > .search {
+    >.search {
         position: relative;
         z-index: 10000;
         width: 100%;
 
-        > .wrapper-search {
+        >.wrapper-search {
             width: 100%;
             position: relative;
             display: flex;
             align-items: center;
 
-            > .icon-search-out {
+            >.icon-search-out {
                 width: 40px;
                 height: 40px;
                 display: flex;
@@ -29,7 +29,7 @@
                 border-radius: 50%;
             }
 
-            > .home-back-left {
+            >.home-back-left {
                 display: none;
                 height: 40px;
                 width: 40px;
@@ -37,13 +37,14 @@
                 background: $bg-grey;
                 margin-right: 5pt;
                 @include pointer();
-                > .home-back {
+
+                >.home-back {
                     width: 20px;
                     height: 20px;
                 }
             }
 
-            > #search {
+            >#search {
                 width: 40px;
                 // display: none;
                 visibility: hidden;
@@ -76,7 +77,7 @@
                     @include pointer();
                 }
 
-                & > input[type="search"].filled {
+                &>input[type="search"].filled {
                     color: $color-black;
                     background-color: $white;
                     cursor: auto;
@@ -85,25 +86,27 @@
                     @include font-size-10($font-head-500);
                 }
 
-                & > input[type="search"]:hover {
+                &>input[type="search"]:hover {
                     background-color: #fff;
                 }
 
-                & > input:-moz-placeholder {
+                &>input:-moz-placeholder {
                     color: transparent;
                 }
 
-                & > input::-webkit-input-placeholder {
+                &>input::-webkit-input-placeholder {
                     color: transparent;
                 }
-                & > input[type="search"].filled:-moz-placeholder {
-                    color: $color-gray;
-                }
-                & > input[type="search"].filled::-webkit-input-placeholder {
+
+                &>input[type="search"].filled:-moz-placeholder {
                     color: $color-gray;
                 }
 
-                > .icon-search {
+                &>input[type="search"].filled::-webkit-input-placeholder {
+                    color: $color-gray;
+                }
+
+                >.icon-search {
                     height: 40px;
                     width: 40px;
                     position: absolute;
@@ -116,7 +119,7 @@
                     align-items: center;
                 }
 
-                > .close {
+                >.close {
                     height: 20pt;
                     width: 20pt;
                     border-radius: 50%;
@@ -135,7 +138,7 @@
             }
         }
 
-        > .wrapper-body-tag {
+        >.wrapper-body-tag {
             display: flex;
             flex-direction: row;
             flex-wrap: wrap;
@@ -150,14 +153,14 @@
             border: $width-border solid $border-separator;
             box-shadow: 3px 3px 6px 0px rgba($black, 0.15);
 
-            > .tab {
+            >.tab {
                 width: 100%;
                 overflow: hidden;
                 background-color: whitesmoke;
                 display: flex;
                 height: 40pt;
 
-                > .tablinks {
+                >.tablinks {
                     width: 50%;
                     padding: 0 10pt;
                     display: flex;
@@ -181,7 +184,7 @@
                 }
             }
 
-            > .wrapper-popular {
+            >.wrapper-popular {
                 width: 45%;
                 flex: 1 1 0%;
                 overflow: hidden;
@@ -191,7 +194,7 @@
                 display: flex;
                 flex-direction: column;
 
-                > .wrapper-header {
+                >.wrapper-header {
                     display: flex;
                     position: relative;
                     height: 46pt;
@@ -200,7 +203,7 @@
                     border-bottom: $width-border solid $border-separator;
                     padding: 0 30pt 0 15pt;
 
-                    > .now-regrad {
+                    >.now-regrad {
                         flex: 1 1 0%;
                         display: flex;
                         align-items: center;
@@ -214,7 +217,7 @@
                         }
                     }
 
-                    > .have-participate {
+                    >.have-participate {
                         flex: 0 0 auto;
                         text-align: right;
                         width: 70pt;
@@ -223,14 +226,14 @@
                     }
                 }
 
-                > .list-popular {
+                >.list-popular {
                     width: 100%;
                     flex: 1 1 0%;
                     border-right: $width-border solid $border-separator;
                     background-color: $white;
                     overflow-x: hidden;
 
-                    > .item-popular {
+                    >.item-popular {
                         display: flex;
                         justify-content: space-between;
                         padding: 15pt 30pt 15pt 50pt;
@@ -243,7 +246,7 @@
                             border-radius: 8pt;
                         }
 
-                        > .tag-popular {
+                        >.tag-popular {
                             display: flex;
                             flex: 1 1 0%;
                             display: -webkit-box;
@@ -254,14 +257,14 @@
                             padding-right: 15pt;
                         }
 
-                        > .count-participate {
+                        >.count-participate {
                             text-align: right;
                             width: 70pt;
                             flex: 0 0 auto;
                         }
                     }
 
-                    > .wrapper-allPost {
+                    >.wrapper-allPost {
                         display: flex;
                         justify-content: center;
                         padding: 15pt 0;
@@ -271,7 +274,8 @@
                         @include font-size-10($font-head-500);
                     }
                 }
-                > .data-found {
+
+                >.data-found {
                     display: flex;
                     align-items: center;
                     justify-content: center;
@@ -279,7 +283,8 @@
                     color: $color-gray;
                 }
             }
-            > .wrapper-history {
+
+            >.wrapper-history {
                 width: 55%;
                 flex: 1 1 0%;
                 overflow: hidden;
@@ -289,7 +294,7 @@
                 display: flex;
                 flex-direction: column;
 
-                > .wrapper-header {
+                >.wrapper-header {
                     display: flex;
                     position: sticky;
                     align-items: center;
@@ -305,24 +310,25 @@
                         margin-right: 15pt;
                     }
 
-                    > .label {
+                    >.label {
                         @include font-size-10($font-head-500);
                     }
                 }
 
-                > .list-body {
+                >.list-body {
                     overflow-y: auto;
                     overflow-x: hidden;
                     flex: 1 1 0%;
 
-                    > .list-fanpage {
+                    >.list-fanpage {
                         display: flex;
                         width: calc(100% - 28pt);
                         padding: 14pt;
                         border-bottom: $width-border solid $border-separator;
                         background-color: $white;
+                        overflow-x: scroll;
 
-                        > .wrapper-profile {
+                        >.wrapper-profile {
                             display: flex;
                             width: calc(100pt - 22pt);
                             flex-direction: column;
@@ -341,7 +347,7 @@
                                 border-radius: 8pt;
                             }
 
-                            > .avatar {
+                            >.avatar {
                                 display: flex;
                                 align-items: center;
                                 justify-content: center;
@@ -355,18 +361,18 @@
                                 background-color: $bg-grey;
                             }
 
-                            > .bottom-offical {
+                            >.bottom-offical {
                                 display: flex;
                                 align-items: center;
                                 justify-content: center;
 
-                                > .offical-page {
+                                >.offical-page {
                                     width: 20px;
                                     height: 20px;
                                     margin-right: 3pt;
                                 }
 
-                                > .fanpage-name {
+                                >.fanpage-name {
                                     color: $brandcolor2;
                                     @include font-size-10($font-head-500);
                                     display: -webkit-box;
@@ -378,30 +384,30 @@
                                 }
                             }
 
-                            > .fanpage-subline {
+                            >.fanpage-subline {
                                 @include font-size-11($font-head-500);
                                 margin-bottom: 5pt;
                             }
 
-                            > .fanpage-tag {
+                            >.fanpage-tag {
                                 @include font-size-11($font-head-500);
                                 color: $color-gray;
                             }
                         }
                     }
 
-                    > .page-recent {
+                    >.page-recent {
                         justify-content: center;
                         @include font-size-10($font-head-500);
                     }
 
-                    > .list-search {
+                    >.list-search {
                         width: calc(100% - 1.4px);
                         background-color: $white;
                         border-left: $width-border solid $border-separator;
                         border-right: $width-border solid $border-separator;
 
-                        > .item {
+                        >.item {
                             display: flex;
                             justify-content: space-between;
                             align-items: center;
@@ -413,7 +419,7 @@
                                 border-radius: 8pt;
                             }
 
-                            > .item-name {
+                            >.item-name {
                                 @include font-size-10($font-head-500);
                                 font-weight: bold;
                                 display: -webkit-box;
@@ -425,7 +431,7 @@
                                 margin: 0 15pt 0 10pt;
                             }
 
-                            > .date-time {
+                            >.date-time {
                                 flex: 0 0 auto;
                                 color: $color-gray;
                                 @include font-size-11($font-head-300);
@@ -433,7 +439,7 @@
                         }
                     }
 
-                    > .list-footer {
+                    >.list-footer {
                         display: flex;
                         align-items: center;
                         justify-content: center;
@@ -446,13 +452,13 @@
                 }
             }
 
-            > .list-body-search {
+            >.list-body-search {
                 width: 100%;
                 background-color: $white;
                 overflow-y: auto;
                 @include font-size-10($font-head-500);
 
-                > .item-search {
+                >.item-search {
                     display: flex;
                     width: calc(100% - 40pt);
                     justify-content: space-between;
@@ -465,37 +471,40 @@
                         border-radius: 8pt;
                     }
 
-                    > .search-name {
+                    >.search-name {
                         display: flex;
                         align-items: center;
                         width: calc(100% - 20pt);
 
-                        > .icon-history {
+                        >.icon-history {
                             padding-right: 10pt;
                             width: 13pt;
                             flex: 0 0 auto;
                         }
+
                         >.description {
                             display: flex;
                             flex-direction: column;
-                            > .history-name {
+
+                            >.history-name {
                                 display: flex;
                                 white-space: normal;
                             }
+
                             >.description-color {
                                 @include font-size-10($font-head-500);
                                 color: #717886;
                             }
                         }
-                      
+
                     }
 
-                    > .list-right {
+                    >.list-right {
                         display: flex;
                         align-items: center;
                         cursor: pointer;
 
-                        > .material-icons {
+                        >.material-icons {
                             font-family: "Material Icons" !important;
                             font-size: $font-size-icon-small;
                         }
@@ -529,34 +538,34 @@
 
 @media (max-width: $xxlarge) {
     .header-search {
-        > .search {
-            > .wrapper-body-tag {
-                > .tab {
-                    > .tablinks {
+        >.search {
+            >.wrapper-body-tag {
+                >.tab {
+                    >.tablinks {
                         @include font-size-10($font-head-500);
                     }
                 }
 
-                > .wrapper-popular {
+                >.wrapper-popular {
                     height: calc(100% - 40pt);
 
-                    > .wrapper-header {
-                        > .now-regrad {
-                            > svg {
+                    >.wrapper-header {
+                        >.now-regrad {
+                            >svg {
                                 display: none;
                             }
 
-                            > span {
+                            >span {
                                 display: none;
                             }
                         }
                     }
                 }
 
-                > .wrapper-history {
+                >.wrapper-history {
                     height: calc(100% - 40pt);
 
-                    > .wrapper-header {
+                    >.wrapper-header {
                         display: none;
                     }
                 }
@@ -567,16 +576,16 @@
 
 @media (max-width: $xlarge) {
     .header-search {
-        > .search {
-            > .wrapper-body-tag {
-                > .tab {
-                    > .tablinks {
+        >.search {
+            >.wrapper-body-tag {
+                >.tab {
+                    >.tablinks {
                         @include font-size-10($font-head-500);
                     }
                 }
 
-                > .wrapper-popular,
-                > .wrapper-history {
+                >.wrapper-popular,
+                >.wrapper-history {
                     // height: calc(100% - 40pt);
                 }
             }
@@ -594,29 +603,29 @@
             z-index: 10000;
         }
 
-        > .search {
-            > .wrapper-search {
-                > .home-back-left {
+        >.search {
+            >.wrapper-search {
+                >.home-back-left {
                     display: flex;
                     justify-content: center;
                     align-items: center;
                     flex: 0 0 auto;
                 }
 
-                > #search {
+                >#search {
                     &.active {
                         width: 100%;
                     }
                 }
             }
 
-            > .wrapper-body-tag {
+            >.wrapper-body-tag {
                 width: 100%;
                 height: 100vh;
                 max-height: calc(100vh - 110pt);
 
-                > .tab {
-                    > .tablinks {
+                >.tab {
+                    >.tablinks {
                         @include font-size-10($font-head-500);
                     }
                 }
@@ -631,9 +640,9 @@
 
 @media (max-width: $lmedium) {
     .header-search {
-        > .search {
-            > .wrapper-search {
-                > .icon-search-out {
+        >.search {
+            >.wrapper-search {
+                >.icon-search-out {
                     width: 36px;
                     height: 36px;
                 }
@@ -644,13 +653,12 @@
 
 @media (max-width: $medium) {
     .header-search {
-        > .search {
-            > .wrapper-body-tag {
+        >.search {
+            >.wrapper-body-tag {
                 max-height: calc(100vh - 90pt);
 
-                > .tab {
-                    > .tablinks {
-                    }
+                >.tab {
+                    >.tablinks {}
                 }
             }
         }
@@ -659,41 +667,40 @@
 
 @media (max-width: $small) {
     .header-search {
-        > .search {
-            > .wrapper-body-tag {
+        >.search {
+            >.wrapper-body-tag {
                 max-height: calc(100vh - 130pt);
 
-                > .tab {
-                    > .tablinks {
-                    }
+                >.tab {
+                    >.tablinks {}
                 }
 
-                > .wrapper-popular {
-                    > .wrapper-header {
+                >.wrapper-popular {
+                    >.wrapper-header {
                         padding: 0 15pt;
 
-                        > .now-regrad {
+                        >.now-regrad {
                             svg {
                                 display: none;
                             }
                         }
                     }
 
-                    > .list-popular {
-                        > .item-popular {
+                    >.list-popular {
+                        >.item-popular {
                             padding: 13pt 15pt 13pt 20pt;
                         }
                     }
                 }
 
-                > .wrapper-history {
-                    > .wrapper-header {
+                >.wrapper-history {
+                    >.wrapper-header {
                         padding: 0 15pt;
                     }
 
-                    > .list-body {
-                        > .list-search {
-                            > .item {
+                    >.list-body {
+                        >.list-search {
+                            >.item {
                                 padding: 13pt 15pt;
                             }
                         }

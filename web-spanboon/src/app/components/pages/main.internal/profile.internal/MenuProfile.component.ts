@@ -14,7 +14,7 @@ import { Router } from '@angular/router';
 import { AuthenManager, ObservableManager, AssetFacade } from '../../../../services/services';
 import { MESSAGE } from '../../../../AlertMessage';
 import { AbstractPage } from '../../AbstractPage';
-import { ValidBase64ImageUtil } from '../../../../utils/ValidBase64ImageUtil'; 
+import { ValidBase64ImageUtil } from '../../../../utils/ValidBase64ImageUtil';
 
 const DEFAULT_USER_ICON: string = '../../../../assets/img/profile.svg';
 const REDIRECT_PATH: string = '/home';
@@ -36,7 +36,7 @@ export class MenuProfile extends AbstractPage implements OnInit {
     @Output()
     public logout: EventEmitter<any> = new EventEmitter();
 
-    public userImage: any; 
+    public userImage: any;
 
     constructor(router: Router, authenManager: AuthenManager, observManager: ObservableManager, assetFacade: AssetFacade,
         dialog: MatDialog) {
@@ -171,7 +171,7 @@ export class MenuProfile extends AbstractPage implements OnInit {
 
     public getLinkProfile() {
         this.isActive = true;
-        this.router.navigateByUrl("/profile/" + this.getCurrentUserId());
+        this.router.navigateByUrl("/profile/" + this.getCurrentUniqueId());
 
     }
 

@@ -255,6 +255,9 @@ export class PostData {
   }
 
   public onClickComment(data: any) {
+    if (!this.isLogin()) {
+      this.showAlertDialog();
+    }
     this.comment.emit({ value: this.value, pageId: this.itemPost._id, userAsPage: this.user });
     setTimeout(() => {
       this.isComment = true
@@ -263,7 +266,14 @@ export class PostData {
     }, 500);
   }
 
+  public isLogin(): boolean {
+    return this.authenManager.getCurrentUser() !== undefined && this.authenManager.getCurrentUser() !== null ? true : false;
+  }
+
   public postAction(action: any) {
+    if (!this.isLogin()) {
+      this.showAlertDialog();
+    }
     if (action.mod === 'COMMENT') {
       this.getComment();
       this.isComment = !this.isComment
@@ -395,6 +405,9 @@ export class PostData {
   }
 
   public commentAction(data: any) {
+    if (!this.isLogin()) {
+      this.showAlertDialog();
+    }
     if (data.action === "LIKE") {
       if (this.user.id !== undefined && this.user.id !== null) {
         this.postCommentFacade.like(this.itemPost._id, data.commentdata, this.user.id).then((res: any) => {
@@ -493,17 +506,17 @@ export class PostData {
   }
 
   public showAlertDialog(): void {
-    let dialog = this.dialog.open(DialogAlert, {
-      disableClose: true,
-      data: {
-        text: MESSAGE.TEXT_TITLE_DEVERLOP,
-        bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-        bottomColorText2: "black",
-        btDisplay1: "none"
-      }
-    });
-    dialog.afterClosed().subscribe((res) => {
-    });
+    // let dialog = this.dialog.open(DialogAlert, {
+    //   disableClose: true,
+    //   data: {
+    //     text: MESSAGE.TEXT_TITLE_DEVERLOP,
+    //     bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+    //     bottomColorText2: "black",
+    //     btDisplay1: "none"
+    //   }
+    // });
+    // dialog.afterClosed().subscribe((res) => {
+    // });
   }
 
   public editPost(itemPost) {

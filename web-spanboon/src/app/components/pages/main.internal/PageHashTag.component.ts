@@ -52,7 +52,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   @ViewChild('boxPost', { static: false }) boxPost: BoxPost;
   @ViewChild("recommendedRight", { static: true }) recommendedRight: ElementRef;
   @ViewChild("recommendedLeft", { static: true }) recommendedLeft: ElementRef;
-  @ViewChild("feedbodysearch", { static: false }) feedbodysearch: ElementRef;
+  @ViewChild("feedbodysearch", { static: true }) feedbodysearch: ElementRef;
   @ViewChild("inputAutocomp", { static: true }) inputAutocomp: ElementRef;
 
   @Output()
@@ -93,6 +93,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   public isLoadMoreObjective: boolean;
   public isLoadMoreHashTag: boolean;
   public isLoadingClickTab: boolean;
+  public isHideMoreObjective: boolean;
   public imageCoverSize: number;
   public position: number;
   public dataTrend: any[] = [];
@@ -165,6 +166,8 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   public pageUser: any;
   public userImage: any;
   public index: any;
+
+  public hidebar: boolean = true;
 
   sortingBy = [{
     name: 'วันที่ล่าสุด',
@@ -392,7 +395,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
           if (window.innerWidth < 489) {
             this.feedbodysearch.nativeElement.style.top = 39 + 'pt';
           } else {
-            this.feedbodysearch.nativeElement.style.top = 55 + 'pt';
+            this.feedbodysearch.nativeElement.style.top = (this.hidebar ? '55pt' : '0');
           }
         }
       } else {
@@ -430,6 +433,18 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     this.searchHashTag();
     this.searchPageCategory(false);
     this.getCount();
+
+    this.routeActivated.queryParams.subscribe(params => {
+      let hidebars = params['hidebar'];
+      if (hidebars === 'true') {
+        this.hidebar = false;
+        this.recommendedLeft.nativeElement.style.top = '0';
+        this.feedbodysearch.nativeElement.style.top = '0';
+        this.recommendedRight.nativeElement.style.top = '0';
+      } else {
+        this.hidebar = true;
+      }
+    });
   }
 
   ngAfterViewInit(): void {
@@ -626,7 +641,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         this.recommendedRight.nativeElement.style.top = '-' + maxcount + 'px';
 
       } else {
-        this.recommendedRight.nativeElement.style.top = '55pt';
+        this.recommendedRight.nativeElement.style.top = (this.hidebar ? '55pt' : '0');
       }
     }
   }
@@ -644,7 +659,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         }
       } else {
         if (this.recommendedLeft) {
-          this.recommendedLeft.nativeElement.style.top = '55pt';
+          this.recommendedLeft.nativeElement.style.top = (this.hidebar ? '55pt' : '0');
         }
       }
     }
@@ -676,13 +691,13 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         orderBy: {}
       },
     };
-    let cloneEmergency: any[] = [];
+
     await this.emergencyEventFacade.searchEmergency(keywordFilter).then((res: any) => {
       if (res) {
         for (let emer of res) {
-          cloneEmergency.push(emer);
+          this.resEmergency.push(emer);
         }
-        this.resEmergency = cloneEmergency;
+
         if (this.emergencyUrl) {
           for (let data of this.resEmergency) {
             if (this.emergencyUrl === data.hashTag) {
@@ -692,9 +707,9 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
           this.searchTrendTag();
         }
         if (this.emergency) {
-          for (let [index, tag] of cloneEmergency.entries()) {
+          for (let [index, tag] of this.resEmergency.entries()) {
             if (tag.value === this.objective) {
-              Object.assign(cloneEmergency[index], { selected: false })
+              Object.assign(this.resEmergency[index], { selected: false })
             }
           }
         }
@@ -727,6 +742,11 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         for (let object of result.data) {
           cloneObject.push(object);
         }
+        // if (result.data.length === 5) {
+        //   this.isHideMoreObjective = false;
+        // } else {
+        //   this.isHideMoreObjective = true;
+        // }
         this.resObjective = cloneObject;
         if (this.objectiveUrl) {
           for (let data of this.resObjective) {
@@ -745,6 +765,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         }
       }
       this.isLoadMoreObjective = false;
+
     }).catch((err: any) => {
       console.log(err)
     })
@@ -798,7 +819,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   }
 
   public getEmergency(data) {
-    if (data.item.selected) {
+    if (data.item.selected == null && data.item.selected == undefined) {
       this.emergency = data.item.id;
     } else {
       this.emergency = '';

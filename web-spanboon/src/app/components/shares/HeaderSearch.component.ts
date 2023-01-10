@@ -198,7 +198,7 @@ export class HeaderSearch extends AbstractPage implements OnInit {
     } else {
       this.heightSearch = true;
 
-      if (this.heightSearch === true) { 
+      if (this.heightSearch === true) {
         setTimeout(() => {
           if (this.isTabClick === 'popular') {
             if (document.getElementById("defaultOpen1") !== null && document.getElementById("defaultOpen1") !== undefined) {
@@ -209,7 +209,7 @@ export class HeaderSearch extends AbstractPage implements OnInit {
               document.getElementById("defaultOpen2").click();
             }
           }
-        }, 50); 
+        }, 50);
       }
     }
 
@@ -261,12 +261,12 @@ export class HeaderSearch extends AbstractPage implements OnInit {
       if (this.searchRecent.length > 0) {
         let index = 0;
         for (let dataImage of res) {
-          if(dataImage.imageURL !== "" && dataImage.imageURL !== undefined && dataImage.imageURL !== null){
+          if (dataImage.imageURL !== "" && dataImage.imageURL !== undefined && dataImage.imageURL !== null) {
             this.getDataIcon(dataImage.imageURL, "image", index)
           } else {
             this.searchRecent[index].isLoadingImage = false;
           }
-          
+
           index++;
         }
       }
@@ -279,7 +279,7 @@ export class HeaderSearch extends AbstractPage implements OnInit {
     })
   }
 
-  public loadHistory(){
+  public loadHistory() {
     let filter = new SearchFilter();
     filter.limit = SEARCH_LIMIT;
     filter.offset = SEARCH_OFFSET + (this.searchRecentName && this.searchRecentName.length > 0 ? this.searchRecent.length : 0);;
@@ -291,17 +291,17 @@ export class HeaderSearch extends AbstractPage implements OnInit {
       delete filter.whereConditions.userId
     }
     filter.count = false;
-    filter.orderBy = {} 
+    filter.orderBy = {}
     this.isLoading = true;
     let originalRecentName: any[] = this.searchRecentName;
-    this.searchHistoryFacade.search(filter).then((res: any) => {  
-      this.isLoadingMore = false; 
+    this.searchHistoryFacade.search(filter).then((res: any) => {
+      this.isLoadingMore = false;
       if (originalRecentName.length > 0) {
         for (let history of res) {
-          const isHistory = this.searchRecentName.find(h =>{
+          const isHistory = this.searchRecentName.find(h => {
             return h.label === history.label
           });
-          if(isHistory){  
+          if (isHistory) {
             continue;
           } else {
             originalRecentName.push(history);
@@ -394,7 +394,7 @@ export class HeaderSearch extends AbstractPage implements OnInit {
     }
     this.isLoading = true;
     this.mainPageFacade.getSearchAll(search).then((res: any) => {
-      this.resSearch = res.result; 
+      this.resSearch = res.result;
       event.stopPropagation();
       this.stopIsloading();
       this.checkMenu(event);
@@ -417,20 +417,20 @@ export class HeaderSearch extends AbstractPage implements OnInit {
           return keyword.label === data
         });
         if (isData) {
-          if(isData.type === "PAGE"){
+          if (isData.type === "PAGE") {
             isPass = isData.type;
             dataList = isData.value;
-          } else if(isData.type === "USER"){
+          } else if (isData.type === "USER") {
             isPass = isData.type;
             data = isData;
-          } else if(isData.type === "KEYWORD"){
+          } else if (isData.type === "KEYWORD") {
             isPass = isData.type;
             data = isData;
             dataList = isData.value;
           } else {
             isPass = isData.type;
             dataList = isData.value;
-          } 
+          }
         } else {
           isPass = "KEYWORD";
           dataList = data;
@@ -440,7 +440,7 @@ export class HeaderSearch extends AbstractPage implements OnInit {
           resultId: '',
           keyword: isData === undefined ? data : data.label
         }
-      } 
+      }
     } else {
       isPass = data.type;
       dataList = data.value;
@@ -449,7 +449,7 @@ export class HeaderSearch extends AbstractPage implements OnInit {
         resultId: data.value,
         keyword: data.label
       }
-    }  
+    }
     if (isPass === 'USER') {
       if (data.uniqueId !== '' && data.uniqueId !== undefined && data.uniqueId !== null) {
         this.router.navigateByUrl('/profile/' + data.uniqueId);
@@ -464,15 +464,15 @@ export class HeaderSearch extends AbstractPage implements OnInit {
       this.router.navigateByUrl('/page/' + dataList);
     } else if (isPass === 'KEYWORD') {
       this.router.navigateByUrl('/search?keyword=' + dataList);
-    } else  if (isPass === 'HASHTAG') {
-      this.router.navigateByUrl('/search?hashtag=' + dataList); 
+    } else if (isPass === 'HASHTAG') {
+      this.router.navigateByUrl('/search?hashtag=' + dataList);
     } else {
       this.router.navigateByUrl('/search');
     }
     this.clickHideSearch();
     this.search.nativeElement.value = ''
     this.filled = false;
-  
+
     this.searchHistoryFacade.create(result).then((res: any) => {
       // this.filled = false;
       this.clickHideSearch();
@@ -521,7 +521,7 @@ export class HeaderSearch extends AbstractPage implements OnInit {
       console.log(err)
     })
   }
-  public loadMoreHashTag(): void {  
+  public loadMoreHashTag(): void {
     let filter = new SearchFilter();
     filter.limit = SEARCH_LIMIT;
     filter.offset = SEARCH_OFFSET + (this.dataTrend && this.dataTrend.length > 0 ? this.dataTrend.length : 0);;
@@ -541,15 +541,15 @@ export class HeaderSearch extends AbstractPage implements OnInit {
       this.isLoadingMore = false;
       if (originalTrend.length > 0) {
         for (let hashtag of res) {
-          const isHashtag = this.dataTrend.find(h =>{
+          const isHashtag = this.dataTrend.find(h => {
             return h.value === hashtag.value
           });
-          if(isHashtag){  
+          if (isHashtag) {
             continue;
           } else {
             originalTrend.push(hashtag);
           }
-         
+
         }
       }
     }).catch((err: any) => {
