@@ -20,6 +20,7 @@ import { PLATFORM_FULFILL_TEXT, PLATFORM_NEEDS_TEXT, PLATFORM_GENERAL_TEXT, PLAT
 import { MESSAGE } from '../../../../custom/variable';
 import { Router } from '@angular/router';
 import Glightbox from 'glightbox';
+import { DialogShare } from '../dialog/DialogShare.component';
 
 @Component({
   selector: 'post-data',
@@ -96,6 +97,7 @@ export class PostData {
   public linkPost: string;
   public isFulfill: boolean = false;
   public isPendingFulfill: boolean = false;
+  public isHide: boolean = true;
 
   // private mainPostLink: string = window.location.origin + '/profile/aaa/post/'
   // private mainPostLink: string = window.location.origin + '/post/'
@@ -272,7 +274,7 @@ export class PostData {
 
   public postAction(action: any) {
     if (!this.isLogin()) {
-      this.showAlertDialog();
+      // this.showAlertDialog();
     }
     if (action.mod === 'COMMENT') {
       this.getComment();
@@ -283,8 +285,16 @@ export class PostData {
     } else if (action.mod === 'REBOON') {
       this.action.emit({ mod: action.mod, postData: this.itemPost._id, type: action.type, post: this.itemPost, userAsPage: this.user });
     } else if (action.mod === 'SHARE') {
-      this.showAlertDialog();
-      this.action.emit({ mod: action.mod });
+      // this.showAlertDialog();
+      // this.action.emit({ mod: action.mod });
+      let dialog = this.dialog.open(DialogShare, {
+        disableClose: true,
+        autoFocus: false,
+        data: {
+          title: "แชร์",
+          text: this.linkPost
+        }
+      });
     }
   }
 
@@ -316,36 +326,36 @@ export class PostData {
         window.open('/objective/' + text.objective._id);
       });
     }
-    // let url = '';
-    // let type = '';
-    // let eventId = '';
-    // if (data.index === 1) {
-    //   url += "emergency=#" + text.emergencyEventTag
-    //   type = "emergency";
-    //   eventId = text.emergencyEvent.hashTag;
-    // } else if (data.index === 2) {
-    //   url += "objective=" + text.objectiveTag;
-    //   type = "objective";
-    //   eventId = text.objective.hashTag;
-    // }
-    // let click = this.engagementService.getEngagement(data.event, eventId, type);
-    // this.engagement.emit(click)
+    let url = '';
+    let type = '';
+    let eventId = '';
+    if (data.index === 1) {
+      url += "emergency=#" + text.emergencyEventTag
+      type = "emergency";
+      eventId = text.emergencyEvent.hashTag;
+    } else if (data.index === 2) {
+      url += "objective=" + text.objectiveTag;
+      type = "objective";
+      eventId = text.objective.hashTag;
+    }
+    let click = this.engagementService.getEngagement(data.event, eventId, type);
+    this.engagement.emit(click)
 
-    // let dialog = this.dialog.open(DialogAlert, {
-    //   disableClose: true,
-    //   data: {
-    //     text: MESSAGE.TEXT_TITLE_DEVERLOP_SEAECH,
-    //     bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-    //     bottomText1: MESSAGE.TEXT_BUTTON_CANCEL,
-    //     bottomColorText2: "black",
-    //     // btDisplay1: "none"
-    //   }
-    // });
-    // dialog.afterClosed().subscribe((res) => {
-    //   if (res) {
-    //     this.router.navigateByUrl('/search?' + url);
-    //   }
-    // });
+    let dialog = this.dialog.open(DialogAlert, {
+      disableClose: true,
+      data: {
+        text: MESSAGE.TEXT_TITLE_DEVERLOP_SEAECH,
+        bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+        bottomText1: MESSAGE.TEXT_BUTTON_CANCEL,
+        bottomColorText2: "black",
+        // btDisplay1: "none"
+      }
+    });
+    dialog.afterClosed().subscribe((res) => {
+      if (res) {
+        this.router.navigateByUrl('/search?' + url);
+      }
+    });
   }
 
   private getComment(limit?) {
@@ -506,17 +516,17 @@ export class PostData {
   }
 
   public showAlertDialog(): void {
-    // let dialog = this.dialog.open(DialogAlert, {
-    //   disableClose: true,
-    //   data: {
-    //     text: MESSAGE.TEXT_TITLE_DEVERLOP,
-    //     bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-    //     bottomColorText2: "black",
-    //     btDisplay1: "none"
-    //   }
-    // });
-    // dialog.afterClosed().subscribe((res) => {
-    // });
+    let dialog = this.dialog.open(DialogAlert, {
+      disableClose: true,
+      data: {
+        text: MESSAGE.TEXT_TITLE_DEVERLOP,
+        bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+        bottomColorText2: "black",
+        btDisplay1: "none"
+      }
+    });
+    dialog.afterClosed().subscribe((res) => {
+    });
   }
 
   public editPost(itemPost) {

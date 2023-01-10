@@ -391,11 +391,11 @@
                 <null-data></null-data>
             </ng-container>
         </ng-template>
-        <ng-container *ngIf="itemPost.story">
+        <!-- <ng-container *ngIf="itemPost.story">
             <div (click)="storyTeb(itemPost)" class="content-sub"> อ่าน{{PLATFORM_STORY}} <span
                     style="margin-left: 1px;">...</span>
             </div>
-        </ng-container>
+        </ng-container> -->
         <div class="tag_div" *ngIf="itemPost.hashTags && itemPost.hashTags.length > 0">
             <div class="h_tag_list" *ngFor="let hashTag of itemPost.hashTags">
                 <a style="color: gray !important;" class="highlight-text" href="/search?hashtag={{hashTag.name}}"

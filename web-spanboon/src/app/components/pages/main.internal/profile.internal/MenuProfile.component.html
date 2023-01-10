@@ -17,7 +17,7 @@
             <div class="menu-user displayName"
                 *ngIf="userImage !== undefined && userImage !== null && userImage.displayName && userImage.displayName !== undefined && userImage.displayName !== null && userImage.displayName !== ''">
                 <span class="donator">
-                    {{userImage.displayName | slice: 0:1  }}
+                    {{userImage.displayName | slice: 0:1 }}
                 </span>
             </div>
         </ng-template>
@@ -32,15 +32,16 @@
                 <ng-template #elseImageTo>
                     <div class="menu-user_z"
                         *ngIf="userImage !== undefined && userImage !== null && userImage.displayName && userImage.displayName !== undefined && userImage.displayName !== null && userImage.displayName !== ''">
-                        <span>{{userImage.displayName | slice: 0:1  }}</span>
+                        <span>{{userImage.displayName | slice: 0:1 }}</span>
                     </div>
                 </ng-template>
                 <div class="profile-detail">
                     <div class="profile-name">
                         {{userImage.displayName}}
                     </div>
-                    <div class="profile-name-eng" *ngIf="userImage && userImage.uniqueId !== '' && userImage.uniqueId !== undefined && userImage.uniqueId !== null" >
-                        @{{userImage.uniqueId}} 
+                    <div class="profile-name-eng"
+                        *ngIf="userImage && userImage.uniqueId !== '' && userImage.uniqueId !== undefined && userImage.uniqueId !== null">
+                        @{{userImage.uniqueId}}
                     </div>
                     <div class="header-follow">
 
@@ -81,7 +82,7 @@
                         ไทมไลน์
                     </div>
                 </div>
-                <div class="setting" (click)="settingProfile()">
+                <!-- <div class="setting" (click)="settingProfile()">
                     <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16.334" height="16.773"
                         viewBox="0 0 16.334 16.773">
                         <g id="tools-and-utensils" transform="translate(-6.71)" opacity="0.34">
@@ -117,7 +118,7 @@
                     <div class="name">
                         การแจ้งเตือน
                     </div>
-                </div>
+                </div> -->
                 <div class="setting" (click)="clickLogout();">
                     <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="17.437" height="15.257"
                         viewBox="0 0 17.437 15.257">

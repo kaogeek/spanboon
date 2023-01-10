@@ -15,6 +15,7 @@ import { BaseLoginProvider, SocialUser } from 'angularx-social-login';
 import { resolve } from 'url';
 import { PageSoialFB } from '../models/models';
 import { PageSocialTW } from '../models/models';
+import { ActivatedRoute } from '@angular/router';
 
 const PAGE_USER: string = 'pageUser';
 const TOKEN_KEY: string = 'token';
@@ -37,18 +38,20 @@ export class AuthenManager {
   protected twitterMode: boolean;
   protected googleMode: boolean;
   protected observManager: ObservableManager;
+  protected routeActivated: ActivatedRoute;
 
   deviceInfo = null;
   isDesktopDevice: boolean;
   isTablet: boolean;
   isMobile: boolean;
-  constructor(http: HttpClient, observManager: ObservableManager) {
+  constructor(http: HttpClient, observManager: ObservableManager, routeActivated: ActivatedRoute) {
     this.http = http;
     this.observManager = observManager;
     this.baseURL = environment.apiBaseURL;
     this.facebookMode = false;
     this.twitterMode = false;
     this.googleMode = false;
+    this.routeActivated = routeActivated;
     // create obsvr subject
     this.observManager.createSubject(REGISTERED_SUBJECT);
   }
@@ -607,6 +610,32 @@ export class AuthenManager {
     }
 
     return user;
+  }
+
+
+  public getHidebar(): boolean {
+    let isCheck: boolean = false;
+    this.routeActivated.queryParams.subscribe(params => {
+      let hidebars = params['hidebar'];
+      if (hidebars === 'true') {
+        localStorage.setItem('hidebar', "true");
+        isCheck = false;
+      } else {
+        localStorage.removeItem('hidebar');
+        isCheck = true;
+      }
+    });
+
+    return isCheck;
+  }
+
+  public setHidebar() {
+    let hidebar = localStorage.getItem('hidebar');
+    if (hidebar === "true") {
+      return false;
+    } else {
+      return true;
+    }
   }
 
   // return current login user admin status

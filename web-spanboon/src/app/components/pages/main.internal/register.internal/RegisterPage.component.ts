@@ -5,7 +5,7 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-import { Component, ElementRef, EventEmitter,NgZone, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, NgZone, OnInit, Output, ViewChild } from '@angular/core';
 import { MatDatepicker, MatDatepickerInputEvent } from '@angular/material';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthenManager, ObservableManager, TwitterService, UserFacade } from '../../../../services/services';
@@ -179,7 +179,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
     (window as any).fbAsyncInit = function () {
       window['FB'].init({
         appId: environment.facebookAppId,
-        cookie: true, 
+        cookie: true,
         xfbml: true,
         version: 'v14.0'
       });
@@ -269,7 +269,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
       this.activeEmail = false;
     }
 
-    if(!this.uuid) {
+    if (!this.uuid) {
       return;
     }
 
@@ -394,7 +394,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
         register.twitterTokenSecret = this.accessToken.twitterOauthTokenSecret;
       }
       this.authenManager.registerSocial(register, this.mode).then((value: any) => {
-        if (value.status === 1 ) {
+        if (value.status === 1) {
           let alertMessage: string = 'ลงทะเบียนสำเร็จ';
           let isValid = false;
           if (value.user) {
@@ -414,7 +414,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
             }
           });
         }
-        else if(value.status === 2 ){
+        else if (value.status === 2) {
           this.fbLibrary();
           window['FB'].login((response) => {
             if (response.authResponse) {
@@ -456,9 +456,8 @@ export class RegisterPage extends AbstractPage implements OnInit {
       });
     }
   }
-  
-  private syncPageFB(){
-    console.log('this.accessToken',this.accessToken);
+
+  private syncPageFB() {
   }
   public generatorUnqueId(text: string): Promise<any> {
     let body = {
@@ -626,8 +625,8 @@ export class RegisterPage extends AbstractPage implements OnInit {
 
   public clickBlack() {
     this.router.navigateByUrl('/login');
-  } 
-  
+  }
+
   public checkedClick() {
     this.checkedCon = !this.checkedCon;
   }

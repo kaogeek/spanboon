@@ -51,6 +51,8 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
     public isButtonFulfill: boolean = true;
     @Input()
     public isNeedBoxPost: boolean = true;
+    @Input()
+    public isHide: boolean = true;
 
     // test
 
