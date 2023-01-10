@@ -444,13 +444,12 @@ export class PageController {
         const query = { _id: userId };
         const newValue = { $set: { isSyncPage: true } };
         let assetCover: any;
-        const pagePicture = await this.facebookService.getPagePicture(socialBinding.facebookPageId);
+        const pagePicture = await this.facebookService.getPagePicture(socialBinding.facebookPageId,socialBinding.pageAccessToken);
         const { data } = await axios.get('https://graph.facebook.com/v14.0/' + socialBinding.facebookPageId + '?fields=cover&access_token=' + socialBinding.pageAccessToken);
         const pageDetail = await this.facebookService.getPageFb(socialBinding.facebookPageId,socialBinding.pageAccessToken);
         const ipAddress = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress).split(',')[0];
         const clientId = req.headers['client-id'];
         let createCate = undefined;
-
         const pageName = await this.pageService.findOne({where:{name:socialBinding.facebookPageName}});
         if(pageName !== undefined && pageName !== null){
             const errorResponse = ResponseUtil.getErrorResponse('Pagename already exists',undefined);
@@ -2841,8 +2840,8 @@ export class PageController {
         }
         // subscribe webhook
         if (page) {
-            const { data } = await axios.post('https://graph.facebook.com/' + page.providerPageId + '/subscribed_apps?subscribed_fields=feed&access_token=' + page.storedCredentials);
-            console.log('webhook', data);
+            const webHooks = await this.facebookService.subScribeWebhook(page.providerPageId,  page.storedCredentials);
+            console.log('webhook', webHooks);
             const socialPostLogsService = await this.socialPostLogsService.findOne({ pageId: pageObjId });
             if (socialPostLogsService) {
                 const query = { pageId: pageObjId };

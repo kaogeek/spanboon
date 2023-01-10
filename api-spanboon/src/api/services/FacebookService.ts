@@ -127,9 +127,9 @@ export class FacebookService {
         }
     }
 
-    public async getPagePicture(pageId:string):Promise<any>{
+    public async getPagePicture(pageId:string,access_token:string):Promise<any>{
         try{
-            const { data } = await axios.get('https://graph.facebook.com/v14.0/' + pageId + '/picture?redirect=0&type=large');
+            const { data } = await axios.get('https://graph.facebook.com/v14.0/' + pageId + '/picture?redirect=0&type=large&access_token='+access_token);
             return data;
         }catch(err){
             return err;
