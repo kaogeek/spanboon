@@ -76,7 +76,6 @@ import { USER_TYPE, NOTIFICATION_TYPE } from '../../constants/NotificationType';
 import { DeviceTokenService } from '../services/DeviceToken';
 import { PageNotificationService } from '../services/PageNotificationService';
 import axios from 'axios';
-import { facebook_setup } from '../../env';
 
 @JsonController('/page')
 export class PageController {
