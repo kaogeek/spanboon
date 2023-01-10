@@ -444,18 +444,24 @@ export class PageController {
         const query = { _id: userId };
         const newValue = { $set: { isSyncPage: true } };
         let assetCover: any;
-        const { request } = await axios.get('https://graph.facebook.com/v14.0/' + socialBinding.facebookPageId + '/picture?type=large');
+        const pagePicture = await this.facebookService.getPagePicture(socialBinding.facebookPageId);
         const { data } = await axios.get('https://graph.facebook.com/v14.0/' + socialBinding.facebookPageId + '?fields=cover&access_token=' + socialBinding.pageAccessToken);
+        const pageDetail = await this.facebookService.getPageFb(socialBinding.facebookPageId,socialBinding.pageAccessToken);
         const ipAddress = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress).split(',')[0];
         const clientId = req.headers['client-id'];
         let createCate = undefined;
 
+        const pageName = await this.pageService.findOne({where:{name:socialBinding.facebookPageName}});
+        if(pageName !== undefined && pageName !== null){
+            const errorResponse = ResponseUtil.getErrorResponse('Pagename already exists',undefined);
+            return res.status(400).send(errorResponse);
+        }
         const pageSocialFb = await this.pageSocialAccountService.findOne({ where: { providerName: PROVIDER.FACEBOOK, providerPageId: socialBinding.facebookPageId} });
         if (pageSocialFb !== undefined && pageSocialFb !== null) {
             const errorResponse = ResponseUtil.getErrorResponse('Unable create Page', undefined);
             return res.status(400).send(errorResponse);
         }
-        const assetPic = await this.assetService.createAssetFromURL(request.socket._httpMessage.res.responseUrl, userId);
+        const assetPic = await this.assetService.createAssetFromURL(pagePicture.data.url, userId);
         if (data.cover !== undefined) {
             assetCover = await this.assetService.createAssetFromURL(data.cover.source, userId);
         }
@@ -490,7 +496,8 @@ export class PageController {
             pageCreate.category = checkPageCate ? checkPageCate.id : createCate.id;
             pageCreate.isOfficial = false;
             pageCreate.banned = false;
-
+            pageCreate.facebookURL = pageDetail ? pageDetail.link : '';
+            pageCreate.mobileNo = pageDetail ? pageDetail.phone : '';
             const result: Page = await this.pageService.create(pageCreate);
             // if page created then auto fetch and webhook
             if (result) {
@@ -530,6 +537,7 @@ export class PageController {
                     socialPostLogs.enable = true;
                     socialPostLogs.lastUpdated = authTime;
                     await this.socialPostLogsService.create(socialPostLogs);
+
                     const pageObjId = new ObjectID(result.id);
                     const pageAcceessLevel = new PageAccessLevel();
                     pageAcceessLevel.page = result.id;
@@ -571,7 +579,13 @@ export class PageController {
                     const errorResponse = ResponseUtil.getErrorResponse('Unable create Page', undefined);
                     return res.status(400).send(errorResponse);
                 }
+            }else{
+                const errorResponse = ResponseUtil.getErrorResponse('Unable create Page', undefined);
+                return res.status(400).send(errorResponse);
             }
+        }else{
+            const errorResponse = ResponseUtil.getErrorResponse('Unable create Page', undefined);
+            return res.status(400).send(errorResponse);
         }
     }
 
@@ -580,7 +594,6 @@ export class PageController {
     public async getUserSyncPage(@Res() res: any, @Req() req: any): Promise<any> {
         const userId = new ObjectID(req.user.id);
         const syncFlag: boolean = req.body.isSyncpage;
-        console.log('syncFlag', syncFlag);
         const query = { _id: userId };
         const newValue = { $set: { isSyncPage: syncFlag } };
         const updateUser = await this.userService.update(query, newValue);
