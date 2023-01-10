@@ -98,7 +98,7 @@ export class FacebookWebhookController {
             text1 = sliceArray.indexOf('[');
             text2 = sliceArray.indexOf(']');
             if (text1 !== -1 && text2 !== -1) {
-                realText = body.entry[0].changes[0].value.message.substring(text1, text2 + 1);
+                realText = body.entry[0].changes[0].value.message.substring(text1+1, text2 );
             } else if (text1 !== -1 && text2 === -1) {
                 realText = body.entry[0].changes[0].value.message.slice(0, 50) + '......';
             } else {

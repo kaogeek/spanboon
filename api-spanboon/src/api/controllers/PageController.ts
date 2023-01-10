@@ -76,6 +76,7 @@ import { USER_TYPE, NOTIFICATION_TYPE } from '../../constants/NotificationType';
 import { DeviceTokenService } from '../services/DeviceToken';
 import { PageNotificationService } from '../services/PageNotificationService';
 import axios from 'axios';
+import { facebook_setup } from '../../env';
 
 @JsonController('/page')
 export class PageController {
@@ -451,6 +452,10 @@ export class PageController {
         const clientId = req.headers['client-id'];
         let createCate = undefined;
         const pageName = await this.pageService.findOne({where:{name:socialBinding.facebookPageName}});
+        const refreshToken = await this.facebookService.getRefreshToken(socialBinding.pageAccessToken);
+        if(!refreshToken){
+            return res.status(400).send(ResponseUtil.getErrorResponse('Cannot get refresh token.', undefined));
+        }
         if(pageName !== undefined && pageName !== null){
             const errorResponse = ResponseUtil.getErrorResponse('Pagename already exists',undefined);
             return res.status(400).send(errorResponse);
@@ -511,13 +516,13 @@ export class PageController {
                 pageSocialAccount.properties = properties;
                 pageSocialAccount.providerName = PROVIDER.FACEBOOK;
                 pageSocialAccount.providerPageId = socialBinding.facebookPageId;
-                pageSocialAccount.storedCredentials = socialBinding.pageAccessToken;
+                pageSocialAccount.storedCredentials = refreshToken.access_token;
                 pageSocialAccount.providerPageName = socialBinding.facebookPageName;
                 pageSocialAccount.ownerPage = userId;
                 const page = await this.pageSocialAccountService.create(pageSocialAccount);
                 // subscribe webhook
                 if (page) {
-                    const webHooks = await this.facebookService.subScribeWebhook(socialBinding.facebookPageId, socialBinding.pageAccessToken);
+                    const webHooks = await this.facebookService.subScribeWebhook(socialBinding.facebookPageId, refreshToken.access_token);
                     console.log('webhook', webHooks);
                     const config = new PageConfig();
                     config.page = result.id;
@@ -2830,9 +2835,14 @@ export class PageController {
         const currentDateTime = moment().toDate();
         const authTime = currentDateTime;
         const page = await this.pageSocialAccountService.findOne({ where: { page: pageObjId } });
+        const refreshToken = await this.facebookService.getRefreshToken(page.storedCredentials);
+        if(!refreshToken){
+            return res.status(400).send(ResponseUtil.getErrorResponse('Cannot get refresh token.', undefined));
+        }
         if (!page) {
             return res.status(400).send(ResponseUtil.getErrorResponse('Page was not found', undefined));
         }
+        
         // check access
         const isUserCanAccess = await this.isUserCanAccessPage(userId, pageObjId);
         if (!isUserCanAccess) {
@@ -2840,8 +2850,8 @@ export class PageController {
         }
         // subscribe webhook
         if (page) {
-            const webHooks = await this.facebookService.subScribeWebhook(page.providerPageId,  page.storedCredentials);
-            console.log('webhook', webHooks);
+            const webHooks = await this.facebookService.subScribeWebhook(page.providerPageId,  refreshToken.access_token);
+            console.log('webHooks',webHooks);
             const socialPostLogsService = await this.socialPostLogsService.findOne({ pageId: pageObjId });
             if (socialPostLogsService) {
                 const query = { pageId: pageObjId };
