@@ -12,13 +12,6 @@ import { ObjectID } from 'mongodb';
 import { BaseModel } from './BaseModel';
 import moment from 'moment';
 import * as bcrypt from 'bcrypt';
-import { AuthenticationId } from './AuthenticationId';
-import { Posts } from './Posts';
-import { Page } from './Page';
-import { PageFollower } from './PageFollower';
-import { Fulfillment } from './Fulfillment';
-import { PageAccessLevel } from './PageAccessLevel';
-
 @Entity('User', { name: 'User' })
 export class User extends BaseModel {
 
