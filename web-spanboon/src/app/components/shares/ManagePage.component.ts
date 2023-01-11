@@ -319,6 +319,17 @@ export class ManagePage extends AbstractPage implements OnInit {
             },
           });
         }
+        if (err.error.message === "Pagename already exists") {
+          this.dialog.open(DialogAlert, {
+            disableClose: true,
+            data: {
+              text: "ชื่อเพจนี้มีอยู่ในระบบแล้ว",
+              bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+              bottomColorText2: "black",
+              btDisplay1: "none",
+            },
+          });
+        }
         if (err.error.message === "User was not found.") {
           let navigationExtras: NavigationExtras = {
             state: {

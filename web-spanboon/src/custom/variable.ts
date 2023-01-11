@@ -13,10 +13,10 @@ export const PLATFORM_NAME_ENG: string = 'MFP Today';
 export enum MESSAGE {
     TEXT_TITLE = 'กรุณากรอก หัวข้อกระทู้',
     TEXT_TITLE_LOGIN = 'กรุณาเข้าสู่ระบบ',
-    // TEXT_TITLE_DEVERLOP = 'ระบบอยู่ในระหว่างการพัฒนา',
+    TEXT_TITLE_DEVERLOP = 'ระบบอยู่ในระหว่างการพัฒนา',
     TEXT_TITLE_NEXT_PAGE = 'คุณต้องการจะออกจากหน้านี้',
     TEXT_TITLE_DELETE_COMMENT_CONFIRM = 'ต้องการลบความคิดเห็น ?',
-    // TEXT_TITLE_DEVERLOP_SEAECH = 'ระบบอยู่ในระหว่างการพัฒนา เหตุการณ์ด่วนและสิ่งที่กำลังทำ คุณต้องการไปหน้า search ไหม',
+    TEXT_TITLE_DEVERLOP_SEAECH = 'ระบบอยู่ในระหว่างการพัฒนา เหตุการณ์ด่วนและสิ่งที่กำลังทำ คุณต้องการไปหน้า search ไหม',
     TEXT_TITLE_FULFILL_ALLOCATE_ERROR = 'ไม่มีโพสที่คุณยังไม่ได้ทำการจัดสรรด้วยตัวเองเพื่อนำไปจัดสรรอัตโนมัติได้',
 
     TEXT_LOGIN_SUCCESS = 'เข้าสู่ระบบสำเร็จ',
@@ -25,7 +25,7 @@ export enum MESSAGE {
     TEXT_SUCCESS = 'สร้างกระทู้ สำเร็จ',
     TEXT_EDIT_SUCCESS = 'แก้ไขข้อมูลสำเร็จ',
     TEXT_ERROR = 'เกิดข้อผิดพลาด',
-    // TEXT_DEVERLOP = 'ระบบอยู่ในระหว่างการพัฒนา',
+    TEXT_DEVERLOP = 'ระบบอยู่ในระหว่างการพัฒนา',
 
     TEXT_BUTTON_CONFIRM = 'ตกลง',
     TEXT_BUTTON_SKIP = 'ข้าม',

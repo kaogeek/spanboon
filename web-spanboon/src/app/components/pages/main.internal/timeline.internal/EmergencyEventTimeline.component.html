@@ -1216,7 +1216,9 @@
                                         data-aos-duration="500" data-aos-easing="ease-in-out" data-aos-mirror="false"
                                         data-aos-once="false" data-aos-anchor-placement="top-center"
                                         *ngFor="let post of item.posts; let indexa = index">
-                                        <post-data [itemPost]="post" (action)="actionComment($event,index,indexa)">
+                                        <post-data [itemPost]="post" [isLike]="false" [isShare]="false"
+                                            [isReboon]="false" [isShowComment]="false"
+                                            (action)="actionComment($event,index,indexa)">
                                         </post-data>
                                     </div>
                                 </div>

@@ -36,6 +36,8 @@ export class ControlAction {
   @Input()
   public share: number = 10;
   @Input()
+  public isShowComment: boolean = true;
+  @Input()
   public isComment: boolean = true;
   @Input()
   public isReboon: boolean = true;

@@ -67,6 +67,8 @@ export class HeaderSearch extends AbstractPage implements OnInit {
   public resSearch: any[] = [];
   public SearchShow: boolean = false;
   public heightSearch: boolean = false;
+  @Input()
+  public isHideButton: boolean = false;
 
   public isTabClick: string;
 
@@ -95,6 +97,7 @@ export class HeaderSearch extends AbstractPage implements OnInit {
         document.getElementById("defaultOpen1").click();
       }, 0);
     }
+    this.checkDivided();
     // }, 10);
   }
 
@@ -522,6 +525,7 @@ export class HeaderSearch extends AbstractPage implements OnInit {
     })
   }
   public loadMoreHashTag(): void {
+    this.checkDivided();
     let filter = new SearchFilter();
     filter.limit = SEARCH_LIMIT;
     filter.offset = SEARCH_OFFSET + (this.dataTrend && this.dataTrend.length > 0 ? this.dataTrend.length : 0);;
@@ -582,5 +586,14 @@ export class HeaderSearch extends AbstractPage implements OnInit {
 
     document.getElementById(items).style.display = "flex";
     $event.currentTarget.className += " active";
+  }
+
+  public checkDivided() {
+    let dataLength = this.dataTrend.length;
+    if (dataLength % 5 != 0) {
+      this.isHideButton = true;
+    } else {
+      this.isHideButton = false;
+    }
   }
 }
