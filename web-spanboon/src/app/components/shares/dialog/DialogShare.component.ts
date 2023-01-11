@@ -56,7 +56,7 @@ export class DialogShare {
         this._snackBar.open('คัดลอกลิงก์ไปยังคลิปบอร์ดแล้ว', '', {
             horizontalPosition: this.horizontalPosition,
             verticalPosition: this.verticalPosition,
-            duration: 2000000,
+            duration: 2000,
             panelClass: ['blue-snackbar']
         });
     }

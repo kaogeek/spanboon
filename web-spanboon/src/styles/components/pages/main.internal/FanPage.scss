@@ -1122,6 +1122,18 @@
   }
 }
 
+.cdk-overlay-container {
+  >.backdrop-tag {}
+
+  >.cdk-overlay-connected-position-bounding-box {
+    >.cdk-overlay-pane {
+      >.mat-menu-panel {
+        min-height: unset;
+      }
+    }
+  }
+}
+
 .list-dropdown {
   >svg {
     margin-right: 16px;

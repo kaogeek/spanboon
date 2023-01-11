@@ -20,7 +20,7 @@
 
         >.edit-head-share {
             width: auto;
-            height: 40pt;
+            height: 17pt;
             padding: 10pt 24pt;
             display: flex;
             align-items: center;
@@ -32,6 +32,9 @@
                 @include font-size-8($font-head-500);
                 height: 20px;
                 color: $white;
+                bottom: 0;
+                position: absolute;
+                margin-bottom: 7px;
             }
 
             >.dialog-image-title-right {
@@ -40,6 +43,7 @@
                 align-items: center;
                 position: absolute;
                 right: 10pt;
+                bottom: 0;
 
                 >.material-icons {
                     font-family: 'Material Icons' !important;
@@ -60,7 +64,7 @@
             overflow-x: hidden;
 
             >.box-edit-share {
-                height: 70px;
+                height: 48px;
                 display: flex;
                 flex-direction: row;
                 align-items: center;

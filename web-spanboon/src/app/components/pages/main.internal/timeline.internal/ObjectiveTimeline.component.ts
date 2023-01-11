@@ -40,6 +40,14 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
     @Input()
     public isClose: boolean = false;
     @Input()
+    public isLike: boolean;
+    @Input()
+    public isReboon: boolean;
+    @Input()
+    public isShare: boolean;
+    @Input()
+    public isComment: boolean;
+    @Input()
     public isFulfillQuantity: boolean = false;
     @Input()
     public isFulfill: boolean = false;

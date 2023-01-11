@@ -162,7 +162,13 @@
                                     <img class="image-profile-fan-page" src="{{resDataPage.imageBase64}}">
                                 </ng-container>
                                 <ng-template #elseImgUrl>
-                                    <img class="image-profile-fan-page" src="../../../../assets/img/profile.svg">
+                                    <ng-container
+                                        *ngIf="resDataPage && resDataPage.signURL !== undefined  && resDataPage.signURL !== '' && resDataPage.signURL !== null; else elseSignURL">
+                                        <img class="image-profile-fan-page" src="{{resDataPage.signURL}}">
+                                    </ng-container>
+                                    <ng-template #elseSignURL>
+                                        <img class="image-profile-fan-page" src="../../../../assets/img/profile.svg">
+                                    </ng-template>
                                 </ng-template>
                             </div>
                             <div class="fan-page-name" [phxPreload]="resDataPage" [preloadClass]="'fan-page-name'">

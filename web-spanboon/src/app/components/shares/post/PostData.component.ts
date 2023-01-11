@@ -58,6 +58,14 @@ export class PostData {
   @Input()
   public isComments: boolean;
   @Input()
+  public isShowComment: boolean = true;
+  @Input()
+  public isShare: boolean = true;
+  @Input()
+  public isLike: boolean = true;
+  @Input()
+  public isReboon: boolean = true;
+  @Input()
   public isUserPage: boolean;
   @Input()
   public isShowUser: boolean;
@@ -286,16 +294,20 @@ export class PostData {
       this.action.emit({ mod: action.mod, postData: this.itemPost._id, type: action.type, post: this.itemPost, userAsPage: this.user });
     } else if (action.mod === 'SHARE') {
       // this.showAlertDialog();
-      // this.action.emit({ mod: action.mod });
-      let dialog = this.dialog.open(DialogShare, {
-        disableClose: true,
-        autoFocus: false,
-        data: {
-          title: "แชร์",
-          text: this.linkPost
-        }
-      });
+      this.action.emit({ mod: action.mod });
+      this.dialogShare();
     }
+  }
+
+  public dialogShare() {
+    let dialog = this.dialog.open(DialogShare, {
+      disableClose: true,
+      autoFocus: false,
+      data: {
+        title: "แชร์",
+        text: this.linkPost
+      }
+    });
   }
 
   public pageAction(action: any) {

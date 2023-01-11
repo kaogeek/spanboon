@@ -481,7 +481,8 @@
                     [share]="itemPost.shareCount ? itemPost.shareCount : 0" [isBlack]="'true'"
                     [userLike]="itemPost.isLike" [userReboon]="itemPost.isRepost" [userComment]="itemPost.isComment"
                     [isPage]="isComments" [accessPage]="pageUser" (emitpage)="pageAction($event)"
-                    (submit)="postAction($event)" [isShowUser]="isShowUser">
+                    (submit)="postAction($event)" [isShowUser]="isShowUser" [isLike]="isLike" [isShare]="isShare"
+                    [isReboon]="isReboon" [isComment]="isShowComment">
                 </control-action>
             </div>
         </div>

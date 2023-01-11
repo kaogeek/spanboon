@@ -1424,7 +1424,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         this.isLoginCh();
         this.postLike(action, index);
       } else if (action.mod === 'SHARE') {
-        this.isLoginCh();
+        // this.isLoginCh();
       } else if (action.mod === 'COMMENT') {
         this.isLoginCh();
       } else if (action.mod === 'POST') {

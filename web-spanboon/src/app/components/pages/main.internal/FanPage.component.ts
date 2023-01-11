@@ -127,6 +127,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   public longtitudeAboutPage: any;
   public localtion: any;
   public selectedIndex: number;
+  public shareDialog: boolean;
 
   public CheckPost: boolean = true;
   public isPostLoading: boolean = false;
@@ -1022,7 +1023,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
 
   public postLike(data: any, index: number) {
     if (!this.isLogin()) {
-      this.showAlertLoginDialog("/page/" + this.resDataPage.id);
+      // this.showAlertLoginDialog("/page/" + this.resDataPage.id);
     } else {
       if (this.resPost.posts.length == 0) {
         this.resDataPost[index].isLike = true;
@@ -1330,39 +1331,43 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   }
 
   public async actionComment(action: any, index: number) {
-    this.isLoginCh();
-    let datapost: any;
-    if (this.resPost.posts.length == 0) {
-      datapost = this.resDataPost;
+    if (action.mod === 'SHARE') {
+
     } else {
-      datapost = this.resPost.posts;
-    }
-    await this.postActionService.actionPost(action, index, datapost, "PAGE").then((res: any) => {
-      if (res !== undefined && res !== null) {
-        //repost
-        if (res && res.type === "NOTOPIC") {
-          this.resPost.posts = res.posts;
-        } else if (res.type === "TOPIC") {
-          this.resPost.posts = res.posts;
-        } else if (res.type === "UNDOTOPIC") {
-          for (let [i, data] of this.resPost.posts.entries()) {
-            if (data.referencePostObject !== null && data.referencePostObject !== undefined && data.referencePostObject !== '') {
-              if (data.referencePostObject._id === action.post._id) {
-                this.resPost.length == 0 ? this.resDataPost.splice(i, 1) : this.resPost.splice(i, 1);
-                break;
+      this.isLoginCh();
+      let datapost: any;
+      if (this.resPost.posts.length == 0) {
+        datapost = this.resDataPost;
+      } else {
+        datapost = this.resPost.posts;
+      }
+      await this.postActionService.actionPost(action, index, datapost, "PAGE").then((res: any) => {
+        if (res !== undefined && res !== null) {
+          //repost
+          if (res && res.type === "NOTOPIC") {
+            this.resPost.posts = res.posts;
+          } else if (res.type === "TOPIC") {
+            this.resPost.posts = res.posts;
+          } else if (res.type === "UNDOTOPIC") {
+            for (let [i, data] of this.resPost.posts.entries()) {
+              if (data.referencePostObject !== null && data.referencePostObject !== undefined && data.referencePostObject !== '') {
+                if (data.referencePostObject._id === action.post._id) {
+                  this.resPost.length == 0 ? this.resDataPost.splice(i, 1) : this.resPost.splice(i, 1);
+                  break;
+                }
               }
             }
+          } else if (res.type === "POST") {
+            this.router.navigateByUrl('/post/' + action.pageId);
+          } else if (action.mod === 'LIKE') {
+            this.postLike(action, index);
+          } else if (action.mod === 'SHARE') {
           }
-        } else if (res.type === "POST") {
-          this.router.navigateByUrl('/post/' + action.pageId);
-        } else if (action.mod === 'LIKE') {
-          this.isLoginCh();
-          this.postLike(action, index);
         }
-      }
-    }).catch((err: any) => {
-      console.log('err ', err)
-    });
+      }).catch((err: any) => {
+        console.log('err ', err)
+      });
+    }
   }
 
   public getAaaPost(action: any, index: number) {
