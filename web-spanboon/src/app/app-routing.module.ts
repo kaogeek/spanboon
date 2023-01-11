@@ -61,10 +61,10 @@ export const APP_ROUTES: Routes = [
             path: 'general',
             component: ProfilePage,
           },
-          {
-            path: 'fulfillment',
-            component: ProfilePage,
-          },
+          // {
+          //   path: 'fulfillment',
+          //   component: ProfilePage,
+          // },
         ]
       },
       {
@@ -91,11 +91,11 @@ export const APP_ROUTES: Routes = [
             component: FanPage,
             // canDeactivate : [DirtyCheckGuard],
           },
-          {
-            path: 'fulfillment',
-            component: FanPage,
-            // canDeactivate : [DirtyCheckGuard],
-          },
+          // {
+          //   path: 'fulfillment',
+          //   component: FanPage,
+          //   // canDeactivate : [DirtyCheckGuard],
+          // },
         ]
       },
       // {
@@ -226,16 +226,16 @@ export const APP_ROUTES: Routes = [
         path: NotificationAllPage.PAGE_NAME,
         component: NotificationAllPage,
       },
-      {
-        path: FulfillPage.PAGE_NAME,
-        component: FulfillPage,
-        children: [
-          {
-            path: ':fulfillId',
-            component: FulfillPage
-          }
-        ]
-      },
+      // {
+      //   path: FulfillPage.PAGE_NAME,
+      //   component: FulfillPage,
+      //   children: [
+      //     {
+      //       path: ':fulfillId',
+      //       component: FulfillPage
+      //     }
+      //   ]
+      // },
       // {
       //   path: FulfillPage.PAGE_NAME + "/:fulfillId",
       //   component: FulfillPage

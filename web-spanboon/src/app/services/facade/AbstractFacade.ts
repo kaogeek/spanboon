@@ -10,6 +10,7 @@ import { environment } from '../../../environments/environment';
 import { AuthenManager } from '../AuthenManager.service';
 import { GenerateUUIDUtil } from '../../utils/GenerateUUIDUtil';
 import { CookieUtil } from '../../utils/CookieUtil';
+import { ActivatedRoute } from '@angular/router';
 
 const UUID: string = 'UUID'
 
@@ -18,11 +19,15 @@ export abstract class AbstractFacade {
   protected baseURL: string;
   protected http: HttpClient;
   protected authMgr: AuthenManager;
+  protected route: ActivatedRoute;
 
-  constructor(http: HttpClient, authMgr: AuthenManager, baseURL?: string) {
+  public hidebar: boolean = true;
+
+  constructor(http: HttpClient, authMgr: AuthenManager, baseURL?: string, route?: ActivatedRoute) {
     this.http = http;
     this.baseURL = baseURL;
     this.authMgr = authMgr;
+    this.route = route;
 
     if (this.baseURL === undefined || this.baseURL === null) {
       this.baseURL = environment.apiBaseURL;
@@ -79,4 +84,5 @@ export abstract class AbstractFacade {
   public getUserToken(): string {
     return this.authMgr.getUserToken();
   }
+
 }

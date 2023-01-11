@@ -61,10 +61,10 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
             label: "จัดการเพจ",
             keyword: "",
         },
-        {
-            label: "โพสต์ของเพจ",
-            keyword: "",
-        },
+        // {
+        //     label: "โพสต์ของเพจ",
+        //     keyword: "",
+        // },
     ];
     public activeLink = this.navLinks[0].label;
 
@@ -216,7 +216,7 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
     }
 
     public selectedSetting(link: any) {
-        this.showAlertDevelopDialog();
+        // this.showAlertDevelopDialog();
         // this.linkSetting = link;
         // const isDirty: boolean = this.settingInfo && this.settingInfo.checkIsDirty();
         // if (!isDirty) {

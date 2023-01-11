@@ -12,18 +12,18 @@
     align-items: center;
     justify-content: center;
 
-    > .collis {
+    >.collis {
         display: flex;
         justify-content: center;
         flex-wrap: wrap;
         flex: 1 1 0%;
 
-        > .wrapper-action {
+        >.wrapper-action {
             display: flex;
             align-items: center;
             @include font-size-9($font-head-500);
 
-            > .label-count {
+            >.label-count {
                 text-align: center;
                 min-width: 9pt;
                 user-select: none;
@@ -33,7 +33,7 @@
                 }
             }
 
-            > .img-action {
+            >.img-action {
                 margin-left: 3pt;
                 cursor: pointer;
                 padding: 3pt;
@@ -44,9 +44,15 @@
                 }
             }
 
-            > .img-action-share {
+            >.img-action-share {
                 margin-left: 3pt;
+                cursor: pointer;
                 padding: 3pt;
+
+                &:hover {
+                    border-radius: 5pt;
+                    background-color: rgb($brandcolor2, 50%);
+                }
             }
 
             &:last-of-type {
@@ -59,7 +65,7 @@
         }
     }
 
-    > .control-slider {
+    >.control-slider {
         width: 100%;
         display: flex;
         flex-direction: row;
@@ -67,35 +73,34 @@
         flex-wrap: wrap;
         color: rgb($white, 0.7);
 
-        > .list-items {
+        >.list-items {
             @include font-size-10($font-head-400);
 
             &:nth-child(5) {
                 display: none;
             }
 
-            > .count-aontrol {
-            }
+            >.count-aontrol {}
 
-            > .title-control {
+            >.title-control {
                 margin-left: 5px;
             }
 
-            > .drot {
+            >.drot {
                 margin: 0 7pt;
             }
         }
     }
 
     .field-profile {
-        > .mat-form-field-wrapper {
+        >.mat-form-field-wrapper {
             padding-bottom: unset;
             display: flex;
             justify-content: center;
             align-items: center;
 
-            > .mat-form-field-flex {
-                > .mat-form-field-infix {
+            >.mat-form-field-flex {
+                >.mat-form-field-infix {
                     display: flex;
                     margin-left: 7px;
                     position: relative;
@@ -105,13 +110,13 @@
                     border-top: unset;
                     padding: unset;
 
-                    > .div-profile {
+                    >.div-profile {
                         display: flex;
                         align-items: center;
                         justify-content: center;
                     }
 
-                    > .mat-select {
+                    >.mat-select {
                         display: flex;
                         width: 100%;
                         outline: 0;
@@ -142,8 +147,8 @@
 
 @media (max-width: $xlarge) {
     .control-action {
-        > .control-slider {
-            > .list-items {
+        >.control-slider {
+            >.list-items {
                 display: none;
 
                 &:nth-child(5) {
