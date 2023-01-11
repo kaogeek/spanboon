@@ -352,22 +352,6 @@ export class PostData {
     }
     let click = this.engagementService.getEngagement(data.event, eventId, type);
     this.engagement.emit(click)
-
-    let dialog = this.dialog.open(DialogAlert, {
-      disableClose: true,
-      data: {
-        text: MESSAGE.TEXT_TITLE_DEVERLOP_SEAECH,
-        bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-        bottomText1: MESSAGE.TEXT_BUTTON_CANCEL,
-        bottomColorText2: "black",
-        // btDisplay1: "none"
-      }
-    });
-    dialog.afterClosed().subscribe((res) => {
-      if (res) {
-        this.router.navigateByUrl('/search?' + url);
-      }
-    });
   }
 
   private getComment(limit?) {

@@ -122,12 +122,14 @@
                 </mat-form-field>
             </div>
 
-            <div class="box-toggle">
+            <!-- <div class="box-toggle">
                 <span *ngIf="isShowText">สร้าง{{PLATFORM_STORY}} :</span>
                 <mat-slide-toggle [ngModelOptions]="{standalone: true}" [(ngModel)]="isStory"
                     (change)="onChangeSlide($event)"></mat-slide-toggle>
-                <!-- <mat-slide-toggle [ngModelOptions]="{standalone: true}" [(ngModel)]="isChecked" (change)="onToggle($event)"></mat-slide-toggle> -->
-            </div>
+                    
+                    comment vvvvvv
+                <mat-slide-toggle [ngModelOptions]="{standalone: true}" [(ngModel)]="isChecked" (change)="onToggle($event)"></mat-slide-toggle>
+            </div> -->
         </div>
         <ng-container *ngIf="modeShowImage">
             <div class="box-image" *ngIf="imagesTimeline && imagesTimeline.length > 0">

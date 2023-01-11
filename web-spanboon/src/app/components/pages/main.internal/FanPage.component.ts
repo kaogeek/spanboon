@@ -320,6 +320,10 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     if (this.isLogin()) {
       this.getProfileImage();
     }
+
+    setTimeout(() => {
+      this.checkAccessPage(this.pageId);
+    }, 1000);
   }
 
   private stopLoading(): void {
@@ -582,6 +586,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
 
   public checkAccessPage(pageId: string) {
     this.pageFacade.getAccess(pageId).then((res: any) => {
+      this.pageId = res.data.id;
       for (let dataPage of res.data) {
         if (dataPage.level === 'OWNER') {
           this.isNotAccess = true;
