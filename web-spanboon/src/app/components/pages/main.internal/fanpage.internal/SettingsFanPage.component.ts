@@ -194,6 +194,9 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
             if (err.error.name === "AccessDeniedError") {
                 this.router.navigateByUrl("/home");
             }
+            if (err.error.message === "Unable to get User Page Access List") {
+                this.router.navigateByUrl("/home");
+            }
         })
     }
 
