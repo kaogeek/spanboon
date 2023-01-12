@@ -515,7 +515,8 @@ export class PageController {
                 pageSocialAccount.properties = properties;
                 pageSocialAccount.providerName = PROVIDER.FACEBOOK;
                 pageSocialAccount.providerPageId = socialBinding.facebookPageId;
-                pageSocialAccount.storedCredentials = refreshToken.access_token;
+                pageSocialAccount.storedCredentials = socialBinding.pageAccessToken;
+                pageSocialAccount.refreshToken = refreshToken.access_token;
                 pageSocialAccount.providerPageName = socialBinding.facebookPageName;
                 pageSocialAccount.ownerPage = userId;
                 const page = await this.pageSocialAccountService.create(pageSocialAccount);

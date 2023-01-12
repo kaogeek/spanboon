@@ -22,12 +22,15 @@ import { ASSET_PATH } from '../../constants/AssetScope';
 import { facebook_setup } from '../../env';
 import { SocialPostLogsService } from '../services/SocialPostLogsService';
 import { ObjectID } from 'mongodb';
+import { HashTag } from '../models/HashTag';
+import { HashTagService } from '../services/HashTagService';
 @JsonController('/fb_webhook')
 export class FacebookWebhookController {
     constructor(
         private pageService: PageService, private postsService: PostsService, private socialPostService: SocialPostService,
         private assetService: AssetService, private postsGalleryService: PostsGalleryService,
-        private socialPostLogsService: SocialPostLogsService
+        private socialPostLogsService: SocialPostLogsService,
+        private hashTagService:HashTagService
     ) { }
 
     /**
@@ -70,6 +73,9 @@ export class FacebookWebhookController {
         const mode = params['hub.mode'];
         const token = params['hub.verify_token'];
         const challenge = params['hub.challenge'];
+        const postMasterHashTagList = [];
+        const masterHashTagMap = {};
+        const today = moment().toDate();
         if (mode && token) {
             // Checks the mode and token sent is correct
             if (mode === 'subscribe' && token === VERIFY_TOKEN) {
@@ -80,6 +86,7 @@ export class FacebookWebhookController {
                 return res.sendStatus(403);
             }
         }
+
         const pageSubscribe = await this.socialPostLogsService.findOne({ providerUserId: String(body.entry[0].changes[0].value.from.id) });
         if(pageSubscribe === undefined){
             return res.status(400);
@@ -88,6 +95,19 @@ export class FacebookWebhookController {
         let text1 = undefined;
         let text2 = undefined;
         let realText = undefined;
+        let detailText = undefined;
+        const hashTagList1 = [];
+        const hashTagList2 = [];
+        const msgSplit = body.entry[0].changes[0].value.message.split('#');
+        if(msgSplit){
+            for (let i = 1; i < msgSplit.length; i++) {
+                hashTagList1.push(msgSplit[i].split('\n')[0]);
+            }
+
+            for (let i = 0; i < hashTagList1.length; i++) {
+                hashTagList2.push(hashTagList1[i].split(' ')[0]);
+            }
+        }
         const match = /r\n|\n/.exec(body.entry[0].changes[0].value.message);
         console.log('body.entry[0].changes[0].value.message',body.entry[0].changes[0].value);
         if(body.entry[0].changes[0].value.message === undefined){
@@ -99,6 +119,7 @@ export class FacebookWebhookController {
             text2 = sliceArray.indexOf(']');
             if (text1 !== -1 && text2 !== -1) {
                 realText = body.entry[0].changes[0].value.message.substring(text1+1, text2 );
+                detailText = body.entry[0].changes[0].value.message.substring(text2 + 1,body.entry[0].changes[0].value.message.length -1 );
             } else if (text1 !== -1 && text2 === -1) {
                 realText = body.entry[0].changes[0].value.message.slice(0, 50) + '......';
             } else {
@@ -108,7 +129,7 @@ export class FacebookWebhookController {
             realText = body.entry[0].changes[0].value.message.substring(0, 50) + '.....';
         }
         const pageIdFB = await this.pageService.findOne({ _id: pageSubscribe.pageId }); 
-        if(pageIdFB.id === undefined){
+        if(pageIdFB === undefined){
             return res.status(400);
         }       
         if (body !== undefined && pageIdFB !== undefined && pageIdFB !== null && pageSubscribe.enable === true) {
@@ -118,7 +139,7 @@ export class FacebookWebhookController {
                 if (checkFeed === undefined) {
                     const postPage: Posts = new Posts();
                     postPage.title = realText;
-                    postPage.detail = body.entry[0].changes[0].value.message;
+                    postPage.detail = detailText;
                     postPage.isDraft = false;
                     postPage.hidden = false;
                     postPage.type = POST_TYPE.GENERAL;
@@ -141,6 +162,7 @@ export class FacebookWebhookController {
                     postPage.visibility = null;
                     postPage.ranges = null;
                     const createPostPageData: Posts = await this.postsService.create(postPage);
+                    console.log('createPostPageData',createPostPageData.id);
                     const newSocialPost = new SocialPost();
                     newSocialPost.pageId = pageIdFB.id;
                     newSocialPost.postId = createPostPageData.id;
@@ -149,6 +171,38 @@ export class FacebookWebhookController {
                     newSocialPost.socialId = body.entry[0].changes[0].value.post_id;
                     newSocialPost.socialType = PROVIDER.FACEBOOK;
                     await this.socialPostService.create(newSocialPost);
+                    if (hashTagList2 !== null && hashTagList2 !== undefined && hashTagList2.length > 0) {
+                        const masterHashTagList: HashTag[] = await this.findMasterHashTag(hashTagList2);
+            
+                        for (const hashTag of masterHashTagList) {
+                            const id = hashTag.id;
+                            const name = hashTag.name;
+                            postMasterHashTagList.push(new ObjectID(id));
+                            masterHashTagMap[name] = hashTag;
+                        }
+            
+                        for (const hashTag of hashTagList2) {
+                            if (masterHashTagMap[hashTag] === undefined) {
+                                const newHashTag: HashTag = new HashTag();
+                                newHashTag.name = hashTag;
+                                newHashTag.lastActiveDate = today;
+                                newHashTag.count = 0;
+                                newHashTag.iconURL = '';
+            
+                                const newMasterHashTag: HashTag = await this.hashTagService.create(newHashTag);
+            
+                                if (newMasterHashTag !== null && newMasterHashTag !== undefined) {
+                                    postMasterHashTagList.push(new ObjectID(newMasterHashTag.id));
+            
+                                    masterHashTagMap[hashTag] = newMasterHashTag;
+                                }
+                            }
+                        }
+                    }
+                    postPage.postsHashTags = postMasterHashTagList;
+                    const query = {_id:createPostPageData.id};
+                    const newValues = {$set:{postsHashTags:postPage.postsHashTags}};
+                    await this.postsService.update(query,newValues);
                     return res.status(200).send('SuccessFul Webhooks');
                 }else{
                     return res.status(400);
@@ -160,7 +214,7 @@ export class FacebookWebhookController {
                 if (checkFeed === undefined && assetPic !== undefined) {
                     const postPage: Posts = new Posts();
                     postPage.title = realText;
-                    postPage.detail = body.entry[0].changes[0].value.message;
+                    postPage.detail = detailText;
                     postPage.isDraft = false;
                     postPage.hidden = false;
                     postPage.type = POST_TYPE.GENERAL;
@@ -231,7 +285,7 @@ export class FacebookWebhookController {
                 if (checkFeed === undefined) {
                     const postPage: Posts = new Posts();
                     postPage.title = realText;
-                    postPage.detail = body.entry[0].changes[0].value.message;
+                    postPage.detail = detailText;
                     postPage.isDraft = false;
                     postPage.hidden = false;
                     postPage.type = POST_TYPE.GENERAL;
@@ -302,4 +356,9 @@ export class FacebookWebhookController {
             return res.status(400).send('this values is removes from webhooks');
         }
     }
+    
+    private async findMasterHashTag(hashTagNameList: string[]): Promise<HashTag[]> {
+        return await this.hashTagService.find({ name: { $in: hashTagNameList } });
+    }
+
 }
