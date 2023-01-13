@@ -5,14 +5,10 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { AuthenManager } from '../AuthenManager.service';
-import { GenerateUUIDUtil } from '../../utils/GenerateUUIDUtil';
-import { CookieUtil } from '../../utils/CookieUtil';
 import { ActivatedRoute } from '@angular/router';
-
-const UUID: string = 'UUID'
 
 export abstract class AbstractFacade {
 
@@ -34,45 +30,6 @@ export abstract class AbstractFacade {
     }
   }
 
-  public getDefaultOptions(): any {
-    let header = this.getDefaultHeader();
-    let userId = this.authMgr.getCurrentUser();
-    header = header.append('userid', userId ? userId.id : '')
-
-    let httpOptions = {
-      headers: header
-    };
-
-    return httpOptions;
-  }
-
-  public getDefaultHeader(): HttpHeaders {
-
-    //getCookie UUID
-    let uuid: any = CookieUtil.getCookie(UUID);
-
-    if (uuid === null || uuid === undefined) {
-      uuid = GenerateUUIDUtil.getUUID();
-      CookieUtil.setCookie(UUID, uuid);
-    }
-
-    let headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Authorization': "Bearer " + this.authMgr.getToken(),
-      'Client-Id': uuid,
-    });
-
-    if (this.authMgr.isFacebookMode()) {
-      headers = headers.set('mode', 'FB');
-    } else if (this.authMgr.isTwitterMode()) {
-      headers = headers.set('mode', 'TW');
-    } else if (this.authMgr.isGoogleMode()) {
-      headers = headers.set('mode', 'GG');
-    }
-
-    return headers;
-  }
-
   public getHttp(): HttpClient {
     return this.http;
   }
@@ -80,9 +37,4 @@ export abstract class AbstractFacade {
   public getBaseURL(): string {
     return this.baseURL;
   }
-
-  public getUserToken(): string {
-    return this.authMgr.getUserToken();
-  }
-
 }

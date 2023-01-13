@@ -125,6 +125,7 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
 
         this.objectiveData = await this.emergencyEventFacade.getEmergencyTimeline(this.objectiveId);
         this.objectiveData.page;
+        this.objectiveData.timelines;
         const pageType = { type: "PAGE" };
         const origin = this.objectiveData.page;
 
@@ -241,6 +242,13 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
             this.popupService.open(origin, TooltipProfile, this.viewContainerRef, {
                 data: data,
             })
+        }
+    }
+
+    public setHashtag(tag: any, post: any): any {
+        if (post) {
+            let dataHashTag = post.trim();
+            return dataHashTag.split('#' + tag)[1];
         }
     }
 

@@ -51,7 +51,7 @@ export class AuthenCheckPage implements OnInit {
   public reCheck(): void {
     this.isLoaded = false;
 
-    let mode = this.authenMgr.isFacebookMode() ? "FB" : this.authenMgr.isTwitterMode() ? "TW" : this.authenMgr.isGoogleMode() ? "GG" : undefined;
+    let mode = this.authenMgr.getToken().mode;
 
     if (mode === undefined) {
       let storageMode = sessionStorage.getItem(AuthenManager.TOKEN_MODE_KEY);
@@ -65,7 +65,7 @@ export class AuthenCheckPage implements OnInit {
       }
     }
 
-    let token = this.authenMgr.getUserToken();
+    let token = this.authenMgr.getToken().token;
     if (token === undefined) {
       token = sessionStorage.getItem(AuthenManager.TOKEN_KEY);
 

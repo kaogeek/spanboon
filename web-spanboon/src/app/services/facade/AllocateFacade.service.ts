@@ -34,7 +34,7 @@ export class AllocateFacade extends AbstractFacade {
             }
 
             let body: any = {};
-            let options = this.getDefaultOptions();
+            let options = this.authMgr.getDefaultOptions();
 
             body = Object.assign(data)
             this.http.post(url, body, options).toPromise().then((response: any) => {
@@ -49,7 +49,7 @@ export class AllocateFacade extends AbstractFacade {
         return new Promise((resolve, reject) => {
             let url: string = this.baseURL + "/fulfillment_case/" + caseId + "/allocate_confirm?asPage=" + pageId;
             let body: any = {};
-            let options = this.getDefaultOptions();
+            let options = this.authMgr.getDefaultOptions();
 
             body = Object.assign(data)
             this.http.post(url, body, options).toPromise().then((response: any) => {
@@ -81,7 +81,7 @@ export class AllocateFacade extends AbstractFacade {
             url = decodeURIComponent(url);
 
             let body: any = {};
-            let options = this.getDefaultOptions();
+            let options = this.authMgr.getDefaultOptions();
 
             body = Object.assign(data)
             this.http.post(url, body, options).toPromise().then((response: any) => {

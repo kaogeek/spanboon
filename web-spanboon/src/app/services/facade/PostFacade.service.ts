@@ -47,7 +47,7 @@ export class PostFacade extends AbstractFacade {
       if (data !== null && data !== undefined) {
         body = Object.assign(data)
       }
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
 
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response as Asset);
@@ -66,7 +66,7 @@ export class PostFacade extends AbstractFacade {
       } else {
         url = this.baseURL + '/post/' + id + '/count';
       }
-      let httpOptions = this.getDefaultOptions();
+      let httpOptions = this.authMgr.getDefaultOptions();
       this.http.get(url, httpOptions).toPromise().then((response: any) => {
         resolve(response.data);
       }).catch((error: any) => {
@@ -83,7 +83,7 @@ export class PostFacade extends AbstractFacade {
       if (filter !== null && filter !== undefined) {
         body = Object.assign(filter)
       }
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
 
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response.data);
@@ -100,7 +100,7 @@ export class PostFacade extends AbstractFacade {
       if (filter !== null && filter !== undefined) {
         body = Object.assign(filter)
       }
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
 
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response.data);
@@ -116,7 +116,7 @@ export class PostFacade extends AbstractFacade {
 
       let url: string = this.baseURL + '/post/' + postId + '/like';
       let body: any;
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
 
       if (asPage !== null && asPage !== undefined) {
         body = { likeAsPage: asPage }
@@ -140,7 +140,7 @@ export class PostFacade extends AbstractFacade {
       if (repost !== null && repost !== undefined) {
         body = Object.assign(repost)
       }
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
 
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response.data);
@@ -155,7 +155,7 @@ export class PostFacade extends AbstractFacade {
 
       let url: string = this.baseURL + '/post/' + postId + '/repost/undo';
       let body: any = {};
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
 
       this.http.put(url, body, options).toPromise().then((response: any) => {
         resolve(response);
@@ -169,7 +169,7 @@ export class PostFacade extends AbstractFacade {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/post/' + postId + '/needs';
 
-      let httpOptions = this.getDefaultOptions();
+      let httpOptions = this.authMgr.getDefaultOptions();
 
       this.http.get(url, httpOptions).toPromise().then((response: any) => {
         resolve(response.data);
@@ -184,7 +184,7 @@ export class PostFacade extends AbstractFacade {
       let url: string
       url = this.baseURL + '/post/count/max';
 
-      let httpOptions = this.getDefaultOptions();
+      let httpOptions = this.authMgr.getDefaultOptions();
       this.http.get(url, httpOptions).toPromise().then((response: any) => {
         resolve(response);
       }).catch((error: any) => {
@@ -198,7 +198,7 @@ export class PostFacade extends AbstractFacade {
       let url: string
       url = this.baseURL + '/post/' + postId + '/recommended_story';
 
-      let httpOptions = this.getDefaultOptions();
+      let httpOptions = this.authMgr.getDefaultOptions();
       this.http.get(url, httpOptions).toPromise().then((response: any) => {
         resolve(response);
       }).catch((error: any) => {
@@ -212,7 +212,7 @@ export class PostFacade extends AbstractFacade {
       let url: string
       url = this.baseURL + '/post/' + postId + '/recommended_hashtag';
 
-      let httpOptions = this.getDefaultOptions();
+      let httpOptions = this.authMgr.getDefaultOptions();
       this.http.get(url, httpOptions).toPromise().then((response: any) => {
         resolve(response);
       }).catch((error: any) => {
@@ -226,7 +226,7 @@ export class PostFacade extends AbstractFacade {
       let url: string
       url = this.baseURL + '/recommend/story?pageId=' + pageId;
 
-      let httpOptions = this.getDefaultOptions();
+      let httpOptions = this.authMgr.getDefaultOptions();
       this.http.get(url, httpOptions).toPromise().then((response: any) => {
         resolve(response);
       }).catch((error: any) => {

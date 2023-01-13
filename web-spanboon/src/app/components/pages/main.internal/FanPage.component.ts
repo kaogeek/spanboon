@@ -162,8 +162,28 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   mySubscription: any;
   files: FileHandle[] = [];
 
-  constructor(router: Router, userFacade: UserFacade, dialog: MatDialog, authenManager: AuthenManager, postFacade: PostFacade, pageFacade: PageFacade, postCommentFacade: PostCommentFacade, cacheConfigInfo: CacheConfigInfo, objectiveFacade: ObjectiveFacade, needsFacade: NeedsFacade, assetFacade: AssetFacade,
-    observManager: ObservableManager, routeActivated: ActivatedRoute, userEngagementFacade: UserEngagementFacade, engagementService: Engagement, recommendFacade: RecommendFacade, aboutPageFacade: AboutPageFacade, seoService: SeoService, profileFacade: ProfileFacade, postActionService: PostActionService, userAccessFacade: UserAccessFacade,
+  constructor(
+    router: Router,
+    userFacade: UserFacade,
+    dialog: MatDialog,
+    authenManager: AuthenManager,
+    postFacade: PostFacade,
+    pageFacade: PageFacade,
+    postCommentFacade: PostCommentFacade,
+    cacheConfigInfo: CacheConfigInfo,
+    objectiveFacade: ObjectiveFacade,
+    needsFacade: NeedsFacade,
+    assetFacade: AssetFacade,
+    observManager: ObservableManager,
+    routeActivated: ActivatedRoute,
+    userEngagementFacade: UserEngagementFacade,
+    engagementService: Engagement,
+    recommendFacade: RecommendFacade,
+    aboutPageFacade: AboutPageFacade,
+    seoService: SeoService,
+    profileFacade: ProfileFacade,
+    postActionService: PostActionService,
+    userAccessFacade: UserAccessFacade
   ) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.dialog = dialog

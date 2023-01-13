@@ -29,7 +29,7 @@ export class ChatFacade extends AbstractFacade {
         body = chatIds;
       }
 
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
 
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response);

@@ -70,7 +70,7 @@ export class FulfillFacade extends AbstractFacade {
                 url += "?" + queryParams;
             }
 
-            let options = this.getDefaultOptions();
+            let options = this.authMgr.getDefaultOptions();
 
             this.http.get(url, options).toPromise().then((response: any) => {
                 resolve(response.data);
@@ -88,7 +88,7 @@ export class FulfillFacade extends AbstractFacade {
                 url += "?asPage=" + asPage;
             }
 
-            let options = this.getDefaultOptions();
+            let options = this.authMgr.getDefaultOptions();
 
             this.http.get(url, options).toPromise().then((response: any) => {
                 resolve(response.data);
@@ -106,7 +106,7 @@ export class FulfillFacade extends AbstractFacade {
                 url += "?asPage=" + asPage;
             }
 
-            let options = this.getDefaultOptions();
+            let options = this.authMgr.getDefaultOptions();
 
             this.http.get(url, options).toPromise().then((response: any) => {
                 resolve(response.data);
@@ -129,7 +129,7 @@ export class FulfillFacade extends AbstractFacade {
                 }
             }
 
-            let options = this.getDefaultOptions();
+            let options = this.authMgr.getDefaultOptions();
 
             this.http.post(url, body, options).toPromise().then((response: any) => {
                 resolve(response.data);
@@ -142,7 +142,7 @@ export class FulfillFacade extends AbstractFacade {
     public getFulfillmentFromPost(postId: string): Promise<any> {
         return new Promise((resolve, reject) => {
             let url: string = this.baseURL + '/fulfillment_case/post/' + postId;
-            let options = this.getDefaultOptions();
+            let options = this.authMgr.getDefaultOptions();
 
             this.http.get(url, options).toPromise().then((response: any) => {
                 resolve(response.data);
@@ -161,7 +161,7 @@ export class FulfillFacade extends AbstractFacade {
                 body = Object.assign(data)
             }
 
-            let options = this.getDefaultOptions();
+            let options = this.authMgr.getDefaultOptions();
 
             this.http.post(url, body, options).toPromise().then((response: any) => {
                 resolve(response.data);
@@ -184,7 +184,7 @@ export class FulfillFacade extends AbstractFacade {
                 body = Object.assign(data)
             }
 
-            let options = this.getDefaultOptions();
+            let options = this.authMgr.getDefaultOptions();
 
             this.http.post(url, body, options).toPromise().then((response: any) => {
                 resolve(response);
@@ -204,7 +204,7 @@ export class FulfillFacade extends AbstractFacade {
 
             let body: any = {};
 
-            let options = this.getDefaultOptions();
+            let options = this.authMgr.getDefaultOptions();
 
             this.http.post(url, body, options).toPromise().then((response: any) => {
                 resolve(response.data);
@@ -222,7 +222,7 @@ export class FulfillFacade extends AbstractFacade {
                 url += "?asPage=" + asPage;
             }
 
-            let options = this.getDefaultOptions();
+            let options = this.authMgr.getDefaultOptions();
 
             this.http.delete(url, options).toPromise().then((response: any) => {
                 resolve(response.data);
@@ -242,7 +242,7 @@ export class FulfillFacade extends AbstractFacade {
 
             let body: any = {};
 
-            let options = this.getDefaultOptions();
+            let options = this.authMgr.getDefaultOptions();
 
             this.http.post(url, body, options).toPromise().then((response: any) => {
                 resolve(response.data);
@@ -265,7 +265,7 @@ export class FulfillFacade extends AbstractFacade {
                 body = Object.assign(data)
             }
 
-            let option = this.getDefaultOptions();
+            let option = this.authMgr.getDefaultOptions();
 
             this.http.put(url, body, option).toPromise().then((response: any) => {
                 resolve(response);
@@ -283,7 +283,7 @@ export class FulfillFacade extends AbstractFacade {
                 url += "?asPage=" + asPage;
             }
 
-            let options = this.getDefaultOptions();
+            let options = this.authMgr.getDefaultOptions();
 
             this.http.delete(url, options).toPromise().then((response: any) => {
                 resolve(response);

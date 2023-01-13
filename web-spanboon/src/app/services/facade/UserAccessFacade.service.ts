@@ -8,7 +8,7 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from '@angular/common/http';
 import { AuthenManager } from '../AuthenManager.service';
-import { AbstractFacade } from "./AbstractFacade"; 
+import { AbstractFacade } from "./AbstractFacade";
 
 @Injectable()
 export class UserAccessFacade extends AbstractFacade {
@@ -21,7 +21,7 @@ export class UserAccessFacade extends AbstractFacade {
         return new Promise((resolve, reject) => {
             let url: string = this.baseURL + '/useraccess/page/';
 
-            let option = this.getDefaultOptions();
+            let option = this.authMgr.getDefaultOptions();
             this.http.get(url, option).toPromise().then((response: any) => {
                 resolve(response.data);
             }).catch((error: any) => {
@@ -33,7 +33,7 @@ export class UserAccessFacade extends AbstractFacade {
         return new Promise((resolve, reject) => {
             let url: string = this.baseURL + '/page/' + pageId + '/access/';
 
-            let option = this.getDefaultOptions();
+            let option = this.authMgr.getDefaultOptions();
             this.http.get(url, option).toPromise().then((response: any) => {
                 resolve(response.data);
             }).catch((error: any) => {
@@ -45,7 +45,7 @@ export class UserAccessFacade extends AbstractFacade {
     public deleteInfoAdmin(id: string, accessId: string): Promise<any> {
         return new Promise((resolve, reject) => {
             let url: string = this.baseURL + '/page/' + id + '/access/' + accessId;
-            let option = this.getDefaultOptions(); 
+            let option = this.authMgr.getDefaultOptions();
 
             this.http.delete(url, option).toPromise().then((response: any) => {
                 resolve(response);
