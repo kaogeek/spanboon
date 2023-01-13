@@ -49,6 +49,11 @@ export class PostsService {
         return this.postsRepository.updateOne(query, newValue, options);
     }
 
+    // update many post
+    public async updateMany(query: any, newValue: any, options?: any): Promise<any> {
+        return await this.postsRepository.updateMany(query, newValue, options);
+    }
+
     // delete post
     public async delete(query: any, options?: any): Promise<any> {
         return await this.postsRepository.deleteOne(query, options);
