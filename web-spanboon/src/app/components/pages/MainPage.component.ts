@@ -42,6 +42,7 @@ export class MainPage extends AbstractPage implements OnInit {
   public isDev: boolean = true;
   public isDirty: boolean = false;
   public hidebar: boolean = true;
+  public isLock: boolean = false;
 
   public redirection: string;
 
@@ -105,7 +106,6 @@ export class MainPage extends AbstractPage implements OnInit {
     if (isLogin) {
       this.searchAccessPage();
     }
-
 
     // const dev = sessionStorage.getItem('isDev');
     // if (dev) {
@@ -275,43 +275,49 @@ export class MainPage extends AbstractPage implements OnInit {
   }
 
   public async dialogPost() {
-    if (this.isLogin()) {
-      let dataName;
-      if (this.user && this.user.name) {
-        dataName = this.user.name
-      } else if (this.user && this.user.uniqueId) {
-        dataName = this.user.displayName
-      } else if (this.user.displayName) {
-        dataName = this.user.displayName
-      }
-      this.data.isListPage = true;
-      this.data.isHeaderPage = true;
-      this.data.isEdit = false;
-      this.data.isFulfill = false;
-      this.data.isMobileButton = true;
-      this.data.id = this.user.id;
-      this.data.accessDataPage = await this.searchAccessPage();
-      if (this.router.url.split('/')[1] === 'page') {
-        this.data.name = this.router.url.split('/')[2];
-        this.data.isSharePost = true;
-        this.data.modeDoIng = true;
-      } else {
-        this.data.name = dataName;
-        this.data.isSharePost = false;
-        this.data.modeDoIng = false;
-      }
-      const dialogRef = this.dialog.open(DialogPost, {
-        width: 'auto',
-        data: this.data,
-        panelClass: 'customize-dialog',
-        disableClose: false,
-      });
+    if (!this.isLock) {
+      if (this.isLogin()) {
+        let dataName;
+        if (this.user && this.user.name) {
+          dataName = this.user.name
+        } else if (this.user && this.user.uniqueId) {
+          dataName = this.user.displayName
+        } else if (this.user.displayName) {
+          dataName = this.user.displayName
+        }
+        this.isLock = true;
+        this.data.isListPage = true;
+        this.data.isHeaderPage = true;
+        this.data.isEdit = false;
+        this.data.isFulfill = false;
+        this.data.isMobileButton = true;
+        this.data.id = this.user.id;
+        this.data.accessDataPage = await this.searchAccessPage();
+        if (this.router.url.split('/')[1] === 'page') {
+          this.data.name = this.router.url.split('/')[2];
+          this.data.isSharePost = true;
+          this.data.modeDoIng = true;
+        } else {
+          this.data.name = dataName;
+          this.data.isSharePost = false;
+          this.data.modeDoIng = false;
+        }
+        const dialogRef = this.dialog.open(DialogPost, {
+          width: 'auto',
+          data: this.data,
+          panelClass: 'customize-dialog',
+          disableClose: false,
+        });
 
-      dialogRef.afterClosed().subscribe(result => {
-        this.stopLoading();
-      });
-    } else {
-      this.router.navigateByUrl('/login')
+        dialogRef.afterClosed().subscribe(result => {
+          this.stopLoading();
+        });
+      } else {
+        this.router.navigateByUrl('/login')
+      }
+      setTimeout(() => {
+        this.isLock = false;
+      }, 1000);
     }
   }
 

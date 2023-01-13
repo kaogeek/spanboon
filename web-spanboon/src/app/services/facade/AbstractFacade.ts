@@ -58,7 +58,7 @@ export abstract class AbstractFacade {
 
     let headers = new HttpHeaders({
       'Content-Type': 'application/json',
-      'Authorization': "Bearer " + this.authMgr.getUserToken(),
+      'Authorization': "Bearer " + this.authMgr.getToken(),
       'Client-Id': uuid,
     });
 

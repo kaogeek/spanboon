@@ -33,6 +33,7 @@ const PAGE_SUB_POST: string = 'post'
 const URL_PATH: string = '/page/';
 const SEARCH_LIMIT: number = 10;
 const SEARCH_OFFSET: number = 0;
+const REFRESH_DATA: string = 'refresh_page';
 
 declare var $: any;
 @Component({
@@ -54,7 +55,22 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   @Output()
   public submitCanCelDialog: EventEmitter<any> = new EventEmitter();
 
-  public links = [{ label: 'ไทมไลน์', keyword: 'timeline' }, { label: this.PLATFORM_GENERAL_TEXT, keyword: 'general' }, { label: this.PLATFORM_NEEDS_TEXT, keyword: 'needs' }, { label: this.PLATFORM_FULFILL_TEXT, keyword: 'fulfillment' }];
+  public links = [
+    {
+      label: 'ไทมไลน์',
+      keyword: 'timeline'
+    },
+    {
+      label: this.PLATFORM_GENERAL_TEXT,
+      keyword: 'general'
+    },
+    // { label: this.PLATFORM_NEEDS_TEXT, 
+    //   keyword: 'needs' 
+    // }, 
+    // { label: this.PLATFORM_FULFILL_TEXT, 
+    //   keyword: 'fulfillment' 
+    // }
+  ];
   public activeLink = this.links[0].label;
 
   @ViewChild('boxPost', { static: false }) boxPost: BoxPost;
@@ -179,6 +195,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     this.userAccessFacade = userAccessFacade;
 
     // this.seoService.removeMeta();
+    this.searchAllPage();
 
     this.mySubscription = this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe((event: NavigationEnd) => {
       if (event instanceof NavigationEnd) {
@@ -239,14 +256,6 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
       this.heightWindow();
       this.countScroll = scrollTop.fix;
       this.setProfile();
-    });
-
-    this.observManager.subscribe('refresh_page', (type) => {
-      let data = {
-        type: type,
-        offset: 0
-      }
-      this.searchPostPageType(data, true);
     });
 
     this.observManager.subscribe('scroll.buttom', (buttom) => {
@@ -321,9 +330,11 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
       this.getProfileImage();
     }
 
-    setTimeout(() => {
-      this.checkAccessPage(this.pageId);
-    }, 1000);
+    this.observManager.subscribe(REFRESH_DATA, (result: any) => {
+      if (result) {
+        this.resPost.posts.unshift(result);
+      }
+    });
   }
 
   private stopLoading(): void {
@@ -585,19 +596,23 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   }
 
   public checkAccessPage(pageId: string) {
-    this.pageFacade.getAccess(pageId).then((res: any) => {
-      this.pageId = res.data.id;
-      for (let dataPage of res.data) {
-        if (dataPage.level === 'OWNER') {
-          this.isNotAccess = true;
+    if (pageId) {
+      this.pageFacade.getAccess(pageId).then((res) => {
+        if (res) {
+          this.pageId = res.data.id;
+          for (let dataPage of res.data) {
+            if (dataPage.level === 'OWNER') {
+              this.isNotAccess = true;
+            }
+          }
         }
-      }
 
-    }).catch((err: any) => {
-      if (err.error.message === 'Unable to get User Page Access List') {
-        this.isNotAccess = false;
-      }
-    })
+      }).catch((err: any) => {
+        if (err.error.message === 'Unable to get User Page Access List') {
+          this.isNotAccess = false;
+        }
+      })
+    }
   }
 
   filesDropped(files: FileHandle[]): void {
@@ -847,58 +862,60 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   }
 
   public showProfilePage(url): void {
-    this.pageFacade.getProfilePage(url).then((res) => {
-      this.checkAccessPage(res.data.id);
-      if (res.pageUsername !== null && res.pageUsername !== undefined) {
-        this.url = res.pageUsername
-      }
-      if (res.data) {
-        this.position = res.data.coverPosition;
-        this.isLoading = true;
-        if (res.data && res.data.imageURL && res.data.imageURL !== '') {
-          this.getDataIcon(res.data.imageURL, "image")
+    this.pageFacade.getProfilePage(url).then(async (res) => {
+      if (res) {
+        await this.checkAccessPage(res.data.id);
+        if (res.pageUsername !== null && res.pageUsername !== undefined) {
+          this.url = res.pageUsername
         }
-        if (res.data && res.data.coverURL && res.data.coverURL !== '') {
-          this.getDataIcon(res.data.coverURL, "cover")
-        }
-        if (res.data && res.data.pageObjectives && res.data.pageObjectives.length > 0) {
-          let index = 0;
-          for (let result of res.data.pageObjectives) {
-            if (result.iconURL !== '') {
-              this.getDataIcon(result.iconURL, "icon", index)
-              index++
+        if (res.data) {
+          this.position = res.data.coverPosition;
+          this.isLoading = true;
+          if (res.data && res.data.imageURL && res.data.imageURL !== '') {
+            this.getDataIcon(res.data.imageURL, "image")
+          }
+          if (res.data && res.data.coverURL && res.data.coverURL !== '') {
+            this.getDataIcon(res.data.coverURL, "cover")
+          }
+          if (res.data && res.data.pageObjectives && res.data.pageObjectives.length > 0) {
+            let index = 0;
+            for (let result of res.data.pageObjectives) {
+              if (result.iconURL !== '') {
+                this.getDataIcon(result.iconURL, "icon", index)
+                index++
+              }
             }
           }
-        }
-        this.resDataPage = res.data;
-        if (this.resDataPage && this.resDataPage.name) {
-          this.name = this.resDataPage.name;
-        } else if (this.resDataPage && this.resDataPage.pageUsername) {
-          this.name = this.resDataPage.pageUsername
-        } else if (this.resDataPage.displayName) {
-          this.name = this.resDataPage.displayName
-        }
-        this.seoService.updateTitle(this.resDataPage.name);
-        if (this.router.url.split('/')[3] !== 'post') {
-          this.seoService.setMetaInfo(this.router.url, this.resDataPage.name, this.resDataPage.name, this.resDataPage.imageURL, this.resDataPage.name);
-        }
-        this.searchAboutPage();
+          this.resDataPage = res.data;
+          if (this.resDataPage && this.resDataPage.name) {
+            this.name = this.resDataPage.name;
+          } else if (this.resDataPage && this.resDataPage.pageUsername) {
+            this.name = this.resDataPage.pageUsername
+          } else if (this.resDataPage.displayName) {
+            this.name = this.resDataPage.displayName
+          }
+          this.seoService.updateTitle(this.resDataPage.name);
+          if (this.router.url.split('/')[3] !== 'post') {
+            this.seoService.setMetaInfo(this.router.url, this.resDataPage.name, this.resDataPage.name, this.resDataPage.imageURL, this.resDataPage.name);
+          }
+          this.searchAboutPage();
 
-        setTimeout(() => {
-          this.isLoading = false;
-          this.showLoading = false;
-        }, 1000);
-      }
-      if (this.boxPost !== undefined) {
-        this.boxPost.clearDataAll();
-      }
-      if (res.data && res.data.needs && res.data.needs.length > 0) {
-        for (let n of res.data.needs) {
-          if (n.standardItemId) {
-            this.needsFacade.getNeeds(n.standardItemId).then((needs) => {
-              n.imageURL = needs.imageURL
-            }).catch((err: any) => {
-            });
+          setTimeout(() => {
+            this.isLoading = false;
+            this.showLoading = false;
+          }, 1000);
+        }
+        if (this.boxPost !== undefined) {
+          this.boxPost.clearDataAll();
+        }
+        if (res.data && res.data.needs && res.data.needs.length > 0) {
+          for (let n of res.data.needs) {
+            if (n.standardItemId) {
+              this.needsFacade.getNeeds(n.standardItemId).then((needs) => {
+                n.imageURL = needs.imageURL
+              }).catch((err: any) => {
+              });
+            }
           }
         }
       }

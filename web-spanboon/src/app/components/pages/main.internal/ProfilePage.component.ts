@@ -31,6 +31,7 @@ const PAGE_NAME: string = 'profile';
 const URL_PATH: string = '/profile/';
 const REDIRECT_PATH: string = '/home';
 const IMAGE_SUBJECT: string = 'authen.image';
+const REFRESH_DATA: string = 'refresh_page';
 
 declare var $: any;
 @Component({
@@ -212,6 +213,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
   public ngOnDestroy() {
     this.mySubscription.unsubscribe();
     super.ngOnDestroy();
+    this.observManager.complete(REFRESH_DATA);
   }
 
   public ngOnInit(): void {
@@ -226,6 +228,12 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     // this.searchPostById('6051c688fb3585b175ab4765')
     $(window).resize(() => {
       this.setTab();
+    });
+
+    this.observManager.subscribe(REFRESH_DATA, (result: any) => {
+      if (result) {
+        this.resPost.posts.unshift(result);
+      }
     });
   }
 

@@ -128,7 +128,7 @@ export class ManagePage extends AbstractPage implements OnInit {
   }
 
   public ngOnInit(): void {
-    // this.isLogin();
+    this.isLogin();
     this.searchAllPage();
     this.fbLibrary();
   }
@@ -288,6 +288,7 @@ export class ManagePage extends AbstractPage implements OnInit {
     facebook.facebookPageId = access.id;
     facebook.pageAccessToken = access.access_token;
     facebook.facebookPageName = access.name;
+    facebook.facebookCategory = access.category;
     let mode = "FACEBOOK";
 
     this.authenManager

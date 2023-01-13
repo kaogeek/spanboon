@@ -191,14 +191,16 @@
                             <span>{{itemPost && itemPost.createdDate | dateFormat}}</span>
                         </div>
                     </a>
+
                     <ng-container *ngIf="isUserPage">
                         <a class="post-name" target="_blank"
-                            (click)="onClickEngagement($event, itemPost._id, 'profile')"
+                            (click)="onClickEngagement($event, (itemPost._id || itemPost.id), 'profile')"
                             href="{{itemPost && itemPost.ownerUser && itemPost.ownerUser.uniqueId !== undefined && itemPost.ownerUser.uniqueId !== null && itemPost.ownerUser.uniqueId !== '' ? '/profile/'+itemPost.ownerUser.uniqueId : '/profile/'+itemPost.ownerUser._id }}">
                             <span>เผยแพร่โดย :
                                 {{itemPost.ownerUser.displayName?itemPost.ownerUser.displayName:itemPost.ownerUser.name?itemPost.ownerUser.name:itemPost.page.name}}</span>
                         </a>
                     </ng-container>
+
                     <!-- <ng-container *ngIf="isUserPage; else UserPages">
                         {{2}}
                         <span *ngIf="itemPost.ownerUser">{{itemPost.ownerUser.displayName || itemPost.ownerUser.name}}

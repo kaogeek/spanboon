@@ -626,7 +626,7 @@
                                 </ng-template>
                             </div>
                         </div>
-                        <ng-container *ngIf="resDataPage && resDataPage.needs && resDataPage.needs.length > 0;">
+                        <!-- <ng-container *ngIf="resDataPage && resDataPage.needs && resDataPage.needs.length > 0;">
                             <ng-container>
                                 <card-item [isDevelop]="true" [itemData]="resDataPage.needs"
                                     [pageName]="resDataPage.name" [label]="'ร่วม'+PLATFORM_FULFILL_TEXT"
@@ -634,7 +634,7 @@
                                     [isButton]="true" [isShowWidthButton]="'899'">
                                 </card-item>
                             </ng-container>
-                        </ng-container>
+                        </ng-container> -->
                     </div>
                     <div *ngIf="showLoading" class="wrapper-profile-fan-page">
                         <Preload-card *ngFor="let item of [0 , 1]" [isShowCard1]="true" [isShowCard2]="false">

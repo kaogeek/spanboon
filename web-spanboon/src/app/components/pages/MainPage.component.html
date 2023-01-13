@@ -19,7 +19,7 @@
     <ng-container *ngIf="hidebar">
         <header-top *ngIf="hidebar" class="nav-header-top" [menutopprofile]="isprofile"></header-top>
         <div class="icon-post-bottom" *ngIf="isPost && hidebar" matRipple [matRippleCentered]="'centered'"
-            [matRippleColor]="'#c6263420'" (click)="dialogPost()">
+            [matRippleColor]="'#c6263420'" (click)="isLock ? null : dialogPost()">
             <svg class="button-post" xmlns="http://www.w3.org/2000/svg" width="39.429" height="31.264"
                 viewBox="0 0 39.429 31.264">
                 <g id="Group_1210" data-name="Group 1210" transform="translate(-4642 -13042.372)">

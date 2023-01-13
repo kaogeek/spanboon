@@ -227,25 +227,26 @@ export class DialogPost extends AbstractPage {
       }
     } else {
       if (data.title) {
-        let pageId = this.data.pageId;
         this.isPostLoading = true;
-        this.pageFacade.createPost(pageId, data).then((res) => {
-          let alertMessages: string;
-          if (res.status === 1) {
-            if (res.message === 'Create PagePost Success') {
-              if (data.isDraft || data.settingsPost) {
-                if (data.isDraft) {
-                  alertMessages = 'สร้างโพสต์ฉบับร่างสำเร็จ'
-                } else {
-                  alertMessages = 'โพสต์ของคุณจะแสดงเมื่อถึงเวลาที่คุณตั้งไว้'
+        this.pageFacade.createPost(data.id, data).then((res) => {
+          if (res) {
+            let alertMessages: string;
+            if (res.status === 1) {
+              if (res.message === 'Create PagePost Success') {
+                if (data.isDraft || data.settingsPost) {
+                  if (data.isDraft) {
+                    alertMessages = 'สร้างโพสต์ฉบับร่างสำเร็จ'
+                  } else {
+                    alertMessages = 'โพสต์ของคุณจะแสดงเมื่อถึงเวลาที่คุณตั้งไว้'
+                  }
+                  this.showAlertDialogWarming(alertMessages, "none");
                 }
-                this.showAlertDialogWarming(alertMessages, "none");
+                this.dialogRef.close(res.data);
+                this.postFacade.nextMessageTopic('');
+                this.postFacade.nextMessage('');
+                this.boxPost.clearDataAll();
+                this.observManager.publish(REFRESH_DATA, res.data.posts);
               }
-              this.dialogRef.close(res.data);
-              this.postFacade.nextMessageTopic('');
-              this.postFacade.nextMessage('');
-              this.boxPost.clearDataAll();
-              this.observManager.publish(REFRESH_DATA, data.type);
             }
           }
         }).catch((err: any) => {
