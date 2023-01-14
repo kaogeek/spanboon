@@ -16,12 +16,14 @@ import { FulfillmentCaseService } from '../services/FulfillmentCaseService';
 import { PostsService } from '../services/PostsService';
 import { POST_TYPE } from '../../constants/PostType';
 import { S3Service } from '../services/S3Service';
+import { HashTagService } from './HashTagService';
+import { HashTag } from '../models/HashTag';
 
 @Service()
 export class PageObjectiveService {
 
     constructor(@OrmRepository() private pageObjectiveRepository: PageObjectiveRepository,
-        private fulfillmentCaseService: FulfillmentCaseService, private postsService: PostsService, private s3Service: S3Service) { }
+        private fulfillmentCaseService: FulfillmentCaseService, private postsService: PostsService, private s3Service: S3Service, private hashTagService: HashTagService) { }
 
     // find PageObjective
     public find(findCondition?: any, options?: any): Promise<any[]> {
@@ -84,7 +86,23 @@ export class PageObjectiveService {
 
     // create PageObjective
     public async create(objective: PageObjective): Promise<PageObjective> {
-        return await this.pageObjectiveRepository.save(objective);
+
+        const data: PageObjective = await this.pageObjectiveRepository.save(objective);
+
+        if (!!data?.pageId) {
+            const objectiveId = new Object(data.id);
+            const pageId = new Object(data.pageId);
+            const hashTagId = new Object(data.hashTag);
+
+            const hashTag: HashTag = await this.hashTagService.findOne({ _id: hashTagId });
+
+            const postsQuery = { postsHashTags: { $in: [hashTagId] }, pageId, $or: [{ objective: { $exists: false } }, { objective: null }] };
+            const updateValue = { $set: { objective: objectiveId, objectiveTag: hashTag.name } };
+
+            await this.postsService.updateMany(postsQuery, updateValue);
+        }
+
+        return data;
     }
 
     // update PageObjective

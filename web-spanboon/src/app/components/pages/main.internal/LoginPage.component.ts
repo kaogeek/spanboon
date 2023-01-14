@@ -130,6 +130,7 @@ export class LoginPage extends AbstractPage implements OnInit {
 
   public ngOnInit() {
     this.checkLoginAndRedirection();
+    this.fbLibrary();
 
     let doRunAccessToken = false;
     const fullURL = window.location.href;
@@ -216,9 +217,9 @@ export class LoginPage extends AbstractPage implements OnInit {
     let twitter = {
       twitterOauthToken: token,
       twitterOauthTokenSecret: token_secret,
-      twitterUserId: userId,
+      twitterUserId: userId
     }
-    this.checkMergeUserFacade.loginWithTwitter(twitter, mode).then((data: any) => {
+    this.authenManager.loginWithTwitter(twitter, mode).then((data: any) => {
       // login success redirect to main page
       this.observManager.publish('authen.check', null);
       if (this.redirection) {
