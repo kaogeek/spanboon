@@ -22,12 +22,21 @@ import { ASSET_PATH } from '../../constants/AssetScope';
 import { facebook_setup } from '../../env';
 import { SocialPostLogsService } from '../services/SocialPostLogsService';
 import { ObjectID } from 'mongodb';
+import { HashTag } from '../models/HashTag';
+import { HashTagService } from '../services/HashTagService';
+import { PageObjectiveService } from '../services/PageObjectiveService';
+import { EmergencyEventService } from '../services/EmergencyEventService';
+import { FacebookService } from '../services/FacebookService';
 @JsonController('/fb_webhook')
 export class FacebookWebhookController {
     constructor(
         private pageService: PageService, private postsService: PostsService, private socialPostService: SocialPostService,
         private assetService: AssetService, private postsGalleryService: PostsGalleryService,
-        private socialPostLogsService: SocialPostLogsService
+        private socialPostLogsService: SocialPostLogsService,
+        private hashTagService: HashTagService,
+        private pageObjectiveService: PageObjectiveService,
+        private emergencyEventService: EmergencyEventService,
+        private facebookService: FacebookService
     ) { }
 
     /**
@@ -48,11 +57,14 @@ export class FacebookWebhookController {
     @Get('/page_feeds')
     public async verifyPageFeedWebhook(@QueryParams() params: any, @Body({ validate: true }) body: any, @Res() res: any): Promise<any> {
         const VERIFY_TOKEN = facebook_setup.FACEBOOK_VERIFY_TOKEN;
+        const APP_ID = facebook_setup.FACEBOOK_APP_ID;
+        const APP_SECRET = facebook_setup.FACEBOOK_APP_SECRET;
         // Parse the query params
         const mode = params['hub.mode'];
         const token = params['hub.verify_token'];
         const challenge = params['hub.challenge'];
-        if (mode && token) {
+        const subscriptionWebhooks = await this.facebookService.subScriptionWbApp(APP_ID,VERIFY_TOKEN,APP_SECRET);
+        if (mode && token && subscriptionWebhooks.success === true) {
             // Checks the mode and token sent is correct
             if (mode === 'subscribe' && token === VERIFY_TOKEN) {
                 // Responds with the challenge token from the request
@@ -70,6 +82,9 @@ export class FacebookWebhookController {
         const mode = params['hub.mode'];
         const token = params['hub.verify_token'];
         const challenge = params['hub.challenge'];
+        const postMasterHashTagList = [];
+        const masterHashTagMap = {};
+        const today = moment().toDate();
         if (mode && token) {
             // Checks the mode and token sent is correct
             if (mode === 'subscribe' && token === VERIFY_TOKEN) {
@@ -81,16 +96,30 @@ export class FacebookWebhookController {
             }
         }
         const pageSubscribe = await this.socialPostLogsService.findOne({ providerUserId: String(body.entry[0].changes[0].value.from.id) });
-        if(pageSubscribe === undefined){
+        if (pageSubscribe === undefined) {
             return res.status(400);
         }
         let sliceArray = undefined;
         let text1 = undefined;
         let text2 = undefined;
         let realText = undefined;
+        let detailText = undefined;
+        let TrimText = undefined;
+        const hashTagList1 = [];
+        const hashTagList2 = [];
+        const msgSplit = body.entry[0].changes[0].value.message.split('#');
+        if (msgSplit) {
+            for (let i = 1; i < msgSplit.length; i++) {
+                hashTagList1.push(msgSplit[i].split('\n')[0]);
+            }
+
+            for (let i = 0; i < hashTagList1.length; i++) {
+                hashTagList2.push(hashTagList1[i].split(' ')[0]);
+            }
+        }
         const match = /r\n|\n/.exec(body.entry[0].changes[0].value.message);
-        console.log('body.entry[0].changes[0].value.message',body.entry[0].changes[0].value);
-        if(body.entry[0].changes[0].value.message === undefined){
+        console.log('body.entry[0].changes[0].value.message', body.entry[0].changes[0].value);
+        if (body.entry[0].changes[0].value.message === undefined) {
             return res.status(400);
         }
         if (match) {
@@ -98,27 +127,58 @@ export class FacebookWebhookController {
             text1 = sliceArray.indexOf('[');
             text2 = sliceArray.indexOf(']');
             if (text1 !== -1 && text2 !== -1) {
-                realText = body.entry[0].changes[0].value.message.substring(text1+1, text2 );
+                // []
+                realText = body.entry[0].changes[0].value.message.substring(text1 + 1, text2);
+                detailText = body.entry[0].changes[0].value.message.substring(text2 + 1, body.entry[0].changes[0].value.message.length - 1);
+                TrimText = detailText.trim();
             } else if (text1 !== -1 && text2 === -1) {
-                realText = body.entry[0].changes[0].value.message.slice(0, 50) + '......';
-            } else {
-                realText = body.entry[0].changes[0].value.message.substring(0, 50) + '.....';
+                // [
+                const matchBackSlashT1 = /r\n|\n/.exec(body.entry[0].changes[0].value.message);
+                realText = body.entry[0].changes[0].value.message.slice(text1 + 1, matchBackSlashT1.index);
+                detailText = body.entry[0].changes[0].value.message.substring(matchBackSlashT1.index, body.entry[0].changes[0].value.message.length - 1);
+                TrimText = detailText.trim();
+            } else if (text1 === -1 && text2 !== -1) {
+                // ]
+                const matchBackSlashT2 = /r\n|\n/.exec(body.entry[0].changes[0].value.message);
+                realText = body.entry[0].changes[0].value.message.slice(0, text2);
+                detailText = body.entry[0].changes[0].value.message.substring(matchBackSlashT2.index, body.entry[0].changes[0].value.message.length - 1);
+                TrimText = detailText.trim();
+            } else if (text1 === -1 && text2 === -1) {
+                const textMessage = body.entry[0].changes[0].value.message.length;
+                if (textMessage >= 50) {
+                    realText = body.entry[0].changes[0].value.message.substring(0, 50) + '.....';
+                    detailText = body.entry[0].changes[0].value.message;
+                    TrimText = detailText.trim();
+                } else {
+                    realText = body.entry[0].changes[0].value.message.substring(0, 30);
+                    detailText = body.entry[0].changes[0].value.message;
+                    TrimText = detailText.trim();
+                }
             }
         } else {
-            realText = body.entry[0].changes[0].value.message.substring(0, 50) + '.....';
+            const textMessage = body.entry[0].changes[0].value.message.length;
+            if (textMessage >= 50) {
+                realText = body.entry[0].changes[0].value.message.substring(0, 50) + '.....';
+                detailText = body.entry[0].changes[0].value.message;
+                TrimText = detailText.trim();
+            } else {
+                realText = body.entry[0].changes[0].value.message.substring(0, 30);
+                detailText = body.entry[0].changes[0].value.message;
+                TrimText = detailText.trim();
+            }
         }
-        const pageIdFB = await this.pageService.findOne({ _id: pageSubscribe.pageId }); 
-        if(pageIdFB.id === undefined){
+        const pageIdFB = await this.pageService.findOne({ _id: pageSubscribe.pageId });
+        if (pageIdFB === undefined) {
             return res.status(400);
-        }       
+        }
         if (body !== undefined && pageIdFB !== undefined && pageIdFB !== null && pageSubscribe.enable === true) {
-            if (body.entry[0].changes[0].value.verb === 'add' && body.entry[0].changes[0].value.link === undefined && body.entry[0].changes[0].value.photos === undefined && body.entry[0].changes[0].value.item !== 'share' && body.entry[0].changes[0].value.item === 'status' ) {
-                const checkPost = await this.socialPostService.find({ socialId: body.entry[0].changes[0].value.post_id});
+            if (body.entry[0].changes[0].value.verb === 'add' && body.entry[0].changes[0].value.link === undefined && body.entry[0].changes[0].value.photos === undefined && body.entry[0].changes[0].value.item !== 'share' && body.entry[0].changes[0].value.item === 'status') {
+                const checkPost = await this.socialPostService.find({ socialId: body.entry[0].changes[0].value.post_id });
                 const checkFeed = checkPost.shift();
                 if (checkFeed === undefined) {
                     const postPage: Posts = new Posts();
                     postPage.title = realText;
-                    postPage.detail = body.entry[0].changes[0].value.message;
+                    postPage.detail = TrimText;
                     postPage.isDraft = false;
                     postPage.hidden = false;
                     postPage.type = POST_TYPE.GENERAL;
@@ -149,18 +209,105 @@ export class FacebookWebhookController {
                     newSocialPost.socialId = body.entry[0].changes[0].value.post_id;
                     newSocialPost.socialType = PROVIDER.FACEBOOK;
                     await this.socialPostService.create(newSocialPost);
+                    if (hashTagList2 !== null && hashTagList2 !== undefined && hashTagList2.length > 0) {
+                        const masterHashTagList: HashTag[] = await this.findMasterHashTag(hashTagList2);
+                        for (const hashTag of masterHashTagList) {
+                            const id = hashTag.id;
+                            const name = hashTag.name;
+                            postMasterHashTagList.push(new ObjectID(id));
+                            masterHashTagMap[name] = hashTag;
+                        }
+                        for (const hashTag of hashTagList2) {
+                            if (masterHashTagMap[hashTag] === undefined) {
+                                const newHashTag: HashTag = new HashTag();
+                                newHashTag.name = hashTag;
+                                newHashTag.lastActiveDate = today;
+                                newHashTag.count = 0;
+                                newHashTag.iconURL = '';
+
+                                const newMasterHashTag: HashTag = await this.hashTagService.create(newHashTag);
+
+                                if (newMasterHashTag !== null && newMasterHashTag !== undefined) {
+                                    postMasterHashTagList.push(new ObjectID(newMasterHashTag.id));
+
+                                    masterHashTagMap[hashTag] = newMasterHashTag;
+                                }
+                            }
+                        }
+
+                    }
+                    // db.PageObjective.aggregate([{"$match":{"pageId":ObjectId('63bebb5e4677b2062a66b606')}},{"$limit":1},{"$sort":{"createdDate":-1}}])
+                    postPage.postsHashTags = postMasterHashTagList;
+                    for(const pageObjective of postMasterHashTagList){
+                        const pageFindtag = await this.pageObjectiveService.aggregate(
+                            [
+                                { '$match': { 'pageId': pageSubscribe.pageId,'hashTag':pageObjective } },
+                                { '$sort': { 'createdDate': -1 } },
+                                { '$limit': 1 }
+                        ]);
+                        const foundPageTag = pageFindtag.shift();
+                        if (foundPageTag) {
+                            const query = { _id: createPostPageData.id };
+                            const newValues = {
+                                $set:{objective: foundPageTag._id,objectiveTag: foundPageTag.title
+                                }
+                            };
+                            const updateTag = await this.postsService.update(query, newValues);
+                            if(updateTag){
+                                break;
+                            }
+                        }
+                    }
+                    const queryTag = { _id: createPostPageData.id };
+                    const newValuesTag = { $set: { postsHashTags: postPage.postsHashTags} };
+                    const EmergencyFound = [];
+                    for(const hashTags of postMasterHashTagList){
+                        const findMostHashTag = await this.hashTagService.aggregate(
+                        [
+                            {'$match':
+                                {'_id':ObjectID(hashTags)}
+                            },
+                            {'$sort':
+                            {
+                                'createdDate':-1
+                            }},
+                            {
+                            '$limit':1
+                            },{
+                                '$lookup':{
+                                    from:'EmergencyEvent',
+                                    localField:'_id',
+                                    foreignField:'hashTag',
+                                    as:'EmergencyHaghTag'
+                                }
+                            }]);
+                        for(const EmergencyHash of findMostHashTag){
+                            EmergencyFound.push(EmergencyHash);
+                        }
+                    }
+                    for(const findEmergencyPost of EmergencyFound){
+                        for(const realEmergencyPost of findEmergencyPost.EmergencyHaghTag){
+                            const queryEmergency= { _id: createPostPageData.id };
+                            const newValuesTagEmergency = {$set:{emergencyEvent:realEmergencyPost._id,emergencyEventTag:realEmergencyPost.title}};
+                            const updateEmeg = await this.postsService.update(queryEmergency, newValuesTagEmergency);
+                            if(updateEmeg){
+                                break;
+                            }
+                        }
+                    }
+                    await this.postsService.update(queryTag, newValuesTag);
                     return res.status(200).send('SuccessFul Webhooks');
-                }else{
+                } else {
                     return res.status(400);
                 }
             } else if (body.entry[0].changes[0].value.verb === 'add' && body.entry[0].changes[0].value.link !== undefined && body.entry[0].changes[0].value.photos === undefined && body.entry[0].changes[0].value.item !== 'share' && body.entry[0].changes[0].value.item === 'photo') {
                 const assetPic = await this.assetService.createAssetFromURL(body.entry[0].changes[0].value.link, pageIdFB.ownerUser);
-                const checkPost = await this.socialPostService.find({ socialId: body.entry[0].changes[0].value.post_id});
+                const checkPost = await this.socialPostService.find({ socialId: body.entry[0].changes[0].value.post_id });
                 const checkFeed = checkPost.shift();
                 if (checkFeed === undefined && assetPic !== undefined) {
                     const postPage: Posts = new Posts();
                     postPage.title = realText;
-                    postPage.detail = body.entry[0].changes[0].value.message;
+                    postPage.detail = TrimText;
                     postPage.isDraft = false;
                     postPage.hidden = false;
                     postPage.type = POST_TYPE.GENERAL;
@@ -191,6 +338,113 @@ export class FacebookWebhookController {
                     newSocialPost.socialId = body.entry[0].changes[0].value.post_id;
                     newSocialPost.socialType = PROVIDER.FACEBOOK;
                     await this.socialPostService.create(newSocialPost);
+                    if (hashTagList2 !== null && hashTagList2 !== undefined && hashTagList2.length > 0) {
+                        const masterHashTagList: HashTag[] = await this.findMasterHashTag(hashTagList2);
+                        const textLength = masterHashTagList.length;
+                        for (const hashTag of masterHashTagList) {
+                            const id = hashTag.id;
+                            const name = hashTag.name;
+                            postMasterHashTagList.push(new ObjectID(id));
+                            masterHashTagMap[name] = hashTag;
+                        }
+
+                        const findPageObjective = await this.pageObjectiveService.findOne({ pageId: pageSubscribe.pageId, hashTag: masterHashTagList[textLength - 1].id });
+                        if (findPageObjective) {
+                            const queryPic = { _id: createPostPageData.id };
+                            const newValuesPic = {
+                                $set:
+                                {
+                                    objective: findPageObjective.id,
+                                    objectiveTag: findPageObjective.title
+                                }
+                            };
+                            await this.postsService.update(queryPic, newValuesPic);
+                        }
+                        const findEmergencyEvent = await this.emergencyEventService.findOne({ hashTag: masterHashTagList[textLength - 1].id });
+                        if (findEmergencyEvent) {
+                            const queryEmergency = { _id: createPostPageData.id };
+                            const newValuesEmergecy = { $set: { emergencyEvent: findEmergencyEvent.id, emergencyEventTag: findEmergencyEvent.title } };
+                            await this.postsService.update(queryEmergency, newValuesEmergecy);
+                        }
+
+                        for (const hashTag of hashTagList2) {
+                            if (masterHashTagMap[hashTag] === undefined) {
+                                const newHashTag: HashTag = new HashTag();
+                                newHashTag.name = hashTag;
+                                newHashTag.lastActiveDate = today;
+                                newHashTag.count = 0;
+                                newHashTag.iconURL = '';
+
+                                const newMasterHashTag: HashTag = await this.hashTagService.create(newHashTag);
+
+                                if (newMasterHashTag !== null && newMasterHashTag !== undefined) {
+                                    postMasterHashTagList.push(new ObjectID(newMasterHashTag.id));
+
+                                    masterHashTagMap[hashTag] = newMasterHashTag;
+                                }
+                            }
+                        }
+                    }
+                    // db.PageObjective.aggregate([{"$match":{"pageId":ObjectId('63bebb5e4677b2062a66b606')}},{"$limit":1},{"$sort":{"createdDate":-1}}])
+                    postPage.postsHashTags = postMasterHashTagList;
+                    for(const pageObjective of postMasterHashTagList){
+                        const pageFindtag = await this.pageObjectiveService.aggregate(
+                            [
+                                { '$match': { 'pageId': pageSubscribe.pageId,'hashTag':pageObjective } },
+                                { '$sort': { 'createdDate': -1 } },
+                                { '$limit': 1 }
+                        ]);
+                        const foundPageTag = pageFindtag.shift();
+                        if (foundPageTag) {
+                            const query = { _id: createPostPageData.id };
+                            const newValues = {
+                                $set:{objective: foundPageTag._id,objectiveTag: foundPageTag.title
+                                }
+                            };
+                            const updateTag = await this.postsService.update(query, newValues);
+                            if(updateTag){
+                                break;
+                            }
+                        }
+                    }
+                    const queryTag = { _id: createPostPageData.id };
+                    const newValuesTag = { $set: { postsHashTags: postPage.postsHashTags} };
+                    const EmergencyFound = [];
+                    for(const hashTags of postMasterHashTagList){
+                        const findMostHashTag = await this.hashTagService.aggregate(
+                        [
+                            {'$match':
+                                {'_id':ObjectID(hashTags)}
+                            },
+                            {'$sort':
+                            {
+                                'createdDate':-1
+                            }},
+                            {
+                            '$limit':1
+                            },{
+                                '$lookup':{
+                                    from:'EmergencyEvent',
+                                    localField:'_id',
+                                    foreignField:'hashTag',
+                                    as:'EmergencyHaghTag'
+                                }
+                            }]);
+                        for(const EmergencyHash of findMostHashTag){
+                            EmergencyFound.push(EmergencyHash);
+                        }
+                    }
+                    for(const findEmergencyPost of EmergencyFound){
+                        for(const realEmergencyPost of findEmergencyPost.EmergencyHaghTag){
+                            const queryEmergency= { _id: createPostPageData.id };
+                            const newValuesTagEmergency = {$set:{emergencyEvent:realEmergencyPost._id,emergencyEventTag:realEmergencyPost.title}};
+                            const updateEmeg = await this.postsService.update(queryEmergency, newValuesTagEmergency);
+                            if(updateEmeg){
+                                break;
+                            }
+                        }
+                    }
+                    await this.postsService.update(queryTag, newValuesTag);
                     if (createPostPageData) {
                         // Asset 
                         const photoGallery = [];
@@ -214,7 +468,7 @@ export class FacebookWebhookController {
                             return res.status(200).send('SuccessFul Webhooks');
                         }
                     }
-                }else{
+                } else {
                     return res.status(400);
                 }
             } else if (body.entry[0].changes[0].value.verb === 'add' && body.entry[0].changes[0].value.link === undefined && body.entry[0].changes[0].value.photos !== undefined && body.entry[0].changes[0].value.item !== 'share') {
@@ -226,12 +480,12 @@ export class FacebookWebhookController {
                     const multiPic = await this.assetService.createAssetFromURL(body.entry[0].changes[0].value.photos[i], pageIdFB.ownerUser);
                     multiPics.push(multiPic);
                 }
-                const checkPost = await this.socialPostService.find({ socialId: body.entry[0].changes[0].value.post_id});
+                const checkPost = await this.socialPostService.find({ socialId: body.entry[0].changes[0].value.post_id });
                 const checkFeed = checkPost.shift();
                 if (checkFeed === undefined) {
                     const postPage: Posts = new Posts();
                     postPage.title = realText;
-                    postPage.detail = body.entry[0].changes[0].value.message;
+                    postPage.detail = TrimText;
                     postPage.isDraft = false;
                     postPage.hidden = false;
                     postPage.type = POST_TYPE.GENERAL;
@@ -262,7 +516,92 @@ export class FacebookWebhookController {
                     newSocialPost.socialId = body.entry[0].changes[0].value.post_id;
                     newSocialPost.socialType = PROVIDER.FACEBOOK;
                     await this.socialPostService.create(newSocialPost);
+                    if (hashTagList2 !== null && hashTagList2 !== undefined && hashTagList2.length > 0) {
+                        const masterHashTagList: HashTag[] = await this.findMasterHashTag(hashTagList2);
+                        for (const hashTag of masterHashTagList) {
+                            const id = hashTag.id;
+                            const name = hashTag.name;
+                            postMasterHashTagList.push(new ObjectID(id));
+                            masterHashTagMap[name] = hashTag;
+                        }
+                        for (const hashTag of hashTagList2) {
+                            if (masterHashTagMap[hashTag] === undefined) {
+                                const newHashTag: HashTag = new HashTag();
+                                newHashTag.name = hashTag;
+                                newHashTag.lastActiveDate = today;
+                                newHashTag.count = 0;
+                                newHashTag.iconURL = '';
 
+                                const newMasterHashTag: HashTag = await this.hashTagService.create(newHashTag);
+
+                                if (newMasterHashTag !== null && newMasterHashTag !== undefined) {
+                                    postMasterHashTagList.push(new ObjectID(newMasterHashTag.id));
+
+                                    masterHashTagMap[hashTag] = newMasterHashTag;
+                                }
+                            }
+                        }
+                    }
+                    // db.PageObjective.aggregate([{"$match":{"pageId":ObjectId('63bebb5e4677b2062a66b606')}},{"$limit":1},{"$sort":{"createdDate":-1}}])
+                    postPage.postsHashTags = postMasterHashTagList;
+                    for(const pageObjective of postMasterHashTagList){
+                        const pageFindtag = await this.pageObjectiveService.aggregate(
+                            [
+                                { '$match': { 'pageId': pageSubscribe.pageId,'hashTag':pageObjective } },
+                                { '$sort': { 'createdDate': -1 } },
+                                { '$limit': 1 }
+                        ]);
+                        const foundPageTag = pageFindtag.shift();
+                        if (foundPageTag) {
+                            const query = { _id: createPostPageData.id };
+                            const newValues = {
+                                $set:{objective: foundPageTag._id,objectiveTag: foundPageTag.title
+                                }
+                            };
+                            const updateTag = await this.postsService.update(query, newValues);
+                            if(updateTag){
+                                break;
+                            }
+                        }
+                    }
+                    const queryTag = { _id: createPostPageData.id };
+                    const newValuesTag = { $set: { postsHashTags: postPage.postsHashTags} };
+                    const EmergencyFound = [];
+                    for(const hashTags of postMasterHashTagList){
+                        const findMostHashTag = await this.hashTagService.aggregate(
+                        [
+                            {'$match':
+                                {'_id':ObjectID(hashTags)}
+                            },
+                            {'$sort':
+                            {
+                                'createdDate':-1
+                            }},
+                            {
+                            '$limit':1
+                            },{
+                                '$lookup':{
+                                    from:'EmergencyEvent',
+                                    localField:'_id',
+                                    foreignField:'hashTag',
+                                    as:'EmergencyHaghTag'
+                                }
+                            }]);
+                        for(const EmergencyHash of findMostHashTag){
+                            EmergencyFound.push(EmergencyHash);
+                        }
+                    }
+                    for(const findEmergencyPost of EmergencyFound){
+                        for(const realEmergencyPost of findEmergencyPost.EmergencyHaghTag){
+                            const queryEmergency= { _id: createPostPageData.id };
+                            const newValuesTagEmergency = {$set:{emergencyEvent:realEmergencyPost._id,emergencyEventTag:realEmergencyPost.title}};
+                            const updateEmeg = await this.postsService.update(queryEmergency, newValuesTagEmergency);
+                            if(updateEmeg){
+                                break;
+                            }
+                        }
+                    }
+                    await this.postsService.update(queryTag, newValuesTag);
                     for (let j = 0; j < multiPics.length; j++) {
                         const postsGallery = new PostsGallery();
                         postsGallery.post = createPostPageData.id;
@@ -276,9 +615,9 @@ export class FacebookWebhookController {
                         }
                     }
                     return res.status(200).send('SuccessFul Webhooks');
-                }else{
+                } else {
                     return res.status(400);
-                } 
+                }
             } else if (body.entry[0].changes[0].value.verb === 'edit') {
                 const socialPost = await this.socialPostService.findOne({ postBy: body.entry[0].changes[0].value.post_id });
                 if (socialPost) {
@@ -302,4 +641,9 @@ export class FacebookWebhookController {
             return res.status(400).send('this values is removes from webhooks');
         }
     }
+
+    private async findMasterHashTag(hashTagNameList: string[]): Promise<HashTag[]> {
+        return await this.hashTagService.find({ name: { $in: hashTagNameList } });
+    }
+
 }

@@ -1014,12 +1014,12 @@ export class MainPageController {
                         from: 'Page',
                         as: 'page',
                         let: {
-                            pageId: '$pageId'
+                            pageId: '$pageId', banned: '$banned'
                         },
                         pipeline: [
                             {
                                 $match: {
-                                    $expr: { $and: [{ $eq: ['$$pageId', '$_id'] }] }
+                                    $expr: { $and: [{ $eq: ['$$pageId', '$_id'] }, { $eq: ['$$banned', false] }] }
                                 }
                             }
                         ],

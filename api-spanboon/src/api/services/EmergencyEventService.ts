@@ -15,12 +15,16 @@ import { FulfillmentCaseService } from '../services/FulfillmentCaseService';
 import { PostsService } from '../services/PostsService';
 import { ObjectID } from 'mongodb';
 import { POST_TYPE } from '../../constants/PostType';
+import { HashTagService } from './HashTagService';
+import { HashTag } from '../models/HashTag';
 
 @Service()
 export class EmergencyEventService {
 
-    constructor(@OrmRepository() private emergencyEventRepository: EmergencyEventRepository, private fulfillmentCaseService: FulfillmentCaseService,
-        private postsService: PostsService) { }
+    constructor(@OrmRepository() private emergencyEventRepository: EmergencyEventRepository
+        , private fulfillmentCaseService: FulfillmentCaseService,
+        private postsService: PostsService,
+        private hashTagService: HashTagService) { }
 
     // find EmergencyEvent
     public find(findCondition?: any): Promise<EmergencyEvent[]> {
@@ -39,7 +43,21 @@ export class EmergencyEventService {
 
     // create EmergencyEvent
     public async create(emergencyEvent: EmergencyEvent): Promise<EmergencyEvent> {
-        return await this.emergencyEventRepository.save(emergencyEvent);
+        const data: EmergencyEvent = await this.emergencyEventRepository.save(emergencyEvent);
+
+        if (!!data?.hashTag) {
+            const emergencyEventId = new Object(data.id);
+            const hashTagId = new Object(data.hashTag);
+
+            const hashTag: HashTag = await this.hashTagService.findOne({ _id: hashTagId });
+
+            const postsQuery = { postsHashTags: { $in: [hashTagId] }, $or: [{ emergencyEvent: { $exists: false } }, { emergencyEvent: null }] };
+            const updateValue = { $set: { emergencyEvent: emergencyEventId, emergencyEventTag: hashTag.name } };
+
+            await this.postsService.updateMany(postsQuery, updateValue);
+        }
+
+        return data;
     }
 
     // update EmergencyEvent

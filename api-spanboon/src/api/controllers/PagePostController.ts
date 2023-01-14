@@ -300,7 +300,6 @@ export class PagePostController {
         const userObjId = new ObjectID(req.user.id);
         const clientId = req.headers['client-id'];
         const mode = req.headers.mode;
-        console.log('mode',mode);
         const ipAddress = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress).split(',')[0];
         const userIdList = [];
         const userTags = [];

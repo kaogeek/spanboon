@@ -962,7 +962,7 @@ export class GuestController {
                 const expirationDate = moment().add(userExrTime, 'days').toDate();
                 const facebookUserId = authenticaTionFB.providerUserId;
                 const query = { providerUserId: facebookUserId, providerName: PROVIDER.FACEBOOK };
-                const newValue = { $set: { providerUserId: fbUser.id, lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, storedCredentials: refreshToken.access_token, expirationDate } };
+                const newValue = { $set: { providerUserId: fbUser.id, lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, storedCredentials: loginParam.token,refreshToken:refreshToken.access_token, expirationDate } };
                 const updateAuth = await this.authenticationIdService.update(query, newValue);
                 if (updateAuth) {
                     const updatedAuth = await this.authenticationIdService.findOne({ where: query });
@@ -1935,19 +1935,20 @@ export class GuestController {
             const expiresAt = authenId.expirationDate;
             if (expiresAt !== undefined && expiresAt !== null && expiresAt.getTime() <= today.getTime()) {
                 const errorUserNameResponse: any = { status: 0, message: 'User token expired.' };
-                await this.deviceToken.delete({ userId: user });
+                await this.deviceToken.delete({ userId: authenId.user });
                 return response.status(400).send(errorUserNameResponse);
             }
         } else if (isMode !== undefined && isMode === 'GG') {
             const authenId = await this.authenticationIdService.findOne({ user: user.id, providerName: PROVIDER.GOOGLE });
             if (authenId === undefined) {
                 const errorUserNameResponse: any = { status: 0, message: 'User token invalid.' };
+                await this.deviceToken.delete({ userId: authenId.user });
                 return response.status(400).send(errorUserNameResponse);
             }
             const expiresAt = authenId.expirationDate;
             if (expiresAt !== undefined && expiresAt !== null && expiresAt.getTime() <= today.getTime()) {
                 const errorUserNameResponse: any = { status: 0, message: 'User token expired.' };
-                await this.deviceToken.delete({ userId: user });
+                await this.deviceToken.delete({ userId: authenId.user });
                 return response.status(400).send(errorUserNameResponse);
             }
         } else {

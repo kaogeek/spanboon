@@ -227,6 +227,18 @@ export class FacebookService {
             return err;
         }
     }
+
+    // Callback_URL 
+
+    public async subScriptionWbApp(appId:string,verifyToken:string,appSecret:string):Promise<any>{
+        try{
+            const { data } = await axios.post('https://graph.facebook.com/v14.0/'+appId+'/subscriptions?object=page&include_values=true&verify_token= ' + verifyToken + '&callback_url='+ process.env.FACEBOOK_CALLBACK_URL+'/&access_token= ' + appId + '|' + appSecret);
+            return data;
+        }catch(err){
+            console.log('Cannot subscribetion Webhooks ',err);
+            return err;
+        }
+    }
     public checkAccessToken(inputToken: string): Promise<any> {
         return new Promise((resolve, reject) => {
             this.getAppAccessToken().then((result: any) => {
