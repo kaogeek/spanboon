@@ -1,0 +1,26 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<div class="dialog-share-box">
+    <div class="newcon-alert-dialog">
+        <div class="edit-head-share">
+            <span class="edit-head-one-share">{{data.title}}</span>
+            <div class="dialog-image-title-right">
+                <i class="material-icons" (click)="onClose()">
+                    clear
+                </i>
+            </div>
+        </div>
+        <div class="edit-input-share">
+            <div class="box-edit-share">
+                <div class="share-data">{{data.text}}</div>
+                <spanboon-button [class]="'copy-clipboard'" [height]="'34pt'" [width]="'auto'" [text]="'คัดลอก'"
+                    [fontSize]="'16px'" [color]="'#F8F7F2'" (click)="clickCopy()"></spanboon-button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -10,17 +10,19 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { ObservableManager } from './ObservableManager.service';
-import { SearchFilter, User, Asset } from '../models/models';
-import { BaseLoginProvider, SocialUser } from 'angularx-social-login';
-import { resolve } from 'url';
+import { User } from '../models/models';
 import { PageSoialFB } from '../models/models';
 import { PageSocialTW } from '../models/models';
+import { ActivatedRoute } from '@angular/router';
+import { CookieUtil } from '../utils/CookieUtil';
+import { GenerateUUIDUtil } from '../utils/GenerateUUIDUtil';
 
 const PAGE_USER: string = 'pageUser';
 const TOKEN_KEY: string = 'token';
 const TOKEN_MODE_KEY: string = 'mode';
 const REGISTERED_SUBJECT: string = 'authen.registered';
 const TOKEN_FCM: string = 'tokenFCM';
+const UUID: string = 'UUID';
 
 // only page user can login
 @Injectable()
@@ -37,18 +39,20 @@ export class AuthenManager {
   protected twitterMode: boolean;
   protected googleMode: boolean;
   protected observManager: ObservableManager;
+  protected routeActivated: ActivatedRoute;
 
   deviceInfo = null;
   isDesktopDevice: boolean;
   isTablet: boolean;
   isMobile: boolean;
-  constructor(http: HttpClient, observManager: ObservableManager) {
+  constructor(http: HttpClient, observManager: ObservableManager, routeActivated: ActivatedRoute) {
     this.http = http;
     this.observManager = observManager;
     this.baseURL = environment.apiBaseURL;
     this.facebookMode = false;
     this.twitterMode = false;
     this.googleMode = false;
+    this.routeActivated = routeActivated;
     // create obsvr subject
     this.observManager.createSubject(REGISTERED_SUBJECT);
   }
@@ -296,47 +300,6 @@ export class AuthenManager {
     });
   }
 
-  public loginWithFacebookTest(token: string, mode?: string): Promise<any> {
-    return new Promise((resolve, reject) => {
-      let url: string = this.baseURL + '/login/test';
-      let body: any = {
-        "token": token
-      };
-
-      let headers = new HttpHeaders({
-        'Content-Type': 'application/json',
-      });
-
-      if (mode !== undefined || mode !== "") {
-        headers = headers.set('mode', mode);
-      }
-
-      let httpOptions = {
-        headers: headers
-      };
-
-      this.http.post(url, body, httpOptions).toPromise().then((response: any) => {
-        let result: any = {
-          token: response.data.token,
-          user: response.data.user
-        };
-
-        this.token = result.token;
-        this.user = result.user;
-        this.facebookMode = true;
-
-        localStorage.setItem(TOKEN_KEY, result.token);
-        localStorage.setItem(TOKEN_MODE_KEY, 'FB');
-        sessionStorage.setItem(TOKEN_KEY, result.token);
-        sessionStorage.setItem(TOKEN_MODE_KEY, 'FB');
-
-        resolve(result);
-      }).catch((error: any) => {
-        reject(error);
-      });
-    });
-  }
-
   public registerSocial(registSocial: User, mode?: string): Promise<any> {
     if (registSocial === undefined || registSocial === null) {
       throw 'RegisterSocial is required.';
@@ -434,32 +397,6 @@ export class AuthenManager {
     });
   }
 
-  public getDefaultOptions(): any {
-    let header = this.getDefaultHeader();
-
-    let httpOptions = {
-      headers: header
-    };
-
-    return httpOptions;
-  }
-
-  public getDefaultHeader(): HttpHeaders {
-    let headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Authorization': "Bearer " + this.getUserToken()
-    });
-    if (this.isFacebookMode()) {
-      headers = headers.set('mode', 'FB');
-    } else if (this.isTwitterMode()) {
-      headers = headers.set('mode', 'TW');
-    } else if (this.isGoogleMode()) {
-      headers = headers.set('mode', 'GG');
-    }
-    return headers;
-  }
-
-
   public logout(user: any): Promise<any> {
     return new Promise((resolve, reject) => {
 
@@ -501,6 +438,40 @@ export class AuthenManager {
     localStorage.removeItem(TOKEN_MODE_KEY);
     sessionStorage.removeItem(TOKEN_MODE_KEY);
     localStorage.removeItem(TOKEN_FCM);
+  }
+
+  public getDefaultOptions(): any {
+    let header = this.getDefaultHeader();
+    let userId = this.getCurrentUser();
+    header = header.append('userid', userId ? userId.id : '')
+
+    let httpOptions = {
+      headers: header
+    };
+
+    return httpOptions;
+  }
+
+  public getDefaultHeader(): HttpHeaders {
+    //getCookie UUID
+    let uuid: any = CookieUtil.getCookie(UUID);
+
+    if (uuid === null || uuid === undefined) {
+      uuid = GenerateUUIDUtil.getUUID();
+      CookieUtil.setCookie(UUID, uuid);
+    }
+
+    let headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': "Bearer " + this.getToken().token,
+      'Client-Id': uuid,
+    });
+
+    if (this.getToken().mode === "FB" || this.getToken().mode === "TW" || this.getToken().mode === "GG") {
+      headers = headers.set('mode', this.getToken().mode);
+    }
+
+    return headers;
   }
 
   public checkAccountStatus(token: string, mode?: string, options?: any): Promise<any> {
@@ -609,22 +580,58 @@ export class AuthenManager {
     return user;
   }
 
+  public getToken(): any {
+    let val: any = {};
+    let token = localStorage.getItem(TOKEN_KEY);
+    let mode = localStorage.getItem(TOKEN_MODE_KEY);
+    val["token"] = token;
+    val["mode"] = mode;
+
+    return val;
+  }
+
+
+  public getHidebar(): boolean {
+    let isCheck: boolean = false;
+    this.routeActivated.queryParams.subscribe(params => {
+      let hidebars = params['hidebar'];
+      if (hidebars === 'true') {
+        localStorage.setItem('hidebar', "true");
+        isCheck = false;
+      } else {
+        localStorage.removeItem('hidebar');
+        isCheck = true;
+      }
+    });
+
+    return isCheck;
+  }
+
+  public setHidebar() {
+    let hidebar = localStorage.getItem('hidebar');
+    if (hidebar === "true") {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   // return current login user admin status
   public isAdminUser(): boolean {
     return false;
   }
 
-  public getUserToken(): string {
-    return this.token;
-  }
+  // public getUserToken(): string {
+  //   return this.token;
+  // }
 
-  public isFacebookMode(): boolean {
-    return this.facebookMode;
-  }
-  public isTwitterMode(): boolean {
-    return this.twitterMode;
-  }
-  public isGoogleMode(): boolean {
-    return this.googleMode;
-  }
+  // public isFacebookMode(): boolean {
+  //   return this.facebookMode;
+  // }
+  // public isTwitterMode(): boolean {
+  //   return this.twitterMode;
+  // }
+  // public isGoogleMode(): boolean {
+  //   return this.googleMode;
+  // }
 }

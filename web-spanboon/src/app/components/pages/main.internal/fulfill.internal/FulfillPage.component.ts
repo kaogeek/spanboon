@@ -308,7 +308,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
     ngOnInit(): void {
         this.checkLoginAndRedirection();
 
-        if (this.authenManager.getUserToken() !== null && this.authenManager.getUserToken() !== undefined) {
+        if (!!this.authenManager.getToken()) {
             this.searchAccessPage();
             this.getImage();
             this.listFulfillmentCase(this.listByStatus, this.asPage, this.sortByType, this.groupByType, this.filterType, SEARCH_LIMIT, SEARCH_OFFSET).then((result) => {
@@ -1425,21 +1425,21 @@ export class FulfillPage extends AbstractPage implements OnInit {
         } else if (index === 2) {
             url += "objective=" + text
         }
-        // let dialog = this.dialog.open(DialogAlert, {
-        //     disableClose: true,
-        //     data: {
-        //         text: MESSAGE.TEXT_TITLE_DEVERLOP_SEAECH,
-        //         bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-        //         bottomText1: MESSAGE.TEXT_BUTTON_CANCEL,
-        //         bottomColorText2: "black",
-        //         // btDisplay1: "none"
-        //     }
-        // });
-        // dialog.afterClosed().subscribe((res) => {
-        //     if (res) {
-        //         this.router.navigateByUrl('/search?' + url);
-        //     }
-        // });
+        let dialog = this.dialog.open(DialogAlert, {
+            disableClose: true,
+            data: {
+                text: MESSAGE.TEXT_TITLE_DEVERLOP_SEAECH,
+                bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+                bottomText1: MESSAGE.TEXT_BUTTON_CANCEL,
+                bottomColorText2: "black",
+                // btDisplay1: "none"
+            }
+        });
+        dialog.afterClosed().subscribe((res) => {
+            if (res) {
+                this.router.navigateByUrl('/search?' + url);
+            }
+        });
     }
 
     onMouseEnter(event: MouseEvent, outerDiv: HTMLElement) {

@@ -22,7 +22,7 @@ export class ProfileFacade extends AbstractFacade {
       new Error("id is required.");
     }
 
-    let option = this.getDefaultOptions();
+    let option = this.authMgr.getDefaultOptions();
 
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/profile/' + id;
@@ -36,7 +36,7 @@ export class ProfileFacade extends AbstractFacade {
   }
 
   public getDefaultOptions(): any {
-    let header = this.getDefaultHeader();
+    let header = this.authMgr.getDefaultHeader();
     let userId = this.authMgr.getCurrentUser();
     header = header.append('userid', userId ? userId.id : '')
     let httpOptions = {
@@ -54,7 +54,7 @@ export class ProfileFacade extends AbstractFacade {
       if (data !== null && data !== undefined) {
         body = Object.assign(data)
       }
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
 
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response.data);
@@ -74,7 +74,7 @@ export class ProfileFacade extends AbstractFacade {
       if (data !== null && data !== undefined) {
         body = Object.assign(data)
       }
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response);
       }).catch((error: any) => {
@@ -93,7 +93,7 @@ export class ProfileFacade extends AbstractFacade {
       if (data !== null && data !== undefined) {
         body = Object.assign(data)
       }
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response);
       }).catch((error: any) => {
@@ -103,7 +103,7 @@ export class ProfileFacade extends AbstractFacade {
   }
 
   // public edit(id: any, data: any){
-  // let options = this.getDefaultOptions();
+  // let options = this.authMgr.getDefaultOptions();
   //  let url: string = this.baseURL + '/profile/'+id;
   // let body: any = {};
   //   if (data !== null && data !== undefined) {
@@ -119,7 +119,7 @@ export class ProfileFacade extends AbstractFacade {
   //     if (data !== null && data !== undefined) {
   //       body = Object.assign(data)
   //     }
-  //     let options = this.getDefaultOptions()
+  //     let options = this.authMgr.getDefaultOptions()
   //     this.http.put(url, body,options).toPromise().then((response: any) => {
   //       resolve(response.data);
   //     }).catch((error: any) => {
@@ -134,7 +134,7 @@ export class ProfileFacade extends AbstractFacade {
       if (data !== null && data !== undefined) {
         body = Object.assign(data)
       }
-      let options = this.getDefaultOptions()
+      let options = this.authMgr.getDefaultOptions()
       this.http.put(url, body, options).toPromise().then((response: any) => {
         resolve(response.data);
       }).catch((error: any) => {
@@ -148,7 +148,7 @@ export class ProfileFacade extends AbstractFacade {
 
       let url: string = this.baseURL + '/user/' + userId + '/follow';
       let body: any = {};
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
 
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response);

@@ -128,7 +128,7 @@ export class ManagePage extends AbstractPage implements OnInit {
   }
 
   public ngOnInit(): void {
-    // this.isLogin();
+    this.isLogin();
     this.searchAllPage();
     this.fbLibrary();
   }
@@ -288,6 +288,7 @@ export class ManagePage extends AbstractPage implements OnInit {
     facebook.facebookPageId = access.id;
     facebook.pageAccessToken = access.access_token;
     facebook.facebookPageName = access.name;
+    facebook.facebookCategory = access.category;
     let mode = "FACEBOOK";
 
     this.authenManager
@@ -313,6 +314,17 @@ export class ManagePage extends AbstractPage implements OnInit {
             disableClose: true,
             data: {
               text: "คุณมีเพจอยู่แล้ว",
+              bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+              bottomColorText2: "black",
+              btDisplay1: "none",
+            },
+          });
+        }
+        if (err.error.message === "Pagename already exists") {
+          this.dialog.open(DialogAlert, {
+            disableClose: true,
+            data: {
+              text: "ชื่อเพจนี้มีอยู่ในระบบแล้ว",
               bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
               bottomColorText2: "black",
               btDisplay1: "none",
@@ -359,16 +371,16 @@ export class ManagePage extends AbstractPage implements OnInit {
   }
 
   public clickSystemDevelopment(): void {
-    // let dialog = this.dialog.open(DialogAlert, {
-    //   disableClose: true,
-    //   data: {
-    //     text: MESSAGE.TEXT_DEVERLOP,
-    //     bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-    //     bottomColorText2: "black",
-    //     btDisplay1: "none",
-    //   },
-    // });
-    // dialog.afterClosed().subscribe((res) => { });
+    let dialog = this.dialog.open(DialogAlert, {
+      disableClose: true,
+      data: {
+        text: MESSAGE.TEXT_DEVERLOP,
+        bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+        bottomColorText2: "black",
+        btDisplay1: "none",
+      },
+    });
+    dialog.afterClosed().subscribe((res) => { });
   }
 
   public clickMenu() {

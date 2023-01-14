@@ -466,7 +466,8 @@
                                             </div>
                                             <div class="detail"
                                                 (click)="openDilogPost(model.postSectionModel.contents[6])">
-                                                <span *ngIf="(model.postSectionModel.contents[6] !== null && model.postSectionModel.contents[6] !== undefined && model.postSectionModel.contents[6] !== '')"
+                                                <span
+                                                    *ngIf="(model.postSectionModel.contents[6] !== null && model.postSectionModel.contents[6] !== undefined && model.postSectionModel.contents[6] !== '')"
                                                     [innerHTML]='model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[2].title: model.postSectionModel.contents[6].post.title | highlight'></span>
                                                 <span *ngIf="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1?
                                                         model.objectiveEvents.contents[0].post[2].coverImage === '':

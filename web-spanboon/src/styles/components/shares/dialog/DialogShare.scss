@@ -1,0 +1,205 @@
+/*
+ * @license Spanboon Platform v0.1
+ * (c) 2020-2021 KaoGeek. http://kaogeek.dev
+ * License: MIT. https://opensource.org/licenses/MIT
+ * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+ */
+.dialog-share-box {
+    width: 715px;
+    max-width: 100%;
+
+    >.newcon-alert-dialog {
+        position: relative;
+        max-width: 715px;
+        width: 90vw;
+        height: auto;
+        background-color: #2c2c2c;
+        box-shadow: 0px 1px 3px 0px #d3d3d4;
+        transition: 0.3s;
+        overflow: hidden;
+
+        >.edit-head-share {
+            width: auto;
+            height: 17pt;
+            padding: 10pt 24pt;
+            display: flex;
+            align-items: center;
+            flex-direction: inherit;
+            position: relative;
+            overflow: hidden;
+
+            >.edit-head-one-share {
+                @include font-size-8($font-head-500);
+                height: 20px;
+                color: $white;
+                bottom: 0;
+                position: absolute;
+                margin-bottom: 7px;
+            }
+
+            >.dialog-image-title-right {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                position: absolute;
+                right: 10pt;
+                bottom: 0;
+
+                >.material-icons {
+                    font-family: 'Material Icons' !important;
+                    cursor: pointer;
+                    opacity: 0.4;
+                    color: $white;
+
+                    &:hover {
+                        opacity: 0.8;
+                    }
+                }
+            }
+        }
+
+        >.edit-input-share {
+            padding: 20pt 24pt;
+            overflow-y: auto;
+            overflow-x: hidden;
+
+            >.box-edit-share {
+                height: 48px;
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                gap: 16px;
+                border-radius: 15px;
+                border: 1px solid #9b9b9b5b;
+                background-color: #1b1b1b;
+                padding: 6px 16px;
+
+                >.share-data {
+                    @include font-size-9($font-head-500);
+                    color: $white;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 1;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                    word-break: break-all;
+                    flex: 1 1 0%;
+                }
+
+                >spanboon-button {
+                    flex: 0 0 auto;
+
+                    >.copy-clipboard {
+                        padding: 0 36px;
+                        color: $white;
+                    }
+                }
+            }
+
+        }
+    }
+}
+
+.blue-snackbar {
+    background: #1b1b1b;
+    color: white;
+    border-radius: 4px;
+    box-sizing: border-box;
+    display: block;
+    margin: 24px;
+    max-width: 33vw;
+    min-width: 344px;
+    padding: 14px 16px;
+    min-height: 48px;
+    transform-origin: center;
+}
+
+@media (max-width: $xxlarge) {
+    .dialog-share-box {
+        width: 600px;
+
+        >.newcon-alert-dialog {
+            max-width: 600px;
+
+            >.edit-input {
+                padding: 18pt;
+                max-height: calc(55vh - 36pt - 20pt - 20pt);
+            }
+        }
+    }
+}
+
+@media (max-width: $xlarge) {
+    .dialog-share-box {
+        width: 550px;
+
+        >.newcon-alert-dialog {
+            max-width: 550px;
+
+            >.edit-h,
+            >.dialog-footer {
+                height: 18pt;
+            }
+
+            >.edit-input {
+                max-height: calc(55vh - 36pt - 18pt - 18pt);
+            }
+        }
+    }
+}
+
+@media (max-width: $large) {
+    .dialog-share-box {
+        width: 530px;
+
+        >.newcon-alert-dialog {
+            max-width: 530px;
+
+            >.edit-h,
+            >.dialog-footer {
+                height: 16pt;
+            }
+
+            >.edit-input {
+                max-height: calc(55vh - 36pt - 16pt - 16pt);
+            }
+        }
+    }
+}
+
+@media (max-width: $medium) {
+    .dialog-share-box {
+        width: 500px;
+
+        >.newcon-alert-dialog {
+            max-width: 500px;
+
+            >.edit-h,
+            >.dialog-footer {
+                height: 14pt;
+            }
+
+            >.edit-input {
+                max-height: calc(55vh - 36pt - 14pt - 14pt);
+            }
+        }
+    }
+}
+
+@media (max-width: $small) {
+    .dialog-share-box {
+        width: 450px;
+
+        >.newcon-alert-dialog {
+            max-width: 450px;
+
+            >.edit-h,
+            >.dialog-footer {
+                height: 14pt;
+            }
+
+            >.edit-input {
+                max-height: calc(55vh - 36pt - 14pt - 14pt);
+            }
+        }
+    }
+}

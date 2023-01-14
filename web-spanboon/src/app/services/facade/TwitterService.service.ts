@@ -10,7 +10,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import * as oauthSignature from 'oauth-signature';
 import { environment } from '../../../environments/environment';
 import { AbstractFacade } from './AbstractFacade';
-import { AuthenManager } from '../AuthenManager.service'; 
+import { AuthenManager } from '../AuthenManager.service';
 
 const twitterObj = {
     consumerKey: environment.consumerKeyTwitter,
@@ -39,7 +39,7 @@ export class TwitterService extends AbstractFacade {
     public requestToken(callback: string): Promise<any> {
         return new Promise((resolve, reject) => {
             let url: string = this.baseURL + '/twitter/request_token?callback=' + callback;
-            let option = this.getDefaultOptions();
+            let option = this.authMgr.getDefaultOptions();
             let httpOptions: any = {
                 headers: option,
                 responseType: 'text'
@@ -55,7 +55,7 @@ export class TwitterService extends AbstractFacade {
 
     public getAcessToKen(accessTokenLink: string) {
         let url: string = this.baseURL + '/twitter/access_token' + accessTokenLink;
-        let option = this.getDefaultOptions();
+        let option = this.authMgr.getDefaultOptions();
         let httpOptions: any = {
             headers: option,
             responseType: 'text'
@@ -77,15 +77,15 @@ export class TwitterService extends AbstractFacade {
     // 1. token for information
     public accountVerify(data: any): Promise<any> {
         let url: string = this.baseURL + '/twitter/account_verify';
-        let option = this.getDefaultOptions();
+        let option = this.authMgr.getDefaultOptions();
         let httpOptions: any = {
             headers: option,
             responseType: 'json'
-        };  
+        };
         let body = {};
-        if(data !== undefined && data !== null){
+        if (data !== undefined && data !== null) {
             body = Object.assign(data);
-        }  
+        }
         return new Promise((resolve, reject) => {
             this.http.post(url, body, httpOptions).toPromise().then((result: any) => {
                 resolve(result);
@@ -94,7 +94,7 @@ export class TwitterService extends AbstractFacade {
                 reject(error);
             });
         });
-    } 
+    }
 
     public genNonce() {
         const charset = '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._~'

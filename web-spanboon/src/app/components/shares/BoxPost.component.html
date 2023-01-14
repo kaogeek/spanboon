@@ -25,7 +25,7 @@
                             [(ngModel)]="accessPageImage.name || accessPageImage.displayName">
                             <ng-container *ngFor="let data of accessPage; let index = index">
                                 <mat-option *ngIf="index === 0 && data.user.type === 'user'"
-                                    [value]="accessPageImage.displayName === data.user.displayName ? data.user.displayName  : data.user.displayName "
+                                    [value]="accessPageImage.displayName === data.user.displayName ? data.user.displayName  : data.user.displayName"
                                     (click)="selectAccessPage(data.user,'USER')">
                                     <div class="wrapper-img-access">
                                         <div class="img-access">
@@ -122,12 +122,14 @@
                 </mat-form-field>
             </div>
 
-            <div class="box-toggle">
+            <!-- <div class="box-toggle">
                 <span *ngIf="isShowText">สร้าง{{PLATFORM_STORY}} :</span>
                 <mat-slide-toggle [ngModelOptions]="{standalone: true}" [(ngModel)]="isStory"
                     (change)="onChangeSlide($event)"></mat-slide-toggle>
-                <!-- <mat-slide-toggle [ngModelOptions]="{standalone: true}" [(ngModel)]="isChecked" (change)="onToggle($event)"></mat-slide-toggle> -->
-            </div>
+                    
+                    comment vvvvvv
+                <mat-slide-toggle [ngModelOptions]="{standalone: true}" [(ngModel)]="isChecked" (change)="onToggle($event)"></mat-slide-toggle>
+            </div> -->
         </div>
         <ng-container *ngIf="modeShowImage">
             <div class="box-image" *ngIf="imagesTimeline && imagesTimeline.length > 0">
@@ -183,7 +185,6 @@
             class="textarea-editor" contentEditable="true" attr.placeholder="{{PLATFORM_STORY_TALE}}ของ {{dataPage}}"
             (keyup)="onKeyup($event)" (click)="onKeyup($event)">
         </div>
-
         <div *ngIf="!isRepost" #storyPost id="{{prefix &&  prefix.detail? prefix.detail : ''}}editableStoryPost"
             class="textarea-editor" contentEditable="true"
             attr.placeholder="ความเห็นของคุณต่อ{{PLATFORM_STORY_TALE}}นี้ {{repostPage}} {{dataPage}}"
@@ -395,8 +396,8 @@
                                             </spanboon-button>
                                         </div>
                                         <div class="btn-submit">
-                                            <spanboon-button (click)="createImageObjective()" [height]="'28pt'"
-                                                [width]="'79pt'" [text]="'สร้าง'">
+                                            <spanboon-button (click)="isLock ? null : createImageObjective()"
+                                                [height]="'28pt'" [width]="'79pt'" [text]="'สร้าง'">
                                             </spanboon-button>
                                         </div>
                                     </div>

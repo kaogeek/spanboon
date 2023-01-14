@@ -8,7 +8,7 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from '@angular/common/http';
 import { AuthenManager } from '../AuthenManager.service';
-import { AbstractFacade } from "./AbstractFacade"; 
+import { AbstractFacade } from "./AbstractFacade";
 
 @Injectable()
 export class RecommendFacade extends AbstractFacade {
@@ -21,7 +21,7 @@ export class RecommendFacade extends AbstractFacade {
     return new Promise((resolve, reject) => {
       let queryParams: string = "";
       let url: string = this.baseURL + '/recommend';
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
 
       if (limit !== undefined && limit !== null) {
         queryParams += "&limit=" + limit
@@ -31,18 +31,18 @@ export class RecommendFacade extends AbstractFacade {
         queryParams += "&offset=" + offset
       }
 
-      if(isRandomPage){
+      if (isRandomPage) {
         queryParams += "&isRandomPage=" + isRandomPage
       }
 
-      if(isRandomUser){
+      if (isRandomUser) {
         queryParams += "&isRandomUser=" + isRandomUser
       }
 
       if (queryParams !== null && queryParams !== undefined && queryParams !== '') {
         queryParams = queryParams.substring(1, queryParams.length);
       }
-  
+
       if (queryParams !== null && queryParams !== undefined && queryParams !== '') {
         url += "?" + queryParams;
       }

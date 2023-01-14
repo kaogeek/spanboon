@@ -32,7 +32,7 @@ export class MainPageSlideFacade extends AbstractFacade {
       if (date !== undefined) {
         url = (url + '&date=' + date)
       }
-      let option = this.getDefaultOptions();
+      let option = this.authMgr.getDefaultOptions();
       let httpOptions
       if (userId !== null && userId !== undefined) {
         let headers = new HttpHeaders({
@@ -53,18 +53,6 @@ export class MainPageSlideFacade extends AbstractFacade {
       });
     });
   }
-
-  // public getDefaultOptions(): any {
-  //   let header = this.getDefaultHeader();
-  //   let userId = this.authMgr.getCurrentUser();
-  //   header = header.append('userId', userId ? userId.id : '')
-
-  //   let httpOptions = {
-  //     headers: header
-  //   };
-
-  //   return httpOptions;
-  // } 
 
   public getSearchAll(search: any): Promise<any[]> {
     return new Promise((resolve, reject) => {
@@ -94,7 +82,7 @@ export class MainPageSlideFacade extends AbstractFacade {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/main/content/search';
       let body: any = {};
-      let option = this.getDefaultOptions();
+      let option = this.authMgr.getDefaultOptions();
       if (search !== null && search !== undefined) {
         body = Object.assign(search)
       }

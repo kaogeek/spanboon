@@ -314,16 +314,16 @@ export class MenuRegister extends AbstractPage implements OnInit {
     }
 
     public clickSystemDevelopment(): void {
-        // let dialog = this.dialog.open(DialogAlert, {
-        //     disableClose: true,
-        //     data: {
-        //         // text: "ระบบอยู่ในระหว่างการพัฒนา",
-        //         bottomText2: "ตกลง",
-        //         bottomColorText2: "black",
-        //         btDisplay1: "none"
-        //     }
-        // });
-        // dialog.afterClosed().subscribe((res) => {
-        // });
+        let dialog = this.dialog.open(DialogAlert, {
+            disableClose: true,
+            data: {
+                text: "ระบบอยู่ในระหว่างการพัฒนา",
+                bottomText2: "ตกลง",
+                bottomColorText2: "black",
+                btDisplay1: "none"
+            }
+        });
+        dialog.afterClosed().subscribe((res) => {
+        });
     }
 }

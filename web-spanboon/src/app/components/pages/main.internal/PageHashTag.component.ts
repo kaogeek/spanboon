@@ -44,7 +44,24 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   @Input()
   protected text: string = "ข้อความ";
 
-  public links = [{ label: 'ทั้งหมด', keyword: 'timeline' }, { label: this.PLATFORM_GENERAL_TEXT, keyword: 'general' }, { label: this.PLATFORM_NEEDS_TEXT, keyword: 'needs' }, { label: this.PLATFORM_FULFILL_TEXT, keyword: 'fulfillment' }];
+  public links = [
+    {
+      label: 'ทั้งหมด',
+      keyword: 'timeline'
+    },
+    {
+      label: this.PLATFORM_GENERAL_TEXT,
+      keyword: 'general'
+    },
+    {
+      label: this.PLATFORM_NEEDS_TEXT,
+      keyword: 'needs'
+    },
+    // {
+    //   label: this.PLATFORM_FULFILL_TEXT,
+    //   keyword: 'fulfillment'
+    // }
+  ];
   public activeLink = this.links[0].label;
 
   filterType: 'เฉพาะที่คุณติดตาม' | 'ทั้งหมด' | 'กำหนดเอง' = 'ทั้งหมด';
@@ -433,18 +450,12 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     this.searchHashTag();
     this.searchPageCategory(false);
     this.getCount();
-
-    this.routeActivated.queryParams.subscribe(params => {
-      let hidebars = params['hidebar'];
-      if (hidebars === 'true') {
-        this.hidebar = false;
-        this.recommendedLeft.nativeElement.style.top = '0';
-        this.feedbodysearch.nativeElement.style.top = '0';
-        this.recommendedRight.nativeElement.style.top = '0';
-      } else {
-        this.hidebar = true;
-      }
-    });
+    this.hidebar = this.authenManager.getHidebar();
+    if (!this.hidebar) {
+      this.recommendedLeft.nativeElement.style.top = '0';
+      this.feedbodysearch.nativeElement.style.top = '0';
+      this.recommendedRight.nativeElement.style.top = '0';
+    }
   }
 
   ngAfterViewInit(): void {
@@ -1413,7 +1424,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         this.isLoginCh();
         this.postLike(action, index);
       } else if (action.mod === 'SHARE') {
-        this.isLoginCh();
+        // this.isLoginCh();
       } else if (action.mod === 'COMMENT') {
         this.isLoginCh();
       } else if (action.mod === 'POST') {

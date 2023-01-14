@@ -14,11 +14,12 @@
         margin: 0 auto;
         padding: 0 10px;
 
-        > .body-recommend {
+        >.body-recommend {
             position: relative;
             display: flex;
             flex-direction: row;
-            > .page-recommended-menu {
+
+            >.page-recommended-menu {
                 width: 245px;
                 position: sticky;
                 top: 55pt;
@@ -30,12 +31,12 @@
                 justify-content: flex-start;
                 align-items: stretch;
 
-                > .list-menu {
+                >.list-menu {
                     @include pointer();
                     padding-top: 7px;
                     padding-bottom: 7px;
 
-                    > .list-item {
+                    >.list-item {
                         color: $black;
                         display: flex;
                         flex-direction: row;
@@ -45,45 +46,44 @@
                         border-radius: 50px;
                         padding: 10px;
 
-                        > .icon-setting {
+                        >.icon-setting {
                             height: 1.75rem;
                             fill: currentcolor;
                             user-select: none;
                         }
 
-                        > .title-setting {
+                        >.title-setting {
                             margin: 0 15px;
                             @include font-size-8($font-head-500);
                         }
                     }
 
                     &:hover {
-                        > .list-item {
+                        >.list-item {
                             color: $brandcolor2;
                             background: rgba($brandcolor2, 0.1);
 
-                            > .icon-setting {
-                            }
+                            >.icon-setting {}
                         }
                     }
 
                     &.active {
-                        > .list-item {
+                        >.list-item {
                             color: $brandcolor2;
 
-                            > .icon-setting {
-                            }
+                            >.icon-setting {}
                         }
                     }
                 }
             }
-            > .body-recommended {
+
+            >.body-recommended {
                 display: flex;
                 flex-direction: row;
                 align-items: flex-start;
                 width: calc(100% - 245pt);
 
-                > .recommended-left {
+                >.recommended-left {
                     // width: calc(100% - 243pt - 5pt);
                     flex: 1 1 0%;
                     // max-width: 600px;
@@ -91,7 +91,7 @@
                     background: #f5f5f5;
                     min-width: 243pt;
 
-                    > .feed-body-search {
+                    >.feed-body-search {
                         position: sticky;
                         top: 55pt;
                         z-index: 99;
@@ -101,18 +101,20 @@
                         background-color: $white;
                         margin-bottom: 5pt;
 
-                        > .feed-header-search {
+                        >.feed-header-search {
                             display: flex;
                             justify-content: stretch;
                             padding: 0 20pt;
                             align-items: center;
-                            > .filter {
+
+                            >.filter {
                                 display: flex;
                                 flex: 1 1 0%;
                                 margin: 15pt 0;
                                 align-items: center;
                                 @include pointer();
-                                > .search {
+
+                                >.search {
                                     display: flex;
                                     width: calc(100% - 40pt);
                                     border-radius: 25pt;
@@ -120,13 +122,14 @@
                                     border: unset;
                                     flex: 1 1 0%;
                                     margin-left: 10pt;
-                                    > .icons-search {
+
+                                    >.icons-search {
                                         display: flex;
                                         align-items: center;
                                         padding-left: 10pt;
                                     }
 
-                                    > .home-back-left {
+                                    >.home-back-left {
                                         display: flex;
                                         align-items: center;
                                         justify-content: center;
@@ -135,7 +138,7 @@
                                         left: 8pt;
                                         border-radius: 50%;
 
-                                        > .home-back {
+                                        >.home-back {
                                             height: 15pt;
                                             width: 15pt;
                                         }
@@ -147,7 +150,7 @@
                                         }
                                     }
 
-                                    > .autocomp-search {
+                                    >.autocomp-search {
                                         // margin: 0 17pt;
                                         width: 100%;
                                         padding: 7pt;
@@ -155,16 +158,16 @@
                                         div {
                                             width: 100%;
 
-                                            > .mat-form-field {
+                                            >.mat-form-field {
                                                 // width: calc(100% - 30pt);
                                                 width: 100%;
 
-                                                > .mat-form-field-wrapper {
-                                                    > .mat-form-field-flex {
-                                                        > .mat-form-field-infix {
+                                                >.mat-form-field-wrapper {
+                                                    >.mat-form-field-flex {
+                                                        >.mat-form-field-infix {
                                                             width: 100%;
 
-                                                            > .mat-input-element {
+                                                            >.mat-input-element {
                                                                 width: calc(100% - 35pt);
                                                                 background: url(/../../../assets/img/search.svg);
                                                                 background-repeat: no-repeat;
@@ -179,17 +182,17 @@
                                                             }
                                                         }
 
-                                                        > .mat-form-field-outline {
+                                                        >.mat-form-field-outline {
                                                             // border-radius: 25pt;
                                                             //     border: 0.7pt solid;
                                                             //     height: 23pt;
                                                         }
                                                     }
 
-                                                    > .mat-form-field-underline {
+                                                    >.mat-form-field-underline {
                                                         height: 0px !important;
 
-                                                        > .mat-form-field-ripple {
+                                                        >.mat-form-field-ripple {
                                                             background-color: unset;
                                                             opacity: 0;
                                                         }
@@ -201,7 +204,7 @@
                                 }
                             }
 
-                            > .clip-board {
+                            >.clip-board {
                                 width: 30pt;
                                 flex: 0 0 auto;
                                 margin-left: 10pt;
@@ -214,54 +217,60 @@
                                     background-color: $background-hover;
                                 }
 
-                                > svg {
+                                >svg {
                                     width: 100%;
                                     padding: 4pt;
                                 }
 
-                                > .btn {
-                                }
+                                >.btn {}
                             }
                         }
-                        > .feed-body {
+
+                        >.feed-body {
                             padding: 0 20pt 10pt;
-                            > .mat-chip-list {
-                                > .mat-chip-list-wrapper {
-                                    > .mat-chip-hashtag {
+
+                            >.mat-chip-list {
+                                >.mat-chip-list-wrapper {
+                                    >.mat-chip-hashtag {
                                         border: 1pt solid $brandcolor2;
                                         background-color: #ff001624;
                                         color: $brandcolor2 !important;
-                                        > .mat-chip-remove {
+
+                                        >.mat-chip-remove {
                                             color: $brandcolor2 !important;
                                             opacity: 0.7 !important;
                                         }
                                     }
                                 }
                             }
+
                             .mat-chip.mat-standard-chip::after {
                                 background: #0000;
                             }
                         }
-                        > .footer-bar {
+
+                        >.footer-bar {
                             display: flex;
                             align-items: center;
                             justify-content: space-between;
                             padding: 0 10pt;
                             border-bottom: 0.7pt solid $border-color;
 
-                            > .nav-bar-tab {
+                            >.nav-bar-tab {
                                 // max-width: 315pt;
                                 // max-width: 260pt;
                                 // width: 237pt;
                                 flex: 1 1 0%;
-                                > .mat-tab-nav-bar {
+
+                                >.mat-tab-nav-bar {
                                     display: flex;
                                     align-items: center;
                                     border-bottom: unset;
-                                    > .mat-tab-link-container {
-                                        > .mat-tab-list {
-                                            > .mat-tab-links {
-                                                > .mat-tab-link {
+
+                                    >.mat-tab-link-container {
+                                        >.mat-tab-list {
+                                            >.mat-tab-links {
+                                                >.mat-tab-link {
                                                     min-width: auto;
                                                     @include font-size-8($font-head-400);
                                                     font-weight: bold;
@@ -273,7 +282,7 @@
                                                     }
                                                 }
 
-                                                > .mat-tab-label-active {
+                                                >.mat-tab-label-active {
                                                     color: $brandcolor2;
                                                 }
                                             }
@@ -281,28 +290,34 @@
                                     }
                                 }
                             }
-                            > .sorting {
+
+                            >.sorting {
                                 flex: 0 0 auto;
-                                > .menu-sorting {
+
+                                >.menu-sorting {
                                     height: 20pt;
                                     border: 0.7pt solid $border-color;
                                     @include font-size-9($font-head-400);
+
                                     &:hover {
                                         color: $brandcolor2;
                                         background: rgba($brandcolor2, 0.1);
+
                                         svg,
                                         g,
                                         path {
                                             fill: $brandcolor2;
                                         }
                                     }
-                                    > .mat-button-wrapper {
+
+                                    >.mat-button-wrapper {
                                         display: flex;
                                         align-items: center;
-                                        > .box-sorting {
+
+                                        >.box-sorting {
                                             padding-left: 5pt;
-                                            > .sorting-name {
-                                            }
+
+                                            >.sorting-name {}
                                         }
                                     }
                                 }
@@ -310,14 +325,14 @@
                         }
                     }
 
-                    > .wrapper-feed-card {
+                    >.wrapper-feed-card {
                         position: relative;
                         z-index: 1;
                         background-color: white;
                         border-left: $width-border solid $border-color;
                         border-right: $width-border solid $border-color;
 
-                        > .feed-post-card {
+                        >.feed-post-card {
                             display: flex;
                             width: calc(100% - 20pt);
                             height: 100%;
@@ -325,20 +340,22 @@
                             border-bottom: $width-border solid $border-color;
                             border-top: $width-border solid $border-color;
                             @include pointer();
+
                             &:hover {
                                 background-color: $background-hover;
                             }
-                            > .wrapper-card-top {
+
+                            >.wrapper-card-top {
                                 margin-right: 10pt;
 
-                                > .com-img {
+                                >.com-img {
                                     height: 37pt;
                                     width: 37pt;
                                     border-radius: 50%;
                                     position: relative;
                                     overflow: hidden;
 
-                                    > .image-user {
+                                    >.image-user {
                                         width: 100%;
                                         height: 100%;
                                     }
@@ -357,48 +374,49 @@
                                 }
                             }
 
-                            > .wrapper-body-card {
+                            >.wrapper-body-card {
                                 display: flex;
                                 flex-direction: column;
 
-                                > .card-header-top {
-                                    > .profile-name {
-                                        > .profile-page {
+                                >.card-header-top {
+                                    >.profile-name {
+                                        >.profile-page {
                                             display: inline-block;
 
-                                            > .page-user {
+                                            >.page-user {
                                                 &:hover {
                                                     color: rgba($brandcolor2, 0.95);
                                                 }
                                             }
 
-                                            > .page-user-name {
+                                            >.page-user-name {
                                                 padding: 0 5pt;
                                                 color: $color-gray;
+
                                                 &:hover {
                                                     color: rgba($brandcolor2, 0.95);
                                                 }
                                             }
                                         }
 
-                                        > .feed-date-time {
+                                        >.feed-date-time {
                                             &:hover {
                                                 color: rgba($brandcolor2, 0.95);
                                             }
                                         }
                                     }
 
-                                    > .post-description {
-                                    }
+                                    >.post-description {}
                                 }
-                                > .card-body-post {
+
+                                >.card-body-post {
                                     padding: 15pt 0 0;
 
-                                    > .post-image {
+                                    >.post-image {
                                         border: $width-border solid $border-color;
                                         // border-radius: 8pt;
 
-                                        > .feed-img {
+                                        >.feed-img {
                                             width: 100%;
                                             height: 100%;
                                             background-color: $white;
@@ -408,13 +426,14 @@
                             }
                         }
                     }
-                    > .feed-none-post {
+
+                    >.feed-none-post {
                         text-align: center;
                         padding: 20pt 0;
                         @include font-size-7($font-head-500);
                     }
 
-                    > .wrapper-body-middle {
+                    >.wrapper-body-middle {
                         // border: 0.7px solid #e5e5e5;
                         // height: 100vh;
                         position: relative;
@@ -442,7 +461,7 @@
                             border-right: 0.5px solid #e5e5e5;
                         }
 
-                        > .header-top-name {
+                        >.header-top-name {
                             padding: 15pt;
                             border-top: 0.5px solid #e5e5e5;
                             border-bottom: 0.5px solid #e5e5e5;
@@ -452,7 +471,7 @@
                             top: 45pt;
                         }
 
-                        > .wrapper-body-trend {
+                        >.wrapper-body-trend {
                             background-color: $white;
                             padding: 10px 15px;
                             border-bottom: 0.5px solid #e5e5e5;
@@ -462,24 +481,24 @@
                                 background-color: $background-hover;
                             }
 
-                            > .trend-title {
+                            >.trend-title {
                                 @include font-size-10($font-head-400);
                                 color: $color-gray;
                             }
 
-                            > .trend-hashtag {
+                            >.trend-hashtag {
                                 @include font-size-9($font-head-500);
                                 color: $black;
                             }
 
-                            > .trend-hashtag-count {
+                            >.trend-hashtag-count {
                                 margin-top: 5px;
                                 @include font-size-10($font-head-500);
                                 color: $color-gray;
                             }
                         }
 
-                        > .read-more {
+                        >.read-more {
                             @include pointer();
                             padding: 15px;
                             @include font-size-9($font-head-500);
@@ -491,13 +510,15 @@
                         }
                     }
                 }
-                > .recommended-right {
+
+                >.recommended-right {
                     width: 234pt;
                     position: sticky;
                     top: 55pt;
                     margin-bottom: 10pt;
-                    > .side-follow {
-                        > .box-right {
+
+                    >.side-follow {
+                        >.box-right {
                             border-radius: 4px;
                             overflow: hidden;
                             border: $width-border solid $border-color;
@@ -505,35 +526,35 @@
                             margin-bottom: 5pt;
                             background-color: white;
 
-                            > .wrapper-filter {
+                            >.wrapper-filter {
                                 // padding-bottom: 30pt;
 
-                                > .wrapper-filter-name {
+                                >.wrapper-filter-name {
                                     padding: 10pt;
                                     border-bottom: $width-border solid $border-color;
                                     @include font-size-8($font-head-500);
                                 }
 
-                                > .body-filter {
+                                >.body-filter {
                                     padding: 10pt;
                                     border-bottom: $width-border solid $border-color;
 
-                                    > .checkbox-filter {
+                                    >.checkbox-filter {
                                         display: flex;
                                         flex-direction: column;
 
-                                        > .header-name {
+                                        >.header-name {
                                             // @include font-size-9-100("Sarabun-ExtraBold");
                                             // @include font-size-9($font-head-500);
                                             @include font-size-9($font-head-500);
                                         }
 
-                                        > .mat-radio-group {
+                                        >.mat-radio-group {
                                             display: flex;
                                             flex-direction: column;
 
-                                            > .mat-radio-button {
-                                                > .mat-radio-label {
+                                            >.mat-radio-button {
+                                                >.mat-radio-label {
                                                     padding: 3pt 0;
                                                     display: flex;
                                                     flex-direction: row-reverse;
@@ -544,26 +565,28 @@
                                                     @include font-size-9($font-head-400);
                                                     color: rgba($black, 0.6);
 
-                                                    > .mat-radio-container {
-                                                        > .mat-radio-ripple,
-                                                        > .mat-ripple {
-                                                        }
+                                                    >.mat-radio-container {
+
+                                                        >.mat-radio-ripple,
+                                                        >.mat-ripple {}
                                                     }
                                                 }
                                             }
                                         }
                                     }
                                 }
-                                > .footer-more {
+
+                                >.footer-more {
                                     padding: 10pt;
                                     @include font-size-8($font-head-500);
 
-                                    > .search-page {
+                                    >.search-page {
                                         display: flex;
                                         justify-content: space-between;
                                         padding: 9pt 0;
                                         align-items: center;
-                                        > .rigth {
+
+                                        >.rigth {
                                             display: flex;
                                             align-items: center;
                                             border: 1px solid $border-color;
@@ -572,18 +595,21 @@
                                             height: 26pt;
                                             flex: 1 1 0%;
                                             margin-right: 5pt;
-                                            > .input-data {
+
+                                            >.input-data {
                                                 @include font-size-9($font-head-400);
                                             }
-                                            > .autocomp-close {
+
+                                            >.autocomp-close {
                                                 @include pointer();
                                             }
                                         }
+
                                         // > .btn {
                                         //     width: 50pt;
                                         //     flex: 0 0 auto;
                                         // }
-                                        > .btn {
+                                        >.btn {
                                             display: flex;
                                             align-items: center;
                                             @include pointer();
@@ -592,29 +618,33 @@
                                             margin-left: 9pt;
                                             width: 50pt;
                                             flex: 0 0 auto;
+
                                             &:hover {
                                                 color: $brandcolor2;
                                             }
                                         }
                                     }
-                                    > .card-page {
+
+                                    >.card-page {
                                         display: flex;
                                         justify-content: space-between;
                                         align-items: center;
                                         padding: 5pt;
                                         margin-bottom: 5pt;
                                         border: 0.7px solid $border-color;
-                                        > .left {
+
+                                        >.left {
                                             display: flex;
                                             align-items: center;
 
-                                            > .page-img {
+                                            >.page-img {
                                                 width: 30pt;
                                                 height: 30pt;
                                                 border-radius: 50%;
                                                 object-fit: cover;
                                             }
-                                            > .not-image {
+
+                                            >.not-image {
                                                 display: flex;
                                                 align-items: center;
                                                 justify-content: center;
@@ -623,18 +653,21 @@
                                                 color: $white;
                                             }
 
-                                            > .page-name {
+                                            >.page-name {
                                                 margin-left: 5pt;
-                                                > .top {
+
+                                                >.top {
                                                     @include font-size-10($font-head-500);
                                                 }
-                                                > .page-username {
+
+                                                >.page-username {
                                                     color: $color-gray;
                                                     @include font-size-10($font-head-500);
                                                 }
                                             }
                                         }
-                                        > .material-icons {
+
+                                        >.material-icons {
                                             font-family: "Material Icons" !important;
                                             font-size: $font-size-icon-small;
                                             @include pointer();
@@ -643,37 +676,41 @@
                                 }
                             }
 
-                            > .lable-follow {
+                            >.lable-follow {
                                 padding: 10pt;
                                 border-bottom: $width-border solid $border-color;
                                 background-color: $white;
                                 // @include font-size-8($font-head-500);
                                 @include font-size-8($font-head-500);
                             }
-                            > .wrapper-card {
+
+                            >.wrapper-card {
                                 background-color: $white;
-                                > .card-follow {
+
+                                >.card-follow {
                                     display: flex;
                                     align-items: center;
                                     justify-content: space-between;
                                     padding: 3pt 10pt;
                                     @include pointer();
+
                                     &:hover {
                                         background-color: $background-hover;
                                     }
-                                    > .follow {
+
+                                    >.follow {
                                         display: flex;
                                         padding: 5pt 0;
                                         align-items: center;
 
-                                        > .img-user {
+                                        >.img-user {
                                             width: 40pt;
                                             height: 40pt;
                                             border-radius: 50%;
                                             object-fit: cover;
                                         }
 
-                                        > .img-user-displayname {
+                                        >.img-user-displayname {
                                             background-color: $brandcolor2;
                                             display: flex;
                                             align-items: center;
@@ -682,25 +719,54 @@
                                             color: $white;
                                         }
 
-                                        > .list-follow-name {
-                                            margin-left: 5pt;
-                                            > .follow-name {
-                                                // @include font-size-10($font-head-500);
-                                                @include font-size-10($font-head-500);
-                                            }
-                                            > .follow-name-eng {
-                                                // @include font-size-10($font-head-500);
-                                                @include font-size-10($font-head-400);
-                                                color: $color-gray;
+                                        >a {
+                                            color: black;
+
+                                            >.list-follow-name {
+                                                margin-left: 5pt;
+
+                                                >.follow-name {
+                                                    display: -webkit-box;
+                                                    -webkit-line-clamp: 1;
+                                                    -webkit-box-orient: vertical;
+                                                    overflow: hidden;
+                                                    word-break: break-all;
+                                                    // @include font-size-10($font-head-500);
+                                                    @include font-size-10($font-head-500);
+                                                }
+
+                                                >.follow-name-eng {
+                                                    // @include font-size-10($font-head-500);
+                                                    @include font-size-10($font-head-400);
+                                                    color: $color-gray;
+                                                }
                                             }
                                         }
                                     }
-                                    > .wrapper-btn-follow {
-                                        > .btn-follow {
+
+                                    >.wrapper-btn-follow {
+                                        >button-follow {
+                                            >.button-follow {
+                                                &:hover {
+                                                    background-color: rgba($brandcolor2, 0.1) !important;
+                                                }
+                                            }
+
+                                            &.active {
+                                                >.button-follow {
+                                                    background-color: $brandcolor2 !important;
+                                                    color: $white !important;
+
+                                                    &:hover {
+                                                        background-color: rgba($brandcolor2, 0.95) !important;
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
                                 }
-                                > .follow-all {
+
+                                >.follow-all {
                                     display: flex;
                                     justify-content: center;
                                     align-items: center;
@@ -714,17 +780,20 @@
                                     @include font-size-9($font-head-500);
                                 }
                             }
-                            > .wrapper-matter {
+
+                            >.wrapper-matter {
                                 // border-bottom: $width-border solid $border-color;
                                 background-color: $white;
                                 margin-top: 5pt;
-                                > .body-matter {
+
+                                >.body-matter {
                                     padding: 10pt;
                                     margin-top: 5pt;
                                     border-bottom: $width-border solid $border-color;
                                     @include font-size-8($font-head-500);
                                 }
-                                > .item-all {
+
+                                >.item-all {
                                     color: $brandcolor2;
                                     padding: 10pt;
                                     text-align: center;
@@ -734,13 +803,14 @@
                                 }
                             }
                         }
-                        > card-checkbox {
+
+                        >card-checkbox {
                             .card-checkbox {
                                 margin-top: 5pt;
                             }
                         }
 
-                        > .hashtag-all {
+                        >.hashtag-all {
                             border-radius: 4px;
                             overflow: hidden;
                             position: relative;
@@ -748,7 +818,7 @@
                             margin-bottom: 5pt;
                             border: $width-border solid $border-color;
 
-                            > .header-top-name {
+                            >.header-top-name {
                                 // @include font-size-8($font-head-500);
                                 @include font-size-8($font-head-500);
                                 width: calc(100% - 20pt);
@@ -756,45 +826,50 @@
                                 border-radius: 4px;
                                 border-bottom: 0.7px solid $border-color;
                             }
-                            > .wrapper-body-trend {
+
+                            >.wrapper-body-trend {
                                 padding: 10pt;
                                 @include pointer();
+
                                 &:hover {
                                     background-color: $background-hover;
                                     border-radius: 8pt;
                                 }
-                                > .trend-hashtag {
+
+                                >.trend-hashtag {
                                     // @include font-size-10($font-head-500);
                                     @include font-size-10($font-head-400);
                                 }
-                                > .trend-hashtag-count {
+
+                                >.trend-hashtag-count {
                                     color: $color-gray;
                                     // @include font-size-10($font-head-500);
                                     @include font-size-10($font-head-500);
                                 }
                             }
                         }
+
                         // >.lable-follow {
                         //     border-top: $width-border solid $border-color;
                         // }
                     }
 
-                    > .div-follow {
+                    >.div-follow {
                         border: $width-border solid $border-color;
                         border-radius: $border-radius-4px;
                         background: $white;
 
-                        > .head-follow {
+                        >.head-follow {
                             padding: 15pt;
                             border-bottom: $width-border solid $border-color;
                             @include font-size-8($font-head-500);
                         }
 
-                        > .wrapper-card {
+                        >.wrapper-card {
                             border-bottom: $width-border solid $border-color;
                             background-color: $white;
 
-                            > .card-follow {
+                            >.card-follow {
                                 display: flex;
                                 align-items: center;
                                 justify-content: space-between;
@@ -805,19 +880,19 @@
                                     background-color: $background-hover;
                                 }
 
-                                > .follow {
+                                >.follow {
                                     display: flex;
                                     padding: 5pt 0;
                                     align-items: center;
 
-                                    > .img-user {
+                                    >.img-user {
                                         width: 40pt;
                                         height: 40pt;
                                         border-radius: 50%;
                                         object-fit: cover;
                                     }
 
-                                    > .img-user-displayname {
+                                    >.img-user-displayname {
                                         background-color: $brandcolor2;
                                         display: flex;
                                         align-items: center;
@@ -827,33 +902,58 @@
                                         flex: 0 0 auto;
                                     }
 
-                                    > .list-follow-name {
-                                        margin-left: 5pt;
+                                    >a {
+                                        color: black;
 
-                                        > .follow-name {
-                                            @include font-size-10($font-head-500);
+                                        >.list-follow-name {
+                                            margin-left: 5pt;
 
-                                            > .img-icon {
-                                                width: 12pt;
-                                                height: 12pt;
+                                            >.follow-name {
+                                                display: -webkit-box;
+                                                -webkit-line-clamp: 1;
+                                                -webkit-box-orient: vertical;
+                                                overflow: hidden;
+                                                word-break: break-all;
+                                                @include font-size-10($font-head-500);
+
+                                                >.img-icon {
+                                                    width: 12pt;
+                                                    height: 12pt;
+                                                }
                                             }
-                                        }
 
-                                        > .follow-name-eng {
-                                            @include font-size-10($font-head-500);
-                                            color: $color-gray;
+                                            >.follow-name-eng {
+                                                @include font-size-10($font-head-500);
+                                                color: $color-gray;
+                                            }
                                         }
                                     }
                                 }
 
-                                > .wrapper-btn-follow {
-                                    > button-follow {
+                                >.wrapper-btn-follow {
+                                    >button-follow {
+                                        >.button-follow {
+                                            &:hover {
+                                                background-color: rgba($brandcolor2, 0.1) !important;
+                                            }
+                                        }
+
+                                        &.active {
+                                            >.button-follow {
+                                                background-color: $brandcolor2 !important;
+                                                color: $white !important;
+
+                                                &:hover {
+                                                    background-color: rgba($brandcolor2, 0.95) !important;
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
 
-                        > .follow-all {
+                        >.follow-all {
                             padding: 8pt 15pt;
                             text-align: center;
                             color: $brandcolor2;
@@ -875,9 +975,10 @@
     .recommended {
         .container {
             max-width: 991px;
-            > .body-recommend {
-                > .body-recommended {
-                    > .recommended-right {
+
+            >.body-recommend {
+                >.body-recommended {
+                    >.recommended-right {
                         display: none;
                     }
                 }
@@ -885,10 +986,10 @@
         }
     }
 }
+
 @media (max-width: $large) {
     .recommended {
-        .container {
-        }
+        .container {}
     }
 }
 
@@ -897,38 +998,45 @@
         .container {
             max-width: 768px;
             padding: 0;
-            > .body-recommend {
-                > .page-recommended-menu {
+
+            >.body-recommend {
+                >.page-recommended-menu {
                     width: unset;
                     padding-left: 20px;
                     padding-right: 20px;
-                    > .list-menu {
-                        > .list-item {
-                            > .icon-setting {
-                            }
-                            > .title-setting {
+
+                    >.list-menu {
+                        >.list-item {
+                            >.icon-setting {}
+
+                            >.title-setting {
                                 display: none;
                             }
                         }
                     }
                 }
-                > .body-recommended {
+
+                >.body-recommended {
                     margin-left: 5pt;
                     width: calc(100% - 5pt);
-                    > .recommended-left {
-                        > .wrapper-body-middle {
-                            > .header-top-name {
+
+                    >.recommended-left {
+                        >.wrapper-body-middle {
+                            >.header-top-name {
                                 @include font-size-9($font-head-500);
                             }
-                            > .wrapper-body-trend {
-                                > .trend-title {
+
+                            >.wrapper-body-trend {
+                                >.trend-title {
                                     @include font-size-11($font-head-400);
                                 }
-                                > .trend-hashtag {
-                                    @include font-size-1($font-head-500);
+
+                                >.trend-hashtag {
+                                    @include font-size-10($font-head-500);
                                 }
                             }
-                            > .read-more {
+
+                            >.read-more {
                                 @include font-size-10($font-head-500);
                             }
                         }
@@ -942,27 +1050,31 @@
 @media (max-width: $medium) {
     .recommended {
         .container {
-            > .body-recommend {
-                > .page-recommended-menu {
+            >.body-recommend {
+                >.page-recommended-menu {
                     padding-left: 10px;
                     padding-right: 10px;
                     top: 39pt;
                 }
-                > .body-recommended {
-                    > .recommended-left {
-                        > .wrapper-body-middle {
-                            > .header-top-name {
+
+                >.body-recommended {
+                    >.recommended-left {
+                        >.wrapper-body-middle {
+                            >.header-top-name {
                                 @include font-size-9($font-head-500);
                             }
-                            > .wrapper-body-trend {
-                                > .trend-title {
+
+                            >.wrapper-body-trend {
+                                >.trend-title {
                                     @include font-size-11($font-head-400);
                                 }
-                                > .trend-hashtag {
+
+                                >.trend-hashtag {
                                     @include font-size-10($font-head-500);
                                 }
                             }
-                            > .read-more {
+
+                            >.read-more {
                                 @include font-size-10($font-head-500);
                             }
                         }
@@ -976,17 +1088,20 @@
 @media (max-width: $small) {
     .recommended {
         min-height: calc(100vh - 40pt - 39pt);
+
         .container {
-            > .body-recommend {
-                > .page-recommended-menu {
-                }
-                > .body-recommended {
+            >.body-recommend {
+                >.page-recommended-menu {}
+
+                >.body-recommended {
                     margin-left: unset;
                     width: 100%;
-                    > .recommended-left {
+
+                    >.recommended-left {
                         min-width: unset;
-                        > .wrapper-body-middle {
-                            > .header-top-name {
+
+                        >.wrapper-body-middle {
+                            >.header-top-name {
                                 top: 39pt;
                             }
                         }

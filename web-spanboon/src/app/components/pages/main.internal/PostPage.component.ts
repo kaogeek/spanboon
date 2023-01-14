@@ -17,7 +17,7 @@ import { Asset } from '../../../models/Asset';
 import { CommentPosts } from '../../../models/CommentPosts';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { CacheConfigInfo } from '../../../services/CacheConfigInfo.service';
-import { BoxPost, DialogMedia } from '../../shares/shares';
+import { BoxPost, DialogMedia, DialogShare } from '../../shares/shares';
 import { ValidBase64ImageUtil } from '../../../utils/ValidBase64ImageUtil';
 import { SearchFilter } from '../../../models/SearchFilter';
 import { RePost } from '../../../models/RePost';

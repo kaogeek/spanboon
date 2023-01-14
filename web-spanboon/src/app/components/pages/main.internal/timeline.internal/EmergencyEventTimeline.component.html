@@ -195,19 +195,23 @@
                                             </div>
                                             <div class="score">
                                                 <div class="score-type">
-                                                    <span class="title">{{objectiveData.timelines[0].post.repostCount}}</span>
+                                                    <span
+                                                        class="title">{{objectiveData.timelines[0].post.repostCount}}</span>
                                                     <span class="disiption">การพูดถึง</span>
                                                 </div>
                                                 <div class="score-type">
-                                                    <span class="title">{{objectiveData.timelines[0].post.viewCount}}</span>
+                                                    <span
+                                                        class="title">{{objectiveData.timelines[0].post.viewCount}}</span>
                                                     <span class="disiption">บอกต่อ</span>
                                                 </div>
                                                 <div class="score-type">
-                                                    <span class="title">{{objectiveData.timelines[0].post.likeCount}}</span>
+                                                    <span
+                                                        class="title">{{objectiveData.timelines[0].post.likeCount}}</span>
                                                     <span class="disiption">ถูกใจ</span>
                                                 </div>
                                                 <div class="score-type">
-                                                    <span class="title">{{objectiveData.timelines[0].post.shareCount}}</span>
+                                                    <span
+                                                        class="title">{{objectiveData.timelines[0].post.shareCount}}</span>
                                                     <span class="disiption">แชร์</span>
                                                 </div>
                                             </div>
@@ -1201,7 +1205,81 @@
 
                         <div *ngIf="item.type === 'EMERGENCY_LASTEST'" class="objective_lastest_card">
                             <div class="body">
-                                <div class="top">
+                                <ng-container *ngFor="let post of item.posts; let indexa = index">
+                                    <div class="wrapper-objective">
+                                        <div class="wrapper-gallery">
+                                            <div class="wrapper-image">
+                                                <ng-container
+                                                    *ngFor="let image of post.postGallery; let image_index = index">
+                                                    <img *ngIf="image_index === 0"
+                                                        [src]="apiBaseURL + image.imageURL + '/image'" alt="">
+                                                </ng-container>
+                                                <div class="wrapper-image-cloud">
+                                                    <ng-container
+                                                        *ngFor="let image of post.postGallery; let image_index = index">
+                                                        <img *ngIf="image_index !== 0"
+                                                            [src]=" apiBaseURL + image.imageURL + '/image'" alt=""
+                                                            [ngStyle]=" {'transform': image_index===1 ? 'rotate(-5deg)'
+                                                            : image_index===2 ? 'rotate(-10deg)' : 'rotate(10deg)' }">
+                                                    </ng-container>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="wrapper-content">
+                                            <div class="head-title">
+                                                <span><a [href]="'/post/' + (post._id || post.id)" target="_blank"
+                                                        class="title">#{{post.objectiveTag}}</a>{{setHashtag(post.objectiveTag,post.title)}}</span>
+                                            </div>
+                                            <div class="detail">
+                                                {{post.detail}}
+                                            </div>
+                                            <span class="drot">•</span>
+                                            <span class="createdDate">
+                                                <svg class="icon-time" height="10pt" viewBox="0 0 512 512" width="10pt"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path
+                                                        d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
+                                                        fill="black" />
+                                                    <path
+                                                        d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
+                                                        fill="black" />
+                                                </svg>
+                                                {{post.createdDate | dateFormat}}
+                                            </span>
+                                            <div class="buttom">
+                                                <a [href]="'/post/' + (post._id || post.id)" target="_blank"
+                                                    class="botton">
+                                                    <span>ไปที่โพสต์</span>
+                                                    <svg style="margin: 0px 10px;" height="15pt" class="icon-time"
+                                                        width="15pt" viewBox="0 -22 512 511"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path fill="white"
+                                                            d="m512 233.820312-212.777344-233.320312v139.203125h-45.238281c-140.273437 0-253.984375 113.710937-253.984375 253.984375v73.769531l20.09375-22.019531c68.316406-74.851562 164.980469-117.5 266.324219-117.5h12.804687v139.203125zm0 0" />
+                                                    </svg>
+                                                </a>
+                                                <div class="score">
+                                                    <div class="score-type">
+                                                        <span class="title">{{post.commentCount}}</span>
+                                                        <span class="disiption">การพูดถึง</span>
+                                                    </div>
+                                                    <div class="score-type">
+                                                        <span class="title">{{post.repostCount}}</span>
+                                                        <span class="disiption">บอกต่อ</span>
+                                                    </div>
+                                                    <div class="score-type">
+                                                        <span class="title">{{post.likeCount}}</span>
+                                                        <span class="disiption">ถูกใจ</span>
+                                                    </div>
+                                                    <div class="score-type">
+                                                        <span class="title">{{post.shareCount}}</span>
+                                                        <span class="disiption">แชร์</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ng-container>
+                                <!-- <div class="top">
                                     <span data-aos="fade-up" data-aos-offset="10" data-aos-delay="70"
                                         data-aos-duration="500" data-aos-easing="ease-in-out" data-aos-mirror="false"
                                         data-aos-once="false" data-aos-anchor-placement="top-center"
@@ -1212,10 +1290,12 @@
                                         data-aos-duration="500" data-aos-easing="ease-in-out" data-aos-mirror="false"
                                         data-aos-once="false" data-aos-anchor-placement="top-center"
                                         *ngFor="let post of item.posts; let indexa = index">
-                                        <post-data [itemPost]="post" (action)="actionComment($event,index,indexa)">
+                                        <post-data [itemPost]="post" [isLike]="false" [isShare]="false"
+                                            [isReboon]="false" [isShowComment]="false"
+                                            (action)="actionComment($event,index,indexa)">
                                         </post-data>
                                     </div>
-                                </div>
+                                </div> -->
                             </div>
                         </div>
 

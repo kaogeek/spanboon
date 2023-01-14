@@ -40,6 +40,14 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
     @Input()
     public isClose: boolean = false;
     @Input()
+    public isLike: boolean;
+    @Input()
+    public isReboon: boolean;
+    @Input()
+    public isShare: boolean;
+    @Input()
+    public isComment: boolean;
+    @Input()
     public isFulfillQuantity: boolean = false;
     @Input()
     public isFulfill: boolean = false;
@@ -51,6 +59,8 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
     public isButtonFulfill: boolean = true;
     @Input()
     public isNeedBoxPost: boolean = true;
+    @Input()
+    public isHide: boolean = true;
 
     // test
 
@@ -122,6 +132,7 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
 
         this.objectiveData = await this.objectiveFacade.getPageObjectiveTimeline(this.objectiveId);
         this.objectiveData.page;
+        this.objectiveData.timelines;
         const pageType = { type: "PAGE" };
         const origin = this.objectiveData.page;
 
@@ -152,17 +163,18 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
         }
     }
 
-    private isLoginCh() {
-        if (!this.isLogin()) {
-            this.showAlertLoginDialog("/objective/" + this.objectiveId);
-            return
-        }
-    }
 
     public setData(): void {
         this.pageObjective = this.objectiveData.pageObjective;
         this.pageOwner = this.objectiveData.page;
 
+    }
+
+    public setHashtag(tag: any, post: any): any {
+        if (post) {
+            let dataHashTag = post.trim();
+            return dataHashTag.split('#' + tag)[1];
+        }
     }
 
     public clickDataSearch(post: any): void {

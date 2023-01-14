@@ -33,6 +33,7 @@ const PAGE_SUB_POST: string = 'post'
 const URL_PATH: string = '/page/';
 const SEARCH_LIMIT: number = 10;
 const SEARCH_OFFSET: number = 0;
+const REFRESH_DATA: string = 'refresh_page';
 
 declare var $: any;
 @Component({
@@ -54,7 +55,22 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   @Output()
   public submitCanCelDialog: EventEmitter<any> = new EventEmitter();
 
-  public links = [{ label: 'ไทมไลน์', keyword: 'timeline' }, { label: this.PLATFORM_GENERAL_TEXT, keyword: 'general' }, { label: this.PLATFORM_NEEDS_TEXT, keyword: 'needs' }, { label: this.PLATFORM_FULFILL_TEXT, keyword: 'fulfillment' }];
+  public links = [
+    {
+      label: 'ไทมไลน์',
+      keyword: 'timeline'
+    },
+    {
+      label: this.PLATFORM_GENERAL_TEXT,
+      keyword: 'general'
+    },
+    // { label: this.PLATFORM_NEEDS_TEXT, 
+    //   keyword: 'needs' 
+    // }, 
+    // { label: this.PLATFORM_FULFILL_TEXT, 
+    //   keyword: 'fulfillment' 
+    // }
+  ];
   public activeLink = this.links[0].label;
 
   @ViewChild('boxPost', { static: false }) boxPost: BoxPost;
@@ -127,6 +143,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   public longtitudeAboutPage: any;
   public localtion: any;
   public selectedIndex: number;
+  public shareDialog: boolean;
 
   public CheckPost: boolean = true;
   public isPostLoading: boolean = false;
@@ -145,8 +162,28 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   mySubscription: any;
   files: FileHandle[] = [];
 
-  constructor(router: Router, userFacade: UserFacade, dialog: MatDialog, authenManager: AuthenManager, postFacade: PostFacade, pageFacade: PageFacade, postCommentFacade: PostCommentFacade, cacheConfigInfo: CacheConfigInfo, objectiveFacade: ObjectiveFacade, needsFacade: NeedsFacade, assetFacade: AssetFacade,
-    observManager: ObservableManager, routeActivated: ActivatedRoute, userEngagementFacade: UserEngagementFacade, engagementService: Engagement, recommendFacade: RecommendFacade, aboutPageFacade: AboutPageFacade, seoService: SeoService, profileFacade: ProfileFacade, postActionService: PostActionService, userAccessFacade: UserAccessFacade,
+  constructor(
+    router: Router,
+    userFacade: UserFacade,
+    dialog: MatDialog,
+    authenManager: AuthenManager,
+    postFacade: PostFacade,
+    pageFacade: PageFacade,
+    postCommentFacade: PostCommentFacade,
+    cacheConfigInfo: CacheConfigInfo,
+    objectiveFacade: ObjectiveFacade,
+    needsFacade: NeedsFacade,
+    assetFacade: AssetFacade,
+    observManager: ObservableManager,
+    routeActivated: ActivatedRoute,
+    userEngagementFacade: UserEngagementFacade,
+    engagementService: Engagement,
+    recommendFacade: RecommendFacade,
+    aboutPageFacade: AboutPageFacade,
+    seoService: SeoService,
+    profileFacade: ProfileFacade,
+    postActionService: PostActionService,
+    userAccessFacade: UserAccessFacade
   ) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.dialog = dialog
@@ -178,6 +215,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     this.userAccessFacade = userAccessFacade;
 
     // this.seoService.removeMeta();
+    this.searchAllPage();
 
     this.mySubscription = this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe((event: NavigationEnd) => {
       if (event instanceof NavigationEnd) {
@@ -238,14 +276,6 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
       this.heightWindow();
       this.countScroll = scrollTop.fix;
       this.setProfile();
-    });
-
-    this.observManager.subscribe('refresh_page', (type) => {
-      let data = {
-        type: type,
-        offset: 0
-      }
-      this.searchPostPageType(data, true);
     });
 
     this.observManager.subscribe('scroll.buttom', (buttom) => {
@@ -319,6 +349,12 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     if (this.isLogin()) {
       this.getProfileImage();
     }
+
+    this.observManager.subscribe(REFRESH_DATA, (result: any) => {
+      if (result) {
+        this.resPost.posts.unshift(result);
+      }
+    });
   }
 
   private stopLoading(): void {
@@ -580,18 +616,23 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   }
 
   public checkAccessPage(pageId: string) {
-    this.pageFacade.getAccess(pageId).then((res: any) => {
-      for (let dataPage of res.data) {
-        if (dataPage.level === 'OWNER') {
-          this.isNotAccess = true;
+    if (pageId) {
+      this.pageFacade.getAccess(pageId).then((res) => {
+        if (res) {
+          this.pageId = res.data.id;
+          for (let dataPage of res.data) {
+            if (dataPage.level === 'OWNER') {
+              this.isNotAccess = true;
+            }
+          }
         }
-      }
 
-    }).catch((err: any) => {
-      if (err.error.message === 'Unable to get User Page Access List') {
-        this.isNotAccess = false;
-      }
-    })
+      }).catch((err: any) => {
+        if (err.error.message === 'Unable to get User Page Access List') {
+          this.isNotAccess = false;
+        }
+      })
+    }
   }
 
   filesDropped(files: FileHandle[]): void {
@@ -841,58 +882,60 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   }
 
   public showProfilePage(url): void {
-    this.pageFacade.getProfilePage(url).then((res) => {
-      this.checkAccessPage(res.data.id);
-      if (res.pageUsername !== null && res.pageUsername !== undefined) {
-        this.url = res.pageUsername
-      }
-      if (res.data) {
-        this.position = res.data.coverPosition;
-        this.isLoading = true;
-        if (res.data && res.data.imageURL && res.data.imageURL !== '') {
-          this.getDataIcon(res.data.imageURL, "image")
+    this.pageFacade.getProfilePage(url).then(async (res) => {
+      if (res) {
+        await this.checkAccessPage(res.data.id);
+        if (res.pageUsername !== null && res.pageUsername !== undefined) {
+          this.url = res.pageUsername
         }
-        if (res.data && res.data.coverURL && res.data.coverURL !== '') {
-          this.getDataIcon(res.data.coverURL, "cover")
-        }
-        if (res.data && res.data.pageObjectives && res.data.pageObjectives.length > 0) {
-          let index = 0;
-          for (let result of res.data.pageObjectives) {
-            if (result.iconURL !== '') {
-              this.getDataIcon(result.iconURL, "icon", index)
-              index++
+        if (res.data) {
+          this.position = res.data.coverPosition;
+          this.isLoading = true;
+          if (res.data && res.data.imageURL && res.data.imageURL !== '') {
+            this.getDataIcon(res.data.imageURL, "image")
+          }
+          if (res.data && res.data.coverURL && res.data.coverURL !== '') {
+            this.getDataIcon(res.data.coverURL, "cover")
+          }
+          if (res.data && res.data.pageObjectives && res.data.pageObjectives.length > 0) {
+            let index = 0;
+            for (let result of res.data.pageObjectives) {
+              if (result.iconURL !== '') {
+                this.getDataIcon(result.iconURL, "icon", index)
+                index++
+              }
             }
           }
-        }
-        this.resDataPage = res.data;
-        if (this.resDataPage && this.resDataPage.name) {
-          this.name = this.resDataPage.name;
-        } else if (this.resDataPage && this.resDataPage.pageUsername) {
-          this.name = this.resDataPage.pageUsername
-        } else if (this.resDataPage.displayName) {
-          this.name = this.resDataPage.displayName
-        }
-        this.seoService.updateTitle(this.resDataPage.name);
-        if (this.router.url.split('/')[3] !== 'post') {
-          this.seoService.setMetaInfo(this.router.url, this.resDataPage.name, this.resDataPage.name, this.resDataPage.imageURL, this.resDataPage.name);
-        }
-        this.searchAboutPage();
+          this.resDataPage = res.data;
+          if (this.resDataPage && this.resDataPage.name) {
+            this.name = this.resDataPage.name;
+          } else if (this.resDataPage && this.resDataPage.pageUsername) {
+            this.name = this.resDataPage.pageUsername
+          } else if (this.resDataPage.displayName) {
+            this.name = this.resDataPage.displayName
+          }
+          this.seoService.updateTitle(this.resDataPage.name);
+          if (this.router.url.split('/')[3] !== 'post') {
+            this.seoService.setMetaInfo(this.router.url, this.resDataPage.name, this.resDataPage.name, this.resDataPage.imageURL, this.resDataPage.name);
+          }
+          this.searchAboutPage();
 
-        setTimeout(() => {
-          this.isLoading = false;
-          this.showLoading = false;
-        }, 1000);
-      }
-      if (this.boxPost !== undefined) {
-        this.boxPost.clearDataAll();
-      }
-      if (res.data && res.data.needs && res.data.needs.length > 0) {
-        for (let n of res.data.needs) {
-          if (n.standardItemId) {
-            this.needsFacade.getNeeds(n.standardItemId).then((needs) => {
-              n.imageURL = needs.imageURL
-            }).catch((err: any) => {
-            });
+          setTimeout(() => {
+            this.isLoading = false;
+            this.showLoading = false;
+          }, 1000);
+        }
+        if (this.boxPost !== undefined) {
+          this.boxPost.clearDataAll();
+        }
+        if (res.data && res.data.needs && res.data.needs.length > 0) {
+          for (let n of res.data.needs) {
+            if (n.standardItemId) {
+              this.needsFacade.getNeeds(n.standardItemId).then((needs) => {
+                n.imageURL = needs.imageURL
+              }).catch((err: any) => {
+              });
+            }
           }
         }
       }
@@ -1022,7 +1065,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
 
   public postLike(data: any, index: number) {
     if (!this.isLogin()) {
-      this.showAlertLoginDialog("/page/" + this.resDataPage.id);
+      // this.showAlertLoginDialog("/page/" + this.resDataPage.id);
     } else {
       if (this.resPost.posts.length == 0) {
         this.resDataPost[index].isLike = true;
@@ -1330,39 +1373,43 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   }
 
   public async actionComment(action: any, index: number) {
-    this.isLoginCh();
-    let datapost: any;
-    if (this.resPost.posts.length == 0) {
-      datapost = this.resDataPost;
+    if (action.mod === 'SHARE') {
+
     } else {
-      datapost = this.resPost.posts;
-    }
-    await this.postActionService.actionPost(action, index, datapost, "PAGE").then((res: any) => {
-      if (res !== undefined && res !== null) {
-        //repost
-        if (res && res.type === "NOTOPIC") {
-          this.resPost.posts = res.posts;
-        } else if (res.type === "TOPIC") {
-          this.resPost.posts = res.posts;
-        } else if (res.type === "UNDOTOPIC") {
-          for (let [i, data] of this.resPost.posts.entries()) {
-            if (data.referencePostObject !== null && data.referencePostObject !== undefined && data.referencePostObject !== '') {
-              if (data.referencePostObject._id === action.post._id) {
-                this.resPost.length == 0 ? this.resDataPost.splice(i, 1) : this.resPost.splice(i, 1);
-                break;
+      this.isLoginCh();
+      let datapost: any;
+      if (this.resPost.posts.length == 0) {
+        datapost = this.resDataPost;
+      } else {
+        datapost = this.resPost.posts;
+      }
+      await this.postActionService.actionPost(action, index, datapost, "PAGE").then((res: any) => {
+        if (res !== undefined && res !== null) {
+          //repost
+          if (res && res.type === "NOTOPIC") {
+            this.resPost.posts = res.posts;
+          } else if (res.type === "TOPIC") {
+            this.resPost.posts = res.posts;
+          } else if (res.type === "UNDOTOPIC") {
+            for (let [i, data] of this.resPost.posts.entries()) {
+              if (data.referencePostObject !== null && data.referencePostObject !== undefined && data.referencePostObject !== '') {
+                if (data.referencePostObject._id === action.post._id) {
+                  this.resPost.length == 0 ? this.resDataPost.splice(i, 1) : this.resPost.splice(i, 1);
+                  break;
+                }
               }
             }
+          } else if (res.type === "POST") {
+            this.router.navigateByUrl('/post/' + action.pageId);
+          } else if (action.mod === 'LIKE') {
+            this.postLike(action, index);
+          } else if (action.mod === 'SHARE') {
           }
-        } else if (res.type === "POST") {
-          this.router.navigateByUrl('/post/' + action.pageId);
-        } else if (action.mod === 'LIKE') {
-          this.isLoginCh();
-          this.postLike(action, index);
         }
-      }
-    }).catch((err: any) => {
-      console.log('err ', err)
-    });
+      }).catch((err: any) => {
+        console.log('err ', err)
+      });
+    }
   }
 
   public getAaaPost(action: any, index: number) {
@@ -1457,17 +1504,17 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   }
 
   public clickSystemDevelopment(): void {
-    // let dialog = this.dialog.open(DialogAlert, {
-    //   disableClose: true,
-    //   data: {
-    //     text: MESSAGE.TEXT_DEVERLOP,
-    //     bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-    //     bottomColorText2: "black",
-    //     btDisplay1: "none"
-    //   }
-    // });
-    // dialog.afterClosed().subscribe((res) => {
-    // });
+    let dialog = this.dialog.open(DialogAlert, {
+      disableClose: true,
+      data: {
+        text: MESSAGE.TEXT_DEVERLOP,
+        bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+        bottomColorText2: "black",
+        btDisplay1: "none"
+      }
+    });
+    dialog.afterClosed().subscribe((res) => {
+    });
   }
 
   public engagement(event) {

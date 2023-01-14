@@ -84,7 +84,7 @@
     </svg> ????????-->
     <div class="wrapper-menu" #menuRight>
         <header-search class="menu-search list-right-menu" [color]="'#f47732'"></header-search>
-        <a class="menu-chat list-right-menu" (click)="showAlertDevelopDialog()" *ngIf="isLogin()">
+        <!-- <a class="menu-chat list-right-menu" (click)="showAlertDevelopDialog()" *ngIf="isLogin()">
             <svg xmlns="http://www.w3.org/2000/svg" width="68.545" height="69.657" viewBox="0 0 68.545 69.657">
                 <g id="Group_2387" data-name="Group 2387" transform="translate(1788.491 -3310.346)">
                     <path id="Path_3510" data-name="Path 3510"
@@ -98,8 +98,8 @@
                         transform="translate(-1905 3200)" fill="#474747" />
                 </g>
             </svg>
-        </a>
-        <a class="menu-fulfill list-right-menu" [routerLink]="'/fulfill'" [routerLinkActive]="['active-link']"
+        </a> -->
+        <!-- <a class="menu-fulfill list-right-menu" [routerLink]="'/fulfill'" [routerLinkActive]="['active-link']"
             *ngIf="isLogin()">
             <svg xmlns="http://www.w3.org/2000/svg" width="80.662" height="70.194" viewBox="0 0 80.662 70.194">
                 <g id="Group_2388" data-name="Group 2388" transform="translate(1705.345 -3207.5)">
@@ -120,7 +120,7 @@
                         transform="translate(-1905 3200)" fill="#474747" />
                 </g>
             </svg>
-        </a>
+        </a> -->
         <btn-notification *ngIf="isLogin()" [noti]="noti.noti" class="menu-nofitication list-right-menu">
         </btn-notification>
         <notification-check-page (noti)="Notification($event)"></notification-check-page>

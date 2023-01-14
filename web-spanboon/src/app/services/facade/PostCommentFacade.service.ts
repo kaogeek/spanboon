@@ -1,9 +1,9 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from '@angular/common/http';
 import { AuthenManager } from '../AuthenManager.service';
-import { AbstractFacade } from "./AbstractFacade"; 
+import { AbstractFacade } from "./AbstractFacade";
 import { SearchFilter } from "../../models/SearchFilter";
-import { CommentPosts } from '../../models/CommentPosts'; 
+import { CommentPosts } from '../../models/CommentPosts';
 
 @Injectable()
 export class PostCommentFacade extends AbstractFacade {
@@ -19,7 +19,7 @@ export class PostCommentFacade extends AbstractFacade {
       if (comment !== null && comment !== undefined) {
         body = Object.assign(comment)
       }
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
 
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response);
@@ -36,7 +36,7 @@ export class PostCommentFacade extends AbstractFacade {
       if (filter !== null && filter !== undefined) {
         body = Object.assign(filter)
       }
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
 
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response.data);
@@ -50,7 +50,7 @@ export class PostCommentFacade extends AbstractFacade {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/post/' + postId + '/comment/status';
       let body: any = {};
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
       body = { comments: commentsArray, asPage: asPage }
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response.data);
@@ -65,7 +65,7 @@ export class PostCommentFacade extends AbstractFacade {
 
       let url: string = this.baseURL + '/post/' + postId + '/comment/' + commentId + '/like';
       let body: any = {};
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
 
       if (likeAsPage !== null && likeAsPage !== undefined) {
         body = { likeAsPage: likeAsPage }
@@ -81,7 +81,7 @@ export class PostCommentFacade extends AbstractFacade {
 
   public delete(postId: string, commentId: string): Promise<any> {
     return new Promise((resolve, reject) => {
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
 
       let url: string = this.baseURL + '/post/' + postId + '/comment/' + commentId;
 
@@ -97,7 +97,7 @@ export class PostCommentFacade extends AbstractFacade {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/post/' + postId + '/comment/' + commentId;
       let body: any = { comment: comment };
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
 
 
       this.http.put(url, body, options).toPromise().then((response: any) => {

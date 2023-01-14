@@ -62,6 +62,7 @@ export class BoxPost extends AbstractPage implements OnInit {
 
   public links = [{ label: 'แท็กทั้งหมด', keyword: 'tab1' }, { label: 'แท็กที่ถูกเลือก', keyword: 'tab2' }];
   public activeLink = this.links[0].keyword;
+  public isLock: boolean = false;
 
   @Input()
   public dataPage: any;
@@ -252,7 +253,7 @@ export class BoxPost extends AbstractPage implements OnInit {
 
   chooseStory: any[] = [
     { value: this.PLATFORM_GENERAL_TEXT, viewValue: this.PLATFORM_GENERAL_TEXT, class: 'icon-feed' },
-    { value: this.PLATFORM_NEEDS_TEXT, viewValue: this.PLATFORM_NEEDS_TEXT, class: 'icon-feed looking' },
+    // { value: this.PLATFORM_NEEDS_TEXT, viewValue: this.PLATFORM_NEEDS_TEXT, class: 'icon-feed looking' },
   ];
   chooseStorys: any[] = [
     { value: this.PLATFORM_GENERAL_TEXT, viewValue: this.PLATFORM_GENERAL_TEXT, class: 'icon-feed' },
@@ -1580,7 +1581,6 @@ export class BoxPost extends AbstractPage implements OnInit {
         Object.assign(data, { objective: this.isEmptyObject(this.dataObjective) ? this.dataObjective.id : "" });
         Object.assign(data, { objectiveTag: this.isEmptyObject(this.dataObjective) ? this.dataObjective.hashTag : "" });
       }
-
       if (this.isRepost) {
         delete data.pageId
       }
@@ -1597,7 +1597,6 @@ export class BoxPost extends AbstractPage implements OnInit {
           Object.assign(data, { id: undefined });
         }
       }
-
       if (this.isFulfill) {
         Object.assign(data, { asPage: this.content.asPage, fulfillCaseId: this.content.fulfillCaseId });
         return this.createFullfillPost.emit(data);
@@ -2224,89 +2223,94 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public createImageObjective(): void {
-    this.isLoading = true;
-    let pageId = this.dataPageId.id;
-    const dataDoing = this.objectiveDoing.nativeElement.value;
-    const tagName = this.objectiveDoingName.nativeElement.value;
-    const category = this.objectCategory.value;
+    if (!this.isLock) {
+      this.isLoading = true;
+      let pageId = this.dataPageId.id;
+      const dataDoing = this.objectiveDoing.nativeElement.value;
+      const tagName = this.objectiveDoingName.nativeElement.value;
+      const category = this.objectCategory.value;
 
-    if (category === undefined) {
-      return this.showAlertDialog("เลือกหมวดหมู่");
-    }
-
-    if (tagName === "") {
-      document.getElementById('objective-doing-name').focus();
-      return this.showAlertDialog("กรุณาใส่แฮชแท็ก");
-    }
-
-    if (dataDoing === "") {
-      document.getElementById('objective-doing').focus();
-      return this.showAlertDialog("กรุณากรอกสิ่งที่คุณกำลังทำ");
-    }
-
-    if (!this.isEmptyObject(this.imageIcon)) {
-      return this.showAlertDialog("กรุณาอัพโหลดรูปภาพ");
-    }
-
-    const asset = new Asset();
-    if (this.isEmptyObject(this.imageIcon)) {
-      let data = this.imageIcon.image.split(',')[0];
-      const typeImage = data.split(':')[1];
-      asset.mimeType = typeImage.split(';')[0];
-      asset.data = this.imageIcon.image.split(',')[1];
-      asset.size = this.imageIcon.size;
-    }
-    if (dataDoing !== '' && tagName !== '' && category !== undefined) {
-      let objectiveImage = {
-        asset,
-        hashTag: tagName,
-        title: dataDoing,
-        category: category,
-        pageId: pageId
+      if (category === undefined) {
+        return this.showAlertDialog("เลือกหมวดหมู่");
       }
-      this.objectiveFacade.uploadImageObjective(objectiveImage).then((res: any) => {
-        let index = 0;
-        if (res.status === 1) {
-          this.getDataIcon(res.data.iconURL, index);
-          index++;
-          let object = {
-            id: res.data.id,
-            title: res.data.title,
-            hashTag: res.data.hashTag,
-          }
-          this.dataObjective = object
-          this.clickCardObjective(0, this.dataObjective);
-          this.keyUpSearchObjective("");
-          this.closeDialog();
-          this.imageIcon = {};
-          this.selectedValue = 'เลือกหมวดหมู่';
-          this.searchObjectivePageCategory();
-          this.isMsgError = false
+
+      if (tagName === "") {
+        document.getElementById('objective-doing-name').focus();
+        return this.showAlertDialog("กรุณาใส่แฮชแท็ก");
+      }
+
+      if (dataDoing === "") {
+        document.getElementById('objective-doing').focus();
+        return this.showAlertDialog("กรุณากรอกสิ่งที่คุณกำลังทำ");
+      }
+
+      if (!this.isEmptyObject(this.imageIcon)) {
+        return this.showAlertDialog("กรุณาอัพโหลดรูปภาพ");
+      }
+
+      this.isLock = true;
+      const asset = new Asset();
+      if (this.isEmptyObject(this.imageIcon)) {
+        let data = this.imageIcon.image.split(',')[0];
+        const typeImage = data.split(':')[1];
+        asset.mimeType = typeImage.split(';')[0];
+        asset.data = this.imageIcon.image.split(',')[1];
+        asset.size = this.imageIcon.size;
+      }
+      if (dataDoing !== '' && tagName !== '' && category !== undefined) {
+        let objectiveImage = {
+          asset,
+          hashTag: tagName,
+          title: dataDoing,
+          category: category,
+          pageId: pageId
         }
-      }).catch((err: any) => {
-        console.log(err);
-        let alertMessages: string;
-        if (err.error.message === 'PageObjective is Exists') {
-          alertMessages = 'สิ่งที่คุณกำลังถูกสร้างแล้ว'
-        } else if (err.error.message === 'PageObjective HashTag is Exists') {
-          alertMessages = 'แฮชแท็กถูกสร้างไว้แล้ว'
-        }
-        let dialog = this.showAlertDialogWarming(alertMessages, "none");
-        dialog.afterClosed().subscribe((res) => {
-          if (res) {
-            // this.observManager.publish('authen.check', null);
-            // if (this.redirection) {
-            //   this.router.navigateByUrl(this.redirection);
-            // } else {
-            //   this.router.navigate(['/login']);
-            // }
+        this.objectiveFacade.uploadImageObjective(objectiveImage).then((res: any) => {
+          let index = 0;
+          if (res.status === 1) {
+            this.getDataIcon(res.data.iconURL, index);
+            index++;
+            let object = {
+              id: res.data.id,
+              title: res.data.title,
+              hashTag: res.data.hashTag,
+            }
+            this.dataObjective = object
+            this.clickCardObjective(0, this.dataObjective);
+            this.keyUpSearchObjective("");
+            this.closeDialog();
+            this.imageIcon = {};
+            this.selectedValue = 'เลือกหมวดหมู่';
+            this.searchObjectivePageCategory();
+            this.isMsgError = false;
+            this.isLock = false;
           }
-        });
-      })
+        }).catch((err: any) => {
+          console.log(err);
+          this.isLock = false;
+          let alertMessages: string;
+          if (err.error.message === 'PageObjective is Exists') {
+            alertMessages = 'สิ่งที่คุณกำลังถูกสร้างแล้ว'
+          } else if (err.error.message === 'PageObjective HashTag is Exists') {
+            alertMessages = 'แฮชแท็กถูกสร้างไว้แล้ว'
+          }
+          let dialog = this.showAlertDialogWarming(alertMessages, "none");
+          dialog.afterClosed().subscribe((res) => {
+            if (res) {
+              // this.observManager.publish('authen.check', null);
+              // if (this.redirection) {
+              //   this.router.navigateByUrl(this.redirection);
+              // } else {
+              //   this.router.navigate(['/login']);
+              // }
+            }
+          });
+        })
+      }
+      $("#menubottom").css({
+        'overflow-y': "auto"
+      });
     }
-    $("#menubottom").css({
-      'overflow-y': "auto"
-    });
   }
 
   public canCelImageObject() {

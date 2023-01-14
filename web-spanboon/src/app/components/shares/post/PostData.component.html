@@ -191,14 +191,16 @@
                             <span>{{itemPost && itemPost.createdDate | dateFormat}}</span>
                         </div>
                     </a>
+
                     <ng-container *ngIf="isUserPage">
                         <a class="post-name" target="_blank"
-                            (click)="onClickEngagement($event, itemPost._id, 'profile')"
+                            (click)="onClickEngagement($event, (itemPost._id || itemPost.id), 'profile')"
                             href="{{itemPost && itemPost.ownerUser && itemPost.ownerUser.uniqueId !== undefined && itemPost.ownerUser.uniqueId !== null && itemPost.ownerUser.uniqueId !== '' ? '/profile/'+itemPost.ownerUser.uniqueId : '/profile/'+itemPost.ownerUser._id }}">
                             <span>เผยแพร่โดย :
                                 {{itemPost.ownerUser.displayName?itemPost.ownerUser.displayName:itemPost.ownerUser.name?itemPost.ownerUser.name:itemPost.page.name}}</span>
                         </a>
                     </ng-container>
+
                     <!-- <ng-container *ngIf="isUserPage; else UserPages">
                         {{2}}
                         <span *ngIf="itemPost.ownerUser">{{itemPost.ownerUser.displayName || itemPost.ownerUser.name}}
@@ -391,11 +393,11 @@
                 <null-data></null-data>
             </ng-container>
         </ng-template>
-        <ng-container *ngIf="itemPost.story">
+        <!-- <ng-container *ngIf="itemPost.story">
             <div (click)="storyTeb(itemPost)" class="content-sub"> อ่าน{{PLATFORM_STORY}} <span
                     style="margin-left: 1px;">...</span>
             </div>
-        </ng-container>
+        </ng-container> -->
         <div class="tag_div" *ngIf="itemPost.hashTags && itemPost.hashTags.length > 0">
             <div class="h_tag_list" *ngFor="let hashTag of itemPost.hashTags">
                 <a style="color: gray !important;" class="highlight-text" href="/search?hashtag={{hashTag.name}}"
@@ -481,7 +483,8 @@
                     [share]="itemPost.shareCount ? itemPost.shareCount : 0" [isBlack]="'true'"
                     [userLike]="itemPost.isLike" [userReboon]="itemPost.isRepost" [userComment]="itemPost.isComment"
                     [isPage]="isComments" [accessPage]="pageUser" (emitpage)="pageAction($event)"
-                    (submit)="postAction($event)" [isShowUser]="isShowUser">
+                    (submit)="postAction($event)" [isShowUser]="isShowUser" [isLike]="isLike" [isShare]="isShare"
+                    [isReboon]="isReboon" [isComment]="isShowComment">
                 </control-action>
             </div>
         </div>
