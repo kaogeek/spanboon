@@ -42,9 +42,6 @@ export class PageSocialAccount {
     @Column({ name: 'storedCredentials' })
     public storedCredentials: string;
 
-    @Column({ name: 'refreshToken' })
-    public refreshToken: string;
-
     @Column({ name: 'properties' })
     public properties: any;
 
