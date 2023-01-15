@@ -26,7 +26,6 @@ import { HashTag } from '../models/HashTag';
 import { HashTagService } from '../services/HashTagService';
 import { PageObjectiveService } from '../services/PageObjectiveService';
 import { EmergencyEventService } from '../services/EmergencyEventService';
-import { FacebookService } from '../services/FacebookService';
 @JsonController('/fb_webhook')
 export class FacebookWebhookController {
     constructor(
@@ -36,7 +35,6 @@ export class FacebookWebhookController {
         private hashTagService: HashTagService,
         private pageObjectiveService: PageObjectiveService,
         private emergencyEventService: EmergencyEventService,
-        private facebookService: FacebookService
     ) { }
 
     /**
@@ -57,14 +55,11 @@ export class FacebookWebhookController {
     @Get('/page_feeds')
     public async verifyPageFeedWebhook(@QueryParams() params: any, @Body({ validate: true }) body: any, @Res() res: any): Promise<any> {
         const VERIFY_TOKEN = facebook_setup.FACEBOOK_VERIFY_TOKEN;
-        const APP_ID = facebook_setup.FACEBOOK_APP_ID;
-        const APP_SECRET = facebook_setup.FACEBOOK_APP_SECRET;
         // Parse the query params
         const mode = params['hub.mode'];
         const token = params['hub.verify_token'];
         const challenge = params['hub.challenge'];
-        const subscriptionWebhooks = await this.facebookService.subScriptionWbApp(APP_ID,VERIFY_TOKEN,APP_SECRET);
-        if (mode && token && subscriptionWebhooks.success === true) {
+        if (mode && token ) {
             // Checks the mode and token sent is correct
             if (mode === 'subscribe' && token === VERIFY_TOKEN) {
                 // Responds with the challenge token from the request

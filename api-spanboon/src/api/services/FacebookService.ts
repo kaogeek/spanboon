@@ -230,9 +230,9 @@ export class FacebookService {
 
     // Callback_URL 
 
-    public async subScriptionWbApp(appId:string,verifyToken:string,appSecret:string):Promise<any>{
+    public async subScriptionWbApp(verifyToken:string):Promise<any>{
         try{
-            const { data } = await axios.post('https://graph.facebook.com/v14.0/'+appId+'/subscriptions?object=page&include_values=true&verify_token= ' + verifyToken + '&callback_url='+ process.env.FACEBOOK_CALLBACK_URL+'/&access_token= ' + appId + '|' + appSecret);
+            const { data } = await axios.post('https://graph.facebook.com/v14.0/'+facebook_setup.FACEBOOK_APP_ID+'/subscriptions?object=page&include_values=true&verify_token= ' + verifyToken + '&callback_url='+ process.env.FACEBOOK_CALLBACK_URL+'/&access_token= ' + facebook_setup.FACEBOOK_APP_ID + '|' + facebook_setup.FACEBOOK_APP_SECRET);
             return data;
         }catch(err){
             console.log('Cannot subscribetion Webhooks ',err);
