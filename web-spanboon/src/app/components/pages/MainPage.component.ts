@@ -107,6 +107,7 @@ export class MainPage extends AbstractPage implements OnInit {
       this.searchAccessPage();
     }
 
+
     // const dev = sessionStorage.getItem('isDev');
     // if (dev) {
     //   this.isDev = false;

@@ -57,8 +57,8 @@ export class AssetFacade extends AbstractFacade {
       if (data !== null && data !== undefined) {
         body = Object.assign(data)
       }
-      
-      let options = this.getDefaultOptions();
+
+      let options = this.authMgr.getDefaultOptions();
 
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response as Asset);

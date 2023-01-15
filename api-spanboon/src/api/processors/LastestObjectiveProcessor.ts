@@ -15,6 +15,8 @@ import { PLATFORM_NAME_TH } from '../../constants/SystemConfig';
 import { PostsService } from '../services/PostsService';
 import { ObjectID } from 'mongodb';
 // import moment from 'moment';
+import { ImageUtil } from '../../utils/ImageUtil';
+import { AssetService } from '../services/AssetService';
 
 export class LastestObjectiveProcessor extends AbstractSectionModelProcessor {
 
@@ -25,6 +27,7 @@ export class LastestObjectiveProcessor extends AbstractSectionModelProcessor {
         private pageObjectiveService: PageObjectiveService,
         private userFollowService: UserFollowService,
         private postsService: PostsService,
+        private assetService: AssetService
     ) {
         super();
     }
@@ -167,6 +170,7 @@ export class LastestObjectiveProcessor extends AbstractSectionModelProcessor {
                 const hashtagNames = [];
                 const hastagRowMap = {};
                 for (const row of searchResult) {
+                    const iconSignUrl = await ImageUtil.generateAssetSignURL(this.assetService, row.iconURL, { prefix: '/file/' });
                     const page = (row.page !== undefined && row.page.length > 0) ? row.page[0] : undefined;
                     const hashtag = (row.hashTagObj !== undefined && row.hashTagObj.length > 0) ? row.hashTagObj[0] : undefined;
                     const moreData: any = {};
@@ -178,6 +182,7 @@ export class LastestObjectiveProcessor extends AbstractSectionModelProcessor {
                     contentModel.title = (hashtag) ? '#' + hashtag.name : '-';
                     contentModel.subtitle = row.name;
                     contentModel.iconUrl = row.iconURL;
+                    contentModel.iconSignUrl = iconSignUrl;
                     // contentModel.commentCount = row.commentCount;
                     // contentModel.repostCount = row.repostCount;
                     // contentModel.shareCount = row.shareCount;

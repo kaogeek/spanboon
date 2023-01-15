@@ -9,7 +9,7 @@ import { Injectable } from "@angular/core";
 import { HttpClient } from '@angular/common/http';
 import { AuthenManager } from '../AuthenManager.service';
 import { AbstractFacade } from "./AbstractFacade";
-import { Observable, Subject,BehaviorSubject } from "rxjs";
+import { Observable, Subject, BehaviorSubject } from "rxjs";
 import { tap } from "rxjs/operators";
 
 
@@ -31,7 +31,7 @@ export class ChatRoomFacade extends AbstractFacade {
       url += "?asPage=" + asPage;
     }
 
-    let options = this.getDefaultOptions();
+    let options = this.authMgr.getDefaultOptions();
 
     return this.http.get(url, options).pipe(
       tap(() => this.chatMessages.next())
@@ -39,7 +39,7 @@ export class ChatRoomFacade extends AbstractFacade {
   }
 
   // get message from API
-  
+
   public getChatMessage(roomId: string, asPage?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + "/chatroom/" + roomId + "/message";
@@ -47,7 +47,7 @@ export class ChatRoomFacade extends AbstractFacade {
         url += "?asPage=" + asPage;
       }
 
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
 
       this.http.get(url, options).toPromise().then((response: any) => {
         resolve(response.data);
@@ -68,7 +68,7 @@ export class ChatRoomFacade extends AbstractFacade {
         body = Object.assign(data);
       }
 
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
 
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response);
@@ -77,5 +77,5 @@ export class ChatRoomFacade extends AbstractFacade {
       });
     });
   };
- 
+
 }

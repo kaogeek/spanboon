@@ -8,8 +8,8 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from '@angular/common/http';
 import { AuthenManager } from '../AuthenManager.service';
-import { AbstractFacade } from "./AbstractFacade"; 
-import { AboutPages, SearchFilter } from '../../models/models'; 
+import { AbstractFacade } from "./AbstractFacade";
+import { AboutPages, SearchFilter } from '../../models/models';
 
 @Injectable()
 export class AboutPageFacade extends AbstractFacade {
@@ -18,35 +18,35 @@ export class AboutPageFacade extends AbstractFacade {
         super(http, authMgr);
     }
 
-    public create(id: string , aboutPage : AboutPages[]): Promise<any[]> {
+    public create(id: string, aboutPage: AboutPages[]): Promise<any[]> {
         return new Promise((resolve, reject) => {
-            let url: string = this.baseURL + '/page/' + id + '/about'; 
-            let body: any = {}; 
+            let url: string = this.baseURL + '/page/' + id + '/about';
+            let body: any = {};
 
-            if(aboutPage !== null && aboutPage !== undefined){
+            if (aboutPage !== null && aboutPage !== undefined) {
                 body = Object.assign(aboutPage);
             }
-            let options = this.getDefaultOptions();
+            let options = this.authMgr.getDefaultOptions();
 
-            this.http.post(url, body , options).toPromise().then((response: any) => {
+            this.http.post(url, body, options).toPromise().then((response: any) => {
                 resolve(response.data as AboutPages[]);
             }).catch((error: any) => {
                 reject(error);
             });
         });
-    } 
+    }
 
-    public search(searchFilter : SearchFilter): Promise<any[]> {
+    public search(searchFilter: SearchFilter): Promise<any[]> {
         return new Promise((resolve, reject) => {
-            let url: string = this.baseURL + '/page_about/search'; 
-            let body: any = {}; 
+            let url: string = this.baseURL + '/page_about/search';
+            let body: any = {};
 
-            if(searchFilter !== null && searchFilter !== undefined){
+            if (searchFilter !== null && searchFilter !== undefined) {
                 body = Object.assign(searchFilter);
             }
-            let options = this.getDefaultOptions();
+            let options = this.authMgr.getDefaultOptions();
 
-            this.http.post(url, body , options).toPromise().then((response: any) => {
+            this.http.post(url, body, options).toPromise().then((response: any) => {
                 resolve(response.data as AboutPages[]);
             }).catch((error: any) => {
                 reject(error);
@@ -57,7 +57,7 @@ export class AboutPageFacade extends AbstractFacade {
     public searchPageAbout(pageId: string, offset?: number, limit?: number): Promise<any[]> {
         let searchFilter = new SearchFilter;
         searchFilter.whereConditions = {
-            pageId : pageId
+            pageId: pageId
         };
         searchFilter.offset = offset;
         searchFilter.limit = limit;

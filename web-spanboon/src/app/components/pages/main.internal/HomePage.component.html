@@ -103,9 +103,9 @@
                                     </svg> เหตุการณ์ด่วน
                                 </div>
                                 <img class="image-back"
-                                    [src]="model.emergencyPin.contents.length > 0?model.emergencyPin.contents[0].coverPageSignURL?model.emergencyPin.contents[0].coverPageSignUR:apiBaseURL+model.emergencyPin.contents[0].coverPageUrl+'/image':model.emergencyEvents.contents.length > 0?model.emergencyEvents.contents[0].coverPageSignURL?model.emergencyEvents.contents[0].coverPageSignURL:apiBaseURL+model.emergencyEvents.contents[0].coverPageUrl+'/image':model.postSectionModel.contents[6].coverPageSignURL?model.postSectionModel.contents[6].coverPageSignURL:apiBaseURL+model.postSectionModel.contents[6].coverPageUrl+'/image'">
+                                    [src]="model.emergencyPin.contents.length > 0?model.emergencyPin.contents[0].coverPageSignUrl?model.emergencyPin.contents[0].coverPageSignUrl:apiBaseURL+model.emergencyPin.contents[0].coverPageUrl+'/image':model.emergencyEvents.contents.length > 0?model.emergencyEvents.contents[0].coverPageSignUrl?model.emergencyEvents.contents[0].coverPageSignUrl:apiBaseURL+model.emergencyEvents.contents[0].coverPageUrl+'/image':model.postSectionModel.contents[6].coverPageSignUrl?model.postSectionModel.contents[6].coverPageSignUrl:apiBaseURL+model.postSectionModel.contents[6].coverPageUrl+'/image'">
                                 <img class="image"
-                                    [src]="model.emergencyPin.contents.length > 0?model.emergencyPin.contents[0].coverPageSignURL?model.emergencyPin.contents[0].coverPageSignUR:apiBaseURL+model.emergencyPin.contents[0].coverPageUrl+'/image':model.emergencyEvents.contents.length > 0?model.emergencyEvents.contents[0].coverPageSignURL?model.emergencyEvents.contents[0].coverPageSignURL:apiBaseURL+model.emergencyEvents.contents[0].coverPageUrl+'/image':model.postSectionModel.contents[6].coverPageSignURL?model.postSectionModel.contents[6].coverPageSignURL:apiBaseURL+model.postSectionModel.contents[6].coverPageUrl+'/image'">
+                                    [src]="model.emergencyPin.contents.length > 0?model.emergencyPin.contents[0].coverPageSignUrl?model.emergencyPin.contents[0].coverPageSignUrl:apiBaseURL+model.emergencyPin.contents[0].coverPageUrl+'/image':model.emergencyEvents.contents.length > 0?model.emergencyEvents.contents[0].coverPageSignUrl?model.emergencyEvents.contents[0].coverPageSignUrl:apiBaseURL+model.emergencyEvents.contents[0].coverPageUrl+'/image':model.postSectionModel.contents[6].coverPageSignUrl?model.postSectionModel.contents[6].coverPageSignUrl:apiBaseURL+model.postSectionModel.contents[6].coverPageUrl+'/image'">
                             </div>
                             <div class="col-detail">
                                 <div class="title">
@@ -164,7 +164,7 @@
                                 <div class="colum-detail-1">
                                     <div class="image" *ngIf="index === 0 && !item.type">
                                         <img
-                                            [src]="item.signURL?item.signURL:item.coverPageSignURL?item.coverPageSignURL:apiBaseURL+item.coverPageUrl+'/image'">
+                                            [src]="item.signURL?item.signURL:item.coverPageSignUrl?item.coverPageSignUrl:apiBaseURL+item.coverPageUrl+'/image'">
                                     </div>
                                     <div class="detail">
                                         <span class="title"
@@ -232,7 +232,7 @@
                                                 (click)="openDilogPost(model.postSectionModel.contents[1])">
                                                 <img class="image"
                                                     *ngIf="model.postSectionModel.contents[1].coverPageUrl"
-                                                    [src]="model.postSectionModel.contents[1].signURL?model.postSectionModel.contents[1].signURL:model.postSectionModel.contents[1].coverPageSignURL?model.postSectionModel.contents[1].coverPageSignURL:apiBaseURL+model.postSectionModel.contents[1].coverPageUrl+'/image'">
+                                                    [src]="model.postSectionModel.contents[1].signURL?model.postSectionModel.contents[1].signURL:model.postSectionModel.contents[1].coverPageSignUrl?model.postSectionModel.contents[1].coverPageSignUrl:apiBaseURL+model.postSectionModel.contents[1].coverPageUrl+'/image'">
                                                 <span *ngIf="!model.postSectionModel.contents[1].coverPageUrl"
                                                     [innerHTML]='model.postSectionModel.contents[1].post.title | highlight'></span>
                                             </div>
@@ -283,7 +283,7 @@
                                                 (click)="openDilogPost(model.postSectionModel.contents[2])">
                                                 <img class="image"
                                                     *ngIf="model.postSectionModel.contents[2].coverPageUrl"
-                                                    [src]="model.postSectionModel.contents[2].signURL?model.postSectionModel.contents[2].signURL:model.postSectionModel.contents[2].coverPageSignURL?model.postSectionModel.contents[2].coverPageSignURL:apiBaseURL+model.postSectionModel.contents[2].coverPageUrl+'/image'">
+                                                    [src]="model.postSectionModel.contents[2].signURL?model.postSectionModel.contents[2].signURL:model.postSectionModel.contents[2].coverPageSignUrl?model.postSectionModel.contents[2].coverPageSignUrl:apiBaseURL+model.postSectionModel.contents[2].coverPageUrl+'/image'">
                                                 <span *ngIf="!model.postSectionModel.contents[2].coverPageUrl"
                                                     [innerHTML]='model.postSectionModel.contents[2].post.length > 1? model.postSectionModel.contents[2].post.title: model.postSectionModel.contents[2].post.title | highlight'></span>
                                             </div>
@@ -327,7 +327,7 @@
                                         <div class="image-post"
                                             (click)="openDilogPost(model.postSectionModel.contents[0])">
                                             <img class="image" *ngIf="model.postSectionModel.contents[0].coverPageUrl"
-                                                [src]="model.postSectionModel.contents[0].signURL?model.postSectionModel.contents[0].signURL:model.postSectionModel.contents[0].coverPageSignURL?model.postSectionModel.contents[0].coverPageSignURL:apiBaseURL+model.postSectionModel.contents[0].coverPageUrl+'/image'">
+                                                [src]="model.postSectionModel.contents[0].signURL?model.postSectionModel.contents[0].signURL:model.postSectionModel.contents[0].coverPageSignUrl?model.postSectionModel.contents[0].coverPageSignUrl:apiBaseURL+model.postSectionModel.contents[0].coverPageUrl+'/image'">
                                             <span *ngIf="!model.postSectionModel.contents[0].coverPageUrl"
                                                 [innerHTML]='model.postSectionModel.contents[0].post.title | highlight'></span>
                                         </div>
@@ -388,7 +388,7 @@
                                                 model.postSectionModel.contents[5])" class="image" *ngIf="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1?
                                                     model.objectiveEvents.contents[0].post[1].coverImage:
                                                     model.postSectionModel.contents[5].coverPageUrl"
-                                                    [src]="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? apiBaseURL+model.objectiveEvents.contents[0].post[1].coverImage+'/image':model.postSectionModel.contents[5].signURL?model.postSectionModel.contents[5].signURL:model.postSectionModel.contents[5].coverPageSignURL?model.postSectionModel.contents[5].coverPageSignURL:apiBaseURL+model.postSectionModel.contents[5].coverPageUrl+'/image'">
+                                                    [src]="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? apiBaseURL+model.objectiveEvents.contents[0].post[1].coverImage+'/image':model.postSectionModel.contents[5].signURL?model.postSectionModel.contents[5].signURL:model.postSectionModel.contents[5].coverPageSignUrl?model.postSectionModel.contents[5].coverPageSignUrl:apiBaseURL+model.postSectionModel.contents[5].coverPageUrl+'/image'">
                                                 <span *ngIf="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1?
                                                         model.objectiveEvents.contents[0].post[1].coverImage === '':
                                                         model.postSectionModel.contents[5].coverPageUrl === ''"
@@ -458,7 +458,7 @@
                                                 model.postSectionModel.contents[6])" class="image" *ngIf="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1?
                                                     model.objectiveEvents.contents[0].post[2].coverImage:
                                                     model.postSectionModel.contents[6].coverPageUrl"
-                                                    [src]="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? apiBaseURL+model.objectiveEvents.contents[0].post[2].coverImage+'/image':model.postSectionModel.contents[6].signURL?model.postSectionModel.contents[6].signURL:model.postSectionModel.contents[6].coverPageSignURL?model.postSectionModel.contents[6].coverPageSignURL:apiBaseURL+model.postSectionModel.contents[6].coverPageUrl+'/image'">
+                                                    [src]="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? apiBaseURL+model.objectiveEvents.contents[0].post[2].coverImage+'/image':model.postSectionModel.contents[6].signURL?model.postSectionModel.contents[6].signURL:model.postSectionModel.contents[6].coverPageSignUrl?model.postSectionModel.contents[6].coverPageSignUrl:apiBaseURL+model.postSectionModel.contents[6].coverPageUrl+'/image'">
                                                 <span *ngIf="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1?
                                                     model.objectiveEvents.contents[0].post[2].coverImage === '':
                                                     model.postSectionModel.contents[6].coverPageUrl === ''"
@@ -466,7 +466,8 @@
                                             </div>
                                             <div class="detail"
                                                 (click)="openDilogPost(model.postSectionModel.contents[6])">
-                                                <span *ngIf="(model.postSectionModel.contents[6] !== null && model.postSectionModel.contents[6] !== undefined && model.postSectionModel.contents[6] !== '')"
+                                                <span
+                                                    *ngIf="(model.postSectionModel.contents[6] !== null && model.postSectionModel.contents[6] !== undefined && model.postSectionModel.contents[6] !== '')"
                                                     [innerHTML]='model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[2].title: model.postSectionModel.contents[6].post.title | highlight'></span>
                                                 <span *ngIf="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1?
                                                         model.objectiveEvents.contents[0].post[2].coverImage === '':
@@ -522,7 +523,7 @@
                                                     model.objectiveEvents.contents[0].post[0].coverImage:
                                                     model.postSectionModel.contents[4].coverPageUrl"
                                                 (click)="openDilogPost(model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[0]: model.postSectionModel.contents[4].post)"
-                                                [src]="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? apiBaseURL+model.objectiveEvents.contents[0].post[0].coverImage+'/image':model.postSectionModel.contents[4].signURL?model.postSectionModel.contents[4].signURL:model.postSectionModel.contents[4].coverPageSignURL?model.postSectionModel.contents[4].coverPageSignURL:apiBaseURL+model.postSectionModel.contents[4].coverPageUrl+'/image'">
+                                                [src]="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? apiBaseURL+model.objectiveEvents.contents[0].post[0].coverImage+'/image':model.postSectionModel.contents[4].signURL?model.postSectionModel.contents[4].signURL:model.postSectionModel.contents[4].coverPageSignUrl?model.postSectionModel.contents[4].coverPageSignUrl:apiBaseURL+model.postSectionModel.contents[4].coverPageUrl+'/image'">
                                             <span *ngIf="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1?
                                                 model.objectiveEvents.contents[0].post[0].coverImage === '':
                                                 model.postSectionModel.contents[4].coverPageUrl === ''"
@@ -563,7 +564,7 @@
                                 <div class="card" *ngFor="let content of data.contents;let index=index"
                                     (click)="clickToPageUser(content.owner?content.data.objectiveId:content.data.pageUsername?content.data.pageUsername:content.data._id,content.owner?'ture':undefined)">
                                     <img
-                                        [src]="content.signURL?content.signURL:content.iconUrlSignURL?content.iconUrlSignURL:apiBaseURL+content.iconUrl+'/image'">
+                                        [src]="content.signURL?content.signURL:content.iconSignUrl?content.iconSignUrl:apiBaseURL+content.iconUrl+'/image'">
                                     <div class="text">
                                         <span [innerHTML]='content.subtitle?content.subtitle:content.title'></span>
                                     </div>
@@ -595,7 +596,7 @@
                                         </div>
                                     </div>
                                     <img *ngIf="content.post.gallery[0]" (click)="openDilogPost(content.post)"
-                                        [src]="content.signURL?content.signURL:content.iconUrlSignURL?content.iconUrlSignURL:apiBaseURL+content.post.gallery[0].imageURL+'/image'">
+                                        [src]="content.signURL?content.signURL:content.coverPageSignUrl?content.coverPageSignUrl:apiBaseURL+content.post.gallery[0].imageURL+'/image'">
                                     <span class="content-post-img" (click)="openDilogPost(content.post)"
                                         *ngIf="!content.post.gallery[0]"
                                         [innerHTML]='content.post.title | highlight'></span>

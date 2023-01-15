@@ -308,7 +308,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
     ngOnInit(): void {
         this.checkLoginAndRedirection();
 
-        if (this.authenManager.getUserToken() !== null && this.authenManager.getUserToken() !== undefined) {
+        if (!!this.authenManager.getToken()) {
             this.searchAccessPage();
             this.getImage();
             this.listFulfillmentCase(this.listByStatus, this.asPage, this.sortByType, this.groupByType, this.filterType, SEARCH_LIMIT, SEARCH_OFFSET).then((result) => {

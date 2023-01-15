@@ -61,7 +61,7 @@ export class HashTagFacade extends AbstractFacade {
       if (filter !== null && filter !== undefined) {
         body = Object.assign(filter)
       }
-      let option = this.getDefaultOptions();
+      let option = this.authMgr.getDefaultOptions();
       this.http.post(url, body, option).toPromise().then((response: any) => {
         resolve(response.data);
       }).catch((error: any) => {
@@ -71,7 +71,7 @@ export class HashTagFacade extends AbstractFacade {
   }
 
   public getDefaultOptions(): any {
-    let header = this.getDefaultHeader();
+    let header = this.authMgr.getDefaultHeader();
     let userId = this.authMgr.getCurrentUser();
     header = header.append('userid', userId ? userId.id : '')
 

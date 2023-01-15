@@ -19,22 +19,22 @@ export class ActionLogFacade extends AbstractFacade {
   }
 
   public createActionLog(contentId: string, contentType: string, action?: string): Promise<ActionLog> {
-    if(contentId === null || contentId === undefined){
-        return Promise.reject('contentId is null');
+    if (contentId === null || contentId === undefined) {
+      return Promise.reject('contentId is null');
     }
 
-    if(contentType === null || contentType === undefined){
-        return Promise.reject('contentType is null');
+    if (contentType === null || contentType === undefined) {
+      return Promise.reject('contentType is null');
     }
 
-    if(action === null || action === undefined){
-        action = 'view';
+    if (action === null || action === undefined) {
+      action = 'view';
     }
 
     const data: any = {
-        'contentId': contentId,
-        'contentType': contentType,
-        'action': action
+      'contentId': contentId,
+      'contentType': contentType,
+      'action': action
     }
     return this.create(data);
   }
@@ -42,7 +42,7 @@ export class ActionLogFacade extends AbstractFacade {
 
   public create(data: ActionLog): Promise<ActionLog> {
     if (data === undefined || data === null) {
-        new Error("data is required.");
+      new Error("data is required.");
     }
 
     if (data.contentId === undefined || data.contentId === null) {
@@ -54,8 +54,8 @@ export class ActionLogFacade extends AbstractFacade {
     // }
 
     if (data.action === undefined || data.action === null || data.action === '') {
-        new Error("action is required.");
-      }
+      new Error("action is required.");
+    }
 
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/actionlog/addlog';
@@ -65,7 +65,7 @@ export class ActionLogFacade extends AbstractFacade {
         body = Object.assign(data)
       }
 
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
 
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response.data as ActionLog);

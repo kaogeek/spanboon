@@ -30,7 +30,7 @@ export class PageFacade extends AbstractFacade {
       if (data !== null && data !== undefined) {
         body = Object.assign(data)
       }
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
 
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response);
@@ -47,7 +47,7 @@ export class PageFacade extends AbstractFacade {
       if (filter !== null && filter !== undefined) {
         body = Object.assign(filter)
       }
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
 
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response.data);
@@ -64,7 +64,7 @@ export class PageFacade extends AbstractFacade {
       if (data !== null && data !== undefined) {
         body = Object.assign(data)
       }
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
 
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response.data);
@@ -82,7 +82,7 @@ export class PageFacade extends AbstractFacade {
       if (data !== null && data !== undefined) {
         body = Object.assign(data)
       }
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response.data);
       }).catch((error: any) => {
@@ -92,7 +92,7 @@ export class PageFacade extends AbstractFacade {
   }
 
   public getDefaultOptions(): any {
-    let header = this.getDefaultHeader();
+    let header = this.authMgr.getDefaultHeader();
     let userId = this.authMgr.getCurrentUser();
     header = header.append('userid', userId ? userId.id : '')
 
@@ -128,7 +128,7 @@ export class PageFacade extends AbstractFacade {
       if (data !== null && data !== undefined) {
         body = Object.assign(data)
       }
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
 
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response);
@@ -146,7 +146,7 @@ export class PageFacade extends AbstractFacade {
       let body: any = {
         "tokenFCM": tokenFCM
       };
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response);
       }).catch((error: any) => {
@@ -160,7 +160,7 @@ export class PageFacade extends AbstractFacade {
       let url: string = this.baseURL + '/page/' + pageId;
       let body: any = {};
 
-      let option = this.getDefaultOptions();
+      let option = this.authMgr.getDefaultOptions();
       this.http.get(url, option).toPromise().then((response: any) => {
         resolve(response);
       }).catch((error: any) => {
@@ -177,7 +177,7 @@ export class PageFacade extends AbstractFacade {
         body = Object.assign(data)
       }
 
-      let option = this.getDefaultOptions();
+      let option = this.authMgr.getDefaultOptions();
       this.http.put(url, body, option).toPromise().then((response: any) => {
         resolve(response);
       }).catch((error: any) => {
@@ -197,7 +197,7 @@ export class PageFacade extends AbstractFacade {
       if (data !== null && data !== undefined) {
         body = Object.assign(data)
       }
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response);
       }).catch((error: any) => {
@@ -216,7 +216,7 @@ export class PageFacade extends AbstractFacade {
       if (data !== null && data !== undefined) {
         body = Object.assign(data)
       }
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response);
       }).catch((error: any) => {
@@ -228,7 +228,7 @@ export class PageFacade extends AbstractFacade {
   public findPagePost(pageId: string, postId: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/page/' + pageId + '/post/' + postId;
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
 
       this.http.get(url, options).toPromise().then((response: any) => {
         resolve(response);
@@ -241,7 +241,7 @@ export class PageFacade extends AbstractFacade {
   public getAccessLevel(pageId: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/page/' + pageId + '/accesslv';
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
 
       this.http.get(url, options).toPromise().then((response: any) => {
         resolve(response);
@@ -254,7 +254,7 @@ export class PageFacade extends AbstractFacade {
   public addAccess(pageId: string, data: any): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/page/' + pageId + '/access';
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
       let body: any = {};
 
       if (data !== null && data !== undefined) {
@@ -272,7 +272,7 @@ export class PageFacade extends AbstractFacade {
   public getAccess(pageId: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/page/' + pageId + '/access';
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
 
       this.http.get(url, options).toPromise().then((response: any) => {
         resolve(response);
@@ -286,7 +286,7 @@ export class PageFacade extends AbstractFacade {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/page/' + pageId + '/post/' + postId;
 
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
 
       this.http.delete(url, options).toPromise().then((response: any) => {
         resolve(response);
@@ -305,7 +305,7 @@ export class PageFacade extends AbstractFacade {
         body = Object.assign(data)
       }
 
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
 
       this.http.put(url, body, options).toPromise().then((response: any) => {
         resolve(response as Post[]);
@@ -318,7 +318,7 @@ export class PageFacade extends AbstractFacade {
   public checkUniqueId(pageId: string, pageUsername: any): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/page/' + pageId + '/uniqueid/check';
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
       let body: any = {};
 
       if (pageUsername !== null && pageUsername !== undefined) {
@@ -336,7 +336,7 @@ export class PageFacade extends AbstractFacade {
   public checkPageUsername(pageUsername: any): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/page/uniqueid/check';
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
       let body: any = {};
 
       if (pageUsername !== null && pageUsername !== undefined) {
@@ -359,7 +359,7 @@ export class PageFacade extends AbstractFacade {
       if (data !== null && data !== undefined) {
         body = Object.assign(data)
       }
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
 
       this.http.put(url, body, options).toPromise().then((response: any) => {
         resolve(response as Post[]);
@@ -372,7 +372,7 @@ export class PageFacade extends AbstractFacade {
   public socialBindingFacebook(pageId: string, facebookPageId: PageSoialFB): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/page/' + pageId + '/social/facebook';
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
       let body: any = {};
       if (facebookPageId !== undefined && facebookPageId !== null) {
         body = Object.assign(facebookPageId);
@@ -388,7 +388,7 @@ export class PageFacade extends AbstractFacade {
   public socialUnBindingFacebook(pageId: string): Promise<PageSocialTW> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/page/' + pageId + '/social/facebook';
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
       this.http.delete(url, options).toPromise().then((response: any) => {
         resolve(response);
       }).catch((error: any) => {
@@ -400,7 +400,7 @@ export class PageFacade extends AbstractFacade {
   public socialGetBindingFacebook(pageId: string): Promise<PageSocialTW> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/page/' + pageId + '/social/facebook/check';
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
       this.http.get(url, options).toPromise().then((response: any) => {
         resolve(response);
       }).catch((error: any) => {
@@ -412,7 +412,7 @@ export class PageFacade extends AbstractFacade {
   public socialBindingTwitter(pageId: string, data: PageSocialTW): Promise<PageSocialTW> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/page/' + pageId + '/social/twitter';
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
       let body: any = {};
       if (data !== undefined && data !== null) {
         body = Object.assign(data);
@@ -428,7 +428,7 @@ export class PageFacade extends AbstractFacade {
   public socialUnBindingTwitter(pageId: string): Promise<PageSocialTW> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/page/' + pageId + '/social/twitter';
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
       this.http.delete(url, options).toPromise().then((response: any) => {
         resolve(response);
       }).catch((error: any) => {
@@ -440,7 +440,7 @@ export class PageFacade extends AbstractFacade {
   public socialGetBindingTwitter(pageId: string): Promise<PageSocialTW> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/page/' + pageId + '/social/twitter/check';
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
       this.http.get(url, options).toPromise().then((response: any) => {
         resolve(response);
       }).catch((error: any) => {
@@ -457,7 +457,7 @@ export class PageFacade extends AbstractFacade {
     return new Promise((resolve, reject) => {
 
       let url: string = this.baseURL + '/page/' + pageId + '/config/' + configName;
-      let option = this.getDefaultOptions();
+      let option = this.authMgr.getDefaultOptions();
       this.http.get(url, option).toPromise().then((response: any) => {
 
         resolve(response.data);
@@ -476,7 +476,7 @@ export class PageFacade extends AbstractFacade {
 
       let url: string = this.baseURL + '/page/' + pageId + '/config/' + configName;
       let body = {};
-      let option = this.getDefaultOptions();
+      let option = this.authMgr.getDefaultOptions();
       if (config !== undefined && config !== null) {
         body = Object.assign(config);
       }
@@ -492,7 +492,7 @@ export class PageFacade extends AbstractFacade {
 
       let url: string = this.baseURL + '/page/' + pageId + '/twitter_fetch_enable';
       let body = {};
-      let option = this.getDefaultOptions();
+      let option = this.authMgr.getDefaultOptions();
       if (config !== undefined && config !== null) {
         body = Object.assign(config);
       }
@@ -507,7 +507,7 @@ export class PageFacade extends AbstractFacade {
     return new Promise((resolve, reject) => {
 
       let url: string = this.baseURL + '/page/' + pageId + '/twitter_fetch_enable';
-      let option = this.getDefaultOptions();
+      let option = this.authMgr.getDefaultOptions();
       this.http.get(url, option).toPromise().then((response: any) => {
         resolve(response.data);
       }).catch((error: any) => {
@@ -523,7 +523,7 @@ export class PageFacade extends AbstractFacade {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/page/' + pageId + '/facebook_fetch_enable';
       let body = {};
-      let option = this.getDefaultOptions();
+      let option = this.authMgr.getDefaultOptions();
       if (config !== undefined && config !== null) {
         body = Object.assign(config);
       }
@@ -539,7 +539,7 @@ export class PageFacade extends AbstractFacade {
     return new Promise((resolve, reject) => {
 
       let url: string = this.baseURL + '/page/' + pageId + '/facebook_fetch_enable';
-      let option = this.getDefaultOptions();
+      let option = this.authMgr.getDefaultOptions();
       this.http.get(url, option).toPromise().then((response: any) => {
         resolve(response.data);
       }).catch((error: any) => {
