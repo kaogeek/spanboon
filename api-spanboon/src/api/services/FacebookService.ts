@@ -220,7 +220,7 @@ export class FacebookService {
     }
     public async expireToken(inputToken:string,appAccessToken:any): Promise<any>{
         try{
-            const { data } = await axios.get('https://graph.facebook.com/v14.0/debug_token?fields=data,expires_at,data_access_expires_at&input_token=' + inputToken + '&access_token=' +appAccessToken);
+            const { data } = await axios.get('https://graph.facebook.com/v14.0/debug_token?fields=data,expires_at,data_access_expires_at,is_valid&input_token=' + inputToken + '&access_token=' +appAccessToken);
             return data;
         }catch(err){
             console.log('Cannot debug token',err);
