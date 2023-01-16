@@ -216,7 +216,6 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
 
     // this.seoService.removeMeta();
     this.searchAllPage();
-
     this.mySubscription = this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe((event: NavigationEnd) => {
       if (event instanceof NavigationEnd) {
         const url: string = decodeURI(this.router.url);
@@ -349,7 +348,6 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     if (this.isLogin()) {
       this.getProfileImage();
     }
-
     this.observManager.subscribe(REFRESH_DATA, (result: any) => {
       if (result) {
         this.resPost.posts.unshift(result);
@@ -540,63 +538,79 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     search.limit = 10;
     search.count = false;
     search.whereConditions = { _id: postIdSubstring };
-    let res = await this.searchById(search);
-    this.resDataPost = res;
-    if (res) {
-      if (this.resDataPost.length === 0) {
-        this.msgPageNotFound = true;
-        this.labelStatus = 'ไม่พบโพสต์';
-      } else {
-        this.showProfilePage(res[0].pageId);
-        this.isMaxLoadingPost = true;
-        let postIndex: number = 0
-        let galleryIndex = 0;
-        for (let post of this.resDataPost) {
-          let arrayHashTag = [];
-          if (post.hashTags.length > 0) {
-            for (let hashtag of post.hashTags) {
-              arrayHashTag.push(hashtag.name)
-            }
-          }
-          let text = arrayHashTag.length > 0 ? arrayHashTag : post.title;
-          this.seoService.setMetaInfo(this.router.url, post.title, post.title + post.detail + text, post.gallery[0].imageURL, text);
-          if (post.gallery.length > 0) {
-            for (let img of post.gallery) {
-              if (img.imageURL !== '') {
-                this.getDataGallery(img.imageURL, postIndex, galleryIndex);
-                galleryIndex++
+    this.postFacade.search(search).then((res) => {
+      if (res) {
+        this.resDataPost = res;
+        if (res) {
+          if (this.resDataPost.length === 0) {
+            this.msgPageNotFound = true;
+            this.labelStatus = 'ไม่พบโพสต์';
+          } else {
+            this.showProfilePage(res[0].pageId);
+            this.isMaxLoadingPost = true;
+            let postIndex: number = 0
+            let galleryIndex = 0;
+            for (let post of this.resDataPost) {
+              let arrayHashTag = [];
+              if (post.hashTags.length > 0) {
+                for (let hashtag of post.hashTags) {
+                  arrayHashTag.push(hashtag.name)
+                }
               }
-            }
-            postIndex++;
-          }
+              let text = arrayHashTag.length > 0 ? arrayHashTag : post.title;
+              this.seoService.setMetaInfo(this.router.url, post.title, post.title + post.detail + text, post.gallery[0].imageURL, text);
+              if (post.gallery.length > 0) {
+                for (let img of post.gallery) {
+                  if (img.imageURL !== '') {
+                    this.getDataGallery(img.imageURL, postIndex, galleryIndex);
+                    galleryIndex++
+                  }
+                }
+                postIndex++;
+              }
 
-          if (post.referencePost !== null && post.referencePost !== undefined && post.referencePost !== '') {
-            let search: SearchFilter = new SearchFilter();
-            search.limit = 30;
-            search.count = false;
-            search.whereConditions = { _id: post.referencePost };
-            this.postFacade.search(search).then((res: any) => {
-              if (res.length !== 0) {
-                post.referencePostObject = res[0]
-              } else {
-                post.referencePostObject = 'UNDEFINED PAGE'
+              if (post.referencePost !== null && post.referencePost !== undefined && post.referencePost !== '') {
+                let search: SearchFilter = new SearchFilter();
+                search.limit = 30;
+                search.count = false;
+                search.whereConditions = { _id: post.referencePost };
+                this.postFacade.search(search).then((res: any) => {
+                  if (res.length !== 0) {
+                    post.referencePostObject = res[0]
+                  } else {
+                    post.referencePostObject = 'UNDEFINED PAGE'
+                  }
+                }).catch((err: any) => {
+                });
               }
-            }).catch((err: any) => {
-            });
+            }
           }
         }
+        this.showLoading = false;
+        // setTimeout(() => {
+        //   if (this.resDataPost[0].needs.length > 0) {
+        //     this.needsCard.fulfillNeeds('sdsad', 'asdsadasd');
+        //   }
+        // }, 500);
       }
-    }
-    this.showLoading = false;
-    // setTimeout(() => {
-    //   if (this.resDataPost[0].needs.length > 0) {
-    //     this.needsCard.fulfillNeeds('sdsad', 'asdsadasd');
-    //   }
-    // }, 500);
+    }).catch((err: any) => {
+      if (err.error.name === "Error" && err.status === 500) {
+        this.router.navigate(['/']);
+      }
+    });
   }
 
-  public async searchById(search: any) {
-    return this.postFacade.search(search);
+  public searchById(search: any) {
+    new Promise((resolve, reject) => {
+      this.postFacade.search(search).then((res) => {
+        if (res) {
+          resolve(res);
+        }
+      }).catch((err: any) => {
+        reject(err);
+      });
+    });
+
   }
 
   public isLogin(): boolean {

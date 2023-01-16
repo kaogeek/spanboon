@@ -103,7 +103,20 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
   mySubscription: any;
   files: FileHandle[] = [];
 
-  public links = [{ label: 'ไทมไลน์', keyword: 'timeline' }, { label: this.PLATFORM_GENERAL_TEXT, keyword: 'general' }, { label: this.PLATFORM_FULFILL_TEXT, keyword: 'fulfillment' }];
+  public links = [
+    {
+      label: 'ไทมไลน์',
+      keyword: 'timeline'
+    },
+    {
+      label: this.PLATFORM_GENERAL_TEXT,
+      keyword: 'general'
+    },
+    // { 
+    //   label: this.PLATFORM_FULFILL_TEXT, 
+    //   keyword: 'fulfillment' 
+    // }
+  ];
   public activeLink = this.links[0].label;
 
   constructor(router: Router, authenManager: AuthenManager, profileFacade: ProfileFacade, dialog: MatDialog, pageFacade: PageFacade, postCommentFacade: PostCommentFacade,
