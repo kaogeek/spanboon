@@ -268,7 +268,7 @@ export class MainPageController {
         });
         const emergencyPinModel = await emergencyPinProcessor.process();
 
-        const objectiveProcessor: ObjectiveProcessor = new ObjectiveProcessor(this.pageObjectiveService, this.postsService, this.s3Service, this.userLikeService);
+        const objectiveProcessor: ObjectiveProcessor = new ObjectiveProcessor(this.pageObjectiveService, this.postsService, this.s3Service, this.userLikeService, this.assetService);
         objectiveProcessor.setData({
             userId,
             startDateTime: weekRanges[0],
@@ -306,7 +306,7 @@ export class MainPageController {
         });
         processorList.push(userPageLookingProcessor);
 
-        const followingRecommendProcessor: FollowingRecommendProcessor = new FollowingRecommendProcessor(this.postsService, this.userFollowService);
+        const followingRecommendProcessor: FollowingRecommendProcessor = new FollowingRecommendProcessor(this.postsService, this.userFollowService, this.assetService);
         followingRecommendProcessor.setData({
             userId,
             startDateTime: weekRanges[0],
@@ -321,7 +321,7 @@ export class MainPageController {
         processorList.push(followingRecommendProcessor);
 
         // open when main icon template show
-        const lastestObjProcessor = new LastestObjectiveProcessor(this.pageObjectiveService, this.userFollowService, this.postsService);
+        const lastestObjProcessor = new LastestObjectiveProcessor(this.pageObjectiveService, this.userFollowService, this.postsService, this.assetService);
         lastestObjProcessor.setData({
             userId,
             startDateTime: weekRanges[0],
@@ -1254,7 +1254,9 @@ export class MainPageController {
             ];
 
             if (isOfficial !== null && isOfficial !== undefined) {
-                postsLookupStmt.splice(2, 0, { $match: { 'page.isOfficial': isOfficial } });
+                postsLookupStmt.splice(2, 0, { $match: { 'page.isOfficial': isOfficial, 'page.banned': false } });
+            } else {
+                postsLookupStmt.splice(2, 0, { $match: { 'page.banned': false } });
             }
 
             searchPostStmt = postStmt.concat(postsLookupStmt);

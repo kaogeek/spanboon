@@ -24,7 +24,7 @@ export class PageConfig extends BaseModel {
     public name: string;
 
     @Column({ name: 'value' })
-    public value: boolean;
+    public value: any;
 
     @Column({ name: 'type' })
     public type: string;

@@ -12,13 +12,6 @@ import { ObjectID } from 'mongodb';
 import { BaseModel } from './BaseModel';
 import moment from 'moment';
 import * as bcrypt from 'bcrypt';
-import { AuthenticationId } from './AuthenticationId';
-import { Posts } from './Posts';
-import { Page } from './Page';
-import { PageFollower } from './PageFollower';
-import { Fulfillment } from './Fulfillment';
-import { PageAccessLevel } from './PageAccessLevel';
-
 @Entity('User', { name: 'User' })
 export class User extends BaseModel {
 
@@ -127,23 +120,23 @@ export class User extends BaseModel {
     @Column({ name: 'isSyncPage' })
     public isSyncPage: boolean;
 
-    @Column(type => AuthenticationId)
-    public authenticationId: AuthenticationId;
+    // @Column(type => AuthenticationId)
+    // public authenticationId: AuthenticationId;
 
-    @Column(type => PageAccessLevel)
-    public pageAccessLevel: PageAccessLevel;
+    // @Column(type => PageAccessLevel)
+    // public pageAccessLevel: PageAccessLevel;
 
-    @Column(type => Posts)
-    public posts: Posts[];
+    // @Column(type => Posts)
+    // public posts: Posts[];
 
-    @Column(type => Page)
-    public pages: Page[];
+    // @Column(type => Page)
+    // public pages: Page[];
 
-    @Column(type => PageFollower)
-    public pageFollowers: PageFollower[];
+    // @Column(type => PageFollower)
+    // public pageFollowers: PageFollower[];
 
-    @Column(type => Fulfillment)
-    public Fulfillments: Fulfillment[];
+    // @Column(type => Fulfillment)
+    // public Fulfillments: Fulfillment[];
 
     @BeforeInsert()
     public createDetails(): any {

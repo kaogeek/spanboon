@@ -14,6 +14,8 @@ import { UserFollowService } from '../services/UserFollowService';
 import { PLATFORM_NAME_TH } from '../../constants/SystemConfig';
 import { SUBJECT_TYPE } from '../../constants/FollowType';
 import { ObjectID } from 'mongodb';
+import { AssetService } from '../services/AssetService';
+import { ImageUtil } from '../../utils/ImageUtil';
 
 export class FollowingRecommendProcessor extends AbstractSectionModelProcessor {
 
@@ -22,7 +24,8 @@ export class FollowingRecommendProcessor extends AbstractSectionModelProcessor {
 
     constructor(
         private postsService: PostsService,
-        private userFollowService: UserFollowService
+        private userFollowService: UserFollowService,
+        private assetService: AssetService
     ) {
         super();
     }
@@ -180,10 +183,12 @@ export class FollowingRecommendProcessor extends AbstractSectionModelProcessor {
 
                 for (const row of postAggregateResult) {
                     if (row.page !== undefined) {
+                        const iconSignUrl = await ImageUtil.generateAssetSignURL(this.assetService, row.page.imageURL, { prefix: '/file/' });
                         const contentModel = new ContentModel();
                         contentModel.title = '';
                         contentModel.subtitle = row.page.name;
                         contentModel.iconUrl = row.page.imageURL;
+                        contentModel.iconSignUrl = iconSignUrl;
                         contentModel.data = row.page;
 
                         if (showUserAction) {

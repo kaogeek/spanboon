@@ -56,13 +56,7 @@
                         <mat-radio-group class="custom-control-input" name="gender" [(ngModel)]="data.gender">
                             <mat-radio-button [value]="0">ชาย</mat-radio-button>
                             <mat-radio-button [value]="1">หญิง</mat-radio-button>
-                            <mat-radio-button [value]="-1">กำหนดเอง</mat-radio-button>
                         </mat-radio-group>
-                    </div>
-                </div>
-                <div class="form-group" *ngIf="data.gender === -1">
-                    <div class="form-col">
-                        <input type="text" id = "customGender" name="customGender" [(ngModel)]="data.customGender" placeholder="เพศ" class="input-text" required>
                     </div>
                 </div>
             </div>

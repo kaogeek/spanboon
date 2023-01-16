@@ -942,8 +942,10 @@ export class GuestController {
             let fbUser = undefined;
             let userFb = undefined;
             let authenticaTionFB = undefined;
+            let refreshToken = undefined;
             try {
                 fbUser = await this.facebookService.fetchFacebook(loginParam.token);
+                refreshToken = await this.facebookService.getRefreshToken(loginParam.token);
                 userFb = await this.userService.find({ email: fbUser.email });
                 for (const userFind of userFb) {
                     authenticaTionFB = await this.authenticationIdService.findOne({ where: { user: ObjectID(userFind.id), providerName: PROVIDER.FACEBOOK } });
@@ -960,7 +962,7 @@ export class GuestController {
                 const expirationDate = moment().add(userExrTime, 'days').toDate();
                 const facebookUserId = authenticaTionFB.providerUserId;
                 const query = { providerUserId: facebookUserId, providerName: PROVIDER.FACEBOOK };
-                const newValue = { $set: { providerUserId: fbUser.id, lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, storedCredentials: loginParam.token, expirationDate } };
+                const newValue = { $set: { providerUserId: fbUser.id, lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, storedCredentials: loginParam.token,refreshToken:refreshToken.access_token, expirationDate } };
                 const updateAuth = await this.authenticationIdService.update(query, newValue);
                 if (updateAuth) {
                     const updatedAuth = await this.authenticationIdService.findOne({ where: query });
@@ -1585,9 +1587,6 @@ export class GuestController {
         const getCache = cache.get(user.id.toString());
         const userExrTime = await this.getUserLoginExpireTime();
         let loginUser: any;
-
-        console.log('getCache >>> ', getCache);
-
         if (getCache !== null && getCache !== undefined) {
             if (user && mode === PROVIDER.EMAIL) {
                 if (otp === getCache[0].otpGet) {
@@ -1936,19 +1935,20 @@ export class GuestController {
             const expiresAt = authenId.expirationDate;
             if (expiresAt !== undefined && expiresAt !== null && expiresAt.getTime() <= today.getTime()) {
                 const errorUserNameResponse: any = { status: 0, message: 'User token expired.' };
-                await this.deviceToken.delete({ userId: user });
+                await this.deviceToken.delete({ userId: authenId.user });
                 return response.status(400).send(errorUserNameResponse);
             }
         } else if (isMode !== undefined && isMode === 'GG') {
             const authenId = await this.authenticationIdService.findOne({ user: user.id, providerName: PROVIDER.GOOGLE });
             if (authenId === undefined) {
                 const errorUserNameResponse: any = { status: 0, message: 'User token invalid.' };
+                await this.deviceToken.delete({ userId: authenId.user });
                 return response.status(400).send(errorUserNameResponse);
             }
             const expiresAt = authenId.expirationDate;
             if (expiresAt !== undefined && expiresAt !== null && expiresAt.getTime() <= today.getTime()) {
                 const errorUserNameResponse: any = { status: 0, message: 'User token expired.' };
-                await this.deviceToken.delete({ userId: user });
+                await this.deviceToken.delete({ userId: authenId.user });
                 return response.status(400).send(errorUserNameResponse);
             }
         } else {
