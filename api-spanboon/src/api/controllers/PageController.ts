@@ -591,28 +591,29 @@ export class PageController {
             return res.status(400).send(errorResponse);
         }
     }
-    @Post('/:id/fb_token')
-    @Authorized('user')
-    public async getRefreshToken(@Param('id') pageId: string,@Body({ validate: true }) socialBinding: PageSocialFBBindingRequest, @Res() res: any, @Req() req: any): Promise<any> {
-        const pageObjId = new ObjectID(pageId);
-        const refreshToken = await this.facebookService.getRefreshToken(socialBinding.pageAccessToken);
-        if(!refreshToken){
-            const errorResponse = ResponseUtil.getErrorResponse('Unable to get refresh token', undefined);
-            return res.status(400).send(errorResponse);
-        }
-        const query = {_id:pageObjId};
-        const newValues = {$set:{storedCredentials:refreshToken.access_token}};
-        const update = await this.pageSocialAccountService.update(query,newValues);
-        const webHooks = await this.facebookService.subScribeWebhook(socialBinding.facebookPageId, refreshToken.access_token);
-        console.log('webHooks',webHooks);
-        if(update && webHooks.success === true){
-            const successResponse = ResponseUtil.getSuccessResponse('Successfully create refreshToken', undefined);
-            return res.status(200).send(successResponse);
-        }else{
-            const errorResponse = ResponseUtil.getErrorResponse('Unable to get refresh token', undefined);
-            return res.status(400).send(errorResponse);
-        }
+    @Post('/fb_token')
+    public async getRefreshToken(@Res() res: any, @Req() req: any): Promise<any> {
+        for(let i = 0 ; i<req.body.length;i++){
+            const shiftOut = req.body[i];
+            const refreshToken = await this.facebookService.getRefreshToken(shiftOut.pageAccessToken);
+            if(!refreshToken){
+                continue;
+            }
+            const queryToken = {providerName:'FACEBOOK',providerPageName:shiftOut.facebookPageName,providerPageId:shiftOut.facebookPageId};
+            const newValues = {$set:{storedCredentials:refreshToken.access_token}};
+            const update = await this.pageSocialAccountService.update(queryToken,newValues);
+            const webHooks = await this.facebookService.subScribeWebhook(shiftOut.facebookPageId, refreshToken.access_token);
+            console.log('webHooks',webHooks);
+            if(update && webHooks.success === true){
+                continue;
+            }else{
+                const errorResponse = ResponseUtil.getErrorResponse('Unable to get refresh token', undefined);
+                return res.status(400).send(errorResponse);
+            }
 
+        }
+        const successResponse = ResponseUtil.getSuccessResponse('Successfully create refreshToken', undefined);
+        return res.status(200).send(successResponse);
     }
     @Post('/user/sync')
     @Authorized('user')
