@@ -115,7 +115,7 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
             delay: 0, // values from 0 to 3000, with step 50ms
             duration: 400, // values from 0 to 3000, with step 50ms
             easing: 'ease', // default easing for AOS animations
-            once: false, // whether animation should happen only once - while scrolling down
+            once: true, // whether animation should happen only once - while scrolling down
             mirror: false, // whether elements should animate out while scrolling past them
             anchorPlacement: 'top-bottom', // defines which position of the element regarding to window should trigger the animation
 
@@ -146,6 +146,7 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
         let numloop: number = 0
 
         for (let item of this.objectiveData.timelines) {
+            console.log("zxczxczxczxczxc", item)
             if (item.type === "OBJECTIVE_NEEDS") {
                 for (let n of item.post.needs) {
                     let standardItem = item.post.standardItemCollection.find(({ _id }) => _id === n.standardItemId);
@@ -272,6 +273,14 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
             }
 
         }, 400);
+    }
+
+    public effectFade(odd: boolean): string {
+        if (odd) {
+            return "fade-left";
+        } else {
+            return "fade-right";
+        }
     }
 
     isPageDirty(): boolean {
