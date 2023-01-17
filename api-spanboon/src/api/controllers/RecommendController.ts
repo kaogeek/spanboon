@@ -199,7 +199,10 @@ export class RecommendController {
                         Object.assign(data, { signURL: (signURL ? signURL : '') });
                         Object.assign(data, { type: 'USER' });
                         Object.assign(data, { isFollowed });
-                        result.push(data);
+
+                        if (!isFollowed) {
+                            result.push(data);
+                        }
                     }
 
                     stmtPage = [
@@ -226,7 +229,10 @@ export class RecommendController {
                     Object.assign(data, { signURL: (signURL ? signURL : '') });
                     Object.assign(data, { type: 'PAGE' });
                     Object.assign(data, { isFollowed });
-                    result.push(data);
+
+                    if (!isFollowed) {
+                        result.push(data);
+                    }
                 }
             }
 

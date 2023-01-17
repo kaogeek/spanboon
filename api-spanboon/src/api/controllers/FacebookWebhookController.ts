@@ -26,7 +26,6 @@ import { HashTag } from '../models/HashTag';
 import { HashTagService } from '../services/HashTagService';
 import { PageObjectiveService } from '../services/PageObjectiveService';
 import { EmergencyEventService } from '../services/EmergencyEventService';
-import { FacebookService } from '../services/FacebookService';
 @JsonController('/fb_webhook')
 export class FacebookWebhookController {
     constructor(
@@ -36,7 +35,6 @@ export class FacebookWebhookController {
         private hashTagService: HashTagService,
         private pageObjectiveService: PageObjectiveService,
         private emergencyEventService: EmergencyEventService,
-        private facebookService: FacebookService
     ) { }
 
     /**
@@ -57,14 +55,11 @@ export class FacebookWebhookController {
     @Get('/page_feeds')
     public async verifyPageFeedWebhook(@QueryParams() params: any, @Body({ validate: true }) body: any, @Res() res: any): Promise<any> {
         const VERIFY_TOKEN = facebook_setup.FACEBOOK_VERIFY_TOKEN;
-        const APP_ID = facebook_setup.FACEBOOK_APP_ID;
-        const APP_SECRET = facebook_setup.FACEBOOK_APP_SECRET;
         // Parse the query params
         const mode = params['hub.mode'];
         const token = params['hub.verify_token'];
         const challenge = params['hub.challenge'];
-        const subscriptionWebhooks = await this.facebookService.subScriptionWbApp(APP_ID,VERIFY_TOKEN,APP_SECRET);
-        if (mode && token && subscriptionWebhooks.success === true) {
+        if (mode && token ) {
             // Checks the mode and token sent is correct
             if (mode === 'subscribe' && token === VERIFY_TOKEN) {
                 // Responds with the challenge token from the request
@@ -105,6 +100,7 @@ export class FacebookWebhookController {
         let realText = undefined;
         let detailText = undefined;
         let TrimText = undefined;
+        let fullStop = undefined;
         const hashTagList1 = [];
         const hashTagList2 = [];
         const msgSplit = body.entry[0].changes[0].value.message.split('#');
@@ -126,10 +122,11 @@ export class FacebookWebhookController {
             sliceArray = body.entry[0].changes[0].value.message.slice(0, match.index);
             text1 = sliceArray.indexOf('[');
             text2 = sliceArray.indexOf(']');
+            fullStop = body.entry[0].changes[0].value.message.indexOf('.');
             if (text1 !== -1 && text2 !== -1) {
                 // []
                 realText = body.entry[0].changes[0].value.message.substring(text1 + 1, text2);
-                detailText = body.entry[0].changes[0].value.message.substring(text2 + 1, body.entry[0].changes[0].value.message.length - 1);
+                detailText = body.entry[0].changes[0].value.message.substring(fullStop + 1, body.entry[0].changes[0].value.message.length - 1);
                 TrimText = detailText.trim();
             } else if (text1 !== -1 && text2 === -1) {
                 // [
@@ -256,6 +253,8 @@ export class FacebookWebhookController {
                             if(updateTag){
                                 break;
                             }
+                        }else{
+                            break;
                         }
                     }
                     const queryTag = { _id: createPostPageData.id };
@@ -405,6 +404,8 @@ export class FacebookWebhookController {
                             if(updateTag){
                                 break;
                             }
+                        }else{
+                            break;
                         }
                     }
                     const queryTag = { _id: createPostPageData.id };
@@ -562,6 +563,8 @@ export class FacebookWebhookController {
                             if(updateTag){
                                 break;
                             }
+                        }else{
+                            break;
                         }
                     }
                     const queryTag = { _id: createPostPageData.id };

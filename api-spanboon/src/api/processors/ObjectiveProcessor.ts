@@ -18,6 +18,8 @@ import { UserLike } from '../models/UserLike';
 import { LIKE_TYPE } from '../../constants/LikeType';
 import moment from 'moment';
 import { ObjectID } from 'mongodb';
+import { ImageUtil } from '../../utils/ImageUtil';
+import { AssetService } from '../services/AssetService';
 
 export class ObjectiveProcessor extends AbstractSectionModelProcessor {
 
@@ -28,7 +30,8 @@ export class ObjectiveProcessor extends AbstractSectionModelProcessor {
         private pageObjectiveService: PageObjectiveService,
         private postsService: PostsService,
         private s3Service: S3Service,
-        private userLikeService: UserLikeService
+        private userLikeService: UserLikeService,
+        private assetService: AssetService
     ) {
         super();
     }
@@ -128,6 +131,7 @@ export class ObjectiveProcessor extends AbstractSectionModelProcessor {
                 const hastagRowMap = {};
                 for (const row of pageObjectiveResult) {
                     if (row) {
+                        const iconSignUrl = await ImageUtil.generateAssetSignURL(this.assetService, row.iconURL, { prefix: '/file/' });
                         const page = (row.page !== undefined && row.page.length > 0) ? row.page[0] : undefined;
                         const hashtag = (row.hashTagObj !== undefined && row.hashTagObj.length > 0) ? row.hashTagObj[0] : undefined;
                         const moreData: any = {};
@@ -139,6 +143,7 @@ export class ObjectiveProcessor extends AbstractSectionModelProcessor {
                         contentModel.title = (hashtag) ? '#' + row.hashTagObj[0].name : '-';
                         contentModel.subtitle = row.name;
                         contentModel.iconUrl = row.iconURL;
+                        contentModel.iconSignUrl = iconSignUrl;
 
                         if (row.s3IconURL !== undefined && row.s3IconURL !== '') {
                             try {

@@ -1820,12 +1820,14 @@
                                 column-gap: 10px;
                                 width: 100%;
                                 padding: 30px;
+                                min-height: 600px;
+                                align-items: center;
 
                                 @media (max-width: $xlarge) {
                                     flex-direction: column;
                                 }
 
-                                &:nth-child(even) {
+                                &:nth-child(odd) {
                                     flex-direction: row-reverse;
 
                                     >.wrapper-gallery {
@@ -1899,10 +1901,15 @@
                                             }
 
                                             >img {
-                                                width: 19%;
+                                                width: 28%;
                                                 border: solid 5px white;
                                                 border-radius: 3px;
                                                 max-width: 100%;
+                                                box-shadow: 0px 11px 27px 3px rgba($black, 0.21);
+
+                                                @media (max-width: $xlarge) {
+                                                    width: 18%;
+                                                }
 
                                                 @media (max-width: $large) {
                                                     width: 20%;
@@ -1928,9 +1935,18 @@
                                 >.wrapper-content {
                                     padding: 30px;
                                     width: 100%;
+                                    padding: 85px 30px;
+
+                                    @media (max-width: $xlarge) {
+                                        padding: 85px 30px;
+                                    }
 
                                     @media (max-width: $medium) {
                                         width: calc(100% - 50px);
+                                    }
+
+                                    @media (max-width: $small) {
+                                        padding: 30px;
                                     }
 
                                     >.head-title {

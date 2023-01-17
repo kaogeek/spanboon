@@ -25,15 +25,12 @@ import { SocialPost } from '../models/SocialPost';
 import { TwitterUtils } from '../../utils/TwitterUtils';
 import { FacebookUtils } from '../../utils/FacebookUtils';
 import { Asset } from '../models/Asset';
-import { AuthenticationIdService } from './AuthenticationIdService';
-
 @Service()
 export class PageSocialAccountService {
 
     constructor(@OrmRepository() private pageSocialAccountRepository: PageSocialAccountRepository,
         private twitterService: TwitterService, private facebookService: FacebookService, private socialPostService: SocialPostService,
         private postsService: PostsService, private postsGalleryService: PostsGalleryService, private assetService: AssetService,
-        private authenticationIdService:AuthenticationIdService
         ) { }
 
     // find PageSocialAccount
@@ -281,14 +278,14 @@ export class PageSocialAccountService {
                 }
             }
         }else{
-            // get refresh token 
-            const authen = await this.authenticationIdService.findOne({user:userId,providerName:modeHeader});
+            // get refresh token
+            const query = {providerName:'FACEBOOK',providerPageId:facebookAccount.providerPageId};
+            const pageFacebookId = await this.findOne(query);
             if (facebookAccount !== undefined) {
                 const fbUserId = facebookAccount.providerPageId;
-                const accessToken = authen.storedCredentials;
 
                 try {
-                    const result = await this.facebookService.publishPost(fbUserId, accessToken, message, assets);
+                    const result = await this.facebookService.publishPost(fbUserId, pageFacebookId.storedCredentials, message, assets);
 
                     return result;
                 } catch (error) {
