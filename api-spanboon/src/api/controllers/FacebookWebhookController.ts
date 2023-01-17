@@ -60,7 +60,7 @@ export class FacebookWebhookController {
         const mode = params['hub.mode'];
         const token = params['hub.verify_token'];
         const challenge = params['hub.challenge'];
-        if (mode && token ) {
+        if (mode && token) {
             // Checks the mode and token sent is correct
             if (mode === 'subscribe' && token === VERIFY_TOKEN) {
                 // Responds with the challenge token from the request
@@ -239,61 +239,65 @@ export class FacebookWebhookController {
                     }
                     // db.PageObjective.aggregate([{"$match":{"pageId":ObjectId('63bebb5e4677b2062a66b606')}},{"$limit":1},{"$sort":{"createdDate":-1}}])
                     postPage.postsHashTags = postMasterHashTagList;
-                    for(const pageObjective of postMasterHashTagList){
+                    for (const pageObjective of postMasterHashTagList) {
                         const pageFindtag = await this.pageObjectiveService.aggregate(
                             [
-                                { '$match': { 'pageId': pageSubscribe.pageId,'hashTag':pageObjective } },
+                                { '$match': { 'pageId': pageSubscribe.pageId, 'hashTag': pageObjective } },
                                 { '$sort': { 'createdDate': -1 } },
                                 { '$limit': 1 }
-                        ]);
+                            ]);
                         const foundPageTag = pageFindtag.shift();
                         if (foundPageTag) {
                             const query = { _id: createPostPageData.id };
                             const newValues = {
-                                $set:{objective: foundPageTag._id,objectiveTag: foundPageTag.title
+                                $set: {
+                                    objective: foundPageTag._id, objectiveTag: foundPageTag.title
                                 }
                             };
                             const updateTag = await this.postsService.update(query, newValues);
-                            if(updateTag){
+                            if (updateTag) {
                                 break;
                             }
-                        }else{
+                        } else {
                             break;
                         }
                     }
                     const queryTag = { _id: createPostPageData.id };
-                    const newValuesTag = { $set: { postsHashTags: postPage.postsHashTags} };
+                    const newValuesTag = { $set: { postsHashTags: postPage.postsHashTags } };
                     const EmergencyFound = [];
-                    for(const hashTags of postMasterHashTagList){
+                    for (const hashTags of postMasterHashTagList) {
                         const findMostHashTag = await this.hashTagService.aggregate(
-                        [
-                            {'$match':
-                                {'_id':ObjectID(hashTags)}
-                            },
-                            {'$sort':
-                            {
-                                'createdDate':-1
-                            }},
-                            {
-                            '$limit':1
-                            },{
-                                '$lookup':{
-                                    from:'EmergencyEvent',
-                                    localField:'_id',
-                                    foreignField:'hashTag',
-                                    as:'EmergencyHaghTag'
-                                }
-                            }]);
-                        for(const EmergencyHash of findMostHashTag){
+                            [
+                                {
+                                    '$match':
+                                        { '_id': ObjectID(hashTags) }
+                                },
+                                {
+                                    '$sort':
+                                    {
+                                        'createdDate': -1
+                                    }
+                                },
+                                {
+                                    '$limit': 1
+                                }, {
+                                    '$lookup': {
+                                        from: 'EmergencyEvent',
+                                        localField: '_id',
+                                        foreignField: 'hashTag',
+                                        as: 'EmergencyHaghTag'
+                                    }
+                                }]);
+                        for (const EmergencyHash of findMostHashTag) {
                             EmergencyFound.push(EmergencyHash);
                         }
                     }
-                    for(const findEmergencyPost of EmergencyFound){
-                        for(const realEmergencyPost of findEmergencyPost.EmergencyHaghTag){
-                            const queryEmergency= { _id: createPostPageData.id };
-                            const newValuesTagEmergency = {$set:{emergencyEvent:realEmergencyPost._id,emergencyEventTag:realEmergencyPost.title}};
+                    for (const findEmergencyPost of EmergencyFound) {
+                        for (const realEmergencyPost of findEmergencyPost.EmergencyHaghTag) {
+                            const queryEmergency = { _id: createPostPageData.id };
+                            const newValuesTagEmergency = { $set: { emergencyEvent: realEmergencyPost._id, emergencyEventTag: realEmergencyPost.title } };
                             const updateEmeg = await this.postsService.update(queryEmergency, newValuesTagEmergency);
-                            if(updateEmeg){
+                            if (updateEmeg) {
                                 break;
                             }
                         }
@@ -392,61 +396,65 @@ export class FacebookWebhookController {
                     }
                     // db.PageObjective.aggregate([{"$match":{"pageId":ObjectId('63bebb5e4677b2062a66b606')}},{"$limit":1},{"$sort":{"createdDate":-1}}])
                     postPage.postsHashTags = postMasterHashTagList;
-                    for(const pageObjective of postMasterHashTagList){
+                    for (const pageObjective of postMasterHashTagList) {
                         const pageFindtag = await this.pageObjectiveService.aggregate(
                             [
-                                { '$match': { 'pageId': pageSubscribe.pageId,'hashTag':pageObjective } },
+                                { '$match': { 'pageId': pageSubscribe.pageId, 'hashTag': pageObjective } },
                                 { '$sort': { 'createdDate': -1 } },
                                 { '$limit': 1 }
-                        ]);
+                            ]);
                         const foundPageTag = pageFindtag.shift();
                         if (foundPageTag) {
                             const query = { _id: createPostPageData.id };
                             const newValues = {
-                                $set:{objective: foundPageTag._id,objectiveTag: foundPageTag.title
+                                $set: {
+                                    objective: foundPageTag._id, objectiveTag: foundPageTag.title
                                 }
                             };
                             const updateTag = await this.postsService.update(query, newValues);
-                            if(updateTag){
+                            if (updateTag) {
                                 break;
                             }
-                        }else{
+                        } else {
                             break;
                         }
                     }
                     const queryTag = { _id: createPostPageData.id };
-                    const newValuesTag = { $set: { postsHashTags: postPage.postsHashTags} };
+                    const newValuesTag = { $set: { postsHashTags: postPage.postsHashTags } };
                     const EmergencyFound = [];
-                    for(const hashTags of postMasterHashTagList){
+                    for (const hashTags of postMasterHashTagList) {
                         const findMostHashTag = await this.hashTagService.aggregate(
-                        [
-                            {'$match':
-                                {'_id':ObjectID(hashTags)}
-                            },
-                            {'$sort':
-                            {
-                                'createdDate':-1
-                            }},
-                            {
-                            '$limit':1
-                            },{
-                                '$lookup':{
-                                    from:'EmergencyEvent',
-                                    localField:'_id',
-                                    foreignField:'hashTag',
-                                    as:'EmergencyHaghTag'
-                                }
-                            }]);
-                        for(const EmergencyHash of findMostHashTag){
+                            [
+                                {
+                                    '$match':
+                                        { '_id': ObjectID(hashTags) }
+                                },
+                                {
+                                    '$sort':
+                                    {
+                                        'createdDate': -1
+                                    }
+                                },
+                                {
+                                    '$limit': 1
+                                }, {
+                                    '$lookup': {
+                                        from: 'EmergencyEvent',
+                                        localField: '_id',
+                                        foreignField: 'hashTag',
+                                        as: 'EmergencyHaghTag'
+                                    }
+                                }]);
+                        for (const EmergencyHash of findMostHashTag) {
                             EmergencyFound.push(EmergencyHash);
                         }
                     }
-                    for(const findEmergencyPost of EmergencyFound){
-                        for(const realEmergencyPost of findEmergencyPost.EmergencyHaghTag){
-                            const queryEmergency= { _id: createPostPageData.id };
-                            const newValuesTagEmergency = {$set:{emergencyEvent:realEmergencyPost._id,emergencyEventTag:realEmergencyPost.title}};
+                    for (const findEmergencyPost of EmergencyFound) {
+                        for (const realEmergencyPost of findEmergencyPost.EmergencyHaghTag) {
+                            const queryEmergency = { _id: createPostPageData.id };
+                            const newValuesTagEmergency = { $set: { emergencyEvent: realEmergencyPost._id, emergencyEventTag: realEmergencyPost.title } };
                             const updateEmeg = await this.postsService.update(queryEmergency, newValuesTagEmergency);
-                            if(updateEmeg){
+                            if (updateEmeg) {
                                 break;
                             }
                         }
@@ -473,7 +481,8 @@ export class FacebookWebhookController {
                                 }
                             }
                             const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
-                            return res.status(200).send(successResponse);                        }
+                            return res.status(200).send(successResponse);
+                        }
                     }
                 } else {
                     const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
@@ -552,61 +561,65 @@ export class FacebookWebhookController {
                     }
                     // db.PageObjective.aggregate([{"$match":{"pageId":ObjectId('63bebb5e4677b2062a66b606')}},{"$limit":1},{"$sort":{"createdDate":-1}}])
                     postPage.postsHashTags = postMasterHashTagList;
-                    for(const pageObjective of postMasterHashTagList){
+                    for (const pageObjective of postMasterHashTagList) {
                         const pageFindtag = await this.pageObjectiveService.aggregate(
                             [
-                                { '$match': { 'pageId': pageSubscribe.pageId,'hashTag':pageObjective } },
+                                { '$match': { 'pageId': pageSubscribe.pageId, 'hashTag': pageObjective } },
                                 { '$sort': { 'createdDate': -1 } },
                                 { '$limit': 1 }
-                        ]);
+                            ]);
                         const foundPageTag = pageFindtag.shift();
                         if (foundPageTag) {
                             const query = { _id: createPostPageData.id };
                             const newValues = {
-                                $set:{objective: foundPageTag._id,objectiveTag: foundPageTag.title
+                                $set: {
+                                    objective: foundPageTag._id, objectiveTag: foundPageTag.title
                                 }
                             };
                             const updateTag = await this.postsService.update(query, newValues);
-                            if(updateTag){
+                            if (updateTag) {
                                 break;
                             }
-                        }else{
+                        } else {
                             break;
                         }
                     }
                     const queryTag = { _id: createPostPageData.id };
-                    const newValuesTag = { $set: { postsHashTags: postPage.postsHashTags} };
+                    const newValuesTag = { $set: { postsHashTags: postPage.postsHashTags } };
                     const EmergencyFound = [];
-                    for(const hashTags of postMasterHashTagList){
+                    for (const hashTags of postMasterHashTagList) {
                         const findMostHashTag = await this.hashTagService.aggregate(
-                        [
-                            {'$match':
-                                {'_id':ObjectID(hashTags)}
-                            },
-                            {'$sort':
-                            {
-                                'createdDate':-1
-                            }},
-                            {
-                            '$limit':1
-                            },{
-                                '$lookup':{
-                                    from:'EmergencyEvent',
-                                    localField:'_id',
-                                    foreignField:'hashTag',
-                                    as:'EmergencyHaghTag'
-                                }
-                            }]);
-                        for(const EmergencyHash of findMostHashTag){
+                            [
+                                {
+                                    '$match':
+                                        { '_id': ObjectID(hashTags) }
+                                },
+                                {
+                                    '$sort':
+                                    {
+                                        'createdDate': -1
+                                    }
+                                },
+                                {
+                                    '$limit': 1
+                                }, {
+                                    '$lookup': {
+                                        from: 'EmergencyEvent',
+                                        localField: '_id',
+                                        foreignField: 'hashTag',
+                                        as: 'EmergencyHaghTag'
+                                    }
+                                }]);
+                        for (const EmergencyHash of findMostHashTag) {
                             EmergencyFound.push(EmergencyHash);
                         }
                     }
-                    for(const findEmergencyPost of EmergencyFound){
-                        for(const realEmergencyPost of findEmergencyPost.EmergencyHaghTag){
-                            const queryEmergency= { _id: createPostPageData.id };
-                            const newValuesTagEmergency = {$set:{emergencyEvent:realEmergencyPost._id,emergencyEventTag:realEmergencyPost.title}};
+                    for (const findEmergencyPost of EmergencyFound) {
+                        for (const realEmergencyPost of findEmergencyPost.EmergencyHaghTag) {
+                            const queryEmergency = { _id: createPostPageData.id };
+                            const newValuesTagEmergency = { $set: { emergencyEvent: realEmergencyPost._id, emergencyEventTag: realEmergencyPost.title } };
                             const updateEmeg = await this.postsService.update(queryEmergency, newValuesTagEmergency);
-                            if(updateEmeg){
+                            if (updateEmeg) {
                                 break;
                             }
                         }
@@ -628,7 +641,7 @@ export class FacebookWebhookController {
                     return res.status(200).send(successResponse);
                 } else {
                     const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
-                    return res.status(200).send(successResponse);          
+                    return res.status(200).send(successResponse);
                 }
             } else if (body.entry[0].changes[0].value.verb === 'edit') {
                 const socialPost = await this.socialPostService.findOne({ postBy: body.entry[0].changes[0].value.post_id });

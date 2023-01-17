@@ -13,21 +13,21 @@ import { DeviceTokenRepository } from '../repositories/DeviceToken';
 export class DeviceTokenService {
 
     constructor(
-        @OrmRepository() private deviceTokenRepository:DeviceTokenRepository,
+        @OrmRepository() private deviceTokenRepository: DeviceTokenRepository,
         @Logger(__filename) private log: LoggerInterface) {
     }
 
     // create Device token and find the user who is login !!!!!
-    public async createDeviceToken(data:any):Promise<any>{
+    public async createDeviceToken(data: any): Promise<any> {
         this.log.info('create a token Firebase cloud messaging');
         return await this.deviceTokenRepository.save(data);
     }
 
-    public async findOne(findCondition:any):Promise<any>{
+    public async findOne(findCondition: any): Promise<any> {
         return await this.deviceTokenRepository.findOne(findCondition);
     }
 
-    public async findPeople(findCondition?:any):Promise<any>{
+    public async findPeople(findCondition?: any): Promise<any> {
         return await this.deviceTokenRepository.find(findCondition);
     }
 

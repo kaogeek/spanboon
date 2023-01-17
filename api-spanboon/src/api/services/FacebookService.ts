@@ -22,7 +22,7 @@ import axios from 'axios';
 export class FacebookService {
     constructor(private authenIdService: AuthenticationIdService, private userService: UserService,
 
-) { }
+    ) { }
 
     public createFB(): Facebook {
         const options = FB.options();
@@ -98,7 +98,7 @@ export class FacebookService {
         return new Promise((resolve, reject) => {
             const facebook = this.createFB();
             facebook.setAccessToken(accessToken);
-            facebook.api('me',{fields:['id'], accessToken:'accessToken'}, (response: any) => {
+            facebook.api('me', { fields: ['id'], accessToken: 'accessToken' }, (response: any) => {
                 if (!response || response.error) {
                     // console.log(!response ? 'error occurred' : response.error);
                     reject(response.error);
@@ -108,58 +108,59 @@ export class FacebookService {
             });
         });
     }
-    public async fetchFacebook(accessToken:string): Promise<any>{
-        try{
-            const {data} = await axios({
-                url: 'https://graph.facebook.com/me?fields=id,name,email,picture&access_token=' + accessToken});
+    public async fetchFacebook(accessToken: string): Promise<any> {
+        try {
+            const { data } = await axios({
+                url: 'https://graph.facebook.com/me?fields=id,name,email,picture&access_token=' + accessToken
+            });
             return data;
-        }catch(err){
+        } catch (err) {
             // console.log('Error :', err);
         }
     }
     // check subscribe 
-    public async checkSubscribe(pageId:string,access_token:string):Promise<any>{
-        try{
-            const {data} = await axios.get('https://graph.facebook.com/'+pageId+'/subscribed_apps&access_token='+access_token);
+    public async checkSubscribe(pageId: string, access_token: string): Promise<any> {
+        try {
+            const { data } = await axios.get('https://graph.facebook.com/' + pageId + '/subscribed_apps&access_token=' + access_token);
             return data;
-        }catch(err){
-            console.log('fail to subscribe webhook',err);
+        } catch (err) {
+            console.log('fail to subscribe webhook', err);
         }
     }
 
-    public async getPagePicture(pageId:string,access_token:string):Promise<any>{
-        try{
-            const { data } = await axios.get('https://graph.facebook.com/v14.0/' + pageId + '/picture?redirect=0&type=large&access_token='+access_token);
+    public async getPagePicture(pageId: string, access_token: string): Promise<any> {
+        try {
+            const { data } = await axios.get('https://graph.facebook.com/v14.0/' + pageId + '/picture?redirect=0&type=large&access_token=' + access_token);
             return data;
-        }catch(err){
+        } catch (err) {
             return err;
         }
     }
 
-    public async getPageId(userId:string,access_token:string):Promise<any>{
-        try{
-            const {data} = await axios.get('https://graph.facebook.com/'+userId+'/accounts?access_token='+access_token);
+    public async getPageId(userId: string, access_token: string): Promise<any> {
+        try {
+            const { data } = await axios.get('https://graph.facebook.com/' + userId + '/accounts?access_token=' + access_token);
             return data;
-        }catch(err){
+        } catch (err) {
             return err;
         }
     }
     // Get post from page on facebook
-    public async pullIngPostFromFacebook(pageId:string,access_token:string):Promise<any>{
-        try{
-            const {data} = await axios.get('https://graph.facebook.com/'+pageId+'/feed?access_token='+access_token);
+    public async pullIngPostFromFacebook(pageId: string, access_token: string): Promise<any> {
+        try {
+            const { data } = await axios.get('https://graph.facebook.com/' + pageId + '/feed?access_token=' + access_token);
             return data;
-        }catch(err){
+        } catch (err) {
             return err;
         }
     }
 
     // Get Photo from page on facebook
-    public async pullingPhotoFromFacebook(pageId:string,access_token:string):Promise<any>{
-        try{
-            const {data} = await axios.get('https://graph.facebook.com/'+pageId+'/photos?url=link&access_token='+access_token);
+    public async pullingPhotoFromFacebook(pageId: string, access_token: string): Promise<any> {
+        try {
+            const { data } = await axios.get('https://graph.facebook.com/' + pageId + '/photos?url=link&access_token=' + access_token);
             return data;
-        }catch(err){
+        } catch (err) {
             return err;
         }
     }
@@ -167,7 +168,7 @@ export class FacebookService {
         return new Promise((resolve, reject) => {
             this.fetchFacebook(accessToken).then((result: any) => {
                 if (result.error) { reject(result.error); return; }
-                this.authenIdService.findOne({ where: { providerUserId: result.id,providerName:'FACEBOOK' } }).then((auth) => {
+                this.authenIdService.findOne({ where: { providerUserId: result.id, providerName: 'FACEBOOK' } }).then((auth) => {
                     if (auth === null || auth === undefined) {
                         resolve(undefined);
                         return;
@@ -201,41 +202,41 @@ export class FacebookService {
             });
         });
     }
-    public async getRefreshToken(accessToken:string): Promise<any>{
-        try{
-            const { data } = await axios.post('https://graph.facebook.com/v14.0/oauth/access_token?grant_type=fb_exchange_token&client_id=' + facebook_setup.FACEBOOK_APP_ID +'&client_secret=' +facebook_setup.FACEBOOK_APP_SECRET + '&fb_exchange_token=' +accessToken);
+    public async getRefreshToken(accessToken: string): Promise<any> {
+        try {
+            const { data } = await axios.post('https://graph.facebook.com/v14.0/oauth/access_token?grant_type=fb_exchange_token&client_id=' + facebook_setup.FACEBOOK_APP_ID + '&client_secret=' + facebook_setup.FACEBOOK_APP_SECRET + '&fb_exchange_token=' + accessToken);
             return data;
-        }catch(err){
+        } catch (err) {
             return err;
         }
     }
-    public async appAccessToken():Promise<any>{
-        try{
+    public async appAccessToken(): Promise<any> {
+        try {
             const { data } = await axios.get('https://graph.facebook.com/oauth/access_token?client_id=' + facebook_setup.FACEBOOK_APP_ID + '&client_secret=' + facebook_setup.FACEBOOK_APP_SECRET + '&grant_type=client_credentials');
             return data;
-        }catch(err){
-            console.log('Cannot get AppAccessToken',err);
+        } catch (err) {
+            console.log('Cannot get AppAccessToken', err);
             return err;
         }
     }
-    public async expireToken(inputToken:string,appAccessToken:any): Promise<any>{
-        try{
-            const { data } = await axios.get('https://graph.facebook.com/v14.0/debug_token?fields=data,expires_at,data_access_expires_at,is_valid&input_token=' + inputToken + '&access_token=' +appAccessToken);
+    public async expireToken(inputToken: string, appAccessToken: any): Promise<any> {
+        try {
+            const { data } = await axios.get('https://graph.facebook.com/v14.0/debug_token?fields=data,expires_at,data_access_expires_at,is_valid&input_token=' + inputToken + '&access_token=' + appAccessToken);
             return data;
-        }catch(err){
-            console.log('Cannot debug token',err);
+        } catch (err) {
+            console.log('Cannot debug token', err);
             return err;
         }
     }
 
     // Callback_URL 
 
-    public async subScriptionWbApp(verifyToken:string):Promise<any>{
-        try{
-            const { data } = await axios.post('https://graph.facebook.com/v14.0/'+facebook_setup.FACEBOOK_APP_ID+'/subscriptions?object=page&include_values=true&verify_token= ' + verifyToken + '&callback_url='+ process.env.FACEBOOK_CALLBACK_URL+'/&access_token= ' + facebook_setup.FACEBOOK_APP_ID + '|' + facebook_setup.FACEBOOK_APP_SECRET);
+    public async subScriptionWbApp(verifyToken: string): Promise<any> {
+        try {
+            const { data } = await axios.post('https://graph.facebook.com/v14.0/' + facebook_setup.FACEBOOK_APP_ID + '/subscriptions?object=page&include_values=true&verify_token= ' + verifyToken + '&callback_url=' + process.env.FACEBOOK_CALLBACK_URL + '/&access_token= ' + facebook_setup.FACEBOOK_APP_ID + '|' + facebook_setup.FACEBOOK_APP_SECRET);
             return data;
-        }catch(err){
-            console.log('Cannot subscribetion Webhooks ',err);
+        } catch (err) {
+            console.log('Cannot subscribetion Webhooks ', err);
             return err;
         }
     }
@@ -370,7 +371,7 @@ export class FacebookService {
             if (message === undefined || message === null) {
                 message = '';
             }
-            
+
             const facebook = this.createFB();
             facebook.setAccessToken(accessToken);
 
@@ -387,71 +388,71 @@ export class FacebookService {
             }
             // xaxios.post('https://graph.facebook.com/'+ accessToken + '/feed');
 
-            this.publishPageId(fbPageId,accessToken).then((res)=>{
-                console.log('res_facebook',res);
-                try{
-                    if(imageIds !== null && imageIds !== undefined && imageIds.length > 0 && imageIds.length === 1){
-                        axios.post(`https://graph.facebook.com/${res.id}/feed?message=${encodeURI(message)}&attached_media[0]={media_fbid:${imageIds[0]}}&access_token=${res.access_token}`).then((resFacebook)=>{
+            this.publishPageId(fbPageId, accessToken).then((res) => {
+                console.log('res_facebook', res);
+                try {
+                    if (imageIds !== null && imageIds !== undefined && imageIds.length > 0 && imageIds.length === 1) {
+                        axios.post(`https://graph.facebook.com/${res.id}/feed?message=${encodeURI(message)}&attached_media[0]={media_fbid:${imageIds[0]}}&access_token=${res.access_token}`).then((resFacebook) => {
                             resolve(resFacebook.data);
                         });
-                    }else if(imageIds !== null && imageIds !== undefined && imageIds.length > 0 && imageIds.length === 2){
-                        axios.post(`https://graph.facebook.com/${res.id}/feed?message=${encodeURI(message)}&attached_media[0]={media_fbid:${imageIds[0]}}&attached_media[1]={media_fbid:${imageIds[1]}}&access_token=${res.access_token}`).then((resFacebook)=>{
+                    } else if (imageIds !== null && imageIds !== undefined && imageIds.length > 0 && imageIds.length === 2) {
+                        axios.post(`https://graph.facebook.com/${res.id}/feed?message=${encodeURI(message)}&attached_media[0]={media_fbid:${imageIds[0]}}&attached_media[1]={media_fbid:${imageIds[1]}}&access_token=${res.access_token}`).then((resFacebook) => {
                             resolve(resFacebook.data);
                         });
-                    }else if(imageIds !== null && imageIds !== undefined && imageIds.length > 0 && imageIds.length === 3){
-                        axios.post(`https://graph.facebook.com/${res.id}/feed?message=${encodeURI(message)}&attached_media[0]={media_fbid:${imageIds[0]}}&attached_media[1]={media_fbid:${imageIds[1]}}&attached_media[2]={media_fbid:${imageIds[2]}}&access_token=${res.access_token}`).then((resFacebook)=>{
+                    } else if (imageIds !== null && imageIds !== undefined && imageIds.length > 0 && imageIds.length === 3) {
+                        axios.post(`https://graph.facebook.com/${res.id}/feed?message=${encodeURI(message)}&attached_media[0]={media_fbid:${imageIds[0]}}&attached_media[1]={media_fbid:${imageIds[1]}}&attached_media[2]={media_fbid:${imageIds[2]}}&access_token=${res.access_token}`).then((resFacebook) => {
                             resolve(resFacebook.data);
                         });
-                    }else if(imageIds !== null && imageIds !== undefined && imageIds.length > 0 && imageIds.length === 4){
-                        axios.post(`https://graph.facebook.com/${res.id}/feed?message=${encodeURI(message)}&attached_media[0]={media_fbid:${imageIds[0]}}&attached_media[1]={media_fbid:${imageIds[1]}}&attached_media[2]={media_fbid:${imageIds[2]}}&attached_media[3]={media_fbid:${imageIds[3]}}&access_token=${res.access_token}`).then((resFacebook)=>{
+                    } else if (imageIds !== null && imageIds !== undefined && imageIds.length > 0 && imageIds.length === 4) {
+                        axios.post(`https://graph.facebook.com/${res.id}/feed?message=${encodeURI(message)}&attached_media[0]={media_fbid:${imageIds[0]}}&attached_media[1]={media_fbid:${imageIds[1]}}&attached_media[2]={media_fbid:${imageIds[2]}}&attached_media[3]={media_fbid:${imageIds[3]}}&access_token=${res.access_token}`).then((resFacebook) => {
                             resolve(resFacebook.data);
                         });
-                    }else{
-                        axios.post(`https://graph.facebook.com/${res.id}/feed?message=${encodeURI(message)}!&access_token=${res.access_token}`).then((resFacebook)=>{
+                    } else {
+                        axios.post(`https://graph.facebook.com/${res.id}/feed?message=${encodeURI(message)}!&access_token=${res.access_token}`).then((resFacebook) => {
                             resolve(resFacebook.data);
                         });
                     }
-                }catch(err){
-                    console.log('Error Feed Message',err);
+                } catch (err) {
+                    console.log('Error Feed Message', err);
                 }
             });
         });
     }
-    
-    public async publishPageId(fbUserId:string,accessToken:string): Promise<any>{
-        try{
-            const {data} = await axios.get(`https://graph.facebook.com/${fbUserId}?fields=access_token&access_token=${accessToken}`);
-            console.log('publishPageId',data);
+
+    public async publishPageId(fbUserId: string, accessToken: string): Promise<any> {
+        try {
+            const { data } = await axios.get(`https://graph.facebook.com/${fbUserId}?fields=access_token&access_token=${accessToken}`);
+            console.log('publishPageId', data);
             return data;
-        }catch(err){
+        } catch (err) {
             // console.log('Error publishPageId :'+ err);
         }
     }
 
-    public async coverImagePage(fbUserId:string,accessToken:string): Promise<any>{
-        try{
-            const {data} = await axios.get(`https://graph.facebook.com/v14.0/${fbUserId}?fields=cover&access_token=${accessToken}`);
+    public async coverImagePage(fbUserId: string, accessToken: string): Promise<any> {
+        try {
+            const { data } = await axios.get(`https://graph.facebook.com/v14.0/${fbUserId}?fields=cover&access_token=${accessToken}`);
             return data;
-        }catch(err){
-            console.log('Error CoverImagePage :'+ err);
+        } catch (err) {
+            console.log('Error CoverImagePage :' + err);
         }
     }
 
-    public async subScribeWebhook(fbUserId:string,accessToken:string): Promise<any>{
-        try{
-            const {data} = await axios.post('https://graph.facebook.com/' + fbUserId + '/subscribed_apps?subscribed_fields=feed&access_token=' + accessToken);
+    public async subScribeWebhook(fbUserId: string, accessToken: string): Promise<any> {
+        try {
+            const { data } = await axios.post('https://graph.facebook.com/' + fbUserId + '/subscribed_apps?subscribed_fields=feed&access_token=' + accessToken);
             return data;
-        }catch(err){
-            console.log('Error SubScribeWebhooks :'+ err);
+        } catch (err) {
+            console.log('Error SubScribeWebhooks :' + err);
         }
     }
 
-    public async getPageFb(fbPageId:string,accessToken:string): Promise<any>{
-        try{
-            const { data } = await axios.get('https://graph.facebook.com/' + fbPageId +'?access_token=' + accessToken + '&fields=id,name,description,emails,category,birthday,about,cover,link,phone');
+    public async getPageFb(fbPageId: string, accessToken: string): Promise<any> {
+        try {
+            const { data } = await axios.get('https://graph.facebook.com/' + fbPageId + '?access_token=' + accessToken + '&fields=id,name,description,emails,category,birthday,about,cover,link,phone');
             return data;
-        }catch(err){
-            console.log('Error cannot get page detail :'+ err);
+        } catch (err) {
+            console.log('Error cannot get page detail :' + err);
         }
     }
 

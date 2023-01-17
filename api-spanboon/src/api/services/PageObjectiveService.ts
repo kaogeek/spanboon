@@ -116,8 +116,8 @@ export class PageObjectiveService {
     }
 
     // delete PageObjectIve Many
-    public async deleteMany(query:any,options?:any): Promise<any>{
-        return await this.pageObjectiveRepository.deleteMany(query,options);
+    public async deleteMany(query: any, options?: any): Promise<any> {
+        return await this.pageObjectiveRepository.deleteMany(query, options);
     }
 
     // Search PageObjective

@@ -12,11 +12,11 @@ import { Service } from 'typedi';
 export class PageNotificationService {
 
     constructor(
-        private notificationService: NotificationService, 
+        private notificationService: NotificationService,
         private userFollowService: UserFollowService,
-        private pageService: PageService, 
+        private pageService: PageService,
         private pageAccessLevelService: PageAccessLevelService
-        ) {}
+    ) { }
 
     public async notifyToUserFollow(pageId: string, notificationType: string, title: string, link?: string): Promise<Notification[]> {
         // check pageId
@@ -44,7 +44,7 @@ export class PageNotificationService {
         return result;
     }
 
-    public async notifyToPageUserFcm(toPageId: string, pageLevel: string[], fromUserId: string, fromUserType: string, notificationType: string, title: string, link?: string,data?: any,displayName?:any,image?:any,count?:any): Promise<any> {
+    public async notifyToPageUserFcm(toPageId: string, pageLevel: string[], fromUserId: string, fromUserType: string, notificationType: string, title: string, link?: string, data?: any, displayName?: any, image?: any, count?: any): Promise<any> {
         // check pageId
         const page: Page = await this.pageService.findOne({ where: { _id: new ObjectID(toPageId), banned: false } });
         if (page === undefined) {
@@ -61,17 +61,17 @@ export class PageNotificationService {
                     continue;
                 }
                 const notification = await this.notificationService.createUserNotificationFCM(
-                    userId, 
-                    fromUserId, 
-                    fromUserType, 
-                    notificationType, 
-                    title, 
+                    userId,
+                    fromUserId,
+                    fromUserType,
+                    notificationType,
+                    title,
                     link,
                     data,
                     displayName,
                     image,
                     count
-                    );
+                );
 
                 result.push(notification);
 
@@ -81,7 +81,7 @@ export class PageNotificationService {
 
         return result;
     }
-    public async notifyToPageUser(toPageId: string, pageLevel: string[], fromUserId: string, fromUserType: string, notificationType: string, title: string, link?: string,data?: any,displayName?:any): Promise<any> {
+    public async notifyToPageUser(toPageId: string, pageLevel: string[], fromUserId: string, fromUserType: string, notificationType: string, title: string, link?: string, data?: any, displayName?: any): Promise<any> {
         // check pageId
         const page: Page = await this.pageService.findOne({ where: { _id: new ObjectID(toPageId), banned: false } });
 
@@ -100,14 +100,14 @@ export class PageNotificationService {
                     continue;
                 }
                 const notification = await this.notificationService.createUserNotification(
-                    userId, 
-                    fromUserId, 
-                    fromUserType, 
-                    notificationType, 
-                    title, 
+                    userId,
+                    fromUserId,
+                    fromUserType,
+                    notificationType,
+                    title,
                     link,
                     displayName
-                    );
+                );
 
                 result.push(notification);
 

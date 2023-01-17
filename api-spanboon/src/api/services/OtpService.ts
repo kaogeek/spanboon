@@ -13,17 +13,17 @@ import { OtpRepository } from '../repositories/OtpRepository';
 export class OtpService {
 
     constructor(
-        @OrmRepository() private otpRepository:OtpRepository,
+        @OrmRepository() private otpRepository: OtpRepository,
         @Logger(__filename) private log: LoggerInterface) {
     }
 
     // create Device token and find the user who is login !!!!!
-    public async createOtp(data:any):Promise<any>{
+    public async createOtp(data: any): Promise<any> {
         this.log.info('Send OTP.');
         return await this.otpRepository.save(data);
     }
 
-    public async findOne(findCondition:any):Promise<any>{
+    public async findOne(findCondition: any): Promise<any> {
         return await this.otpRepository.findOne(findCondition);
     }
 

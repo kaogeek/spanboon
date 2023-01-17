@@ -48,7 +48,7 @@ export class PageAboutService {
     }
 
     // Search PageAbout
-    public search(filter: SearchFilter): Promise<any> { 
+    public search(filter: SearchFilter): Promise<any> {
         const condition: any = SearchUtil.createFindCondition(filter.limit, filter.offset, filter.select, filter.relation, filter.whereConditions, filter.orderBy);
 
         if (filter.count) {
