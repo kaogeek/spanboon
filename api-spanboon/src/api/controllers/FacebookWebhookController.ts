@@ -302,8 +302,8 @@ export class FacebookWebhookController {
                     const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
                     return res.status(200).send(successResponse);
                 } else {
-                    const errorResponse = ResponseUtil.getErrorResponse('Value verb does not add', undefined);
-                    return res.status(400).send(errorResponse);
+                    const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                    return res.status(200).send(successResponse);
                 }
             } else if (body.entry[0].changes[0].value.verb === 'add' && body.entry[0].changes[0].value.link !== undefined && body.entry[0].changes[0].value.photos === undefined && body.entry[0].changes[0].value.item !== 'share' && body.entry[0].changes[0].value.item === 'photo') {
                 const assetPic = await this.assetService.createAssetFromURL(body.entry[0].changes[0].value.link, pageIdFB.ownerUser);
@@ -476,8 +476,8 @@ export class FacebookWebhookController {
                             return res.status(200).send(successResponse);                        }
                     }
                 } else {
-                    const errorResponse = ResponseUtil.getErrorResponse('Value verb does not add', undefined);
-                    return res.status(400).send(errorResponse);
+                    const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                    return res.status(200).send(successResponse);
                 }
             } else if (body.entry[0].changes[0].value.verb === 'add' && body.entry[0].changes[0].value.link === undefined && body.entry[0].changes[0].value.photos !== undefined && body.entry[0].changes[0].value.item !== 'share') {
                 const multiPics = [];
@@ -627,8 +627,8 @@ export class FacebookWebhookController {
                     const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
                     return res.status(200).send(successResponse);
                 } else {
-                    const errorResponse = ResponseUtil.getErrorResponse('Value verb does not add', undefined);
-                    return res.status(400).send(errorResponse);                
+                    const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                    return res.status(200).send(successResponse);          
                 }
             } else if (body.entry[0].changes[0].value.verb === 'edit') {
                 const socialPost = await this.socialPostService.findOne({ postBy: body.entry[0].changes[0].value.post_id });
