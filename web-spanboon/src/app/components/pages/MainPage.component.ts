@@ -192,7 +192,7 @@ export class MainPage extends AbstractPage implements OnInit {
       this.isPost = false;
     } else {
       this.isPost = true;
-      if ($(window).scrollTop() + $(window).height() == $(document).height()) {
+      if ($(window).scrollTop() > 1) {
         if (window.innerWidth > 1024) {
           postBottom.addClass("active");
           this.isdivtop = true;
@@ -265,9 +265,9 @@ export class MainPage extends AbstractPage implements OnInit {
   }
 
   public clicktotop() {
-    // var scrolltotop = document.getElementById("menubottom");
-    var scrolltotop = this.mainpage.nativeElement;
-    scrolltotop.scrollTop = 0
+    if ($(window).scrollTop() > 1) {
+      $(window).scrollTop(0);
+    }
   }
 
   public isLogin(): boolean {

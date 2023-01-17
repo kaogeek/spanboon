@@ -30,14 +30,12 @@ export class GoogleService {
     return new google.auth.OAuth2(this.CLIENT_ID, this.CLIENT_SECRET, this.REDIRECT_URL);
   }
 
-  public async verifyIdToken(idToken: string, modHeaders: string): Promise<any> {
+  public async verifyIdToken(idToken: string, modHeaders?: string): Promise<any> {
     return new Promise(async (resolve, reject) => {
       let ticket;
-      if (modHeaders !== undefined && modHeaders !== null) {
-        ticket = await this.CLIENT.verifyIdToken({ idToken, audience: this.CLIENT_ID });
-      } else {
+      if (idToken !== undefined && idToken !== null) {
         ticket = await this.CLIENT.verifyIdToken({ idToken });
-      }
+      } 
       const payload = ticket.getPayload();
 
       if (payload !== null && payload !== undefined) {

@@ -385,15 +385,13 @@ export class LoginPage extends AbstractPage implements OnInit {
   }
 
   public fbLibrary() {
-    (window as any).fbAsyncInit = function () {
-      window['FB'].init({
+    window['FB'].init({
         appId: environment.facebookAppId,
         cookie: true,
         xfbml: true,
         version: 'v14.0'
       });
-      window['FB'].AppEvents.logPageView();
-    };
+    window['FB'].AppEvents.logPageView();
 
     (function (d, s, id) {
       var js, fjs = d.getElementsByTagName(s)[0];

@@ -50,7 +50,7 @@ export class AppComponent {
   }
 
   ngOnInit(): void {
-    // this.requestPermission();
+    this.requestPermission();
     let tokenS = sessionStorage.getItem(TOKEN_KEY);
     let tokenL = localStorage.getItem(TOKEN_KEY);
     if (tokenS !== '' && tokenS !== null && tokenS !== undefined) {
