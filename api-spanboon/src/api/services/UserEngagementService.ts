@@ -23,7 +23,7 @@ export class UserEngagementService {
     }
 
     // find userEngagement
-    public findOne(findCondition: any): Promise<any> {  
+    public findOne(findCondition: any): Promise<any> {
         return this.userEngagementRepository.findOne(findCondition);
     }
 

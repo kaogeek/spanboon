@@ -35,7 +35,7 @@ export class GoogleService {
       let ticket;
       if (idToken !== undefined && idToken !== null) {
         ticket = await this.CLIENT.verifyIdToken({ idToken });
-      } 
+      }
       const payload = ticket.getPayload();
 
       if (payload !== null && payload !== undefined) {
