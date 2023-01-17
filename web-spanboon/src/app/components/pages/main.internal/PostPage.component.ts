@@ -764,12 +764,16 @@ export class PostPage extends AbstractPage implements OnInit {
         var aw = await this.pageFacade.search(search).then((pages: any) => {
           pageInUser = pages
         }).catch((err: any) => {
+          console.log("err", err);
         })
         for (let p of pageInUser) {
-          var aw = await this.assetFacade.getPathFile(p.imageURL).then((res: any) => {
-            p.img64 = res.data
-          }).catch((err: any) => {
-          });
+          if (!p.signURL) {
+            await this.assetFacade.getPathFile(p.imageURL).then((res: any) => {
+              p.img64 = res.data
+            }).catch((err: any) => {
+              console.log("err", err);
+            });
+          }
         }
         const dialogRef = this.dialog.open(DialogReboonTopic, {
           width: '650pt',

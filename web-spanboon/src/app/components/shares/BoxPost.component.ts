@@ -930,7 +930,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     }
     let cloneStory = this.dataStroy ? this.dataStroy : '';
     this.dataStroy = this.content && this.content.story ? this.content.story : {};
-    const storyPost = this.storyPost.nativeElement.innerText
+    const storyPost = this.storyPost.nativeElement.innerText;
     this.dataClone = {
       topic,
       cloneStory,
@@ -940,71 +940,71 @@ export class BoxPost extends AbstractPage implements OnInit {
       imagesTimeline: this.imagesTimeline,
       dataStroy: this.dataStroy
     }
-    const dialogRef = this.dialog.open(DialogCreateStory, {
-      width: '100vw',
-      height: '100vh',
-      data: this.dataClone,
-      disableClose: false,
-    });
+    // const dialogRef = this.dialog.open(DialogPost, {
+    //   width: '100vw',
+    //   height: '100vh',
+    //   data: this.dataClone,
+    //   disableClose: false,
+    // });
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (storyPostShort.trim() === "") {
-        this.isMsgError = true
-        var contentAlert;
-        if (this.isListPage) {
-          contentAlert = document.getElementById(this.prefix.header + 'editableStoryPost');
-          document.getElementById(this.prefix.detail + "editableStoryPost").focus();
-        } else {
-          contentAlert = document.getElementById('editableStoryPost');
-          document.getElementById("editableStoryPost").focus();
-        }
-        contentAlert.classList.add('msg-error-shake');
+    // dialogRef.afterClosed().subscribe(result => {
+    //   if (storyPostShort.trim() === "") {
+    //     this.isMsgError = true
+    //     var contentAlert;
+    //     if (this.isListPage) {
+    //       contentAlert = document.getElementById(this.prefix.header + 'editableStoryPost');
+    //       document.getElementById(this.prefix.detail + "editableStoryPost").focus();
+    //     } else {
+    //       contentAlert = document.getElementById('editableStoryPost');
+    //       document.getElementById("editableStoryPost").focus();
+    //     }
+    //     contentAlert.classList.add('msg-error-shake');
 
-        // remove the class after the animation completes
-        setTimeout(function () {
-          contentAlert.classList.remove('msg-error-shake');
-        }, 1000);
+    //     // remove the class after the animation completes
+    //     setTimeout(function () {
+    //       contentAlert.classList.remove('msg-error-shake');
+    //     }, 1000);
 
-        event.preventDefault();
-        return;
-      }
-      if (result) {
-        this.isStoryResultData = false
-        this.dataStroy = { story: result.story, storyAry: result.storyAry }
-        // delete this.dataStroy.item;
-        // delete this.dataStroy.cloneStory;
-        if (result.coverImages.asset !== undefined && result.coverImages.asset !== null) {
-          const asset = new Asset();
-          asset.mimeType = result.coverImages.asset.type;
-          asset.fileName = result.coverImages.asset.name;
-          asset.size = result.coverImages.asset.size;
-          asset.data = result.coverImages.asset.data;
-          this.coverImage = asset;
-        }
-        let data = {
-          title: topic,
-          detail: storyPostShort,
-          story: this.dataStroy,
-          needs: this.arrListItem ? this.arrListItem : [],
-          emergencyEvent: this.isEmptyObject(this.dataAutoComp) ? this.dataAutoComp.id : "",
-          emergencyEventTag: this.isEmptyObject(this.dataAutoComp) ? this.dataAutoComp.hashtag : "",
-          userTags: this.userTag,
-          postsHashTags: this.hashTag,
-          postGallery: this.dataImage,
-          coverImage: this.coverImage,
-          postSocialTW: this.twitterConection && this.isAutoPostTwitter ? true : false,
-          postSocialFB: this.facebookConection && this.isAutoPostFacebook ? true : false
-        }
-        if (this.modeShowDoing) {
-          Object.assign(data, { objective: this.isEmptyObject(this.dataObjective) ? this.dataObjective.id : "" });
-          Object.assign(data, { objectiveTag: this.isEmptyObject(this.dataObjective) ? this.dataObjective.hashTag : "" });
-        }
-        this.isClickPostPreLoad = true;
-        return this.createPost.emit(data);
-      }
-      this.stopLoading();
-      this.onResize();
-    });
+    //     event.preventDefault();
+    //     return;
+    //   }
+    //   if (result) {
+    //     this.isStoryResultData = false
+    //     this.dataStroy = { story: result.story, storyAry: result.storyAry }
+    //     // delete this.dataStroy.item;
+    //     // delete this.dataStroy.cloneStory;
+    //     if (result.coverImages.asset !== undefined && result.coverImages.asset !== null) {
+    //       const asset = new Asset();
+    //       asset.mimeType = result.coverImages.asset.type;
+    //       asset.fileName = result.coverImages.asset.name;
+    //       asset.size = result.coverImages.asset.size;
+    //       asset.data = result.coverImages.asset.data;
+    //       this.coverImage = asset;
+    //     }
+    //     let data = {
+    //       title: topic,
+    //       detail: storyPostShort,
+    //       story: this.dataStroy,
+    //       needs: this.arrListItem ? this.arrListItem : [],
+    //       emergencyEvent: this.isEmptyObject(this.dataAutoComp) ? this.dataAutoComp.id : "",
+    //       emergencyEventTag: this.isEmptyObject(this.dataAutoComp) ? this.dataAutoComp.hashtag : "",
+    //       userTags: this.userTag,
+    //       postsHashTags: this.hashTag,
+    //       postGallery: this.dataImage,
+    //       coverImage: this.coverImage,
+    //       postSocialTW: this.twitterConection && this.isAutoPostTwitter ? true : false,
+    //       postSocialFB: this.facebookConection && this.isAutoPostFacebook ? true : false
+    //     }
+    //     if (this.modeShowDoing) {
+    //       Object.assign(data, { objective: this.isEmptyObject(this.dataObjective) ? this.dataObjective.id : "" });
+    //       Object.assign(data, { objectiveTag: this.isEmptyObject(this.dataObjective) ? this.dataObjective.hashTag : "" });
+    //     }
+    //     this.isClickPostPreLoad = true;
+    //     return this.createPost.emit(data);
+    //   }
+    //   this.stopLoading();
+    //   this.onResize();
+    // });
   }
 
   public onLostFocus(data, isTopic: boolean) {

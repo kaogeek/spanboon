@@ -1096,13 +1096,17 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
       this.pageUser.push(this.userCloneDatas)
       this.pageUser.reverse();
     }).catch((err: any) => {
+      console.log("err", err);
     });
     if (this.pageUser.length > 0) {
       for (let p of this.pageUser) {
-        var aw = await this.assetFacade.getPathFile(p.imageURL).then((res: any) => {
-          p.img64 = res.data
-        }).catch((err: any) => {
-        });
+        if (!p.signURL) {
+          await this.assetFacade.getPathFile(p.imageURL).then((res: any) => {
+            p.img64 = res.data
+          }).catch((err: any) => {
+            console.log("err", err);
+          });
+        }
       }
     }
   }

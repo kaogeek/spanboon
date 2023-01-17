@@ -66,12 +66,16 @@ export class PostActionService extends AbstractFacade {
                 var aw = await this.pageFacade.search(search).then((pages: any) => {
                     this.pageInUser = pages
                 }).catch((err: any) => {
+                    console.log("err", err);
                 })
                 for (let p of this.pageInUser) {
-                    var aw = await this.assetFacade.getPathFile(p.imageURL).then((res: any) => {
-                        p.img64 = res.data
-                    }).catch((err: any) => {
-                    });
+                    if (!p.signURL) {
+                        await this.assetFacade.getPathFile(p.imageURL).then((res: any) => {
+                            p.img64 = res.data
+                        }).catch((err: any) => {
+                            console.log("err", err);
+                        });
+                    }
                 }
                 return new Promise((resolve, reject) => {
                     if (isDialog) {
