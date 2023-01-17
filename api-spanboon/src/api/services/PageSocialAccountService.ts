@@ -254,11 +254,8 @@ export class PageSocialAccountService {
 
     public async pagePostMessageToFacebook(pageId: string, message: string, assets?: Asset[], userId?: any, mode?: any): Promise<any> {
         const facebookAccount = await this.getFacebookPageAccount(pageId);
-        let modeHeader = undefined;
         let debugToken = undefined;
-        if (mode === 'FB') {
-            modeHeader = PROVIDER.FACEBOOK;
-        }
+
         const appAccessToken = await this.facebookService.appAccessToken();
         if (appAccessToken) {
             debugToken = await this.facebookService.expireToken(facebookAccount.storedCredentials, appAccessToken.access_token);
@@ -279,7 +276,7 @@ export class PageSocialAccountService {
             }
         } else {
             // get refresh token
-            const query = { providerName: 'FACEBOOK', providerPageId: facebookAccount.providerPageId };
+            const query = { providerName: PROVIDER.FACEBOOK, providerPageId: facebookAccount.providerPageId };
             const pageFacebookId = await this.findOne(query);
             if (facebookAccount !== undefined) {
                 const fbUserId = facebookAccount.providerPageId;
