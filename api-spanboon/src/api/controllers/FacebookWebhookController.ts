@@ -26,6 +26,7 @@ import { HashTag } from '../models/HashTag';
 import { HashTagService } from '../services/HashTagService';
 import { PageObjectiveService } from '../services/PageObjectiveService';
 import { EmergencyEventService } from '../services/EmergencyEventService';
+import { ResponseUtil } from '../../utils/ResponseUtil';
 @JsonController('/fb_webhook')
 export class FacebookWebhookController {
     constructor(
@@ -92,7 +93,8 @@ export class FacebookWebhookController {
         }
         const pageSubscribe = await this.socialPostLogsService.findOne({ providerUserId: String(body.entry[0].changes[0].value.from.id) });
         if (pageSubscribe === undefined) {
-            return res.status(400);
+            const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+            return res.status(200).send(successResponse);
         }
         let sliceArray = undefined;
         let text1 = undefined;
@@ -116,7 +118,8 @@ export class FacebookWebhookController {
         const match = /r\n|\n/.exec(body.entry[0].changes[0].value.message);
         console.log('body.entry[0].changes[0].value.message', body.entry[0].changes[0].value);
         if (body.entry[0].changes[0].value.message === undefined) {
-            return res.status(400);
+            const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+            return res.status(200).send(successResponse);
         }
         if (match) {
             sliceArray = body.entry[0].changes[0].value.message.slice(0, match.index);
@@ -166,7 +169,8 @@ export class FacebookWebhookController {
         }
         const pageIdFB = await this.pageService.findOne({ _id: pageSubscribe.pageId });
         if (pageIdFB === undefined) {
-            return res.status(400);
+            const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+            return res.status(200).send(successResponse);
         }
         if (body !== undefined && pageIdFB !== undefined && pageIdFB !== null && pageSubscribe.enable === true) {
             if (body.entry[0].changes[0].value.verb === 'add' && body.entry[0].changes[0].value.link === undefined && body.entry[0].changes[0].value.photos === undefined && body.entry[0].changes[0].value.item !== 'share' && body.entry[0].changes[0].value.item === 'status') {
@@ -295,9 +299,11 @@ export class FacebookWebhookController {
                         }
                     }
                     await this.postsService.update(queryTag, newValuesTag);
-                    return res.status(200).send('SuccessFul Webhooks');
+                    const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                    return res.status(200).send(successResponse);
                 } else {
-                    return res.status(400);
+                    const errorResponse = ResponseUtil.getErrorResponse('Value verb does not add', undefined);
+                    return res.status(400).send(errorResponse);
                 }
             } else if (body.entry[0].changes[0].value.verb === 'add' && body.entry[0].changes[0].value.link !== undefined && body.entry[0].changes[0].value.photos === undefined && body.entry[0].changes[0].value.item !== 'share' && body.entry[0].changes[0].value.item === 'photo') {
                 const assetPic = await this.assetService.createAssetFromURL(body.entry[0].changes[0].value.link, pageIdFB.ownerUser);
@@ -466,11 +472,12 @@ export class FacebookWebhookController {
                                     await this.assetService.update({ _id: assetObj.id, userId: pageIdFB.ownerUser }, { $set: { expirationDate: null } });
                                 }
                             }
-                            return res.status(200).send('SuccessFul Webhooks');
-                        }
+                            const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                            return res.status(200).send(successResponse);                        }
                     }
                 } else {
-                    return res.status(400);
+                    const errorResponse = ResponseUtil.getErrorResponse('Value verb does not add', undefined);
+                    return res.status(400).send(errorResponse);
                 }
             } else if (body.entry[0].changes[0].value.verb === 'add' && body.entry[0].changes[0].value.link === undefined && body.entry[0].changes[0].value.photos !== undefined && body.entry[0].changes[0].value.item !== 'share') {
                 const multiPics = [];
@@ -617,9 +624,11 @@ export class FacebookWebhookController {
                             await this.assetService.update({ _id: multiPics[j].id, userId: pageIdFB.ownerUser }, { $set: { expirationDate: null } });
                         }
                     }
-                    return res.status(200).send('SuccessFul Webhooks');
+                    const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                    return res.status(200).send(successResponse);
                 } else {
-                    return res.status(400);
+                    const errorResponse = ResponseUtil.getErrorResponse('Value verb does not add', undefined);
+                    return res.status(400).send(errorResponse);                
                 }
             } else if (body.entry[0].changes[0].value.verb === 'edit') {
                 const socialPost = await this.socialPostService.findOne({ postBy: body.entry[0].changes[0].value.post_id });
@@ -627,21 +636,26 @@ export class FacebookWebhookController {
                     const queryFB = { _id: socialPost.postId };
                     const setValue = { detail: body.entry[0].changes[0].value.message };
                     await this.postsService.update(queryFB, setValue);
-                    return res.status(200).send('SuccessFul Webhooks');
+                    const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                    return res.status(200).send(successResponse);
                 } else {
                     console.log('cannot update values');
                 }
             } else if (body.entry[0].changes[0].value.verb === 'add' && body.entry[0].changes[0].value.item === 'share' && body.entry[0].changes[0].value.link !== undefined) {
                 console.log('pass5');
-                return res.status(400).send('this values is removes from webhooks');
+                const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                return res.status(200).send(successResponse);
             } else if (body.entry[0].changes[0].value.verb === 'edited' && body.entry[0].changes[0].value.item === 'status' && body.entry[0].changes[0].value.link === undefined) {
                 console.log('pass6');
-                return res.status(400).send('this values is removes from webhooks');
+                const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                return res.status(200).send(successResponse);
             } else {
-                return res.status(400).send('this values is removes from webhooks');
+                const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                return res.status(200).send(successResponse);
             }
         } else {
-            return res.status(400).send('this values is removes from webhooks');
+            const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+            return res.status(200).send(successResponse);
         }
     }
 

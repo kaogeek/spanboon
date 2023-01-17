@@ -635,15 +635,21 @@ export class PageController {
 
             result.push(userAccLV);
         }
-        for(const pageFbSocial of result){
-            if(pageFbSocial.page !== undefined){
-                const pageFb = await this.pageSocialAccountService.find({page:pageFbSocial.page.id,providerName:PROVIDER.FACEBOOK});
+        for (const pageFbSocial of result) {
+            if (pageFbSocial.page !== undefined) {
+                const pageFb = await this.pageSocialAccountService.find({ page: pageFbSocial.page.id, providerName: PROVIDER.FACEBOOK });
                 const access_token = process.env.FACEBOOK_APP_ID + '|' + process.env.FACEBOOK_APP_SECRET;
-                for(const expireFb of pageFb){
-                    const issued_Token = await this.facebookService.expireToken(expireFb.storedCredentials,access_token);
-                    issued_fb.push(issued_Token.data.is_valid);
+                for (const expireFb of pageFb) {
+                    const issued_Token = await this.facebookService.expireToken(expireFb.storedCredentials, access_token);
+                    const objectPageFb = {
+                        pageId: expireFb.page,
+                        facebookPageId: expireFb.providerPageId,
+                        facebookPageName: expireFb.providerPageName,
+                        facebookTokenExpired: !issued_Token.data.is_valid
+                    };
+                    issued_fb.push(objectPageFb);
                 }
-            }else{
+            } else {
                 continue;
             }
         }
@@ -651,7 +657,8 @@ export class PageController {
         return res.status(200).send(successResponse);
 
     }
-    @Post('/fb_token')
+    @Post('/get/fb_token')
+    @Authorized('user')
     public async getRefreshToken(@Res() res: any, @Req() req: any): Promise<any> {
         for (let i = 0; i < req.body.length; i++) {
             const shiftOut = req.body[i];
@@ -747,6 +754,52 @@ export class PageController {
      * @apiErrorExample {json} Unable Binding Page Social
      * HTTP/1.1 500 Internal Server Error
      */
+    @Get('/:id/test/page')
+    @Authorized('user')
+    public async testGetPage(@Param('id') pageId: string, @Res() res: any, @Req() req: any):Promise<any>{
+        const userId = new ObjectID(req.user.id);
+        const pageObjId = new ObjectID(pageId);
+        const testQuery = await this.pageService.aggregate([
+            {$match:{'_id':ObjectID(pageObjId),'ownerUser':ObjectID(userId)}},
+                {$lookup:{from:'Posts',localField:'_id',foreignField:'pageId',as:'Posts'}},
+                {$unwind:{path:'$Posts',preserveNullAndEmptyArrays: true}},
+                {$lookup:{from:'SocialPost',localField:'_id',foreignField:'pageId',as:'SocialPost'}},
+                {$unwind:{path:'$SocialPost',preserveNullAndEmptyArrays:true}},
+                {$lookup:{from:'PageSocialAccount',localField:'_id',foreignField:'page',as:'PageSocialAccount'}},
+                {$unwind:{path:'$PageSocialAccount',preserveNullAndEmptyArrays:true}},
+                {$lookup:{from:'PageAccessLevel',localField:'ownerUser',foreignField:'user',as:'PageAccessLevel'}},
+                {$unwind:{path:'$PageAccessLevel',preserveNullAndEmptyArrays:true}},
+                {$lookup:{from:'PageAbout',localField:'_id',foreignField:'pageId',as:'PageAbout'}},
+                {$unwind:{path:'$PageAbout',preserveNullAndEmptyArrays:true}},
+                {$lookup:{from:'Needs',localField:'_id',foreignField:'pageId',as:'Needs'}},
+                {$unwind:{path:'$Needs',preserveNullAndEmptyArrays:true}},
+                {$lookup:{from:'FulfillmentCase',localField:'_id',foreignField:'pageId',as:'FulfillmentCase'}},
+                {$unwind:{path:'$FulfillmentCase',preserveNullAndEmptyArrays:true}},
+                {$lookup:{from:'PageConfig',localField:'_id',foreignField:'page',as:'PageConfig'}},
+                {$unwind:{path:'$PageConfig',preserveNullAndEmptyArrays:true}},
+                {$lookup:{from:'PageObjective',localField:'_id',foreignField:'pageId',as:'PageObjective'}},
+                {$unwind:{path:'$PageObjective',preserveNullAndEmptyArrays:true}},
+                {$limit:1},
+            ]);
+        const postIdList = [];
+        for(const post of testQuery){
+            if(post !== undefined){
+                postIdList.push(post);
+            }
+        }
+         console.log('userId',userId);
+        console.log('postIdList[0]',postIdList[0]);
+        console.log('postIdList[0].PageAccessLevel',new ObjectID(postIdList[0].PageAccessLevel.user) === userId);
+        if(postIdList[0].PageAccessLevel.user === userId && postIdList[0].PageAccessLevel.level === 'OWNER'){
+            for(const [i,values] of postIdList.entries()){
+                console.log('%d: %s',i,values);
+            }        
+        } else{
+            return res.status(400).send(ResponseUtil.getErrorResponse('You do not have a permission to delete page.', false));
+        }
+        return res.status(200).send(testQuery);
+    }
+
     @Post('/:id/social/facebook')
     @Authorized('user')
     public async bindingPageFacebook(@Param('id') pageId: string, @Body({ validate: true }) socialBinding: PageSocialFBBindingRequest, @Res() res: any, @Req() req: any): Promise<any> {
