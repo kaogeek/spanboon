@@ -11,9 +11,11 @@
             <div class="dropdown-page" *ngIf="isListPage && isHeaderPage && !isEdit && !isFulfill && !isMobilePost;">
                 <mat-form-field appearance="none">
                     <div class="selected-dropdown">
-                        <ng-container
-                            *ngIf="accessPageImage && accessPageImage.imageURL && accessPageImage.imageURL !== '' && accessPageImage.imageURL !== undefined && accessPageImage.imageURL !== null; else elseAccessPage">
-                            <img class="img" src="{{accessPageImage.imageURL}}" alt="">
+                        <ng-container *ngIf="accessPageImage && (!!accessPageImage.signURL 
+                            || !!accessPageImage.imageURL); else elseAccessPage">
+                            <img class="img"
+                                [src]="accessPageImage.signURL ? accessPageImage.signURL : accessPageImage.imageURL"
+                                alt="">
                         </ng-container>
                         <ng-template #elseAccessPage>
                             <div class="donator">
@@ -30,8 +32,10 @@
                                     <div class="wrapper-img-access">
                                         <div class="img-access">
                                             <ng-container
-                                                *ngIf="data.user.imageURL !== '' && data.user.imageURL !== undefined && data.user.imageURL !== null; else elseImageProfile">
-                                                <img class="icon-image" src="{{data.user.imageURL}}" alt="">
+                                                *ngIf="!!data.user.signURL || !!data.user.imageURL; else elseImageProfile">
+                                                <img class="icon-image"
+                                                    [src]="data.user.signURL ? data.user.signURL : data.user.imageURL"
+                                                    alt="">
                                             </ng-container>
                                             <ng-template #elseImageProfile>
                                                 <img class="icon-image" src="../../../assets/img/profile1.svg" alt="">
@@ -46,8 +50,10 @@
                                     <div class="wrapper-img-access">
                                         <div class="img-access">
                                             <ng-container
-                                                *ngIf="data.page.imageURL !== '' && data.page.imageURL !== undefined && data.page.imageURL !== null; else elseImageProfile">
-                                                <img class="icon-image" src="{{data.page.imageURL}}" alt="">
+                                                *ngIf="!!data.page.signURL || !!data.page.imageURL; else elseImageProfile">
+                                                <img class="icon-image"
+                                                    [src]="data.page.signURL ? data.page.signURL : data.page.imageURL"
+                                                    alt="">
                                             </ng-container>
                                             <ng-template #elseImageProfile>
                                                 <img class="icon-image" src="../../../assets/img/profile1.svg" alt="">
@@ -70,8 +76,10 @@
                 <mat-form-field appearance="none" *ngIf="!isSelectOption">
                     <div class="selected-dropdown">
                         <ng-container
-                            *ngIf="accessPageImage && accessPageImage.imageURL && accessPageImage.imageURL !== '' && accessPageImage.imageURL !== undefined && accessPageImage.imageURL !== null; else elseAccessPage">
-                            <img class="img" src="{{accessPageImage.imageURL}}" alt="">
+                            *ngIf="accessPageImage && (!!accessPageImage.signURL || !!accessPageImage.imageURL); else elseAccessPage">
+                            <img class="img"
+                                [src]="accessPageImage.signURL? accessPageImage.signURL : accessPageImage.imageURL"
+                                alt="">
                         </ng-container>
                         <ng-template #elseAccessPage>
                             <div class="donator">
@@ -88,8 +96,10 @@
                                     <div class="wrapper-img-access">
                                         <div class="img-access">
                                             <ng-container
-                                                *ngIf="data.user.imageURL !== '' && data.user.imageURL !== undefined && data.user.imageURL !== null; else elseImageProfile">
-                                                <img class="icon-image" src="{{data.user.imageURL}}" alt="">
+                                                *ngIf="!!data.user.signURL || !!data.user.imageURL; else elseImageProfile">
+                                                <img class="icon-image"
+                                                    [src]="data.user.signURL ? data.user.signURL : data.user.imageURL"
+                                                    alt="">
                                             </ng-container>
                                             <ng-template #elseImageProfile>
                                                 <img class="icon-image" src="../../../assets/img/profile1.svg" alt="">
@@ -104,8 +114,10 @@
                                     <div class="wrapper-img-access">
                                         <div class="img-access">
                                             <ng-container
-                                                *ngIf="data.page.imageURL !== '' && data.page.imageURL !== undefined && data.page.imageURL !== null; else elseImageProfile">
-                                                <img class="icon-image" src="{{data.page.imageURL}}" alt="">
+                                                *ngIf="!!data.page.signURL || !!data.page.imageURL; else elseImageProfile">
+                                                <img class="icon-image"
+                                                    [src]="data.page.signURL ? data.page.signURL : data.page.imageURL"
+                                                    alt="">
                                             </ng-container>
                                             <ng-template #elseImageProfile>
                                                 <img class="icon-image" src="../../../assets/img/profile1.svg" alt="">
@@ -720,7 +732,8 @@
                         </ng-template>
                     </div>
                     <ng-container *ngIf="isSharePost">
-                        <div class="share-social" #menuTrigger="matMenuTrigger" [matMenuTriggerFor]="menuSocial">
+                        <div class="share-social" #menuTrigger="matMenuTrigger" [matMenuTriggerFor]="menuSocial"
+                            (click)="clickToSocial()">
                             <svg class="icon-social"
                                 [class.active]="menuTrigger.menuOpen || isAutoPostTwitter || isAutoPostFacebook"
                                 xmlns="http://www.w3.org/2000/svg" width="17.474" height="17.474"

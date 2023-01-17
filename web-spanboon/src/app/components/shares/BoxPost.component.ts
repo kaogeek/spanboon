@@ -7,12 +7,12 @@
 
 import { Component, OnInit, Output, EventEmitter, Input, ViewChild, ElementRef, SimpleChanges } from '@angular/core';
 import { DialogManageImage, DialogImage, DialogDoIng, DialogCreateStory, DialogSettingDateTime, DialogPost, DialogPreview } from './dialog/dialog';
-import { MatDialog, MatSelect, MatAutocompleteTrigger, MatSlideToggleChange, MatTableDataSource, MatMenuTrigger, MatSelectChange, MatSnackBar } from '@angular/material';
+import { MatDialog, MatSelect, MatAutocompleteTrigger, MatSlideToggleChange, MatTableDataSource, MatMenuTrigger, MatSnackBar } from '@angular/material';
 import { FormControl } from '@angular/forms';
 import { AbstractPage } from '../pages/AbstractPage';
 import { PostFacade, HashTagFacade, EmergencyEventFacade, ObjectiveFacade, AssetFacade, UserFacade, ObservableManager, UserAccessFacade, AuthenManager, NeedsFacade, PageFacade, TwitterService, CacheConfigInfo } from '../../services/services';
 import { Asset } from '../../models/Asset';
-import { Config, PageSocialTW, SearchFilter } from '../../models/models';
+import { SearchFilter } from '../../models/models';
 import { POST_TYPE } from '../../TypePost';
 import * as $ from 'jquery';
 import { Observable, fromEvent, of } from 'rxjs';
@@ -22,7 +22,7 @@ import { environment } from '../../../environments/environment';
 import { NeedsCard } from './card/card';
 import { TwitterUtils } from '../../utils/TwitterUtils';
 import { Router } from '@angular/router';
-import { FACEBOOK_AUTO_POST, MAX_FILE_SIZE, TWITTER_AUTO_POST } from '../../Config';
+import { FACEBOOK_AUTO_POST, TWITTER_AUTO_POST } from '../../Config';
 import { ValidateFileSizeImageUtils } from '../../utils/ValidateFileSizeImageUtils';
 
 declare var $: any;
@@ -310,15 +310,6 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.isSelectOption = true;
     this.router = router;
     this.data = {};
-
-
-    // this.cacheConfigInfo.getConfig(TWITTER_AUTO_POST).then((config: any) => { 
-    //   if (config.value !== undefined) {
-    //     // this.isShowFacebook = (config.value.toLowerCase() === 'true');
-    //   }
-    // }).catch((error: any) => {
-    //   // console.log(error) 
-    // }); 
   }
 
   public ngOnInit(): void {
@@ -343,10 +334,10 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public ngOnChanges(changes: SimpleChanges): void {
-    this.socialGetBindingTwitter();
-    this.socialGetBindingFacebook();
-    this.getConfigTwitter();
-    this.getConfigFacebook();
+    // this.socialGetBindingTwitter();
+    // this.socialGetBindingFacebook();
+    // this.getConfigTwitter();
+    // this.getConfigFacebook();
   }
 
   public ngAfterViewInit(): void {
@@ -580,10 +571,10 @@ export class BoxPost extends AbstractPage implements OnInit {
         const cloneData = JSON.parse(JSON.stringify(this.accessDataPage))
         this.cloneDataCheck(cloneData);
       }
-      this.socialGetBindingTwitter();
-      this.socialGetBindingFacebook();
-      this.getConfigTwitter();
-      this.getConfigFacebook();
+      // this.socialGetBindingTwitter();
+      // this.socialGetBindingFacebook();
+      // this.getConfigTwitter();
+      // this.getConfigFacebook();
     }, 0);
   }
 
@@ -647,35 +638,36 @@ export class BoxPost extends AbstractPage implements OnInit {
         for (let data of res) {
           if (index === 0) {
             Object.assign(data.user, { type: 'user' });
-            if (data.user && data.user.imageURL !== '' && data.user.imageURL !== null && data.user.imageURL !== undefined) {
+            if (data.user && !data.user.signURL) {
               this.assetFacade.getPathFile(data.user.imageURL).then((image: any) => {
                 if (image.status === 1) {
                   if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
-                    data.user.imageURL = null
+                    data.user.imageURL = null;
                   } else {
-                    data.user.imageURL = image.data
+                    data.user.imageURL = image.data;
                   }
                   this.accessPage = res;
                 }
               }).catch((err: any) => {
                 if (err.error.message === "Unable got Asset") {
-                  data.user.imageURL = ''
+                  data.user.imageURL = '';
                 }
               })
             }
           }
-          if (data.page && data.page.imageURL !== '' && data.page.imageURL !== null && data.page.imageURL !== undefined) {
+
+          if (data.page && !data.page.signURL) {
             this.assetFacade.getPathFile(data.page.imageURL).then((image: any) => {
               if (image.status === 1) {
                 if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
-                  data.page.imageURL = null
+                  data.page.imageURL = null;
                 } else {
-                  data.page.imageURL = image.data
+                  data.page.imageURL = image.data;
                 }
               }
             }).catch((err: any) => {
               if (err.error.message === "Unable got Asset") {
-                data.page.imageURL = ''
+                data.page.imageURL = '';
               }
             })
           } else {
@@ -696,20 +688,20 @@ export class BoxPost extends AbstractPage implements OnInit {
           if (data.page.pageUsername === this.dataPage || data.page.id === this.dataPage) {
             const cloneDataPage = data.page;
             this.modeShowDoing = true;
-            if (cloneDataPage.imageURL !== '' && cloneDataPage.imageURL !== undefined && cloneDataPage.imageURL !== null) {
+            if (!cloneDataPage.signURL) {
               this.assetFacade.getPathFile(cloneDataPage.imageURL).then((image: any) => {
                 if (image.status === 1) {
                   if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
-                    cloneDataPage.imageURL = null
+                    cloneDataPage.imageURL = null;
                   } else {
-                    cloneDataPage.imageURL = image.data
+                    cloneDataPage.imageURL = image.data;
                   }
                   this.accessPageImage = cloneDataPage;
                   this.isSelectOption = false;
                 }
               }).catch((err: any) => {
                 if (err.error.message === "Unable got Asset") {
-                  cloneDataPage.imageURL = ''
+                  cloneDataPage.imageURL = '';
                 }
               });
             } else {
@@ -740,20 +732,20 @@ export class BoxPost extends AbstractPage implements OnInit {
   public userCheck(data: any) {
     const cloneDataUser = data.user;
     this.dataPageId = data.user;
-    if (cloneDataUser.imageURL !== undefined && cloneDataUser.imageURL !== '' && cloneDataUser.imageURL !== null) {
+    if (!cloneDataUser.signURL) {
       this.assetFacade.getPathFile(cloneDataUser.imageURL).then((image: any) => {
         if (image.status === 1) {
           if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
-            cloneDataUser.imageURL = null
+            cloneDataUser.imageURL = null;
           } else {
-            cloneDataUser.imageURL = image.data
+            cloneDataUser.imageURL = image.data;
           }
           this.accessPageImage = cloneDataUser;
           this.isSelectOption = false;
         }
       }).catch((err: any) => {
         if (err.error.message === "Unable got Asset") {
-          cloneDataUser.imageURL = ''
+          cloneDataUser.imageURL = '';
         }
       });
     } else {
@@ -1412,6 +1404,7 @@ export class BoxPost extends AbstractPage implements OnInit {
       this.accessPageImage.name = event.name;
       this.accessPageImage.imageURL = event.imageURL;
       this.accessPageImage.id = event.id;
+      this.clickToSocial();
     } else {
       this.modeDoIng = true;
       this.isSharePost = false;
@@ -1420,12 +1413,15 @@ export class BoxPost extends AbstractPage implements OnInit {
       this.accessPageImage.imageURL = event.imageURL;
       this.accessPageImage.id = event.id
     }
+
+    this.selectedInformation.emit(event);
+  }
+
+  public clickToSocial() {
     this.socialGetBindingTwitter();
     this.socialGetBindingFacebook();
     this.getConfigTwitter();
     this.getConfigFacebook();
-
-    this.selectedInformation.emit(event);
   }
 
   public onClickGetDataPost(isDraft?: boolean, isEdit?: boolean) {
@@ -1536,7 +1532,7 @@ export class BoxPost extends AbstractPage implements OnInit {
             asset,
           });
         } else {
-          if (image.imageURL !== undefined && image.imageURL !== '' && image.imageURL !== null) {
+          if (!!image.imageURL) {
             image.ordering = index + 1;
             asset.ordering = image.ordering;
             this.dataImage.push({
@@ -2560,10 +2556,10 @@ export class BoxPost extends AbstractPage implements OnInit {
 
   public onResize() {
     this.checkTabs();
-    this.socialGetBindingTwitter();
-    this.socialGetBindingFacebook();
-    this.getConfigTwitter();
-    this.getConfigFacebook();
+    // this.socialGetBindingTwitter();
+    // this.socialGetBindingFacebook();
+    // this.getConfigTwitter();
+    // this.getConfigFacebook();
 
     if (window.innerWidth <= 479) {
       this.isMobilePost = true;

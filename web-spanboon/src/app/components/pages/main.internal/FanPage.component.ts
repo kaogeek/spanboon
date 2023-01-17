@@ -352,7 +352,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
 
     this.observManager.subscribe(REFRESH_DATA, (result: any) => {
       if (result) {
-        this.resPost.posts.unshift(result);
+        // this.resPost.posts.unshift(result);
       }
     });
   }
