@@ -53,10 +53,10 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       label: this.PLATFORM_GENERAL_TEXT,
       keyword: 'general'
     },
-    {
-      label: this.PLATFORM_NEEDS_TEXT,
-      keyword: 'needs'
-    },
+    // {
+    //   label: this.PLATFORM_NEEDS_TEXT,
+    //   keyword: 'needs'
+    // },
     // {
     //   label: this.PLATFORM_FULFILL_TEXT,
     //   keyword: 'fulfillment'
@@ -1353,10 +1353,13 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
           }).catch((err: any) => {
           })
           for (let p of pageInUser) {
-            var aw = await this.assetFacade.getPathFile(p.imageURL).then((res: any) => {
-              p.img64 = res.data
-            }).catch((err: any) => {
-            });
+            if (!p.signURL) {
+              await this.assetFacade.getPathFile(p.imageURL).then((res: any) => {
+                p.img64 = res.data
+              }).catch((err: any) => {
+                console.log("err", err);
+              });
+            }
           }
           const dialogRef = this.dialog.open(DialogReboonTopic, {
             width: '450pt',

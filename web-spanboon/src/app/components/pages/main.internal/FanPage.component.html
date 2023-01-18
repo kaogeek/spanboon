@@ -699,8 +699,9 @@
                                                     (action)="actionComment($event,index)"
                                                     (comment)="createComment($event,index)" [pageUser]="pageUser"
                                                     [isPage]="isNotAccess" (userpage)="getAaaPost($event,index)"
-                                                    (delete)="deletePost($event,index)" (update)="editPost($event)"
-                                                    (engagement)="engagement($event)" (hide)="hidePost($event,index)">
+                                                    (delete)="deletePost($event,index)"
+                                                    (update)="editPost($event,index)" (engagement)="engagement($event)"
+                                                    (hide)="hidePost($event,index)">
                                                 </post-data>
                                             </ng-container>
                                             <Preload-card *ngIf="isLoadingPost" [isShowCard1]="true"

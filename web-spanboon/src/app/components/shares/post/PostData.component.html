@@ -193,11 +193,12 @@
                     </a>
 
                     <ng-container *ngIf="isUserPage">
+                        <!-- {{itemPost | json}} asdkjashdjkashdkjash -->
                         <a class="post-name" target="_blank"
                             (click)="onClickEngagement($event, (itemPost._id || itemPost.id), 'profile')"
                             href="{{itemPost && itemPost.ownerUser && itemPost.ownerUser.uniqueId !== undefined && itemPost.ownerUser.uniqueId !== null && itemPost.ownerUser.uniqueId !== '' ? '/profile/'+itemPost.ownerUser.uniqueId : '/profile/'+itemPost.ownerUser._id }}">
                             <span>เผยแพร่โดย :
-                                {{itemPost.ownerUser.displayName?itemPost.ownerUser.displayName:itemPost.ownerUser.name?itemPost.ownerUser.name:itemPost.page.name}}</span>
+                                {{itemPost.ownerUser.displayName}}</span>
                         </a>
                     </ng-container>
 

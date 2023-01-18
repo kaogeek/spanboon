@@ -505,11 +505,11 @@
                 </div>
             </div>
             <div class="wrapper-middle" #middle>
-                <div class="wrapper-edit-story" *ngIf="(isEmptyObject(dataStroy) || isDataStroy) && isStory">
-                    <div class="edit-story" (click)="showDialogCreateStory(true)">
+                <!-- <div class="wrapper-edit-story" *ngIf="(isEmptyObject(dataStroy) || isDataStroy) && isStory">
+                    <div class="edit-story" (click)="showDialogCreateStory(false)">
                         แก้ไข{{PLATFORM_STORY}}
                     </div>
-                </div>
+                </div> -->
                 <ng-container *ngIf="arrListItem && arrListItem.length > 0 && isTypeNeed; else elseNeeds">
                     <div class="wrapper-edit-story" (click)="showDialogDoing()">
                         <span class="label-needs"> กำลัง{{PLATFORM_NEEDS_TEXT}} {{getObjectLength(arrListItem)}}

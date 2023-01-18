@@ -617,6 +617,24 @@
   }
 }
 
+.pageNotFound {
+  display: flex;
+  flex-direction: column;
+  background-color: whitesmoke;
+  width: 100%;
+
+  >#Group_142 {
+    width: 100pt;
+    height: auto;
+    max-width: 70vw;
+  }
+
+  >.text-NotFound {
+    margin-top: 15pt;
+    @include font-size-7($font-head-500);
+  }
+}
+
 @media (max-width: $xxlarge) {
   .profile-timeline-page {
     .container {
