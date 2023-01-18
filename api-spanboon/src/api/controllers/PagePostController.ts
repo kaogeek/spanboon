@@ -992,8 +992,8 @@ export class PagePostController {
                 if (pageObjId === undefined || pageObjId === 'undefined') {
                     pageObjId = null;
                 }
-
-                pageStmt = { $or: [{ _id: pageObjId }, { pageUsername: pId }, { deleted: false }, { banned: false }] };
+                pageStmt = {$match:{deleted: false , banned: false }};
+                pageStmt = { $or: [{ _id: pageObjId }, { pageUsername: pId }]};
             }
             const page: Page = await this.pageService.findOne(pageStmt);
             if (page !== null && page !== undefined) {
