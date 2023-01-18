@@ -5,22 +5,17 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-import { Component, OnInit, ViewChild, ElementRef, HostListener, EventEmitter } from '@angular/core';
+import { Component, OnInit, ViewChild, EventEmitter } from '@angular/core';
 import { MatPaginator, MatDialog } from '@angular/material';
-import { SwiperConfigInterface, SwiperComponent, SwiperDirective } from 'ngx-swiper-wrapper';
-import { NgxGalleryOptions, NgxGalleryImage } from 'ngx-gallery';
-import { Gallery, GalleryRef } from '@ngx-gallery/core';
+import { Gallery } from '@ngx-gallery/core';
 import { AuthenManager, MainPageSlideFacade, HashTagFacade, AssetFacade, PageFacade } from '../../../services/services';
 import { AbstractPage } from '../AbstractPage';
 import { CacheConfigInfo } from '../../../services/CacheConfigInfo.service';
 import { PostFacade } from '../../../services/facade/PostFacade.service';
 import { Router } from '@angular/router';
 import { SearchFilter } from '../../../models/SearchFilter';
-import { ValidBase64ImageUtil } from '../../../utils/ValidBase64ImageUtil';
-import { DialogAlert } from '../../shares/dialog/dialog';
 import { DialogPostCrad } from '../../shares/dialog/DialogPostCrad.component';
 import { environment } from 'src/environments/environment';
-import { MESSAGE } from '../../../../custom/variable';
 
 declare var $: any;
 
@@ -106,18 +101,22 @@ export class HomePage extends AbstractPage implements OnInit {
       search.limit = 2;
       search.count = false;
       search.whereConditions = { ownerUser: userId };
-      var aw = await this.pageFacade.search(search).then((pages: any) => {
+      await this.pageFacade.search(search).then((pages: any) => {
         this.pageUser = pages
         this.pageUser.push(this.userCloneDatas)
         this.pageUser.reverse();
       }).catch((err: any) => {
+        console.log("err", err);
       });
       if (this.pageUser.length > 0) {
         for (let p of this.pageUser) {
-          var aw = await this.assetFacade.getPathFile(p.imageURL).then((res: any) => {
-            p.img64 = res.data
-          }).catch((err: any) => {
-          });
+          if (!p.signURL) {
+            await this.assetFacade.getPathFile(p.imageURL).then((res: any) => {
+              p.img64 = res.data
+            }).catch((err: any) => {
+              console.log("err", err);
+            });
+          }
         }
       }
     }

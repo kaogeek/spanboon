@@ -79,16 +79,16 @@ export class DialogPost extends AbstractPage {
 
     this.observManager.createSubject(REFRESH_DATA);
     this.observManager.createSubject('scroll.fix');
-    if (this.data && this.data.isListPage && this.data.isListPage !== '' && this.data.isListPage !== undefined && this.data.isListPage !== null) {
-      this.isFulfill = this.data.isFulfill;
-      this.isEdit = this.data.isEdit;
-      this.isListPage = this.data.isListPage;
-      if (this.data && !this.data.isSharePost) {
-        this.isSharePost = this.data.isSharePost;
-      } else {
-        this.isSharePost = true;
-      }
-    }
+    // if (this.data && this.data.isListPage && this.data.isListPage !== '' && this.data.isListPage !== undefined && this.data.isListPage !== null) {
+    //   this.isFulfill = this.data.isFulfill;
+    //   this.isEdit = this.data.isEdit;
+    //   this.isListPage = this.data.isListPage;
+    //   if (this.data && !this.data.isSharePost) {
+    //     this.isSharePost = this.data.isSharePost;
+    //   } else {
+    //     this.isSharePost = true;
+    //   }
+    // }
 
     if (this.data && this.data.fulfillRequest && this.data.fulfillRequest !== '' && this.data.fulfillRequest !== undefined && this.data.fulfillRequest !== null) {
       this.isFulfill = this.data.isFulfill;
@@ -97,37 +97,39 @@ export class DialogPost extends AbstractPage {
       this.isFulfillNull = this.data.isFulfillNull;
     }
 
-    if (this.data && this.data.story && this.data.story !== '' && this.data.story !== undefined && this.data.story !== null) {
-      let search: SearchFilter = new SearchFilter();
-      search.limit = 5;
-      search.count = false;
-      search.whereConditions = { _id: this.data._id };
-      this.postFacade.searchPostStory(search).then((res: any) => {
-        this.data.story = res[0].story
-      }).catch((err: any) => {
-        console.log(err)
-      })
-    }
+    // if (this.data && this.data.story && this.data.story !== '' && this.data.story !== undefined && this.data.story !== null) {
+    //   let search: SearchFilter = new SearchFilter();
+    //   search.limit = 5;
+    //   search.count = false;
+    //   search.whereConditions = { _id: this.data._id };
+    //   this.postFacade.searchPostStory(search).then((res: any) => {
+    //     this.data.story = res[0].story
+    //   }).catch((err: any) => {
+    //     console.log(err)
+    //   })
+    // }
 
 
   }
 
   public ngOnInit() {
-    if (this.isListPage) {
-      this.prefix.header = 'header';
-      this.prefix.detail = 'post';
-      if (!this.isEdit) {
-        this.postFacade.nextMessageTopic(this.data.topic);
-        this.postFacade.nextMessage(this.data.content);
+    // if (this.isListPage) {
+    //   this.prefix.header = 'header';
+    //   this.prefix.detail = 'post';
+    //   console.log("this.prefix.header", this.prefix.header)
+    //   console.log("this.prefix.detail", this.prefix.detail)
+    //   if (!this.isEdit) {
+    //     this.postFacade.nextMessageTopic(this.data.topic);
+    //     this.postFacade.nextMessage(this.data.content);
 
-        this.subscription = this.postFacade.sharedMessage.subscribe(message => {
-          this.data.content = message;
-        });
-        this.subscription = this.postFacade.sharedMessageTopic.subscribe(messages => {
-          this.data.topic = messages;
-        });
-      }
-    }
+    //     this.subscription = this.postFacade.sharedMessage.subscribe(message => {
+    //       this.data.content = message;
+    //     });
+    //     this.subscription = this.postFacade.sharedMessageTopic.subscribe(messages => {
+    //       this.data.topic = messages;
+    //     });
+    //   }
+    // }
 
     this.confirmEventEmitter = new EventEmitter<any>();
     this.confirmEventEmitter.subscribe(() => {
@@ -196,7 +198,7 @@ export class DialogPost extends AbstractPage {
   }
 
   public createPost(data) {
-    if (this.isEdit) {
+    if (this.isEdit || this.isListPage) {
       if (data.title) {
         let pageId = this.data.pageId;
         this.isPostLoading = true;

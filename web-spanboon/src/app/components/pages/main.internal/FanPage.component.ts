@@ -319,6 +319,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
       this.mySubscription.unsubscribe();
     }
     super.ngOnDestroy();
+    this.observManager.complete(REFRESH_DATA);
   }
 
   isPageDirty(): boolean {
@@ -1174,6 +1175,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
 
     dialogRef.afterClosed().subscribe(result => {
       if (result !== undefined) {
+        this.resPost.posts[index] = result;
       }
       this.stopLoading();
     });
@@ -1445,18 +1447,22 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     search.limit = 10;
     search.count = false;
     search.whereConditions = { ownerUser: userId };
-    var aw = await this.pageFacade.search(search).then((pages: any) => {
+    await this.pageFacade.search(search).then((pages: any) => {
       this.pageUser = pages
       this.pageUser.push(this.userCloneDatas)
       this.pageUser.reverse();
     }).catch((err: any) => {
+      console.log("err", err);
     });
     if (this.pageUser.length > 0) {
       for (let p of this.pageUser) {
-        var aw = await this.assetFacade.getPathFile(p.imageURL).then((res: any) => {
-          p.img64 = res.data
-        }).catch((err: any) => {
-        });
+        if (!p.signURL) {
+          await this.assetFacade.getPathFile(p.imageURL).then((res: any) => {
+            p.img64 = res.data
+          }).catch((err: any) => {
+            console.log("err", err);
+          });
+        }
       }
     }
   }

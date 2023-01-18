@@ -106,7 +106,7 @@ export class StoryPage extends AbstractPage implements OnInit {
     search.whereConditions = { _id: this.url };
     this.postFacade.searchPostStory(search).then(async (res: any) => {
       this.STORY = res;
-      this.safeSrc =  this.sanitizer.bypassSecurityTrustResourceUrl(res[0].story.storyAry[0].videoUrl);
+      this.safeSrc = this.sanitizer.bypassSecurityTrustResourceUrl(res[0].story.storyAry[0].videoUrl);
       this.TimeoutRuntimeSet();
       this.getRecommendedHashtag(this.STORY[0]._id);
       this.getRecommendedStory(this.STORY[0]._id);
@@ -240,13 +240,17 @@ export class StoryPage extends AbstractPage implements OnInit {
         this.pageUser.push(this.userCloneDatas)
         this.pageUser.reverse();
       }).catch((err: any) => {
+        console.log("err", err);
       });
       if (this.pageUser.length > 0) {
         for (let p of this.pageUser) {
-          var aw = await this.assetFacade.getPathFile(p.imageURL).then((res: any) => {
-            p.img64 = res.data
-          }).catch((err: any) => {
-          });
+          if (!p.signURL) {
+            await this.assetFacade.getPathFile(p.imageURL).then((res: any) => {
+              p.img64 = res.data
+            }).catch((err: any) => {
+              console.log("err", err);
+            });
+          }
         }
       }
     }

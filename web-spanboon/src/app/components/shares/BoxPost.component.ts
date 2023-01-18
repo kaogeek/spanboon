@@ -6,7 +6,7 @@
  */
 
 import { Component, OnInit, Output, EventEmitter, Input, ViewChild, ElementRef, SimpleChanges } from '@angular/core';
-import { DialogManageImage, DialogImage, DialogDoIng, DialogCreateStory, DialogSettingDateTime, DialogPost, DialogPreview } from './dialog/dialog';
+import { DialogManageImage, DialogImage, DialogDoIng, DialogSettingDateTime, DialogPost, DialogPreview } from './dialog/dialog';
 import { MatDialog, MatSelect, MatAutocompleteTrigger, MatSlideToggleChange, MatTableDataSource, MatMenuTrigger, MatSnackBar } from '@angular/material';
 import { FormControl } from '@angular/forms';
 import { AbstractPage } from '../pages/AbstractPage';
@@ -15,7 +15,7 @@ import { Asset } from '../../models/Asset';
 import { SearchFilter } from '../../models/models';
 import { POST_TYPE } from '../../TypePost';
 import * as $ from 'jquery';
-import { Observable, fromEvent, of } from 'rxjs';
+import { Observable, fromEvent, Subject } from 'rxjs';
 import { map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { ValidBase64ImageUtil } from '../../utils/ValidBase64ImageUtil';
 import { environment } from '../../../environments/environment';
@@ -37,7 +37,7 @@ const TEXT_LIMIT: number = 230;
   templateUrl: './BoxPost.component.html'
 })
 export class BoxPost extends AbstractPage implements OnInit {
-
+  private destroy = new Subject<void>();
   @ViewChild('topic', { static: false }) topic: ElementRef;
   @ViewChild('storyPost', { static: false }) storyPost: ElementRef;
   @ViewChild('matSelect', { static: false }) matSelect: MatSelect;
@@ -45,20 +45,20 @@ export class BoxPost extends AbstractPage implements OnInit {
   @ViewChild('objectiveDoing', { static: false }) objectiveDoing: ElementRef;
   @ViewChild('objectiveDoingName', { static: false }) objectiveDoingName: ElementRef;
   @ViewChild('objectCategory', { static: false }) objectCategory: MatSelect;
-  @ViewChild('autoCompleteTag', { static: false }) autoCompleteTag: ElementRef;
   @ViewChild('menuTag', { static: false }) menu: MatMenuTrigger;
-
   @ViewChild('headerTop', { static: false }) headerTop: ElementRef;
   @ViewChild('tagEvent', { static: false }) tagEvent: ElementRef;
   @ViewChild('toolBar', { static: false }) toolBar: ElementRef;
   @ViewChild('middle', { static: false }) middle: ElementRef;
   @ViewChild('needsCard', { static: false }) needsElement: NeedsCard;
-
-  @ViewChild('autoCompleteTag', { static: true, read: MatAutocompleteTrigger })
-  updatePosition: MatAutocompleteTrigger;
-
+  // @ViewChild('autocompleteField', { static: true, read: MatAutocompleteTrigger })
+  // updatePosition: MatAutocompleteTrigger;
   @ViewChild('autocompleteEmergency', { static: false })
   autocompleteEmergency: ElementRef;
+  @ViewChild('autocompleteField', { static: false })
+  autocompleteField: ElementRef;
+  @ViewChild('searchInputObjective', { static: false })
+  searchInputObjective: ElementRef;
 
   public links = [{ label: 'แท็กทั้งหมด', keyword: 'tab1' }, { label: 'แท็กที่ถูกเลือก', keyword: 'tab2' }];
   public activeLink = this.links[0].keyword;
@@ -341,6 +341,20 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public ngAfterViewInit(): void {
+    fromEvent(this.autocompleteEmergency && this.autocompleteEmergency.nativeElement, 'keyup').pipe(
+      debounceTime(500)
+      , distinctUntilChanged()
+    ).subscribe((text: any) => {
+      this.keyUpSearchEmergencyEvent(this.autocompleteEmergency.nativeElement.value, true);
+    });
+
+    fromEvent(this.autocompleteField && this.autocompleteField.nativeElement, 'keyup').pipe(
+      debounceTime(500)
+      , distinctUntilChanged()
+    ).subscribe((text: any) => {
+      this.keyUpSearchHashTag(this.autocompleteField.nativeElement.value, true);
+    });
+
     setTimeout(() => {
       if (this.isListPage) {
         this.prefix_button = 'box-file-input1';
@@ -580,6 +594,8 @@ export class BoxPost extends AbstractPage implements OnInit {
 
   public ngOnDestroy(): void {
     super.ngOnDestroy();
+    this.destroy.next();
+    this.destroy.complete();
   }
 
   isPageDirty(): boolean {
@@ -773,9 +789,9 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   private setAutoComp() {
-    if (this.autoCompleteTag !== undefined) {
+    if (this.autocompleteField !== undefined) {
       clearTimeout(this.setTimeoutAutocomp);
-      fromEvent(this.autoCompleteTag.nativeElement, 'keyup').pipe(
+      fromEvent(this.autocompleteField.nativeElement, 'keyup').pipe(
         // get value
         map((event: any) => {
           return event.target.value;
@@ -930,7 +946,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     }
     let cloneStory = this.dataStroy ? this.dataStroy : '';
     this.dataStroy = this.content && this.content.story ? this.content.story : {};
-    const storyPost = this.storyPost.nativeElement.innerText
+    const storyPost = this.storyPost.nativeElement.innerText;
     this.dataClone = {
       topic,
       cloneStory,
@@ -940,71 +956,71 @@ export class BoxPost extends AbstractPage implements OnInit {
       imagesTimeline: this.imagesTimeline,
       dataStroy: this.dataStroy
     }
-    const dialogRef = this.dialog.open(DialogCreateStory, {
-      width: '100vw',
-      height: '100vh',
-      data: this.dataClone,
-      disableClose: false,
-    });
+    // const dialogRef = this.dialog.open(DialogPost, {
+    //   width: '100vw',
+    //   height: '100vh',
+    //   data: this.dataClone,
+    //   disableClose: false,
+    // });
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (storyPostShort.trim() === "") {
-        this.isMsgError = true
-        var contentAlert;
-        if (this.isListPage) {
-          contentAlert = document.getElementById(this.prefix.header + 'editableStoryPost');
-          document.getElementById(this.prefix.detail + "editableStoryPost").focus();
-        } else {
-          contentAlert = document.getElementById('editableStoryPost');
-          document.getElementById("editableStoryPost").focus();
-        }
-        contentAlert.classList.add('msg-error-shake');
+    // dialogRef.afterClosed().subscribe(result => {
+    //   if (storyPostShort.trim() === "") {
+    //     this.isMsgError = true
+    //     var contentAlert;
+    //     if (this.isListPage) {
+    //       contentAlert = document.getElementById(this.prefix.header + 'editableStoryPost');
+    //       document.getElementById(this.prefix.detail + "editableStoryPost").focus();
+    //     } else {
+    //       contentAlert = document.getElementById('editableStoryPost');
+    //       document.getElementById("editableStoryPost").focus();
+    //     }
+    //     contentAlert.classList.add('msg-error-shake');
 
-        // remove the class after the animation completes
-        setTimeout(function () {
-          contentAlert.classList.remove('msg-error-shake');
-        }, 1000);
+    //     // remove the class after the animation completes
+    //     setTimeout(function () {
+    //       contentAlert.classList.remove('msg-error-shake');
+    //     }, 1000);
 
-        event.preventDefault();
-        return;
-      }
-      if (result) {
-        this.isStoryResultData = false
-        this.dataStroy = { story: result.story, storyAry: result.storyAry }
-        // delete this.dataStroy.item;
-        // delete this.dataStroy.cloneStory;
-        if (result.coverImages.asset !== undefined && result.coverImages.asset !== null) {
-          const asset = new Asset();
-          asset.mimeType = result.coverImages.asset.type;
-          asset.fileName = result.coverImages.asset.name;
-          asset.size = result.coverImages.asset.size;
-          asset.data = result.coverImages.asset.data;
-          this.coverImage = asset;
-        }
-        let data = {
-          title: topic,
-          detail: storyPostShort,
-          story: this.dataStroy,
-          needs: this.arrListItem ? this.arrListItem : [],
-          emergencyEvent: this.isEmptyObject(this.dataAutoComp) ? this.dataAutoComp.id : "",
-          emergencyEventTag: this.isEmptyObject(this.dataAutoComp) ? this.dataAutoComp.hashtag : "",
-          userTags: this.userTag,
-          postsHashTags: this.hashTag,
-          postGallery: this.dataImage,
-          coverImage: this.coverImage,
-          postSocialTW: this.twitterConection && this.isAutoPostTwitter ? true : false,
-          postSocialFB: this.facebookConection && this.isAutoPostFacebook ? true : false
-        }
-        if (this.modeShowDoing) {
-          Object.assign(data, { objective: this.isEmptyObject(this.dataObjective) ? this.dataObjective.id : "" });
-          Object.assign(data, { objectiveTag: this.isEmptyObject(this.dataObjective) ? this.dataObjective.hashTag : "" });
-        }
-        this.isClickPostPreLoad = true;
-        return this.createPost.emit(data);
-      }
-      this.stopLoading();
-      this.onResize();
-    });
+    //     event.preventDefault();
+    //     return;
+    //   }
+    //   if (result) {
+    //     this.isStoryResultData = false
+    //     this.dataStroy = { story: result.story, storyAry: result.storyAry }
+    //     // delete this.dataStroy.item;
+    //     // delete this.dataStroy.cloneStory;
+    //     if (result.coverImages.asset !== undefined && result.coverImages.asset !== null) {
+    //       const asset = new Asset();
+    //       asset.mimeType = result.coverImages.asset.type;
+    //       asset.fileName = result.coverImages.asset.name;
+    //       asset.size = result.coverImages.asset.size;
+    //       asset.data = result.coverImages.asset.data;
+    //       this.coverImage = asset;
+    //     }
+    //     let data = {
+    //       title: topic,
+    //       detail: storyPostShort,
+    //       story: this.dataStroy,
+    //       needs: this.arrListItem ? this.arrListItem : [],
+    //       emergencyEvent: this.isEmptyObject(this.dataAutoComp) ? this.dataAutoComp.id : "",
+    //       emergencyEventTag: this.isEmptyObject(this.dataAutoComp) ? this.dataAutoComp.hashtag : "",
+    //       userTags: this.userTag,
+    //       postsHashTags: this.hashTag,
+    //       postGallery: this.dataImage,
+    //       coverImage: this.coverImage,
+    //       postSocialTW: this.twitterConection && this.isAutoPostTwitter ? true : false,
+    //       postSocialFB: this.facebookConection && this.isAutoPostFacebook ? true : false
+    //     }
+    //     if (this.modeShowDoing) {
+    //       Object.assign(data, { objective: this.isEmptyObject(this.dataObjective) ? this.dataObjective.id : "" });
+    //       Object.assign(data, { objectiveTag: this.isEmptyObject(this.dataObjective) ? this.dataObjective.hashTag : "" });
+    //     }
+    //     this.isClickPostPreLoad = true;
+    //     return this.createPost.emit(data);
+    //   }
+    //   this.stopLoading();
+    //   this.onResize();
+    // });
   }
 
   public onLostFocus(data, isTopic: boolean) {
@@ -1385,6 +1401,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public eventClick() {
+    this.autocompleteEmergency.nativeElement.focus();
     if (this.isShowEmergency === true) {
       this.closeSearchAutocomp();
     } else {
@@ -1646,7 +1663,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     if (this.objectiveDoing !== undefined) {
       this.objectiveDoing.nativeElement.value = "";
     }
-    this.autoCompleteTag = undefined;
+    this.autocompleteField.nativeElement.value = undefined;
     this.selectedObjectiveId = undefined;
     this.resPageCategory = []
     this.dataAutoComp = {};
@@ -1850,6 +1867,8 @@ export class BoxPost extends AbstractPage implements OnInit {
   public removeEmergency() {
     this.dataAutoComp = {};
     document.querySelector('.mat-selected').classList.remove('mat-selected');
+    this.autocompleteEmergency.nativeElement.value = "";
+    console.log(this.autocompleteEmergency.nativeElement.value);
   }
 
   public unCheckboxAll() {
@@ -2029,9 +2048,9 @@ export class BoxPost extends AbstractPage implements OnInit {
       }
     }
     this.closeDialog();
-    $("#menubottom").css({
-      'overflow-y': "auto"
-    });
+    // $("#menubottom").css({
+    //   'overflow-y': "auto"
+    // });
   }
   public isEmptyObject(obj) {
     return (obj && (Object.keys(obj).length > 0));
@@ -2303,18 +2322,18 @@ export class BoxPost extends AbstractPage implements OnInit {
           });
         })
       }
-      $("#menubottom").css({
-        'overflow-y': "auto"
-      });
+      // $("#menubottom").css({
+      //   'overflow-y': "auto"
+      // });
     }
   }
 
   public canCelImageObject() {
     this.isUpload = false;
     this.isShowObjective = false;
-    $("#menubottom").css({
-      'overflow-y': "auto"
-    });
+    // $("#menubottom").css({
+    //   'overflow-y': "auto"
+    // });
   }
 
   public onFileMultiSelectedImage(event) {
@@ -2407,10 +2426,9 @@ export class BoxPost extends AbstractPage implements OnInit {
     } else {
       this.closeDialog();
     }
-    $("#menubottom").css({
-      'overflow-y': "auto"
-    });
-
+    // $("#menubottom").css({
+    //   'overflow-y': "auto"
+    // });
   }
   public focusOutTag() {
     this.isShowCheckboxTag = false;

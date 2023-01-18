@@ -146,7 +146,6 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
         let numloop: number = 0
 
         for (let item of this.objectiveData.timelines) {
-            console.log("zxczxczxczxczxc", item)
             if (item.type === "OBJECTIVE_NEEDS") {
                 for (let n of item.post.needs) {
                     let standardItem = item.post.standardItemCollection.find(({ _id }) => _id === n.standardItemId);
