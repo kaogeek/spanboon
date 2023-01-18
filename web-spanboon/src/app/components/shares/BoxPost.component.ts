@@ -1401,6 +1401,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public eventClick() {
+    this.autocompleteEmergency.nativeElement.focus();
     if (this.isShowEmergency === true) {
       this.closeSearchAutocomp();
     } else {
@@ -1866,6 +1867,8 @@ export class BoxPost extends AbstractPage implements OnInit {
   public removeEmergency() {
     this.dataAutoComp = {};
     document.querySelector('.mat-selected').classList.remove('mat-selected');
+    this.autocompleteEmergency.nativeElement.value = "";
+    console.log(this.autocompleteEmergency.nativeElement.value);
   }
 
   public unCheckboxAll() {
