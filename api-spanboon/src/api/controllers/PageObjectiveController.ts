@@ -545,6 +545,8 @@ export class ObjectiveController {
             objective = await this.pageObjectiveService.findOne({ where: { _id: objId } });
         } catch (ex) {
             objective = await this.pageObjectiveService.findOne({ where: { title: id } });
+        } finally {
+            objective = await this.pageObjectiveService.findOne({ $or: [{ _id: objId }, { title: id }] });
         }
 
         if (objective) {

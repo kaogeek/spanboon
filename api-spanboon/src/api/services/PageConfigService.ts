@@ -54,4 +54,9 @@ export class PageConfigService {
     public async delete(query: any, options?: any): Promise<any> {
         return await this.pageConfigRepository.deleteOne(query, options);
     }
+
+    // delete Many
+    public async deleteMany(query:any,options?:any): Promise<any>{
+        return await this.pageConfigRepository.deleteMany(query,options);
+    }
 }
