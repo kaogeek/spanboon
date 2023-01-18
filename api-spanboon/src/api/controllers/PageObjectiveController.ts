@@ -549,7 +549,7 @@ export class ObjectiveController {
 
         if (objective) {
             // generate timeline
-            const page = await this.pageService.findOne({ _id: objective.pageId });
+            const page = await this.pageService.findOne({ _id: objective.pageId, banned: false });
             const followingUsers = await this.userFollowService.sampleUserFollow(objId, SUBJECT_TYPE.OBJECTIVE, 5);
             let isFollowed = false;
             if (userId !== null && userId !== undefined && userId !== '') {

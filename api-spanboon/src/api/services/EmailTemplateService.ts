@@ -5,16 +5,16 @@
  * Author:  shiorin <junsuda.s@absolute.co.th>, chalucks <chaluck.s@absolute.co.th>
  */
 
-import {Service} from 'typedi';
-import {OrmRepository} from 'typeorm-typedi-extensions';
-import {Logger, LoggerInterface} from '../../decorators/Logger';
-import {Like} from 'typeorm/index';
-import {EmailTemplateRepository} from '../repositories/EmailTemplateRepository';
+import { Service } from 'typedi';
+import { OrmRepository } from 'typeorm-typedi-extensions';
+import { Logger, LoggerInterface } from '../../decorators/Logger';
+import { Like } from 'typeorm/index';
+import { EmailTemplateRepository } from '../repositories/EmailTemplateRepository';
 
 @Service()
 export class EmailTemplateService {
     constructor(@OrmRepository() private emailTemplateRepository: EmailTemplateRepository,
-                @Logger(__filename) private log: LoggerInterface) {
+        @Logger(__filename) private log: LoggerInterface) {
     }
 
     // Create emailTemplate

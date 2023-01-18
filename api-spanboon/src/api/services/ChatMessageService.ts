@@ -174,10 +174,10 @@ export class ChatMessageService {
                             const fromUserType = mainType;
                             const notificationType = NOTIFICATION_TYPE.CHAT;
                             const data = {
-                                roomId : chatMessage.room
+                                roomId: chatMessage.room
                             };
- 
-                            await this.notificationService.createNotification(toUserId, toUserType, fromUserId, fromUserType, notificationType, title,'',data);
+
+                            await this.notificationService.createNotification(toUserId, toUserType, fromUserId, fromUserType, notificationType, title, '', data);
                         }
                     }
                 }

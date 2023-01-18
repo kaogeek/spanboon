@@ -139,7 +139,7 @@ export class ChatController {
                 }
             }
         );
-        const updateResult = await this.chatMessageService.find({ room:msgObjIds, deleted: false });
+        const updateResult = await this.chatMessageService.find({ room: msgObjIds, deleted: false });
 
         if (updateResult) {
             const successResponse = ResponseUtil.getSuccessResponse('Successfully mark read chat message', updateResult);

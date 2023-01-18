@@ -849,7 +849,7 @@ export class PagePostController {
                         }
 
                         if (isPostFacebook) {
-                            const isValid = await this.pageSocialAccountService.pagePostToFacebook(createResult.posts.id, pageId,userObjId,mode);
+                            const isValid = await this.pageSocialAccountService.pagePostToFacebook(createResult.posts.id, pageId, userObjId, mode);
                             createResult.facebookValid = isValid;
                         }
                     }
@@ -985,15 +985,15 @@ export class PagePostController {
             let pageStmt;
             try {
                 pageObjId = new ObjectID(pId);
-                pageStmt = { _id: pageObjId };
+                pageStmt = { _id: pageObjId, deleted: false, banned: false };
             } catch (ex) {
-                pageStmt = { pageUsername: pId };
+                pageStmt = { pageUsername: pId, deleted: false, banned: false };
             } finally {
                 if (pageObjId === undefined || pageObjId === 'undefined') {
                     pageObjId = null;
                 }
 
-                pageStmt = { $or: [{ _id: pageObjId }, { pageUsername: pId }] };
+                pageStmt = { $or: [{ _id: pageObjId }, { pageUsername: pId }], deleted: false, banned: false };
             }
 
             const page: Page = await this.pageService.findOne(pageStmt);

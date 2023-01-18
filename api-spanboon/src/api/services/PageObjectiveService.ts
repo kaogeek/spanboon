@@ -115,6 +115,11 @@ export class PageObjectiveService {
         return await this.pageObjectiveRepository.deleteOne(query, options);
     }
 
+    // delete PageObjectIve Many
+    public async deleteMany(query: any, options?: any): Promise<any> {
+        return await this.pageObjectiveRepository.deleteMany(query, options);
+    }
+
     // Search PageObjective
     public search(filter: SearchFilter, options?: any): Promise<any> {
         const condition: any = SearchUtil.createFindCondition(filter.limit, filter.offset, filter.select, filter.relation, filter.whereConditions, filter.orderBy);
