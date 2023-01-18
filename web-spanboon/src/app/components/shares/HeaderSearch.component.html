@@ -49,7 +49,7 @@
                     <ng-template #elseIsloading>
                         <ng-container *ngIf="resSearch.length > 0; else elseNotFound">
                             <div class="item-search" *ngFor="let item of resSearch; let index = index">
-                                <ng-container *ngIf="item.historyId; else elseHistory">
+                                <ng-container *ngIf="item.historyId && isLogin(); else elseHistory">
                                     <div class="search-name" (click)="clickOpenLink(item)">
                                         <svg class="icon-history" xmlns="http://www.w3.org/2000/svg" width="18.412"
                                             height="20.418" viewBox="0 0 18.412 20.418">

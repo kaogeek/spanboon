@@ -363,6 +363,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   }
 
   private checkLoginAndRedirection(): void {
+    this.isLoading = true;
     if (this.isLogin()) {
       if (this.redirection) {
         this.router.navigateByUrl(this.redirection);
@@ -905,7 +906,6 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         }
         if (res.data) {
           this.position = res.data.coverPosition;
-          this.isLoading = true;
           if (res.data && res.data.imageURL && res.data.imageURL !== '') {
             this.getDataIcon(res.data.imageURL, "image")
           }
@@ -1339,7 +1339,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         }
       } else {
         if (this.pagefixHeight) {
-          this.pagefixHeight.nativeElement.style.top = '130px';
+          this.pagefixHeight.nativeElement.style.top = '125px';
         }
       }
 
@@ -1351,7 +1351,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         }
       } else {
         if (this.sidefeedHeight) {
-          this.sidefeedHeight.nativeElement.style.top = '130px';
+          this.sidefeedHeight.nativeElement.style.top = '125px';
         }
       }
     }

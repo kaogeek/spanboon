@@ -161,7 +161,8 @@
         <mat-form-field *ngIf="isPage && isShowUser && accessPage" appearance="none" class="field-profile">
             <div class="div-profile">
                 <img *ngIf="isImges" class="icon-images"
-                    src="{{selectedAccessPageimges && selectedAccessPageimges.img64 }}" alt="">
+                    src="{{selectedAccessPageimges.signURL?selectedAccessPageimges.signURL:selectedAccessPageimges.imageURL?selectedAccessPageimges.imageURL:selectedAccessPageimges.img64}}"
+                    alt="">
                 <div *ngIf="isDis" class="donator-contro">
                     <span>{{selectedAccessPageimges | slice: 0:1 }}</span>
                 </div>

@@ -369,6 +369,7 @@
                                         @media (max-width: 620px) {
                                             width: 300px;
                                         }
+
                                     }
 
                                     &.gallery {
@@ -1834,6 +1835,10 @@
                                         >.wrapper-image {
                                             >img {
                                                 transform: rotate(10deg);
+
+                                                @media (max-width: $small) {
+                                                    transform: rotate(5deg);
+                                                }
                                             }
 
                                             >.wrapper-image-cloud {
@@ -1952,8 +1957,8 @@
                                     >.head-title {
                                         @include font-size-5($font-head-500);
 
-                                        .title {
-                                            color: #1b95e0;
+                                        @media (max-width: $small) {
+                                            @include font-size-7($font-head-500);
                                         }
                                     }
 
@@ -1961,6 +1966,11 @@
                                         margin-top: 30px;
                                         @include font-size-7($font-content-light);
                                         line-height: 40px;
+
+                                        @media (max-width: $small) {
+                                            word-break: break-all;
+                                            @include font-size-9($font-content-light);
+                                        }
                                     }
 
                                     >.drot {
@@ -1972,6 +1982,10 @@
                                     >.createdDate {
                                         opacity: 0.2;
                                         @include font-size-8($font-head-500);
+
+                                        @media (max-width: $small) {
+                                            @include font-size-10($font-head-500);
+                                        }
                                     }
 
                                     >.buttom {
@@ -1983,10 +1997,6 @@
 
                                         @media (max-width: $lmedium) {
                                             justify-content: center;
-                                        }
-
-                                        @media (max-width: $small) {
-                                            width: calc(100% - 50px);
                                         }
 
                                         >.botton {
