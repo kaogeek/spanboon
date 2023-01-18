@@ -54,4 +54,9 @@ export class SocialPostLogsService {
     public async delete(query: any, options?: any): Promise<any> {
         return await this.socialPostLogsRepository.deleteOne(query, options);
     }
+
+    // deleteMany
+    public async deleteMany(query:any,options?:any): Promise<any>{
+        return await this.socialPostLogsRepository.deleteMany(query,options);
+    }
 }

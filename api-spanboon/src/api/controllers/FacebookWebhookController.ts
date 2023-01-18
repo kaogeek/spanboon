@@ -106,6 +106,10 @@ export class FacebookWebhookController {
         const hashTagList1 = [];
         const hashTagList2 = [];
         const msgSplit = body.entry[0].changes[0].value.message.split('#');
+        if (msgSplit === undefined) {
+            const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+            return res.status(200).send(successResponse);
+        }
         if (msgSplit) {
             for (let i = 1; i < msgSplit.length; i++) {
                 hashTagList1.push(msgSplit[i].split('\n')[0]);
@@ -116,6 +120,10 @@ export class FacebookWebhookController {
             }
         }
         const match = /r\n|\n/.exec(body.entry[0].changes[0].value.message);
+        if (match === undefined) {
+            const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+            return res.status(200).send(successResponse);
+        }
         console.log('body.entry[0].changes[0].value.message', body.entry[0].changes[0].value);
         if (body.entry[0].changes[0].value.message === undefined) {
             const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
@@ -157,12 +165,13 @@ export class FacebookWebhookController {
             }
         } else {
             const textMessage = body.entry[0].changes[0].value.message.length;
+            fullStop = body.entry[0].changes[0].value.message.indexOf('.');
             if (textMessage >= 50) {
-                realText = body.entry[0].changes[0].value.message.substring(0, 50) + '.....';
+                realText = body.entry[0].changes[0].value.message.substring(0, fullStop + 1) + '.....';
                 detailText = body.entry[0].changes[0].value.message;
                 TrimText = detailText.trim();
             } else {
-                realText = body.entry[0].changes[0].value.message.substring(0, 30);
+                realText = body.entry[0].changes[0].value.message.substring(0, fullStop + 1);
                 detailText = body.entry[0].changes[0].value.message;
                 TrimText = detailText.trim();
             }

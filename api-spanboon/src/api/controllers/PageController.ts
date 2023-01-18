@@ -76,7 +76,7 @@ import { USER_TYPE, NOTIFICATION_TYPE } from '../../constants/NotificationType';
 import { DeviceTokenService } from '../services/DeviceToken';
 import { PageNotificationService } from '../services/PageNotificationService';
 import axios from 'axios';
-
+import { DeletePageService } from '../services/DeletePageService';
 @JsonController('/page')
 export class PageController {
     private PAGE_ACCESS_LEVEL_GUEST = 'GUEST';
@@ -105,6 +105,7 @@ export class PageController {
         private socialPostLogsService: SocialPostLogsService,
         private deviceTokenService: DeviceTokenService,
         private pageNotificationService: PageNotificationService,
+        private deletePageService: DeletePageService
     ) { }
 
     // Find Page API
@@ -754,50 +755,12 @@ export class PageController {
      * @apiErrorExample {json} Unable Binding Page Social
      * HTTP/1.1 500 Internal Server Error
      */
-    @Get('/:id/test/page')
+    @Delete('/:id/test/page')
     @Authorized('user')
-    public async testGetPage(@Param('id') pageId: string, @Res() res: any, @Req() req: any):Promise<any>{
-        const userId = new ObjectID(req.user.id);
+    public async testGetPage(@Param('id') pageId: string, @Res() res: any, @Req() req: any): Promise<any> {
         const pageObjId = new ObjectID(pageId);
-        const testQuery = await this.pageService.aggregate([
-            {$match:{'_id':ObjectID(pageObjId),'ownerUser':ObjectID(userId)}},
-                {$lookup:{from:'Posts',localField:'_id',foreignField:'pageId',as:'Posts'}},
-                {$unwind:{path:'$Posts',preserveNullAndEmptyArrays: true}},
-                {$lookup:{from:'SocialPost',localField:'_id',foreignField:'pageId',as:'SocialPost'}},
-                {$unwind:{path:'$SocialPost',preserveNullAndEmptyArrays:true}},
-                {$lookup:{from:'PageSocialAccount',localField:'_id',foreignField:'page',as:'PageSocialAccount'}},
-                {$unwind:{path:'$PageSocialAccount',preserveNullAndEmptyArrays:true}},
-                {$lookup:{from:'PageAccessLevel',localField:'ownerUser',foreignField:'user',as:'PageAccessLevel'}},
-                {$unwind:{path:'$PageAccessLevel',preserveNullAndEmptyArrays:true}},
-                {$lookup:{from:'PageAbout',localField:'_id',foreignField:'pageId',as:'PageAbout'}},
-                {$unwind:{path:'$PageAbout',preserveNullAndEmptyArrays:true}},
-                {$lookup:{from:'Needs',localField:'_id',foreignField:'pageId',as:'Needs'}},
-                {$unwind:{path:'$Needs',preserveNullAndEmptyArrays:true}},
-                {$lookup:{from:'FulfillmentCase',localField:'_id',foreignField:'pageId',as:'FulfillmentCase'}},
-                {$unwind:{path:'$FulfillmentCase',preserveNullAndEmptyArrays:true}},
-                {$lookup:{from:'PageConfig',localField:'_id',foreignField:'page',as:'PageConfig'}},
-                {$unwind:{path:'$PageConfig',preserveNullAndEmptyArrays:true}},
-                {$lookup:{from:'PageObjective',localField:'_id',foreignField:'pageId',as:'PageObjective'}},
-                {$unwind:{path:'$PageObjective',preserveNullAndEmptyArrays:true}},
-                {$limit:1},
-            ]);
-        const postIdList = [];
-        for(const post of testQuery){
-            if(post !== undefined){
-                postIdList.push(post);
-            }
-        }
-         console.log('userId',userId);
-        console.log('postIdList[0]',postIdList[0]);
-        console.log('postIdList[0].PageAccessLevel',new ObjectID(postIdList[0].PageAccessLevel.user) === userId);
-        if(postIdList[0].PageAccessLevel.user === userId && postIdList[0].PageAccessLevel.level === 'OWNER'){
-            for(const [i,values] of postIdList.entries()){
-                console.log('%d: %s',i,values);
-            }        
-        } else{
-            return res.status(400).send(ResponseUtil.getErrorResponse('You do not have a permission to delete page.', false));
-        }
-        return res.status(200).send(testQuery);
+        await this.deletePageService.deletePage(pageObjId);
+        return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Binding Page Facebook Social.', true));
     }
 
     @Post('/:id/social/facebook')

@@ -993,11 +993,9 @@ export class PagePostController {
                     pageObjId = null;
                 }
 
-                pageStmt = { $or: [{ _id: pageObjId }, { pageUsername: pId }], deleted: false, banned: false };
+                pageStmt = { $or: [{ _id: pageObjId }, { pageUsername: pId }, { deleted: false }, { banned: false }] };
             }
-
             const page: Page = await this.pageService.findOne(pageStmt);
-
             if (page !== null && page !== undefined) {
                 const postPageObjId = new ObjectID(page.id);
                 const today = moment().toDate();
@@ -1032,7 +1030,6 @@ export class PagePostController {
                         }
                     }
                 }
-
                 postPageStmt = [
                     { $match: matchStmt },
                     { $sort: { startDateTime: -1 } },

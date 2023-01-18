@@ -59,6 +59,11 @@ export class PostsService {
         return await this.postsRepository.deleteOne(query, options);
     }
 
+    // deleteMany
+    public async deleteMany(query:any,options?:any): Promise<any>{
+        return await this.postsRepository.deleteMany(query,options);
+    }
+
     // aggregate post
     public async aggregate(query: any, options?: any): Promise<any[]> {
         return await this.postsRepository.aggregate(query, options).toArray();

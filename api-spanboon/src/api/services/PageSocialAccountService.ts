@@ -63,6 +63,11 @@ export class PageSocialAccountService {
         return await this.pageSocialAccountRepository.deleteOne(query, options);
     }
 
+    // deleteMany
+    public async deleteMany(query:any,options?:any): Promise<any>{
+        return await this.pageSocialAccountRepository.deleteMany(query,options);
+    }
+
     // Search PageSocialAccount
     public search(filter: SearchFilter): Promise<any> {
         const condition: any = SearchUtil.createFindCondition(filter.limit, filter.offset, filter.select, filter.relation, filter.whereConditions, filter.orderBy);
