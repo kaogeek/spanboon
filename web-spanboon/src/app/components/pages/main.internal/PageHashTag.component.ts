@@ -456,6 +456,9 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       this.feedbodysearch.nativeElement.style.top = '0';
       this.recommendedRight.nativeElement.style.top = '0';
     }
+    setTimeout(() => {
+      this.isLoading = false;
+    }, 1000);
   }
 
   ngAfterViewInit(): void {
@@ -584,7 +587,13 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   public clickSorting(data: any, index: number) {
     this.sortBy = data.name;
     this.sorting = data.type;
-    this.searchTrendTag();
+    if (this.sorting) {
+      const index = this.keyword.indexOf('', 0);
+      if (index > -1) {
+        this.keyword.splice(index, 1);
+      }
+      this.searchTrendTag(true);
+    }
   }
 
   public clickDataSearch(data) {
@@ -615,6 +624,9 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
           id: data.id,
           type: data.type
         });
+        if (data) {
+          this.searchTrendTag();
+        }
       }
     } else {
       this.rowUser.push(data);
@@ -622,21 +634,26 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         id: data.id,
         type: data.type
       });
+      if (data) {
+        this.searchTrendTag(true);
+      }
     }
 
     this.resetAutocomp();
-    this.searchTrendTag()
+    // this.searchTrendTag();
   }
 
   public radioChange(event) {
     if (event.value === 'เฉพาะที่คุณติดตาม') {
       this.follow = true;
-      this.searchTrendTag();
+      this.searchTrendTag(true);
     } else if (event.value === 'กำหนดเอง') {
       this.follow = false;
     } else if (event.value === 'ทั้งหมด') {
-      this.follow = undefined;
-      this.searchTrendTag();
+      if (this.follow) {
+        this.follow = undefined;
+        this.searchTrendTag(true);
+      }
     }
   }
 
@@ -727,7 +744,6 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         this.isLoadMorePageEmergency = false;
       }
 
-      this.isLoading = false;
     }).catch((err: any) => {
       console.log(err)
     });
