@@ -1324,9 +1324,9 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     if (this.scrollMobile) {
       this.recommendedLeft.nativeElement.style.height = 'auto';
     }
-    $("#menubottom").css({
-      'overflow-y': "hidden"
-    });
+    // $("#menubottom").css({
+    //   'overflow-y': "hidden"
+    // });
   }
 
   public async actionComment(action: any, index: number) {
@@ -1485,9 +1485,9 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     var postion = $(".slide-left");
     postion.removeClass("active");
     this.isBackdrop = false;
-    $("#menubottom").css({
-      'overflow-y': "auto"
-    });
+    // $("#menubottom").css({
+    //   'overflow-y': "auto"
+    // });
     const scroll = this.recommendedLeft.nativeElement.scrollTop;
     if (scroll > 0) {
       this.recommendedLeft.nativeElement.scrollTop = 0

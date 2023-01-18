@@ -21,29 +21,27 @@
 
   > .search-header-objective {
     display: flex;
-    padding: 10pt;
-    height: 16pt;
+    align-items: center;
+    position: relative;
     border-bottom: $width-border solid $border-separator;
 
-    > .img-search {
-      width: 12pt;
-    }
+    > label {
+      position: absolute;
+      left: 12px;
 
-    > .form-search-field {
-      padding-left: 10pt;
-      @include font-size-10($font-head-500);
-
-      > .mat-form-field-wrapper {
-        > .mat-form-field-flex {
-          > .mat-form-field-infix {
-            padding: unset;
-            border-top: unset;
-          }
-        }
+      > .img-search {
+        width: 12pt;
       }
     }
+
+    > input {
+      flex: 1 1 0%;
+      height: 16pt;
+      padding: 14px 14px 14px 46px;
+      @include font-size-10($font-head-500);
+    }
   }
-  
+
   > .wrapper-add-doing {
     border-bottom: $width-border solid $border-separator;
 
@@ -72,7 +70,7 @@
         cursor: pointer;
         @include font-size-10($font-head-500);
         @include pointer();
-        >.add-label {
+        > .add-label {
           @include font-size-10($font-head-500);
         }
         > .icon-add {
@@ -94,7 +92,6 @@
       overflow-x: hidden;
       -webkit-user-select: none;
       width: 100%;
-      @include pointer();
 
       > .wrapper-not-objective {
         display: flex;
@@ -115,6 +112,7 @@
         width: calc(25% - 28pt);
         @include font-size-10($font-head-500);
         height: max-content;
+        @include pointer();
 
         &:hover {
           background-color: $background-hover;
@@ -153,7 +151,7 @@
           height: 60pt;
           border-radius: 50%;
         }
-        >.image-waste {
+        > .image-waste {
           background-color: $bg-grey;
           display: flex;
           align-items: center;
@@ -181,8 +179,6 @@
     }
   }
 }
-
-
 
 @keyframes placeHolderShimmer {
   0% {
@@ -225,10 +221,10 @@
   .wrapper-body-objective {
     width: unset;
     height: 100%;
-    >.wrapper-add-doing {
-      >.wrapper-add-image {
-        >.image-upload {
-          >.add-label {
+    > .wrapper-add-doing {
+      > .wrapper-add-image {
+        > .image-upload {
+          > .add-label {
             display: none;
           }
         }
