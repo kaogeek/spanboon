@@ -227,7 +227,8 @@
                 <div class="search-tag-emergency" *ngIf="!isFulfill">
                     <div *ngIf="isRepost" class="event-tag" [matMenuTriggerFor]="menuEvent"
                         (menuClosed)="focusOutEmergency()"
-                        [class.active-tag1]="isShowEmergency || isEmptyObject(dataAutoComp)" (click)="eventClick()">
+                        [class.active-tag1]="isShowEmergency || isEmptyObject(dataAutoComp)"
+                        (click)="eventClick(); autocompleteEmergency.nativeElement.focus();">
                         <svg xmlns="http://www.w3.org/2000/svg" width="23" height="21" viewBox="0 0 23 21">
                             <g id="Group_1312" data-name="Group 1312" transform="translate(-672.701 -415.463)">
                                 <path id="Subtraction_2" data-name="Subtraction 2"
