@@ -324,7 +324,7 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
                     limit: 10,
                     callbacks: {
                         remoteFilter: (query, callback) => {
-                            let filter : SearchFilter = new SearchFilter();
+                            let filter: SearchFilter = new SearchFilter();
                             filter.whereConditions = {
                                 name: query
                             };
@@ -1880,9 +1880,9 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
             }
         }
         this.closeDialog();
-        $("#menubottom").css({
-            'overflow-y': "auto"
-        });
+        // $("#menubottom").css({
+        //     'overflow-y': "auto"
+        // });
     }
     public isEmptyObject(obj) {
         return (obj && (Object.keys(obj).length > 0));
@@ -2161,17 +2161,17 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
                 });
             })
         }
-        $("#menubottom").css({
-            'overflow-y': "auto"
-        });
+        // $("#menubottom").css({
+        //     'overflow-y': "auto"
+        // });
     }
 
     public canCelImageObject() {
         this.isUpload = false;
         this.isShowObjective = false;
-        $("#menubottom").css({
-            'overflow-y': "auto"
-        });
+        // $("#menubottom").css({
+        //     'overflow-y': "auto"
+        // });
     }
 
     public onFileMultiSelectedImage(event) {
@@ -2190,11 +2190,11 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
                         size: file.size,
                         image: event.target.result
                     }
-                    if(ValidateFileSizeImageUtils.sizeImage(file.size)){
+                    if (ValidateFileSizeImageUtils.sizeImage(file.size)) {
                         this.showAlertDialog('ขนาดไฟล์รูปภาพใหญ่เกินไป กรุณาอัพโหลดใหม่อีกครั้ง')
-                      } else { 
+                    } else {
                         this.genImages(data);
-                      }
+                    }
                 }
                 reader.readAsDataURL(file);
             }
@@ -2265,9 +2265,9 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
         } else {
             this.closeDialog();
         }
-        $("#menubottom").css({
-            'overflow-y': "auto"
-        });
+        // $("#menubottom").css({
+        //     'overflow-y': "auto"
+        // });
 
     }
     public focusOutTag() {

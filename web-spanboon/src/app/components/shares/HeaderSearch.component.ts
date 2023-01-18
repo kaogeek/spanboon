@@ -12,11 +12,10 @@ import { ObjectiveFacade, MainPageSlideFacade, AuthenManager, SearchHistoryFacad
 import { SearchFilter } from '../../models/SearchFilter';
 import { AbstractPage } from '../pages/AbstractPage';
 import { MatDialog } from '@angular/material';
-import { fromEvent } from 'rxjs';
-import { map, distinctUntilChanged } from 'rxjs/operators';
+import { fromEvent, Subject } from 'rxjs';
+import { map, distinctUntilChanged, debounceTime, takeUntil } from 'rxjs/operators';
 import { CookieUtil } from '../../utils/CookieUtil';
 import { ValidBase64ImageUtil } from '../../utils/ValidBase64ImageUtil';
-import { SimpleChanges } from '@angular/core';
 
 declare var $: any;
 const SEARCH_LIMIT: number = 10;
@@ -28,7 +27,7 @@ const UUID: string = 'UUID'
   templateUrl: './HeaderSearch.component.html'
 })
 export class HeaderSearch extends AbstractPage implements OnInit {
-
+  private destroy = new Subject<void>();
   @Input()
   public text: string = "ข้อความ";
   @Input()
@@ -44,10 +43,9 @@ export class HeaderSearch extends AbstractPage implements OnInit {
   @Input()
   public link: string = "#";
 
-  @ViewChild('search', { static: false }) public search: ElementRef
+  @ViewChild('search', { static: false }) public search: ElementRef;
 
   public router: Router;
-  private objectiveFacade: ObjectiveFacade;
   private mainPageFacade: MainPageSlideFacade;
   private searchHistoryFacade: SearchHistoryFacade;
   private searchHashTagFacade: HashTagFacade;
@@ -72,16 +70,14 @@ export class HeaderSearch extends AbstractPage implements OnInit {
 
   public isTabClick: string;
 
-  @ViewChild('search', { static: false }) private searchData: ElementRef;
   @ViewChild('tabs', { static: false }) private tabs: ElementRef;
   @ViewChild('wrapperBodyTag', { static: false }) private wrapperBodyTag: ElementRef;
 
-  constructor(router: Router, objectiveFacade: ObjectiveFacade, mainPageFacade: MainPageSlideFacade, searchHashTagFacade: HashTagFacade,
+  constructor(router: Router, mainPageFacade: MainPageSlideFacade, searchHashTagFacade: HashTagFacade,
     authenManager: AuthenManager, dialog: MatDialog, searchHistoryFacade: SearchHistoryFacade, assetFacade: AssetFacade) {
     super(null, authenManager, dialog, router);
     this.router = router;
     this.authenManager = authenManager;
-    this.objectiveFacade = objectiveFacade;
     this.mainPageFacade = mainPageFacade;
     this.searchHistoryFacade = searchHistoryFacade;
     this.searchHashTagFacade = searchHashTagFacade;
@@ -102,27 +98,18 @@ export class HeaderSearch extends AbstractPage implements OnInit {
   }
 
   public ngAfterViewInit(): void {
-    fromEvent(this.searchData.nativeElement, 'keyup').pipe(
-      // get value
-      map((event: any) => {
-        return event.target.value;
-      })
-      // if character length greater then 2
-      // , filter(res => res.length > 2)
-      // Time in milliseconds between key events
-      // , debounceTime(1000)
-      // If previous query is diffent from current
+    fromEvent(this.search && this.search.nativeElement, 'keyup').pipe(
+      debounceTime(500)
       , distinctUntilChanged()
-      // subscription for response
-    ).subscribe((text: string) => {
-      this.isLoading = true;
-      this.keyUpAutoComp(text);
+    ).subscribe((text: any) => {
+      this.keyUpAutoComp(this.search.nativeElement.value);
     });
-
   }
 
   public ngOnDestroy(): void {
     super.ngOnDestroy();
+    this.destroy.next();
+    this.destroy.complete();
   }
 
   isPageDirty(): boolean {
@@ -145,9 +132,9 @@ export class HeaderSearch extends AbstractPage implements OnInit {
   }
 
   public clickShowSearch() {
-    $("#menubottom").css({
-      'overflow-y': "hidden"
-    });
+    // $("#menubottom").css({
+    //   'overflow-y': "hidden"
+    // });
 
     this.SearchShow = true;
     this.filled = true;
@@ -228,9 +215,9 @@ export class HeaderSearch extends AbstractPage implements OnInit {
   }
 
   public clickHideSearch() {
-    $("#menubottom").css({
-      'overflow-y': "auto"
-    });
+    // $("#menubottom").css({
+    //   'overflow-y': "auto"
+    // });
 
     this.SearchShow = false;
     this.filled = false;
@@ -493,9 +480,9 @@ export class HeaderSearch extends AbstractPage implements OnInit {
     filter.count = false;
     filter.orderBy = {}
 
-    $("#menubottom").css({
-      'overflow-y': "auto"
-    });
+    // $("#menubottom").css({
+    //   'overflow-y': "auto"
+    // });
 
     this.searchHashTagFacade.search(filter, dataHashTag.value).then((res: any) => {
     }).catch((err: any) => {

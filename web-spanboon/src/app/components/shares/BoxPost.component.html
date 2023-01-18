@@ -271,8 +271,7 @@
                                         search
                                     </span>
                                     <input type="text" name="autocompleteEmergency" matInput id="autocompleteEmergency"
-                                        #autocompleteEmergency placeholder="ค้นหา"
-                                        (keyup)="keyUpSearchEmergencyEvent(autocompleteEmergency.value, true)">
+                                        #autocompleteEmergency placeholder="ค้นหา">
                                 </div>
                             </div>
                             <div class="panel-checkbox">
@@ -302,7 +301,7 @@
                 <div class="search-objective" *ngIf="modeShowDoing">
                     <div *ngIf="isRepost" class="objective-doing" [matMenuTriggerFor]="menuEventObjective"
                         (menuClosed)="focusOutObjective()" [class.active-tag]="isShowObjective || dataObjective.hashTag"
-                        (click)="clickObjectiveDoing();">
+                        (click)="clickObjectiveDoing(); searchInputObjective.nativeElement.value = ''; searchInputObjective.nativeElement.focus();">
                         <svg class="img-objective" xmlns="http://www.w3.org/2000/svg" width="22.899" height="22.899"
                             viewBox="0 0 22.899 22.899">
                             <g id="mission" transform="translate(0)">
@@ -361,7 +360,6 @@
                                                 </mat-select>
                                             </mat-form-field>
                                             <div class="hash">
-                                                <!-- <span class="wrapper-hashTag">#</span> -->
                                                 <label for="add-username">#</label>
                                                 <input type="text" class="input-hashTag" id="objective-doing-name"
                                                     name="objective-doing-name" #objectiveDoingName
@@ -414,26 +412,22 @@
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
                         </ng-container>
                         <ng-template #elseUpload>
-                            <div class="wrapper-body-objective">
+                            <div class="wrapper-body-objective" (click)="$event.stopPropagation()">
                                 <div class="search-header-objective">
-                                    <svg class="img-search" xmlns="http://www.w3.org/2000/svg" width="20.276"
-                                        height="20.682" viewBox="0 0 20.276 20.682">
-                                        <g id="surface1" transform="translate(-27)">
-                                            <path id="Path_104" data-name="Path 104"
-                                                d="M14.235,12.272a7.776,7.776,0,1,0-2.392,2.2l5.734,5.7a1.628,1.628,0,0,0,2.36-2.242c-.02-.021-.039-.04-.059-.059ZM7.883,12.8A5.016,5.016,0,1,1,12.9,7.779,5.017,5.017,0,0,1,7.883,12.8Zm0,0"
-                                                transform="translate(26.891 0)" fill="#474747" />
-                                        </g>
-                                    </svg>
-                                    <mat-form-field class="form-search-field" appearance="none"
-                                        (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
-                                        <input matInput placeholder="ค้นหา" #searchInputObjective
-                                            id="searchInputObjective"
-                                            (keyup)="keyUpSearchObjective(searchInputObjective.value)">
-                                    </mat-form-field>
+                                    <label for="searchInputObjective">
+                                        <svg class="img-search" xmlns="http://www.w3.org/2000/svg" width="20.276"
+                                            height="20.682" viewBox="0 0 20.276 20.682">
+                                            <g id="surface1" transform="translate(-27)">
+                                                <path id="Path_104" data-name="Path 104"
+                                                    d="M14.235,12.272a7.776,7.776,0,1,0-2.392,2.2l5.734,5.7a1.628,1.628,0,0,0,2.36-2.242c-.02-.021-.039-.04-.059-.059ZM7.883,12.8A5.016,5.016,0,1,1,12.9,7.779,5.017,5.017,0,0,1,7.883,12.8Zm0,0"
+                                                    transform="translate(26.891 0)" fill="#474747" />
+                                            </g>
+                                        </svg>
+                                    </label>
+                                    <input matInput placeholder="ค้นหา" #searchInputObjective id="searchInputObjective">
                                 </div>
                                 <div class="wrapper-add-doing">
                                     <div class="wrapper-add-image">
@@ -623,8 +617,7 @@
                                         search
                                     </span>
                                     <input type="text" matInput name="autocompleteField" id="autocompleteField"
-                                        #autocompleteField placeholder="ค้นหา" #autoCompleteTag
-                                        (keyup)="keyUpSearchHashTag(autocompleteField.value , false)">
+                                        #autocompleteField placeholder="ค้นหา">
                                 </div>
                                 <nav mat-tab-nav-bar animationDuration="0ms" (click)="$event.stopPropagation()"
                                     (keydown)="$event.stopPropagation()">
@@ -646,20 +639,21 @@
                                         <mat-progress-bar mode="indeterminate"></mat-progress-bar>
                                     </mat-option>
                                     <ng-container *ngIf="!isLoading">
-                                        <mat-option [ngClass]="{'dis': onPost}" class="list"
-                                            *ngFor="let item of resHashTag" [value]="item.value">
-                                            <div class="list-checkbox" (click)="optionClicked($event, item);">
-                                                <mat-checkbox (click)="$event.stopPropagation()" name="{{item.value}}"
-                                                    [(ngModel)]="item.selected" value="{{item.id}}"
-                                                    [ngModelOptions]="{standalone: true}"
-                                                    (change)="checkCheckBoxvalue($event, item)">
-                                                    #{{item.value}}
-                                                    <div class="tag-count">
-                                                        {{item.count ? item.count : 0 | shortNumber }} ครั้ง
-                                                    </div>
-                                                </mat-checkbox>
-                                            </div>
-                                        </mat-option>
+                                        <ng-container *ngFor="let item of resHashTag">
+                                            <!-- <mat-option [ngClass]="{'dis': onPost}" class="list" [value]="item.value">
+                                                <div class="list-checkbox" (click)="optionClicked($event, item);">
+                                                    <mat-checkbox (click)="$event.stopPropagation()" name="{{item.value}}"
+                                                        [(ngModel)]="item.selected" value="{{item.id}}"
+                                                        [ngModelOptions]="{standalone: true}"
+                                                        (change)="checkCheckBoxvalue($event, item)">
+                                                        #{{item.value}}
+                                                        <div class="tag-count">
+                                                            {{item.count ? item.count : 0 | shortNumber }} ครั้ง
+                                                        </div>
+                                                    </mat-checkbox>
+                                                </div>
+                                            </mat-option> -->
+                                        </ng-container>
                                     </ng-container>
                                 </ng-container>
                                 <ng-template #elseTab>
@@ -668,7 +662,7 @@
                                     </mat-option>
                                     <ng-container *ngIf="!isLoading">
                                         <ng-container *ngFor="let item of listTag">
-                                            <mat-option class="list" *ngIf="item.isServer !== false"
+                                            <!-- <mat-option class="list" *ngIf="item.isServer !== false"
                                                 [value]="item.name">
                                                 <div class="list-checkbox" (click)="optionClicked($event, item);">
                                                     <mat-checkbox (click)="$event.stopPropagation()"
@@ -682,9 +676,8 @@
                                                         </div>
                                                     </mat-checkbox>
                                                 </div>
-                                            </mat-option>
+                                            </mat-option> -->
                                         </ng-container>
-
                                     </ng-container>
                                 </ng-template>
                             </div>
