@@ -343,7 +343,6 @@ export class PostsCommentController {
             const postsObjId = new ObjectID(postsId);
             const postsStmt = { _id: postsObjId };
             const posts: Posts = await this.postsService.findOne(postsStmt);
-
             if (posts !== null && posts !== undefined) {
                 const postPageObjId = new ObjectID(posts.id);
                 let limit = search.limit;
@@ -388,14 +387,13 @@ export class PostsCommentController {
                             path: '$page',
                             preserveNullAndEmptyArrays: true
                         }
-                    },
+                    },   
                     {
-                        $match: { 'page.deleted': false, 'page.banned': false }
+                        $match: {'user.banned': false }
                     },
                     { $project: { _id: 0, id: '$_id', comment: 1, mediaURL: 1, post: 1, commentAsPage: 1, likeCount: 1, createdDate: 1, 'page._id': 1, 'page.name': 1, 'page.pageUsername': 1, 'page.imageURL': 1, 'page.s3ImageURL': 1, 'page.isOfficial': 1, 'user.id': '$user._id', 'user.imageURL': 1, 'user.displayName': 1 } }
                 ];
                 const postCommentLists: any[] = await this.postsCommentService.aggregate(postCommentStmt);
-
                 if (postCommentLists !== null && postCommentLists !== undefined && postCommentLists.length > 0) {
                     const commentIdList = [];
 
@@ -463,7 +461,6 @@ export class PostsCommentController {
                             delete result.page.s3ImageURL;
                         }
                     });
-
                     const successResponse = ResponseUtil.getSuccessResponse('Successfully Search Posts Comment', postCommentLists);
                     return res.status(200).send(successResponse);
                 } else {

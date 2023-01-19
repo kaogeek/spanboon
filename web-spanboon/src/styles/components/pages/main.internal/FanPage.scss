@@ -691,7 +691,6 @@
               > .title-feed {
                 text-align: center;
                 padding: 10pt 0 5pt 0;
-                @include pointer();
                 @include font-size-8($font-head-500);
               }
 

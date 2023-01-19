@@ -41,6 +41,11 @@ export class PageAccessLevelService {
         return await this.pageAccessLevelRepository.deleteOne(query, options);
     }
 
+    // deleteMany
+    public async deleteMany(query:any,options?:any): Promise<any>{
+        return await this.pageAccessLevelRepository.deleteMany(query,options);
+    }
+
     // find PageAccessLevel
     public findAll(): Promise<any> {
         this.log.info('Find all pages');

@@ -228,7 +228,7 @@
                     <div *ngIf="isRepost" class="event-tag" [matMenuTriggerFor]="menuEvent"
                         (menuClosed)="focusOutEmergency()"
                         [class.active-tag1]="isShowEmergency || isEmptyObject(dataAutoComp)"
-                        (click)="eventClick(); autocompleteEmergency.nativeElement.focus();">
+                        (click)="eventClick(); autocompleteEmergency?.nativeElement?.focus();">
                         <svg xmlns="http://www.w3.org/2000/svg" width="23" height="21" viewBox="0 0 23 21">
                             <g id="Group_1312" data-name="Group 1312" transform="translate(-672.701 -415.463)">
                                 <path id="Subtraction_2" data-name="Subtraction 2"
@@ -257,7 +257,7 @@
                             </g>
                         </svg>
                         <ng-container *ngIf="isEmptyObject(dataAutoComp); else elseObjective">
-                            {{'#'+dataAutoComp.hashtag}}
+                            {{'#' + dataAutoComp.hashtag}}
                         </ng-container>
                         <ng-template #elseObjective>
                             เหตุการณ์ด่วน
@@ -433,7 +433,7 @@
                                 <div class="wrapper-add-doing">
                                     <div class="wrapper-add-image">
                                         <div class="page-doing">
-                                            สิ่งที่ {{dataPage ? '"'+dataPage+'"' : ''}} กำลังทำอยู่
+                                            สิ่งที่ {{dataPage ? '"' + dataPage + '"' : ''}} กำลังทำอยู่
                                         </div>
                                         <div class="image-upload" (click)="UploadImage(); $event.stopPropagation()">
                                             <svg class="icon-add" xmlns="http://www.w3.org/2000/svg" width="20.948"
@@ -465,7 +465,7 @@
                                                 </ng-container>
                                                 <ng-template #elseIsicon>
                                                     <ng-container
-                                                        *ngIf="item.iconURL === '' || item.iconURL === null || item.iconURL === undefined; else elseIsBase64">
+                                                        *ngIf="!item.iconSignURL && !item.iconURL; else elseIsBase64">
                                                         <div class="image-tag image-waste">
                                                             <img src="../../../../assets/img/photo.png"
                                                                 style="width: 40%; height: auto;">
@@ -473,8 +473,10 @@
                                                     </ng-container>
                                                     <ng-template #elseIsBase64>
                                                         <ng-container
-                                                            *ngIf="item.iconBase64 !== '' && item.iconBase64 !== undefined && item.iconBase64 !== null ; else elsecheckBase">
-                                                            <img class="image-tag" src="{{item.iconBase64}}" alt="">
+                                                            *ngIf="!!item.iconSignURL || !!item.iconBase64; else elsecheckBase">
+                                                            <img class="image-tag"
+                                                                [src]="item.iconSignURL ? item.iconSignURL : item.iconBase64"
+                                                                alt="">
                                                         </ng-container>
                                                         <ng-template #elsecheckBase>
                                                             <div class="image-tag image-waste">
@@ -611,8 +613,8 @@
                     </div>
                     <mat-menu #menuTag="matMenu" class="drop-list" (click)="$event.stopPropagation()"
                         (keydown)="$event.stopPropagation()">
-                        <div class="au-comp" *ngIf="isShowCheckboxTag">
-                            <div class="header" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+                        <div class="au-comp" *ngIf="isShowCheckboxTag" (click)="$event.stopPropagation()">
+                            <div class="header">
                                 <div class="div-search">
                                     <span class="material-icons icons-search">
                                         search
@@ -620,11 +622,9 @@
                                     <input type="text" matInput name="autocompleteField" id="autocompleteField"
                                         #autocompleteField placeholder="ค้นหา">
                                 </div>
-                                <nav mat-tab-nav-bar animationDuration="0ms" (click)="$event.stopPropagation()"
-                                    (keydown)="$event.stopPropagation()">
+                                <nav mat-tab-nav-bar animationDuration="0ms">
                                     <a mat-tab-link *ngFor="let link of links" [disableRipple]="true"
-                                        (click)="keyUpSearchHashTag('',false); activeLink = link.keyword"
-                                        [active]="activeLink == link.keyword">
+                                        (click)="activeLink = link.keyword" [active]="activeLink == link.keyword">
                                         {{link.label}}
                                     </a>
                                 </nav>
@@ -635,40 +635,35 @@
                                         ยกเลิกทั้งหมด
                                     </span>
                                 </mat-option>
+                                <mat-option class="mat-option-progress" *ngIf="isLoading">
+                                    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                                </mat-option>
                                 <ng-container *ngIf="activeLink === 'tab1'; else elseTab">
-                                    <mat-option class="mat-option-progress" *ngIf="isLoading">
-                                        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-                                    </mat-option>
                                     <ng-container *ngIf="!isLoading">
                                         <ng-container *ngFor="let item of resHashTag">
-                                            <!-- <mat-option [ngClass]="{'dis': onPost}" class="list" [value]="item.value">
-                                                <div class="list-checkbox" (click)="optionClicked($event, item);">
-                                                    <mat-checkbox (click)="$event.stopPropagation()" name="{{item.value}}"
-                                                        [(ngModel)]="item.selected" value="{{item.id}}"
-                                                        [ngModelOptions]="{standalone: true}"
-                                                        (change)="checkCheckBoxvalue($event, item)">
+                                            <mat-option [ngClass]="{'dis': onPost}" class="list" [value]="item.value">
+                                                <div class="list-checkbox">
+                                                    <mat-checkbox (change)="checkCheckBoxvalue($event, item)"
+                                                        name="{{item.value}}" [(ngModel)]="item.selected"
+                                                        value="{{item.id}}">
                                                         #{{item.value}}
                                                         <div class="tag-count">
                                                             {{item.count ? item.count : 0 | shortNumber }} ครั้ง
                                                         </div>
                                                     </mat-checkbox>
                                                 </div>
-                                            </mat-option> -->
+                                            </mat-option>
                                         </ng-container>
                                     </ng-container>
                                 </ng-container>
                                 <ng-template #elseTab>
-                                    <mat-option class="mat-option-progress" *ngIf="isLoading">
-                                        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-                                    </mat-option>
                                     <ng-container *ngIf="!isLoading">
                                         <ng-container *ngFor="let item of listTag">
-                                            <!-- <mat-option class="list" *ngIf="item.isServer !== false"
+                                            <mat-option class="list" *ngIf="item.selected !== false"
                                                 [value]="item.name">
-                                                <div class="list-checkbox" (click)="optionClicked($event, item);">
-                                                    <mat-checkbox (click)="$event.stopPropagation()"
-                                                        name="{{item.name}}" [(ngModel)]="item.selected"
-                                                        (change)="checkCheckBoxvalue($event, item)">
+                                                <div class="list-checkbox">
+                                                    <mat-checkbox (change)="checkCheckBoxvalue($event, item)"
+                                                        name="{{item.name}}" [(ngModel)]="item.selected">
                                                         #{{item.name}}
                                                         <div class="tag-count">
                                                             <span>
@@ -677,7 +672,7 @@
                                                         </div>
                                                     </mat-checkbox>
                                                 </div>
-                                            </mat-option> -->
+                                            </mat-option>
                                         </ng-container>
                                     </ng-container>
                                 </ng-template>

@@ -145,7 +145,7 @@ export class UserProfileController {
 
     // Search PagePost
     /**
-     * @api {post} /api/user/:id/post/search Search PagePost API
+     * @api {post} /api/profile/:id/post/search Search PagePost API
      * @apiGroup Page
      * @apiParam (Request body) {number} limit limit
      * @apiParam (Request body) {number} offset offset
@@ -173,7 +173,6 @@ export class UserProfileController {
             if (isHideStory === null || isHideStory === undefined) {
                 isHideStory = true;
             }
-
             const postType = search.type;
             let userObjId;
             const result: any = {};
@@ -222,6 +221,20 @@ export class UserProfileController {
                                 foreignField: 'post',
                                 as: 'gallery'
                             }
+                        },
+                        {
+                            $lookup: {
+                                from: 'EmergencyEvent',
+                                localField: 'emergencyEvent',
+                                foreignField: '_id',
+                                as: 'emergencyEvent'
+                            },
+                        },
+                        {
+                            $unwind: {
+                                path: '$emergencyEvent',
+                                preserveNullAndEmptyArrays: true
+                            }
                         }
                     ];
                 } else {
@@ -236,6 +249,19 @@ export class UserProfileController {
                                 localField: '_id',
                                 foreignField: 'post',
                                 as: 'gallery'
+                            }
+                        },                        {
+                            $lookup: {
+                                from: 'EmergencyEvent',
+                                localField: 'emergencyEvent',
+                                foreignField: '_id',
+                                as: 'emergencyEvent'
+                            },
+                        },
+                        {
+                            $unwind: {
+                                path: '$emergencyEvent',
+                                preserveNullAndEmptyArrays: true
                             }
                         }
                     ];

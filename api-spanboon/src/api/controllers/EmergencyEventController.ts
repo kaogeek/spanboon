@@ -286,7 +286,13 @@ export class EmergencyEventController {
         let emergencyEvent: EmergencyEvent;
         const objId = new ObjectID(id);
 
-        emergencyEvent = await this.emergencyEventService.findOne({ where: { _id: objId } });
+        try {
+            emergencyEvent = await this.emergencyEventService.findOne({ where: { _id: objId } });
+        } catch (ex) {
+            emergencyEvent = await this.emergencyEventService.findOne({ where: { title: id } });
+        } finally {
+            emergencyEvent = await this.emergencyEventService.findOne({ $or: [{ _id: objId }, { title: id }] });
+        }
 
         if (emergencyEvent) {
             // generate timeline

@@ -51,8 +51,6 @@ export class BoxPost extends AbstractPage implements OnInit {
   @ViewChild('toolBar', { static: false }) toolBar: ElementRef;
   @ViewChild('middle', { static: false }) middle: ElementRef;
   @ViewChild('needsCard', { static: false }) needsElement: NeedsCard;
-  // @ViewChild('autocompleteField', { static: true, read: MatAutocompleteTrigger })
-  // updatePosition: MatAutocompleteTrigger;
   @ViewChild('autocompleteEmergency', { static: false })
   autocompleteEmergency: ElementRef;
   @ViewChild('autocompleteField', { static: false })
@@ -348,11 +346,11 @@ export class BoxPost extends AbstractPage implements OnInit {
       this.keyUpSearchEmergencyEvent(this.autocompleteEmergency.nativeElement.value, true);
     });
 
-    fromEvent(this.autocompleteField && this.autocompleteField.nativeElement, 'keyup').pipe(
+    fromEvent(this.searchInputObjective && this.searchInputObjective.nativeElement, 'keyup').pipe(
       debounceTime(500)
       , distinctUntilChanged()
     ).subscribe((text: any) => {
-      this.keyUpSearchHashTag(this.autocompleteField.nativeElement.value, true);
+      this.keyUpSearchObjective(this.searchInputObjective.nativeElement.value);
     });
 
     setTimeout(() => {
@@ -1346,11 +1344,6 @@ export class BoxPost extends AbstractPage implements OnInit {
     })
   }
 
-  optionClicked(event, item: any) {
-    event.stopPropagation();
-    this.checkCheckBoxvalue(event, item);
-  }
-
   private stopLoading(): void {
     setTimeout(() => {
       this.isLoading = false;
@@ -1402,6 +1395,7 @@ export class BoxPost extends AbstractPage implements OnInit {
 
   public eventClick() {
     this.autocompleteEmergency.nativeElement.focus();
+    this.keyUpSearchEmergencyEvent("", true);
     if (this.isShowEmergency === true) {
       this.closeSearchAutocomp();
     } else {
@@ -1663,7 +1657,10 @@ export class BoxPost extends AbstractPage implements OnInit {
     if (this.objectiveDoing !== undefined) {
       this.objectiveDoing.nativeElement.value = "";
     }
-    this.autocompleteField.nativeElement.value = undefined;
+    if (this.autocompleteField !== undefined) {
+      this.autocompleteField.nativeElement.value = "";
+    }
+
     this.selectedObjectiveId = undefined;
     this.resPageCategory = []
     this.dataAutoComp = {};
@@ -1688,7 +1685,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public keyUpSearchObjective(value: string) {
-    this.resObjective = []
+    this.resObjective = [];
     const keywordFilter: any = {
       filter: {
         limit: SEARCH_LIMIT,
@@ -1703,29 +1700,32 @@ export class BoxPost extends AbstractPage implements OnInit {
         }
       },
     };
-    Object.assign(keywordFilter, { hashTag: value })
-
+    Object.assign(keywordFilter, { hashTag: value });
     this.objectiveFacade.searchObjective(keywordFilter).then((result: any) => {
       if (result.status === 1) {
         this.resObjective = result.data;
         let index = 0;
         this.isLoading = true;
         for (let data of this.resObjective) {
-          if (data.iconURL !== '' && data.iconURL !== undefined && data.iconURL !== null) {
-            Object.assign(this.resObjective[index], { isLoadImageIcon: true });
-            this.getDataIcon(data.iconURL, index);
-          } else {
-            Object.assign(this.resObjective[index], { isLoadImageIcon: false });
-            this.isLoading = false;
+          if (!data.iconSignURL) {
+            if (!!data.iconURL) {
+              Object.assign(this.resObjective[index], { isLoadImageIcon: true });
+              this.getDataIcon(data.iconURL, index);
+            } else {
+              Object.assign(this.resObjective[index], { isLoadImageIcon: false });
+              this.isLoading = false;
+            }
           }
+
           index++;
         }
+
         this.isLoading = false;
       }
     }).catch((err: any) => {
       console.log(err)
       if (err.error.message === 'Cannot Search PageObjective') {
-        this.resObjective = []
+        this.resObjective = [];
       }
     });
   }
@@ -1752,6 +1752,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     if (this.isLoading) {
       return;
     }
+
     let filter = new SearchFilter();
     filter.limit = SEARCH_LIMIT;
     filter.offset = SEARCH_OFFSET;
@@ -1759,9 +1760,11 @@ export class BoxPost extends AbstractPage implements OnInit {
     filter.whereConditions = {
       name: data
     };
+
     if (typeof data !== "string" || data.trim() === "") {
       delete filter.whereConditions.name;
     }
+
     filter.count = false;
     filter.orderBy = {}
     this.resHashTag = [];
@@ -1769,9 +1772,9 @@ export class BoxPost extends AbstractPage implements OnInit {
     let result = {
       filter
     }
+
     this.hashTagFacade.searchTrend(result).then((res: any) => {
       if (res) {
-
         this.resHashTag = res;
         this.checkHashTag();
       }
@@ -1866,7 +1869,7 @@ export class BoxPost extends AbstractPage implements OnInit {
 
   public removeEmergency() {
     this.dataAutoComp = {};
-    document.querySelector('.mat-selected').classList.remove('mat-selected');
+    // document.querySelector('.mat-selected').classList.remove('mat-selected');
     this.autocompleteEmergency.nativeElement.value = "";
   }
 
@@ -1947,11 +1950,26 @@ export class BoxPost extends AbstractPage implements OnInit {
         tagId: item.id,
         tag: item.value
       });
-      this.listTag.push(Object.assign({}, { name: item.value, selected: true, count: item.count, isSelectData: true }));
 
+      this.listTag.push(Object.assign({}, { name: item.value, selected: true, count: item.count, isSelectData: true }));
     } else {
+      let hash_index = this.resHashTag.findIndex(tag => (tag.value === item.name || tag.value === item.value) && tag.count === item.count);
+      let tag_index = this.listTag.findIndex(tag => (tag.name === item.name || tag.name === item.value) && tag.count === item.count);
+      let select_index = this.selectValueTag.findIndex(tag => (tag.tag === item.name || tag.tag === item.value));
+      if (hash_index !== -1) {
+        this.resHashTag[hash_index].selected = false;
+      }
+
+      if (tag_index !== -1) {
+        this.listTag.splice(tag_index, 1);
+      }
+
+      if (select_index !== -1) {
+        this.selectValueTag.splice(tag_index, 1);
+      }
+
       this.selectValueTag = this.selectValueTag.filter(d => {
-        return d.tag !== item.value
+        return d.tag !== item.value;
       });
 
       this.listHashTagNew = this.listHashTagNew.filter(newTag => {
@@ -2004,52 +2022,64 @@ export class BoxPost extends AbstractPage implements OnInit {
             }
           });
         }
-
       }
     }
     this.getTextLength();
   }
 
   public clickCardObjective(index: number, item: any) {
-    if (this.elementCheck) {
-      if (this.dataObjective && this.dataObjective.id === item.id) {
-        this.dataObjective = {};
-        this.selectedObjectiveId = undefined;
-        document.querySelector('.active-click-doing').classList.remove('active-click-doing');
-      } else {
-        this.selectedObjectiveId = item.id;
-        this.dataObjective.id = item.id;
-        this.dataObjective.hashTag = item.hashTag;
-        this.dataObjective.status = 2;
-      }
+    if (this.dataObjective && this.dataObjective.id === item.id) {
+      this.dataObjective = {};
+      this.selectedObjectiveId = undefined;
+      // document.querySelector('.active-click-doing').classList.remove('active-click-doing');
     } else {
       this.selectedObjectiveId = item.id;
       this.dataObjective.id = item.id;
       this.dataObjective.hashTag = item.hashTag;
       this.dataObjective.status = 2;
-      let objectClone = JSON.parse(JSON.stringify(this.dataObjective));
-
-      const isPass = this.objectArray.find(objective => {
-        return objective.hashTag === this.dataObjective.hashTag
-      });
-
-      if (!isPass) {
-        this.objectArray.push({
-          id: this.dataObjective.id,
-          name: this.dataObjective.hashTag,
-          isText: true,
-          isTopic: false
-        });
-      }
-      let indexData = this.objectArray.map(function (e) { return e.name; }).indexOf(objectClone.title);
-      if (indexData != 0) {
-        this.objectArray = this.objectArray.splice(index, 1);
-      }
     }
-    this.closeDialog();
-    // $("#menubottom").css({
-    //   'overflow-y': "auto"
+    // if (this.elementCheck) {
+    //   if (this.dataObjective && this.dataObjective.id === item.id) {
+    //     this.dataObjective = {};
+    //     this.selectedObjectiveId = undefined;
+    //     document.querySelector('.active-click-doing').classList.remove('active-click-doing');
+    //   } else {
+    //     this.selectedObjectiveId = item.id;
+    //     this.dataObjective.id = item.id;
+    //     this.dataObjective.hashTag = item.hashTag;
+    //     this.dataObjective.status = 2;
+    //   }
+    // } else {
+    //   this.selectedObjectiveId = item.id;
+    //   this.dataObjective.id = item.id;
+    //   this.dataObjective.hashTag = item.hashTag;
+    //   this.dataObjective.status = 2;
+    //   let objectClone = JSON.parse(JSON.stringify(this.dataObjective));
+
+    // const isPass = this.objectArray.find(objective => {
+    // return objective.hashTag === this.dataObjective.hashTag
+    // console.log(objective.hashTag, 'sdfsdf', this.dataObjective.hashTag);
     // });
+
+    //   if (!isPass) {
+    //     this.objectArray.push({
+    //       id: this.dataObjective.id,
+    //       name: this.dataObjective.hashTag,
+    //       isText: true,
+    //       isTopic: false
+    //     });
+    //   }
+
+    //   let indexData = this.objectArray.map(function (e) { return e.name; }).indexOf(objectClone.title);
+    //   if (indexData != 0) {
+    //     this.objectArray = this.objectArray.splice(index, 1);
+    //   }
+    // }
+
+    // this.closeDialog();
+    // // $("#menubottom").css({
+    // //   'overflow-y': "auto"
+    // // });
   }
   public isEmptyObject(obj) {
     return (obj && (Object.keys(obj).length > 0));
@@ -2160,11 +2190,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.isUpload = false;
     this.isShowObjective = true;
     this.keyUpSearchObjective("");
-    setTimeout(() => {
-      const element = document.querySelector('.active-click-doing');
-      this.elementCheck = element && element.classList && element.classList.contains('active-click-doing');
-    }, 500);
-
+    this.elementCheck = true;
     setTimeout(() => {
       this.setTopobj();
     }, 0);
@@ -2271,7 +2297,8 @@ export class BoxPost extends AbstractPage implements OnInit {
         asset.data = this.imageIcon.image.split(',')[1];
         asset.size = this.imageIcon.size;
       }
-      if (dataDoing !== '' && tagName !== '' && category !== undefined) {
+
+      if (!!dataDoing) {
         let objectiveImage = {
           asset,
           hashTag: tagName,
@@ -2279,23 +2306,27 @@ export class BoxPost extends AbstractPage implements OnInit {
           category: category,
           pageId: pageId
         }
+
         this.objectiveFacade.uploadImageObjective(objectiveImage).then((res: any) => {
-          let index = 0;
           if (res.status === 1) {
-            this.getDataIcon(res.data.iconURL, index);
-            index++;
             let object = {
               id: res.data.id,
               title: res.data.title,
               hashTag: res.data.hashTag,
             }
-            this.dataObjective = object
+
+            this.dataObjective = object;
             this.clickCardObjective(0, this.dataObjective);
-            this.keyUpSearchObjective("");
             this.closeDialog();
             this.imageIcon = {};
             this.selectedValue = 'เลือกหมวดหมู่';
-            this.searchObjectivePageCategory();
+            this.resObjective.push(res.data);
+            if (!res.data.iconSignURL) {
+              let index_data = this.resObjective.findIndex((obj) => obj.id === res.data.id);
+              if (index_data !== -1) {
+                this.getDataIcon(res.data.iconURL, index_data);
+              }
+            }
             this.isMsgError = false;
             this.isLock = false;
           }
@@ -2308,6 +2339,7 @@ export class BoxPost extends AbstractPage implements OnInit {
           } else if (err.error.message === 'PageObjective HashTag is Exists') {
             alertMessages = 'แฮชแท็กถูกสร้างไว้แล้ว'
           }
+
           let dialog = this.showAlertDialogWarming(alertMessages, "none");
           dialog.afterClosed().subscribe((res) => {
             if (res) {
@@ -2321,6 +2353,7 @@ export class BoxPost extends AbstractPage implements OnInit {
           });
         })
       }
+
       // $("#menubottom").css({
       //   'overflow-y': "auto"
       // });

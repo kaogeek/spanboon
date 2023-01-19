@@ -105,17 +105,40 @@ export class FacebookWebhookController {
         let fullStop = undefined;
         const hashTagList1 = [];
         const hashTagList2 = [];
-        const msgSplit = body.entry[0].changes[0].value.message.split('#');
-        if (msgSplit) {
-            for (let i = 1; i < msgSplit.length; i++) {
-                hashTagList1.push(msgSplit[i].split('\n')[0]);
-            }
 
-            for (let i = 0; i < hashTagList1.length; i++) {
-                hashTagList2.push(hashTagList1[i].split(' ')[0]);
+        if (body.entry[0].changes[0].value.item === 'post' && body.entry[0].changes[0].value.verb === 'remove') {
+            const findPostFc = await this.socialPostService.findOne({ socialId: body.entry[0].changes[0].value.post_id, socialType: PROVIDER.FACEBOOK });
+            if (findPostFc !== undefined) {
+                const deleteSocialPost = await this.socialPostService.delete({ socialId: findPostFc.socialId, socialType: PROVIDER.FACEBOOK });
+                if (deleteSocialPost) {
+                    const deletePost = await this.postsService.delete({ _id: findPostFc.postId, pageId: findPostFc.pageId });
+                    if (deletePost) {
+                        const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                        return res.status(200).send(successResponse);
+                    }
+                }
+            } else {
+                const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                return res.status(200).send(successResponse);
+            }
+        }
+        if (body.entry[0].changes[0].value.message !== undefined) {
+            const msgSplit = body.entry[0].changes[0].value.message.split('#');
+            if (msgSplit !== undefined) {
+                for (let i = 1; i < msgSplit.length; i++) {
+                    hashTagList1.push(msgSplit[i].split('\n')[0]);
+                }
+
+                for (let i = 0; i < hashTagList1.length; i++) {
+                    hashTagList2.push(hashTagList1[i].split(' ')[0]);
+                }
             }
         }
         const match = /r\n|\n/.exec(body.entry[0].changes[0].value.message);
+        if (match === undefined) {
+            const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+            return res.status(200).send(successResponse);
+        }
         console.log('body.entry[0].changes[0].value.message', body.entry[0].changes[0].value);
         if (body.entry[0].changes[0].value.message === undefined) {
             const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
@@ -146,23 +169,24 @@ export class FacebookWebhookController {
             } else if (text1 === -1 && text2 === -1) {
                 const textMessage = body.entry[0].changes[0].value.message.length;
                 if (textMessage >= 50) {
-                    realText = body.entry[0].changes[0].value.message.substring(0, 50) + '.....';
+                    realText = body.entry[0].changes[0].value.message.substring(0, fullStop);
                     detailText = body.entry[0].changes[0].value.message;
                     TrimText = detailText.trim();
                 } else {
-                    realText = body.entry[0].changes[0].value.message.substring(0, 30);
+                    realText = body.entry[0].changes[0].value.message.substring(0, fullStop);
                     detailText = body.entry[0].changes[0].value.message;
                     TrimText = detailText.trim();
                 }
             }
         } else {
             const textMessage = body.entry[0].changes[0].value.message.length;
+            fullStop = body.entry[0].changes[0].value.message.indexOf('.');
             if (textMessage >= 50) {
-                realText = body.entry[0].changes[0].value.message.substring(0, 50) + '.....';
+                realText = body.entry[0].changes[0].value.message.substring(0, fullStop);
                 detailText = body.entry[0].changes[0].value.message;
                 TrimText = detailText.trim();
             } else {
-                realText = body.entry[0].changes[0].value.message.substring(0, 30);
+                realText = body.entry[0].changes[0].value.message.substring(0, fullStop);
                 detailText = body.entry[0].changes[0].value.message;
                 TrimText = detailText.trim();
             }
