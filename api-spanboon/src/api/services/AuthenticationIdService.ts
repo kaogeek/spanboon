@@ -39,6 +39,11 @@ export class AuthenticationIdService {
         return await this.authenticationIdRepository.deleteOne(query, options);
     }
 
+    // deleteMany
+
+    public async deleteMany(query:any,options?:any):Promise<any>{
+        return await this.authenticationIdRepository.deleteMany(query,options);
+    }
     // create token
     public async create(accessToken: any): Promise<AuthenticationId> {
         return this.authenticationIdRepository.save(accessToken);

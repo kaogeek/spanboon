@@ -471,6 +471,12 @@ export class PageController {
         }
         // create category 
 
+        const findPageEnable = await this.socialPostLogsService.findOne({providerUserId:socialBinding.facebookPageId});
+        if(findPageEnable !== undefined && findPageEnable !== null){
+            const errorResponse = ResponseUtil.getErrorResponse('Unable create Page', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
         await this.userService.update(query, newValue);
 
         const checkPageCate = await this.pageCategoryService.findOne({ name: socialBinding.facebookCategory });
@@ -755,12 +761,18 @@ export class PageController {
      * @apiErrorExample {json} Unable Binding Page Social
      * HTTP/1.1 500 Internal Server Error
      */
-    @Delete('/:id/test/page')
+    @Delete('/:id/delete/page')
     @Authorized('user')
     public async testGetPage(@Param('id') pageId: string, @Res() res: any, @Req() req: any): Promise<any> {
         const pageObjId = new ObjectID(pageId);
-        await this.deletePageService.deletePage(pageObjId);
-        return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Binding Page Facebook Social.', true));
+        const findPage = await this.pageService.findOne({_id:ObjectID(pageObjId)});
+        if(findPage !== undefined){
+            await this.deletePageService.deletePage(pageObjId);
+            return res.status(200).send(ResponseUtil.getSuccessResponse('Delete page is successfully.', true));
+        }else{
+            const errorResponse: any = { status: 0, message: 'Sorry cannnot delete page.' };
+            return res.status(400).send(errorResponse);
+        }
     }
 
     @Post('/:id/social/facebook')

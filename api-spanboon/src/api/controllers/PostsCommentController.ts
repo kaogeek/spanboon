@@ -387,9 +387,9 @@ export class PostsCommentController {
                             path: '$page',
                             preserveNullAndEmptyArrays: true
                         }
-                    },
+                    },   
                     {
-                        $match: { 'page.deleted': false, 'page.banned': false }
+                        $match: {'user.banned': false }
                     },
                     { $project: { _id: 0, id: '$_id', comment: 1, mediaURL: 1, post: 1, commentAsPage: 1, likeCount: 1, createdDate: 1, 'page._id': 1, 'page.name': 1, 'page.pageUsername': 1, 'page.imageURL': 1, 'page.s3ImageURL': 1, 'page.isOfficial': 1, 'user.id': '$user._id', 'user.imageURL': 1, 'user.displayName': 1 } }
                 ];
