@@ -8,7 +8,7 @@
 import { Component, OnInit, ViewChild, EventEmitter } from '@angular/core';
 import { MatPaginator, MatDialog } from '@angular/material';
 import { Gallery } from '@ngx-gallery/core';
-import { AuthenManager, MainPageSlideFacade, HashTagFacade, AssetFacade, PageFacade } from '../../../services/services';
+import { AuthenManager, MainPageSlideFacade, HashTagFacade, AssetFacade, PageFacade, SeoService } from '../../../services/services';
 import { AbstractPage } from '../AbstractPage';
 import { CacheConfigInfo } from '../../../services/CacheConfigInfo.service';
 import { PostFacade } from '../../../services/facade/PostFacade.service';
@@ -16,6 +16,7 @@ import { Router } from '@angular/router';
 import { SearchFilter } from '../../../models/SearchFilter';
 import { DialogPostCrad } from '../../shares/dialog/DialogPostCrad.component';
 import { environment } from 'src/environments/environment';
+import { PLATFORM_NAME_TH } from 'src/custom/variable';
 
 declare var $: any;
 
@@ -34,6 +35,7 @@ export class HomePage extends AbstractPage implements OnInit {
   private pageFacade: PageFacade;
   private mainPageModelFacade: MainPageSlideFacade;
   private assetFacade: AssetFacade;
+  private seoService: SeoService;
 
   public static readonly PAGE_NAME: string = PAGE_NAME;
   @ViewChild("paginator", { static: false }) public paginator: MatPaginator;
@@ -42,18 +44,20 @@ export class HomePage extends AbstractPage implements OnInit {
   public pageUser: any;
   public model: any = undefined;
   public hashTag: any = [];
+  public PLATFORM_NAME_TH: string = PLATFORM_NAME_TH;
 
   public apiBaseURL = environment.apiBaseURL;
   public isLoading: boolean;
 
   constructor(private gallery: Gallery, router: Router, authenManager: AuthenManager, postFacade: PostFacade, dialog: MatDialog, cacheConfigInfo: CacheConfigInfo,
-    mainPageModelFacade: MainPageSlideFacade, pageFacade: PageFacade, hashTagFacade: HashTagFacade, assetFacade: AssetFacade) {
+    mainPageModelFacade: MainPageSlideFacade, pageFacade: PageFacade, hashTagFacade: HashTagFacade, assetFacade: AssetFacade, seoService: SeoService) {
     super(null, authenManager, dialog, router);
 
     this.pageFacade = pageFacade;
     this.mainPageModelFacade = mainPageModelFacade;
     this.assetFacade = assetFacade;
     this.hashTagFacade = hashTagFacade;
+    this.seoService = seoService;
 
   }
 
@@ -81,6 +85,7 @@ export class HomePage extends AbstractPage implements OnInit {
         this.model.postSectionModel.contents.splice(index, 1);
       }
     }
+    this.seoService.updateTitle(PLATFORM_NAME_TH);
     let filter: SearchFilter = new SearchFilter();
     filter.limit = 5;
     filter.offset = 0;

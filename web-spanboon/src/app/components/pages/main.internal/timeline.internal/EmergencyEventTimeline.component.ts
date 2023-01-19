@@ -6,7 +6,7 @@
  */
 
 import { Component, OnInit, Input, EventEmitter, Output, ViewContainerRef } from '@angular/core';
-import { AuthenManager, ObservableManager, EmergencyEventFacade, HashTagFacade, AssetFacade, PostActionService, PostFacade } from '../../../../services/services';
+import { AuthenManager, ObservableManager, EmergencyEventFacade, HashTagFacade, AssetFacade, PostActionService, PostFacade, SeoService } from '../../../../services/services';
 import { MatDialog } from '@angular/material';
 import { Router, ActivatedRoute } from '@angular/router';
 import { environment } from '../../../../../environments/environment';
@@ -74,9 +74,10 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
 
     public apiBaseURL = environment.apiBaseURL;
     private routeActivated: ActivatedRoute;
+    private seoService: SeoService;
 
     constructor(router: Router, authenManager: AuthenManager, assetFacade: AssetFacade, postActionService: PostActionService, postFacade: PostFacade, private popupService: MenuContextualService, private viewContainerRef: ViewContainerRef, emergencyEventFacade: EmergencyEventFacade, hashTagFacade: HashTagFacade, observManager: ObservableManager, routeActivated: ActivatedRoute,
-        dialog: MatDialog) {
+        dialog: MatDialog, seoService: SeoService) {
         super(PAGE_NAME, authenManager, dialog, router);
         this.router = router;
         this.authenManager = authenManager;
@@ -87,6 +88,7 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
         this.hashTagFacade = hashTagFacade;
         this.routeActivated = routeActivated;
         this.emergencyEventFacade = emergencyEventFacade;
+        this.seoService = seoService;
 
         // You can also pass an optional settings object
         // below listed default settings
@@ -124,6 +126,7 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
         this.currentDate = new Date();
 
         this.objectiveData = await this.emergencyEventFacade.getEmergencyTimeline(this.objectiveId);
+        this.seoService.updateTitle(this.objectiveData.emergencyEvent.hashTagName);
         this.objectiveData.page;
         this.objectiveData.timelines;
         const pageType = { type: "PAGE" };

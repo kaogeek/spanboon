@@ -1868,7 +1868,6 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.dataAutoComp = {};
     document.querySelector('.mat-selected').classList.remove('mat-selected');
     this.autocompleteEmergency.nativeElement.value = "";
-    console.log(this.autocompleteEmergency.nativeElement.value);
   }
 
   public unCheckboxAll() {

@@ -6,7 +6,7 @@
  */
 
 import { Component, OnInit, Input, EventEmitter, Output, ViewContainerRef } from '@angular/core';
-import { AuthenManager, ObservableManager, ObjectiveFacade, HashTagFacade, PostFacade, PostActionService } from '../../../../services/services';
+import { AuthenManager, ObservableManager, ObjectiveFacade, HashTagFacade, PostFacade, PostActionService, SeoService } from '../../../../services/services';
 import { MatDialog } from '@angular/material';
 import { Router, ActivatedRoute } from '@angular/router';
 import { environment } from '../../../../../environments/environment';
@@ -83,9 +83,10 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
 
     public apiBaseURL = environment.apiBaseURL;
     private routeActivated: ActivatedRoute;
+    private seoService: SeoService;
 
     constructor(router: Router, authenManager: AuthenManager, private popupService: MenuContextualService, postFacade: PostFacade, postActionService: PostActionService, private viewContainerRef: ViewContainerRef, objectiveFacade: ObjectiveFacade, hashTagFacade: HashTagFacade, observManager: ObservableManager, routeActivated: ActivatedRoute,
-        dialog: MatDialog) {
+        dialog: MatDialog, seoService: SeoService) {
         super(PAGE_NAME, authenManager, dialog, router);
         this.router = router;
         this.authenManager = authenManager;
@@ -95,6 +96,7 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
         this.routeActivated = routeActivated;
         this.postActionService = postActionService;
         this.objectiveFacade = objectiveFacade;
+        this.seoService = seoService;
 
         // You can also pass an optional settings object
         // below listed default settings
@@ -131,6 +133,7 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
         this.currentDate = new Date();
 
         this.objectiveData = await this.objectiveFacade.getPageObjectiveTimeline(this.objectiveId);
+        this.seoService.updateTitle(this.objectiveData.pageObjective.hashTagName);
         this.objectiveData.page;
         this.objectiveData.timelines;
         const pageType = { type: "PAGE" };

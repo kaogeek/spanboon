@@ -6,7 +6,7 @@
  */
 
 import { Component, OnInit, ViewChild, EventEmitter, ElementRef, Output } from '@angular/core';
-import { AuthenManager, ProfileFacade, AssetFacade, ObservableManager, PageFacade, PostFacade, PostCommentFacade, RecommendFacade, Engagement, UserEngagementFacade, PostActionService } from '../../../services/services';
+import { AuthenManager, ProfileFacade, AssetFacade, ObservableManager, PageFacade, PostFacade, PostCommentFacade, RecommendFacade, Engagement, UserEngagementFacade, PostActionService, SeoService } from '../../../services/services';
 import { MatDialog } from '@angular/material';
 import * as $ from 'jquery';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -61,6 +61,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
   private engagementService: Engagement;
   private userEngagementFacade: UserEngagementFacade;
   private postActionService: PostActionService;
+  private seoService: SeoService;
   public dialog: MatDialog;
 
   public isLoading: boolean;
@@ -121,7 +122,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
 
   constructor(router: Router, authenManager: AuthenManager, profileFacade: ProfileFacade, dialog: MatDialog, pageFacade: PageFacade, postCommentFacade: PostCommentFacade,
     sanitizer: DomSanitizer, assetFacade: AssetFacade, observManager: ObservableManager, routeActivated: ActivatedRoute, postFacade: PostFacade, recommendFacade: RecommendFacade,
-    engagementService: Engagement, userEngagementFacade: UserEngagementFacade, postActionService: PostActionService) {
+    engagementService: Engagement, userEngagementFacade: UserEngagementFacade, postActionService: PostActionService, seoService: SeoService) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.dialog = dialog;
     this.sanitizer = sanitizer;
@@ -137,6 +138,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     this.engagementService = engagementService;
     this.userEngagementFacade = userEngagementFacade;
     this.postActionService = postActionService;
+    this.seoService = seoService;
     this.msgUserNotFound = false;
     this.isFiles = false;
     this.showLoading = true;
@@ -452,37 +454,40 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
   public showProfile(url: string): void {
     this.isLoading = true;
     this.profileFacade.getProfile(url).then((res) => {
-      if (res.status === 1 && res.data) {
-        let user = {
-          displayName: res.data.displayName,
-          firstName: res.data.firstName,
-          lastName: res.data.lastName,
-          birthdate: res.data.birthdate,
-          gender: res.data.gender,
-          customGender: res.data.customGender,
-          username: res.data.username
+      if (res) {
+        this.seoService.updateTitle(res.data.name ? res.data.name : res.data.displayName);
+        if (res.status === 1 && res.data) {
+          let user = {
+            displayName: res.data.displayName,
+            firstName: res.data.firstName,
+            lastName: res.data.lastName,
+            birthdate: res.data.birthdate,
+            gender: res.data.gender,
+            customGender: res.data.customGender,
+            username: res.data.username
+          }
+          this.resEditProfile = user;
+          this.position = res.data.coverPosition;
+          this.resProfile = res.data;
+          if (this.resProfile && this.resProfile.name) {
+            this.name = this.resProfile.name
+          } else if (this.resProfile && this.resProfile.uniqueId) {
+            this.name = this.resProfile.uniqueId
+          } else if (this.resProfile.displayName) {
+            this.name = this.resProfile.displayName
+          }
+          // this.seoService.updateTitle(this.resProfile.displayName);
+          if (this.resProfile.imageURL !== '' && this.resProfile.imageURL !== null && this.resProfile.imageURL !== undefined) {
+            this.resProfile.isLoadingImage = true;
+            this.getDataIcon(this.resProfile.imageURL, "image")
+          }
+          if (this.resProfile.coverURL !== '' && this.resProfile.coverURL !== null && this.resProfile.coverURL !== undefined) {
+            this.getDataIcon(this.resProfile.coverURL, "cover")
+          }
+          setTimeout(() => {
+            this.isLoading = false;
+          }, 2000);
         }
-        this.resEditProfile = user;
-        this.position = res.data.coverPosition;
-        this.resProfile = res.data;
-        if (this.resProfile && this.resProfile.name) {
-          this.name = this.resProfile.name
-        } else if (this.resProfile && this.resProfile.uniqueId) {
-          this.name = this.resProfile.uniqueId
-        } else if (this.resProfile.displayName) {
-          this.name = this.resProfile.displayName
-        }
-
-        if (this.resProfile.imageURL !== '' && this.resProfile.imageURL !== null && this.resProfile.imageURL !== undefined) {
-          this.resProfile.isLoadingImage = true;
-          this.getDataIcon(this.resProfile.imageURL, "image")
-        }
-        if (this.resProfile.coverURL !== '' && this.resProfile.coverURL !== null && this.resProfile.coverURL !== undefined) {
-          this.getDataIcon(this.resProfile.coverURL, "cover")
-        }
-        setTimeout(() => {
-          this.isLoading = false;
-        }, 2000);
       }
 
     }).catch((err: any) => {
@@ -834,7 +839,8 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     }
     this.profileFacade.saveImageProfile(userId, editImage).then((res: any) => {
       if (res.status === 1) {
-        this.getDataIcon(res.data.coverURL, "cover")
+        this.getDataIcon((res.data.coverURL ? res.data.coverURL : res.data.imageURL
+        ), (res.data.coverURL ? "cover" : "image"));
         this.isFiles = false;
         this.observManager.publish('authen.image', res);
       }
@@ -934,10 +940,8 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result !== undefined) {
         this.editImageProfile(result)
-        console.log("resssaaaa", result)
       }
       this.stopLoading();
-      console.log("vvvvvv")
     });
   }
 

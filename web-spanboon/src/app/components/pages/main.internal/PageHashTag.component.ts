@@ -6,7 +6,7 @@
  */
 
 import { Component, OnInit, Input, ViewChild, ElementRef, EventEmitter, Output } from '@angular/core';
-import { ObjectiveFacade, NeedsFacade, AssetFacade, AuthenManager, ObservableManager, PostCommentFacade, PageFacade, HashTagFacade, MainPageSlideFacade, EmergencyEventFacade, PageCategoryFacade, PostFacade, AccountFacade, Engagement, UserEngagementFacade } from '../../../services/services';
+import { ObjectiveFacade, NeedsFacade, AssetFacade, AuthenManager, ObservableManager, PostCommentFacade, PageFacade, HashTagFacade, MainPageSlideFacade, EmergencyEventFacade, PageCategoryFacade, PostFacade, AccountFacade, Engagement, UserEngagementFacade, SeoService } from '../../../services/services';
 import { DateAdapter, MatDialog } from '@angular/material';
 import { AbstractPage } from '../AbstractPage';
 import { FileHandle } from '../../shares/directive/directives';
@@ -23,6 +23,7 @@ import { RePost } from '../../../models/RePost';
 import { AbstractPageImageLoader } from '../AbstractPageImageLoader';
 import { UserEngagement } from '../../../models/UserEngagement';
 import { filter } from 'rxjs/internal/operators/filter';
+import { PLATFORM_NAME_TH } from 'src/custom/variable';
 
 const PAGE_NAME: string = 'search';
 const SEARCH_LIMIT: number = 20;
@@ -38,6 +39,7 @@ declare var $: any;
 export class PageHashTag extends AbstractPageImageLoader implements OnInit {
 
   public static readonly PAGE_NAME: string = PAGE_NAME;
+  public PLATFORM_NAME_TH: string = PLATFORM_NAME_TH;
 
   @Input()
   protected isIconPage: boolean;
@@ -91,6 +93,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   private dateAdapter: DateAdapter<Date>;
   private engagementService: Engagement;
   private userEngagementFacade: UserEngagementFacade;
+  private seoService: SeoService;
 
   public resDataPage: any;
   public resObjective: any;
@@ -237,7 +240,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   files: FileHandle[] = [];
   constructor(router: Router, dialog: MatDialog, authenManager: AuthenManager, pageFacade: PageFacade, objectiveFacade: ObjectiveFacade, needsFacade: NeedsFacade, assetFacade: AssetFacade, hashTagFacade: HashTagFacade,
     observManager: ObservableManager, routeActivated: ActivatedRoute, postCommentFacade: PostCommentFacade, searchHashTagFacade: HashTagFacade, mainPageFacade: MainPageSlideFacade, dateAdapter: DateAdapter<Date>, emergencyEventFacade: EmergencyEventFacade,
-    pageCategoryFacade: PageCategoryFacade, postFacede: PostFacade, accountFacade: AccountFacade, engagementService: Engagement, userEngagementFacade: UserEngagementFacade) {
+    pageCategoryFacade: PageCategoryFacade, postFacede: PostFacade, accountFacade: AccountFacade, engagementService: Engagement, userEngagementFacade: UserEngagementFacade, seoService: SeoService) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.dialog = dialog
     this.objectiveFacade = objectiveFacade;
@@ -263,6 +266,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     this.whereConditions = ["name"];
     this.isBackdrop = false;
     this.showLoading = true;
+    this.seoService = seoService;
 
     this.page = [];
     this.pageCateUrl = [];
@@ -397,7 +401,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         //   });
         // }
       }
-
+      this.seoService.updateTitle(PLATFORM_NAME_TH);
     });
 
     this.observManager.subscribe('scroll.fix', (scrollTop) => {
