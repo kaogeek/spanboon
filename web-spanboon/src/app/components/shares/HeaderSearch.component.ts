@@ -491,6 +491,7 @@ export class HeaderSearch extends AbstractPage implements OnInit {
   }
 
   public onDeleteHistory(item: any, index: number): void {
+    console.log("123123")
     let userId;
     let data;
     if (this.isLogin()) {

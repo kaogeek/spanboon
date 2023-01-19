@@ -482,7 +482,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
         }
         setTimeout(() => {
           this.isLoading = false;
-        }, 1000);
+        }, 2000);
       }
 
     }).catch((err: any) => {
@@ -934,8 +934,10 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result !== undefined) {
         this.editImageProfile(result)
+        console.log("resssaaaa", result)
       }
       this.stopLoading();
+      console.log("vvvvvv")
     });
   }
 

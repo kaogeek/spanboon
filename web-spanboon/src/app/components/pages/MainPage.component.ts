@@ -326,6 +326,10 @@ export class MainPage extends AbstractPage implements OnInit {
     return await this.userAccessFacade.getPageAccess();
   }
 
+  private openLoading() {
+    this.isLoading = true;
+  }
+
   private stopLoading(): void {
     setTimeout(() => {
       this.isLoading = false;

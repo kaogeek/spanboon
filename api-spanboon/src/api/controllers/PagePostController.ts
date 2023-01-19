@@ -985,26 +985,24 @@ export class PagePostController {
             let pageStmt;
             try {
                 pageObjId = new ObjectID(pId);
-                pageStmt = { _id: pageObjId, deleted: false, banned: false };
+                pageStmt = { _id: pageObjId, banned: false };
             } catch (ex) {
-                pageStmt = { pageUsername: pId, deleted: false, banned: false };
+                pageStmt = { pageUsername: pId, banned: false };
             } finally {
                 if (pageObjId === undefined || pageObjId === 'undefined') {
                     pageObjId = null;
                 }
 
-                pageStmt = { $or: [{ _id: pageObjId }, { pageUsername: pId }], deleted: false, banned: false };
+                pageStmt = { $or: [{ _id: pageObjId }, { pageUsername: pId }], banned: false };
             }
 
             const page: Page = await this.pageService.findOne(pageStmt);
-
             if (page !== null && page !== undefined) {
                 const postPageObjId = new ObjectID(page.id);
                 const today = moment().toDate();
                 const whereCondition = search.whereConditions;
                 let limit = search.limit;
                 let offset = search.offset;
-                let postPageStmt;
 
                 if (offset === null || offset === undefined) {
                     offset = 0;
@@ -1033,7 +1031,7 @@ export class PagePostController {
                     }
                 }
 
-                postPageStmt = [
+                const postPageStmt: any[] = [
                     { $match: matchStmt },
                     { $sort: { startDateTime: -1 } },
                     { $skip: offset },

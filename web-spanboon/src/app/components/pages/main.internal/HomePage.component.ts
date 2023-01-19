@@ -44,6 +44,7 @@ export class HomePage extends AbstractPage implements OnInit {
   public hashTag: any = [];
 
   public apiBaseURL = environment.apiBaseURL;
+  public isLoading: boolean;
 
   constructor(private gallery: Gallery, router: Router, authenManager: AuthenManager, postFacade: PostFacade, dialog: MatDialog, cacheConfigInfo: CacheConfigInfo,
     mainPageModelFacade: MainPageSlideFacade, pageFacade: PageFacade, hashTagFacade: HashTagFacade, assetFacade: AssetFacade) {
@@ -66,10 +67,12 @@ export class HomePage extends AbstractPage implements OnInit {
       this.getMainPageModel();
       this.searchPageInUser();
     }
+    this.stopIsloading();
     super.ngOnInit();
   }
 
   private async getMainPageModel(userId?) {
+    this.isLoading = true;
     this.model = await this.mainPageModelFacade.getMainPageModel(userId);
     for (let index = 0; index < this.model.postSectionModel.contents.length; index++) {
       if (this.model.postSectionModel.contents[index].post.type === "FULFILLMENT") {
@@ -93,6 +96,12 @@ export class HomePage extends AbstractPage implements OnInit {
     }).catch(error => {
       console.log(error);
     });
+  }
+
+  public stopIsloading() {
+    setTimeout(() => {
+      this.isLoading = false;
+    }, 1000);
   }
 
   public async searchPageInUser(userId?) {

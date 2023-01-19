@@ -4,7 +4,7 @@
     License: MIT. https://opensource.org/licenses/MIT
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
-
+<loading *ngIf="isLoading"></loading>
 <div *ngIf="model === undefined" class="loding">
     <div class="top">
         <div class="top_for_loding" *ngFor="let number of [0,1 ]">

@@ -1221,7 +1221,7 @@
                                                     <div class="wrapper-image-cloud">
                                                         <ng-container
                                                             *ngFor="let image of post.postGallery; let image_index = index">
-                                                            <img *ngIf="image_index !== 0"
+                                                            <img *ngIf="image_index !== 0 && image_index <= 3"
                                                                 [src]=" apiBaseURL + image.imageURL + '/image'" alt=""
                                                                 [ngStyle]=" {'transform': image_index===1 ? 'rotate(-5deg)'
                                                                 : image_index===2 ? 'rotate(-10deg)' : 'rotate(10deg)' }">
@@ -1234,8 +1234,8 @@
                                                 data-aos-easing="ease-in-out" data-aos-mirror="false"
                                                 data-aos-once="false" data-aos-anchor-placement="top-center">
                                                 <div class="head-title">
-                                                    <span><a [href]="'/post/' + (post._id || post.id)" target="_blank"
-                                                            class="title">#{{post.objectiveTag}}</a>{{setHashtag(post.objectiveTag,post.title)}}</span>
+                                                    <span
+                                                        class="title">#{{post.objectiveTag}}{{setHashtag(post.objectiveTag,post.title)}}</span>
                                                 </div>
                                                 <div class="detail">
                                                     {{post.detail}}
@@ -1314,8 +1314,8 @@
                                                 data-aos-easing="ease-in-out" data-aos-mirror="false"
                                                 data-aos-once="false" data-aos-anchor-placement="top-center">
                                                 <div class="head-title">
-                                                    <span><a [href]="'/post/' + (post._id || post.id)" target="_blank"
-                                                            class="title">#{{post.objectiveTag}}</a>{{setHashtag(post.objectiveTag,post.title)}}</span>
+                                                    <span
+                                                        class="title">#{{post.objectiveTag}}{{setHashtag(post.objectiveTag,post.title)}}</span>
                                                 </div>
                                                 <div class="detail">
                                                     {{post.detail}}

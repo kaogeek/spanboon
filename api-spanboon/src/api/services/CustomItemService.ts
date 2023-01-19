@@ -52,6 +52,10 @@ export class CustomItemService {
         return await this.customItemRepository.deleteOne(query, options);
     }
 
+    public async deleteMany(query:any,options?:any): Promise<any>{
+        return await this.customItemRepository.deleteMany(query,options);
+    }
+
     // Search CustomItem
     public search(filter: SearchFilter): Promise<any> {
         const condition: any = SearchUtil.createFindCondition(filter.limit, filter.offset, filter.select, filter.relation, filter.whereConditions, filter.orderBy);
