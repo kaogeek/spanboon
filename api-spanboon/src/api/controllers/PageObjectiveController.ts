@@ -323,7 +323,10 @@ export class ObjectiveController {
                 objectiveLists = await this.pageObjectiveService.search(filter, { signURL: true });
             }
         }
-
+        if(filter.whereConditions.hashTag === undefined){
+            const successResponse = ResponseUtil.getSuccessResponse('Successfully Search PageObjective', []);
+            return res.status(200).send(successResponse);
+        }
         if (objectiveLists !== null && objectiveLists !== undefined && objectiveLists.length > 0) {
             objectiveLists.map((data) => {
                 const hashTagKey = data.hashTag;
