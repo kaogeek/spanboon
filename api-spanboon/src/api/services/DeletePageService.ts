@@ -117,6 +117,7 @@ export class DeletePageService {
                 const findPostPage = await this.postsService.findOne({ pageId: pageTest._id });
                 if (findPostPage !== undefined) {
                     await this.postsService.deleteMany({ pageId: pageTest._id });
+
                 }
                 const findPage = await this.pageService.findOne({ _id: pageTest._id });
                 if (findPage !== undefined) {

@@ -18,6 +18,7 @@ import { environment } from '../../../../../environments/environment';
 import * as $ from 'jquery';
 import { GoogleLoginProvider, SocialAuthService, SocialUser } from 'angularx-social-login';
 import { TwitterService } from "../../../../services/facade/TwitterService.service";
+import { CheckMergeUserFacade } from "src/app/services/facade/CheckMergeUserFacade.service";
 
 const PAGE_NAME: string = 'register/menu';
 
@@ -35,12 +36,28 @@ export class MenuRegister extends AbstractPage implements OnInit {
     private activatedRoute: ActivatedRoute;
     private observManager: ObservableManager;
     private twitterService: TwitterService;
+    private checkMergeUserFacade: CheckMergeUserFacade;
 
     public authenManager: AuthenManager;
     public dialog: MatDialog;
     public redirection: string;
     public googleUser = {};
     public auth2: any;
+
+    public modeSwitch: "mergeuser";
+    public emailOtp: string;
+    public limitOtpCount: number;
+    public socialMode: any;
+    public pictureSocial: any;
+    public login = true;
+    public social: any = {
+        socialLogin: undefined,
+    };
+    public mockDataMergeSocial: any = {
+        social: undefined,
+    };
+
+    public dataUser: any;
 
     //twitter
     public authorizeLink = 'https://api.twitter.com/oauth/authorize';
@@ -55,7 +72,8 @@ export class MenuRegister extends AbstractPage implements OnInit {
         dialog: MatDialog,
         observManager: ObservableManager,
         twitterService: TwitterService,
-        _ngZone: NgZone,) {
+        _ngZone: NgZone,
+        checkMergeUserFacade: CheckMergeUserFacade) {
         super(PAGE_NAME, authenManager, dialog, router);
         this.authenManager = authenManager;
         this.activatedRoute = activatedRoute;
@@ -64,6 +82,7 @@ export class MenuRegister extends AbstractPage implements OnInit {
         this._ngZone = _ngZone;
         this.observManager = observManager;
         this.twitterService = twitterService;
+        this.checkMergeUserFacade = checkMergeUserFacade;
 
         this.activatedRoute.params.subscribe(param => {
             this.redirection = param['redirection'];
@@ -196,37 +215,56 @@ export class MenuRegister extends AbstractPage implements OnInit {
     private loginGoogle() {
         let mode = 'GOOGLE';
 
-        this.authenManager.loginWithGoogle(this.googleToken.idToken, this.googleToken.authToken, mode).then((data: any) => {
-            // login success redirect to main page
-            this.observManager.publish('authen.check', null);
-            if (this.redirection) {
-                this.router.navigateByUrl(this.redirection);
-            } else {
-                this.router.navigate(['home']);
-            }
-        }).catch((err) => {
-            const statusMsg = err.error.message;
-            if (statusMsg === "User was not found.") {
-                let navigationExtras: NavigationExtras = {
-                    state: {
-                        accessToken: this.googleToken,
-                        redirection: this.redirection
-                    },
-                    queryParams: { mode: 'google' }
-                }
-                this.router.navigate(['/register'], navigationExtras);
-            } else if (err.error.message === 'Baned PageUser.') {
-                this.dialog.open(DialogAlert, {
+        this.checkMergeUserFacade.loginWithGoogle(this.googleToken.idToken, this.googleToken.authToken, mode).then((data: any) => {
+            if (data.data.status === 2) {
+                let dialog = this.dialog.open(DialogAlert, {
                     disableClose: true,
                     data: {
-                        text: MESSAGE.TEXT_LOGIN_BANED,
-                        bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-                        bottomColorText2: "black",
+                        text: "พบแอคเคาท์ในระบบแล้ว กรุณาเข้าสู่ระบบด้วยโหมดกูเกิ้ล",
                         btDisplay1: "none"
                     }
                 });
+                dialog.afterClosed().subscribe((res) => {
+                    if (res) {
+                        this.router.navigate(['/login']);
+                    }
+                });
+            } else {
+                this.authenManager.loginWithGoogle(this.googleToken.idToken, this.googleToken.authToken, mode).then((data: any) => {
+                    // login success redirect to main page
+                    this.observManager.publish('authen.check', null);
+                    if (this.redirection) {
+                        this.router.navigateByUrl(this.redirection);
+                    } else {
+                        this.router.navigate(['home']);
+                    }
+                }).catch((err) => {
+                    const statusMsg = err.error.message;
+                    if (statusMsg === "User was not found.") {
+                        let navigationExtras: NavigationExtras = {
+                            state: {
+                                accessToken: this.googleToken,
+                                redirection: this.redirection
+                            },
+                            queryParams: { mode: 'google' }
+                        }
+                        this.router.navigate(['/register'], navigationExtras);
+                    } else if (err.error.message === 'Baned PageUser.') {
+                        this.dialog.open(DialogAlert, {
+                            disableClose: true,
+                            data: {
+                                text: MESSAGE.TEXT_LOGIN_BANED,
+                                bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+                                bottomColorText2: "black",
+                                btDisplay1: "none"
+                            }
+                        });
+                    }
+                });
             }
-        });
+        }).catch((error) => {
+        })
+
     }
 
     private checkLoginAndRedirection(): void {
@@ -242,15 +280,13 @@ export class MenuRegister extends AbstractPage implements OnInit {
     }
 
     public fbLibrary() {
-        (window as any).fbAsyncInit = function () {
-            window['FB'].init({
-                appId: environment.facebookAppId,
-                cookie: true,
-                xfbml: true,
-                version: 'v14.0'
-            });
-            window['FB'].AppEvents.logPageView();
-        };
+        window['FB'].init({
+            appId: environment.facebookAppId,
+            cookie: true,
+            xfbml: true,
+            version: 'v14.0'
+        });
+        window['FB'].AppEvents.logPageView();
 
         (function (d, s, id) {
             var js, fjs = d.getElementsByTagName(s)[0];
@@ -275,21 +311,61 @@ export class MenuRegister extends AbstractPage implements OnInit {
 
                 this._ngZone.run(() => this.loginFB());
             }
-        });
+        }, { scope: 'public_profile, email' });
     }
 
     private loginFB() {
         let mode = 'FACEBOOK'
-        this.authenManager.loginWithFacebook(this.accessToken.fbtoken, mode).then((data: any) => {
-            // login success redirect to main page
-            this.observManager.publish('authen.check', null);
-            if (this.redirection) {
-                this.router.navigateByUrl(this.redirection);
+
+        this.checkMergeUserFacade.loginWithFacebook(this.accessToken.fbtoken, mode).then((data: any) => {
+            if (data.data.status === 2) {
+                let dialog = this.dialog.open(DialogAlert, {
+                    disableClose: true,
+                    data: {
+                        text: "พบแอคเคาท์ในระบบแล้ว กรุณาเข้าสู่ระบบด้วยโหมดเฟสบุ๊ค",
+                        btDisplay1: "none"
+                    }
+                });
+                dialog.afterClosed().subscribe((res) => {
+                    if (res) {
+                        this.router.navigate(['/login']);
+                    }
+                });
             } else {
-                this.router.navigate(['home']);
+                this.authenManager.loginWithFacebook(this.accessToken.fbtoken, mode).then((data: any) => {
+                    // login success redirect to main page
+                    this.observManager.publish('authen.check', null);
+                    if (this.redirection) {
+                        this.router.navigateByUrl(this.redirection);
+                    } else {
+                        this.router.navigate(['home']);
+                    }
+                }).catch((err) => {
+                    const statusMsg = err.error.message;
+                    if (statusMsg === "User was not found.") {
+                        let navigationExtras: NavigationExtras = {
+                            state: {
+                                accessToken: this.accessToken,
+                                redirection: this.redirection
+                            },
+                            queryParams: { mode: 'facebook' }
+                        }
+                        this.router.navigate(['/register'], navigationExtras);
+                    } else if (err.error.message === 'Baned PageUser.') {
+                        this.dialog.open(DialogAlert, {
+                            disableClose: true,
+                            data: {
+                                text: MESSAGE.TEXT_LOGIN_BANED,
+                                bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+                                bottomColorText2: "black",
+                                btDisplay1: "none"
+                            }
+                        });
+                    }
+                });
             }
-        }).catch((err) => {
-            const statusMsg = err.error.message;
+        }).catch((error) => {
+            const statusMsg = error.error.message;
             if (statusMsg === "User was not found.") {
                 let navigationExtras: NavigationExtras = {
                     state: {
@@ -299,7 +375,7 @@ export class MenuRegister extends AbstractPage implements OnInit {
                     queryParams: { mode: 'facebook' }
                 }
                 this.router.navigate(['/register'], navigationExtras);
-            } else if (err.error.message === 'Baned PageUser.') {
+            } else if (statusMsg === 'Baned PageUser.') {
                 this.dialog.open(DialogAlert, {
                     disableClose: true,
                     data: {

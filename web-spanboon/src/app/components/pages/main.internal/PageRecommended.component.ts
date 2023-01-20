@@ -6,7 +6,7 @@
  */
 
 import { Component, OnInit, Input, ViewChild, ElementRef, EventEmitter, Output } from '@angular/core';
-import { ObjectiveFacade, NeedsFacade, AssetFacade, AuthenManager, ObservableManager, PageFacade, HashTagFacade, Engagement, UserEngagementFacade, RecommendFacade, ProfileFacade } from '../../../services/services';
+import { ObjectiveFacade, NeedsFacade, AssetFacade, AuthenManager, ObservableManager, PageFacade, HashTagFacade, Engagement, UserEngagementFacade, RecommendFacade, ProfileFacade, SeoService } from '../../../services/services';
 import { MatDialog } from '@angular/material';
 import { AbstractPage } from '../AbstractPage';
 import { FileHandle } from '../../shares/directive/directives';
@@ -56,6 +56,7 @@ export class PageRecommended extends AbstractPage implements OnInit {
   private recommendFacade: RecommendFacade;
   private pageFacade: PageFacade;
   private profileFacade: ProfileFacade;
+  private seoService: SeoService;
 
   public resDataPage: any;
   public resObjective: any;
@@ -79,7 +80,7 @@ export class PageRecommended extends AbstractPage implements OnInit {
   files: FileHandle[] = [];
   constructor(router: Router, dialog: MatDialog, authenManager: AuthenManager, pageFacade: PageFacade, profileFacade: ProfileFacade, objectiveFacade: ObjectiveFacade, needsFacade: NeedsFacade, assetFacade: AssetFacade,
     observManager: ObservableManager, routeActivated: ActivatedRoute, searchHashTagFacade: HashTagFacade, engagementService: Engagement, userEngagementFacade: UserEngagementFacade,
-    recommendFacade: RecommendFacade) {
+    recommendFacade: RecommendFacade, seoService: SeoService) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.dialog = dialog
     this.objectiveFacade = objectiveFacade;
@@ -93,6 +94,7 @@ export class PageRecommended extends AbstractPage implements OnInit {
     this.pageFacade = pageFacade;
     this.profileFacade = profileFacade;
     this.whereConditions = ["name"]
+    this.seoService = seoService;
 
     this.observManager.subscribe('scroll.fix', (scrollTop) => {
       this.heightWindow();
@@ -103,6 +105,7 @@ export class PageRecommended extends AbstractPage implements OnInit {
     this.searchTrendTag();
     this.openLoading();
     this.getRecommend();
+    this.seoService.updateTitle("แนะนำสำหรับคุณ");
   }
 
   public ngOnDestroy(): void {

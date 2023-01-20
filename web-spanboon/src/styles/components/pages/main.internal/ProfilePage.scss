@@ -14,7 +14,7 @@
     margin: 0 auto;
     padding: 0 10px;
 
-    >.wrapper-profile-page {
+    > .wrapper-profile-page {
       display: flex;
       flex-direction: row;
       align-items: flex-start;
@@ -22,13 +22,13 @@
       position: relative;
       width: 100%;
 
-      >.menu-left {
+      > .menu-left {
         flex: 1 1 0%;
         position: sticky;
         top: 55pt;
         padding: 10pt 20pt;
 
-        >.setting {
+        > .setting {
           display: flex;
           align-items: center;
           @include pointer();
@@ -38,12 +38,12 @@
           width: 140pt;
           margin-bottom: 7pt;
 
-          >.icon {
+          > .icon {
             width: 16pt;
             height: 16pt;
           }
 
-          >.name {
+          > .name {
             margin-left: 10pt;
             @include font-size-9($font-head-500);
           }
@@ -62,7 +62,7 @@
           }
         }
 
-        >.icon-btn-post {
+        > .icon-btn-post {
           margin-top: 10pt;
           width: 140pt;
           display: flex;
@@ -79,30 +79,31 @@
             background: rgb($brandcolor2, 0.95);
           }
 
-          >svg {
+          > svg {
             width: 20pt;
             height: 20pt;
           }
 
-          >span {
+          > span {
             margin-left: 8pt;
             @include font-size-9($font-head-500);
           }
         }
 
-        >.menu-rreload-card {}
+        > .menu-rreload-card {
+        }
       }
 
-      >.wrapper-feed-profile {
+      > .wrapper-feed-profile {
         position: relative;
         margin: 0 5pt;
         max-width: 600px;
         width: 600px;
 
-        >.profile-background {
+        > .profile-background {
           position: relative;
 
-          >.wrapper-cover-image {
+          > .wrapper-cover-image {
             width: calc(100% - 4px);
             height: 219pt;
             // border: 2px dashed $brandcolor2;
@@ -117,21 +118,21 @@
               display: none;
             }
 
-            >.text-wrapper {
+            > .text-wrapper {
               display: flex;
               height: 100%;
               justify-content: center;
               align-items: center;
               @include font-size-9($font-head-400);
 
-              >.wrapper-icon-upload {
-                >.icon-upload {
+              > .wrapper-icon-upload {
+                > .icon-upload {
                   width: 50pt;
                   height: 50pt;
                   padding: 0 50pt;
                 }
 
-                >.centered {
+                > .centered {
                   text-align: center;
                   margin: 10pt;
 
@@ -146,7 +147,7 @@
             }
           }
 
-          >.image-not-edit {
+          > .image-not-edit {
             border: $width-border solid $border-color !important;
             width: calc(100% - 2.4px) !important;
 
@@ -156,19 +157,19 @@
               opacity: unset !important;
             }
 
-            >.image-cover {
+            > .image-cover {
               width: 100%;
               height: 100%;
               object-fit: cover;
             }
           }
 
-          >.cover-img {
+          > .cover-img {
             width: 100%;
             background-size: cover;
             height: 219pt;
 
-            >.body-cover-image {
+            > .body-cover-image {
               width: 100%;
               height: 100%;
               background-size: cover;
@@ -180,15 +181,15 @@
             }
           }
 
-          >.set-cover {
+          > .set-cover {
             position: absolute;
             right: 15pt;
             bottom: 15pt;
             display: flex;
 
-            >.btn-edit-cover,
-            >.btn-save-cover,
-            >.btn-cancel-cover {
+            > .btn-edit-cover,
+            > .btn-save-cover,
+            > .btn-cancel-cover {
               display: flex;
               align-items: center;
               justify-content: center;
@@ -207,13 +208,13 @@
                 background: rgba($black, 0.4);
               }
 
-              >.image-upload {
-                >label {
+              > .image-upload {
+                > label {
                   cursor: pointer;
                   display: flex;
                   align-items: center;
 
-                  >svg {
+                  > svg {
                     margin: 0 7pt 0 0;
 
                     g,
@@ -222,15 +223,17 @@
                     }
                   }
 
-                  >.label-edit-cover {}
+                  > .label-edit-cover {
+                  }
                 }
 
-                #file-input {}
+                #file-input {
+                }
               }
             }
           }
 
-          #image {
+          #images {
             display: none;
             width: 100%;
             height: 219pt;
@@ -248,7 +251,7 @@
           }
         }
 
-        >.wrapper-profile {
+        > .wrapper-profile {
           position: relative;
           display: flex;
           flex-wrap: wrap;
@@ -257,7 +260,7 @@
           border-right: $width-border solid $border-color;
           background-color: $white;
 
-          >.img-profile {
+          > .img-profile {
             position: absolute;
             width: 100pt;
             height: 100pt;
@@ -265,7 +268,7 @@
             margin: -60pt 0 0 10pt;
             flex: 0 0 auto;
 
-            >.image-profile-fan-page {
+            > .image-profile-fan-page {
               width: calc(100% - 8px);
               height: calc(100% - 8px);
               border-radius: 50%;
@@ -274,7 +277,7 @@
               background-color: $white;
             }
 
-            >.edit-profile {
+            > .edit-profile {
               width: 30pt;
               height: 30pt;
               position: absolute;
@@ -288,7 +291,8 @@
               justify-content: center;
               align-items: center;
 
-              >.icon-image {}
+              > .icon-image {
+              }
 
               &:hover {
                 opacity: 1;
@@ -296,11 +300,11 @@
             }
           }
 
-          >.ur_ed_z {
+          > .ur_ed_z {
             width: 100%;
             border-bottom: $width-border solid $border-color;
 
-            >.wrapper-btn-edit-profile {
+            > .wrapper-btn-edit-profile {
               width: 97pt;
               padding: 7pt 10pt 10pt;
               text-align: center;
@@ -308,17 +312,17 @@
               margin: 0 0 0 auto;
             }
 
-            >.wrapper-page-name {
+            > .wrapper-page-name {
               width: calc(100% - 20pt);
               padding: 0 10pt 20pt 10pt;
 
-              >.fan-page-name {
+              > .fan-page-name {
                 color: $brandcolor2;
                 margin: 0 10pt;
                 @include font-size-7($font-head-500);
               }
 
-              >.fan-page-tag {
+              > .fan-page-tag {
                 color: $color-gray;
                 margin-left: 10pt;
                 @include font-size-9($font-head-100);
@@ -327,38 +331,40 @@
           }
         }
 
-        >.wrapper-feed-menu {
+        > .wrapper-feed-menu {
           border-bottom: $width-border solid $border-color;
           border-left: $width-border solid $border-color;
           border-right: $width-border solid $border-color;
 
-          >.wrapper-counter-follow {
+          > .wrapper-counter-follow {
             padding: 15pt 20pt;
             background-color: $white;
             @include font-size-9($font-head-500);
 
-            >.follower {}
+            > .follower {
+            }
 
-            >.following {
+            > .following {
               margin-left: 10pt;
             }
           }
 
-          >.mat-tab-header {
+          > .mat-tab-header {
             align-items: center;
             background: $white;
 
-            >.mat-tab-header-pagination {
-              >.mat-tab-header-pagination-chevron {}
+            > .mat-tab-header-pagination {
+              > .mat-tab-header-pagination-chevron {
+              }
             }
 
-            >.mat-tab-link-container {
-              >.mat-tab-list {
-                >.mat-tab-links {
+            > .mat-tab-link-container {
+              > .mat-tab-list {
+                > .mat-tab-links {
                   height: 52pt;
                   align-items: center;
 
-                  >.mat-tab-link {
+                  > .mat-tab-link {
                     height: 100%;
                     color: $color-black;
                     @include pointer();
@@ -371,11 +377,11 @@
                     }
                   }
 
-                  >.mat-tab-label-active {
+                  > .mat-tab-label-active {
                     color: $brandcolor2;
                   }
 
-                  >.mat-icon-button {
+                  > .mat-icon-button {
                     position: absolute;
                     right: 10px;
                   }
@@ -385,85 +391,85 @@
           }
         }
 
-        >.card-feed-post {
+        > .card-feed-post {
           border: 0.7px solid $border-color;
           background-color: $white;
           margin: 5pt;
 
-          >.feed-status {
+          > .feed-status {
             display: flex;
             justify-content: space-between;
             padding: 0 30pt;
             align-items: center;
             margin-top: 25pt;
 
-            >.left {
+            > .left {
               display: flex;
               align-items: center;
 
-              >.icon-feed {
+              > .icon-feed {
                 width: 8pt;
                 height: 8pt;
                 border-radius: 50%;
                 background-color: $color-gray;
               }
 
-              >.fulfill {
+              > .fulfill {
                 background-color: $status-post-fulfill;
               }
 
-              >.message {
+              > .message {
                 padding-left: 5pt;
                 @include font-size-10($font-head-500);
               }
             }
 
-            >.right {
-              >.wrapper-date {
+            > .right {
+              > .wrapper-date {
                 @include font-size-11($font-head-500);
                 color: $color-gray;
               }
             }
           }
 
-          >.wrapper-content {
+          > .wrapper-content {
             padding: 5pt 30pt;
 
-            >.content-header {
+            > .content-header {
               @include font-size-8($font-head-500);
             }
 
-            >.content-body {
+            > .content-body {
               white-space: pre-wrap;
               font-family: "Sarabun-Light";
               @include font-size-9($font-content-light);
             }
 
-            >.tag-emergency {
+            > .tag-emergency {
               display: flex;
               align-items: center;
               padding: 10pt 0;
 
-              >.emergencyEvent {
+              > .emergencyEvent {
                 padding-left: 5pt;
                 @include font-size-9($font-head-500);
               }
             }
 
-            >.content-tag {
+            > .content-tag {
               padding: 10pt 0;
               @include font-size-10($font-head-500);
               padding-bottom: 10pt;
             }
 
-            >.list-looking-for {
+            > .list-looking-for {
               border-top: $width-border solid $border-color;
 
-              >.item-looking-for {
+              > .item-looking-for {
                 border-bottom: unset !important;
 
-                >.amount-looking-for {
-                  >.bottom {
+                > .amount-looking-for {
+                  > .bottom {
                     display: flex;
                     flex-direction: column;
                     text-align: right;
@@ -472,25 +478,25 @@
               }
             }
 
-            >.wrapper-story-profile {
+            > .wrapper-story-profile {
               display: flex;
               align-items: center;
               padding: 10pt 0;
               border-bottom: $width-border solid $border-color;
               border-top: $width-border solid $border-color;
 
-              >.for-give {
+              > .for-give {
                 @include font-size-10($font-head-500);
               }
 
-              >.page-name {
+              > .page-name {
                 padding: 0 5pt;
                 @include text-limit();
                 @include font-size-10($font-head-500);
               }
             }
 
-            >.icon-social {
+            > .icon-social {
               display: flex;
               justify-content: flex-end;
               padding: 10pt 0;
@@ -498,20 +504,20 @@
           }
         }
 
-        >.feed-post-none {
+        > .feed-post-none {
           display: flex;
           justify-content: center;
           height: 501pt;
           background-color: $brandcolor;
           @include font-size-9($font-head-500);
 
-          >.lable-timeline {
+          > .lable-timeline {
             padding: 50pt;
           }
         }
       }
 
-      >.side-follow {
+      > .side-follow {
         transition: 0.3s;
         position: sticky;
         top: 60pt;
@@ -521,21 +527,21 @@
         margin: 5pt 0 10pt 5pt;
         flex: 0 0 auto;
 
-        >.box-right {
+        > .box-right {
           border: 0.7px solid $border-color;
           margin-bottom: 5pt;
 
-          >.lable-follow {
+          > .lable-follow {
             padding: 10pt;
             border-bottom: $width-border solid $border-color;
             background-color: $white;
             @include font-size-9($font-head-500);
           }
 
-          >.wrapper-card {
+          > .wrapper-card {
             background-color: $white;
 
-            >.card-follow {
+            > .card-follow {
               display: flex;
               align-items: center;
               justify-content: space-between;
@@ -546,38 +552,39 @@
                 background-color: $background-hover;
               }
 
-              >.follow {
+              > .follow {
                 display: flex;
                 padding: 5pt 0;
                 align-items: center;
 
-                >.img-user {
+                > .img-user {
                   width: 40pt;
                   height: 40pt;
                   border-radius: 50%;
                   object-fit: cover;
                 }
 
-                >.list-follow-name {
+                > .list-follow-name {
                   margin-left: 5pt;
 
-                  >.follow-name {
+                  > .follow-name {
                     @include font-size-10($font-head-500);
                   }
 
-                  >.follow-name-eng {
+                  > .follow-name-eng {
                     @include font-size-10($font-head-500);
                     color: $color-gray;
                   }
                 }
               }
 
-              >.wrapper-btn-follow {
-                >.btn-follow {}
+              > .wrapper-btn-follow {
+                > .btn-follow {
+                }
               }
             }
 
-            >.follow-all {
+            > .follow-all {
               display: flex;
               justify-content: center;
               align-items: center;
@@ -591,11 +598,11 @@
             }
           }
 
-          >.wrapper-matter {
+          > .wrapper-matter {
             background-color: $white;
             margin-top: 5pt;
 
-            >.body-matter {
+            > .body-matter {
               padding: 10pt;
               margin-top: 5pt;
               border-bottom: $width-border solid $border-color;
@@ -603,7 +610,7 @@
               @include font-size-9($font-head-500);
             }
 
-            >.item-all {
+            > .item-all {
               color: $brandcolor2;
               padding: 10pt;
               text-align: center;
@@ -623,13 +630,13 @@
   background-color: whitesmoke;
   width: 100%;
 
-  >#Group_142 {
+  > #Group_142 {
     width: 100pt;
     height: auto;
     max-width: 70vw;
   }
 
-  >.text-NotFound {
+  > .text-NotFound {
     margin-top: 15pt;
     @include font-size-7($font-head-500);
   }
@@ -638,22 +645,21 @@
 @media (max-width: $xxlarge) {
   .profile-timeline-page {
     .container {
-      >.wrapper-profile-page {
-        >.wrapper-feed-profile {
-          >.profile-background {
-
-            >.cover-img,
-            >#image {
+      > .wrapper-profile-page {
+        > .wrapper-feed-profile {
+          > .profile-background {
+            > .cover-img,
+            > #images {
               height: calc(219pt - 10pt);
             }
           }
 
-          >.wrapper-feed-menu {
-            >.mat-tab-header {
-              >.mat-tab-link-container {
-                >.mat-tab-list {
-                  >.mat-tab-links {
-                    >.mat-tab-link {
+          > .wrapper-feed-menu {
+            > .mat-tab-header {
+              > .mat-tab-link-container {
+                > .mat-tab-list {
+                  > .mat-tab-links {
+                    > .mat-tab-link {
                       @include font-size-9($font-head-500);
                     }
                   }
@@ -672,56 +678,58 @@
     .container {
       max-width: 991px;
 
-      >.wrapper-profile-page {
-        >.menu-left {
-          >.setting {
+      > .wrapper-profile-page {
+        > .menu-left {
+          > .setting {
             width: 20pt;
             padding: 5pt;
             justify-content: center;
             margin: 0 auto;
             border-radius: 50%;
 
-            >.icon {}
+            > .icon {
+            }
 
-            >.name {
+            > .name {
               display: none;
             }
           }
 
-          >.icon-btn-post {
+          > .icon-btn-post {
             width: 32pt;
             padding: 5pt;
 
-            >.button-post {}
+            > .button-post {
+            }
 
-            >span {
+            > span {
               display: none;
             }
           }
 
-          >.menu-rreload-card {
+          > .menu-rreload-card {
             display: none;
           }
         }
 
-        >.wrapper-feed-profile {
+        > .wrapper-feed-profile {
           // max-width: unset;
           // width: 100%;
 
-          >.profile-background {
-
-            >.cover-img,
-            >#image {
+          > .profile-background {
+            > .cover-img,
+            > #images {
               height: calc(219pt - 10pt);
             }
           }
 
-          >.wrapper-feed-menu {
-            >.mat-tab-header {
-              >.mat-tab-link-container {
-                >.mat-tab-list {
-                  >.mat-tab-links {
-                    >.mat-tab-link {}
+          > .wrapper-feed-menu {
+            > .mat-tab-header {
+              > .mat-tab-link-container {
+                > .mat-tab-list {
+                  > .mat-tab-links {
+                    > .mat-tab-link {
+                    }
                   }
                 }
               }
@@ -729,7 +737,8 @@
           }
         }
 
-        >.side-follow {}
+        > .side-follow {
+        }
       }
     }
   }
@@ -738,21 +747,20 @@
 @media (max-width: $large) {
   .profile-timeline-page {
     .container {
-      >.wrapper-profile-page {
-        >.wrapper-feed-profile {
-          >.profile-background {
-
-            >.cover-img,
-            >#image {
+      > .wrapper-profile-page {
+        > .wrapper-feed-profile {
+          > .profile-background {
+            > .cover-img,
+            > #images {
               height: calc(280pt - 40pt);
             }
           }
 
-          >.wrapper-feed-menu {
-            >.mat-tab-header {
-              >.mat-tab-link-container {
-                >.mat-tab-list {
-                  >.mat-tab-links {
+          > .wrapper-feed-menu {
+            > .mat-tab-header {
+              > .mat-tab-link-container {
+                > .mat-tab-list {
+                  > .mat-tab-links {
                     height: 48pt;
                   }
                 }
@@ -761,15 +769,15 @@
           }
         }
 
-        >.menu-left {
+        > .menu-left {
           flex: unset;
         }
 
-        >.wrapper-feed-profile {
+        > .wrapper-feed-profile {
           margin-right: 0;
         }
 
-        >.side-follow {
+        > .side-follow {
           display: none;
         }
       }
@@ -783,24 +791,23 @@
       max-width: 768px;
       padding: 0;
 
-      >.wrapper-profile-page {
-        >.wrapper-feed-profile {
+      > .wrapper-profile-page {
+        > .wrapper-feed-profile {
           // max-width: unset;
           width: calc(100% - 5pt);
 
-          >.profile-background {
-
-            >.cover-img,
-            >#image {
+          > .profile-background {
+            > .cover-img,
+            > #images {
               height: calc(319pt - 60pt);
             }
           }
 
-          >.wrapper-feed-menu {
-            >.mat-tab-header {
-              >.mat-tab-link-container {
-                >.mat-tab-list {
-                  >.mat-tab-links {
+          > .wrapper-feed-menu {
+            > .mat-tab-header {
+              > .mat-tab-link-container {
+                > .mat-tab-list {
+                  > .mat-tab-links {
                     height: 40pt;
                   }
                 }
@@ -809,7 +816,12 @@
           }
         }
 
-        >.wrapper-feed-menu>.mat-tab-header>.mat-tab-link-container>.mat-tab-list>.mat-tab-links>.side-follow {
+        > .wrapper-feed-menu
+          > .mat-tab-header
+          > .mat-tab-link-container
+          > .mat-tab-list
+          > .mat-tab-links
+          > .side-follow {
           display: none;
         }
       }
@@ -820,22 +832,21 @@
 @media (max-width: $medium) {
   .profile-timeline-page {
     .container {
-      >.wrapper-profile-page {
-        >.menu-left {
+      > .wrapper-profile-page {
+        > .menu-left {
           display: none;
         }
 
-        >.wrapper-feed-profile {
+        > .wrapper-feed-profile {
           // margin: 0 5pt;
           // width: calc(100% - 10pt);
           margin: 0;
           width: 100%;
           max-width: unset;
 
-          >.profile-background {
-
-            >.cover-img,
-            >#image {
+          > .profile-background {
+            > .cover-img,
+            > #images {
               height: calc(300pt - 80pt);
             }
           }
@@ -850,31 +861,30 @@
     min-height: calc(100vh - 39pt);
 
     .container {
-      >.wrapper-profile-page {
-        >.wrapper-feed-profile {
-          >.profile-background {
-
-            >.cover-img,
-            >#image {
+      > .wrapper-profile-page {
+        > .wrapper-feed-profile {
+          > .profile-background {
+            > .cover-img,
+            > #images {
               height: calc(290pt - 100pt);
             }
 
-            >.set-cover {
+            > .set-cover {
               top: 10pt;
               left: 10pt;
               bottom: unset;
               right: unset;
 
-              >.btn-edit-cover {
+              > .btn-edit-cover {
                 padding: 0 10pt;
 
-                >.image-upload {
-                  >label {
-                    >svg {
+                > .image-upload {
+                  > label {
+                    > svg {
                       margin: 0;
                     }
 
-                    >.label-edit-cover {
+                    > .label-edit-cover {
                       display: none;
                     }
                   }
@@ -883,24 +893,24 @@
             }
           }
 
-          >.wrapper-profile {
+          > .wrapper-profile {
             flex-direction: column;
             align-items: center;
 
-            >.img-profile {
+            > .img-profile {
               margin: -60pt 0 10pt 0;
             }
 
-            >.ur_ed_z {
+            > .ur_ed_z {
               display: flex;
               flex-direction: column-reverse;
 
-              >.wrapper-btn-edit-profile {
+              > .wrapper-btn-edit-profile {
                 margin: 0 auto;
                 width: 90%;
               }
 
-              >.wrapper-page-name {
+              > .wrapper-page-name {
                 border-bottom: unset;
                 margin-top: 45pt;
                 padding: 0 10pt 5pt 10pt;
@@ -908,12 +918,12 @@
             }
           }
 
-          >.wrapper-feed-menu {
-            >.mat-tab-header {
-              >.mat-tab-link-container {
-                >.mat-tab-list {
-                  >.mat-tab-links {
-                    >.mat-icon-button {
+          > .wrapper-feed-menu {
+            > .mat-tab-header {
+              > .mat-tab-link-container {
+                > .mat-tab-list {
+                  > .mat-tab-links {
+                    > .mat-icon-button {
                       position: unset;
                     }
                   }

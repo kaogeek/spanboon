@@ -49,4 +49,9 @@ export class PageUsageHistoryService {
     public async delete(query: any, options?: any): Promise<any> {
         return await this.pageUsageHistoryRepository.deleteOne(query, options);
     }
+
+    // deleteMany
+    public async deleteMany(query: any, options?: any): Promise<any> {
+        return await this.pageUsageHistoryRepository.deleteMany(query, options);
+    }
 }

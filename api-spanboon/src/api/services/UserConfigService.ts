@@ -53,4 +53,9 @@ export class UserConfigService {
     public async delete(query: any, options?: any): Promise<any> {
         return await this.userConfigRepository.deleteOne(query, options);
     }
+
+    // deleteMany
+    public async deleteMany(query: any, options?: any): Promise<any> {
+        return await this.userConfigRepository.deleteMany(query, options);
+    }
 }

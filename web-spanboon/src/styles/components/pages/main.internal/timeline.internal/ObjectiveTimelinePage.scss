@@ -1927,10 +1927,18 @@
                                                 @media (max-width: $small) {
                                                     width: 27%;
                                                 }
+
+                                                &:nth-child(odd) {
+
+                                                    @media (max-width: $small) {
+                                                        width: 29.5%;
+                                                    }
+                                                }
+
                                             }
 
                                             @media (max-width: $medium) {
-                                                bottom: -30px;
+                                                bottom: -15px;
                                             }
                                         }
                                     }
@@ -2000,7 +2008,7 @@
                                         }
 
                                         >.botton {
-                                            @include font-size-9($font-head-300);
+                                            @include font-size-7($font-head-500);
                                             padding: 10px;
                                             background-color: #fd5454;
                                             height: 40px;
@@ -2011,6 +2019,11 @@
                                             align-items: center;
                                             border-radius: 30px;
                                             cursor: pointer;
+                                            gap: 10px;
+
+                                            span {
+                                                margin-left: 10px;
+                                            }
                                         }
 
                                         >.score {
