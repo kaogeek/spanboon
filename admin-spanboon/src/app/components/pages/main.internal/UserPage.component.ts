@@ -131,7 +131,7 @@ export class UserPage extends AbstractPage implements OnInit {
             isSelect: false,
             isCreate: true,
             isEdit: false,
-            isDelete: true,
+            isDelete: false,
             isComment: false,
             isBack: false
         };
