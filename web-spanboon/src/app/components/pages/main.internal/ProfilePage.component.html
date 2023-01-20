@@ -125,15 +125,14 @@
                     </ng-container>
                 </div>
                 <div class="wrapper-feed-profile">
-                    <div *ngIf="!showLoading" class="profile-background">
+                    <div class="profile-background" *ngIf="!showLoading">
                         <ng-container
                             *ngIf="isLoading || (resProfile && resProfile.isLoadingCover); else elseisLoading">
                             <div class="cover-img preload-background"></div>
                         </ng-container>
                         <ng-template #elseisLoading>
                             <ng-container *ngIf="resProfile">
-                                <ng-container
-                                    *ngIf="resProfile.coverURL === '' || resProfile.coverURL === undefined || resProfile.coverURL === null ; else elseCoverImage">
+                                <ng-container *ngIf="!resProfile.coverURL; else elseCoverImage">
                                     <ng-container *ngIf="isNotAccess; else elseisNotAccess">
                                         <div class="wrapper-cover-image" [class.hide]="isFiles"
                                             (click)="fileInput.click()" dragdrop-image (files)="filesDropped($event)">
@@ -195,7 +194,7 @@
                                     <div class="cover-img" [class.hide]="isFiles" *ngIf="!isEditCover">
                                         <div (load)="loadImageOK($event)" (error)="loadImageError($event)"
                                             class="body-cover-image"
-                                            [ngStyle]="resProfile.coverBase64 ? {'background-image': 'url('+resProfile.coverBase64+')' ,'background-position-y' : position+'%' } : {} ">
+                                            [ngStyle]="resProfile.coverURL ? {'background-image': 'url(' + resProfile.coverURL + ')' ,'background-position-y' : resProfile.coverPosition + '%' } : {}">
                                         </div>
                                     </div>
                                     <div class="set-cover">
@@ -241,7 +240,7 @@
                                 </ng-template>
                             </ng-container>
                         </ng-template>
-                        <img id="image" [class.active]="!isEditCover"
+                        <img id="images" [class.active]="!isEditCover"
                             [ngStyle]="{'display': isEditCover ? 'flex' : 'none'}">
                     </div>
 

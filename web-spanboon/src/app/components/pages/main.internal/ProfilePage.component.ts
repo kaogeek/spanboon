@@ -477,11 +477,11 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
             this.name = this.resProfile.displayName
           }
           // this.seoService.updateTitle(this.resProfile.displayName);
-          if (this.resProfile.imageURL !== '' && this.resProfile.imageURL !== null && this.resProfile.imageURL !== undefined) {
+          if (!!this.resProfile.imageURL) {
             this.resProfile.isLoadingImage = true;
             this.getDataIcon(this.resProfile.imageURL, "image")
           }
-          if (this.resProfile.coverURL !== '' && this.resProfile.coverURL !== null && this.resProfile.coverURL !== undefined) {
+          if (!!this.resProfile.coverURL) {
             this.getDataIcon(this.resProfile.coverURL, "cover")
           }
           setTimeout(() => {
@@ -590,6 +590,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     } else if (myType === "image") {
       Object.assign(this.resProfile, { isLoadingImage: true });
     }
+
     this.assetFacade.getPathFile(imageURL).then((res: any) => {
       if (res.status === 1) {
         if (myType === "image") {
@@ -602,9 +603,9 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
         } else if (myType === "cover") {
           this.resProfile.isLoadingCover = false;
           if (ValidBase64ImageUtil.validBase64Image(res.data)) {
-            Object.assign(this.resProfile, { coverBase64: res.data });
+            Object.assign(this.resProfile, { coverURL: res.data });
           } else {
-            Object.assign(this.resProfile, { coverBase64: '' });
+            Object.assign(this.resProfile, { coverURL: '' });
           }
         }
       }
@@ -616,7 +617,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
             Object.assign(this.resProfile, { imageBase64: '' });
           } else {
             this.resProfile.isLoadingCover = false;
-            Object.assign(this.resProfile, { coverBase64: '', isLoaded: true });
+            Object.assign(this.resProfile, { coverURL: '', isLoaded: true });
           }
         }
       }
@@ -670,10 +671,9 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
   }
 
   public saveCoverImage(): void {
+    this.isEditCover = true;
     let userId = this.getCurrentUserId();
-
-    this.isEditCover = false;
-    const styleWidth = document.getElementById('image');
+    const styleWidth = document.getElementById('images');
     let value = window.getComputedStyle(styleWidth).getPropertyValue("background-position-y");
     let position = value.substring(0, value.lastIndexOf("%"));
     let image = window.getComputedStyle(styleWidth).getPropertyValue("background-image");
@@ -692,12 +692,15 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
 
     this.profileFacade.saveCoverImageProfile(userId, dataImages).then((res: any) => {
       if (res.status === 1) {
+        this.isEditCover = false;
         this.isFiles = false;
         this.getDataIcon(res.data.coverURL, "cover");
         this.resProfile.coverPosition = res.data.coverPosition;
       }
     }).catch((err: any) => {
-      console.log(err)
+      console.log(err);
+      this.isEditCover = false;
+      this.isFiles = false;
     })
   }
 
@@ -733,8 +736,8 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     $(img).on('load', function () {
       imgWidth = img.width;
       imgHeight = img.height;
-      let imgWidthTrue = $('#image').width();
-      let imgHeightTrue = $('#image').height();
+      let imgWidthTrue = $('#images').width();
+      let imgHeightTrue = $('#images').height();
       let varImg;
       if (imgHeight > imgWidth) {
         varImg = imgHeight / imgWidth;
@@ -748,18 +751,18 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
         imgHeightTotal = imgWidthTrue - imgHeightTrue;
       }
 
-      $('#image').css('background-image', 'url(' + img.src + ')');
-      $('#image').css('display', 'flex');
+      $('#images').css('background-image', 'url(' + img.src + ')');
+      $('#images').css('display', 'flex');
     });
 
     var start_y;
     var newPos;
     this.isFiles = true;
-    var curPos = $('#image').css('background-position-y');
+    var curPos = $('#images').css('background-position-y');
     var mouseDown = false;
     var move = true;
 
-    $('#image').mousedown(function (e) {
+    $('#images').mousedown(function (e) {
       mouseDown = true;
     });
 
@@ -768,7 +771,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
       $('.image').css('background-position-y', curPos)
     });
 
-    $('#image').mouseenter(function (e) {
+    $('#images').mouseenter(function (e) {
       start_y = e.clientY;
     });
 
@@ -777,7 +780,6 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
       start_y = e.clientY;
 
       if (mouseDown) {
-
         let newPercent = (100 / imgHeight) * newPos;
         newPercent = newPercent * 5;
 
@@ -807,16 +809,18 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
           }
         }
 
-        $('#image').css('background-position-y', this.coverImageoldValue + '%');
-        curPos = parseInt($('#image').css('background-position-y'));
+        $('#images').css('background-position-y', this.coverImageoldValue + '%');
+        curPos = parseInt($('#images').css('background-position-y'));
 
         if (curPos > 100) {
           curPos = 100;
-          $('#image').css('background-position-y', curPos + '%');
+          $('#images').css('background-position-y', curPos + '%');
+          this.position = curPos;
         }
         if (curPos < 0) {
           curPos = 0;
-          $('#image').css('background-position-y', curPos + '%');
+          $('#images').css('background-position-y', curPos + '%');
+          this.position = curPos;
         }
       }
     });

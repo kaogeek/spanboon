@@ -42,7 +42,6 @@ declare var $: any;
 })
 export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestroy, DirtyComponent {
   private cacheConfigInfo: CacheConfigInfo;
-
   public static readonly PAGE_NAME: string = PAGE_NAME;
   public static readonly PAGE_SUB_POST: string = PAGE_SUB_POST;
 
@@ -751,10 +750,12 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         if (curPos > 100) {
           curPos = 100;
           $('#images').css('background-position-y', curPos + '%');
+          this.position = curPos;
         }
         if (curPos < 0) {
           curPos = 0;
           $('#images').css('background-position-y', curPos + '%');
+          this.position = curPos;
         }
       }
     });
@@ -901,22 +902,23 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     this.pageFacade.getProfilePage(url).then(async (res) => {
       if (res) {
         await this.checkAccessPage(res.data.id);
-        if (res.pageUsername !== null && res.pageUsername !== undefined) {
-          this.url = res.pageUsername
+        if (!!res.pageUsername) {
+          this.url = res.pageUsername;
         }
+
         if (res.data) {
           this.position = res.data.coverPosition;
           if (res.data && res.data.imageURL && res.data.imageURL !== '') {
-            this.getDataIcon(res.data.imageURL, "image")
+            this.getDataIcon(res.data.imageURL, "image");
           }
           if (res.data && res.data.coverURL && res.data.coverURL !== '') {
-            this.getDataIcon(res.data.coverURL, "cover")
+            this.getDataIcon(res.data.coverURL, "cover");
           }
           if (res.data && res.data.pageObjectives && res.data.pageObjectives.length > 0) {
             let index = 0;
             for (let result of res.data.pageObjectives) {
               if (result.iconURL !== '') {
-                this.getDataIcon(result.iconURL, "icon", index)
+                this.getDataIcon(result.iconURL, "icon", index);
                 index++
               }
             }
@@ -925,9 +927,9 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
           if (this.resDataPage && this.resDataPage.name) {
             this.name = this.resDataPage.name;
           } else if (this.resDataPage && this.resDataPage.pageUsername) {
-            this.name = this.resDataPage.pageUsername
+            this.name = this.resDataPage.pageUsername;
           } else if (this.resDataPage.displayName) {
-            this.name = this.resDataPage.displayName
+            this.name = this.resDataPage.displayName;
           }
           this.seoService.updateTitle(this.resDataPage.name);
           if (this.router.url.split('/')[3] !== 'post') {
@@ -978,9 +980,9 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
           }
         } else if (myType === "cover") {
           if (ValidBase64ImageUtil.validBase64Image(res.data)) {
-            Object.assign(this.resDataPage, { coverBase64: res.data });
+            Object.assign(this.resDataPage, { coverURL: res.data });
           } else {
-            Object.assign(this.resDataPage, { coverBase64: '' });
+            Object.assign(this.resDataPage, { coverURL: '' });
           }
         } else if (myType === "icon") {
           if (this.resDataPage && this.resDataPage.pageObjectives !== undefined) {
@@ -991,7 +993,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
             }
           }
         }
-        this.isLoading = false
+        this.isLoading = false;
       }
     }).catch((err: any) => {
       console.log('err ', err)
@@ -1000,7 +1002,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
           if (myType === "image") {
             Object.assign(this.resDataPage, { imageBase64: '' });
           } else if (myType === "cover") {
-            Object.assign(this.resDataPage, { coverBase64: '' });
+            Object.assign(this.resDataPage, { coverURL: '' });
           } else {
             Object.assign(this.resDataPage.pageObjectives[index], { iconBase64: '', isLoaded: true });
           }
@@ -1246,7 +1248,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   }
 
   public saveCoverImage(): void {
-    this.isEditCover = false;
+    this.isEditCover = true;
     const styleWidth = document.getElementById('images');
     let value = window.getComputedStyle(styleWidth).getPropertyValue("background-position-y");
     let position = value.substring(0, value.lastIndexOf("%"));
@@ -1259,22 +1261,23 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
 
     asset.data = index.substring(0, index.lastIndexOf(")")).split('"')[0];
     asset.size = this.imageCoverSize;
-
     let dataList = {
       coverPosition: Number(position),
       asset
     }
 
-    let pageId = this.resDataPage.id
+    let pageId = this.resDataPage.id;
     this.pageFacade.saveCoverImagePage(pageId, dataList).then((res: any) => {
       if (res.status === 1) {
+        this.isEditCover = false;
         this.isFiles = false;
         this.getDataIcon(res.data.coverURL, "cover");
         this.resDataPage.coverPosition = res.data.coverPosition;
       }
-
     }).catch((err: any) => {
-      console.log(err)
+      console.log(err);
+      this.isEditCover = false;
+      this.isFiles = false;
     })
   }
 
@@ -1288,12 +1291,13 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     if (files.length === 0) {
       return;
     }
+
     if (files) {
       const reader = new FileReader();
       reader.onload = (event: any) => {
         this.imageCoverSize = files.size;
         this.rePositionIamge(event.target.result);
-        this.isEditCover = true
+        this.isEditCover = true;
         this.isFiles = true;
       }
       reader.readAsDataURL(files);
