@@ -6,7 +6,7 @@
  */
 
 import { Component, OnInit, Output, EventEmitter, Input, ViewChild, ElementRef, SimpleChanges } from '@angular/core';
-import { DialogManageImage, DialogImage, DialogDoIng, DialogSettingDateTime, DialogPost, DialogPreview } from './dialog/dialog';
+import { DialogManageImage, DialogImage, DialogDoIng, DialogSettingDateTime, DialogPost, DialogPreview, DialogCreateStory } from './dialog/dialog';
 import { MatDialog, MatSelect, MatAutocompleteTrigger, MatSlideToggleChange, MatTableDataSource, MatMenuTrigger, MatSnackBar } from '@angular/material';
 import { FormControl } from '@angular/forms';
 import { AbstractPage } from '../pages/AbstractPage';
@@ -345,13 +345,14 @@ export class BoxPost extends AbstractPage implements OnInit {
     ).subscribe((text: any) => {
       this.keyUpSearchEmergencyEvent(this.autocompleteEmergency.nativeElement.value, true);
     });
-
-    fromEvent(this.searchInputObjective && this.searchInputObjective.nativeElement, 'keyup').pipe(
-      debounceTime(500)
-      , distinctUntilChanged()
-    ).subscribe((text: any) => {
-      this.keyUpSearchObjective(this.searchInputObjective.nativeElement.value);
-    });
+    if (this.modeShowDoing) {
+      fromEvent(this.searchInputObjective && this.searchInputObjective.nativeElement, 'keyup').pipe(
+        debounceTime(500)
+        , distinctUntilChanged()
+      ).subscribe((text: any) => {
+        this.keyUpSearchObjective(this.searchInputObjective.nativeElement.value);
+      });
+    }
 
     setTimeout(() => {
       if (this.isListPage) {
@@ -954,7 +955,7 @@ export class BoxPost extends AbstractPage implements OnInit {
       imagesTimeline: this.imagesTimeline,
       dataStroy: this.dataStroy
     }
-    // const dialogRef = this.dialog.open(DialogPost, {
+    // const dialogRef = this.dialog.open(DialogCreateStory, {
     //   width: '100vw',
     //   height: '100vh',
     //   data: this.dataClone,
