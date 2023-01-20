@@ -8,12 +8,11 @@
 import { Component, OnInit, Input, ViewChild, ElementRef, EventEmitter, Output } from '@angular/core';
 import { ObjectiveFacade, NeedsFacade, AssetFacade, AuthenManager, ObservableManager, PostCommentFacade, PageFacade, HashTagFacade, MainPageSlideFacade, EmergencyEventFacade, PageCategoryFacade, PostFacade, AccountFacade, Engagement, UserEngagementFacade, SeoService } from '../../../services/services';
 import { DateAdapter, MatDialog } from '@angular/material';
-import { AbstractPage } from '../AbstractPage';
 import { FileHandle } from '../../shares/directive/directives';
 import * as $ from 'jquery';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { BoxPost, DialogReboonTopic } from '../../shares/shares';
-import { ChangeContext, LabelType, Options, PointerType } from 'ng5-slider';
+import { ChangeContext, LabelType, Options } from 'ng5-slider';
 import { SearchFilter } from '../../../../app/models/SearchFilter';
 import { environment } from '../../../../environments/environment';
 import { CommentPosts } from '../../../models/CommentPosts';
@@ -24,6 +23,8 @@ import { AbstractPageImageLoader } from '../AbstractPageImageLoader';
 import { UserEngagement } from '../../../models/UserEngagement';
 import { filter } from 'rxjs/internal/operators/filter';
 import { PLATFORM_NAME_TH } from 'src/custom/variable';
+import { fromEvent, Subject, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 const PAGE_NAME: string = 'search';
 const SEARCH_LIMIT: number = 20;
@@ -37,7 +38,11 @@ declare var $: any;
   templateUrl: './PageHashTag.component.html',
 })
 export class PageHashTag extends AbstractPageImageLoader implements OnInit {
+  valueinput: string;
+  valueChanged: Subject<string> = new Subject<string>();
+  inputSub: Subscription;
 
+  private destroy = new Subject<void>();
   public static readonly PAGE_NAME: string = PAGE_NAME;
   public PLATFORM_NAME_TH: string = PLATFORM_NAME_TH;
 
@@ -73,6 +78,9 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   @ViewChild("recommendedLeft", { static: true }) recommendedLeft: ElementRef;
   @ViewChild("feedbodysearch", { static: true }) feedbodysearch: ElementRef;
   @ViewChild("inputAutocomp", { static: true }) inputAutocomp: ElementRef;
+  @ViewChild('mytexttt', { static: true }) mytexttt: ElementRef;
+  namettt = 'Angular';
+  resulttt = '';
 
   @Output()
   public submitRemove: EventEmitter<any> = new EventEmitter();
@@ -447,8 +455,29 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     this.routeActivated.queryParams.subscribe(params => {
     });*/
   }
+  ngAfterContentInit() {
+    this.inputSub = this.valueChanged
+      .pipe(debounceTime(500))
+      .subscribe(value => {
+        this.keyUpAutoComp(this.valueinput);
+      });
+  }
+
+  onChangeInput(text: string) {
+    this.valueChanged.next(text);
+  }
 
   public ngOnInit(): void {
+    // fromEvent(this.inputAutocomp && this.inputAutocomp.nativeElement, 'keyup').pipe(
+    //   debounceTime(500)
+    //   , distinctUntilChanged()
+    // ).subscribe((text: any) => {
+    //   this.keyUpAutoComp(this.inputAutocomp.nativeElement.value);
+    // });
+    // fromEvent(this.mytexttt.nativeElement, 'keyup').pipe(debounceTime(1000)).subscribe((data => {
+    //   console.log('Calling the API now with' + this.mytexttt.nativeElement.value);
+    //   this.resulttt = this.mytexttt.nativeElement.value;
+    // }));
     this.searchEmergency();
     this.searchObjective();
     this.searchHashTag();
@@ -465,7 +494,14 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     }, 1000);
   }
 
-  ngAfterViewInit(): void {
+  public ngAfterViewInit(): void {
+    // fromEvent(this.inputAutocomp && this.inputAutocomp.nativeElement, 'keyup').pipe(
+    //   debounceTime(500)
+    //   , distinctUntilChanged()
+    // ).subscribe((text: any) => {
+    //   this.keyUpAutoComp(this.inputAutocomp.nativeElement.value);
+    // });
+
     this.minEngagment = 0;
     this.maxEngagment = 0;
 
@@ -503,6 +539,9 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
 
   public ngOnDestroy(): void {
     super.ngOnDestroy();
+    this.destroy.next();
+    this.destroy.complete();
+    this.inputSub.unsubscribe();
   }
 
   isPageDirty(): boolean {
@@ -522,7 +561,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     try {
       this.isLoading = true;
       let data = {
-        keyword: text.target.value
+        keyword: text.target.value ? text.target.value : text
       }
 
       this.dataUser = await this.accountFacade.search(data);
@@ -654,6 +693,12 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       this.searchTrendTag(true);
     } else if (event.value === 'กำหนดเอง') {
       this.follow = false;
+      fromEvent(this.inputAutocomp && this.inputAutocomp.nativeElement, 'keyup').pipe(
+        debounceTime(500)
+        , distinctUntilChanged()
+      ).subscribe((text: any) => {
+        this.keyUpAutoComp(this.inputAutocomp.nativeElement.value);
+      });
     } else if (event.value === 'ทั้งหมด') {
       if (this.follow) {
         this.follow = undefined;

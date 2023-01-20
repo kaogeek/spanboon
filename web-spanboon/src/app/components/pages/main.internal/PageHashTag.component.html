@@ -150,7 +150,7 @@
                                                 <input matInput type="text" class="input-data"
                                                     placeholder="ชื่อคนหรือเพจ" name="createdname"
                                                     [(ngModel)]="createdName" [matAutocomplete]="autoComplete"
-                                                    (keyup)="keyUpAutoComp($event)" #inputAutocomp>
+                                                    (keyup)="keyUpAutoComp($event)">
                                                 <mat-autocomplete #autoComplete="matAutocomplete">
                                                     <mat-option class="mat-option-progress" *ngIf="isLoading">
                                                         <mat-progress-bar mode="indeterminate"></mat-progress-bar>
@@ -474,14 +474,15 @@
                                             </mat-radio-group>
                                         </section>
                                     </div>
+                                    <!-- <input type="text" id="mytext" #mytexttt>
+                                    <input [ngModel]="value" (ngModelChange)="onChangeInput($event)"> -->
                                     <div class="footer-more" *ngIf="filterType === 'กำหนดเอง' ">
                                         <div>ผู้คนหรือเพจที่ต้องการค้นหา</div>
                                         <div class="search-page">
                                             <div class="rigth">
                                                 <input matInput type="text" class="input-data"
                                                     placeholder="ชื่อคนหรือเพจ" name="createdname"
-                                                    [(ngModel)]="createdName" [matAutocomplete]="autoComplete"
-                                                    (keyup)="keyUpAutoComp($event)" #inputAutocomp>
+                                                    [(ngModel)]="createdName" [matAutocomplete]="autoComplete">
                                                 <mat-autocomplete #autoComplete="matAutocomplete">
                                                     <mat-option class="mat-option-progress" *ngIf="isLoading">
                                                         <mat-progress-bar mode="indeterminate"></mat-progress-bar>

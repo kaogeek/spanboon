@@ -124,18 +124,25 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
         })
 
         this.currentDate = new Date();
-
-        this.objectiveData = await this.emergencyEventFacade.getEmergencyTimeline(this.objectiveId);
-        this.seoService.updateTitle(this.objectiveData.emergencyEvent.hashTagName);
-        this.objectiveData.page;
-        this.objectiveData.timelines;
-        const pageType = { type: "PAGE" };
-        const origin = this.objectiveData.page;
-
-        const dataPageTypeAssign = Object.assign(pageType, origin);
-        this.objectiveData.page = { owner: dataPageTypeAssign };
-        this._groupData();
-        this.setData();
+        this.emergencyEventFacade.getEmergencyTimeline(this.objectiveId).then((res) => {
+            if (res) {
+                this.objectiveData = res;
+                this.seoService.updateTitle(this.objectiveData.emergencyEvent.hashTagName);
+                this.objectiveData.page;
+                this.objectiveData.timelines;
+                const pageType = { type: "PAGE" };
+                const origin = this.objectiveData.page;
+                const dataPageTypeAssign = Object.assign(pageType, origin);
+                this.objectiveData.page = { owner: dataPageTypeAssign };
+                this._groupData();
+                this.setData();
+            }
+        }).catch((error) => {
+            if (error) {
+                this.router.navigate(['home']);
+                console.log("error", error);
+            }
+        });
     }
 
     private _groupData(): void {
