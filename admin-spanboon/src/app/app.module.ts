@@ -74,8 +74,10 @@ import {
   PageObjectiveCategoryFacade,
   EmergencyEventFacade,
   PageUserFacade,
-  PageUserAdminFacade,
+  PageUserAdminFacade
+  ,
 } from './services/services';
+import { UserFacade } from './services/facade/UserFacade.service';
 import {
   SafePipe,
   ShortNumberPipe,
@@ -144,6 +146,7 @@ const SERVICE_CLASSES: any[] = [
   PageObjectiveCategoryFacade,
   EmergencyEventFacade,
   PageUserFacade,
+  UserFacade,
   PageUserAdminFacade,
   // other 
   {

@@ -42,6 +42,11 @@ export class UserLikeService {
         return await this.userLikeRepository.deleteOne(query, options);
     }
 
+    // delete Many
+    public async deleteMany(query: any, options?: any): Promise<any> {
+        return await this.userLikeRepository.deleteMany(query, options);
+    }
+
     // aggregate userLike
     public aggregate(query: any, options?: any): Promise<UserLike[]> {
         return this.userLikeRepository.aggregate(query, options).toArray();

@@ -76,7 +76,6 @@ import { USER_TYPE, NOTIFICATION_TYPE } from '../../constants/NotificationType';
 import { DeviceTokenService } from '../services/DeviceToken';
 import { PageNotificationService } from '../services/PageNotificationService';
 import axios from 'axios';
-import { DeletePageService } from '../services/DeletePageService';
 @JsonController('/page')
 export class PageController {
     private PAGE_ACCESS_LEVEL_GUEST = 'GUEST';
@@ -105,7 +104,6 @@ export class PageController {
         private socialPostLogsService: SocialPostLogsService,
         private deviceTokenService: DeviceTokenService,
         private pageNotificationService: PageNotificationService,
-        private deletePageService: DeletePageService
     ) { }
 
     // Find Page API
@@ -471,8 +469,8 @@ export class PageController {
         }
         // create category 
 
-        const findPageEnable = await this.socialPostLogsService.findOne({providerUserId:socialBinding.facebookPageId});
-        if(findPageEnable !== undefined && findPageEnable !== null){
+        const findPageEnable = await this.socialPostLogsService.findOne({ providerUserId: socialBinding.facebookPageId });
+        if (findPageEnable !== undefined && findPageEnable !== null) {
             const errorResponse = ResponseUtil.getErrorResponse('Unable create Page', undefined);
             return res.status(400).send(errorResponse);
         }
@@ -761,19 +759,6 @@ export class PageController {
      * @apiErrorExample {json} Unable Binding Page Social
      * HTTP/1.1 500 Internal Server Error
      */
-    @Delete('/:id/delete/page')
-    @Authorized('user')
-    public async testGetPage(@Param('id') pageId: string, @Res() res: any, @Req() req: any): Promise<any> {
-        const pageObjId = new ObjectID(pageId);
-        const findPage = await this.pageService.findOne({_id:ObjectID(pageObjId)});
-        if(findPage !== undefined){
-            await this.deletePageService.deletePage(pageObjId);
-            return res.status(200).send(ResponseUtil.getSuccessResponse('Delete page is successfully.', true));
-        }else{
-            const errorResponse: any = { status: 0, message: 'Sorry cannnot delete page.' };
-            return res.status(400).send(errorResponse);
-        }
-    }
 
     @Post('/:id/social/facebook')
     @Authorized('user')
@@ -2358,6 +2343,7 @@ export class PageController {
                 const tokenFCMId = await this.deviceTokenService.find({ userId: pageOwnerNoti.id });
                 const notificationFollower = whoFollowYou.displayName + space + 'กดติดตามเพจ' + space + page.pageUsername;
                 const link = `/profile/${whoFollowYou.id}`;
+
                 for (const tokenFCM of tokenFCMId) {
                     if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined) {
                         await this.pageNotificationService.notifyToPageUserFcm(

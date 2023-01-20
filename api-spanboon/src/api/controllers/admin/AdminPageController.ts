@@ -6,7 +6,7 @@
  */
 
 import 'reflect-metadata';
-import { JsonController, Res, Post, Body, Req, Authorized, Param } from 'routing-controllers';
+import { JsonController, Res, Post, Body, Req, Delete, Authorized, Param } from 'routing-controllers';
 import { ResponseUtil } from '../../../utils/ResponseUtil';
 import { PageService } from '../../services/PageService';
 import moment from 'moment';
@@ -16,10 +16,10 @@ import { BanRequest } from './requests/BanRequest';
 import { AdminUserActionLogsService } from '../../services/AdminUserActionLogsService';
 import { AdminUserActionLogs } from '../../models/AdminUserActionLogs';
 import { LOG_TYPE, PAGE_LOG_ACTION } from '../../../constants/LogsAction';
-
+import { DeletePageService } from '../../services/DeletePageService';
 @JsonController('/admin/page')
 export class AdminPageController {
-    constructor(private pageService: PageService, private actionLogService: AdminUserActionLogsService) { }
+    constructor(private pageService: PageService, private actionLogService: AdminUserActionLogsService, private deletePageService: DeletePageService) { }
 
     /**
      * @api {post} /api/admin/page/:id/approve Approve Page API
@@ -76,7 +76,21 @@ export class AdminPageController {
             return res.status(400).send(errorResponse);
         }
     }
-
+    @Delete('/:id/delete/page')
+    @Authorized()
+    public async deletePageAd(@Param('id') pageId: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const pageObjId = new ObjectID(pageId);
+        const findPage = await this.pageService.findOne({ _id: ObjectID(pageObjId) });
+        const ownerPage = req.body;
+        console.log('ownerPage', ownerPage);
+        if (findPage !== undefined) {
+            await this.deletePageService.deletePage(pageObjId);
+            return res.status(200).send(ResponseUtil.getSuccessResponse('Delete page is successfully.', true));
+        } else {
+            const errorResponse: any = { status: 0, message: 'Sorry cannnot delete page.' };
+            return res.status(400).send(errorResponse);
+        }
+    }
     /**
      * @api {post} /api/admin/page/:id/unapprove UnApprove Page API
      * @apiGroup Admin Page API

@@ -589,9 +589,20 @@ export class PagePostController {
                     for (let i = 0; i < userFollow.length; i++) {
                         const tokenFCMId = await this.deviceToken.find({ userId: userFollow[i].userId, token: { $ne: null } });
                         const link = `/page/${pagePostId.id}/post/` + createPostPageData.id;
+                        await this.notificationService.createNotificationFCM(
+                            userFollow[i].userId,
+                            USER_TYPE.PAGE,
+                            req.user.id + '',
+                            USER_TYPE.USER,
+                            NOTIFICATION_TYPE.POST,
+                            notificationTextPOST,
+                            link,
+                            pagePostId.pageUsername,
+                            pagePostId.imageURL
+                        );
                         for (const tokenFCM of tokenFCMId) {
                             if (tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== null) {
-                                await this.notificationService.createNotificationFCM(
+                                await this.notificationService.sendNotificationFCM(
                                     tokenFCM.userId,
                                     USER_TYPE.PAGE,
                                     req.user.id + '',
@@ -605,15 +616,7 @@ export class PagePostController {
                                 );
                             }
                             else {
-                                await this.notificationService.createNotification(
-                                    userFollow[i].userId,
-                                    USER_TYPE.PAGE,
-                                    req.user.id + '',
-                                    USER_TYPE.USER,
-                                    NOTIFICATION_TYPE.POST,
-                                    notificationTextPOST,
-                                    link,
-                                );
+                                continue;
                             }
                         }
                     }
@@ -624,12 +627,23 @@ export class PagePostController {
                     const userPost = await this.userService.findOne({ _id: createPostPageData.ownerUser });
                     const notificationTextPOST = 'มีโพสต์ใหม่จาก' + space + userPost.displayName;
                     const userFollow = await this.userFollowService.find({ subjectType: 'USER', subjectId: createPostPageData.ownerUser });
+                    const link = `/profile/${userPost.id}/post/` + createPostPageData.id;
                     for (let i = 0; i < userFollow.length; i++) {
+                        await this.notificationService.createNotificationFCM(
+                            userFollow[i].userId,
+                            USER_TYPE.USER,
+                            req.user.id + '',
+                            USER_TYPE.USER,
+                            NOTIFICATION_TYPE.POST,
+                            notificationTextPOST,
+                            link,
+                            userPost.displayName,
+                            userPost.imageURL
+                        );
                         const tokenFCMId = await this.deviceToken.find({ userId: userFollow[i].userId, token: { $ne: null } });
                         for (const tokenFCM of tokenFCMId) {
-                            const link = `/profile/${userPost.id}/post/` + createPostPageData.id;
                             if (tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== null) {
-                                await this.notificationService.createNotificationFCM(
+                                await this.notificationService.sendNotificationFCM(
                                     tokenFCM.userId,
                                     USER_TYPE.USER,
                                     req.user.id + '',
@@ -643,15 +657,7 @@ export class PagePostController {
                                 );
                             }
                             else {
-                                await this.notificationService.createNotification(
-                                    userFollow[i].userId,
-                                    USER_TYPE.USER,
-                                    req.user.id + '',
-                                    USER_TYPE.USER,
-                                    NOTIFICATION_TYPE.POST,
-                                    notificationTextPOST,
-                                    link,
-                                );
+                                continue;
                             }
                         }
 

@@ -15,7 +15,7 @@ import { DialogWarningComponent } from '../../shares/DialogWarningComponent.comp
 import { AuthenManager } from '../../../services/AuthenManager.service';
 import { PageUser } from '../../../models/PageUser';
 import { Router } from '@angular/router';
-
+import { UserFacade } from '../../../services/facade/UserFacade.service'
 const PAGE_NAME: string = "user";
 
 @Component({
@@ -29,7 +29,7 @@ export class UserPage extends AbstractPage implements OnInit {
     public pageUserFacade: PageUserFacade;
     private authenManager: AuthenManager;
     private router: Router;
-
+    private userFacade:UserFacade;
     public fieldSearch: string[];
 
     public dataForm: PageUser;
@@ -47,12 +47,17 @@ export class UserPage extends AbstractPage implements OnInit {
     public imageName: string = '';
     public value: string = '';
 
-    constructor(pageUserFacade: PageUserFacade, router: Router, dialog: MatDialog, authenManager: AuthenManager) {
+    constructor(pageUserFacade: PageUserFacade, 
+        router: Router, 
+        dialog: MatDialog, 
+        authenManager: AuthenManager,
+        userFacade:UserFacade ) {
         super(PAGE_NAME, dialog);
         this.pageUserFacade = pageUserFacade;
         this.router = router;
         this.isGender = false
         this.authenManager = authenManager;
+        this.userFacade = userFacade;
         this.fieldSearch = [
             "username"
         ]
@@ -263,6 +268,25 @@ export class UserPage extends AbstractPage implements OnInit {
                     });
                 }
             }
+        });
+    }
+    public clickDelete(data: any): void {
+        console.log('data',data);
+        this.userFacade.deleteuser(data.id).then((res) => {
+            let index = 0;
+            let dataTable = this.table.data;
+            for (let d of dataTable) {
+                if (d.id == data.id) {
+                    dataTable.splice(index, 1);
+                    this.table.setTableConfig(dataTable);
+                    // alert("success");
+                    this.dialogWarning("ลบข้อมูลสำเร็จ");
+                    break;
+                }
+                index++;
+            }
+        }).catch((err) => {
+            this.dialogWarning(err.error.message);
         });
     }
 }

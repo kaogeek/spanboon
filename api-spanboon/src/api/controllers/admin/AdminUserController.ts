@@ -6,7 +6,7 @@
  */
 
 import 'reflect-metadata';
-import { JsonController, Res, Post, Body, Req, Authorized, Param } from 'routing-controllers';
+import { JsonController, Res, Post, Body, Req, Authorized, Delete, Param } from 'routing-controllers';
 import { ResponseUtil } from '../../../utils/ResponseUtil';
 import { UserService } from '../../services/UserService';
 import { User } from '../../models/User';
@@ -22,13 +22,14 @@ import { FileUtil } from '../../../utils/Utils';
 import { Asset } from '../../../api/models/Asset';
 import { ASSET_SCOPE, ASSET_PATH } from '../../../constants/AssetScope';
 import { AssetService } from '../../../api/services/AssetService';
-
+import { DeleteUserService } from '../../services/DeleteUserSerivce';
 @JsonController('/admin/user')
 export class AdminUserController {
     constructor(
         private userService: UserService,
         private actionLogService: AdminUserActionLogsService,
-        private assetService: AssetService
+        private assetService: AssetService,
+        private deleteUserService: DeleteUserService
     ) { }
 
     /**
@@ -129,7 +130,18 @@ export class AdminUserController {
             return res.status(400).send(errorResponse);
         }
     }
-
+    @Delete('/:id/delete/user')
+    @Authorized()
+    public async deleteUserAd(@Param('id') userId: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const userObjId = new ObjectID(userId);
+        if (userObjId !== undefined) {
+            await this.deleteUserService.deleteUser(userObjId);
+            return res.status(200).send(ResponseUtil.getSuccessResponse('Delete page is successfully.', true));
+        } else {
+            const errorResponse: any = { status: 0, message: 'Sorry cannnot delete page.' };
+            return res.status(400).send(errorResponse);
+        }
+    }
     /**
      * @api {post} /api/admin/user/:id/ban Ban Page API
      * @apiGroup Admin API

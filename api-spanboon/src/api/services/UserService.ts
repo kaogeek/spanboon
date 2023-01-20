@@ -219,7 +219,7 @@ export class UserService {
             if (user !== undefined && user !== null) {
                 if (user !== undefined && user !== null) {
                     const clearItem = {
-                        id: user._id,
+                        id: user.id,
                         username: user.username,
                         uniqueId: user.uniqueId,
                         email: user.email,

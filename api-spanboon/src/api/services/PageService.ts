@@ -113,6 +113,10 @@ export class PageService {
         return await this.pageRepository.deleteOne(query, options);
     }
 
+    public async deleteMany(query: any, options?: any): Promise<any> {
+        return await this.pageRepository.deleteMany(query, options);
+    }
+
     // Search Page
     public search(filter: SearchFilter, options?: any): Promise<any> {
         const condition: any = SearchUtil.createFindCondition(filter.limit, filter.offset, filter.select, filter.relation, filter.whereConditions, filter.orderBy);

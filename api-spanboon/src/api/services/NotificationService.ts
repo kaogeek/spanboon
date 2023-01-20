@@ -80,7 +80,7 @@ export class NotificationService {
         }
     }
 
-    public async createNotificationFCM(toUserId: string, toUserType: string, fromUserId: string, fromUserType: string, notificationType: string, title: string, link: string, data?: any, displayName?: any, image?: any, count?: any): Promise<any> {
+    public async sendNotificationFCM(toUserId: string, toUserType: string, fromUserId: string, fromUserType: string, notificationType: string, title: string, link: string, data?: any, displayName?: any, image?: any, count?: any): Promise<any> {
         const notification: Notification = new Notification();
         notification.isRead = false;
         notification.toUser = new ObjectID(toUserId);
@@ -113,7 +113,6 @@ export class NotificationService {
                     }
                 };
                 Promise.all([await admin.messaging().sendToDevice(token, payload)]);
-                return await this.create(notification);
             }
             else {
                 const payload =
@@ -131,7 +130,7 @@ export class NotificationService {
                     }
                 };
                 Promise.all([await admin.messaging().sendToDevice(token, payload)]);
-                return await this.create(notification);
+
             }
         }
         else {
@@ -142,6 +141,22 @@ export class NotificationService {
                 return undefined;
             }
         }
+    }
+
+    public async createNotificationFCM(toUserId: string, toUserType: string, fromUserId: string, fromUserType: string, notificationType: string, title: string, link: string, data?: any, displayName?: any, image?: any, count?: any): Promise<any> {
+        const notification: Notification = new Notification();
+        notification.isRead = false;
+        notification.toUser = new ObjectID(toUserId);
+        notification.toUserType = toUserType;
+        notification.fromUser = new ObjectID(fromUserId);
+        notification.fromUserType = fromUserType;
+        notification.title = title;
+        notification.link = link;
+        notification.type = notificationType;
+        notification.deleted = false;
+        notification.data = data;
+        return await this.create(notification);
+
     }
     public async createNotification(toUserId: string, toUserType: string, fromUserId: string, fromUserType: string, notificationType: string, title: string, link?: string, data?: any, displayName?: any, image?: any): Promise<any> {
         const notification: Notification = new Notification();

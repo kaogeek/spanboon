@@ -42,6 +42,11 @@ export class UserEngagementService {
         return await this.userEngagementRepository.deleteOne(query, options);
     }
 
+    // deleteMany
+    public async deleteMany(query: any, options?: any): Promise<any> {
+        return await this.userEngagementRepository.deleteMany(query, options);
+    }
+
     // find userEngagement
     public aggregate(query: any, options?: any): Promise<any[]> {
         return this.userEngagementRepository.aggregate(query, options).toArray();

@@ -1176,7 +1176,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result !== undefined) {
+      if (!!result) {
         this.resPost.posts[index] = result;
       }
       this.stopLoading();
