@@ -69,7 +69,7 @@ export class PostPage extends AbstractPage implements OnInit {
             isSelect: false,
             isCreate: false,
             isEdit: false,
-            isDelete: false,
+            isDelete: true,
             isComment: false,
             isBack: false
         };
@@ -221,7 +221,24 @@ export class PostPage extends AbstractPage implements OnInit {
             }
         });
     }
-
+    public clickDelete(data: any): void {
+        this.pageFacade.delete(data.id).then((res) => {
+            let index = 0;
+            let dataTable = this.table.data;
+            for (let d of dataTable) {
+                if (d.id == data.id) {
+                    dataTable.splice(index, 1);
+                    this.table.setTableConfig(dataTable);
+                    // alert("success");
+                    this.dialogWarning("ลบข้อมูลสำเร็จ");
+                    break;
+                }
+                index++;
+            }
+        }).catch((err) => {
+            this.dialogWarning(err.error.message);
+        });
+    }
     public clickSave() {
 
     }

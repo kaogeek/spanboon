@@ -105,7 +105,6 @@ export class FacebookWebhookController {
         let fullStop = undefined;
         const hashTagList1 = [];
         const hashTagList2 = [];
-
         if (body.entry[0].changes[0].value.item === 'post' && body.entry[0].changes[0].value.verb === 'remove') {
             const findPostFc = await this.socialPostService.findOne({ socialId: body.entry[0].changes[0].value.post_id, socialType: PROVIDER.FACEBOOK });
             if (findPostFc !== undefined) {
@@ -181,12 +180,12 @@ export class FacebookWebhookController {
         } else {
             const textMessage = body.entry[0].changes[0].value.message.length;
             fullStop = body.entry[0].changes[0].value.message.indexOf('.');
-            if (textMessage >= 50) {
+            if (textMessage >= 50 && fullStop !== -1) {
                 realText = body.entry[0].changes[0].value.message.substring(0, fullStop);
                 detailText = body.entry[0].changes[0].value.message;
                 TrimText = detailText.trim();
             } else {
-                realText = body.entry[0].changes[0].value.message.substring(0, fullStop);
+                realText = body.entry[0].changes[0].value.message.substring(0, 40) + '....';
                 detailText = body.entry[0].changes[0].value.message;
                 TrimText = detailText.trim();
             }

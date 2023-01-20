@@ -34,7 +34,20 @@ export class UserFacade extends AbstractFacade {
       });
     });
   }
-
+  public deleteuser(id: any): Promise<any> {
+    if (id === undefined || id === null) {
+      new Error("Id is required.");
+    }
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/admin/user/' + id + '/delete/user';
+      let options = this.getDefaultOptions();
+      this.http.delete(url, options).toPromise().then((response: any) => {
+        resolve(response.data);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
   public edit(id: any, body: User): Promise<User> {
     if (id === undefined || id === null) {
       new Error("Id is required.");
@@ -102,4 +115,5 @@ export class UserFacade extends AbstractFacade {
       });
     });
   } 
+
 }
