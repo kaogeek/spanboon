@@ -131,7 +131,6 @@ export class LoginPage extends AbstractPage implements OnInit {
   public ngOnInit() {
     this.checkLoginAndRedirection();
     this.fbLibrary();
-
     let doRunAccessToken = false;
     const fullURL = window.location.href;
     if (fullURL !== undefined && fullURL !== '') {
@@ -386,11 +385,11 @@ export class LoginPage extends AbstractPage implements OnInit {
 
   public fbLibrary() {
     window['FB'].init({
-        appId: environment.facebookAppId,
-        cookie: true,
-        xfbml: true,
-        version: 'v14.0'
-      });
+      appId: environment.facebookAppId,
+      cookie: true,
+      xfbml: true,
+      version: 'v14.0'
+    });
     window['FB'].AppEvents.logPageView();
 
     (function (d, s, id) {

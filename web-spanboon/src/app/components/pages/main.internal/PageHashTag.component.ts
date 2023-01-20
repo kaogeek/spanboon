@@ -497,6 +497,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
 
     }).catch((err) => {
       console.log(err)
+      this.isLoading = false;
     });
   }
 
@@ -750,6 +751,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
 
     }).catch((err: any) => {
       console.log(err)
+      this.isLoading = false;
     });
   }
 
@@ -799,6 +801,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
 
     }).catch((err: any) => {
       console.log(err)
+      this.isLoading = false;
     })
   }
 
@@ -832,6 +835,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       // this.resHashTag = cloneHashtag;
     }).catch(error => {
       console.log(error);
+      this.isLoading = false;
       this.isLoadMoreHashTag = false;
     });
   }
@@ -865,6 +869,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     return this.userEngagementFacade.create(dataEngagement).then((res: any) => {
     }).catch((err: any) => {
       console.log('err ', err)
+      this.isLoading = false;
     });
   }
 
@@ -1004,6 +1009,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
                 posts.post.referencePostObject = 'UNDEFINED PAGE'
               }
             }).catch((err: any) => {
+              this.isLoading = false;
             });
           }
         }
@@ -1039,6 +1045,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       }
     }).catch((error: any) => {
       console.log(error);
+      this.isLoading = false;
     });
   }
 
@@ -1055,6 +1062,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         this.isLoading = false
       }
     }).catch((err: any) => {
+      this.isLoading = false;
       // if (err.error.status === 0) {
       //   if (err.error.message === 'Unable got Asset') {
       //     Object.assign(this.resDataPage.posts[postIndex].gallery[galleryIndex], { galleryBase64: null, isLoaded: true });
@@ -1098,6 +1106,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
 
     }).catch((err) => {
       console.log(err)
+      this.isLoading = false;
     })
   }
 
@@ -1242,6 +1251,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       this.isLoadMorePageCategory = false;
     }).catch((err: any) => {
       console.log(err)
+      this.isLoading = false;
     })
   }
 
@@ -1371,6 +1381,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
           var aw = await this.pageFacade.search(search).then((pages: any) => {
             pageInUser = pages
           }).catch((err: any) => {
+            this.isLoading = false;
           })
           for (let p of pageInUser) {
             if (!p.signURL) {
@@ -1378,6 +1389,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
                 p.img64 = res.data
               }).catch((err: any) => {
                 console.log("err", err);
+                this.isLoading = false;
               });
             }
           }
@@ -1425,6 +1437,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
                 this.resPost[index].post.repostCount++
               }).catch((err: any) => {
                 console.log(err)
+                this.isLoading = false;
               })
             }
           });
@@ -1436,10 +1449,12 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
             this.resPost[index].post.isRepost = true
           }).catch((err: any) => {
             console.log(err)
+            this.isLoading = false;
           })
         } else if (action.type === "UNDOTOPIC") {
           this.postFacede.undoPost(action.post._id).then((res: any) => {
           }).catch((err: any) => {
+            this.isLoading = false;
           })
         }
 
@@ -1483,6 +1498,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         }
       }).catch((err: any) => {
         console.log(err)
+        this.isLoading = false;
       });
     }
   }
@@ -1499,6 +1515,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       this.resPost.posts[index].isComment = true
       this.resPost.posts[index]
     }).catch((err: any) => {
+      this.isLoading = false;
     })
   }
 

@@ -481,6 +481,7 @@
 
     >.tag_div {
       display: flex;
+      flex-wrap: wrap;
       width: 100%;
       margin-top: 10pt;
 
@@ -490,6 +491,7 @@
         @include pointer();
         display: inline;
         margin: 0 7pt 7pt 0;
+        flex: 0 0 auto;
 
         &:hover {
           color: rgba($brandcolor2, 0.95);
