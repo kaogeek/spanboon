@@ -411,7 +411,7 @@
             [isImage]="itemPost.gallery && itemPost.gallery.length > 0 && itemPost.title === '' "></needs-card>
 
         <!-- shared post to facebook or twitter -->
-        <ng-container *ngIf="itemPost.socialPosts && itemPost.socialPosts.length > 0;">
+        <!-- <ng-container *ngIf="itemPost.socialPosts && itemPost.socialPosts.length > 0;">
             <div class="social-share">
                 <svg class="img-action" xmlns="http://www.w3.org/2000/svg" width="17.474" height="17.474"
                     viewBox="0 0 17.474 17.474">
@@ -462,7 +462,7 @@
                     </div>
                 </ng-template>
             </div>
-        </ng-container>
+        </ng-container> -->
         <div class="wrapper-footer-post"
             [class.active]="!(isEmptyObject(itemPost.emergencyEvent) && isEmptyObject(itemPost.objective))">
             <div class="left" *ngIf="isEmptyObject(itemPost.emergencyEvent) || isEmptyObject(itemPost.objective)">
