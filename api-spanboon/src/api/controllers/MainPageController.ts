@@ -1272,6 +1272,21 @@ export class MainPageController {
                     postIdList.push(post._id);
                     postMap[post._id + ''] = post;
 
+                    const postPage = post.page;
+
+                    if (!!postPage) {
+                        const pageImageURL = postPage.imageURL;
+                        const pageCoverURL = postPage.coverURL;
+
+                        const pageImageSignURL = await ImageUtil.generateAssetSignURL(this.assetService, pageImageURL, { prefix: '/file/' });
+                        const pageCoverSignURL = await ImageUtil.generateAssetSignURL(this.assetService, pageCoverURL, { prefix: '/file/' });
+
+                        Object.assign(postPage, { signURL: (pageImageSignURL ? pageImageSignURL : '') });
+                        Object.assign(postPage, { coverSignURL: (pageCoverSignURL ? pageCoverSignURL : '') });
+                        delete postPage.s3ImageURL;
+                        delete postPage.s3CoverURL;
+                    }
+
                     // inject sign URL
                     const covImageSignURL = await ImageUtil.generateAssetSignURL(this.assetService, post.coverImage, { prefix: '/file/' });
                     Object.assign(post, { coverImageSignURL: (covImageSignURL ? covImageSignURL : '') });
@@ -1283,6 +1298,7 @@ export class MainPageController {
                             delete galImage.s3ImageURL;
                         }
                     }
+
                     // end inject sign URL
                     if (userMap[post.ownerUser] === undefined) {
                         const user = await this.userService.findOne({ _id: new ObjectID(post.ownerUser) });
