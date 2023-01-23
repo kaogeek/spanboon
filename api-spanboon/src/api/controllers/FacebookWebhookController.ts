@@ -96,13 +96,9 @@ export class FacebookWebhookController {
             const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
             return res.status(200).send(successResponse);
         }
-        let sliceArray = undefined;
-        let text1 = undefined;
-        let text2 = undefined;
+
         let realText = undefined;
-        let detailText = undefined;
         let TrimText = undefined;
-        let fullStop = undefined;
         const hashTagList1 = [];
         const hashTagList2 = [];
         if (body.entry[0].changes[0].value.item === 'post' && body.entry[0].changes[0].value.verb === 'remove') {
@@ -133,63 +129,121 @@ export class FacebookWebhookController {
                 }
             }
         }
-        const match = /r\n|\n/.exec(body.entry[0].changes[0].value.message);
-        if (match === undefined) {
-            const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
-            return res.status(200).send(successResponse);
-        }
-        console.log('body.entry[0].changes[0].value.message', body.entry[0].changes[0].value);
-        if (body.entry[0].changes[0].value.message === undefined) {
-            const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
-            return res.status(200).send(successResponse);
-        }
-        if (match) {
-            sliceArray = body.entry[0].changes[0].value.message.slice(0, match.index);
-            text1 = sliceArray.indexOf('[');
-            text2 = sliceArray.indexOf(']');
-            fullStop = body.entry[0].changes[0].value.message.indexOf('.');
-            if (text1 !== -1 && text2 !== -1) {
-                // []
-                realText = body.entry[0].changes[0].value.message.substring(text1 + 1, text2);
-                detailText = body.entry[0].changes[0].value.message.substring(fullStop + 1, body.entry[0].changes[0].value.message.length - 1);
-                TrimText = detailText.trim();
-            } else if (text1 !== -1 && text2 === -1) {
-                // [
-                const matchBackSlashT1 = /r\n|\n/.exec(body.entry[0].changes[0].value.message);
-                realText = body.entry[0].changes[0].value.message.slice(text1 + 1, matchBackSlashT1.index);
-                detailText = body.entry[0].changes[0].value.message.substring(matchBackSlashT1.index, body.entry[0].changes[0].value.message.length - 1);
-                TrimText = detailText.trim();
-            } else if (text1 === -1 && text2 !== -1) {
-                // ]
-                const matchBackSlashT2 = /r\n|\n/.exec(body.entry[0].changes[0].value.message);
-                realText = body.entry[0].changes[0].value.message.slice(0, text2);
-                detailText = body.entry[0].changes[0].value.message.substring(matchBackSlashT2.index, body.entry[0].changes[0].value.message.length - 1);
-                TrimText = detailText.trim();
-            } else if (text1 === -1 && text2 === -1) {
-                const textMessage = body.entry[0].changes[0].value.message.length;
-                if (textMessage >= 50) {
-                    realText = body.entry[0].changes[0].value.message.substring(0, fullStop);
-                    detailText = body.entry[0].changes[0].value.message;
-                    TrimText = detailText.trim();
-                } else {
-                    realText = body.entry[0].changes[0].value.message.substring(0, fullStop);
-                    detailText = body.entry[0].changes[0].value.message;
-                    TrimText = detailText.trim();
-                }
+        const msg = body.entry[0].changes[0].value.message;
+        const regex = /[\[\]]/g;
+        const titleLength = 150;
+        const checkPattern = msg.startsWith('[');
+        console.log('PATTERN: ', checkPattern);
+
+        if (checkPattern) {
+            const regex2 = /[.\-_,*+?^$|\\]/;
+
+            const result = msg.lastIndexOf(']');
+            const title1 = msg.slice(0, result);
+            realText = title1.replace(regex, '').trim();
+            console.log('TITLE: ', realText);
+
+            const detail1 = msg.replace(title1 + ']', '').trim();
+            const checkDetail = detail1.startsWith('.\n');
+
+            if (checkDetail) {
+                TrimText = detail1.replace(regex2, '').trim();
+                console.log('DETAIL: ', TrimText);
+            } else {
+                TrimText = detail1;
+                console.log('DETAIL: ', TrimText);
             }
         } else {
-            const textMessage = body.entry[0].changes[0].value.message.length;
-            fullStop = body.entry[0].changes[0].value.message.indexOf('.');
-            if (textMessage >= 50 && fullStop !== -1) {
-                realText = body.entry[0].changes[0].value.message.substring(0, fullStop);
-                detailText = body.entry[0].changes[0].value.message;
-                TrimText = detailText.trim();
-            } else {
-                realText = body.entry[0].changes[0].value.message.substring(0, 40) + '....';
-                detailText = body.entry[0].changes[0].value.message;
-                TrimText = detailText.trim();
-            }
+            const title1 = msg.split('\n')[0];
+            const title2 = title1.replace(regex, '').trim();
+
+            realText = title2.length > titleLength
+                ? (title2.substring(0, titleLength) + '...')
+                : title2;
+            console.log('TITLE: ', realText);
+
+            TrimText = msg;
+            console.log('DETAIL: ', TrimText);
         }
+        /* const match = /r\n|\n/.exec(body.entry[0].changes[0].value.message);
+         if (match === undefined) {
+             const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+             return res.status(200).send(successResponse);
+         }
+         console.log('body.entry[0].changes[0].value.message', body.entry[0].changes[0].value);
+         if (body.entry[0].changes[0].value.message === undefined) {
+             const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+             return res.status(200).send(successResponse);
+         }
+         if (match) {
+             sliceArray = body.entry[0].changes[0].value.message.slice(0, match.index);
+             text1 = sliceArray.indexOf('[');
+             text2 = sliceArray.indexOf(']');
+             fullStop = body.entry[0].changes[0].value.message.indexOf('.');
+             if (text1 !== -1 && text2 !== -1 && fullStop !== -1) {
+                 // []
+                 console.log('pass1');
+                 realText = body.entry[0].changes[0].value.message.substring(text1 + 1, text2);
+                 detailText = body.entry[0].changes[0].value.message.substring(text2 +1 , body.entry[0].changes[0].value.message.length - 1);
+                 TrimText = detailText.trim();
+             } else if (text1 !== -1 && text2 === -1 && fullStop !== -1) {
+                 // [
+                 console.log('pass2');
+                 const matchBackSlashT1 = /r\n|\n/.exec(body.entry[0].changes[0].value.message);
+                 console.log('matchBackSlashT1',matchBackSlashT1.index);
+                 realText = body.entry[0].changes[0].value.message.slice(text1 + 1, matchBackSlashT1.index);
+                 detailText = body.entry[0].changes[0].value.message.substring(matchBackSlashT1.index + 2, body.entry[0].changes[0].value.message.length - 1);
+                 TrimText = detailText.trim();
+             } else if (text1 === -1 && text2 !== -1 && fullStop !== -1) {
+                 // ]
+                 console.log('pass3');
+                 const matchBackSlashT2 = /r\n|\n/.exec(body.entry[0].changes[0].value.message);
+                 realText = body.entry[0].changes[0].value.message.slice(0, text2);
+                 detailText = body.entry[0].changes[0].value.message.substring(matchBackSlashT2.index + 2, body.entry[0].changes[0].value.message.length - 1);
+                 TrimText = detailText.trim();
+             } else if (text1 === -1 && text2 === -1 && fullStop !== -1 ) {
+                 console.log('pass4');
+                 const textMessage = body.entry[0].changes[0].value.message.length;
+                 if (textMessage >= titleLength) {
+                     console.log('pass5');
+                     realText = body.entry[0].changes[0].value.message.substring(0, match.index);
+                     detailText = body.entry[0].changes[0].value.message;
+                     TrimText = detailText.trim();
+                 } else {
+                     console.log('pass6');
+                     realText = body.entry[0].changes[0].value.message.substring(0, match.index) + '.....';
+                     detailText = body.entry[0].changes[0].value.message;
+                     TrimText = detailText.trim();
+                 }
+             } else if(text1 === -1 && text2 === -1 && fullStop === -1 ){
+                 console.log('pass7');
+                 const textMessage = body.entry[0].changes[0].value.message.length;
+                 if (textMessage >= titleLength) {
+                     console.log('pass8');
+                     realText = body.entry[0].changes[0].value.message.substring(0, match.index);
+                     detailText = body.entry[0].changes[0].value.message;
+                     TrimText = detailText.trim();
+                 } else {
+                     console.log('pass9');
+                     realText = body.entry[0].changes[0].value.message.substring(0, match.index) + '.....';
+                     detailText = body.entry[0].changes[0].value.message;
+                     TrimText = detailText.trim();
+                 }
+             }
+         } else {
+             const textMessage = body.entry[0].changes[0].value.message.length;
+             fullStop = body.entry[0].changes[0].value.message.indexOf('.');
+             console.log('match',match);
+             if (textMessage >= titleLength && match) {
+                 realText = body.entry[0].changes[0].value.message.substring(0, match);
+                 detailText = body.entry[0].changes[0].value.message;
+                 TrimText = detailText.trim();
+             } else {
+                 realText = body.entry[0].changes[0].value.message.substring(0, 40) + '....';
+                 detailText = body.entry[0].changes[0].value.message;
+                 TrimText = detailText.trim();
+             }
+         } */
         const pageIdFB = await this.pageService.findOne({ _id: pageSubscribe.pageId });
         if (pageIdFB === undefined) {
             const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
