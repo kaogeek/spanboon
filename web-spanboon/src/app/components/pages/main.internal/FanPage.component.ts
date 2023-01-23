@@ -23,7 +23,7 @@ import { RePost } from '../../../models/RePost';
 import { MESSAGE } from '../../../AlertMessage';
 import { BoxPost } from '../../shares/BoxPost.component';
 import { DialogMedia } from '../../shares/dialog/DialogMedia.component';
-import { DialogAlert, DialogPost } from '../../shares/shares';
+import { DialogAlert, DialogPost, DialogShare } from '../../shares/shares';
 import { UserEngagement } from '../../../models/models';
 import { DirtyComponent } from 'src/app/dirty-component';
 import { filter } from 'rxjs/internal/operators/filter';
@@ -143,6 +143,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   public localtion: any;
   public selectedIndex: number;
   public shareDialog: boolean;
+  public mainPostLink: string;
 
   public CheckPost: boolean = true;
   public isPostLoading: boolean = false;
@@ -1392,9 +1393,22 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     }
   }
 
+  public dialogShare() {
+    let dialog = this.dialog.open(DialogShare, {
+      disableClose: true,
+      autoFocus: false,
+      data: {
+        title: "แชร์",
+        text: this.linkmain
+      }
+    });
+  }
+
   public async actionComment(action: any, index: number) {
     if (action.mod === 'SHARE') {
-
+      this.mainPostLink = window.location.origin + '/page/' + this.resDataPage.pageUsername + '/post/';
+      this.linkmain = (this.mainPostLink + this.resPost.posts[index]._id);
+      this.dialogShare();
     } else {
       this.isLoginCh();
       let datapost: any;

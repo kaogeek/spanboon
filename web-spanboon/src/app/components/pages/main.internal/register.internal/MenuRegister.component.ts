@@ -263,6 +263,18 @@ export class MenuRegister extends AbstractPage implements OnInit {
                 });
             }
         }).catch((error) => {
+            console.log("err", error);
+            const statusMsg = error.error.message;
+            if (statusMsg === "User was not found.") {
+                let navigationExtras: NavigationExtras = {
+                    state: {
+                        accessToken: this.googleToken,
+                        redirection: this.redirection
+                    },
+                    queryParams: { mode: 'google' }
+                }
+                this.router.navigate(['/register'], navigationExtras);
+            }
         })
 
     }

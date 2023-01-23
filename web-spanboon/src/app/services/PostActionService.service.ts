@@ -246,6 +246,10 @@ export class PostActionService extends AbstractFacade {
             }
             return data;
         } else if (action.mod === 'SHARE') {
+            let data = {
+                type: "SHARE"
+            }
+            return data;
         } else if (action.mod === 'COMMENT') {
         } else if (action.mod === 'POST') {
             let data = {

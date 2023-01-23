@@ -81,6 +81,7 @@ p {
         max-width: unset;
     }
 }
+
 // .cdk-overlay-container {
 //     > .cdk-global-overlay-wrapper {
 //         > .cdk-overlay-pane {
@@ -94,22 +95,24 @@ p {
 //     }
 // }
 .cdk-global-overlay-wrapper {
-    > .cdk-overlay-pane {
+    >.cdk-overlay-pane {
         .mat-dialog-container {
             padding: unset;
         }
+
         .mat-dialog-title {
             margin: unset;
         }
     }
 }
+
 // for dialog alert
 .cdk-overlay-pane {
-    max-width: 100vw !important;
+    max-width: 90vw !important;
 }
 
 .mat-dialog-content {
-    margin: unset !important ;
+    margin: unset !important;
     padding: unset !important;
     // max-height: unset;
 }
@@ -125,6 +128,7 @@ p {
     .cdk-global-overlay-wrapper {
         // align-items: flex-start !important;
     }
+
     .customize-dialog {
         max-width: 100vw !important;
         height: 100%;
@@ -307,7 +311,9 @@ input:focus {
 
 #canvas-wrap {
     position: relative;
-} /* Make this a positioned parent */
+}
+
+/* Make this a positioned parent */
 #overlay {
     top: 20px;
     left: 30px;
@@ -319,6 +325,7 @@ input:focus {
     height: auto;
     overflow: hidden;
 }
+
 #canvas-wrap canvas {
     position: absolute;
     top: 0;
@@ -326,6 +333,7 @@ input:focus {
     z-index: 0;
     background-color: #fbfbfc;
 }
+
 @media (max-width: $large) {
     #canvas-wrap canvas {
         display: none !important;
@@ -342,17 +350,21 @@ input:focus {
 .wrapper-notification-copy {
     box-shadow: 0px 6px 15px #0000001a;
     background-color: white;
+
     .mat-menu-title {
         display: flex;
         flex-direction: column;
         padding: 0 15pt;
-        > .text {
+
+        >.text {
             @include font-size-8($font-head-500);
         }
-        > .select-noti-list {
+
+        >.select-noti-list {
             @include font-size-10($font-head-400);
             padding: 10pt 0pt;
-            > .list {
+
+            >.list {
                 cursor: pointer;
                 color: black;
                 background: #eeeeee 0% 0% no-repeat padding-box;
@@ -360,20 +372,24 @@ input:focus {
                 padding: 7px 15px;
                 margin-right: 10px;
             }
-            > .select {
+
+            >.select {
                 color: #ee7623 !important;
                 background: #ee762329 0% 0% no-repeat padding-box !important;
             }
         }
     }
-    > .test {
+
+    >.test {
         padding: 20px;
         @include font-size-6($font-head-500);
     }
-    > .select-noti-list {
+
+    >.select-noti-list {
         @include font-size-10($font-head-400);
         padding: 10pt 0pt;
-        > .list {
+
+        >.list {
             cursor: pointer;
             color: black;
             background: #eeeeee 0% 0% no-repeat padding-box;
@@ -381,7 +397,8 @@ input:focus {
             padding: 7px 15px;
             margin-right: 10px;
         }
-        > .select {
+
+        >.select {
             color: #ee7623 !important;
             background: #ee762329 0% 0% no-repeat padding-box !important;
         }
@@ -399,6 +416,7 @@ input:focus {
     .mat-menu-content {
         padding: unset !important;
     }
+
     .wrapper-header {
         display: flex;
         justify-content: space-between;
@@ -408,9 +426,9 @@ input:focus {
         border-bottom: $width-border solid $border-separator;
         @include font-size-10($font-head-500);
 
-        > .wrapper-noti {
-        }
-        > .wrapper-setting {
+        >.wrapper-noti {}
+
+        >.wrapper-setting {
             cursor: pointer;
         }
     }
@@ -419,6 +437,7 @@ input:focus {
         overflow-y: auto;
         // max-height: calc(100vh - 40pt - 40pt - 55pt);
         z-index: 9999;
+
         .not-foun-noti {
             @include font-size-9($font-head-500);
             height: 200px;
@@ -445,30 +464,32 @@ input:focus {
                 // background-color: rgb(243, 243, 243);
                 background: rgb(255, 255, 255);
             }
+
             &.dis {
                 display: none;
             }
 
-            > div {
+            >div {
                 display: flex;
                 width: 100%;
                 justify-content: space-between;
                 align-items: center;
 
-                > .wrapper-list-div {
+                >.wrapper-list-div {
                     display: flex;
                     align-items: center;
 
-                    > .user-noti {
+                    >.user-noti {
                         padding: 5pt 10pt;
 
-                        > .img {
+                        >.img {
                             width: 34pt;
                             height: 34pt;
                             border-radius: 50%;
                             object-fit: cover;
                         }
-                        > .none-image {
+
+                        >.none-image {
                             display: flex;
                             align-items: center;
                             justify-content: center;
@@ -478,19 +499,19 @@ input:focus {
                         }
                     }
 
-                    > .wrapper-message {
+                    >.wrapper-message {
                         @include font-size-10($font-head-500);
 
-                        > .top {
+                        >.top {
                             color: $black;
 
-                            > .name {
+                            >.name {
                                 display: contents;
                                 font-weight: bold;
                             }
                         }
 
-                        > .wrapper-time {
+                        >.wrapper-time {
                             display: flex;
                             align-items: center;
                             color: $color-gray;
@@ -509,13 +530,14 @@ input:focus {
                     }
                 }
 
-                > .wrapper-setting {
-                }
+                >.wrapper-setting {}
             }
         }
+
         .preload {
             padding: unset;
         }
+
         .eorror {
             width: 100%;
             width: 100%;
