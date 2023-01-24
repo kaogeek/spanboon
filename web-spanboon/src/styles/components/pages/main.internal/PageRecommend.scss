@@ -468,7 +468,7 @@
                             @include font-size-8($font-head-500);
                             background: $white;
                             position: sticky;
-                            top: 45pt;
+                            top: 0pt;
                         }
 
                         >.wrapper-body-trend {
@@ -1100,11 +1100,7 @@
                     >.recommended-left {
                         min-width: unset;
 
-                        >.wrapper-body-middle {
-                            >.header-top-name {
-                                top: 39pt;
-                            }
-                        }
+                        >.wrapper-body-middle {}
                     }
                 }
             }

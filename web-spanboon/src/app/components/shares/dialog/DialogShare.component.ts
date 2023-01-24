@@ -7,6 +7,7 @@
 
 import { Component, Inject } from '@angular/core';
 import { MatDialogRef, MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition, MAT_DIALOG_DATA } from '@angular/material';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DialogData } from '../../../models/models';
 
 @Component({
@@ -16,11 +17,15 @@ import { DialogData } from '../../../models/models';
 })
 
 export class DialogShare {
+    public mainPostLink: string;
 
     private isbottom: boolean
+    private routing: Router;
 
     constructor(public dialogRef: MatDialogRef<DialogShare>, private _snackBar: MatSnackBar,
-        @Inject(MAT_DIALOG_DATA) public data: DialogData) {
+        @Inject(MAT_DIALOG_DATA) public data: DialogData, routing: Router) {
+        this.routing = routing;
+        this.mainPostLink = window.location.origin;
 
     }
     horizontalPosition: MatSnackBarHorizontalPosition = 'start';
@@ -45,6 +50,7 @@ export class DialogShare {
     }
 
     public ngOnInit(): void {
+
     }
 
     public clickCopy() {
