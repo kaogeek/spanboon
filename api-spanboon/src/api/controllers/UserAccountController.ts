@@ -46,7 +46,7 @@ export class UserAccountController {
         }
 
         if (user) {
-            user = this.userService.cleanAdminUserField(user);
+            user = await this.userService.cleanAdminUserField(user);
             const successResponse = ResponseUtil.getSuccessResponse('Successfully Get UserAccount', user);
             return res.status(200).send(successResponse);
         } else {

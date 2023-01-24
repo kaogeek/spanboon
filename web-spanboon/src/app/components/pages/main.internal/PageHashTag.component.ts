@@ -11,7 +11,7 @@ import { DateAdapter, MatDialog } from '@angular/material';
 import { FileHandle } from '../../shares/directive/directives';
 import * as $ from 'jquery';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
-import { BoxPost, DialogReboonTopic } from '../../shares/shares';
+import { BoxPost, DialogReboonTopic, DialogShare } from '../../shares/shares';
 import { ChangeContext, LabelType, Options } from 'ng5-slider';
 import { SearchFilter } from '../../../../app/models/SearchFilter';
 import { environment } from '../../../../environments/environment';
@@ -172,6 +172,8 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   public follow: boolean;
   public isLoadingPost: boolean;
   public isMaxLoadingPost: boolean;
+  public mainPostLink: string;
+  public linkPost: string;
 
   public postId: any
   public isFollow: boolean = true;
@@ -456,15 +458,9 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     });*/
   }
   ngAfterContentInit() {
-    this.inputSub = this.valueChanged
-      .pipe(debounceTime(500))
-      .subscribe(value => {
-        this.keyUpAutoComp(this.valueinput);
-      });
   }
 
   onChangeInput(text: string) {
-    this.valueChanged.next(text);
   }
 
   public ngOnInit(): void {
@@ -541,7 +537,6 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     super.ngOnDestroy();
     this.destroy.next();
     this.destroy.complete();
-    this.inputSub.unsubscribe();
   }
 
   isPageDirty(): boolean {
@@ -693,12 +688,6 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       this.searchTrendTag(true);
     } else if (event.value === 'กำหนดเอง') {
       this.follow = false;
-      fromEvent(this.inputAutocomp && this.inputAutocomp.nativeElement, 'keyup').pipe(
-        debounceTime(500)
-        , distinctUntilChanged()
-      ).subscribe((text: any) => {
-        this.keyUpAutoComp(this.inputAutocomp.nativeElement.value);
-      });
     } else if (event.value === 'ทั้งหมด') {
       if (this.follow) {
         this.follow = undefined;
@@ -1066,9 +1055,11 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
               let galleryIndex = 0;
               if (post.post.gallery.length > 0) {
                 for (let img of post.post.gallery) {
-                  if (img.imageURL !== '') {
-                    this.getDataGallery(img.imageURL, postIndex, galleryIndex);
-                    galleryIndex++
+                  if (!img.signURL) {
+                    if (img.imageURL !== '') {
+                      this.getDataGallery(img.imageURL, postIndex, galleryIndex);
+                      galleryIndex++
+                    }
                   }
                 }
               }
@@ -1507,6 +1498,9 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         this.isLoginCh();
         this.postLike(action, index);
       } else if (action.mod === 'SHARE') {
+        this.mainPostLink = window.location.origin + '/post/';
+        this.linkPost = (this.mainPostLink + this.resPost[index].post._id);
+        this.dialogShare();
         // this.isLoginCh();
       } else if (action.mod === 'COMMENT') {
         this.isLoginCh();
@@ -1516,6 +1510,17 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     } else {
       return this.showAlertLoginDialog(this.url);
     }
+  }
+
+  public dialogShare() {
+    let dialog = this.dialog.open(DialogShare, {
+      disableClose: true,
+      autoFocus: false,
+      data: {
+        title: "แชร์",
+        text: this.linkPost
+      }
+    });
   }
 
   private isLoginCh() {

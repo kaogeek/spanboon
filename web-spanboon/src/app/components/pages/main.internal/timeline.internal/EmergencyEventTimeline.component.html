@@ -1234,8 +1234,7 @@
                                                 data-aos-easing="ease-in-out" data-aos-mirror="false"
                                                 data-aos-once="false" data-aos-anchor-placement="top-center">
                                                 <div class="head-title">
-                                                    <span
-                                                        class="title">#{{post.objectiveTag}}{{setHashtag(post.objectiveTag,post.title)}}</span>
+                                                    <span class="title">#{{post.title}}</span>
                                                 </div>
                                                 <div class="detail">
                                                     {{post.detail}}
@@ -1254,8 +1253,8 @@
                                                     {{post.createdDate | dateFormat}}
                                                 </span>
                                                 <div class="buttom">
-                                                    <a [href]="'/post/' + (post._id || post.id)" target="_blank"
-                                                        class="botton">
+                                                    <a [href]="post.pageId ? '/post/' + (post._id || post.id) : '/profile/' + post.ownerUser + '/post/' + (post._id || post.id)"
+                                                        target="_blank" class="botton">
                                                         <span>ไปที่โพสต์</span>
                                                         <svg style="margin: 0px 10px;" height="15pt" class="icon-time"
                                                             width="15pt" viewBox="0 -22 512 511"
@@ -1314,8 +1313,7 @@
                                                 data-aos-easing="ease-in-out" data-aos-mirror="false"
                                                 data-aos-once="false" data-aos-anchor-placement="top-center">
                                                 <div class="head-title">
-                                                    <span
-                                                        class="title">#{{post.objectiveTag}}{{setHashtag(post.objectiveTag,post.title)}}</span>
+                                                    <span class="title">#{{post.title}}</span>
                                                 </div>
                                                 <div class="detail">
                                                     {{post.detail}}
@@ -1334,8 +1332,8 @@
                                                     {{post.createdDate | dateFormat}}
                                                 </span>
                                                 <div class="buttom">
-                                                    <a [href]="'/post/' + (post._id || post.id)" target="_blank"
-                                                        class="botton">
+                                                    <a [href]="post.pageId ? '/post/' + (post._id || post.id) : '/profile/' + post.ownerUser + '/post/' + (post._id || post.id)"
+                                                        target="_blank" class="botton">
                                                         <span>ไปที่โพสต์</span>
                                                         <svg style="margin: 0px 10px;" height="15pt" class="icon-time"
                                                             width="15pt" viewBox="0 -22 512 511"

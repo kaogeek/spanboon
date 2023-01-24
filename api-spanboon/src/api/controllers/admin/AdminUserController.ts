@@ -110,7 +110,7 @@ export class AdminUserController {
 
             const updatedUser = await this.userService.findOne({ where: { _id: userObjId } });
 
-            result = this.userService.cleanAdminUserField(updatedUser);
+            result = await this.userService.cleanAdminUserField(updatedUser);
 
             const objId = new ObjectID(result.id);
             const ipAddress = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress).split(',')[0];

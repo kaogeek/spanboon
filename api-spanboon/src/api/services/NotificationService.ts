@@ -98,49 +98,22 @@ export class NotificationService {
         const link_noti = String(link);
         const image_url = String(image);
         const count_data = String(count);
-        if (String(notification.toUser) !== String(notification.fromUser)) {
-            if (count !== null) {
-                const payload =
-                {
-                    notification: {
-                        toUser,
-                        fromUserId,
-                        title,
-                        link_noti,
-                        notificationType,
-                        displayNameFCM,
-                        image_url,
-                    }
-                };
-                Promise.all([await admin.messaging().sendToDevice(token, payload)]);
-            }
-            else {
-                const payload =
-                {
-                    notification: {
-                        toUser,
-                        fromUserId,
-                        title,
-                        link_noti,
-                        notificationType,
-                        displayNameFCM,
-                        image_url,
-                        count_data
-
-                    }
-                };
-                Promise.all([await admin.messaging().sendToDevice(token, payload)]);
+        const payload =
+        {
+            notification: {
+                toUser,
+                fromUserId,
+                title,
+                link_noti,
+                notificationType,
+                displayNameFCM,
+                image_url,
+                count_data
 
             }
-        }
-        else {
-            if (count !== null) {
-                return undefined;
-            }
-            else {
-                return undefined;
-            }
-        }
+        };
+
+        Promise.all([await admin.messaging().sendToDevice(token, payload)]);
     }
 
     public async createNotificationFCM(toUserId: string, toUserType: string, fromUserId: string, fromUserType: string, notificationType: string, title: string, link: string, data?: any, displayName?: any, image?: any, count?: any): Promise<any> {

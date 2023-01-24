@@ -163,7 +163,7 @@ export class PageRecommended extends AbstractPage implements OnInit {
       this.recommendedRight.nativeElement.style.top = '-' + maxcount + 'px';
 
     } else {
-      this.recommendedRight.nativeElement.style.top = '55pt';
+      this.recommendedRight.nativeElement.style.top = '0pt';
     }
   }
 

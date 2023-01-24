@@ -63,9 +63,9 @@ export class GoogleService {
           return;
         }
 
-        this.userService.findOne({ where: { _id: new ObjectID(auth.user) } }).then((authUser) => {
+        this.userService.findOne({ where: { _id: new ObjectID(auth.user) } }).then(async (authUser) => {
           if (authUser) {
-            authUser = this.userService.cleanAdminUserField(authUser);
+            authUser = await this.userService.cleanAdminUserField(authUser);
             resolve({ token: accessToken, authId: auth, user: authUser });
           } else {
             resolve(undefined);

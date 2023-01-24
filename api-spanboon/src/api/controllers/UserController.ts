@@ -297,6 +297,7 @@ export class UserController {
                     whoFollowYou.displayName,
                     whoFollowYou.imageURL
                 );
+                
                 for (const tokenFCM of tokenFCMId) {
                     if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined) {
                         await this.notificationService.sendNotificationFCM(

@@ -183,7 +183,7 @@ export class GuestController {
                     message += '<p> ชื่อผู้ใช้ : ' + result.email + '</p>';
 
                     MAILService.customerLoginMail(message, registerEmail, 'ยินดีต้อนรับสู่' + PLATFORM_NAME_TH);
-                    result = this.userService.cleanUserField(result);
+                    result = await this.userService.cleanUserField(result);
 
                     const authId = new AuthenticationId();
                     authId.user = result.id;
@@ -238,7 +238,7 @@ export class GuestController {
                 }
 
                 const userExrTime = await this.getUserLoginExpireTime();
-                userData = this.userService.cleanUserField(resultUser);
+                userData = await this.userService.cleanUserField(resultUser);
                 const authenId = new AuthenticationId();
                 authenId.user = resultUser.id;
                 authenId.lastAuthenTime = moment().toDate();
@@ -311,7 +311,7 @@ export class GuestController {
                 if (resultData) {
                     const userId = resultData.id;
 
-                    userData = this.userService.cleanUserField(resultData);
+                    userData = await this.userService.cleanUserField(resultData);
                     if (assets !== null && assets !== undefined && Object.keys(assets).length > 0) {
                         const asset = new Asset();
                         const fileName = userId + FileUtil.renameFile();
@@ -384,7 +384,7 @@ export class GuestController {
                     const errorResponse = ResponseUtil.getErrorResponse('Apple was registered.', undefined);
                     return res.status(400).send(errorResponse);
                 }
-                userData = this.userService.cleanUserField(resultUser);
+                userData = await this.userService.cleanUserField(resultUser);
                 const authenId = new AuthenticationId();
                 authenId.user = resultUser.id;
                 authenId.lastAuthenTime = moment().toDate();
@@ -451,7 +451,7 @@ export class GuestController {
                 if (resultData) {
                     const userId = resultData.id;
 
-                    userData = this.userService.cleanUserField(resultData);
+                    userData = await this.userService.cleanUserField(resultData);
                     try {
                         if (Object.keys(assets).length > 0 && assets !== null && assets !== undefined) {
                             const asset = new Asset();
@@ -536,7 +536,7 @@ export class GuestController {
                     return res.status(400).send(errorResponse);
                 }
                 if (checkIdToken === null && checkIdToken === undefined) {
-                    userData = this.userService.cleanUserField(resultUser);
+                    userData = await this.userService.cleanUserField(resultUser);
                     const authenId = new AuthenticationId();
                     authenId.user = resultUser.id;
                     authenId.lastAuthenTime = moment().toDate();
@@ -546,7 +546,7 @@ export class GuestController {
                     authenId.expirationDate = moment().add(userExrTime, 'days').toDate();
                     authIdCreate = await this.authenticationIdService.create(authenId);
                 } else {
-                    userData = this.userService.cleanUserField(resultUser);
+                    userData = await this.userService.cleanUserField(resultUser);
                     const authenId = new AuthenticationId();
                     authenId.user = resultUser.id;
                     authenId.lastAuthenTime = moment().toDate();
@@ -615,7 +615,7 @@ export class GuestController {
                 const resultData: User = await this.userService.create(user);
                 if (resultData) {
                     const userId = resultData.id;
-                    userData = this.userService.cleanUserField(resultData);
+                    userData = await this.userService.cleanUserField(resultData);
                     if (Object.keys(assets).length > 0 && assets !== null && assets !== undefined) {
                         const asset = new Asset();
                         const fileName = userId + FileUtil.renameFile();
@@ -698,7 +698,7 @@ export class GuestController {
                 }
 
                 // has user just create only authenID
-                userData = this.userService.cleanUserField(resultUser);
+                userData = await this.userService.cleanUserField(resultUser);
                 const authenId = new AuthenticationId();
                 authenId.user = resultUser.id;
                 authenId.lastAuthenTime = moment().toDate();
@@ -764,7 +764,7 @@ export class GuestController {
                 if (resultData) {
                     const userId = resultData.id;
 
-                    userData = this.userService.cleanUserField(resultData);
+                    userData = await this.userService.cleanUserField(resultData);
                     if (assets !== null && assets !== undefined && Object.keys(assets).length > 0) {
                         const asset = new Asset();
                         const fileName = userId + FileUtil.renameFile();
@@ -897,14 +897,15 @@ export class GuestController {
                             await this.authenticationIdService.create(newToken);
                         }
                         if (checkExistTokenFcm !== 'undefiend' && checkExistTokenFcm !== null) {
-                            const findFcmToken = await this.deviceToken.findOne({deviceName: deviceNameEm, token: tokenFCMEm ? tokenFCMEm : null, userId: userObjId});
-                            if(findFcmToken){
-                                const queryFcm = {deviceName: deviceNameEm, userId: userObjId};
-                                const newValuesFcm = {$set:{token: tokenFCMEm}};
-                                await this.deviceToken.updateToken(queryFcm,newValuesFcm);
-                            }else{
-                                await this.deviceToken.createDeviceToken({ deviceName: deviceNameEm, token: tokenFCMEm ? tokenFCMEm :null, userId: userObjId});
-                            }                           }
+                            const findFcmToken = await this.deviceToken.findOne({ deviceName: deviceNameEm, token: tokenFCMEm ? tokenFCMEm : null, userId: userObjId });
+                            if (findFcmToken) {
+                                const queryFcm = { deviceName: deviceNameEm, userId: userObjId };
+                                const newValuesFcm = { $set: { token: tokenFCMEm } };
+                                await this.deviceToken.updateToken(queryFcm, newValuesFcm);
+                            } else {
+                                await this.deviceToken.createDeviceToken({ deviceName: deviceNameEm, token: tokenFCMEm ? tokenFCMEm : null, userId: userObjId });
+                            }
+                        }
                         loginToken = token;
                     }
                     loginUser = userLogin;
@@ -934,14 +935,14 @@ export class GuestController {
                 const update_Apple = await this.authenticationIdService.update(query, newValue);
                 if (update_Apple) {
                     const updatedAuth = await this.authenticationIdService.findOne({ where: { providerUserId: appleId.userId } });
-                    const findFcmToken = await this.deviceToken.findOne({deviceName: deviceAP, token: tokenFCM_AP? tokenFCM_AP:null, userId: updatedAuth.user});
-                    if(findFcmToken){
-                        const queryFcm = {deviceName: deviceAP, userId: updatedAuth.user};
-                        const newValuesFcm = {$set:{token: tokenFCM_AP}};
-                        await this.deviceToken.updateToken(queryFcm,newValuesFcm);
-                    }else{
-                        await this.deviceToken.createDeviceToken({ deviceName: deviceAP, token: tokenFCM_AP? tokenFCM_AP:null, userId: updatedAuth.user });
-                    }                    
+                    const findFcmToken = await this.deviceToken.findOne({ deviceName: deviceAP, token: tokenFCM_AP ? tokenFCM_AP : null, userId: updatedAuth.user });
+                    if (findFcmToken) {
+                        const queryFcm = { deviceName: deviceAP, userId: updatedAuth.user };
+                        const newValuesFcm = { $set: { token: tokenFCM_AP } };
+                        await this.deviceToken.updateToken(queryFcm, newValuesFcm);
+                    } else {
+                        await this.deviceToken.createDeviceToken({ deviceName: deviceAP, token: tokenFCM_AP ? tokenFCM_AP : null, userId: updatedAuth.user });
+                    }
                     loginUser = await this.userService.findOne({ where: { _id: ObjectID(updatedAuth.user) } });
                     loginToken = jwt.sign({ token: updatedAuth.storedCredentials, userId: loginUser.id }, env.SECRET_KEY);
                 }
@@ -975,17 +976,17 @@ export class GuestController {
                 const expirationDate = moment().add(userExrTime, 'days').toDate();
                 const facebookUserId = authenticaTionFB.providerUserId;
                 const query = { providerUserId: facebookUserId, providerName: PROVIDER.FACEBOOK };
-                const newValue = { $set: { providerUserId: fbUser.id, lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, storedCredentials: loginParam.token,refreshToken:refreshToken.access_token, expirationDate } };
+                const newValue = { $set: { providerUserId: fbUser.id, lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, storedCredentials: loginParam.token, refreshToken: refreshToken.access_token, expirationDate } };
                 const updateAuth = await this.authenticationIdService.update(query, newValue);
                 if (updateAuth) {
                     const updatedAuth = await this.authenticationIdService.findOne({ where: query });
-                    const findFcmToken = await this.deviceToken.findOne({deviceName: deviceFB, token: tokenFcmFB ? tokenFcmFB:null, userId: updatedAuth.user});
-                    if(findFcmToken){
-                        const queryFcm = {deviceName: deviceFB, userId: updatedAuth.user};
-                        const newValuesFcm = {$set:{token: tokenFcmFB}};
-                        await this.deviceToken.updateToken(queryFcm,newValuesFcm);
-                    }else{
-                        await this.deviceToken.createDeviceToken({ deviceName: deviceFB, token: tokenFcmFB ? tokenFcmFB:null, userId: updatedAuth.user });
+                    const findFcmToken = await this.deviceToken.findOne({ deviceName: deviceFB, token: tokenFcmFB ? tokenFcmFB : null, userId: updatedAuth.user });
+                    if (findFcmToken) {
+                        const queryFcm = { deviceName: deviceFB, userId: updatedAuth.user };
+                        const newValuesFcm = { $set: { token: tokenFcmFB } };
+                        await this.deviceToken.updateToken(queryFcm, newValuesFcm);
+                    } else {
+                        await this.deviceToken.createDeviceToken({ deviceName: deviceFB, token: tokenFcmFB ? tokenFcmFB : null, userId: updatedAuth.user });
                     }
                     loginUser = await this.userService.findOne({ where: { _id: ObjectID(updatedAuth.user) } });
                     loginToken = updatedAuth.storedCredentials;
@@ -1023,12 +1024,12 @@ export class GuestController {
                 const updateAuth = await this.authenticationIdService.update(query, newValue);
                 if (updateAuth) {
                     const updatedAuthGG = await this.authenticationIdService.findOne({ providerUserId: googleUser.authId.providerUserId, providerName: PROVIDER.GOOGLE });
-                    const findFcmToken = await this.deviceToken.findOne({deviceName: deviceGG, token: tokenFcmGG ? tokenFcmGG : null, userId: updatedAuthGG.user});
-                    if(findFcmToken){
-                        const queryFcm = {deviceName: deviceGG, userId: updatedAuthGG.user};
-                        const newValuesFcm = {$set:{token: tokenFcmGG}};
-                        await this.deviceToken.updateToken(queryFcm,newValuesFcm);
-                    }else{
+                    const findFcmToken = await this.deviceToken.findOne({ deviceName: deviceGG, token: tokenFcmGG ? tokenFcmGG : null, userId: updatedAuthGG.user });
+                    if (findFcmToken) {
+                        const queryFcm = { deviceName: deviceGG, userId: updatedAuthGG.user };
+                        const newValuesFcm = { $set: { token: tokenFcmGG } };
+                        await this.deviceToken.updateToken(queryFcm, newValuesFcm);
+                    } else {
                         await this.deviceToken.createDeviceToken({ deviceName: deviceGG, token: tokenFcmGG ? tokenFcmGG : null, userId: updatedAuthGG.user });
                     }
                     loginUser = await this.userService.findOne({ where: { _id: updatedAuthGG.user } });
@@ -1081,14 +1082,14 @@ export class GuestController {
 
                 if (updateAuth) {
                     const updatedAuth = await this.authenticationIdService.findOne({ _id: twAuthenId.id });
-                    const findFcmToken = await this.deviceToken.findOne({deviceName: deviceGG, token: tokenFcmGG ? tokenFcmGG : null, userId: updatedAuth.user});
-                    if(findFcmToken){
-                        const queryFcm = {deviceName: deviceGG, userId: updatedAuth.user};
-                        const newValuesFcm = {$set:{token: tokenFcmGG}};
-                        await this.deviceToken.updateToken(queryFcm,newValuesFcm);
-                    }else{
+                    const findFcmToken = await this.deviceToken.findOne({ deviceName: deviceGG, token: tokenFcmGG ? tokenFcmGG : null, userId: updatedAuth.user });
+                    if (findFcmToken) {
+                        const queryFcm = { deviceName: deviceGG, userId: updatedAuth.user };
+                        const newValuesFcm = { $set: { token: tokenFcmGG } };
+                        await this.deviceToken.updateToken(queryFcm, newValuesFcm);
+                    } else {
                         await this.deviceToken.createDeviceToken({ deviceName: deviceGG, token: tokenFcmGG ? tokenFcmGG : null, userId: updatedAuth.user });
-                    }                   
+                    }
                     loginUser = await this.userService.findOne({ where: { _id: updatedAuth.user } });
                     loginToken = updatedAuth.storedCredentials;
                     loginToken = jwt.sign({ token: loginToken }, env.SECRET_KEY);
@@ -1862,7 +1863,7 @@ export class GuestController {
                     await this.forgotPasswordActivateCodeService.update({ email, code }, { $set: { activate: true, activateDate: today } });
 
                     let updateUser: User = await this.userService.findOne({ email });
-                    updateUser = this.userService.cleanUserField(updateUser);
+                    updateUser = await this.userService.cleanUserField(updateUser);
 
                     return res.status(200).send(ResponseUtil.getSuccessResponse('Change Password Success', updateUser));
                 } else {

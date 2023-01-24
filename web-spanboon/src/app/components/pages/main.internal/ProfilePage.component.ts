@@ -26,6 +26,7 @@ import { DialogDoIng } from '../../shares/dialog/DialogDoIng.component';
 import { BoxPost } from '../../shares/BoxPost.component';
 import { DialogPost } from '../../shares/dialog/DialogPost.component';
 import { filter } from 'rxjs/internal/operators/filter';
+import { DialogShare } from '../../shares/dialog/DialogShare.component';
 
 const PAGE_NAME: string = 'profile';
 const URL_PATH: string = '/profile/';
@@ -75,6 +76,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
   public isLoadingPost: boolean;
   public isLoadingClickTab: boolean;
   public isClickPostPreLoad: boolean;
+  public mainPostLink: string;
 
   public curPos: number;
   public position: number;
@@ -92,6 +94,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
   public dataRecommend: any;
   public selectedIndex: number;
   public pathPostId: string;
+  public linkPost: string;
 
   public postId: any
   public userCloneDatas: any
@@ -1016,9 +1019,24 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
       } else if (action.mod === 'LIKE') {
         this.isLoginCh();
         this.postLike(action, index);
+      } else if (action.mod === 'SHARE') {
+        this.mainPostLink = window.location.origin + '/profile/' + this.user.uniqueId + '/post/';
+        this.linkPost = (this.mainPostLink + this.resPost.posts[index]._id);
+        this.dialogShare();
       }
     }).catch((err: any) => {
       console.log('err ', err)
+    });
+  }
+
+  public dialogShare() {
+    let dialog = this.dialog.open(DialogShare, {
+      disableClose: true,
+      autoFocus: false,
+      data: {
+        title: "แชร์",
+        text: this.linkPost
+      }
     });
   }
 

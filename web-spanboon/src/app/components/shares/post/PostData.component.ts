@@ -294,8 +294,8 @@ export class PostData {
       this.action.emit({ mod: action.mod, postData: this.itemPost._id, type: action.type, post: this.itemPost, userAsPage: this.user });
     } else if (action.mod === 'SHARE') {
       // this.showAlertDialog();
-      this.action.emit({ mod: action.mod });
-      this.dialogShare();
+      // this.dialogShare();
+      this.action.emit({ mod: action.mod, linkPost: this.linkPost });
     }
   }
 
