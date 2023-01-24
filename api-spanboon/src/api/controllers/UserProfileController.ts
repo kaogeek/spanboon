@@ -250,7 +250,7 @@ export class UserProfileController {
                                 foreignField: 'post',
                                 as: 'gallery'
                             }
-                        },                        {
+                        }, {
                             $lookup: {
                                 from: 'EmergencyEvent',
                                 localField: 'emergencyEvent',
@@ -478,7 +478,7 @@ export class UserProfileController {
             const coverURLUpdate = await this.userService.update({ _id: userObjId }, { $set: { coverURL: ASSET_PATH + newAssetId, coverPosition: userCoverPosition, s3CoverURL: newS3CoverURL } });
             if (coverURLUpdate) {
                 let users = await this.userService.findOne({ _id: userObjId });
-                users = this.userService.cleanAdminUserField(users);
+                users = await this.userService.cleanAdminUserField(users);
                 const successResponse = ResponseUtil.getSuccessResponse('Edit CoverURL Success', users);
                 return res.status(200).send(successResponse);
             } else {
@@ -552,7 +552,7 @@ export class UserProfileController {
             const imageURLUpdate = await this.userService.update({ _id: userObjId }, { $set: { imageURL: ASSET_PATH + newAssetId, s3ImageURL: newS3ImageURL } });
             if (imageURLUpdate) {
                 let users = await this.userService.findOne({ _id: userObjId });
-                users = this.userService.cleanAdminUserField(users);
+                users = await this.userService.cleanAdminUserField(users);
                 const successResponse = ResponseUtil.getSuccessResponse('Edit ImageURL Success', users);
                 return res.status(200).send(successResponse);
             } else {

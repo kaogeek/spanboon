@@ -365,37 +365,38 @@ export class SearchHistoryController {
 
                 try {
                     resultObjId = new ObjectID(resultId);
-                    pageStmt = { _id: resultObjId };
+                    pageStmt = { _id: resultObjId, banned: false };
                     userStmt = { _id: resultObjId };
                 } catch (ex) {
-                    pageStmt = { pageUsername: resultId };
+                    pageStmt = { pageUsername: resultId, banned: false };
                     userStmt = { $or: [{ firstName: resultId }, { lastName: resultId }, { displayName: resultId }, { uniqueId: resultId }] };
                 } finally {
                     if (resultObjId === undefined || resultObjId === 'undefined') {
                         resultObjId = null;
                     }
 
-                    pageStmt = { $or: [{ _id: resultObjId }, { name: resultId }, { pageUsername: resultId }, { uniqueId: resultId }] };
+                    pageStmt = { $or: [{ _id: resultObjId }, { name: resultId }, { pageUsername: resultId }, { uniqueId: resultId }], banned: false };
                     userStmt = { $or: [{ _id: resultObjId }, { firstName: resultId }, { lastName: resultId }, { displayName: resultId }, { uniqueId: resultId }] };
                 }
 
                 if (resultType === SEARCH_TYPE.PAGE) {
-
-                    page = await this.pageService.findOne(pageStmt);
+                    page = await this.pageService.findOne(pageStmt, { signURL: true });
 
                     const imageURL = page ? (page.imageURL ? page.imageURL : '') : '';
+                    const signURL = page ? (page['signURL'] ? page['signURL'] : '') : '';
                     const pageUsername = page ? (page.pageUsername ? page.pageUsername : '') : '';
                     const isOfficial = page ? (page.isOfficial ? page.isOfficial : false) : false;
 
-                    value = { value: resultId, label: history.keyword, imageURL, pageUsername, type: history.resultType, createdDate: history.createdDate, isOfficial };
+                    value = { value: resultId, label: history.keyword, imageURL, signURL, pageUsername, type: history.resultType, createdDate: history.createdDate, isOfficial };
                 }
 
                 if (resultType === SEARCH_TYPE.USER) {
-                    user = await this.userService.findOne(userStmt);
+                    user = await this.userService.findOne(userStmt, { signURL: true });
                     const imageURL = user ? (user.imageURL ? user.imageURL : '') : '';
+                    const signURL = page ? (user['signURL'] ? user['signURL'] : '') : '';
                     const uniqueId = user ? (user.uniqueId ? user.uniqueId : '') : '';
 
-                    value = { value: resultId, label: history.keyword, imageURL, uniqueId, type: history.resultType, createdDate: history.createdDate };
+                    value = { value: resultId, label: history.keyword, imageURL, signURL, uniqueId, type: history.resultType, createdDate: history.createdDate };
                 }
 
                 if (resultType === SEARCH_TYPE.KEYWORD) {
