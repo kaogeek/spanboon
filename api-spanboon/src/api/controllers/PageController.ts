@@ -75,6 +75,7 @@ import { SocialPostLogs } from '../models/SocialPostLogs';
 import { USER_TYPE, NOTIFICATION_TYPE } from '../../constants/NotificationType';
 import { DeviceTokenService } from '../services/DeviceToken';
 import { PageNotificationService } from '../services/PageNotificationService';
+import { NotificationService } from '../services/NotificationService';
 import axios from 'axios';
 @JsonController('/page')
 export class PageController {
@@ -104,6 +105,7 @@ export class PageController {
         private socialPostLogsService: SocialPostLogsService,
         private deviceTokenService: DeviceTokenService,
         private pageNotificationService: PageNotificationService,
+        private notificationService:NotificationService
     ) { }
 
     // Find Page API
@@ -2341,12 +2343,22 @@ export class PageController {
                 const pageOwnerNoti = await this.userService.findOne({ _id: page.ownerUser });
                 // user to page 
                 const tokenFCMId = await this.deviceTokenService.find({ userId: pageOwnerNoti.id });
-                const notificationFollower = whoFollowYou.displayName + space + 'กดติดตามเพจ' + space + page.pageUsername;
+                const notificationFollower = whoFollowYou.displayName + space + 'กดติดตามเพจ' + space + page.name;
                 const link = `/profile/${whoFollowYou.id}`;
-
+                await this.pageNotificationService.notifyToPageUserFcm(
+                    followCreate.subjectId,
+                    undefined,
+                    req.user.id + '',
+                    USER_TYPE.PAGE,
+                    NOTIFICATION_TYPE.FOLLOW,
+                    notificationFollower,
+                    link,
+                    whoFollowYou.displayName,
+                    whoFollowYou.imageURL
+                );
                 for (const tokenFCM of tokenFCMId) {
                     if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined) {
-                        await this.pageNotificationService.notifyToPageUserFcm(
+                        await this.notificationService.sendNotificationFCM(
                             followCreate.subjectId,
                             undefined,
                             req.user.id + '',
@@ -2359,15 +2371,7 @@ export class PageController {
                             whoFollowYou.imageURL
                         );
                     } else {
-                        await this.pageNotificationService.notifyToPageUser(
-                            followCreate.subjectId,
-                            undefined,
-                            req.user.id + '',
-                            USER_TYPE.PAGE,
-                            NOTIFICATION_TYPE.FOLLOW,
-                            notificationFollower,
-                            link,
-                        );
+                        continue;
                     }
                 }
                 if (engagement) {
