@@ -103,9 +103,9 @@ export class MainPage extends AbstractPage implements OnInit {
     this.hidebar = this.authenManager.getHidebar();
     const isLogin: boolean = this.isLogin();
 
-    if (isLogin) {
-      this.searchAccessPage();
-    }
+    // if (isLogin) {
+    //   this.searchAccessPage();
+    // }
 
 
     // const dev = sessionStorage.getItem('isDev');
@@ -293,7 +293,7 @@ export class MainPage extends AbstractPage implements OnInit {
         this.data.isFulfill = false;
         this.data.isMobileButton = true;
         this.data.id = this.user.id;
-        this.data.accessDataPage = await this.searchAccessPage();
+        // this.data.accessDataPage = await this.searchAccessPage();
         if (this.router.url.split('/')[1] === 'page') {
           this.data.name = this.router.url.split('/')[2];
           this.data.isSharePost = true;

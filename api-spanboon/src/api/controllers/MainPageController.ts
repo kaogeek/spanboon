@@ -574,9 +574,9 @@ export class MainPageController {
             if (pageLimit !== null && pageLimit !== undefined && pageLimit > 0) {
                 // const pageQuery = { $and: [{ _id: { $not: { $in: pageResultStmt } } }, { $or: [{ name: exp }, { pageUsername: exp }] }] };
                 const pageQuery = [
-                    { $match: { $and: [{ _id: { $not: { $in: pageResultStmt } } }, { $or: [{ name: exp }, { pageUsername: exp }] }] } },
+                    { $match: { $and: [{ _id: { $not: { $in: pageResultStmt } },banned:false }, { $or: [{ name: exp }, { pageUsername: exp }] }] } },
                     { $limit: pageLimit }
-                ];
+                ];  
                 const pages: any[] = await this.pageService.aggregate(pageQuery);
 
                 pageRows = pages.length;
@@ -630,7 +630,6 @@ export class MainPageController {
                     }
                 }
             }
-
             search.result = searchResults;
 
             if (search !== null && search !== undefined && Object.keys(search).length > 0) {

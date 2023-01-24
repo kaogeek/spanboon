@@ -40,11 +40,10 @@
                             <div class="wrapper-list-page" *ngIf="item.page" (click)="drawer.toggle()">
                                 <ng-container>
                                     <div class="list-page" (click)="nextPage(item)">
-                                        <ng-container
-                                            *ngIf="item.page && item.page.imageURL && item.page.imageURL !== ''; else elseImg">
+                                        <ng-container *ngIf="!!item.page.signURL || !!item.page.imageURL; else elseImg">
                                             <div class="image-page">
                                                 <img class="img"
-                                                    [src]="item.page.signURL?item.page.signURL:item.page.imageSignURL?item.page.imageSignURL:apiBaseURL+item.page.imageURL+'/image'">
+                                                    [src]="item.page.signURL ? item.page.signURL : item.page.imageSignURL ? item.page.imageSignURL : apiBaseURL + item.page.imageURL + '/image'">
                                             </div>
                                         </ng-container>
                                         <ng-template #elseImg>

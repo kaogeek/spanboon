@@ -239,7 +239,6 @@ export class ObjectiveController {
         const hashTagIdList = [];
         const hashTagMap = {};
         let hashTagList: HashTag[];
-
         if (filter === undefined) {
             filter = new SearchFilter();
         }
@@ -249,7 +248,11 @@ export class ObjectiveController {
         } else {
             hashTagList = await this.hashTagService.find();
         }
-
+        
+        if(hashTagList.length === 0){
+            const successResponse = ResponseUtil.getSuccessResponse('Successfully Search PageObjective', []);
+            return res.status(200).send(successResponse);
+        }
         if (hashTagList !== null && hashTagList !== undefined && hashTagList.length > 0) {
             for (const masterHashTag of hashTagList) {
                 const id = masterHashTag.id;
@@ -280,7 +283,6 @@ export class ObjectiveController {
         if (filter.whereConditions !== null && filter.whereConditions !== undefined && Object.keys(filter.whereConditions).length > 0 && typeof filter.whereConditions === 'object') {
             const pageId = filter.whereConditions.pageId;
             let pageObjId;
-
             if (pageId !== null && pageId !== undefined && pageId !== '') {
                 pageObjId = new ObjectID(filter.whereConditions.pageId);
             }

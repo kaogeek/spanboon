@@ -33,9 +33,10 @@
         <div class="wrapper-body-doing">
             <!-- <ng-container *ngIf="itemData && itemData !== undefined && itemData.length > 0 ; else elseTemplateitemData">  -->
             <ng-container *ngFor="let itemObjective of itemData; let index = index">
-                <div class="wrapper-doing" (click)="test(itemObjective);" *ngIf="index <= 5">
+                <div class="wrapper-doing" (click)="clickObjective(itemObjective);" *ngIf="index <= 5">
                     <display-image [class]="'image-tag'" [isPreload]="'true'" [isLoaded]="itemObjective.isLoaded"
-                        [isGlightbox]="false" [base64]="itemObjective.iconBase64">
+                        [isGlightbox]="false"
+                        [base64]="!!itemObjective?.iconSignURL ? itemObjective.iconSignURL : itemObjective.iconBase64">
                     </display-image>
                     <span class="i_title">
                         {{itemObjective.title}}
@@ -55,12 +56,13 @@
             <div class="swiper-container" [swiper]="configSlider1" [(index)]="index">
                 <div class="swiper-wrapper">
                     <div class="swiper-slide" *ngFor="let itemObjective of itemData; let index = index">
-                        <div class="wrapper-doing" (click)="test(itemObjective);">
+                        <div class="wrapper-doing" (click)="clickObjective(itemObjective);">
                             <display-image [isGlightbox]="false" [class]="'image-tag'" [isPreload]="'true'"
-                                [isLoaded]="itemObjective.isLoaded" [base64]="itemObjective.iconBase64">
+                                [isLoaded]="itemObjective.isLoaded"
+                                [base64]="!!itemObjective?.iconSignURL ? itemObjective.iconSignURL : itemObjective.iconBase64">
                             </display-image>
                             <span class="i_title">
-                                {{'#'+itemObjective.title}}
+                                {{'#' + itemObjective.title}}
                             </span>
                         </div>
                     </div>
@@ -87,7 +89,7 @@
                         src="../../../../assets/img/customize_item.svg">
 
                     <img *ngIf="item.imageURL" class="icon-looking-for"
-                        [src]="item.signURL?item.signURL:item.imageSignURL?item.imageSignURL:apiBaseURL+item.imageURL+'/image'"
+                        [src]="item.signURL ? item.signURL : (item.imageSignURL ? item.imageSignURL : apiBaseURL + item.imageURL +'/image')"
                         alt="">
                     <div class="title-looking-for">
                         <div class="top">{{item.name}}</div>
@@ -110,7 +112,7 @@
                                 <img *ngIf="!item.imageURL" class="icon-ob"
                                     src="../../../../assets/img/customize_item.svg">
                                 <img *ngIf="item.imageURL" class="icon-ob"
-                                    [src]="item.signURL?item.signURL:item.imageSignURL?item.imageSignURL:apiBaseURL+item.imageURL+'/image'"
+                                    [src]="item.signURL ? item.signURL : (item.imageSignURL ? item.imageSignURL : apiBaseURL + item.imageURL + '/image')"
                                     alt="">
                             </div>
                             <div class="bottom-ob">

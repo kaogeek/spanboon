@@ -215,7 +215,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     this.userAccessFacade = userAccessFacade;
 
     // this.seoService.removeMeta();
-    this.searchAllPage();
+    // this.searchAllPage();
     this.mySubscription = this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe((event: NavigationEnd) => {
       if (event instanceof NavigationEnd) {
         const url: string = decodeURI(this.router.url);
@@ -340,7 +340,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     this.checkLoginAndRedirection();
     this.setTab();
     this.setCop();
-    this.searchAllPage();
+    // this.searchAllPage();
     $(window).resize(() => {
       this.setTab();
     });
@@ -454,6 +454,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     if (this.isLoadDataPost) {
       return;
     }
+
     if (offset) {
       data.offset = 0;
       this.resPost.posts = [];
@@ -461,26 +462,30 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     } else {
       data.offset = this.resPost && this.resPost.posts && this.resPost.posts.length > 0 ? this.resPost.posts.length : 0;
     }
-    data.limit = 5
+
+    data.limit = 5;
     let originalpost: any[] = this.resPost.posts;
     this.pageFacade.searchPostType(data, this.url).then(async (res: any) => {
       if (!Array.isArray(res) && res.posts.length > 0) {
         if (res.posts.length !== 5) {
-          this.isMaxLoadingPost = true
-          this.isLoadingPost = false
+          this.isMaxLoadingPost = true;
+          this.isLoadingPost = false;
         }
+
         for (let post of res.posts) {
           originalpost.push(post);
         }
+
         if (this.resDataPage && this.resDataPage.pageObjectives && this.resDataPage.pageObjectives.length > 0) {
           let index = 0;
           for (let result of this.resDataPage.pageObjectives) {
-            if (result.iconURL !== '') {
-              this.getDataIcon(result.iconURL, "icon", index)
+            if (!result.iconSignURL) {
+              this.getDataIcon(result.iconURL, "icon", index);
               index++
             }
           }
         }
+
         this.resPost.posts = originalpost
         this.isPostLoading = false;
         for (let post of this.resPost.posts) {
@@ -909,21 +914,24 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
 
         if (res.data) {
           this.position = res.data.coverPosition;
-          if (res.data && res.data.imageURL && res.data.imageURL !== '') {
+          if (!res!.data!.signURL) {
             this.getDataIcon(res.data.imageURL, "image");
           }
-          if (res.data && res.data.coverURL && res.data.coverURL !== '') {
+
+          if (!res!.data!.coverSignURL) {
             this.getDataIcon(res.data.coverURL, "cover");
           }
+
           if (res.data && res.data.pageObjectives && res.data.pageObjectives.length > 0) {
-            let index = 0;
-            for (let result of res.data.pageObjectives) {
-              if (result.iconURL !== '') {
+            for (const [index, result] of res.data.pageObjectives.entries()) {
+              if (!result.iconSignURL) {
                 this.getDataIcon(result.iconURL, "icon", index);
-                index++
+              } else {
+                result['isLoaded'] = true;
               }
             }
           }
+
           this.resDataPage = res.data;
           if (this.resDataPage && this.resDataPage.name) {
             this.name = this.resDataPage.name;
@@ -1272,7 +1280,10 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
       if (res.status === 1) {
         this.isEditCover = false;
         this.isFiles = false;
-        this.getDataIcon(res.data.coverURL, "cover");
+        if (!res.data.coverSignURL) {
+          this.getDataIcon(res.data.coverURL, "cover");
+          this.resDataPage.coverSignURL = '';
+        }
         this.resDataPage.coverPosition = res.data.coverPosition;
       }
     }).catch((err: any) => {
@@ -1592,24 +1603,24 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     });
   }
 
-  public searchAllPage() {
-    this.userAccessFacade.getPageAccess().then((res: any) => {
-      if (res.length > 0) {
-        for (let data of res) {
-          if (
-            data.page &&
-            data.page.imageURL !== "" &&
-            data.page.imageURL !== null &&
-            data.page.imageURL !== undefined
-          ) {
-            this.resListPage = res;
-          } else {
-            this.resListPage = res;
-          }
-        }
-      }
-    })
-  }
+  // public searchAllPage() {
+  //   this.userAccessFacade.getPageAccess().then((res: any) => {
+  //     if (res.length > 0) {
+  //       for (let data of res) {
+  //         if (
+  //           data.page &&
+  //           data.page.imageURL !== "" &&
+  //           data.page.imageURL !== null &&
+  //           data.page.imageURL !== undefined
+  //         ) {
+  //           this.resListPage = res;
+  //         } else {
+  //           this.resListPage = res;
+  //         }
+  //       }
+  //     }
+  //   })
+  // }
 
   public clickSetting() {
     let dataPage = this.resDataPage;

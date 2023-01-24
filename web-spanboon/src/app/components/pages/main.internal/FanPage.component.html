@@ -14,7 +14,8 @@
                     </ng-container>
                     <ng-template #elseisLoading>
                         <ng-container *ngIf="resDataPage">
-                            <ng-container *ngIf="!resDataPage.coverURL; else elseCoverImage">
+                            <ng-container
+                                *ngIf="!resDataPage.coverSignURL && !resDataPage.coverURL; else elseCoverImage">
                                 <ng-container *ngIf="isNotAccess; else elseOwner">
                                     <div class="wrapper-cover-image" [class.hide]="isFiles"
                                         (click)="fileInputCover.click()" dragdrop-image (files)="filesDropped($event)">
@@ -29,15 +30,16 @@
                                                     <g>
                                                         <g>
                                                             <g>
-                                                                <path d="M391.86,144.552c0.16-2.712,0.248-5.464,0.248-8.312c0.09-59.919-39.046-112.838-96.364-130.3
-   c-71.85-21.89-147.842,18.61-169.732,90.46c-2.024-0.104-3.976-0.16-5.904-0.16c-66.274,0-120,53.726-120,120s53.726,120,120,120
-   h72.088c4.418,0,8-3.582,8-8s-3.582-8-8-8h-72.088c-57.438,0-104-46.562-104-104s46.562-104,104-104
-   c3.688,0.01,7.373,0.211,11.04,0.6c3.93,0.329,7.534-2.2,8.56-6.008c13.401-53.473,61.51-90.937,116.637-90.828
-   c66.274,0.13,119.894,53.962,119.763,120.236c0.021,4.99-0.303,9.975-0.968,14.92c-0.049,0.358-0.073,0.72-0.073,1.081
-   c0.001,4.418,3.583,7.999,8.001,7.999h1.04c44.183,0,80,35.817,80,80c0,44.183-35.817,80-80,80h-95.464c-4.418,0-8,3.582-8,8
-   s3.582,8,8,8h95.464c50.028,0.01,91.677-38.401,95.707-88.267C484.086,195.127,444.707,148.823,391.86,144.552z" />
+                                                                <path
+                                                                    d="M391.86,144.552c0.16-2.712,0.248-5.464,0.248-8.312c0.09-59.919-39.046-112.838-96.364-130.3
+                            c-71.85-21.89-147.842,18.61-169.732,90.46c-2.024-0.104-3.976-0.16-5.904-0.16c-66.274,0-120,53.726-120,120s53.726,120,120,120
+                            h72.088c4.418,0,8-3.582,8-8s-3.582-8-8-8h-72.088c-57.438,0-104-46.562-104-104s46.562-104,104-104
+                            c3.688,0.01,7.373,0.211,11.04,0.6c3.93,0.329,7.534-2.2,8.56-6.008c13.401-53.473,61.51-90.937,116.637-90.828
+                            c66.274,0.13,119.894,53.962,119.763,120.236c0.021,4.99-0.303,9.975-0.968,14.92c-0.049,0.358-0.073,0.72-0.073,1.081
+                            c0.001,4.418,3.583,7.999,8.001,7.999h1.04c44.183,0,80,35.817,80,80c0,44.183-35.817,80-80,80h-95.464c-4.418,0-8,3.582-8,8
+                            s3.582,8,8,8h95.464c50.028,0.01,91.677-38.401,95.707-88.267C484.086,195.127,444.707,148.823,391.86,144.552z" />
                                                                 <polygon points="336.276,245.088 240.108,148.928 143.94,245.088 155.26,256.408 232.108,179.552 232.108,480.24 248.108,480.24 
-   248.108,179.552 324.956,256.408" />
+                            248.108,179.552 324.956,256.408" />
                                                             </g>
                                                         </g>
                                                     </g>
@@ -70,7 +72,7 @@
                                     <div class="wrapper-img" id="wrapper-img" (load)="loadImageOK($event)"
                                         (error)="loadImageError($event)" [phxPreload]="resDataPage"
                                         [preloadClass]="'wrapper-img'"
-                                        [ngStyle]="resDataPage.coverURL ? {'background-image': 'url(' + resDataPage.coverURL + ')' ,'background-position-y' : resDataPage.coverPosition + '%' } :  {}">
+                                        [ngStyle]="{'background-position-y' : resDataPage.coverPosition ? resDataPage.coverPosition + '%' : '50%' , 'background-image' : 'url(' + (resDataPage.coverSignURL ?  resDataPage.coverSignURL : (resDataPage.coverURL ? resDataPage.coverURL : '')) + ')' }">
                                     </div>
                                     <ng-container
                                         *ngIf="resDataPage && resDataPage.subTitle && resDataPage.subTitle !== ''; else elseSubTitle">
@@ -157,19 +159,8 @@
                                         </g>
                                     </svg>
                                 </div>
-                                <ng-container
-                                    *ngIf="resDataPage && resDataPage.imageBase64 !== undefined  && resDataPage.imageBase64 !== '' && resDataPage.imageBase64 !== null; else elseImgUrl">
-                                    <img class="image-profile-fan-page" src="{{resDataPage.imageBase64}}">
-                                </ng-container>
-                                <ng-template #elseImgUrl>
-                                    <ng-container
-                                        *ngIf="resDataPage && resDataPage.signURL !== undefined  && resDataPage.signURL !== '' && resDataPage.signURL !== null; else elseSignURL">
-                                        <img class="image-profile-fan-page" src="{{resDataPage.signURL}}">
-                                    </ng-container>
-                                    <ng-template #elseSignURL>
-                                        <img class="image-profile-fan-page" src="../../../../assets/img/profile.svg">
-                                    </ng-template>
-                                </ng-template>
+                                <img class="image-profile-fan-page"
+                                    [src]="!!resDataPage?.signURL ? resDataPage?.signURL : (!!resDataPage?.imageBase64 ? resDataPage?.imageBase64 : '../../../../assets/img/profile.svg')">
                             </div>
                             <div class="fan-page-name" [phxPreload]="resDataPage" [preloadClass]="'fan-page-name'">
                                 <svg *ngIf="resDataPage && resDataPage.isOfficial ? resDataPage.isOfficial : false"
@@ -676,7 +667,8 @@
                                 <div *ngIf="!isPost" class="main-feed">
                                     <box-post *ngIf="isLogin() && isNotAccess" #boxPost [modeShowDoing]="'true'"
                                         [dataPage]="name" [userPage]="resDataPage" [dataPageId]="resDataPage"
-                                        [isClickPostPreLoad]="isClickPostPreLoad" [profile]="resDataPage.imageBase64"
+                                        [isClickPostPreLoad]="isClickPostPreLoad"
+                                        [profile]="!!resDataPage?.signURL ? resDataPage.signURL : resDataPage.imageBase64"
                                         [isShowTablet]="'true'" [isShowMaxWidth]="'899'"
                                         (createPost)="createPost($event)" style="display: block; padding: 5pt 0;">
                                     </box-post>
