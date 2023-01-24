@@ -1267,7 +1267,6 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     const typeImage = dataImage.split(':')[1];
     asset.mimeType = typeImage.split(';')[0];
     let index = image.substring(5).split(',')[1];
-
     asset.data = index.substring(0, index.lastIndexOf(")")).split('"')[0];
     asset.size = this.imageCoverSize;
     let dataList = {
@@ -1280,7 +1279,9 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
       if (res.status === 1) {
         this.isEditCover = false;
         this.isFiles = false;
-        if (!res.data.coverSignURL) {
+        if (!!res!.data!.coverSignURL) {
+          this.resDataPage.coverSignURL = res.data.coverSignURL;
+        } else {
           this.getDataIcon(res.data.coverURL, "cover");
           this.resDataPage.coverSignURL = '';
         }
