@@ -16,6 +16,7 @@ import { fromEvent, Subject } from 'rxjs';
 import { map, distinctUntilChanged, debounceTime, takeUntil } from 'rxjs/operators';
 import { CookieUtil } from '../../utils/CookieUtil';
 import { ValidBase64ImageUtil } from '../../utils/ValidBase64ImageUtil';
+import { environment } from 'src/environments/environment';
 
 declare var $: any;
 const SEARCH_LIMIT: number = 10;
@@ -67,7 +68,7 @@ export class HeaderSearch extends AbstractPage implements OnInit {
   public heightSearch: boolean = false;
   @Input()
   public isHideButton: boolean = false;
-
+  public apiBaseURL = environment.apiBaseURL;
   public isTabClick: string;
 
   @ViewChild('tabs', { static: false }) private tabs: ElementRef;

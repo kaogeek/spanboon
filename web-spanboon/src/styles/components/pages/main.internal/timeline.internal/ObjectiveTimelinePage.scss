@@ -1974,6 +1974,11 @@
                                         margin-top: 30px;
                                         @include font-size-7($font-content-light);
                                         line-height: 40px;
+                                        display: -webkit-box;
+                                        -webkit-line-clamp: 4;
+                                        -webkit-box-orient: vertical;
+                                        overflow: hidden;
+                                        word-break: break-word;
 
                                         @media (max-width: $small) {
                                             word-break: break-all;

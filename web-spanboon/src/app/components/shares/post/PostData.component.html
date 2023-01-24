@@ -43,18 +43,16 @@
     <!-- *ngIf="isNotAccess" -->
 
     <div class="header-post" [class.active]="itemPost.referencePostObject && itemPost.referencePostObject.ownerUser">
-        <div class="left"
-            [ngStyle]="{'margin-right': itemPost.referencePostObject !== '' && itemPost.referencePostObject !== undefined && itemPost.referencePostObject !== null ? '15pt' : 'unset'}">
+        <div class="left" [ngStyle]="{'margin-right': !!itemPost.referencePostObject ? '15pt' : 'unset'}">
             <ng-container *ngIf="isShowProfile">
                 <div class="wrapper-profile-page" *ngIf="itemPost.type === 'NEEDS' || itemPost.type === 'GENERAL' ">
                     <div class="page-img">
                         <ng-container *ngIf="itemPost.page; else elseImage">
                             <a target="_blank"
-                                [href]="(itemPost.page.pageUsername !== null && itemPost.page.pageUsername !== undefined && itemPost.page.pageUsername !== '') ? 'page/'+itemPost.page.pageUsername: (itemPost.page._id !== null && itemPost.page._id !== undefined && itemPost.page._id !== '') ? 'page/'+itemPost.page._id: 'page/'+itemPost.page._id">
-                                <ng-container
-                                    *ngIf="itemPost.page.imageURL !== '' && itemPost.page.imageURL !== null && itemPost.page.imageURL !== undefined; else elseTemplateFileImage">
+                                [href]="!!itemPost.page.pageUsername ? 'page/' + itemPost.page.pageUsername: (!!itemPost.page._id ? 'page/' + itemPost.page._id: 'page/' + itemPost.page._id)">
+                                <ng-container *ngIf="!!itemPost.page.imageURL; else elseTemplateFileImage">
                                     <img class="post-data-profile"
-                                        [src]="itemPost.page.signURL?itemPost.page.signURL:itemPost.page.imageSignURL?itemPost.page.imageSignURL:apiBaseURL+itemPost.page.imageURL+'/image'">
+                                        [src]="itemPost.page.signURL ? itemPost.page.signURL : (itemPost.page.imageSignURL ? itemPost.page.imageSignURL:apiBaseURL + itemPost.page.imageURL + '/image')">
                                 </ng-container>
                                 <ng-template #elseTemplateFileImage>
                                     <img class="post-data-profile" src="../../../../../../assets/img/profile1.svg"
@@ -64,11 +62,10 @@
                         </ng-container>
                         <ng-template #elseImage>
                             <a target="_blank"
-                                [href]="(itemPost.user.uniqueId !== null && itemPost.user.uniqueId !== undefined && itemPost.user.uniqueId !== '') ? itemPost.user.uniqueId: (itemPost.page._id !== null && itemPost.user._id !== undefined && itemPost.user._id !== '') ? itemPost.user._id: itemPost.user._id">
-                                <ng-container
-                                    *ngIf="itemPost.user && itemPost.user.imageURL !== '' && itemPost.user.imageURL !== undefined && itemPost.user.imageURL !== null; else elseTemplateProfile">
+                                [href]="!!itemPost.user.uniqueId ? itemPost.user.uniqueId: (!!itemPost.page._id ? itemPost.user._id: itemPost.user._id)">
+                                <ng-container *ngIf="!!itemPost!.user!.imageURL; else elseTemplateProfile">
                                     <img class="post-data-profile"
-                                        [src]="itemPost.user.signURL?itemPost.user.signURL:itemPost.user.imageSignURL?itemPost.user.imageSignURL:apiBaseURL+itemPost.user.imageURL+'/image'"
+                                        [src]="itemPost.user.signURL ? itemPost.user.signURL : (itemPost.user.imageSignURL ? itemPost.user.imageSignURL : apiBaseURL + itemPost.user.imageURL + '/image')"
                                         alt="">
                                 </ng-container>
                                 <ng-template #elseTemplateProfile>
@@ -81,15 +78,14 @@
                         <div class="post-data-name">
                             <ng-container *ngIf="itemPost.page; else elseName">
                                 <a target="_blank"
-                                    [href]="(itemPost.page.pageUsername !== null && itemPost.page.pageUsername !== undefined && itemPost.page.pageUsername !== '') ? 'page/'+itemPost.page.pageUsername: (itemPost.page._id !== null && itemPost.page._id !== undefined && itemPost.page._id !== '') ? 'page/'+itemPost.page._id: 'page/'+itemPost.page._id">
+                                    [href]="!!itemPost.page.pageUsername ? 'page/' + itemPost.page.pageUsername : (itemPost.page._id ? 'page/' + itemPost.page._id: 'page/' + itemPost.page._id)">
                                     {{itemPost.page.name}}
                                 </a>
                             </ng-container>
                             <ng-template #elseName>
-                                <ng-container
-                                    *ngIf="itemPost.user && itemPost.user.displayName !== '' && itemPost.user.displayName !== undefined && itemPost.user.displayName !== null">
+                                <ng-container *ngIf="!!itemPost!.user!.displayName">
                                     <a target="_blank"
-                                        [href]="(itemPost.user.uniqueId !== null && itemPost.user.uniqueId !== undefined && itemPost.user.uniqueId !== '') ? 'profile/'+itemPost.user.uniqueId: (itemPost.page._id !== null && itemPost.user._id !== undefined && itemPost.user._id !== '') ? 'profile/'+itemPost.user._id: 'profile/'+itemPost.user._id">
+                                        [href]="!!itemPost.user.uniqueId ? 'profile/' + itemPost.user.uniqueId : (!!itemPost.page._id ? 'profile/' + itemPost.user._id : 'profile/' + itemPost.user._id)">
                                         {{itemPost.user.displayName}}
                                     </a>
                                 </ng-container>
@@ -193,10 +189,9 @@
                     </a>
 
                     <ng-container *ngIf="isUserPage">
-                        <!-- {{itemPost | json}} asdkjashdjkashdkjash -->
                         <a class="post-name" target="_blank"
                             (click)="onClickEngagement($event, (itemPost._id || itemPost.id), 'profile')"
-                            href="{{itemPost && itemPost.ownerUser && itemPost.ownerUser.uniqueId !== undefined && itemPost.ownerUser.uniqueId !== null && itemPost.ownerUser.uniqueId !== '' ? '/profile/'+itemPost.ownerUser.uniqueId : '/profile/'+itemPost.ownerUser._id }}">
+                            [href]="!!itemPost!.ownerUser!.uniqueId ? '/profile/' + itemPost.ownerUser.uniqueId : '/profile/' + itemPost.ownerUser._id">
                             <span>เผยแพร่โดย :
                                 {{itemPost.ownerUser.displayName}}</span>
                         </a>
@@ -218,8 +213,7 @@
                 </div>
             </ng-container>
         </div>
-        <div class="repost-re"
-            *ngIf="itemPost.referencePostObject !== '' && itemPost.referencePostObject !== undefined && itemPost.referencePostObject !== null">
+        <div class="repost-re" *ngIf="!!itemPost.referencePostObject">
 
             <ng-container *ngIf="isUserPage; else UserPage">
                 <svg class="img-action" xmlns="http://www.w3.org/2000/svg" width="56.105" height="47.887"
@@ -259,13 +253,12 @@
         [class.active]="itemPost.gallery && itemPost.gallery.length === 0 && itemPost.title === '' ">
         <div class="fufill-name">
             <div class="left">
-                <a href="/profile/{{itemPost.requester && itemPost.requester.uniqueId !== '' && itemPost.requester.uniqueId !== undefined && itemPost.requester.uniqueId !== null ? itemPost.requester.uniqueId : itemPost.requester && itemPost.requester._id}}"
+                <a href="/profile/{{!!itemPost!.requester!.uniqueId ? itemPost.requester.uniqueId : (itemPost.requester._id || itemPost.requester.id)}}"
                     target="_blank" (click)="onClickEngagement($event , itemPost._id , 'profile')">
                     <div class="profile-left">
-                        <ng-container
-                            *ngIf="itemPost.requester && itemPost.requester.imageURL && itemPost.requester.imageURL !== undefined && itemPost.requester.imageURL !== '' && itemPost.requester.imageURL !== null; else elseTemplateImage">
+                        <ng-container *ngIf="!!itemPost.requester.imageURL; else elseTemplateImage">
                             <img class="post-data-profile"
-                                [src]="itemPost.requester.signURL?itemPost.requester.signURL:itemPost.requester.imageSignURL?itemPost.requester.imageSignURL:apiBaseURL+itemPost.requester.imageURL+'/image'"
+                                [src]="!!itemPost!.requester!.signURL ? itemPost.requester.signURL : (itemPost.requester.imageSignURL ? itemPost.requester.imageSignURL : apiBaseURL + itemPost.requester.imageURL + '/image')"
                                 alt="">
                         </ng-container>
                         <ng-template #elseTemplateImage>
@@ -327,10 +320,9 @@
                 <a href="/page/{{itemPost.pageId}}" target="_blank"
                     (click)="onClickEngagement($event , itemPost._id , 'page')">
                     <div class="profile-right">
-                        <ng-container
-                            *ngIf="itemPost.fulfillmentPage && itemPost.fulfillmentPage.imageURL && itemPost.fulfillmentPage.imageURL !== undefined && itemPost.fulfillmentPage.imageURL !== '' && itemPost.fulfillmentPage.imageURL !== null; else elseTemplateImagePage">
+                        <ng-container *ngIf="!!itemPost!.fulfillmentPage!.imageURL; else elseTemplateImagePage">
                             <img class="post-data-profile"
-                                [src]="itemPost.fulfillmentPage.signURL?itemPost.fulfillmentPage.signURL:itemPost.fulfillmentPage.imageSignURL?itemPost.fulfillmentPage.imageSignURL:apiBaseURL+itemPost.fulfillmentPage.imageURL+'/image'"
+                                [src]="itemPost.fulfillmentPage.signURL ? itemPost.fulfillmentPage.signURL : (itemPost.fulfillmentPage.imageSignURL ? itemPost.fulfillmentPage.imageSignURL : apiBaseURL+itemPost.fulfillmentPage.imageURL + '/image')"
                                 alt="">
                         </ng-container>
                         <ng-template #elseTemplateImagePage>
@@ -339,8 +331,7 @@
                         <div class="name-top">
                             <div class="fulfill-name">{{itemPost.fulfillmentPage && itemPost.fulfillmentPage.name}}
                             </div>
-                            <ng-container
-                                *ngIf="itemPost.objectiveTag && itemPost.objectiveTag !== null && itemPost.objectiveTag !== undefined && itemPost.objectiveTag !== ''; else elseTemplateObjective">
+                            <ng-container *ngIf="!!itemPost.objectiveTag; else elseTemplateObjective">
                                 <div class="text">สิ่งที่กำลังทำ</div>
                             </ng-container>
                             <ng-template #elseTemplateObjective>
@@ -358,15 +349,14 @@
         <display-gallery [gallery]="itemPost.gallery" (clickShowImage)="showDialogGallery($event)"></display-gallery>
         <!-- <display-gallery [gallery]="itemPost.gallery" (clickShowImage)="showDialogGallery($event)"></display-gallery> -->
     </ng-container>
-    <div class="topic-name" [class.active]="itemPost.referencePostObject"
-        *ngIf="itemPost.title === '' || itemPost.title === undefined || itemPost.title === null  ">
+    <div class="topic-name" [class.active]="itemPost.referencePostObject" *ngIf="!!itemPost!.title">
         <div class="name" *ngIf="itemPost.requester">
             {{itemPost.requester && itemPost.requester.displayName}} เต็มเติมให้กับ
             {{itemPost.fulfillmentPage && itemPost.fulfillmentPage.name}}
         </div>
     </div>
     <div class="wrapper-content"
-        [class.active]="(itemPost.type === 'FULFILLMENT' && itemPost.title !== '' && itemPost.title !== undefined && itemPost.title !== null) || (itemPost.type === 'NEEDS' && itemPost.gallery && itemPost.gallery.length === 0) || (itemPost.type === 'GENERAL' && itemPost.title !== '' && itemPost.detail !== '' && itemPost.gallery && itemPost.gallery.length === 0 || (itemPost.title === ''  || itemPost.detail === ''))">
+        [class.active]="(itemPost.type === 'FULFILLMENT' && !!itemPost!.title) || (itemPost.type === 'NEEDS' && itemPost.gallery && itemPost.gallery.length === 0) || (itemPost.type === 'GENERAL' && itemPost.title !== '' && itemPost.detail !== '' && itemPost.gallery && itemPost.gallery.length === 0 || (itemPost.title === ''  || itemPost.detail === ''))">
         <!-- <div class="wrapper-content" [class.active]="itemPost.gallery && itemPost.gallery.length > 0 " > -->
         <div *ngIf="itemPost.title" class="title" [phxPreload]="itemPost" [preloadClass]="'title'"
             [innerHTML]=" itemPost.title | highlight ">
@@ -374,15 +364,13 @@
         <div *ngIf="itemPost.detail" class="content" [phxPreload]="itemPost" [preloadClass]="'content'"
             [innerHTML]=" itemPost.detail | highlight ">
         </div>
-        <div class="page-give" *ngIf="isFulfill"
-            [class.active]="itemPost.gallery.length === 0 && itemPost.title !== '' && itemPost.title !== null && itemPost.title !== undefined ">
+        <div class="page-give" *ngIf="isFulfill" [class.active]="itemPost.gallery.length === 0 && !!itemPost!.title">
             <span>ร่วม{{PLATFORM_FULFILL_TEXT}}ให้กับ</span>
             <a target="_blank" (click)="onClickEngagement($event , itemPost._id , 'post')"
-                matTooltip="{{itemPost.casePostId && itemPost.casePostId !== undefined && itemPost.casePostId !== '' ? webBaseURL+'/post/'+itemPost.casePostId : webBaseURL+'/page/'+itemPost.pageId }}"
-                href="{{itemPost.casePostId && itemPost.casePostId !== undefined && itemPost.casePostId !== '' ? webBaseURL+'/post/'+itemPost.casePostId : webBaseURL+'/page/'+itemPost.pageId }}">
-                {{itemPost.casePostId && itemPost.casePostId !== undefined &&
-                itemPost.casePostId !== '' ?
-                'โพสต์' : 'เพจ' }} </a>
+                matTooltip="{{!!itemPost!.casePostId ? webBaseURL + '/post/' + itemPost.casePostId : webBaseURL + '/page/' + itemPost.pageId }}"
+                [href]="!!itemPost!.casePostId ? webBaseURL + '/post/' + itemPost.casePostId : webBaseURL + '/page/' + itemPost.pageId">
+                {{!!itemPost!.casePostId ? 'โพสต์' : 'เพจ' }}
+            </a>
         </div>
         <ng-container *ngIf="checkPost(itemPost.referencePostObject); else elseNullPost">
             <repost-data *ngIf="itemPost.referencePostObject" [itemPost]="itemPost.referencePostObject"
@@ -492,17 +480,15 @@
         <ng-container>
             <div *ngIf="!isSearchHashTag && isComments" class="comment">
                 <div class="comment-img">
-                    <ng-container
-                        *ngIf="user && user.imageURL && user.imageURL !== undefined && user.imageURL !== null && user.imageURL !== '' ; else elseImage">
+                    <ng-container *ngIf="!!user!.imageURL; else elseImage">
                         <div class="menu-user" (click)="menuProfile();">
                             <img class="image-profile"
-                                [src]="user.signURL?user.signURL:user.imageSignURL?user.imageSignURL:apiBaseURL+user.imageURL+'/image'"
+                                [src]="user.signURL ? user.signURL : (user.imageSignURL ? user.imageSignURL : apiBaseURL + user.imageURL + '/image')"
                                 alt="">
                         </div>
                     </ng-container>
                     <ng-template #elseImage>
-                        <div class="menu-user displayName"
-                            *ngIf="user && user.displayName && user.displayName !== undefined && user.displayName !== null && user.displayName !== '' || user && user.name && user.name !== null && user.name !== '' && user.name !== undefined ">
+                        <div class="menu-user displayName" *ngIf="!!user!.displayName || !!user!.name">
                             <div class="donator">
                                 {{ user.name || user.displayName | slice: 0:1 }}
                             </div>

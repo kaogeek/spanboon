@@ -549,7 +549,30 @@
 
         <div class="wrapper-tool-post" mat-dialog-actions (window:resize)="onResize()">
             <div class="box-left" [ngStyle]="{'border-right': isFulfill ? 'unset':'0.7px solid #e5e5e5'}">
-                <mat-form-field appearance="none" *ngIf="!isFulfill">
+                <ng-container *ngIf="!isFulfill">
+                    <ng-container *ngIf="isRepost; else elseIsRepost">
+                        <ng-container *ngIf="modeDoIng; else elseDoIng">
+                            <ng-container *ngFor="let data of chooseStorys">
+                                <div appDebounceClick class="butt" (click)="selectType(data.value)">
+                                    {{data.viewValue}}
+                                </div>
+                            </ng-container>
+                        </ng-container>
+                        <ng-template #elseDoIng>
+                            <ng-container *ngFor="let data of chooseStory">
+                                <div appDebounceClick class="butt" (click)="selectType(data.value)">
+                                    {{data.viewValue}}
+                                </div>
+                            </ng-container>
+                        </ng-template>
+                    </ng-container>
+                    <ng-template #elseIsRepost>
+                        <!-- <div appDebounceClick class="butt but-submit" (click)="selectType(data.value)">
+                            {{"แชร์เข้าไทมไลน์ของฉัน"}}
+                        </div> -->
+                    </ng-template>
+                </ng-container>
+                <!-- <mat-form-field appearance="none" *ngIf="!isFulfill">
                     <mat-select *ngIf="isRepost;" #matSelect [(ngModel)]="selected"
                         [ngModelOptions]="{standalone: true}">
                         <ng-container *ngIf="modeDoIng ; else elseDoIng">
@@ -583,7 +606,7 @@
                             </div>
                         </mat-option>
                     </mat-select>
-                </mat-form-field>
+                </mat-form-field> -->
             </div>
             <div class="box-center" style="justify-content: flex-end;">
                 <!-- <div class="center" style="justify-content: flex-end;"> -->
@@ -821,7 +844,10 @@
                         </div>
                     </ng-container>
                     <ng-template #elseIsEdit>
-                        <mat-form-field appearance="none" [class.active]="isMobilePost || isMobileButton">
+                        <div appDebounceClick class="butt but-submit" (click)="onClickGetDataPost(false,true)">
+                            โพสต์
+                        </div>
+                        <!-- <mat-form-field appearance="none" [class.active]="isMobilePost || isMobileButton">
                             <mat-select [(value)]="selected1">
                                 <mat-option *ngIf="isRepost" [value]="'โพสต์'" (click)="onClickGetDataPost(false,true)">
                                     โพสต์
@@ -837,7 +863,7 @@
                                 <mat-option *ngIf="isRepost" [value]="'ตั้งเวลาโพสต์'" (click)="onClickSettingTime()">
                                     ตั้งเวลาโพสต์
                                 </mat-option>
-                                <!-- <ng-container *ngIf="isEdit; else elseIsEdit"> 
+                                <ng-container *ngIf="isEdit; else elseIsEdit"> 
                                     <mat-option [value]="'แก้ไขโพสต์'" [class.active]="isEdit" (click)="onClickGetDataPost()">
                                         แก้ไขโพสต์
                                     </mat-option>
@@ -856,9 +882,9 @@
                                     <mat-option *ngIf="isRepost" [value]="'ตั้งเวลาโพสต์'" (click)="onClickSettingTime()">
                                         ตั้งเวลาโพสต์
                                     </mat-option>
-                                </ng-template> -->
+                                </ng-template>
                             </mat-select>
-                        </mat-form-field>
+                        </mat-form-field> -->
                     </ng-template>
                 </ng-template>
             </div>

@@ -360,38 +360,10 @@ export class Notification extends AbstractPage implements OnInit {
         if (!noti.notification.isRead) {
           this.isObs
             ? this.notiisRead.splice(0, 0, {
-                notification: {
-                  title: "การแจ้งเตือนใหม่",
-                  body: noti.notification.title,
-                  image: this.apiBaseURL + noti.sender.imageURL + '/image',
-                  status: noti.notification.type,
-                  isRred: noti.notification.isRead,
-                  id: noti.notification.id,
-                  link: noti.notification.link,
-                  createdDate: noti.notification.createdDate,
-                },
-              })
-            : this.notiisRead.push({
-                notification: {
-                  title: "การแจ้งเตือนใหม่",
-                  body: noti.notification.title,
-                  image: this.apiBaseURL + noti.sender.imageURL + '/image',
-                  status: noti.notification.type,
-                  isRred: noti.notification.isRead,
-                  id: noti.notification.id,
-                  link: noti.notification.link,
-                  createdDate: noti.notification.createdDate,
-                },
-              });
-        }
-        this.notiOffset++;
-        noti.notification.linkPath = this.mainPostLink + noti.notification.link;
-        this.isObs
-          ? this.notiisAll.splice(0, 0, {
               notification: {
                 title: "การแจ้งเตือนใหม่",
                 body: noti.notification.title,
-                image: this.apiBaseURL + noti.sender.imageURL+ '/image',
+                image: !!noti!.sender!.imageURL ? this.apiBaseURL + noti.sender.imageURL + '/image' : '',
                 status: noti.notification.type,
                 isRred: noti.notification.isRead,
                 id: noti.notification.id,
@@ -399,11 +371,11 @@ export class Notification extends AbstractPage implements OnInit {
                 createdDate: noti.notification.createdDate,
               },
             })
-          : this.notiisAll.push({
+            : this.notiisRead.push({
               notification: {
                 title: "การแจ้งเตือนใหม่",
                 body: noti.notification.title,
-                image: this.apiBaseURL + noti.sender.imageURL + '/image',
+                image: !!noti!.sender!.imageURL ? this.apiBaseURL + noti.sender.imageURL + '/image' : '',
                 status: noti.notification.type,
                 isRred: noti.notification.isRead,
                 id: noti.notification.id,
@@ -411,6 +383,34 @@ export class Notification extends AbstractPage implements OnInit {
                 createdDate: noti.notification.createdDate,
               },
             });
+        }
+        this.notiOffset++;
+        noti.notification.linkPath = this.mainPostLink + noti.notification.link;
+        this.isObs
+          ? this.notiisAll.splice(0, 0, {
+            notification: {
+              title: "การแจ้งเตือนใหม่",
+              body: noti.notification.title,
+              image: !!noti!.sender!.imageURL ? this.apiBaseURL + noti.sender.imageURL + '/image' : '',
+              status: noti.notification.type,
+              isRred: noti.notification.isRead,
+              id: noti.notification.id,
+              link: noti.notification.link,
+              createdDate: noti.notification.createdDate,
+            },
+          })
+          : this.notiisAll.push({
+            notification: {
+              title: "การแจ้งเตือนใหม่",
+              body: noti.notification.title,
+              image: !!noti!.sender!.imageURL ? this.apiBaseURL + noti.sender.imageURL + '/image' : '',
+              status: noti.notification.type,
+              isRred: noti.notification.isRead,
+              id: noti.notification.id,
+              link: noti.notification.link,
+              createdDate: noti.notification.createdDate,
+            },
+          });
       }
       this.setNotification();
     }

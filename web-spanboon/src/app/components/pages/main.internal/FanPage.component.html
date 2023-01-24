@@ -693,7 +693,6 @@
                                         <ng-container *ngIf="resPost && resPost.posts && resPost.posts.length > 0;">
                                             <ng-container *ngFor="let itemPost of resPost.posts;let index = index">
                                                 <post-data [itemPost]="itemPost" [user]="userImage"
-                                                    [mainPostLink]="resDataPage && resDataPage.pageUsername && resDataPage.pageUsername !== '' && resDataPage.pageUsername !== undefined ? 'page/'+resDataPage.pageUsername+'/post/' : 'page/'+resDataPage.id+'/post/' "
                                                     [isComments]="isLogin()" [isUserPage]="isLogin() && isNotAccess"
                                                     [isShowUser]="true" [isNotAccess]="isNotAccess"
                                                     (action)="actionComment($event,index)"
@@ -715,11 +714,9 @@
                                 <div class="main-feed">
                                     <ng-container *ngIf="resDataPost && resDataPost.length > 0;">
                                         <ng-container *ngFor="let itemPost of resDataPost; let index = index">
-                                            <post-data [itemPost]="itemPost" [user]="userImage"
-                                                [mainPostLink]="resDataPage && resDataPage.pageUsername && resDataPage.pageUsername !== undefined && resDataPage.pageUsername !== '' ? 'page/'+resDataPage.pageUsername+'/post/' : 'page/'+resDataPage.id+'/post/' "
-                                                [isComments]="isLogin()" [isUserPage]="isLogin() && isNotAccess"
-                                                [isShowUser]="true" [isNotAccess]="isNotAccess"
-                                                (action)="actionComment($event,index)"
+                                            <post-data [itemPost]="itemPost" [user]="userImage" [isComments]="isLogin()"
+                                                [isUserPage]="isLogin() && isNotAccess" [isShowUser]="true"
+                                                [isNotAccess]="isNotAccess" (action)="actionComment($event,index)"
                                                 (comment)="createComment($event,index)" [pageUser]="pageUser"
                                                 [isPage]="isNotAccess" (userpage)="getAaaPost($event,index)"
                                                 (delete)="deletePost($event,index)" (update)="editPost($event)"
