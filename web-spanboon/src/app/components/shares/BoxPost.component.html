@@ -866,7 +866,7 @@
     </form>
 
     <div class="section-tablet" *ngIf="isShowTablet">
-        <ng-container *ngIf="profile !== '' && profile !== null && profile !== undefined; else elseTemplateProfile">
+        <ng-container *ngIf="!!profile; else elseTemplateProfile">
             <img src="{{profile}}" alt="" class="img-profile">
         </ng-container>
         <ng-template #elseTemplateProfile>

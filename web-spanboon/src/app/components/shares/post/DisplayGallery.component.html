@@ -9,7 +9,7 @@
     <ng-container *ngFor="let img of gallery; let index = index">
         <ng-container *ngIf="index === 0">
             <display-image class="cover-img" [isLoaded]="img.isLoaded || true"
-                [base64]="img.signURL?img.signURL:img.galleryBase64 || apiBaseURL+img.imageURL+'/image'"
+                [base64]="img.signURL ? img.signURL : img.galleryBase64 || apiBaseURL + img.imageURL + '/image'"
                 [class]="'gallery'" (click)="showDialogGallery(index)"></display-image>
         </ng-container>
     </ng-container>
@@ -18,14 +18,14 @@
         <ng-container *ngFor="let image of gallery; let index = index">
             <ng-container *ngIf="index > 0 && index <= 2">
                 <display-image class="sub-list-image" [isLoaded]="image.isLoaded || true"
-                    [base64]="image.signURL?image.signURL:image.galleryBase64 || apiBaseURL+image.imageURL+'/image'"
+                    [base64]="image.signURL ? image.signURL : image.galleryBase64 || apiBaseURL + image.imageURL + '/image'"
                     [class]="'gallery'" (click)="showDialogGallery(index)"></display-image>
             </ng-container>
             <ng-container *ngIf="index === 3">
                 <ng-container *ngIf="gallery.length > 4; else elseImageMore">
                     <div class="wrapper-gallery-more" (click)="showDialogGallery(index)">
                         <display-image class="sub-list-image" [isLoaded]="image.isLoaded || true"
-                            [base64]="image.signURL?image.signURL:image.galleryBase64 || apiBaseURL+image.imageURL+'/image'"
+                            [base64]="image.signURL ?image.signURL : image.galleryBase64 || apiBaseURL + image.imageURL + '/image'"
                             [class]="'gallery'"></display-image>
                         <span class="image-more"> +
                             {{gallery.length-4}}
@@ -34,7 +34,7 @@
                 </ng-container>
                 <ng-template #elseImageMore>
                     <display-image class="sub-list-image" [isLoaded]="image.isLoaded || true"
-                        [base64]="image.signURL?image.signURL:image.galleryBase64 || apiBaseURL+image.imageURL+'/image'"
+                        [base64]="image.signURL ? image.signURL : image.galleryBase64 || apiBaseURL + image.imageURL + '/image'"
                         [class]="'gallery'" (click)="showDialogGallery(index)"></display-image>
                 </ng-template>
             </ng-container>
