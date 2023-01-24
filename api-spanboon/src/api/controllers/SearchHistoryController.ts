@@ -242,26 +242,21 @@ export class SearchHistoryController {
                 historyIdStmt = { _id: historyObjId, userId: null, clientId };
             }
         }
-
         const historyList: SearchHistory[] = await this.searchHistoryService.find({ where: historyIdStmt });
-
         if (historyList !== null && historyList !== undefined && historyList.length > 0) {
             let historyClear;
-
             for (const searchHistory of historyList) {
                 if (isHistoryClear) {
                     keywordList.push(searchHistory.keyword);
                 } else {
-                    historyClear = await this.searchHistoryService.delete(searchHistory);
-
+                    historyClear = await this.searchHistoryService.delete({_id:searchHistory.id});
                     if (historyClear) {
                         historyCleared.push(historyClear);
                     }
                 }
             }
-
+            
             const historyByKWLists: SearchHistory[] = await this.searchHistoryService.find({ where: { keyword: { $in: keywordList } } });
-
             if (historyByKWLists !== null && historyByKWLists !== undefined && historyByKWLists.length > 0) {
                 for (const kwHistory of historyByKWLists) {
                     historyClear = await this.searchHistoryService.delete(kwHistory);
@@ -270,8 +265,8 @@ export class SearchHistoryController {
                         historyCleared.push(historyClear);
                     }
                 }
-            }
-
+            } 
+ 
             if (historyCleared !== null && historyCleared !== undefined && historyCleared.length > 0) {
                 const successResponse = ResponseUtil.getSuccessResponse('Clear History Success', []);
                 return res.status(200).send(successResponse);
