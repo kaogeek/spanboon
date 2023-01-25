@@ -112,7 +112,7 @@ export class NotificationService {
 
             }
         };
-        if (notification.toUser !== notification.fromUser) {
+        if (String(notification.toUser) !== String(notification.fromUser)) {
             Promise.all([await admin.messaging().sendToDevice(token, payload)]);
         } else {
             return;
