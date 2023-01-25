@@ -832,4 +832,27 @@ export class LoginPage extends AbstractPage implements OnInit {
       });
     }
   }
+
+  public checkAuthUser(data: any): string {
+    let socialAuthIcon: string;
+    for (const socialAuth of data) {
+      if (socialAuth) {
+        if (socialAuth === 'EMAIL') {
+          socialAuthIcon = 'EMAIL';
+          break;
+        } else if (socialAuth === 'FACEBOOK') {
+          socialAuthIcon = 'FACEBOOK';
+          break;
+        } else if (socialAuth === 'TWITTER') {
+          socialAuthIcon = 'TWITTER';
+          break;
+        } else if (socialAuth === 'GOOGLE') {
+          socialAuthIcon = 'GOOGLE';
+          break;
+        }
+      }
+    }
+
+    return socialAuthIcon;
+  }
 }

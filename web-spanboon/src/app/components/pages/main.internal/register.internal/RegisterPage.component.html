@@ -38,26 +38,29 @@
             </div>
             <div class="user">
                 <div class="user-grop">
-                    <input type="text" #displayName="ngModel" name="displayName" id="displayName" placeholder="ชื่อที่ต้องการแสดง"
-                        class="input-text" [(ngModel)]="data.displayName" required shake [shake]="active">  
+                    <input type="text" #displayName="ngModel" name="displayName" id="displayName"
+                        placeholder="ชื่อที่ต้องการแสดง" class="input-text" [(ngModel)]="data.displayName" required
+                        shake [shake]="active">
                 </div>
                 <div class="user-grop">
                     <ng-container *ngIf="uuid; else elseUUid">
                         <label for="username">@</label>
-                        <input type="text" style="padding-left: 25pt; width: calc(100% - 25pt - 13pt - 4px);" #username id="username" name="username" placeholder="ยูสเซอร์เนม"
-                            maxlength="15" class="input-text" [class.correct]='uuid' [(ngModel)]="data.uniqueId"
-                            required (keyup)="checkUUID(username.value)">
+                        <input type="text" style="padding-left: 25pt; width: calc(100% - 25pt - 13pt - 4px);" #username
+                            id="username" name="username" placeholder="ยูสเซอร์เนม" maxlength="15" class="input-text"
+                            [class.correct]='uuid' [(ngModel)]="data.uniqueId" required
+                            (keyup)="checkUUID(username.value)">
                     </ng-container>
                     <ng-template #elseUUid>
                         <label for="username">@</label>
-                        <input type="text" style="padding-left: 25pt; width: calc(100% - 25pt - 13pt - 4px);" #username id="username" name="username" placeholder="ยูสเซอร์เนม"
-                            maxlength="15" class="input-text" [class.incorrect]='uuid === false'
-                            [(ngModel)]="data.uniqueId" required (keyup)="checkUUID(username.value)">
+                        <input type="text" style="padding-left: 25pt; width: calc(100% - 25pt - 13pt - 4px);" #username
+                            id="username" name="username" placeholder="ยูสเซอร์เนม" maxlength="15" class="input-text"
+                            [class.incorrect]='uuid === false' [(ngModel)]="data.uniqueId" required
+                            (keyup)="checkUUID(username.value)">
 
                     </ng-template>
                     <div class="display-name">{{PLATFORM_URL}}/@{{data.uniqueId}}</div>
                 </div>
-            </div> 
+            </div>
         </div>
         <div class="form-register">
             <div class="form-group">
@@ -65,10 +68,10 @@
                     [(ngModel)]="data.firstName">
 
                 <input type="text" name="lastName" placeholder="นามสกุล" class="input-text-group"
-                    [(ngModel)]="data.lastName"> 
+                    [(ngModel)]="data.lastName">
                 <ng-container *ngIf="mode === 'facebook' || mode === 'google'; else elseEmail">
                     <input type="email" id="email" name="email" placeholder="อีเมล" class="input-text readonly" shake
-                     readonly [(ngModel)]="data.email" [email]="true" required>
+                        readonly [(ngModel)]="data.email" [email]="true" required>
                 </ng-container>
                 <ng-template #elseEmail>
                     <input type="email" id="email" name="email" placeholder="อีเมล" class="input-text" shake
@@ -88,23 +91,24 @@
 
             <div for="birthday" class="title-label">วันเกิด</div>
             <mat-form-field appearance="none">
-                <input #birthday matInput class="mat-birthday" [class.active]="!isCheckDate" [matDatepicker]="dp3" placeholder="วว/ดด/ปป" name="birthday" id="birthday"
-                (dateChange)="orgValueChange(birthday.value)"
-                    [(ngModel)]="data.birthday" [min]="minDate" (keyup)="vaidatorDate(birthday.value)" [max]="maxDate" required>
+                <input #birthday matInput class="mat-birthday" [class.active]="!isCheckDate" [matDatepicker]="dp3"
+                    placeholder="วว/ดด/ปป" name="birthday" id="birthday" (dateChange)="orgValueChange(birthday.value)"
+                    [(ngModel)]="data.birthday" [min]="minDate" (keyup)="vaidatorDate(birthday.value)" [max]="maxDate"
+                    required>
                 <mat-datepicker-toggle matSuffix [for]="dp3"></mat-datepicker-toggle>
                 <mat-datepicker #dp3 disabled="false"></mat-datepicker>
             </mat-form-field>
             <ng-container *ngIf="mode === 'normal'">
                 <div class="header-agreement">
                     <div class="check-true" (click)="checkedClick()">
-                       <mat-checkbox [(ngModel)]="checkedCon">
-                       <span class="policy" [routerLink]="'/policy'" > นโยบายความเป็นส่วนตัว </span>
-                       <span class="policy" [routerLink]="'/tos'"> ข้อกำหนดในการใช้บริการ </span>
-                       <span>ฉันได้อ่านข้อความที่กล่าวมา
-                           และยินยอมตามข้อกำหนดของ{{PLATFORM_NAME_TH}}</span>
-                       </mat-checkbox>
-                   </div>
-               </div>
+                        <mat-checkbox (change)="$event.checked = checkedCon">
+                            <span class="policy" [routerLink]="'/policy'"> นโยบายความเป็นส่วนตัว </span>
+                            <span class="policy" [routerLink]="'/tos'"> ข้อกำหนดในการใช้บริการ </span>
+                            <span>ฉันได้อ่านข้อความที่กล่าวมา
+                                และยินยอมตามข้อกำหนดของ{{PLATFORM_NAME_TH}}</span>
+                        </mat-checkbox>
+                    </div>
+                </div>
             </ng-container>
 
 
@@ -124,28 +128,30 @@
                     <spanboon-button [text]="'ยกเลิก'" [height]="'35pt'" [bgColor]="'rgb(248, 247, 242)'"
                         [color]="'#000'" [fontSize]="'16px'" (click)="clickBlack()"></spanboon-button>
                     <spanboon-button [text]="'สมัครสมาชิก'" [height]="'35pt'" (click)="onClickregister(register.value)"
-                         [color]="'#F8F7F2'" [fontSize]="'16px'" [ngClass]="checkedCon ? 'deactive' : 'active'"></spanboon-button>
+                        [color]="'#F8F7F2'" [fontSize]="'16px'"
+                        [ngClass]="checkedCon ? 'deactive' : 'active'"></spanboon-button>
                 </div>
             </ng-container>
             <ng-template #btnComfirm>
                 <div class="wrapper-policy">
-                    <span>สร้างรหัสผ่าน</span> บนแฟลตฟอร์ม{{PLATFORM_NAME_TH}} <a class="btn-spanboon" (click)="onShowDialog()">คลิกที่นี่</a>
-                </div> 
+                    <span>สร้างรหัสผ่าน</span> บนแฟลตฟอร์ม{{PLATFORM_NAME_TH}} <a class="btn-spanboon"
+                        (click)="onShowDialog()">คลิกที่นี่</a>
+                </div>
                 <div class="header-agreement">
                     <div class="check-true" (click)="checkedClick()">
-                       <mat-checkbox [(ngModel)]="checkedCon">
-                       <span class="policy" [routerLink]="'/policy'" > นโยบายความเป็นส่วนตัว </span>
-                       <span class="policy" [routerLink]="'/tos'"> ข้อกำหนดในการใช้บริการ </span>
-                       <span>ฉันได้อ่านข้อความที่กล่าวมา
-                           และยินยอมตามข้อกำหนดของ{{PLATFORM_NAME_TH}}</span>
-                       </mat-checkbox>
-                   </div>
-               </div>
+                        <mat-checkbox (change)="$event.checked = checkedCon">
+                            <span class="policy" [routerLink]="'/policy'"> นโยบายความเป็นส่วนตัว </span>
+                            <span class="policy" [routerLink]="'/tos'"> ข้อกำหนดในการใช้บริการ </span>
+                            <span>ฉันได้อ่านข้อความที่กล่าวมา
+                                และยินยอมตามข้อกำหนดของ{{PLATFORM_NAME_TH}}</span>
+                        </mat-checkbox>
+                    </div>
+                </div>
                 <div class="div-btn">
                     <spanboon-button [text]="'ยกเลิก'" [height]="'35pt'" [bgColor]="'rgb(248, 247, 242)'"
                         [color]="'#000'" [fontSize]="'16px'" (click)="clickBlack()"></spanboon-button>
-                    <spanboon-button [text]="'ยืนยัน'" [height]="'35pt'"  [color]="'#F8F7F2'"
-                        [fontSize]="'16px'" (click)="onClickregister(register.value)">
+                    <spanboon-button [text]="'ยืนยัน'" [height]="'35pt'" [color]="'#F8F7F2'" [fontSize]="'16px'"
+                        (click)="checkedCon ? onClickregister(register.value) : null">
                     </spanboon-button>
                 </div>
             </ng-template>

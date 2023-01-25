@@ -55,7 +55,7 @@ export class UserNotificationController {
             filter.take = limit;
         } else {
             filter.take = 5;
-        } 
+        }
         const userNotifications: Notification[] = await this.notificationService.find(filter);
         const notiResp = await this.parseNotificationsToResponses(userNotifications);
 
@@ -194,12 +194,10 @@ export class UserNotificationController {
         } else {
             filter.whereConditions = { toUser: userObjId, toUserType: USER_TYPE.USER };
         }
-
         const userNotificationsList: any = await this.notificationService.search(filter);
         const notiResp = await this.parseNotificationsToResponses(userNotificationsList);
-
         if (userNotificationsList) {
-            const successResponse = ResponseUtil.getSuccessResponse('Successfully search UserNotifications', notiResp);
+            const successResponse = ResponseUtil.getSuccessResponse('Successfully search UserNotifications', notiResp, notiResp.length);
             return res.status(200).send(successResponse);
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot search UserNotifications', undefined);

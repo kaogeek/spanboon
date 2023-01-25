@@ -484,9 +484,15 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
             this.resProfile.isLoadingImage = true;
             this.getDataIcon(this.resProfile.imageURL, "image");
           }
+
           if (!this.resProfile!.coverSignURL) {
             this.getDataIcon(this.resProfile.coverURL, "cover");
           }
+
+          if (!this.resProfile!.coverSignURL && !this.resProfile!.coverURL) {
+            this.resProfile.isLoadingCover = false;
+          }
+
           setTimeout(() => {
             this.isLoading = false;
           }, 2000);

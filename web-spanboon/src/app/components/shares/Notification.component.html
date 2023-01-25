@@ -5,16 +5,17 @@
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
 
-<div [class.active]="isActive()" class="btn-notfication" [matMenuTriggerFor]="beforeMenu" (menuOpened)="isOpened()">
-    <div class="notiAlert" [class.active-plus]="notiisRead.length > 9" *ngIf="notiisRead.length > 0">
-        <ng-container *ngIf="notiisRead.length > 9; else elseTemplateNoti">
+<div [class.active]="isActive()" class="btn-notfication" [matMenuTriggerFor]="beforeMenu"
+    (menuOpened)="isOpened(); this.switeNotiType();">
+    <div class="notiAlert" [class.active-plus]="noti.length > 9" *ngIf="noti.length > 0">
+        <ng-container *ngIf="noti.length > 9; else elseTemplateNoti">
             <span>9+</span>
         </ng-container>
         <ng-template #elseTemplateNoti>
-            <span>{{notiisRead.length}}</span>
+            <span>{{noti.length}}</span>
         </ng-template>
     </div>
-    <ng-container *ngIf="notiisRead.length > 0; else elseTemplateIcons">
+    <ng-container>
         <svg xmlns="http://www.w3.org/2000/svg" width="48.435" height="55.402" viewBox="0 0 48.435 55.402">
             <g id="Group_2390" data-name="Group 2390" transform="translate(1622.165 -3303.088)">
                 <path id="Path_3517" data-name="Path 3517"
@@ -33,7 +34,7 @@
         </svg>
     </ng-container>
     <ng-template #elseTemplateIcons>
-        <ng-container *ngIf="isActive(); else elseTemplateOpen">
+        <ng-container>
             <svg xmlns="http://www.w3.org/2000/svg" width="47.06" height="55.402" viewBox="0 0 47.06 55.402">
                 <g id="Group_493" data-name="Group 493" transform="translate(-407.878 -248.869)">
                     <g id="Path_263" data-name="Path 263">
@@ -47,7 +48,7 @@
                 </g>
             </svg>
         </ng-container>
-        <ng-template #elseTemplateOpen>
+        <ng-template>
             <svg xmlns="http://www.w3.org/2000/svg" width="47.06" height="55.402" viewBox="0 0 47.06 55.402">
                 <g id="Group_2389" data-name="Group 2389" transform="translate(1680.568 -3303.088)">
                     <path id="Path_3521" data-name="Path 3521"
@@ -66,13 +67,15 @@
     <div class="mat-menu-title" (click)="$event.stopPropagation();">
         <div class="text">การแจ้งเตือน</div>
         <div class="select-noti-list">
-            <span class="list" (click)="switeNotiType();" [ngClass]="{'select': isNotiAll }">ทั้งหมด
-                ({{notiisAll.length}})</span>
-            <span class="list" (click)="switeNotiType();" [ngClass]="{'select': !isNotiAll }">ยังไม่ได้อ่าน
-                ({{notiisRead.length}})</span>
+            <span class="list" (click)="!isNotiAll ? clickNotification() : null"
+                [ngClass]="{'select': isNotiAll }">ทั้งหมด
+                ({{noti.length}})</span>
+            <span class="list" (click)="isNotiAll ? clickNotification() : null"
+                [ngClass]="{'select': !isNotiAll }">ยังไม่ได้อ่าน
+                ({{dataNotiRead.length}})</span>
         </div>
-    </div> 
-    <div *ngIf="notiisAll.length !== 0" class="wrapper-header" (click)="$event.stopPropagation();">
+    </div>
+    <div *ngIf="noti.length !== 0" class="wrapper-header">
         <div class="wrapper-noti" style="border-bottom: unset !important;">
             ใหม่
         </div>
@@ -80,11 +83,11 @@
             ดูทั้งหมด
         </div>
     </div>
-    <div class="noti-sc" (click)="$event.stopPropagation();" (scroll)="scroll($event)">
-        <notification-card *ngFor="let i of notiisTable" [message]="i" (click)="redirectNotification(i);markReadNoti(i)"
-            [fullPage]="true" [slide]="true">
+    <div class="noti-sc">
+        <notification-card *ngFor="let item of (isNotiAll ? noti : dataNotiRead); let i = index" [message]="item"
+            [fullPage]="true" [slide]="true" (click)="clickIsRead(i)">
         </notification-card>
-        <div style="height: 60px;" *ngIf="isScrollNoti">
+        <div style="height: 60px;">
             <spinners></spinners>
         </div>
     </div>

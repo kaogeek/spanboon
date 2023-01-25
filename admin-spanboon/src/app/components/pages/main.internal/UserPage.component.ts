@@ -29,7 +29,7 @@ export class UserPage extends AbstractPage implements OnInit {
     public pageUserFacade: PageUserFacade;
     private authenManager: AuthenManager;
     private router: Router;
-    private userFacade:UserFacade;
+    private userFacade: UserFacade;
     public fieldSearch: string[];
 
     public dataForm: PageUser;
@@ -47,11 +47,11 @@ export class UserPage extends AbstractPage implements OnInit {
     public imageName: string = '';
     public value: string = '';
 
-    constructor(pageUserFacade: PageUserFacade, 
-        router: Router, 
-        dialog: MatDialog, 
+    constructor(pageUserFacade: PageUserFacade,
+        router: Router,
+        dialog: MatDialog,
         authenManager: AuthenManager,
-        userFacade:UserFacade ) {
+        userFacade: UserFacade) {
         super(PAGE_NAME, dialog);
         this.pageUserFacade = pageUserFacade;
         this.router = router;
@@ -131,7 +131,7 @@ export class UserPage extends AbstractPage implements OnInit {
             isSelect: false,
             isCreate: true,
             isEdit: false,
-            isDelete: false,
+            isDelete: true,
             isComment: false,
             isBack: false
         };
@@ -271,7 +271,7 @@ export class UserPage extends AbstractPage implements OnInit {
         });
     }
     public clickDelete(data: any): void {
-        console.log('data',data);
+        console.log('data', data);
         this.userFacade.deleteuser(data.id).then((res) => {
             let index = 0;
             let dataTable = this.table.data;
