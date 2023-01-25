@@ -456,7 +456,6 @@ export class DialogCreatePage extends AbstractPage {
 
   public checkedClick() {
     this.checkedCon = !this.checkedCon;
-
     if (this.checkedCon === true) {
       $('.but-conf').removeClass('active');
     } else {
