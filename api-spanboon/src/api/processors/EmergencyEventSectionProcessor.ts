@@ -57,12 +57,12 @@ export class EmergencyEventSectionProcessor extends AbstractSectionModelProcesso
                     createdDate: 'DESC'
                 };
                 searchFilter.whereConditions = {
-                    isClose: false
+                    isClose: false,
                 };
 
                 const searchResult = await this.emergencyEvent.aggregate([
                     { $match: searchFilter.whereConditions },
-                    { $sort: { createdDate: -1 } },
+                    { $sort: { isPin: -1, createdDate: -1 } },
                     { // sample post for one
                         $lookup: {
                             from: 'Posts',

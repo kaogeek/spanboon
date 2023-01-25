@@ -132,7 +132,6 @@ export class MainPageController {
 
                 const lKresult: any = {};
                 lKresult.contents = lastestLookSectionModelSec.contents;
-
                 if (lKresult) {
                     const successResponse = ResponseUtil.getSuccessResponse('Successfully Main Page Data', lKresult);
                     return res.status(200).send(successResponse);
@@ -343,9 +342,7 @@ export class MainPageController {
         // result.looking = stillLKSectionModel;
         // result.viewSection = userRecSectionModel;
         result.sectionModels = [];
-
         processorList = ProcessorUtil.randomProcessorOrdering(processorList);
-
         // ! remove random function when fishished testing
         const randIdx = Math.floor(Math.random() * processorList.length);
         for (let i = 0; i < processorList.length; i++) {
@@ -574,9 +571,9 @@ export class MainPageController {
             if (pageLimit !== null && pageLimit !== undefined && pageLimit > 0) {
                 // const pageQuery = { $and: [{ _id: { $not: { $in: pageResultStmt } } }, { $or: [{ name: exp }, { pageUsername: exp }] }] };
                 const pageQuery = [
-                    { $match: { $and: [{ _id: { $not: { $in: pageResultStmt } },banned:false }, { $or: [{ name: exp }, { pageUsername: exp }] }] } },
+                    { $match: { $and: [{ _id: { $not: { $in: pageResultStmt } }, banned: false }, { $or: [{ name: exp }, { pageUsername: exp }] }] } },
                     { $limit: pageLimit }
-                ];  
+                ];
                 const pages: any[] = await this.pageService.aggregate(pageQuery);
 
                 pageRows = pages.length;
@@ -706,7 +703,6 @@ export class MainPageController {
             // Page Catgory
             let pageCategories: string[];
             let sortBy: string;
-
             if (data !== undefined) {
                 // search all post by keyword or hashTag
                 keyword = data.keyword;
@@ -893,7 +889,6 @@ export class MainPageController {
 
             if (emergencyEvent !== null && emergencyEvent !== undefined && emergencyEvent !== '') {
                 const postsEmergencyEvent: EmergencyEvent = await this.emergencyEventService.findOne({ _id: new ObjectID(emergencyEvent) });
-
                 if (postsEmergencyEvent !== null && postsEmergencyEvent !== undefined) {
                     postStmt.push({ $match: { emergencyEvent: new ObjectID(postsEmergencyEvent.id) } });
                 } else {
@@ -1005,7 +1000,6 @@ export class MainPageController {
                     return res.status(200).send(ResponseUtil.getSuccessResponse('Search Success', []));
                 }
             }
-
             // const queryDb = [{$match:{"pageId":{$ne:null}}},{$lookup:{from:"Page",as:"page",let:{pageId:"$pageId"},pipeline:[{$match:{$expr:{$and:[{$eq:["$$pageId","$_id"]}]}}}]}},{$match:{"page.isOfficial" : false}}]
             const postsLookupStmt: any[] = [
                 {
@@ -1259,7 +1253,6 @@ export class MainPageController {
             }
 
             searchPostStmt = postStmt.concat(postsLookupStmt);
-
             const userMap = {};
             const postResult = await this.postsService.aggregate(searchPostStmt, { allowDiskUse: true }); // allowDiskUse: true to fix an Exceeded memory limit for $group.
             if (postResult !== null && postResult !== undefined && postResult.length > 0) {
