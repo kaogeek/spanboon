@@ -17,7 +17,7 @@ export class NotificationFacade extends AbstractFacade {
         super(http, authMgr);
     }
 
-    public listNotification(limit?, offset?): Promise<any> {
+    public listNotification(limit?: number, offset?: number): Promise<any> {
         return new Promise((resolve, reject) => {
             let url: string = (this.baseURL + '/notification') + (limit ? "?limit=" + limit : "?limit=20") + (offset ? "&offset=" + offset : "");
             let options = this.authMgr.getDefaultOptions();

@@ -121,9 +121,10 @@
                 </g>
             </svg>
         </a> -->
-        <btn-notification *ngIf="isLogin()" [noti]="noti.noti" class="menu-nofitication list-right-menu">
+        <btn-notification class="menu-nofitication list-right-menu" [noti]="notificationList"
+            (click)="getNotification(limitNotification,0)" *ngIf="isLogin()">
         </btn-notification>
-        <notification-check-page (noti)="Notification($event)"></notification-check-page>
+        <!-- <notification-check-page (noti)="Notification($event)"></notification-check-page> -->
         <btn-menu-profile class="menu-profile list-right-menu"></btn-menu-profile>
         <btn-list-page *ngIf="isLogin()" class="menu-page list-right-menu" [link]="'/page'"></btn-list-page>
     </div>

@@ -578,6 +578,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     // this.startDate = { begin: new Date(event.value.begin), end: new Date(event.value.end) }
     this.startDateLong = new Date(event.value.begin).getTime();
     this.endDateLong = new Date(event.value.end).getTime();
+    this.autocomp(32);
     // this.searchTrendTag();
   }
 
@@ -590,6 +591,9 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   }
 
   public autocomp(keyword) {
+    if (keyword === 32) {
+      this.searchTrendTag();
+    }
     var autocomp = (document.getElementById("autocompSearch") as HTMLInputElement).value;
     var key = keyword.keyCode || keyword.charCode;
     if (autocomp.includes('#')) {
@@ -889,9 +893,9 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
 
   public getEmergency(data) {
     if (data.item.selected == null && data.item.selected == undefined) {
-      this.emergency = data.item.id;
-    } else {
       this.emergency = '';
+    } else {
+      this.emergency = data.item.hashTag;
     }
     this.searchTrendTag(true);
 
@@ -974,7 +978,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       type: this.type ? this.type : '',
       createBy: this.userId,
       objective: this.objective ? this.objective : '',
-      emergencyEvent: this.emergency,
+      emergencyEventTag: this.emergency ? this.emergency : '',
       startDate: this.startDate && this.startDate.begin,
       endDate: this.startDate && this.startDate.end,
       startViewCount: this.startViewCount,

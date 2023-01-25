@@ -7,7 +7,7 @@
 
 import { Component, ViewChild, OnInit, NgZone, EventEmitter, Input, Output, ElementRef, Renderer2, QueryList } from '@angular/core';
 import { Router, NavigationExtras, ActivatedRoute } from '@angular/router';
-import { AuthenManager, ObservableManager, EditProfileUserPageFacade } from '../../../services/services';
+import { AuthenManager, ObservableManager, EditProfileUserPageFacade, NotificationFacade } from '../../../services/services';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { MatDialog } from '@angular/material';
 import { AbstractPage } from '../AbstractPage';
@@ -19,6 +19,7 @@ import { DialogListFacebook } from '../../components';
 import { PageSoialFB } from 'src/app/models/PageSocialFB';
 import { TwitterService } from '../../../services/services';
 import { PageSocialTW } from 'src/app/models/PageSocialTW';
+import { SearchFilter } from 'src/app/models/SearchFilter';
 
 const DEFAULT_USER_ICON: string = '../../../assets/components/pages/icons8-female-profile-128.png';
 const REDIRECT_PATH: string = '/main';
@@ -44,7 +45,14 @@ export class HeaderTop extends AbstractPage implements OnInit {
   private observManager: ObservableManager;
   private editProfileFacade: EditProfileUserPageFacade;
   private userImage: any;
-  public noti: any = [];
+
+  // Notification
+  public notificationList: any[] = [];
+  public isLoadNotification: boolean = false;
+  public limitNotification = 30;
+  public sumNotification = 30;
+
+  public apiBaseURL = environment.apiBaseURL;
   public isPreLoadIng: boolean;
   public isLoadingTwitter: boolean;
   public isLoading: boolean;
@@ -54,6 +62,7 @@ export class HeaderTop extends AbstractPage implements OnInit {
   public responseFacabook: any;
   public connectTwitter: boolean = false;
   private twitterService: TwitterService;
+  public notificationFacade: NotificationFacade;
 
   public partners: any[] = [];
   public countPageuser: any;
@@ -75,7 +84,7 @@ export class HeaderTop extends AbstractPage implements OnInit {
   constructor(router: Router, authenManager: AuthenManager, observManager: ObservableManager,
     editProfileFacade: EditProfileUserPageFacade, dialog: MatDialog, private renderer: Renderer2, _ngZone: NgZone,
     activatedRoute: ActivatedRoute,
-    twitterService: TwitterService,) {
+    twitterService: TwitterService, notificationFacade: NotificationFacade) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.router = router;
     this._ngZone = _ngZone;
@@ -87,6 +96,7 @@ export class HeaderTop extends AbstractPage implements OnInit {
     this.isFrist = true;
     this.activatedRoute = activatedRoute;
     this.twitterService = twitterService;
+    this.notificationFacade = notificationFacade;
 
     this.activatedRoute.params.subscribe((param) => {
       this.redirection = param['redirection'];
@@ -139,6 +149,9 @@ export class HeaderTop extends AbstractPage implements OnInit {
         this.accessTokenLink += '?' + queryParam;
         doRunAccessToken = true;
       }
+    }
+    if (this.isLogin()) {
+      this.getNotification(this.limitNotification, 0);
     }
   }
 
@@ -392,9 +405,56 @@ export class HeaderTop extends AbstractPage implements OnInit {
     }
   }
 
-  public Notification(noti) {
-    this.noti = [];
-    this.noti = noti;
+  // public Notification(noti) {
+  //   this.noti = [];
+  //   this.noti = noti;
+  // }
+
+  public TestNoti() {
+
+    // this.getNotification('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNmM3MTE1ODMwMmZhNWYyNDVlZWFmNCIsImlhdCI6MTY3NDYxNjc5OX0.SNfM86-aGc4ckxteLvYCYLLV2qswj1SHVjfQy8s4TpI', 'EMAIL',);
   }
 
+  public getNotification(limit: number, offset: number) {
+    this.notificationFacade.listNotification(limit, offset).then(async (res) => {
+      if (res) {
+        let dataNoti: any[] = [];
+        for await (let data of res) {
+          dataNoti.push({
+            notification: {
+              title: "การแจ้งเตือนใหม่",
+              body: data.notification.title,
+              image: !!data!.sender && data.sender.imageURL ? this.apiBaseURL + data.sender.imageURL + '/image' : '',
+              status: data.notification.type,
+              isRead: data.notification.isRead,
+              id: data.notification.id,
+              link: data.notification.link,
+              createdDate: data.notification.createdDate
+            }
+          });
+        }
+        this.notificationList = dataNoti;
+        this.observManager.createSubject('notification');
+        this.observManager.publish('notification', {
+          data: true
+        });
+      }
+    }).catch((error) => {
+      if (error) {
+        console.log(error);
+      }
+    });
+  }
+
+  // public notija() {
+  //   this.notificationFacade.findNotification('63b693401a69db32be899d25').then((res) => {
+  //     if (res) {
+  //       console.log("res findNotification", res);
+  //     }
+  //   }).catch((error) => {
+  //     if (error) {
+  //       console.log("error", error);
+  //     }
+  //   });
+  // }
 }

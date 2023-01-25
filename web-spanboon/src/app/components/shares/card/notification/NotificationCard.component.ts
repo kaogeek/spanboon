@@ -36,7 +36,8 @@ export class NotificationCard extends AbstractPage implements OnInit {
     super(PAGE_NAME, authenManager, dialog, router);
   }
 
-  public ngOnInit(): void { }
+  public ngOnInit(): void {
+  }
 
   public ngOnDestroy(): void {
     super.ngOnDestroy();
