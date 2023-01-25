@@ -117,41 +117,41 @@ export class SettingsAdminRoles extends AbstractPage implements OnInit {
             check: true,
             title: "สามารถจัดการทุกแง่มุมของเพจได้ พวกเขาจะสามารถเผยแพร่และส่งข้อความ Messenger ในนามของเพจ, ตอบกลับและลบความคิดเห็นบนเพจ, ดูว่าใครสร้างโพสต์หรือแสดงความคิดเห็น, ดูข้อมูลเชิงลึก, และกำหนดบทบาทในเพจได้",
         },
-        {
-            label: "ผู้จัดการ",
-            keyword: "MODERATOR",
-            value: 2,
-            check: false,
-            title: "สามารถส่งข้อความ Messenger ในฐานะของเพจ, ตอบกลับและลบความคิดเห็นบนเพจ, ดูว่าใครสร้างโพสต์หรือแสดงความคิดเห็น",
-        },
-        {
-            label: "ผู้จัดการโพสต์",
-            keyword: "POST_MODERATOR",
-            value: 3,
-            check: false,
-            title: "ตอบกลับและลบความคิดเห็นบนเพจ, ดูว่าใครสร้างโพสต์หรือแสดงความคิดเห็น",
-        },
-        {
-            label: "ผู้จัดการ" + this.PLATFORM_FULFILL_TEXT,
-            keyword: "FULFILLMENT_MODERATOR",
-            value: 4,
-            check: false,
-            title: "สามารถส่งข้อความ จัดการโพสต์ที่" + this.PLATFORM_FULFILL_TEXT + "ได้",
-        },
-        {
-            label: "ผู้จัดการแชท",
-            keyword: "CHAT_MODERATOR",
-            value: 5,
-            check: false,
-            title: "สามารถส่งข้อความ Messenger ในฐานะของเพจ ",
-        },
-        {
-            label: "เจ้าของเพจ",
-            keyword: "OWNER",
-            value: 6,
-            check: false,
-            title: "สามารถเผยแพร่เนื้อหาและส่งข้อความใน Messenger ในฐานะเพจ, ตอบกลับและลบความคิดเห็นบนเพจ, ดูว่าใครเป็นคนสร้างโพสต์หรือแสดงความคิดเห็น, และดูข้อมูลเชิงลึกต่างๆได้",
-        },
+        // {
+        //     label: "ผู้จัดการ",
+        //     keyword: "MODERATOR",
+        //     value: 2,
+        //     check: false,
+        //     title: "สามารถส่งข้อความ Messenger ในฐานะของเพจ, ตอบกลับและลบความคิดเห็นบนเพจ, ดูว่าใครสร้างโพสต์หรือแสดงความคิดเห็น",
+        // },
+        // {
+        //     label: "ผู้จัดการโพสต์",
+        //     keyword: "POST_MODERATOR",
+        //     value: 3,
+        //     check: false,
+        //     title: "ตอบกลับและลบความคิดเห็นบนเพจ, ดูว่าใครสร้างโพสต์หรือแสดงความคิดเห็น",
+        // },
+        // {
+        //     label: "ผู้จัดการ" + this.PLATFORM_FULFILL_TEXT,
+        //     keyword: "FULFILLMENT_MODERATOR",
+        //     value: 4,
+        //     check: false,
+        //     title: "สามารถส่งข้อความ จัดการโพสต์ที่" + this.PLATFORM_FULFILL_TEXT + "ได้",
+        // },
+        // {
+        //     label: "ผู้จัดการแชท",
+        //     keyword: "CHAT_MODERATOR",
+        //     value: 5,
+        //     check: false,
+        //     title: "สามารถส่งข้อความ Messenger ในฐานะของเพจ ",
+        // },
+        // {
+        //     label: "เจ้าของเพจ",
+        //     keyword: "OWNER",
+        //     value: 6,
+        //     check: false,
+        //     title: "สามารถเผยแพร่เนื้อหาและส่งข้อความใน Messenger ในฐานะเพจ, ตอบกลับและลบความคิดเห็นบนเพจ, ดูว่าใครเป็นคนสร้างโพสต์หรือแสดงความคิดเห็น, และดูข้อมูลเชิงลึกต่างๆได้",
+        // },
     ];
 
     constructor(authenManager: AuthenManager, dialog: MatDialog, router: Router, userAccessFacade: UserAccessFacade, assetFacade: AssetFacade,
@@ -187,7 +187,7 @@ export class SettingsAdminRoles extends AbstractPage implements OnInit {
         this.dirtyCancelEvent = new EventEmitter();
     }
 
-    ngOnInit(): void { 
+    ngOnInit(): void {
         if (this.isLogin) {
             this.getAccessPage();
         }
@@ -364,16 +364,16 @@ export class SettingsAdminRoles extends AbstractPage implements OnInit {
         return base64Image && regex.test(base64Image) ? true : false;
     }
 
-    public addUserLevel() { 
-        if(this.valueSt === ''){
+    public addUserLevel() {
+        if (this.valueSt === '') {
             return;
         }
         this.isActive = true;
-        let levelUser = this.getLevelUser(this.selectPower.label); 
+        let levelUser = this.getLevelUser(this.selectPower.label);
         let access = {
             level: levelUser,
             user: this.valueSt.id || this.valueSt.uniqueId
-        } 
+        }
         this.pageFacade.addAccess(this.pageId, access).then((res) => {
             if (res.message === "Successfully adding User Page Access") {
                 this.clearInputData();
