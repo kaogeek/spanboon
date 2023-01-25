@@ -482,10 +482,10 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
           // this.seoService.updateTitle(this.resProfile.displayName);
           if (!!this.resProfile.imageURL) {
             this.resProfile.isLoadingImage = true;
-            this.getDataIcon(this.resProfile.imageURL, "image")
+            this.getDataIcon(this.resProfile.imageURL, "image");
           }
-          if (!!this.resProfile.coverURL) {
-            this.getDataIcon(this.resProfile.coverURL, "cover")
+          if (!this.resProfile!.coverSignURL) {
+            this.getDataIcon(this.resProfile.coverURL, "cover");
           }
           setTimeout(() => {
             this.isLoading = false;
@@ -685,7 +685,6 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     const typeImage = dataImage.split(':')[1];
     asset.mimeType = typeImage.split(';')[0];
     let index = image.substring(5).split(',')[1];
-
     asset.data = index.substring(0, index.lastIndexOf(")")).split('"')[0];
     asset.size = this.imageCoverSize;
     let dataImages = {
@@ -697,7 +696,12 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
       if (res.status === 1) {
         this.isEditCover = false;
         this.isFiles = false;
-        this.getDataIcon(res.data.coverURL, "cover");
+        if (!!res!.data!.coverSignURL) {
+          this.resProfile.coverSignURL = res.data.coverSignURL;
+        } else {
+          this.getDataIcon(res.data.coverURL, "cover");
+          this.resProfile.coverSignURL = '';
+        }
         this.resProfile.coverPosition = res.data.coverPosition;
       }
     }).catch((err: any) => {

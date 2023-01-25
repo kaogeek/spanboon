@@ -76,7 +76,7 @@
                                                 {{item.label}}
                                             </span>
                                             <span class="description-color"> {{item.type === "PAGE" ? "เพจ" : item.type
-                                                === "USER" ? "ผู้ใข้" : "แฮชแท็ก" }} </span>
+                                                === "USER" ? "ผู้ใช้" : "แฮชแท็ก" }} </span>
                                         </div>
                                     </div>
                                     <div class="list-right">
@@ -100,7 +100,7 @@
                                                 {{item.label}}
                                             </span>
                                             <span class="description-color"> {{item.type === "PAGE" ? "เพจ" : item.type
-                                                === "USER" ? "ผู้ใข้" : "แฮชแท็ก" }} </span>
+                                                === "USER" ? "ผู้ใช้" : "แฮชแท็ก" }} </span>
                                         </div>
                                     </div>
 
@@ -142,8 +142,7 @@
                         <div class="list-popular">
                             <div class="item-popular" *ngFor="let trend of dataTrend; let index = index"
                                 (click)="searchHashTag(trend,index);clickOpenLink(trend)">
-                                <ng-container
-                                    *ngIf="trend.label !== '' && trend.label !== undefined && trend.label !== null">
+                                <ng-container *ngIf="!!trend!.label">
                                     <div class="tag-popular">
                                         {{trend.label}}
                                     </div>
@@ -208,15 +207,19 @@
                                         </span>
                                     </ng-container>
                                     <ng-template #elseIsLoadIng>
-                                        <ng-container
-                                            *ngIf="data.imageBase64 && data.imageBase64 !== null; else elseBase64">
-                                            <img class="avatar" src="{{data.imageBase64}}">
+                                        <ng-container *ngIf="!!data!.signURL; else elseImgUrl">
+                                            <img class="avatar" src="{{data.signURL}}">
                                         </ng-container>
-                                        <ng-template #elseBase64>
-                                            <div class="avatar image-file-waste">
-                                                <img src="../../../../assets/img/photo.png" alt=""
-                                                    style="width: 40%; height: auto;">
-                                            </div>
+                                        <ng-template #elseImgUrl>
+                                            <ng-container *ngIf="!!data!.imageURL; else elseBase64">
+                                                <img class="avatar" src="{{apiBaseURL + data.imageURL + '/image'}}">
+                                            </ng-container>
+                                            <ng-template #elseBase64>
+                                                <div class="avatar image-file-waste">
+                                                    <img src="../../../../assets/img/photo.png" alt=""
+                                                        style="width: 40%; height: auto;">
+                                                </div>
+                                            </ng-template>
                                         </ng-template>
                                     </ng-template>
                                     <div class="bottom-offical">

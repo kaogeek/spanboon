@@ -12,7 +12,7 @@
     </div>
     <div class="body">
         <div class="image">
-            <ng-container *ngIf="message.notification.image; else image">
+            <ng-container *ngIf="!!message!.notification!.image; else image">
                 <img src="{{message? message.notification.image:''}}">
             </ng-container>
             <ng-template #image>

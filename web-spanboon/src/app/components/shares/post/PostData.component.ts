@@ -488,12 +488,12 @@ export class PostData {
     }
   }
 
-  public showDialogGallery(imageGallery) {
-    var lightbox = Glightbox();
-    let arrayImage = []
-    for (let galleryImage of imageGallery.gallerys) {
+  public async showDialogGallery(imageGallery) {
+    let lightbox = Glightbox();
+    let arrayImage = [];
+    for await (let galleryImage of imageGallery.gallerys) {
       arrayImage.push({
-        href: galleryImage.galleryBase64,
+        href: this.apiBaseURL + galleryImage.imageURL + '/image',
         type: 'image' // Type is only required if GlIghtbox fails to know what kind of content should display
       })
     }

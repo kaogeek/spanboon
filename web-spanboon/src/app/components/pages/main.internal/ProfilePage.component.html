@@ -132,7 +132,8 @@
                         </ng-container>
                         <ng-template #elseisLoading>
                             <ng-container *ngIf="resProfile">
-                                <ng-container *ngIf="!resProfile.coverURL; else elseCoverImage">
+                                <ng-container
+                                    *ngIf="!resProfile.coverSignURL && !resProfile.coverURL; else elseCoverImage">
                                     <ng-container *ngIf="isNotAccess; else elseisNotAccess">
                                         <div class="wrapper-cover-image" [class.hide]="isFiles"
                                             (click)="fileInput.click()" dragdrop-image (files)="filesDropped($event)">
@@ -194,7 +195,7 @@
                                     <div class="cover-img" [class.hide]="isFiles" *ngIf="!isEditCover">
                                         <div (load)="loadImageOK($event)" (error)="loadImageError($event)"
                                             class="body-cover-image"
-                                            [ngStyle]="resProfile.coverURL ? {'background-image': 'url(' + resProfile.coverURL + ')' ,'background-position-y' : resProfile.coverPosition + '%' } : {}">
+                                            [ngStyle]="{'background-position-y' : resProfile.coverPosition ? resProfile.coverPosition + '%' : '50%' , 'background-image' : 'url(' + (resProfile.coverSignURL ?  resProfile.coverSignURL : (resProfile.coverURL ? resProfile.coverURL : '')) + ')' }">
                                         </div>
                                     </div>
                                     <div class="set-cover">

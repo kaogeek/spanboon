@@ -55,8 +55,10 @@ export class NotificationCheckPage implements OnInit {
             try {
                 // valid
                 this.notificationMgr.loadCurrentUserNotification((isObserv ? 1 : 10), offSet).then((res) => {
-                    isObserv ? this.noti.emit({ noti: [res[0]] }) : this.noti.emit({ noti: res });
-                    this.isLoaded = false;
+                    if (res) {
+                        isObserv ? this.noti.emit({ noti: [res[0]] }) : this.noti.emit({ noti: res });
+                        this.isLoaded = false;
+                    }
                 }).catch(() => {
                     this.isLoaded = false;
                 });

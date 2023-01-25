@@ -119,7 +119,12 @@ export class ControlAction {
   }
 
   public selectAccessPage(page: any) {
-    if (page.img64 !== undefined && page.img64 !== null && page.img64 !== '') {
+    if (!!page.signURL) {
+      this.selectedAccessPageimges = page
+      this.isImges = true
+      this.isDis = false
+      this.emitpage.emit(page);
+    } else if (!!page.imageURL) {
       this.selectedAccessPageimges = page
       this.isImges = true
       this.isDis = false

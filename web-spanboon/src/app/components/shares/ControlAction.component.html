@@ -161,7 +161,7 @@
         <mat-form-field *ngIf="isPage && isShowUser && accessPage" appearance="none" class="field-profile">
             <div class="div-profile">
                 <img *ngIf="isImges" class="icon-images"
-                    src="{{selectedAccessPageimges.signURL?selectedAccessPageimges.signURL:selectedAccessPageimges.imageURL?selectedAccessPageimges.imageURL:selectedAccessPageimges.img64}}"
+                    src="{{selectedAccessPageimges.signURL ? selectedAccessPageimges.signURL : apiBaseURL + selectedAccessPageimges.imageURL + '/image'}}"
                     alt="">
                 <div *ngIf="isDis" class="donator-contro">
                     <span>{{selectedAccessPageimges | slice: 0:1 }}</span>
@@ -172,13 +172,15 @@
                     <mat-option [value]="data.pageUsername || data.name " (click)="selectAccessPage(data)">
                         <div class="wrapper-img-access">
                             <div class="img-access">
-                                <ng-container
-                                    *ngIf="data.imageURL !== '' && data.imageURL !== undefined && data.imageURL !== null; else elseImageProfile">
-                                    <img class="icon-image"
-                                        [src]="data.signURL?data.signURL:data.imageSignURL?data.imageSignURL:apiBaseURL+data.imageURL+'/image'"
-                                        alt="">
+                                <ng-container *ngIf="!!data!.signURL; else elseImageProfile">
+                                    <img class="icon-image" [src]="data.signURL" alt="">
                                 </ng-container>
                                 <ng-template #elseImageProfile>
+                                    <ng-container *ngIf="!!data!.imageURL; else elseNameUser">
+                                        <img class="icon-image" [src]="apiBaseURL + data.imageURL + '/image'" alt="">
+                                    </ng-container>
+                                </ng-template>
+                                <ng-template #elseNameUser>
                                     <div class="donator-contro">
                                         <span>{{data.Username || data.name || data.displayName || data.firstName |
                                             slice:
