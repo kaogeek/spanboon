@@ -102,7 +102,6 @@ export class AuthenManager {
       let headers = new HttpHeaders({
         'Content-Type': 'application/json',
       });
-
       if (mode !== undefined || mode !== "") {
         headers = headers.set('mode', mode);
       }
@@ -120,9 +119,9 @@ export class AuthenManager {
         this.token = result.token;
         this.user = result.user;
         localStorage.setItem(TOKEN_KEY, result.token);
-        localStorage.setItem(TOKEN_MODE_KEY, undefined);
+        localStorage.setItem(TOKEN_MODE_KEY, mode);
         sessionStorage.setItem(TOKEN_KEY, result.token);
-        sessionStorage.setItem(TOKEN_MODE_KEY, undefined);
+        sessionStorage.setItem(TOKEN_MODE_KEY, mode);
 
         resolve(result);
       }).catch((error: any) => {
@@ -179,9 +178,9 @@ export class AuthenManager {
       let url: string = this.baseURL + '/login';
       const tokenFCM = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
       let body: any = {
-        twitterOauthToken:data.twitterOauthToken,
-        twitterOauthTokenSecret:data.twitterOauthTokenSecret,
-        twitterUserId:data.twitterUserId,
+        twitterOauthToken: data.twitterOauthToken,
+        twitterOauthTokenSecret: data.twitterOauthTokenSecret,
+        twitterUserId: data.twitterUserId,
         tokenFCM: tokenFCM,
         deviceName: this.myBrowser(),
       };

@@ -72,14 +72,16 @@
                         <div class="profile-card">
                             <div class="profile-box">
                                 <div class="wrapper-img">
-                                    <div class="icon-social"
-                                        [ngClass]="{'facebook': mockDataMergeSocial.social === 'FACEBOOK' , 'twitter': mockDataMergeSocial.social === 'TWITTER', 'google': mockDataMergeSocial.social === 'GOOGLE', 'email': mockDataMergeSocial.social === 'EMAIL'}">
-                                        <img class="icon-social-pic"
-                                            [src]="mockDataMergeSocial.social === 'FACEBOOK' ? '../../../../assets/img/facebook-logo.svg' : (mockDataMergeSocial.social === 'TWITTER' ? '../../../../assets/img/twitter.svg' : (mockDataMergeSocial.social === 'GOOGLE' ? '../../../../assets/img/google.svg' : '../../../../assets/img/logo/mfp.svg'))">
-                                    </div>
-                                    <ng-container
-                                        *ngIf="dataUser.data.imageURL !== '' && dataUser.data.imageURL !== undefined && dataUser.data.imageURL !== null ; else elsePhotoSocial">
-                                        <img class="social-pic" [src]="apiBaseURL+dataUser.data.imageURL+'/image'" />
+                                    <ng-container>
+                                        <div class="icon-social"
+                                            [ngClass]="{'facebook': mockDataMergeSocial.social === 'FACEBOOK' , 'twitter': mockDataMergeSocial.social === 'TWITTER', 'google': mockDataMergeSocial.social === 'GOOGLE', 'email': mockDataMergeSocial.social === 'EMAIL'}">
+                                            <img class="icon-social-pic"
+                                                [src]="mockDataMergeSocial.social === 'FACEBOOK' ? '../../../../assets/img/facebook-logo.svg' : (mockDataMergeSocial.social === 'TWITTER' ? '../../../../assets/img/twitter.svg' : (mockDataMergeSocial.social === 'GOOGLE' ? '../../../../assets/img/google.svg' : '../../../../assets/img/logo/mfp.svg'))">
+                                        </div>
+                                    </ng-container>
+                                    <ng-container *ngIf="!!dataUser!.data!.imageURL; else elsePhotoSocial">
+                                        <img class="social-pic"
+                                            [src]="apiBaseURL + dataUser.data.imageURL + '/image'" />
                                     </ng-container>
                                     <ng-template #elsePhotoSocial>
                                         <div class="not-image">
@@ -101,14 +103,16 @@
                         <div class="profile-card">
                             <div class="profile-box">
                                 <div class="wrapper-img">
+                                    <!-- <ng-container *ngIf="checkAuthUser(dataUser.authUser)"> -->
                                     <div class="icon-social"
                                         [ngClass]="{'facebook': social.socialLogin === 'FACEBOOK' , 'twitter': social.socialLogin === 'TWITTER', 'google': social.socialLogin === 'GOOGLE', 'email': social.socialLogin === 'EMAIL'}">
                                         <img class="icon-social-pic"
                                             [src]="social.socialLogin === 'FACEBOOK' ? '../../../../assets/img/facebook-logo.svg' : (social.socialLogin === 'TWITTER' ? '../../../../assets/img/twitter.svg' : (social.socialLogin === 'GOOGLE' ? '../../../../assets/img/google.svg' : '../../../../assets/img/logo/mfp.svg'))">
                                     </div>
-                                    <ng-container
-                                        *ngIf="dataUser.data.imageURL !== '' && dataUser.data.imageURL !== undefined && dataUser.data.imageURL !== null ; else elsePhoto">
-                                        <img class="social-pic" [src]="apiBaseURL+dataUser.data.imageURL+'/image'" />
+                                    <!-- </ng-container> -->
+                                    <ng-container *ngIf="!!dataUser!.data!.imageURL; else elsePhoto">
+                                        <img class="social-pic"
+                                            [src]="apiBaseURL + dataUser.data.imageURL + '/image'" />
                                     </ng-container>
                                     <ng-template #elsePhoto>
                                         <div class="not-image">

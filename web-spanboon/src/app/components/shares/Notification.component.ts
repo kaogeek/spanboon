@@ -5,20 +5,14 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
  */
 
-import { SimpleChanges } from "@angular/core";
-import { Component, Input, OnInit, EventEmitter } from "@angular/core";
+import { Component, EventEmitter, Input, OnInit, SimpleChanges } from "@angular/core";
 import { MatDialog } from "@angular/material";
 import { Router } from "@angular/router";
-import { environment } from "src/environments/environment";
-import { CHAT_MESSAGE_TYPE } from "../../../app/ChatMessageTypes";
-import {
-  AuthenManager,
-  NotificationFacade,
-  AssetFacade,
-} from "../../services/services";
-import { ObservableManager } from "../../services/ObservableManager.service";
+import { AuthenManager } from "src/app/services/AuthenManager.service";
 import { AbstractPage } from "../pages/AbstractPage";
-import { AuthenCheckPage } from "../../components/pages/AuthenCheckPage.component";
+import { environment } from "src/environments/environment";
+import { NotificationFacade } from "src/app/services/facade/NotificationFacade.service";
+import { ObservableManager } from "src/app/services/ObservableManager.service";
 
 @Component({
   selector: "btn-notification",
@@ -26,305 +20,31 @@ import { AuthenCheckPage } from "../../components/pages/AuthenCheckPage.componen
 })
 export class Notification extends AbstractPage implements OnInit {
   @Input()
-  protected text: string = "ข้อความ";
-  @Input()
-  protected time: string = "3 นาทีที่แล้ว";
-  @Input()
-  protected color: string = "#ffffff";
-  @Input()
-  protected bgColor: string = "";
-  @Input()
-  protected class: string | [string];
-  @Input()
-  protected crColor: string = "";
-  @Input()
-  protected link: string = "#";
-  @Input()
   public noti: any;
 
-  public notiisAll: any[] = [];
-  public notiisRead: any[] = [];
-  public notiisTable: any[] = [];
-  public messagelist: any[] = [];
-  public messagelist2: any[] = [];
+  private observManager: ObservableManager;
+  public dataNotiRead: any[] = [];
 
-  public notiOffset: number = 0;
-  public linkPost: string;
   public preload: boolean;
   public apiBaseURL = environment.apiBaseURL;
 
-  public timeOut: boolean;
-  public message: any = null;
-  public slideNoti: boolean;
   public isNotiAll: boolean = true;
-  public isScrollNoti: boolean = false;
-  public isObs: boolean;
-
-  public mockmessage4: object[] = [
-    {
-      notification: {
-        title: "การแจ้งเตือนใหม่",
-        body: "แมวสวัดดีปีใหม่ และ ไก่สดCPส่งที่KFC ได้แชร์โพสต์ของ หมูหมักหลักสิบ",
-        image:
-          "https://faithandbacon.com/wp-content/uploads/2019/11/animal-ape-banana-cute-321552-min-scaled.jpg",
-        status: "COMMENT",
-        isRred: true,
-      },
-    },
-    {
-      notification: {
-        title: "การแจ้งเตือนใหม่",
-        body: "ไก่จ๋าหนีข้าทำไม และ แมวตัวนี้สีดำ ได้แชร์โพสต์ของ หนูไงจะแมวไรละ",
-        image:
-          "https://faithandbacon.com/wp-content/uploads/2019/11/animal-ape-banana-cute-321552-min-scaled.jpg",
-        status: "COMMENT",
-        isRred: false,
-      },
-    },
-    {
-      notification: {
-        title: "การแจ้งเตือนใหม่",
-        body: "ตู่อยู่ต่อไม่รอแล้วนะ ดูการเติบโตของเพจ พลังประชาชนคนจนทั้งประเทศ",
-        image:
-          "https://faithandbacon.com/wp-content/uploads/2019/11/animal-ape-banana-cute-321552-min-scaled.jpg",
-        status: "COMMENT",
-        isRred: false,
-      },
-    },
-    {
-      notification: {
-        title: "การแจ้งเตือนใหม่",
-        body: "Treerayuth และ TreeraHUT ส่งรูปภาพไปให้ Onraor",
-        image:
-          "https://image.sistacafe.com/images/uploads/summary/image/86991/c0d2af28b7a4548d686cc7a01a38263f.jpg",
-        status: "LIKE",
-        isRred: false,
-      },
-    },
-    {
-      notification: {
-        title: "การแจ้งเตือนใหม่",
-        body: "ผักชีโลละ30 และ 30รักษาทุกโรค ถูกใจโพสต์ของ สวัดดีคนไทย",
-        image:
-          "https://image.sistacafe.com/images/uploads/summary/image/86991/c0d2af28b7a4548d686cc7a01a38263f.jpg",
-        status: "LIKE",
-        isRred: false,
-      },
-    },
-    {
-      notification: {
-        title: "การแจ้งเตือนใหม่",
-        body: "เสี่ยชัตสายชัก แสดงความคิดเห็นโพสต์ของ โอ๋นวลน้อง",
-        image:
-          "https://image.sistacafe.com/images/uploads/summary/image/86991/c0d2af28b7a4548d686cc7a01a38263f.jpg",
-        status: "LIKE",
-        isRred: false,
-      },
-    },
-    {
-      notification: {
-        title: "การแจ้งเตือนใหม่",
-        body: "แมวสวัดดีปีใหม่ และ ไก่สดCPส่งที่KFC ได้แชร์โพสต์ของ หมูหมักหลักสิบ",
-        image:
-          "https://positioningmag.com/wp-content/uploads/2019/05/open_ais-1.jpg",
-        status: "repost",
-        isRred: false,
-      },
-    },
-    {
-      notification: {
-        title: "การแจ้งเตือนใหม่",
-        body: "ไก่จ๋าหนีข้าทำไม และ แมวตัวนี้สีดำ ได้แชร์โพสต์ของ หนูไงจะแมวไรละ",
-        image:
-          "https://positioningmag.com/wp-content/uploads/2019/05/open_ais-1.jpg",
-        status: "repost",
-        isRred: true,
-      },
-    },
-    {
-      notification: {
-        title: "การแจ้งเตือนใหม่",
-        body: "ตู่อยู่ต่อไม่รอแล้วนะ ดูการเติบโตของเพจ พลังประชาชนคนจนทั้งประเทศ",
-        image:
-          "https://positioningmag.com/wp-content/uploads/2019/05/open_ais-1.jpg",
-        status: "repost",
-        isRred: false,
-      },
-    },
-    {
-      notification: {
-        title: "การแจ้งเตือนใหม่",
-        body: "Treerayuth และ TreeraHUT ส่งรูปภาพไปให้ Onraor",
-        image:
-          "http://2.bp.blogspot.com/-EIvtDqptdvo/VMg93TF620I/AAAAAAAAMAg/K7cekcFlJys/w640/funnymonkey12108thinks.jpg",
-        status: "share",
-        isRred: false,
-      },
-    },
-    {
-      notification: {
-        title: "การแจ้งเตือนใหม่",
-        body: "ผักชีโลละ30 และ 30รักษาทุกโรค ถูกใจโพสต์ของ สวัดดีคนไทย",
-        image:
-          "http://2.bp.blogspot.com/-EIvtDqptdvo/VMg93TF620I/AAAAAAAAMAg/K7cekcFlJys/w640/funnymonkey12108thinks.jpg",
-        status: "share",
-        isRred: true,
-      },
-    },
-    {
-      notification: {
-        title: "การแจ้งเตือนใหม่",
-        body: "เสี่ยชัตสายชัก แสดงความคิดเห็นโพสต์ของ โอ๋นวลน้อง",
-        image:
-          "http://2.bp.blogspot.com/-EIvtDqptdvo/VMg93TF620I/AAAAAAAAMAg/K7cekcFlJys/w640/funnymonkey12108thinks.jpg",
-        status: "share",
-        isRred: false,
-      },
-    },
-    {
-      notification: {
-        title: "การแจ้งเตือนใหม่",
-        body: "แมวสวัดดีปีใหม่ และ ไก่สดCPส่งที่KFC ได้แชร์โพสต์ของ หมูหมักหลักสิบ",
-        image:
-          "https://image.bangkokbiznews.com/uploads/images/md/2022/05/w3DH0pBZXO4yN75OYWBj.webp?x-image-process=style/MD",
-        status: "POST",
-        isRred: true,
-      },
-    },
-    {
-      notification: {
-        title: "การแจ้งเตือนใหม่",
-        body: "ไก่จ๋าหนีข้าทำไม และ แมวตัวนี้สีดำ ได้แชร์โพสต์ของ หนูไงจะแมวไรละ",
-        image:
-          "https://image.bangkokbiznews.com/uploads/images/md/2022/05/w3DH0pBZXO4yN75OYWBj.webp?x-image-process=style/MD",
-        status: "POST",
-        isRred: true,
-      },
-    },
-    {
-      notification: {
-        title: "การแจ้งเตือนใหม่",
-        body: "ตู่อยู่ต่อไม่รอแล้วนะ ดูการเติบโตของเพจ พลังประชาชนคนจนทั้งประเทศ",
-        image:
-          "https://image.bangkokbiznews.com/uploads/images/md/2022/05/w3DH0pBZXO4yN75OYWBj.webp?x-image-process=style/MD",
-        status: "POST",
-        isRred: false,
-      },
-    },
-    {
-      notification: {
-        title: "การแจ้งเตือนใหม่",
-        body: "Treerayuth และ TreeraHUT ส่งรูปภาพไปให้ Onraor",
-        image:
-          "https://static.posttoday.com/media/content/2019/09/05/1F4A465E09344344A3CA7241645E4FB4.jpg",
-        status: "fullfill",
-        isRred: true,
-      },
-    },
-    {
-      notification: {
-        title: "การแจ้งเตือนใหม่",
-        body: "ผักชีโลละ30 และ 30รักษาทุกโรค ถูกใจโพสต์ของ สวัดดีคนไทย",
-        image:
-          "https://static.posttoday.com/media/content/2019/09/05/1F4A465E09344344A3CA7241645E4FB4.jpg",
-        status: "fullfill",
-        isRred: true,
-      },
-    },
-    {
-      notification: {
-        title: "การแจ้งเตือนใหม่",
-        body: "เสี่ยชัตสายชัก แสดงความคิดเห็นโพสต์ของ โอ๋นวลน้อง",
-        image:
-          "https://static.posttoday.com/media/content/2019/09/05/1F4A465E09344344A3CA7241645E4FB4.jpg",
-        status: "fullfill",
-        isRred: false,
-      },
-    },
-  ];
-
-  private mainPostLink: string = window.location.origin;
-  private observManager: ObservableManager;
-
+  public message: any = null;
   public router: Router;
   public authenManager: AuthenManager;
-  public assetFacade: AssetFacade;
   public notificationFacade: NotificationFacade;
 
-  constructor(
-    router: Router,
+  constructor(router: Router,
     authenManager: AuthenManager,
-    dialog: MatDialog,
-    observManager: ObservableManager,
-    assetFacade: AssetFacade,
-    notificationFacade: NotificationFacade
-  ) {
+    dialog: MatDialog, notificationFacade: NotificationFacade, observManager: ObservableManager) {
     super(null, authenManager, dialog, router);
-    this.router = router;
     this.authenManager = authenManager;
-    this.observManager = observManager;
-    this.assetFacade = assetFacade;
     this.notificationFacade = notificationFacade;
-
-    this.observManager.createSubject(AuthenCheckPage.NOTI_CHECK_LOAD_SUBJECT);
+    this.observManager = observManager;
 
     this.preload = true;
-
-    this.observManager.subscribe(
-      AuthenCheckPage.NOTI_CHECK_SUBJECT,
-      (result: any) => {
-        setTimeout(() => {
-          this.isObs = true;
-          this.notiOffset + this.noti.length;
-          this.checkNotification();
-        }, 300);
-      }
-    );
-
-    this.observManager.subscribe(
-      AuthenCheckPage.NOTI_CHECK_LOAD_SUBJECT,
-      (result: any) => {
-        setTimeout(() => {
-          this.notiOffset + this.noti.length;
-          this.checkNotification();
-        }, 300);
-      }
-    );
   }
 
-  public ngAfterViewInit(): void {
-    setTimeout(() => {
-      this.checkNotification();
-      setTimeout(() => {
-        this.preload = false;
-      }, 1000);
-    }, 1000);
-  }
-
-  public ngOnInit(): void {
-    for (let index = 0; index < 3; index++) {
-      this.setData();
-    }
-  }
-
-  public scroll(event: any) {
-    if (!this.isScrollNoti) {
-      if (
-        event.target.offsetHeight + event.target.scrollTop >=
-        event.target.scrollHeight - 200
-      ) {
-        this.isScrollNoti = true;
-        setTimeout(() => {
-          this.observManager.publish(AuthenCheckPage.NOTI_CHECK_LOAD_SUBJECT, {
-            data: this.notiOffset,
-          });
-          setTimeout(() => {
-            this.isScrollNoti = false;
-          }, 500);
-        }, 1500);
-      }
-    }
-  }
 
   isPageDirty(): boolean {
     // throw new Error('Method not implemented.');
@@ -339,145 +59,60 @@ export class Notification extends AbstractPage implements OnInit {
     return;
   }
 
-  isActive(): boolean {
-    let notification = document.getElementsByClassName("wrapper-notification");
-    return notification && notification.length > 0;
-  }
-  public isLogin(): boolean {
-    let user = this.authenManager.getCurrentUser();
-    return user !== undefined && user !== null;
-  }
-
-  private checkNotification() {
-    if (
-      this.notiisAll &&
-      this.notiisAll.length !== this.noti &&
-      this.noti !== undefined &&
-      this.noti !== null &&
-      this.noti.length
-    ) {
-      for (let noti of this.noti) {
-        if (!noti.notification.isRead) {
-          this.isObs
-            ? this.notiisRead.splice(0, 0, {
-              notification: {
-                title: "การแจ้งเตือนใหม่",
-                body: noti.notification.title,
-                image: !!noti!.sender!.imageURL ? this.apiBaseURL + noti.sender.imageURL + '/image' : '',
-                status: noti.notification.type,
-                isRred: noti.notification.isRead,
-                id: noti.notification.id,
-                link: noti.notification.link,
-                createdDate: noti.notification.createdDate,
-              },
-            })
-            : this.notiisRead.push({
-              notification: {
-                title: "การแจ้งเตือนใหม่",
-                body: noti.notification.title,
-                image: !!noti!.sender!.imageURL ? this.apiBaseURL + noti.sender.imageURL + '/image' : '',
-                status: noti.notification.type,
-                isRred: noti.notification.isRead,
-                id: noti.notification.id,
-                link: noti.notification.link,
-                createdDate: noti.notification.createdDate,
-              },
-            });
-        }
-        this.notiOffset++;
-        noti.notification.linkPath = this.mainPostLink + noti.notification.link;
-        this.isObs
-          ? this.notiisAll.splice(0, 0, {
-            notification: {
-              title: "การแจ้งเตือนใหม่",
-              body: noti.notification.title,
-              image: !!noti!.sender!.imageURL ? this.apiBaseURL + noti.sender.imageURL + '/image' : '',
-              status: noti.notification.type,
-              isRred: noti.notification.isRead,
-              id: noti.notification.id,
-              link: noti.notification.link,
-              createdDate: noti.notification.createdDate,
-            },
-          })
-          : this.notiisAll.push({
-            notification: {
-              title: "การแจ้งเตือนใหม่",
-              body: noti.notification.title,
-              image: !!noti!.sender!.imageURL ? this.apiBaseURL + noti.sender.imageURL + '/image' : '',
-              status: noti.notification.type,
-              isRred: noti.notification.isRead,
-              id: noti.notification.id,
-              link: noti.notification.link,
-              createdDate: noti.notification.createdDate,
-            },
-          });
+  public ngOnInit(): void {
+    this.observManager.subscribe('notification', (result: any) => {
+      if (result) {
+        this.switeNotiType();
       }
-      this.setNotification();
-    }
+    });
   }
 
-  public switeNotiType() {
-    this.isNotiAll = !this.isNotiAll;
-    this.setNotification();
-  }
-
-  public setNotification() {
-    if (this.isNotiAll) {
-      this.notiisTable = this.notiisAll;
-    } else {
-      this.notiisTable = this.notiisRead;
-    }
-    this.isObs = false;
-  }
-
-  public markReadNoti(data) {
-    this.notificationFacade.markRead(data.notification.id);
-  }
-
-  public redirectNotification(data) {
-    if (data.notification.type === CHAT_MESSAGE_TYPE.LIKE) {
-      this.router.navigateByUrl(data.notification.link);
-    } else if (data.notification.type === CHAT_MESSAGE_TYPE.CHAT) {
-      this.router.navigateByUrl("/fulfill", {
-        state: { room: data.notification.data },
-      });
-    }
-  }
-
-  public markReadNotiAll() {
-    this.notificationFacade.clearAll();
-    this.showAlertDevelopDialog();
+  public ngOnChanges(changes: SimpleChanges): void {
+    this.switeNotiType();
   }
 
   public isOpened() {
-    // if (this.notiisAll && this.notiisAll.length > 0) {
-    //   for (let msg of this.notiisAll) {
-    //     this.notificationFacade.markRead(msg.notification.id);
-    //     this.notiisRead = [];
-    //   }
-    // }
   }
 
-  public setData() {
-    this.messagelist.push(
-      this.mockmessage4[Math.floor(Math.random() * this.mockmessage4.length)]
-    );
-    this.messagelist2.push(
-      this.mockmessage4[Math.floor(Math.random() * this.mockmessage4.length)]
-    );
-    // this.messagelist.push(data);
-    // setInterval(() => {
-    //   this.mockMessage();
-    // }, 1000);
+  public clickNotification() {
+    this.isNotiAll = !this.isNotiAll;
+    this.switeNotiType();
   }
 
-  // public mockMessage() {
-  //   if (this.timeOut) return;
-  //   if (this.messagelist.length !== 0) {
-  //     this.timeOut = true;
-  //     this.message = this.messagelist[0];
-  //     this.messagelist.splice(0, 1);
-  //     this.slideNoti = true;
-  //   };
-  // }
+  public ngOnDestroy(): void {
+    this.observManager.complete('notification');
+  }
+
+  public switeNotiType() {
+    let dataRead: any[] = [];
+    for (const notiRead of this.noti) {
+      if (!notiRead.notification.isRead) {
+        dataRead.push(notiRead);
+      }
+    }
+
+    this.dataNotiRead = dataRead;
+  }
+
+  public clickIsRead(index: number) {
+    this.notificationFacade.markRead(this.isNotiAll ? this.noti[index].notification.id : this.dataNotiRead[index].notification.id).then((res) => {
+      if (res) {
+        if (this.isNotiAll) {
+          this.noti[index].notification.isRead = true;
+        } else {
+          this.dataNotiRead[index].notification.isRead = true;
+          this.dataNotiRead.splice(index, 1);
+        }
+      }
+    }).catch((error) => {
+      if (error) {
+        console.log(error);
+      }
+    });
+  }
+
+  public isActive(): boolean {
+    let notification = document.getElementsByClassName("wrapper-notification");
+    return notification && notification.length > 0;
+  }
 }
