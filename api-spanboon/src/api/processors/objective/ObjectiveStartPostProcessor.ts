@@ -8,12 +8,13 @@
 import { AbstractTypeSectionProcessor } from '../AbstractTypeSectionProcessor';
 import { PageObjectiveService } from '../../services/PageObjectiveService';
 import { PostsService } from '../../services/PostsService';
+import { S3Service } from '../../services/S3Service';
 
 export class ObjectiveStartPostProcessor extends AbstractTypeSectionProcessor {
 
     public static TYPE = 'OBJECTIVE_START';
 
-    constructor(private pageObjectiveService: PageObjectiveService, private postsService: PostsService) {
+    constructor(private pageObjectiveService: PageObjectiveService, private postsService: PostsService, private s3Service: S3Service) {
         super();
         this.type = ObjectiveStartPostProcessor.TYPE;
     }
@@ -69,6 +70,20 @@ export class ObjectiveStartPostProcessor extends AbstractTypeSectionProcessor {
                 let result = undefined;
                 if (searchResult !== undefined && searchResult.length > 0) {
                     const post = searchResult[0];
+
+                    if (!!post.s3CoverImage) {
+                        const signUrl = await this.s3Service.getConfigedSignedUrl(post.s3CoverImage);
+                        Object.assign(post, { coverSignURL: (signUrl ? signUrl : '') });
+                        delete post.s3CoverImage;
+                    }
+
+                    if (!!post.postGallery) {
+                        for (const postGallery of post.postGallery) {
+                            const signUrl = await this.s3Service.getConfigedSignedUrl(postGallery.s3ImageURL);
+                            Object.assign(postGallery, { imageSignURL: (signUrl ? signUrl : '') });
+                            delete postGallery.s3ImageURL;
+                        }
+                    }
 
                     let isLike = false;
                     let isRepost = false;

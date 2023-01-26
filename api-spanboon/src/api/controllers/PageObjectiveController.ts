@@ -46,6 +46,7 @@ import { ObjectiveShareProcessor } from '../processors/objective/ObjectiveShareP
 import { ObjectivePostLikedProcessor } from '../processors/objective/ObjectivePostLikedProcessor';
 import { DateTimeUtil } from '../../utils/DateTimeUtil';
 import { SearchFilter } from './requests/SearchFilterRequest';
+import { S3Service } from '../services/S3Service';
 
 @JsonController('/objective')
 export class ObjectiveController {
@@ -60,7 +61,8 @@ export class ObjectiveController {
         private postsCommentService: PostsCommentService,
         private fulfillmentCaseService: FulfillmentCaseService,
         private socialPostService: SocialPostService,
-        private userLikeService: UserLikeService
+        private userLikeService: UserLikeService,
+        private s3Service: S3Service
     ) { }
 
     // Find PageObjective API
@@ -248,8 +250,8 @@ export class ObjectiveController {
         } else {
             hashTagList = await this.hashTagService.find();
         }
-        
-        if(hashTagList.length === 0){
+
+        if (hashTagList.length === 0) {
             const successResponse = ResponseUtil.getSuccessResponse('Successfully Search PageObjective', []);
             return res.status(200).send(successResponse);
         }
@@ -553,7 +555,7 @@ export class ObjectiveController {
 
         if (objective) {
             // generate timeline
-            const page = await this.pageService.findOne({ _id: objective.pageId, banned: false });
+            const page = await this.pageService.findOne({ _id: objective.pageId, banned: false }, { signURL: true });
             const followingUsers = await this.userFollowService.sampleUserFollow(objId, SUBJECT_TYPE.OBJECTIVE, 5);
             let isFollowed = false;
             if (userId !== null && userId !== undefined && userId !== '') {
@@ -561,6 +563,12 @@ export class ObjectiveController {
                 if (userPageObjFollow !== undefined) {
                     isFollowed = true;
                 }
+            }
+
+            if (objective.s3IconURL !== undefined && objective.s3IconURL !== '') {
+                const signUrl = await this.s3Service.getConfigedSignedUrl(objective.s3IconURL);
+                Object.assign(objective, { iconSignURL: (signUrl ? signUrl : '') });
+                delete objective.s3IconURL;
             }
 
             const pageObjTimeline = new PageObjectiveTimelineResponse();
@@ -588,7 +596,7 @@ export class ObjectiveController {
             pageObjTimeline.timelines = [];
 
             // fix for first section
-            const startProcessor = new ObjectiveStartPostProcessor(this.pageObjectiveService, this.postsService);
+            const startProcessor = new ObjectiveStartPostProcessor(this.pageObjectiveService, this.postsService, this.s3Service);
             startProcessor.setData({
                 objectiveId: objId,
                 userId
@@ -682,7 +690,7 @@ export class ObjectiveController {
             }
 
             // current post section
-            const lastestPostProcessor = new ObjectiveLastestProcessor(this.postsService);
+            const lastestPostProcessor = new ObjectiveLastestProcessor(this.postsService, this.s3Service);
             lastestPostProcessor.setData({
                 objectiveId: objId,
                 limit: 10,

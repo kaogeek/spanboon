@@ -17,6 +17,8 @@ import { HashTagService } from '../services/HashTagService';
 import { NeedsService } from '../services/NeedsService';
 import { LIKE_TYPE } from '../../constants/LikeType';
 import { ObjectID } from 'mongodb';
+import { ImageUtil } from '../../utils/ImageUtil';
+import { AssetService } from './AssetService';
 
 @Service()
 export class PostsService {
@@ -27,7 +29,9 @@ export class PostsService {
         private postsCommentService: PostsCommentService,
         private userLikeService: UserLikeService,
         private hashTagService: HashTagService,
-        private needsService: NeedsService) { }
+        private needsService: NeedsService,
+        private assetService: AssetService
+    ) { }
 
     // find post
     public async find(findCondition: any): Promise<Posts[]> {
@@ -60,8 +64,8 @@ export class PostsService {
     }
 
     // deleteMany
-    public async deleteMany(query:any,options?:any): Promise<any>{
-        return await this.postsRepository.deleteMany(query,options);
+    public async deleteMany(query: any, options?: any): Promise<any> {
+        return await this.postsRepository.deleteMany(query, options);
     }
 
     // aggregate post
@@ -254,6 +258,15 @@ export class PostsService {
                     result = await this.hashTagService.find({
                         _id: { $in: hashTagObjIds }
                     });
+                }
+
+                if (!!result) {
+                    for (const postHashTag of result) {
+                        if (!!postHashTag.iconURL) {
+                            const signURL = await ImageUtil.generateAssetSignURL(this.assetService, postHashTag.iconURL, { prefix: '/file/' });
+                            Object.assign(postHashTag, { iconSignURL: (signURL ? signURL : '') });
+                        }
+                    }
                 }
 
                 resolve(result);
