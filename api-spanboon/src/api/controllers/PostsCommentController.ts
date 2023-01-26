@@ -241,8 +241,8 @@ export class PostsCommentController {
                     if (postWho.pageId !== undefined && postWho.pageId !== null) {
                         const userName = await this.userService.findOne({ _id: postsComment.user });
                         const tokenFCMId = await this.deviceTokenService.find({ userId: getPost.ownerUser });
-                        const notificationComment = `${userName.id}${space}ได้แสดงความคิดเห็นต่อโพสต์ของเพจ${space}${page.name}`;
-                        const link = `/page/${page.id}/post/` + postWho.id;
+                        const notificationComment = `${userName.displayName}${space}ได้แสดงความคิดเห็นต่อโพสต์ของเพจ${space}${page.name}`;
+                        const link = `/post/` + postWho.id;
                         await this.pageNotificationService.notifyToPageUserFcm(
                             page.id,
                             undefined,
