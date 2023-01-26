@@ -349,10 +349,11 @@
                                         </ul>
                                         <div class="header-agreement">
                                             <div class="check-true" (click)="checkedClick()">
-                                                <mat-checkbox [disableRipple]="'true'" [(ngModel)]="checkedCon">
+                                                <mat-checkbox [disableRipple]="'true'"
+                                                    (change)="$event.checked = checkedCon">
+                                                    <span>ฉันได้อ่านข้อความที่กล่าวมา
+                                                        และยินยอมตามข้อกำหนดของ{{PLATFORM_NAME_TH}}</span>
                                                 </mat-checkbox>
-                                                <span>ฉันได้อ่านข้อความที่กล่าวมา
-                                                    และยินยอมตามข้อกำหนดของ{{PLATFORM_NAME_TH}}</span>
                                             </div>
                                         </div>
                                     </div>

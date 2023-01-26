@@ -6,12 +6,13 @@
  */
 
 export class ResponseUtil {
-    public static getSuccessResponse(msg: string, value: any): any {
+    public static getSuccessResponse(msg: string, value: any, countIsReadL?: number): any {
         if (value !== null || value !== undefined || value !== '') {
             const sucessRes: any = {
                 status: 1,
                 message: msg,
                 data: value,
+                count: countIsReadL,
             };
             return sucessRes;
         } else {
@@ -23,6 +24,7 @@ export class ResponseUtil {
         }
 
     }
+
     public static getErrorResponse(msg: string, err: any): any {
         if (err !== null || err !== undefined || err !== '') {
             const errorResponse: any = {
@@ -41,13 +43,13 @@ export class ResponseUtil {
     }
 
     public static getSuccessResponseAuth(msg: string, value: any, authen: any, pic?: any): any {
-        if (value !== null || value !== undefined || value !== '' ) {
+        if (value !== null || value !== undefined || value !== '') {
             const sucessRes: any = {
                 status: 2,
                 message: msg,
                 data: value,
                 authUser: authen,
-                picture:pic,
+                picture: pic,
             };
             return sucessRes;
         }
