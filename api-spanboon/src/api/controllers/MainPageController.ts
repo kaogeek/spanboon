@@ -679,7 +679,7 @@ export class MainPageController {
             let createBy: any; // {id,type}
             let objective: string;
             let emergencyEvent: string;
-            let emergencyEventTag:string;
+            // let emergencyEventTag:string;
             let startDate: string;
             let endDate: string;
             let startViewCount: number;
@@ -714,7 +714,7 @@ export class MainPageController {
                 createBy = data.createBy;
                 objective = data.objective;
                 emergencyEvent = data.emergencyEvent;
-                emergencyEventTag = data.emergencyEventTag;
+                // emergencyEventTag = data.emergencyEventTag;
                 startDate = data.startDate;
                 endDate = data.endDate;
                 startViewCount = data.startViewCount;
