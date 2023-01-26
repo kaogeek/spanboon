@@ -372,12 +372,12 @@ export class AboutPage extends AbstractPage implements OnInit {
                     if (data.label === 'หน่วยงาน') {
                         this.dataAboutPage = data;
                     }
-                    if(data.label === 'ละติจูด'){
+                    if (data.label === 'ละติจูด') {
                         this.latitudeAboutPage = data;
-                    }   
-                    if(data.label === 'ลองจิจูด'){
+                    }
+                    if (data.label === 'ลองจิจูด') {
                         this.longtitudeAboutPage = data;
-                    }  
+                    }
 
                 }
                 this.cloneAboutPage = JSON.parse(JSON.stringify(this.resAboutPage));
@@ -402,34 +402,34 @@ export class AboutPage extends AbstractPage implements OnInit {
             this.isActiveButton2 = false;
         } else {
             // if (text.length > 0) {
-                this.isActiveButton2 = true;
-                let pattern = text.match('^[A-Za-z0-9_.]*$');
-                if (!pattern) {
+            this.isActiveButton2 = true;
+            let pattern = text.match('^[A-Za-z0-9_.]*$');
+            if (!pattern) {
+                this.uuid = false;
+                document.getElementById('pageUsername').style.border = '2px solid red';
+                document.getElementById('pageUsername').focus();
+            } else {
+                let body = {
+                    pageUsername: text
+                }
+                this.uuid = true;
+                document.getElementById('pageUsername').style.border = '2px solid green';
+                this.pageFacade.checkUniqueId(this.pageId, body).then((res) => {
+                    if (res && res.data) {
+                        this.uuid = res.data;
+                        document.getElementById('pageUsername').style.border = '2px solid green';
+                    } else {
+                        this.uuid = res.error;
+                        document.getElementById('pageUsername').style.border = '2px solid red';
+                    }
+                    document.getElementById('pageUsername').focus();
+                }).catch((err) => {
                     this.uuid = false;
                     document.getElementById('pageUsername').style.border = '2px solid red';
                     document.getElementById('pageUsername').focus();
-                } else {
-                    let body = {
-                        pageUsername: text
-                    }
-                    this.uuid = true;
-                    document.getElementById('pageUsername').style.border = '2px solid green';
-                    this.pageFacade.checkUniqueId(this.pageId, body).then((res) => {
-                        if (res && res.data) {
-                            this.uuid = res.data;
-                            document.getElementById('pageUsername').style.border = '2px solid green';
-                        } else {
-                            this.uuid = res.error;
-                            document.getElementById('pageUsername').style.border = '2px solid red';
-                        }
-                        document.getElementById('pageUsername').focus();
-                    }).catch((err) => {
-                        this.uuid = false;
-                        document.getElementById('pageUsername').style.border = '2px solid red';
-                        document.getElementById('pageUsername').focus();
-                    });
+                });
 
-                }
+            }
             // }
         }
     }
@@ -577,9 +577,9 @@ export class AboutPage extends AbstractPage implements OnInit {
         this.pageFacade.updateProfilePage(this.pageId, body).then((res) => {
             if (res.data) {
                 this.resDataPage = res.data;
-                if(this.resDataPage.pageUsername === ""){
+                if (this.resDataPage.pageUsername === "") {
                     this.router.navigateByUrl('/page/' + this.pageId + '/settings');
-                }else {
+                } else {
 
                     this.router.navigateByUrl('/page/' + this.resDataPage.pageUsername + '/settings');
                 }
@@ -610,7 +610,7 @@ export class AboutPage extends AbstractPage implements OnInit {
             } else {
                 this.resDataPage.name = this.cloneData.name;
             }
-        } else if (index === 2) { 
+        } else if (index === 2) {
             if (this.cloneData && this.cloneData.pageUsername === undefined) {
                 this.resDataPage.pageUsername = '';
             } else {
@@ -640,17 +640,17 @@ export class AboutPage extends AbstractPage implements OnInit {
                 if (!this.resDataPage.email.match(emailPattern)) {
                     document.getElementById('email').style.border = "1px solid red";
                     return document.getElementById("email").focus();
-                  } else {
+                } else {
                     document.getElementById('email').style.border = "unset";
-                  }
+                }
             } else {
                 let emailPattern = "[A-Za-z0-9._%-]+@[A-Za-z0-9._%-]+\\.[a-z]{2,3}";
                 if (!this.resDataPage.email.match(emailPattern)) {
                     document.getElementById('email').style.border = "1px solid red";
                     return document.getElementById("email").focus();
-                  } else {
+                } else {
                     document.getElementById('email').style.border = "unset";
-                  }
+                }
             }
         } else if (index === 8) {
             if (this.cloneData.lineId === undefined) {
@@ -745,7 +745,7 @@ export class AboutPage extends AbstractPage implements OnInit {
                 let indexValue = Number(index);
                 this.closeCard(indexValue);
             }).catch((err: any) => {
-                console.log('ere ', err)
+                console.log('err ', err)
             })
 
         } else {
@@ -785,7 +785,7 @@ export class AboutPage extends AbstractPage implements OnInit {
                     let indexValue = Number(this.indexCard);
                     this.closeCard(indexValue);
                 }).catch((err: any) => {
-                    console.log('ere ', err)
+                    console.log('err ', err)
                 })
             }
         }

@@ -145,6 +145,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   public type: string;
   public createdName: any;
   public emergency: any;
+  public emergencyId: any;
   public emergencyUrl: any;
   public objective: any;
   public objectiveUrl: any;
@@ -177,6 +178,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
 
   public postId: any
   public isFollow: boolean = true;
+  public isCheckEmer: boolean = false;
   public item: any;
   public sort: any;
   public widthBtn: any;
@@ -750,7 +752,6 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   }
 
   public async searchEmergency() {
-    this.isLoading = true;
     this.isLoadMorePageEmergency = true;
     const keywordFilter: any = {
       filter: {
@@ -788,7 +789,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       }
 
     }).catch((err: any) => {
-      console.log(err)
+      console.log("error", err)
       this.isLoading = false;
     });
   }
@@ -892,10 +893,12 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   }
 
   public getEmergency(data) {
-    if (data.item.selected == null && data.item.selected == undefined) {
+    if (data.event.checked === false) {
       this.emergency = '';
+      this.emergencyId = '';
     } else {
       this.emergency = data.item.hashTag;
+      this.emergencyId = data.item.hasTagObj._id;
     }
     this.searchTrendTag(true);
 
@@ -979,6 +982,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       createBy: this.userId,
       objective: this.objective ? this.objective : '',
       emergencyEventTag: this.emergency ? this.emergency : '',
+      emergencyEvent: this.emergencyId ? this.emergencyId : '',
       startDate: this.startDate && this.startDate.begin,
       endDate: this.startDate && this.startDate.end,
       startViewCount: this.startViewCount,
