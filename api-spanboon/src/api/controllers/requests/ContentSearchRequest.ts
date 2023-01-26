@@ -17,6 +17,7 @@ export class ContentSearchRequest extends SearchRequest {
     public createBy: any[]; // {id,type}
     public objective: string; // hashTag
     public emergencyEvent: string; // id
+    public emergencyEventTag:string;
     public startDate: string;
     public endDate: string;
     public startViewCount: number;
