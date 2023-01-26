@@ -84,6 +84,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
   public account_twitter: any;
   public isCheckDate: any;
   public checkedCon: boolean = false;
+  public isRegister: boolean = false;
 
   constructor(authenManager: AuthenManager,
     private authService: SocialAuthService,
@@ -207,84 +208,76 @@ export class RegisterPage extends AbstractPage implements OnInit {
   }
 
   public onClickregister(formData) {
-    const register = new User();
-    register.username = formData.email;
-    register.firstName = formData.firstName === undefined ? "" : formData.firstName;
-    register.lastName = formData.lastName === undefined ? "" : formData.lastName;
-    register.email = formData.email;
-    register.password = formData.password;
-    // unqueId
-    if (formData.username === undefined || formData.username === '') {
-      this.generatorUnqueId(formData.displayName).then((isVaild: any) => {
-        if (isVaild) {
-          register.uniqueId = formData.displayName;
-        } else {
-          let emailSubstring = formData.email.substring(1, 0);
-          let newUnique = formData.displayName + '.' + emailSubstring;
-          this.generatorUnqueId(newUnique).then((isVaild1: any) => {
-            if (isVaild1) {
-              register.uniqueId = newUnique;
-            }
-          }).catch((err: any) => {
-            console.log(err)
-          });
-        }
-      }).catch((err: any) => {
-        console.log(err)
-      });
-    } else {
-      register.uniqueId = formData.username;
-    }
-    register.birthdate = new Date(moment(formData.birthday).format('YYYY-MM-DD'));
-    register.birthdate.setHours(0);
-    register.birthdate.setMinutes(0);
-    register.birthdate.setSeconds(0);
-    register.displayName = formData.displayName;
-    register.gender = formData.gender;
-    register.customGender = formData.genderTxt === undefined ? "" : formData.genderTxt;
-    if (formData.displayName === '' || formData.displayName === undefined) {
-      this.active = true;
-      document.getElementById('displayName').style.border = "1px solid red";
-      return document.getElementById("displayName").focus();
-    } else {
-      document.getElementById('displayName').style.border = "unset";
-      this.active = false;
-    }
-    if (formData.email === '' || formData.email === undefined) {
-      this.activeEmail = true;
-      document.getElementById('email').style.border = "1px solid red";
-      return document.getElementById("email").focus();
-    } else {
-      document.getElementById('email').style.border = "unset";
-      this.activeEmail = false;
-    }
-    // mark
-    let emailPattern = "[A-Za-z0-9._%-]+@[A-Za-z0-9._%-]+\\.[a-z]{2,3}";
-    if (!formData.email.match(emailPattern)) {
-      this.activeEmail = true;
-      document.getElementById('email').style.border = "1px solid red";
-      return document.getElementById("email").focus();
-    } else {
-      document.getElementById('email').style.border = "unset";
-      this.activeEmail = false;
-    }
-
-    if (!this.uuid) {
-      return;
-    }
-
-    if (this.mode === "normal") {
-      if (formData.password === "" && formData.repassword === "") {
-        this.activePass = true;
-        document.getElementById('password').style.border = "1px solid red";
-        return document.getElementById("password").focus();
+    if (!this.isRegister) {
+      this.isRegister = true;
+      const register = new User();
+      register.username = formData.email;
+      register.firstName = formData.firstName === undefined ? "" : formData.firstName;
+      register.lastName = formData.lastName === undefined ? "" : formData.lastName;
+      register.email = formData.email;
+      register.password = formData.password;
+      // unqueId
+      if (formData.username === undefined || formData.username === '') {
+        this.generatorUnqueId(formData.displayName).then((isVaild: any) => {
+          if (isVaild) {
+            register.uniqueId = formData.displayName;
+          } else {
+            let emailSubstring = formData.email.substring(1, 0);
+            let newUnique = formData.displayName + '.' + emailSubstring;
+            this.generatorUnqueId(newUnique).then((isVaild1: any) => {
+              if (isVaild1) {
+                register.uniqueId = newUnique;
+              }
+            }).catch((err: any) => {
+              console.log(err)
+            });
+          }
+        }).catch((err: any) => {
+          console.log(err)
+        });
       } else {
-        document.getElementById('password').style.border = "unset";
-        this.activePass = false;
+        register.uniqueId = formData.username;
+      }
+      register.birthdate = new Date(moment(formData.birthday).format('YYYY-MM-DD'));
+      register.birthdate.setHours(0);
+      register.birthdate.setMinutes(0);
+      register.birthdate.setSeconds(0);
+      register.displayName = formData.displayName;
+      register.gender = formData.gender;
+      register.customGender = formData.genderTxt === undefined ? "" : formData.genderTxt;
+      if (formData.displayName === '' || formData.displayName === undefined) {
+        this.active = true;
+        document.getElementById('displayName').style.border = "1px solid red";
+        return document.getElementById("displayName").focus();
+      } else {
+        document.getElementById('displayName').style.border = "unset";
+        this.active = false;
+      }
+      if (formData.email === '' || formData.email === undefined) {
+        this.activeEmail = true;
+        document.getElementById('email').style.border = "1px solid red";
+        return document.getElementById("email").focus();
+      } else {
+        document.getElementById('email').style.border = "unset";
+        this.activeEmail = false;
+      }
+      // mark
+      let emailPattern = "[A-Za-z0-9._%-]+@[A-Za-z0-9._%-]+\\.[a-z]{2,3}";
+      if (!formData.email.match(emailPattern)) {
+        this.activeEmail = true;
+        document.getElementById('email').style.border = "1px solid red";
+        return document.getElementById("email").focus();
+      } else {
+        document.getElementById('email').style.border = "unset";
+        this.activeEmail = false;
       }
 
-      if (formData.password.length !== undefined || formData.repassword.length !== undefined) {
-        if (formData.password.length < 6 || formData.repassword.length < 6) {
+      if (!this.uuid) {
+        return;
+      }
+
+      if (this.mode === "normal") {
+        if (formData.password === "" && formData.repassword === "") {
           this.activePass = true;
           document.getElementById('password').style.border = "1px solid red";
           return document.getElementById("password").focus();
@@ -292,168 +285,183 @@ export class RegisterPage extends AbstractPage implements OnInit {
           document.getElementById('password').style.border = "unset";
           this.activePass = false;
         }
-      }
-      if (formData.password !== formData.repassword) {
-        this.activeRePass = true;
-        document.getElementById('repassword').style.border = "1px solid red";
-        return document.getElementById("repassword").focus();
-      } else {
-        document.getElementById('repassword').style.border = "unset";
-        this.activeRePass = false;
-      }
-    }
-    if (formData.gender === -1 && formData.genderTxt === undefined) {
-      document.getElementById('genderTxt').style.border = "1px solid red";
-      return document.getElementById("genderTxt").focus();
-    }
 
-    const asset = new Asset();
-    if (this.imagesAvatar !== undefined && Object.keys(this.imagesAvatar).length > 0) {
-      let data = this.imagesAvatar.image.split(',')[0];
-      let typeImage = data.split(':')[1];
-      asset.mimeType = typeImage.split(';')[0];
-      asset.data = this.imagesAvatar.image.split(',')[1];
-      asset.fileName = this.imagesAvatar.name;
-      asset.size = this.imagesAvatar.size;
-    } else {
-      asset
-    }
-    let image = {
-      asset
-    }
-    let body = Object.assign(register, image)
-
-    if (this.mode === "normal") {
-      let modeType = "EMAIL";
-      this.authenManager.register(body, modeType).then((res) => {
-        if (res.status === 1) {
-          let alertMessage: string = 'ลงทะเบียนสำเร็จ ' + MESSAGE.TEXT_TITLE_LOGIN;
-          let isValid = false;
-          if (res.data) {
-            isValid = true;
+        if (formData.password.length !== undefined || formData.repassword.length !== undefined) {
+          if (formData.password.length < 6 || formData.repassword.length < 6) {
+            this.activePass = true;
+            document.getElementById('password').style.border = "1px solid red";
+            return document.getElementById("password").focus();
+          } else {
+            document.getElementById('password').style.border = "unset";
+            this.activePass = false;
           }
-          let dialog = this.showAlertDialogWarming(alertMessage, "none");
-          dialog.afterClosed().subscribe((res) => {
-            if (isValid) {
-              this.observManager.publish('authen.check', null);
-              if (this.redirection) {
-                this.router.navigateByUrl(this.redirection);
-              } else {
-                this.router.navigate(['/login']);
-              }
-            } else {
-              this.router.navigate(['/login']);
-            }
-          });
         }
-      }).catch((err) => {
-        if (err.error.status === 0) {
-          let alertMessages: string;
-          if (err.error.message === 'This Email already exists') {
-            alertMessages = 'อีเมลนี้ถูกสมัครสมาชิกแล้ว กรุณาเข้าสู่ระบบ';
-          } else if (err.error.message === 'Register Failed') {
-            alertMessages = 'คุณไม่สามารถสมัครสมาชิกได้ กรุณาติดต่อผู้ดูแลระบบ';
-          } else if (err.error.message === 'Facebook was registered.') {
-            alertMessages = 'คุณได้สมัครอีเมล์นี้แล้ว กรุณาลองล็อคอินอีกครั้ง';
-          }
-          let dialog = this.showAlertDialogWarming(alertMessages, "none");
-          dialog.afterClosed().subscribe((res) => {
-            if (res) {
-              this.observManager.publish('authen.check', null);
-              if (this.redirection) {
-                this.router.navigateByUrl(this.redirection);
-              } else {
-                this.router.navigate(['/login']);
-              }
-            }
-          });
+        if (formData.password !== formData.repassword) {
+          this.activeRePass = true;
+          document.getElementById('repassword').style.border = "1px solid red";
+          return document.getElementById("repassword").focus();
         } else {
-          this.router.navigate(['/login']);
+          document.getElementById('repassword').style.border = "unset";
+          this.activeRePass = false;
         }
-      });
-    } else {
-      this.mode = this.mode === 'twitter' ? 'TWITTER' : this.mode === 'facebook' ? 'FACEBOOK' : this.mode === 'google' ? 'GOOGLE' : '';
-      if (this.passwordModeSocial !== "") {
-        register.password = this.passwordModeSocial;
-      } else {
-        register.password = this.passwordModeSocial === undefined ? "" : this.passwordModeSocial;
+      }
+      if (formData.gender === -1 && formData.genderTxt === undefined) {
+        document.getElementById('genderTxt').style.border = "1px solid red";
+        return document.getElementById("genderTxt").focus();
       }
 
-      if (this.mode === "facebook" || this.mode === "FACEBOOK") {
-        register.fbAccessExpirationTime = this.accessToken.fbexptime;
-        register.fbSignedRequest = this.accessToken.fbsignedRequest;
-        register.fbToken = this.accessToken.fbtoken;
-        register.fbUserId = this.accessToken.fbid;
-      } else if (this.mode === "google" || this.mode === "GOOGLE") {
-        register.googleUserId = this.accessToken.googleUserId;
-        register.authToken = this.accessToken.authToken;
-        register.idToken = this.accessToken.idToken;
-      } else if (this.mode === "twitter" || this.mode === "TWITTER") {
-        register.twitterUserId = this.accessToken.twitterUserId;
-        register.twitterOauthToken = this.accessToken.twitterOauthToken;
-        register.twitterTokenSecret = this.accessToken.twitterOauthTokenSecret;
+      const asset = new Asset();
+      if (this.imagesAvatar !== undefined && Object.keys(this.imagesAvatar).length > 0) {
+        let data = this.imagesAvatar.image.split(',')[0];
+        let typeImage = data.split(':')[1];
+        asset.mimeType = typeImage.split(';')[0];
+        asset.data = this.imagesAvatar.image.split(',')[1];
+        asset.fileName = this.imagesAvatar.name;
+        asset.size = this.imagesAvatar.size;
+      } else {
+        asset
       }
-      this.authenManager.registerSocial(register, this.mode).then((value: any) => {
-        if (value.status === 1) {
-          let alertMessage: string = 'ลงทะเบียนสำเร็จ';
-          let isValid = false;
-          if (value.user) {
-            isValid = true;
-          }
-          let dialog = this.showAlertDialogWarming(alertMessage, "none");
-          dialog.afterClosed().subscribe((res) => {
-            if (isValid) {
-              this.observManager.publish('authen.check', null);
-              if (this.redirection) {
-                this.router.navigateByUrl(this.redirection);
+      let image = {
+        asset
+      }
+      let body = Object.assign(register, image)
+
+      if (this.mode === "normal") {
+        let modeType = "EMAIL";
+        this.authenManager.register(body, modeType).then((res) => {
+          if (res.status === 1) {
+            let alertMessage: string = 'ลงทะเบียนสำเร็จ ' + MESSAGE.TEXT_TITLE_LOGIN;
+            let isValid = false;
+            this.isRegister = false;
+            if (res.data) {
+              isValid = true;
+            }
+            let dialog = this.showAlertDialogWarming(alertMessage, "none");
+            dialog.afterClosed().subscribe((res) => {
+              if (isValid) {
+                this.observManager.publish('authen.check', null);
+                if (this.redirection) {
+                  this.router.navigateByUrl(this.redirection);
+                } else {
+                  this.router.navigate(['/login']);
+                }
               } else {
                 this.router.navigate(['/login']);
               }
-            } else {
-              this.router.navigate(['/login']);
-            }
-          });
-        }
-        else if (value.status === 2) {
-          this.fbLibrary();
-          window['FB'].login((response) => {
-            if (response.authResponse) {
-              let accessToken = {
-                fbid: response.authResponse.userID,
-                fbtoken: response.authResponse.accessToken,
-                fbexptime: response.authResponse.data_access_expiration_time,
-                fbsignedRequest: response.authResponse.signedRequest
-              }
-              this.accessToken = accessToken;
-              this._ngZone.run(() => this.syncPageFB());
-            }
-          }, { scope: 'public_profile, email, pages_manage_posts, pages_show_list, pages_read_engagement, pages_manage_metadata' });
-        }
-      }).catch((err: any) => {
-        if (err.error.status === 0) {
-          let alertMessages: string;
-          if (err.error.message === 'This Email already exists') {
-            alertMessages = 'อีเมลนี้ถูกสมัครสมาชิกแล้ว กรุณาเข้าสู่ระบบ';
-          } else if (err.error.message === 'Register Facebook Failed') {
-            alertMessages = 'คุณไม่สามารถสมัครสมาชิกได้ กรุณาติดต่อผู้ดูแลระบบ';
-          } else if (err.error.message === 'Twitter TokenSecret is required') {
-            alertMessages = 'โทเค็นของคุณหมดอายุ';
+            });
           }
-          let dialog = this.showAlertDialogWarming(alertMessages, "none");
-          dialog.afterClosed().subscribe((res) => {
-            if (res) {
-              this.observManager.publish('authen.check', null);
-              if (this.redirection) {
-                this.router.navigateByUrl(this.redirection);
-              } else {
-                this.router.navigate(['/login']);
-              }
+        }).catch((err) => {
+          if (err.error.status === 0) {
+            let alertMessages: string;
+            if (err.error.message === 'This Email already exists') {
+              alertMessages = 'อีเมลนี้ถูกสมัครสมาชิกแล้ว กรุณาเข้าสู่ระบบ';
+            } else if (err.error.message === 'Register Failed') {
+              alertMessages = 'คุณไม่สามารถสมัครสมาชิกได้ กรุณาติดต่อผู้ดูแลระบบ';
+            } else if (err.error.message === 'Facebook was registered.') {
+              alertMessages = 'คุณได้สมัครอีเมล์นี้แล้ว กรุณาลองล็อคอินอีกครั้ง';
             }
-          });
+            let dialog = this.showAlertDialogWarming(alertMessages, "none");
+            dialog.afterClosed().subscribe((res) => {
+              if (res) {
+                this.observManager.publish('authen.check', null);
+                if (this.redirection) {
+                  this.router.navigateByUrl(this.redirection);
+                } else {
+                  this.router.navigate(['/login']);
+                }
+              }
+            });
+          } else {
+            this.router.navigate(['/login']);
+          }
+          this.isRegister = false;
+        });
+      } else {
+        this.mode = this.mode === 'twitter' ? 'TWITTER' : this.mode === 'facebook' ? 'FACEBOOK' : this.mode === 'google' ? 'GOOGLE' : '';
+        if (this.passwordModeSocial !== "") {
+          register.password = this.passwordModeSocial;
         } else {
-          this.router.navigate(['/login']);
+          register.password = this.passwordModeSocial === undefined ? "" : this.passwordModeSocial;
         }
-      });
+
+        if (this.mode === "facebook" || this.mode === "FACEBOOK") {
+          register.fbAccessExpirationTime = this.accessToken.fbexptime;
+          register.fbSignedRequest = this.accessToken.fbsignedRequest;
+          register.fbToken = this.accessToken.fbtoken;
+          register.fbUserId = this.accessToken.fbid;
+        } else if (this.mode === "google" || this.mode === "GOOGLE") {
+          register.googleUserId = this.accessToken.googleUserId;
+          register.authToken = this.accessToken.authToken;
+          register.idToken = this.accessToken.idToken;
+        } else if (this.mode === "twitter" || this.mode === "TWITTER") {
+          register.twitterUserId = this.accessToken.twitterUserId;
+          register.twitterOauthToken = this.accessToken.twitterOauthToken;
+          register.twitterTokenSecret = this.accessToken.twitterOauthTokenSecret;
+        }
+        this.authenManager.registerSocial(register, this.mode).then((value: any) => {
+          if (value.status === 1) {
+            let alertMessage: string = 'ลงทะเบียนสำเร็จ';
+            let isValid = false;
+            this.isRegister = false;
+            if (value.user) {
+              isValid = true;
+            }
+            let dialog = this.showAlertDialogWarming(alertMessage, "none");
+            dialog.afterClosed().subscribe((res) => {
+              if (isValid) {
+                this.observManager.publish('authen.check', null);
+                if (this.redirection) {
+                  this.router.navigateByUrl(this.redirection);
+                } else {
+                  this.router.navigate(['/login']);
+                }
+              } else {
+                this.router.navigate(['/login']);
+              }
+            });
+          }
+          else if (value.status === 2) {
+            this.fbLibrary();
+            window['FB'].login((response) => {
+              if (response.authResponse) {
+                let accessToken = {
+                  fbid: response.authResponse.userID,
+                  fbtoken: response.authResponse.accessToken,
+                  fbexptime: response.authResponse.data_access_expiration_time,
+                  fbsignedRequest: response.authResponse.signedRequest
+                }
+                this.accessToken = accessToken;
+                this._ngZone.run(() => this.syncPageFB());
+              }
+            }, { scope: 'public_profile, email, pages_manage_posts, pages_show_list, pages_read_engagement, pages_manage_metadata' });
+          }
+        }).catch((err: any) => {
+          if (err.error.status === 0) {
+            let alertMessages: string;
+            if (err.error.message === 'This Email already exists') {
+              alertMessages = 'อีเมลนี้ถูกสมัครสมาชิกแล้ว กรุณาเข้าสู่ระบบ';
+            } else if (err.error.message === 'Register Facebook Failed') {
+              alertMessages = 'คุณไม่สามารถสมัครสมาชิกได้ กรุณาติดต่อผู้ดูแลระบบ';
+            } else if (err.error.message === 'Twitter TokenSecret is required') {
+              alertMessages = 'โทเค็นของคุณหมดอายุ';
+            }
+            let dialog = this.showAlertDialogWarming(alertMessages, "none");
+            dialog.afterClosed().subscribe((res) => {
+              if (res) {
+                this.observManager.publish('authen.check', null);
+                if (this.redirection) {
+                  this.router.navigateByUrl(this.redirection);
+                } else {
+                  this.router.navigate(['/login']);
+                }
+              }
+            });
+          } else {
+            this.router.navigate(['/login']);
+          }
+          this.isRegister = false;
+        });
+      }
     }
   }
 
