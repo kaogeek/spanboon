@@ -7,12 +7,16 @@
 
 import { AbstractTypeSectionProcessor } from '../AbstractTypeSectionProcessor';
 import { PostsService } from '../../services/PostsService';
+import { S3Service } from '../../services/S3Service';
 
 export class ObjectiveLastestProcessor extends AbstractTypeSectionProcessor {
 
     public static TYPE = 'OBJECTIVE_LASTEST';
 
-    constructor(private postsService: PostsService) {
+    constructor(
+        private postsService: PostsService,
+        private s3Service: S3Service
+    ) {
         super();
         this.type = ObjectiveLastestProcessor.TYPE;
     }
@@ -63,7 +67,7 @@ export class ObjectiveLastestProcessor extends AbstractTypeSectionProcessor {
                 if (searchResult !== undefined && searchResult.length > 0) {
                     // insert isLike Action
                     if (userId !== undefined && userId !== null && userId !== '') {
-                        for(const post of searchResult){
+                        for (const post of searchResult) {
                             const userAction: any = await this.postsService.getUserPostAction(post._id + '', userId, true, true, true, true);
                             const isLike = userAction.isLike;
                             const isRepost = userAction.isRepost;
@@ -74,6 +78,20 @@ export class ObjectiveLastestProcessor extends AbstractTypeSectionProcessor {
                             post.isRepost = isRepost;
                             post.isComment = isComment;
                             post.isShare = isShare;
+
+                            if (!!post.s3CoverImage) {
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(post.s3CoverImage);
+                                Object.assign(post, { coverSignURL: (signUrl ? signUrl : '') });
+                                delete post.s3CoverImage;
+                            }
+
+                            if (!!post.postGallery) {
+                                for (const postGallery of post.postGallery) {
+                                    const signUrl = await this.s3Service.getConfigedSignedUrl(postGallery.s3ImageURL);
+                                    Object.assign(postGallery, { imageSignURL: (signUrl ? signUrl : '') });
+                                    delete postGallery.s3ImageURL;
+                                }
+                            }
                         }
                     }
 

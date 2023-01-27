@@ -679,6 +679,7 @@ export class MainPageController {
             let createBy: any; // {id,type}
             let objective: string;
             let emergencyEvent: string;
+            // let emergencyEventTag:string;
             let startDate: string;
             let endDate: string;
             let startViewCount: number;
@@ -713,6 +714,7 @@ export class MainPageController {
                 createBy = data.createBy;
                 objective = data.objective;
                 emergencyEvent = data.emergencyEvent;
+                // emergencyEventTag = data.emergencyEventTag;
                 startDate = data.startDate;
                 endDate = data.endDate;
                 startViewCount = data.startViewCount;
@@ -888,7 +890,7 @@ export class MainPageController {
             }
 
             if (emergencyEvent !== null && emergencyEvent !== undefined && emergencyEvent !== '') {
-                const postsEmergencyEvent: EmergencyEvent = await this.emergencyEventService.findOne({ _id: new ObjectID(emergencyEvent) });
+                const postsEmergencyEvent: EmergencyEvent = await this.emergencyEventService.findOne({ hashTag: new ObjectID(emergencyEvent) });
                 if (postsEmergencyEvent !== null && postsEmergencyEvent !== undefined) {
                     postStmt.push({ $match: { emergencyEvent: new ObjectID(postsEmergencyEvent.id) } });
                 } else {
@@ -1155,7 +1157,21 @@ export class MainPageController {
                             'postByType': 0
                         }
                     }
-                },
+                },/* 
+                $lookup: {
+                    from: 'Page',
+                    as: 'page',
+                    let: {
+                        pageId: '$pageId'
+                    },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: { $and: [{ $eq: ['$$pageId', '$_id'] }] }
+                            }
+                        }
+                    ],
+                }, */
                 {
                     $lookup: {
                         from: 'EmergencyEvent',

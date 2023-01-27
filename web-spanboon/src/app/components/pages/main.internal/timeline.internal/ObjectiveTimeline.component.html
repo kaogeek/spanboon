@@ -30,7 +30,7 @@
                 <div class="objective">
                     <div class="data">
                         <img class="iconURL"
-                            [src]="pageObjective.signURL?pageObjective.signURL:pageObjective.iconSignURL?pageObjective.iconSignURL:apiBaseURL+pageObjective.iconURL+'/image'"
+                            [src]="pageObjective.signURL ? pageObjective.signURL : pageObjective.iconSignURL ? pageObjective.iconSignURL : apiBaseURL + pageObjective.iconURL + '/image'"
                             alt="">
                         <div class="data-text">
                             <div class="text">
@@ -43,15 +43,15 @@
                                     <span class="disiption">ติดตาม</span>
                                 </div>
                                 <div class="score-type">
-                                    <span class="title">{{objectiveData.commentCount}}</span>
+                                    <span class="title">{{objectiveData.timelines[0].post.viewCount}}</span>
                                     <span class="disiption">การพูดถึง</span>
                                 </div>
                                 <div class="score-type">
-                                    <span class="title">{{objectiveData.repostCount}}</span>
+                                    <span class="title">{{objectiveData.timelines[0].post.repostCount}}</span>
                                     <span class="disiption">บอกต่อ</span>
                                 </div>
                                 <div class="score-type">
-                                    <span class="title">{{objectiveData.shareCount}}</span>
+                                    <span class="title">{{objectiveData.timelines[0].post.shareCount}}</span>
                                     <span class="disiption">แชร์</span>
                                 </div>
                             </div>
@@ -64,15 +64,15 @@
                                 </div>
                                 <div class="sub-score">
                                     <div class="score-type">
-                                        <span class="title">{{objectiveData.shareCount}}</span>
+                                        <span class="title">{{objectiveData.timelines[0].post.shareCount}}</span>
                                         <span class="disiption">แชร์</span>
                                     </div>
                                     <div class="score-type">
-                                        <span class="title">{{objectiveData.commentCount}}</span>
+                                        <span class="title">{{objectiveData.timelines[0].post.repostCount}}</span>
                                         <span class="disiption">การพูดถึง</span>
                                     </div>
                                     <div class="score-type">
-                                        <span class="title">{{objectiveData.repostCount}}</span>
+                                        <span class="title">{{objectiveData.timelines[0].post.shareCount}}</span>
                                         <span class="disiption">บอกต่อ</span>
                                     </div>
                                 </div>
@@ -95,7 +95,9 @@
                     <div class="owner">
                         <span class="title">ผู้สร้าง</span>
                         <div class="page" (click)="clickToPage(pageOwner.owner)">
-                            <img class="iconURL" src="{{apiBaseURL+pageOwner.owner.imageURL+'/image'}}" alt="">
+                            <img class="iconURL"
+                                [src]="pageOwner.owner.signURL ? pageOwner.owner.signURL : apiBaseURL + pageOwner.owner.imageURL + '/image'"
+                                alt="">
                             <div class="disiption">
                                 <span>{{pageOwner.owner.name}}</span>
                             </div>
@@ -136,7 +138,7 @@
             <div class="body" *ngIf="objectiveData.timelines.length > 1">
                 <div *ngFor="let item of objectiveData? objectiveData.timelines:[]; let index = index"
                     class="strat-section-point">
-                    <div class="head">
+                    <div class="head" *ngIf="item.type !== 'OBJECTIVE_INFLUENCER_FOLLOWED'">
                         <div class="line"></div>
                         <div class="strat-point" data-aos="fade-up" data-aos-offset="10" data-aos-delay="15"
                             data-aos-duration="500" data-aos-easing="ease-in-out" data-aos-mirror="false"
@@ -157,7 +159,8 @@
                                     </div>
                                     <div *ngIf="item.post.postGallery.length > 0" class="top">
                                         <img class="iconURL"
-                                            [src]="apiBaseURL+item.post.postGallery[0].imageURL+'/image'" alt="">
+                                            [src]="item.post.postGallery[0].imageSignURL ? item.post.postGallery[0].imageSignURL : apiBaseURL + item.post.postGallery[0].imageURL + '/image'"
+                                            alt="">
                                     </div>
                                 </div>
                             </div>
@@ -170,7 +173,7 @@
                                         <span class="sub_title">{{item.title}}</span>
                                     </div>
                                     <div class="post">
-                                        <div class="head">
+                                        <!-- <div class="head">
                                             <div class="type" *ngIf="item.post.type === 'NEEDS'">
                                                 <div class="point"></div>
                                                 <div class="type_name">
@@ -190,7 +193,7 @@
                                                 </svg>
                                                 {{item.post.createdDate | dateFormat}}
                                             </span>
-                                        </div>
+                                        </div> -->
                                         <div class="title" [innerHTML]="item.post.title"></div>
                                         <div class="detail" [innerHTML]="item.post.detail"></div>
                                         <div class="buttom">
@@ -227,7 +230,7 @@
                             </div>
                         </div>
 
-                        <div *ngIf="item.type === 'OBJECTIVE_NEEDS'" class="objective_needs_card">
+                        <!-- <div *ngIf="item.type === 'OBJECTIVE_NEEDS'" class="objective_needs_card">
                             <div class="left" data-aos="fade-right" data-aos-offset="10" data-aos-delay="15"
                                 data-aos-duration="700" data-aos-easing="ease-in-out" data-aos-mirror="false"
                                 data-aos-once="false" data-aos-anchor-placement="top-center">
@@ -349,9 +352,9 @@
                                                             </div>
                                                         </div>
                                                         <div class="fullfill">
-                                                            <!-- <div class="botton">
+                                                            <div class="botton">
                                                                 <span>เติมเต็ม</span>
-                                                            </div> -->
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -360,8 +363,8 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div *ngIf="item.type === 'OBJECTIVE_INFLUENCER_FULFILL'" class="objective_influencer_fulfill">
+                        </div> -->
+                        <!-- <div *ngIf="item.type === 'OBJECTIVE_INFLUENCER_FULFILL'" class="objective_influencer_fulfill">
                             <div class="body">
                                 <div class="left" data-aos="fade-right" data-aos-offset="10" data-aos-delay="15"
                                     data-aos-duration="700" data-aos-easing="ease-in-out" data-aos-mirror="false"
@@ -1106,9 +1109,9 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
 
-                        <div *ngIf="item.type === 'OBJECTIVE_INFLUENCER_FOLLOWED'" class="objective_influencer_fulfill">
+                        <!-- <div *ngIf="item.type === 'OBJECTIVE_INFLUENCER_FOLLOWED'" class="objective_influencer_fulfill">
                             <div class="body">
                                 <div class="left" data-aos="fade-right" data-aos-offset="10" data-aos-delay="15"
                                     data-aos-duration="700" data-aos-easing="ease-in-out" data-aos-mirror="false"
@@ -1848,7 +1851,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
 
                         <div *ngIf="item.type === 'OBJECTIVE_INFLUENCER'" class="objective_post_liked">
                             <div class="body">
@@ -1963,13 +1966,15 @@
                                                     <ng-container
                                                         *ngFor="let image of post.postGallery; let image_index = index">
                                                         <img *ngIf="image_index === 0"
-                                                            [src]="apiBaseURL + image.imageURL + '/image'" alt="">
+                                                            [src]="image.imageSignURL ? image.imageSignURL : apiBaseURL + image.imageURL + '/image'"
+                                                            alt="">
                                                     </ng-container>
                                                     <div class="wrapper-image-cloud">
                                                         <ng-container
                                                             *ngFor="let image of post.postGallery; let image_index = index">
                                                             <img *ngIf="image_index !== 0 && image_index <= 3"
-                                                                [src]=" apiBaseURL + image.imageURL + '/image'" alt=""
+                                                                [src]="image.imageSignURL ? image.imageSignURL : apiBaseURL + image.imageURL + '/image'"
+                                                                alt=""
                                                                 [ngStyle]=" {'transform': image_index === 1 ? 'rotate(-5deg)'
                                                                 : image_index === 2 ? 'rotate(-10deg)' : 'rotate(-15deg)' }">
                                                         </ng-container>
@@ -1980,12 +1985,6 @@
                                                 data-aos-delay="15" data-aos-duration="500"
                                                 data-aos-easing="ease-in-out" data-aos-mirror="false"
                                                 data-aos-once="false" data-aos-anchor-placement="top-center">
-                                                <div class="head-title">
-                                                    <span class="title">#{{post.title}}</span>
-                                                </div>
-                                                <div class="detail">
-                                                    {{post.detail}}
-                                                </div>
                                                 <span class="drot">•</span>
                                                 <span class="createdDate">
                                                     <svg class="icon-time" height="10pt" viewBox="0 0 512 512"
@@ -1999,6 +1998,12 @@
                                                     </svg>
                                                     {{post.createdDate | dateFormat}}
                                                 </span>
+                                                <div class="head-title">
+                                                    <span class="title">{{post.title}}</span>
+                                                </div>
+                                                <div class="detail">
+                                                    {{post.detail}}
+                                                </div>
                                                 <div class="buttom">
                                                     <a [href]="post.pageId ? '/post/' + (post._id || post.id) : '/profile/' + post.ownerUser + '/post/' + (post._id || post.id)"
                                                         target="_blank" class="botton">
@@ -2043,13 +2048,15 @@
                                                     <ng-container
                                                         *ngFor="let image of post.postGallery; let image_index = index">
                                                         <img *ngIf="image_index === 0"
-                                                            [src]="apiBaseURL + image.imageURL + '/image'" alt="">
+                                                            [src]="image.imageSignURL ? image.imageSignURL : apiBaseURL + image.imageURL + '/image'"
+                                                            alt="">
                                                     </ng-container>
                                                     <div class="wrapper-image-cloud">
                                                         <ng-container
                                                             *ngFor="let image of post.postGallery; let image_index = index">
                                                             <img *ngIf="image_index !== 0"
-                                                                [src]=" apiBaseURL + image.imageURL + '/image'" alt=""
+                                                                [src]="image.imageSignURL ? image.imageSignURL : apiBaseURL + image.imageURL + '/image'"
+                                                                alt=""
                                                                 [ngStyle]=" {'transform': image_index===1 ? 'rotate(-5deg)'
                                                                 : image_index===2 ? 'rotate(-10deg)' : 'rotate(-15deg)' }">
                                                         </ng-container>
@@ -2060,12 +2067,6 @@
                                                 data-aos-delay="15" data-aos-duration="500"
                                                 data-aos-easing="ease-in-out" data-aos-mirror="false"
                                                 data-aos-once="false" data-aos-anchor-placement="top-center">
-                                                <div class="head-title">
-                                                    <span class="title">#{{post.title}}</span>
-                                                </div>
-                                                <div class="detail">
-                                                    {{post.detail}}
-                                                </div>
                                                 <span class="drot">•</span>
                                                 <span class="createdDate">
                                                     <svg class="icon-time" height="10pt" viewBox="0 0 512 512"
@@ -2079,6 +2080,12 @@
                                                     </svg>
                                                     {{post.createdDate | dateFormat}}
                                                 </span>
+                                                <div class="head-title">
+                                                    <span class="title">{{post.title}}</span>
+                                                </div>
+                                                <div class="detail">
+                                                    {{post.detail}}
+                                                </div>
                                                 <div class="buttom">
                                                     <a [href]="post.pageId ? '/post/' + (post._id || post.id) : '/profile/' + post.ownerUser + '/post/' + (post._id || post.id)"
                                                         target="_blank" class="botton">

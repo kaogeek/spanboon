@@ -100,6 +100,7 @@ export class NotificationService {
         const count_data = String(count);
         const payload =
         {
+
             notification: {
                 toUser,
                 fromUserId,

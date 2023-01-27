@@ -1802,7 +1802,7 @@
 
                     >.objective_lastest_card {
                         width: 100%;
-                        margin-bottom: 200px;
+                        margin-bottom: 50px;
                         padding: 60px 30px;
                         display: flex;
 
@@ -1968,6 +1968,7 @@
                                     }
 
                                     >.head-title {
+                                        margin-top: 10px;
                                         @include font-size-5($font-head-500);
 
                                         @media (max-width: $small) {
@@ -4595,7 +4596,7 @@
     }
 
     .objective-timeline-body>.timeline-data-section>.body>.strat-section-point>.head>.strat-point>.title {
-        @include font-size-8($font-head-500);
+        @include font-size-6($font-head-500);
         color: $brandcolor2;
     }
 }
@@ -4718,6 +4719,11 @@
                 }
             }
         }
+    }
+
+    .objective-timeline-body>.timeline-data-section>.body>.strat-section-point>.head>.strat-point>.title {
+        @include font-size-8($font-head-500);
+        color: $brandcolor2;
     }
 }
 

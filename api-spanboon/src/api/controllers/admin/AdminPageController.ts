@@ -17,9 +17,11 @@ import { AdminUserActionLogsService } from '../../services/AdminUserActionLogsSe
 import { AdminUserActionLogs } from '../../models/AdminUserActionLogs';
 import { LOG_TYPE, PAGE_LOG_ACTION } from '../../../constants/LogsAction';
 import { DeletePageService } from '../../services/DeletePageService';
+import { PostsService } from '../../services/PostsService';
 @JsonController('/admin/page')
 export class AdminPageController {
-    constructor(private pageService: PageService, private actionLogService: AdminUserActionLogsService, private deletePageService: DeletePageService) { }
+    constructor(private pageService: PageService, private actionLogService: AdminUserActionLogsService, private deletePageService: DeletePageService,
+        private postsService:PostsService) { }
 
     /**
      * @api {post} /api/admin/page/:id/approve Approve Page API
@@ -191,7 +193,9 @@ export class AdminPageController {
             const query = { _id: pageObjId };
             const newValue = { $set: { banned: pageBanned, updateDate: moment().toDate(), updateByUsername: username } };
             const result = await this.pageService.update(query, newValue);
-
+            const hiddenPageId = {pageId:pageObjId};
+            const hiddenPost = {$set:{hidden:true}};
+            await this.postsService.updateMany(hiddenPageId,hiddenPost);
             if (result) {
                 const pageResult: Page = await this.pageService.findOne(pageQuery);
                 const userObjId = new ObjectID(req.user.id);
