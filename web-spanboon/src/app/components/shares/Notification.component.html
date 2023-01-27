@@ -4,15 +4,14 @@
     License: MIT. https://opensource.org/licenses/MIT
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
-
 <div [class.active]="isActive()" class="btn-notfication" [matMenuTriggerFor]="beforeMenu"
-    (menuOpened)="isOpened(); this.switeNotiType();">
-    <div class="notiAlert" [class.active-plus]="noti.length > 9" *ngIf="noti.length > 0">
-        <ng-container *ngIf="noti.length > 9; else elseTemplateNoti">
+    (menuOpened)="isNotiAll = false">
+    <div class="notiAlert" [class.active-plus]="noti!.countUnread > 9" *ngIf="noti!.countUnread > 0">
+        <ng-container *ngIf="noti!.countUnread > 9; else elseTemplateNoti">
             <span>9+</span>
         </ng-container>
         <ng-template #elseTemplateNoti>
-            <span>{{noti.length}}</span>
+            <span>{{noti.countUnread}}</span>
         </ng-template>
     </div>
     <ng-container>
@@ -67,28 +66,36 @@
     <div class="mat-menu-title" (click)="$event.stopPropagation();">
         <div class="text">การแจ้งเตือน</div>
         <div class="select-noti-list">
-            <span class="list" (click)="!isNotiAll ? clickNotification() : null"
-                [ngClass]="{'select': isNotiAll }">ทั้งหมด
-                ({{noti.length}})</span>
-            <span class="list" (click)="isNotiAll ? clickNotification() : null"
-                [ngClass]="{'select': !isNotiAll }">ยังไม่ได้อ่าน
-                ({{dataNotiRead.length}})</span>
+            <span class="list" (click)="isNotiAll ? clickNotification() : null" [ngClass]="{'select': !isNotiAll }">
+                ยังไม่ได้อ่าน ({{noti!.countUnread < 1000 ? noti!.countUnread : '999+' }}) </span>
+                    <span class="list" (click)="!isNotiAll ? clickNotification() : null"
+                        [ngClass]="{'select': isNotiAll }">
+                        ทั้งหมด ({{noti!.countAll < 1000 ? noti!.countAll : '999+' }}) </span>
         </div>
     </div>
-    <div *ngIf="noti.length !== 0" class="wrapper-header">
+    <div *ngIf="noti.length !== 0" class="wrapper-header" (click)="$event.stopPropagation();">
         <div class="wrapper-noti" style="border-bottom: unset !important;">
             ใหม่
         </div>
-        <div class="wrapper-setting">
+        <!-- <div class="wrapper-setting">
             ดูทั้งหมด
-        </div>
+        </div> -->
     </div>
-    <div class="noti-sc">
-        <notification-card *ngFor="let item of (isNotiAll ? noti : dataNotiRead); let i = index" [message]="item"
-            [fullPage]="true" [slide]="true" (click)="clickIsRead(i)">
-        </notification-card>
-        <div style="height: 60px;">
-            <spinners></spinners>
-        </div>
+    <div #notiScroll class="noti-sc" (scroll)="scroll($event)">
+        <ng-container *ngIf="isNotiAll; else elseTemplateNotiAll">
+            <notification-card *ngFor="let item of noti!.all; let i = index" [message]="item" [fullPage]="true"
+                [slide]="true" (click)="clickIsRead(i)">
+            </notification-card>
+        </ng-container>
+        <ng-template #elseTemplateNotiAll>
+            <notification-card *ngFor="let item of noti!.unread; let i = index" [message]="item" [fullPage]="true"
+                [slide]="true" (click)="clickIsRead(i)">
+            </notification-card>
+        </ng-template>
+        <ng-container *ngIf="isNotiAll ? (noti!.countAll >= notiOffsetAll) : (noti!.countUnread >= notiOffsetUnread)">
+            <div style="height: 60px;" *ngIf="isLoading">
+                <spinners></spinners>
+            </div>
+        </ng-container>
     </div>
 </mat-menu>

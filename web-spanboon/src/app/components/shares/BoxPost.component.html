@@ -827,7 +827,6 @@
                 </div>
             </div>
             <div class="box-right" [class.active]="isClickPostPreLoad">
-                <div class="div-gatdata-post" (click)="onClickGetDataPost(false,true)"></div>
                 <ng-container *ngIf="isFulfill; else elseIsFulfill">
                     <mat-form-field appearance="none">
                         <mat-select [(value)]="selected1">
@@ -844,7 +843,7 @@
                         </div>
                     </ng-container>
                     <ng-template #elseIsEdit>
-                        <div appDebounceClick class="butt but-submit" (click)="onClickGetDataPost(false,true)">
+                        <div appDebounceClick class="butt" (click)="onClickGetDataPost(false,true)">
                             โพสต์
                         </div>
                         <!-- <mat-form-field appearance="none" [class.active]="isMobilePost || isMobileButton">

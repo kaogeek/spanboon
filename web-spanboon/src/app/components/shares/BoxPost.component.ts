@@ -495,8 +495,8 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.onResize();
 
     $(() => {
-      $.fn.atwho.debug = true
-      var at_config = {
+      $.fn.atwho.debug = true;
+      let at_config = {
         at: "@",
         insertTpl: '<span class="tribute-container">${displayName}</span>',
         displayTpl: '<li >${displayName}</li>',
@@ -523,7 +523,7 @@ export class BoxPost extends AbstractPage implements OnInit {
           }
         }
       }
-      var hashTag_config = {
+      let hashTag_config = {
         at: "#",
         searchKey: 'value',
         insertTpl: '<span class="tribute-container-hashtag">#${value}</span>&nbsp',
@@ -566,6 +566,7 @@ export class BoxPost extends AbstractPage implements OnInit {
         $('#topic').atwho(at_config).atwho(at_config);
       }
     });
+
     this.updateText();
 
     // contenteditable
@@ -620,7 +621,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public replaceContenteditable(element) {
-    element.addEventListener('paste', (evt: any) => {
+    element!.addEventListener('paste', (evt: any) => {
       evt.preventDefault();
       if (evt.srcElement.className) {
         let clipdata = evt.clipboardData || (<any>window).clipboardData;
