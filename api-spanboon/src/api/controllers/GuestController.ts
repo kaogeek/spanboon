@@ -930,8 +930,11 @@ export class GuestController {
                 return res.status(400).send(errorUserNameResponse);
             } else {
                 const currentDateTime = moment().toDate();
+                const userExrTime = await this.getUserLoginExpireTime();
+                const authTime = currentDateTime;
+                const expirationDateAp = moment().add(userExrTime, 'days').toDate();
                 const query = { id: appleId.userId, providerName: PROVIDER.APPLE };
-                const newValue = { $set: { lastAuthenTime: currentDateTime, storedCredentials: appleId.idToken, expirationDate: appleId.metadata.creationTime, properties: { tokenSign: appleId.accessToken, signIn: appleId.metadata.lastSignInTime } } };
+                const newValue = { $set: { lastAuthenTime: authTime, storedCredentials: appleId.idToken, expirationDate: expirationDateAp, properties: { tokenSign: appleId.accessToken, signIn: appleId.metadata.lastSignInTime } } };
                 const update_Apple = await this.authenticationIdService.update(query, newValue);
                 if (update_Apple) {
                     const updatedAuth = await this.authenticationIdService.findOne({ where: { providerUserId: appleId.userId } });
@@ -1944,7 +1947,23 @@ export class GuestController {
                 const errorResponse: any = { status: 0, message: ex.message };
                 return response.status(400).send(errorResponse);
             }
-        } else {
+        } if(isMode !== undefined && isMode === 'AP'){
+            try {
+                const decryptToken: any = await jwt.verify(tokenParam, env.SECRET_KEY);
+                if (decryptToken.token === undefined) {
+                    const errorUserNameResponse: any = { status: 0, message: 'Token was not found.' };
+                    return response.status(400).send(errorUserNameResponse);
+                }
+                const apUser = await this.authenticationIdService.findOne({user:decryptToken.userId,providerName: PROVIDER.APPLE });
+                const findUser = await this.userService.findOne({ _id: ObjectID(apUser.user) });
+                user = findUser;
+            } catch (ex: any) {
+                const errorResponse: any = { status: 0, message: ex.message };
+                return response.status(400).send(errorResponse);
+            }
+        }
+        
+        else {
             const pageUserId = await this.authService.decryptToken(tokenParam);
             if (pageUserId !== undefined) {
                 user = await this.userService.findOne({ where: { _id: new ObjectID(pageUserId) } }, { signURL: true });
@@ -1987,7 +2006,33 @@ export class GuestController {
                 await this.deviceToken.delete({ userId: authenId.user });
                 return response.status(400).send(errorUserNameResponse);
             }
-        } else {
+        } else if(isMode !== undefined && isMode === 'AP'){
+            const authenId = await this.authenticationIdService.findOne({ user: user.id, providerName: PROVIDER.APPLE });
+            if (authenId === undefined) {
+                const errorUserNameResponse: any = { status: 0, message: 'User token invalid.' };
+                await this.deviceToken.delete({ userId: authenId.user });
+                return response.status(400).send(errorUserNameResponse);
+            }
+            const expiresAt = authenId.expirationDate;
+            if (expiresAt !== undefined && expiresAt !== null && expiresAt.getTime() <= today.getTime()) {
+                const errorUserNameResponse: any = { status: 0, message: 'User token expired.' };
+                await this.deviceToken.delete({ userId: authenId.user });
+                return response.status(400).send(errorUserNameResponse);
+            }
+        } else if(isMode !== undefined && isMode === 'TW'){
+            const authenId = await this.authenticationIdService.findOne({ user: user.id, providerName: PROVIDER.GOOGLE });
+            if (authenId === undefined) {
+                const errorUserNameResponse: any = { status: 0, message: 'User token invalid.' };
+                await this.deviceToken.delete({ userId: authenId.user });
+                return response.status(400).send(errorUserNameResponse);
+            }
+            const expiresAt = authenId.expirationDate;
+            if (expiresAt !== undefined && expiresAt !== null && expiresAt.getTime() <= today.getTime()) {
+                const errorUserNameResponse: any = { status: 0, message: 'User token expired.' };
+                await this.deviceToken.delete({ userId: authenId.user });
+                return response.status(400).send(errorUserNameResponse);
+            }
+        }else {
             // normal mode
             const authenId: AuthenticationId = await this.authenticationIdService.findOne({ where: { user: user.id, providerName: PROVIDER.EMAIL } });
             if (authenId === undefined) {

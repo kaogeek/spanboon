@@ -5,21 +5,19 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-import { Component, ViewChild, OnInit, NgZone, EventEmitter, Input, Output, ElementRef, Renderer2, QueryList } from '@angular/core';
+import { Component, ViewChild, OnInit, NgZone, EventEmitter, Input, Renderer2 } from '@angular/core';
 import { Router, NavigationExtras, ActivatedRoute } from '@angular/router';
 import { AuthenManager, ObservableManager, EditProfileUserPageFacade, NotificationFacade } from '../../../services/services';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { MatDialog } from '@angular/material';
 import { AbstractPage } from '../AbstractPage';
 import { MESSAGE } from '../../../../app/AlertMessage';
-import * as $ from 'jquery';
 import { environment } from 'src/environments/environment';
 import { DialogAlert } from '../../components';
 import { DialogListFacebook } from '../../components';
 import { PageSoialFB } from 'src/app/models/PageSocialFB';
 import { TwitterService } from '../../../services/services';
 import { PageSocialTW } from 'src/app/models/PageSocialTW';
-import { SearchFilter } from 'src/app/models/SearchFilter';
 
 const DEFAULT_USER_ICON: string = '../../../assets/components/pages/icons8-female-profile-128.png';
 const REDIRECT_PATH: string = '/main';
@@ -47,7 +45,14 @@ export class HeaderTop extends AbstractPage implements OnInit {
   private userImage: any;
 
   // Notification
-  public notificationList: any[] = [];
+  public notificationList: any = {
+    read: [],
+    unread: [],
+    all: [],
+    countRead: 0,
+    countUnread: 0,
+    countAll: 0
+  };
   public isLoadNotification: boolean = false;
   public limitNotification = 30;
   public sumNotification = 30;
@@ -151,7 +156,17 @@ export class HeaderTop extends AbstractPage implements OnInit {
       }
     }
     if (this.isLogin()) {
-      this.getNotification(this.limitNotification, 0);
+      this._getNotification(this.limitNotification, 0, '', '', {}, { 'createdDate': -1 }, false, 'push');
+      this._getNotification(this.limitNotification, 0, '', '', { isRead: false }, { 'createdDate': -1 }, false, 'push');
+      this.observManager.subscribe('scrollLoadNotification', (res) => {
+        if (res) {
+          if (res.data.isReadAll) {
+            this._getNotification(this.limitNotification, res.data.offset, '', '', {}, { 'createdDate': -1 }, false, 'push');
+          } else {
+            this._getNotification(this.limitNotification, res.data.offset, '', '', { isRead: false }, { 'createdDate': -1 }, false, 'push');
+          }
+        }
+      });
     }
   }
 
@@ -405,35 +420,31 @@ export class HeaderTop extends AbstractPage implements OnInit {
     }
   }
 
-  // public Notification(noti) {
-  //   this.noti = [];
-  //   this.noti = noti;
-  // }
+  private _getNotification(limit: number, offset: number, select: any, relation: any, whereConditions: any, orderBy: any, count: boolean, arrange?: 'unshift' | 'push') {
+    let val = {
+      limit: limit,
+      offset: offset,
+      select: select,
+      relation: relation,
+      whereConditions: whereConditions,
+      orderBy: orderBy,
+      count: count
+    };
 
-  public TestNoti() {
-
-    // this.getNotification('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNmM3MTE1ODMwMmZhNWYyNDVlZWFmNCIsImlhdCI6MTY3NDYxNjc5OX0.SNfM86-aGc4ckxteLvYCYLLV2qswj1SHVjfQy8s4TpI', 'EMAIL',);
-  }
-
-  public getNotification(limit: number, offset: number) {
-    this.notificationFacade.listNotification(limit, offset).then(async (res) => {
+    this.notificationFacade.search(val).then(async (res) => {
       if (res) {
-        let dataNoti: any[] = [];
-        for await (let data of res) {
-          dataNoti.push({
-            notification: {
-              title: "การแจ้งเตือนใหม่",
-              body: data.notification.title,
-              image: !!data!.sender && data.sender.imageURL ? this.apiBaseURL + data.sender.imageURL + '/image' : '',
-              status: data.notification.type,
-              isRead: data.notification.isRead,
-              id: data.notification.id,
-              link: data.notification.link,
-              createdDate: data.notification.createdDate
-            }
-          });
+        for await (let data of res.data) {
+          if (arrange === 'unshift') {
+            if ((whereConditions['isRead'] === true)) this.notificationList['read'].unshift(this._setValueNotification(data, (whereConditions['isRead'] === true))), (this.notificationList.countRead = res.count);
+            if ((whereConditions['isRead'] === false)) this.notificationList['unread'].unshift(this._setValueNotification(data, (whereConditions['isRead'] === false))), (this.notificationList.countUnread = res.count);
+            if ((!whereConditions['isRead'])) this.notificationList['all'].unshift(this._setValueNotification(data, (!whereConditions['isRead']))), (this.notificationList.countAll = res.count);
+          } else if (arrange === 'push') {
+            if ((whereConditions['isRead'] === true)) this.notificationList['read'].push(this._setValueNotification(data, (whereConditions['isRead'] === true))), (this.notificationList.countRead = res.count);
+            if ((whereConditions['isRead'] === false)) this.notificationList['unread'].push(this._setValueNotification(data, (whereConditions['isRead'] === false))), (this.notificationList.countUnread = res.count);
+            if ((!whereConditions['isRead'])) this.notificationList['all'].push(this._setValueNotification(data, (!whereConditions['isRead']))), (this.notificationList.countAll = res.count);
+          }
         }
-        this.notificationList = dataNoti;
+
         this.observManager.createSubject('notification');
         this.observManager.publish('notification', {
           data: true
@@ -444,6 +455,33 @@ export class HeaderTop extends AbstractPage implements OnInit {
         console.log(error);
       }
     });
+  }
+
+  private _setValueNotification(data: any, isRead: boolean) {
+    const title = "การแจ้งเตือนใหม่";
+    if (isRead) {
+      return {
+        title: title,
+        body: data.notification.title,
+        image: !!data!.sender && data.sender.imageURL ? this.apiBaseURL + data.sender.imageURL + '/image' : '',
+        status: data.notification.type,
+        isRead: data.notification.isRead,
+        id: data.notification.id,
+        link: data.notification.link,
+        createdDate: data.notification.createdDate
+      }
+    } else {
+      return {
+        title: title,
+        body: data.notification.title,
+        image: !!data!.sender && data.sender.imageURL ? this.apiBaseURL + data.sender.imageURL + '/image' : '',
+        status: data.notification.type,
+        isRead: data.notification.isRead,
+        id: data.notification.id,
+        link: data.notification.link,
+        createdDate: data.notification.createdDate
+      }
+    }
   }
 
   // public notija() {

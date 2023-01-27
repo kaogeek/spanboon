@@ -5,7 +5,7 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
  */
 
-import { Component, EventEmitter, Input, OnInit, SimpleChanges } from "@angular/core";
+import { Component, ElementRef, EventEmitter, Input, OnInit, SimpleChanges, ViewChild } from "@angular/core";
 import { MatDialog } from "@angular/material";
 import { Router } from "@angular/router";
 import { AuthenManager } from "src/app/services/AuthenManager.service";
@@ -24,15 +24,15 @@ export class Notification extends AbstractPage implements OnInit {
 
   private observManager: ObservableManager;
   public dataNotiRead: any[] = [];
-
-  public preload: boolean;
   public apiBaseURL = environment.apiBaseURL;
-
-  public isNotiAll: boolean = true;
-  public message: any = null;
+  public isNotiAll: boolean = false;
   public router: Router;
   public authenManager: AuthenManager;
   public notificationFacade: NotificationFacade;
+  public isLoading: boolean = false;
+  @ViewChild('notiScroll', { static: false }) public notiScroll!: ElementRef<HTMLDivElement>;
+  public notiOffsetUnread: number = 0;
+  public notiOffsetAll: number = 0;
 
   constructor(router: Router,
     authenManager: AuthenManager,
@@ -41,8 +41,6 @@ export class Notification extends AbstractPage implements OnInit {
     this.authenManager = authenManager;
     this.notificationFacade = notificationFacade;
     this.observManager = observManager;
-
-    this.preload = true;
   }
 
 
@@ -62,46 +60,37 @@ export class Notification extends AbstractPage implements OnInit {
   public ngOnInit(): void {
     this.observManager.subscribe('notification', (result: any) => {
       if (result) {
-        this.switeNotiType();
+        this.isLoading = false;
       }
     });
   }
 
   public ngOnChanges(changes: SimpleChanges): void {
-    this.switeNotiType();
-  }
-
-  public isOpened() {
+    this.isLoading = false;
+    this.observManager.createSubject('scrollLoadNotification');
   }
 
   public clickNotification() {
+    this.isLoading = true;
+    this.notiScroll!.nativeElement!.scrollTop = 0;
+    setTimeout(() => {
+      this.isLoading = false;
+    }, 1000);
     this.isNotiAll = !this.isNotiAll;
-    this.switeNotiType();
   }
 
   public ngOnDestroy(): void {
     this.observManager.complete('notification');
   }
 
-  public switeNotiType() {
-    let dataRead: any[] = [];
-    for (const notiRead of this.noti) {
-      if (!notiRead.notification.isRead) {
-        dataRead.push(notiRead);
-      }
-    }
-
-    this.dataNotiRead = dataRead;
-  }
-
   public clickIsRead(index: number) {
-    this.notificationFacade.markRead(this.isNotiAll ? this.noti[index].notification.id : this.dataNotiRead[index].notification.id).then((res) => {
+    this.notificationFacade.markRead(this.isNotiAll ? this.noti!.all[index].id : this.noti!.unread[index].id).then((res) => {
       if (res) {
         if (this.isNotiAll) {
-          this.noti[index].notification.isRead = true;
+          this.noti.all[index].isRead = true;
         } else {
-          this.dataNotiRead[index].notification.isRead = true;
-          this.dataNotiRead.splice(index, 1);
+          this.noti.unread[index].isRead = true;
+          this.noti.splice(index, 1);
         }
       }
     }).catch((error) => {
@@ -114,5 +103,20 @@ export class Notification extends AbstractPage implements OnInit {
   public isActive(): boolean {
     let notification = document.getElementsByClassName("wrapper-notification");
     return notification && notification.length > 0;
+  }
+
+  public scroll(event: any) {
+    if ((event.target.scrollTop + event.target.offsetHeight) === event.target.scrollHeight) {
+      this.isLoading = true;
+      let count = this.isNotiAll ? (this.noti!.countAll >= this.notiOffsetAll ? this.notiOffsetAll += 30 : '') : (this.noti!.countUnread >= this.notiOffsetUnread ? this.notiOffsetUnread += 30 : '');
+      if (!!count) {
+        this.observManager.publish('scrollLoadNotification', {
+          data: {
+            isReadAll: this.isNotiAll,
+            offset: count
+          }
+        });
+      }
+    }
   }
 }

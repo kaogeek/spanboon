@@ -108,7 +108,7 @@ export class NotificationFacade extends AbstractFacade {
             }
 
             this.http.post(url, body, options).toPromise().then((response: any) => {
-                resolve(response.data);
+                resolve(response);
             }).catch((error: any) => {
                 reject(error);
             });

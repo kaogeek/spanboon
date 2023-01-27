@@ -120,7 +120,17 @@ export class AppComponent {
   public listen() {
     const messaging = getMessaging();
     onMessage(messaging, (payload) => {
-      this.setData({ notification: { title: 'การแจ้งเตือนใหม่', body: payload.notification.title, image: this.apiBaseURL + payload.data["gcm.notification.image_url"] + '/image', status: payload.data["gcm.notification.notificationType"], isRead: true, link: payload.data["gcm.notification.link_noti"], displayName: payload.data["gcm.notification.displayFCM"] } });
+      this.setData({
+        notification: {
+          title: 'การแจ้งเตือนใหม่',
+          body: payload.notification.title,
+          image: this.apiBaseURL + payload.data["gcm.notification.image_url"] + '/image',
+          status: payload.data["gcm.notification.notificationType"],
+          isRead: true,
+          link: payload.data["gcm.notification.link_noti"],
+          displayName: payload.data["gcm.notification.displayFCM"]
+        }
+      });
       this.observManager.publish(NOTI_CHECK_SUBJECT, {
         data: payload.notification
       });
