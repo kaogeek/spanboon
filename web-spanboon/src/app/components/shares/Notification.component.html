@@ -66,9 +66,10 @@
     <div class="mat-menu-title" (click)="$event.stopPropagation();">
         <div class="text">การแจ้งเตือน</div>
         <div class="select-noti-list">
-            <span class="list" (click)="isNotiAll ? clickNotification() : null" [ngClass]="{'select': !isNotiAll }">
+            <span class="list" (click)="isNotiAll && noti!.all.length >= 0 ? clickNotification() : null;"
+                [ngClass]="{'select': !isNotiAll }">
                 ยังไม่ได้อ่าน ({{noti!.countUnread < 1000 ? noti!.countUnread : '999+' }}) </span>
-                    <span class="list" (click)="!isNotiAll ? clickNotification() : null"
+                    <span class="list" (click)="!isNotiAll && noti!.unread.length >= 0 ? clickNotification() : null"
                         [ngClass]="{'select': isNotiAll }">
                         ทั้งหมด ({{noti!.countAll < 1000 ? noti!.countAll : '999+' }}) </span>
         </div>

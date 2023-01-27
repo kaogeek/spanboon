@@ -14,6 +14,8 @@ import { environment } from "src/environments/environment";
 import { NotificationFacade } from "src/app/services/facade/NotificationFacade.service";
 import { ObservableManager } from "src/app/services/ObservableManager.service";
 
+const NOTI_CHECK_SUBJECT: string = 'noti.check';
+const NOTI_READ_SUBJECT: string = 'noti.read';
 @Component({
   selector: "btn-notification",
   templateUrl: "./Notification.component.html",
@@ -58,6 +60,37 @@ export class Notification extends AbstractPage implements OnInit {
   }
 
   public ngOnInit(): void {
+    this.observManager.subscribe(NOTI_READ_SUBJECT, (result: any) => {
+      if (result) {
+        let dataNoti = [
+          { body: result.data.body, link: result.data.link, status: result.data.status }];
+
+        let index = dataNoti.findIndex(res => res.body === result.data.body && res.link === result.data.link && res.status === result.data.status);
+        this.notificationFacade.markRead(this.noti!.unread[index].id).then((res) => {
+          if (res) {
+            if (index >= 0) {
+              this.noti.all[index].isRead = true;
+              this.noti.unread.splice(index, 1);
+              this.noti.countUnread--;
+            }
+          }
+        }).catch((error) => {
+          if (error) {
+            console.log(error);
+          }
+        });
+      }
+    });
+
+    this.observManager.subscribe(NOTI_CHECK_SUBJECT, (result: any) => {
+      if (result) {
+        this.noti.unread.unshift(result.data);
+        this.noti.all.unshift(result.data);
+        this.noti.countUnread++;
+        this.noti.countAll++;
+      }
+    });
+
     this.observManager.subscribe('notification', (result: any) => {
       if (result) {
         this.isLoading = false;
@@ -81,6 +114,8 @@ export class Notification extends AbstractPage implements OnInit {
 
   public ngOnDestroy(): void {
     this.observManager.complete('notification');
+    this.observManager.complete(NOTI_CHECK_SUBJECT);
+    this.observManager.complete(NOTI_READ_SUBJECT);
   }
 
   public clickIsRead(index: number) {
@@ -90,7 +125,8 @@ export class Notification extends AbstractPage implements OnInit {
           this.noti.all[index].isRead = true;
         } else {
           this.noti.unread[index].isRead = true;
-          this.noti.splice(index, 1);
+          this.noti.unread.splice(index, 1);
+          this.noti.countUnread--;
         }
       }
     }).catch((error) => {
