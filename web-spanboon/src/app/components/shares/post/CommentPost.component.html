@@ -4,19 +4,18 @@
     License: MIT. https://opensource.org/licenses/MIT
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
-
 <div class="comment" *ngFor="let comment of commentdata; let i = index">
     <div class="comment-body">
-        <div class="comment-img" (click)="clickToUser(comment.page?comment.page:comment.user)" *ngIf="!isImgSing">
-            <ng-container
-                *ngIf="comment.user !== undefined && comment.user !== null && comment.user.imageURL && comment.user.imageURL !== undefined && comment.user.imageURL !== null && comment.user.imageURL !== '' ; else elseImage">
-                <div class="menu-user" (click)="menuProfile(comment.page?comment.page:comment.user);">
-                    <img class="image-profile-comment" src="{{testIimageURL(comment.user.imageURL)}}" alt="">
+        <div class="comment-img" (click)="clickToUser(comment.page ? comment.page : comment.user)" *ngIf="!isImgSing">
+            <ng-container *ngIf="!!comment!.user!.signURL || !!comment!.user!.imageURL; else elseImage">
+                <div class="menu-user" (click)="menuProfile(comment.page ? comment.page : comment.user);">
+                    <img class="image-profile-comment"
+                        src="{{testIimageURL(comment.user.signURL ? comment.user.signURL : comment.user.imageURL)}}"
+                        alt="">
                 </div>
             </ng-container>
             <ng-template #elseImage>
-                <div class="menu-user displayName"
-                    *ngIf="comment.user !== undefined && comment.user !== null && comment.user.displayName && comment.user.displayName !== undefined && comment.user.displayName !== null && comment.user.displayName !== ''">
+                <div class="menu-user displayName" *ngIf="!!comment!.user!.displayName">
                     <div class="donators">
                         {{comment.user.displayName | slice: 0:1 }}
                     </div>
@@ -27,11 +26,13 @@
             <div class="menu-user" *ngIf="comment.page?comment.page.imageURL:comment.user.imageURL"
                 (click)="menuProfile(comment.page?comment.page:comment.user);">
                 <img *ngIf="comment.page" class="image-profile-comment"
-                    [src]="apiBaseURL+comment.page.imageURL+'/image'" alt="">
+                    [src]="comment.page.signURL ? comment.page.signURL : apiBaseURL + comment.page.imageURL + '/image'"
+                    alt="">
                 <img *ngIf="!comment.page" class="image-profile-comment"
-                    [src]="apiBaseURL+comment.user.imageURL+'/image'" alt="">
+                    [src]="comment.user.signURL ? comment.user.signURL : apiBaseURL + comment.user.imageURL + '/image'"
+                    alt="">
             </div>
-            <div *ngIf="comment.page?comment.page.imageURL === '':false || comment.user.imageURL === undefined"
+            <div *ngIf="comment.page ? comment.page.imageURL === '':false || comment.user.imageURL === undefined"
                 class="menu-user displayName">
                 <div class="donators" *ngIf="comment.page">
                     {{comment.page.name | slice: 0:1 }}

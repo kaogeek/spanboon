@@ -7,15 +7,13 @@
 
 <ng-container *ngIf="isLogin(); else elseUser">
     <button mat-button [matMenuTriggerFor]="beforeMenu" class="log-header">
-        <ng-container
-            *ngIf="userImage !== undefined && userImage !== null && userImage.imageURL && userImage.imageURL !== undefined && userImage.imageURL !== null && userImage.imageURL !== '' ; else elseImage">
+        <ng-container *ngIf="!!userImage!.signURL || !!userImage!.imageURL; else elseImage">
             <div class="menu-user">
-                <img class="image-profile" src="{{userImage.imageURL}}" alt="">
+                <img class="image-profile" src="{{userImage.signURL ? userImage.signURL : userImage.imageURL}}" alt="">
             </div>
         </ng-container>
         <ng-template #elseImage>
-            <div class="menu-user displayName"
-                *ngIf="userImage !== undefined && userImage !== null && userImage.displayName && userImage.displayName !== undefined && userImage.displayName !== null && userImage.displayName !== ''">
+            <div class="menu-user displayName" *ngIf="!!userImage!.displayName">
                 <span class="donator">
                     {{userImage.displayName | slice: 0:1 }}
                 </span>
@@ -25,13 +23,12 @@
     <mat-menu #beforeMenu="matMenu" xPosition="before" class="menu-set" backdropClass="profile-sub-menu">
         <div class="header-menu-profile">
             <div class="profile-header" (click)="$event.stopPropagation()">
-                <ng-container
-                    *ngIf="userImage !== undefined && userImage !== null && userImage.imageURL && userImage.imageURL !== undefined && userImage.imageURL !== null && userImage.imageURL !== ''; else elseImageTo">
-                    <img class="image-profile_z" src="{{userImage.imageURL}}" alt="">
+                <ng-container *ngIf="!!userImage!.signURL || !!userImage!.imageURL; else elseImageTo">
+                    <img class="image-profile_z" src="{{userImage.signURL ? userImage.signURL : userImage.imageURL}}"
+                        alt="">
                 </ng-container>
                 <ng-template #elseImageTo>
-                    <div class="menu-user_z"
-                        *ngIf="userImage !== undefined && userImage !== null && userImage.displayName && userImage.displayName !== undefined && userImage.displayName !== null && userImage.displayName !== ''">
+                    <div class="menu-user_z" *ngIf="!!userImage!.displayName">
                         <span>{{userImage.displayName | slice: 0:1 }}</span>
                     </div>
                 </ng-template>
@@ -39,8 +36,7 @@
                     <div class="profile-name">
                         {{userImage.displayName}}
                     </div>
-                    <div class="profile-name-eng"
-                        *ngIf="userImage && userImage.uniqueId !== '' && userImage.uniqueId !== undefined && userImage.uniqueId !== null">
+                    <div class="profile-name-eng" *ngIf="!!userImage!.uniqueId">
                         @{{userImage.uniqueId}}
                     </div>
                     <div class="header-follow">

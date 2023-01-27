@@ -18,9 +18,8 @@ import {
   MenuRegister,
   PageHashTag,
   PageRecommended,
-  SettingsFanPage, forgotPasswordPage, FulfillPage, ObjectiveTimeline,
+  SettingsFanPage, forgotPasswordPage, ObjectiveTimeline,
   EmergencyEventTimeline, Redirect, SettingAccount, AboutPage, SettingsAdminRoles, SecurityInfo, Policy, TOS,
-  NotificationAllPage,
 } from './components/components';
 
 import { TestComponent } from './components/TestComponent.component';
@@ -222,10 +221,10 @@ export const APP_ROUTES: Routes = [
         path: TOS.PAGE_NAME,
         component: TOS,
       },
-      {
-        path: NotificationAllPage.PAGE_NAME,
-        component: NotificationAllPage,
-      },
+      // {
+      //   path: NotificationAllPage.PAGE_NAME,
+      //   component: NotificationAllPage,
+      // },
       // {
       //   path: FulfillPage.PAGE_NAME,
       //   component: FulfillPage,

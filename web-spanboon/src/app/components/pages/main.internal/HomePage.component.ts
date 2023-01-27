@@ -5,7 +5,7 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-import { Component, OnInit, ViewChild, EventEmitter } from '@angular/core';
+import { Component, OnInit, ViewChild, EventEmitter, HostListener } from '@angular/core';
 import { MatPaginator, MatDialog } from '@angular/material';
 import { Gallery } from '@ngx-gallery/core';
 import { AuthenManager, MainPageSlideFacade, HashTagFacade, AssetFacade, PageFacade, SeoService } from '../../../services/services';
@@ -40,6 +40,8 @@ export class HomePage extends AbstractPage implements OnInit {
   public static readonly PAGE_NAME: string = PAGE_NAME;
   @ViewChild("paginator", { static: false }) public paginator: MatPaginator;
 
+  public isPostNewTab: boolean = false;
+  public windowWidth: any;
   public userCloneDatas: any;
   public pageUser: any;
   public model: any = undefined;
@@ -48,6 +50,17 @@ export class HomePage extends AbstractPage implements OnInit {
 
   public apiBaseURL = environment.apiBaseURL;
   public isLoading: boolean;
+
+  @HostListener('window:resize', ['$event'])
+  public getScreenSize(event?) {
+    this.windowWidth = window.innerWidth;
+
+    if (this.windowWidth <= 479) {
+      this.isPostNewTab = true;
+    } else {
+      this.isPostNewTab = false;
+    }
+  }
 
   constructor(private gallery: Gallery, router: Router, authenManager: AuthenManager, postFacade: PostFacade, dialog: MatDialog, cacheConfigInfo: CacheConfigInfo,
     mainPageModelFacade: MainPageSlideFacade, pageFacade: PageFacade, hashTagFacade: HashTagFacade, assetFacade: AssetFacade, seoService: SeoService) {
@@ -72,6 +85,7 @@ export class HomePage extends AbstractPage implements OnInit {
       this.searchPageInUser();
     }
     this.stopIsloading();
+    this.getScreenSize();
     super.ngOnInit();
   }
 
@@ -190,6 +204,8 @@ export class HomePage extends AbstractPage implements OnInit {
           isNotAccess: false,
           user: this.userCloneDatas,
           pageUser: this.pageUser,
+          panelClass: 'dialog-postcard',
+          backdropClass: 'dialog-postcard',
         }
       });
 

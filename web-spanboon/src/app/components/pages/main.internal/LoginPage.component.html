@@ -26,7 +26,7 @@
                     </div>
                     <div class="login-div">
                         <spanboon-button class="login" [height]="'34pt'" [text]="'เข้าสู่ระบบ'" [fontSize]="'18px'"
-                            [color]="'#F8F7F2'" (click)="onClickLogin()"></spanboon-button>
+                            [color]="'#F8F7F2'" (click)="login ? onClickLogin() : ''"></spanboon-button>
 
                         <div class="center-line">
                             <span class="border-span"></span>
@@ -79,9 +79,10 @@
                                                 [src]="mockDataMergeSocial.social === 'FACEBOOK' ? '../../../../assets/img/facebook-logo.svg' : (mockDataMergeSocial.social === 'TWITTER' ? '../../../../assets/img/twitter.svg' : (mockDataMergeSocial.social === 'GOOGLE' ? '../../../../assets/img/google.svg' : '../../../../assets/img/logo/mfp.svg'))">
                                         </div>
                                     </ng-container>
-                                    <ng-container *ngIf="!!dataUser!.data!.imageURL; else elsePhotoSocial">
+                                    <ng-container
+                                        *ngIf="!!dataUser!.data!.signURL || !!dataUser!.data!.imageURL; else elsePhotoSocial">
                                         <img class="social-pic"
-                                            [src]="apiBaseURL + dataUser.data.imageURL + '/image'" />
+                                            [src]="dataUser.data.signURL ? dataUser.data.signURL : apiBaseURL + dataUser.data.imageURL + '/image'" />
                                     </ng-container>
                                     <ng-template #elsePhotoSocial>
                                         <div class="not-image">
@@ -110,9 +111,10 @@
                                             [src]="social.socialLogin === 'FACEBOOK' ? '../../../../assets/img/facebook-logo.svg' : (social.socialLogin === 'TWITTER' ? '../../../../assets/img/twitter.svg' : (social.socialLogin === 'GOOGLE' ? '../../../../assets/img/google.svg' : '../../../../assets/img/logo/mfp.svg'))">
                                     </div>
                                     <!-- </ng-container> -->
-                                    <ng-container *ngIf="!!dataUser!.data!.imageURL; else elsePhoto">
+                                    <ng-container
+                                        *ngIf="!!dataUser!.data!.signURL || !!dataUser!.data!.imageURL; else elsePhoto">
                                         <img class="social-pic"
-                                            [src]="apiBaseURL + dataUser.data.imageURL + '/image'" />
+                                            [src]="dataUser.data.signURL ? dataUser.data.signURL : apiBaseURL + dataUser.data.imageURL + '/image'" />
                                     </ng-container>
                                     <ng-template #elsePhoto>
                                         <div class="not-image">
