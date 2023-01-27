@@ -920,11 +920,10 @@ export class GuestController {
         }
 
         else if (mode === PROVIDER.APPLE) {
-
             const appleId: any = req.body.apple.result.user;
             const tokenFCM_AP = req.body.tokenFCM;
             const deviceAP = req.body.deviceName;
-            const appleClient = await this.authenticationIdService.findOne({ where: { providerUserId: appleId.userId } });
+            const appleClient = await this.authenticationIdService.findOne({ where: { providerUserId: appleId.userId, providerName: PROVIDER.APPLE } });
             if (appleClient === null || appleClient === undefined) {
                 const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
                 return res.status(400).send(errorUserNameResponse);
@@ -934,7 +933,7 @@ export class GuestController {
                 const authTime = currentDateTime;
                 const expirationDateAp = moment().add(userExrTime, 'days').toDate();
                 const query = { id: appleId.userId, providerName: PROVIDER.APPLE };
-                const newValue = { $set: { lastAuthenTime: authTime, storedCredentials: appleId.idToken, expirationDate: expirationDateAp, properties: { tokenSign: appleId.accessToken, signIn: appleId.metadata.lastSignInTime } } };
+                const newValue = { $set: { lastAuthenTime: authTime, storedCredentials: appleId.idToken, expirationDate: expirationDateAp } };
                 const update_Apple = await this.authenticationIdService.update(query, newValue);
                 if (update_Apple) {
                     const updatedAuth = await this.authenticationIdService.findOne({ where: { providerUserId: appleId.userId } });
@@ -1943,18 +1942,19 @@ export class GuestController {
 
                 const keyMap = ObjectUtil.parseQueryParamToMap(decryptToken.token);
                 user = await this.twitterService.getTwitterUser(keyMap['user_id']);
+                console.log('user', user);
             } catch (ex: any) {
                 const errorResponse: any = { status: 0, message: ex.message };
                 return response.status(400).send(errorResponse);
             }
-        } if(isMode !== undefined && isMode === 'AP'){
+        } if (isMode !== undefined && isMode === 'AP') {
             try {
                 const decryptToken: any = await jwt.verify(tokenParam, env.SECRET_KEY);
                 if (decryptToken.token === undefined) {
                     const errorUserNameResponse: any = { status: 0, message: 'Token was not found.' };
                     return response.status(400).send(errorUserNameResponse);
                 }
-                const apUser = await this.authenticationIdService.findOne({user:decryptToken.userId,providerName: PROVIDER.APPLE });
+                const apUser = await this.authenticationIdService.findOne({ user: ObjectID(decryptToken.userId), providerName: PROVIDER.APPLE });
                 const findUser = await this.userService.findOne({ _id: ObjectID(apUser.user) });
                 user = findUser;
             } catch (ex: any) {
@@ -1962,7 +1962,7 @@ export class GuestController {
                 return response.status(400).send(errorResponse);
             }
         }
-        
+
         else {
             const pageUserId = await this.authService.decryptToken(tokenParam);
             if (pageUserId !== undefined) {
@@ -2006,7 +2006,7 @@ export class GuestController {
                 await this.deviceToken.delete({ userId: authenId.user });
                 return response.status(400).send(errorUserNameResponse);
             }
-        } else if(isMode !== undefined && isMode === 'AP'){
+        } else if (isMode !== undefined && isMode === 'AP') {
             const authenId = await this.authenticationIdService.findOne({ user: user.id, providerName: PROVIDER.APPLE });
             if (authenId === undefined) {
                 const errorUserNameResponse: any = { status: 0, message: 'User token invalid.' };
@@ -2019,8 +2019,8 @@ export class GuestController {
                 await this.deviceToken.delete({ userId: authenId.user });
                 return response.status(400).send(errorUserNameResponse);
             }
-        } else if(isMode !== undefined && isMode === 'TW'){
-            const authenId = await this.authenticationIdService.findOne({ user: user.id, providerName: PROVIDER.GOOGLE });
+        } else if (isMode !== undefined && isMode === 'TW') {
+            const authenId = await this.authenticationIdService.findOne({ user: user.id, providerName: PROVIDER.TWITTER });
             if (authenId === undefined) {
                 const errorUserNameResponse: any = { status: 0, message: 'User token invalid.' };
                 await this.deviceToken.delete({ userId: authenId.user });
@@ -2032,7 +2032,7 @@ export class GuestController {
                 await this.deviceToken.delete({ userId: authenId.user });
                 return response.status(400).send(errorUserNameResponse);
             }
-        }else {
+        } else {
             // normal mode
             const authenId: AuthenticationId = await this.authenticationIdService.findOne({ where: { user: user.id, providerName: PROVIDER.EMAIL } });
             if (authenId === undefined) {
