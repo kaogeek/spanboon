@@ -286,7 +286,7 @@ export class UserController {
                 const tokenFCMId = await this.deviceTokenService.find({ userId: userFollow.subjectId });
                 const notification_follower = whoFollowYou.displayName + space + 'กดติดตามคุณ';
                 const link = `/profile/${whoFollowYou.id}`;
-                await this.notificationService.createNotificationFCM(
+                const notificationId = await this.notificationService.createNotificationFCM(
                     followCreate.subjectId,
                     USER_TYPE.USER,
                     req.user.id + '',
@@ -297,7 +297,6 @@ export class UserController {
                     whoFollowYou.displayName,
                     whoFollowYou.imageURL
                 );
-                
                 for (const tokenFCM of tokenFCMId) {
                     if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined) {
                         await this.notificationService.sendNotificationFCM(
@@ -310,7 +309,8 @@ export class UserController {
                             link,
                             tokenFCM.Tokens,
                             whoFollowYou.displayName,
-                            whoFollowYou.imageURL
+                            whoFollowYou.imageURL,
+                            notificationId.id
                         );
                     }
                     else {

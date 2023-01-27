@@ -72,7 +72,6 @@ export class NotificationService {
     // Search Notification
     public search(search: SearchFilter): Promise<any> {
         const condition: any = SearchUtil.createFindCondition(search.limit, search.offset, search.select, search.relation, search.whereConditions, search.orderBy);
-
         if (search.count) {
             return this.notificationRepository.count();
         } else {
@@ -80,7 +79,7 @@ export class NotificationService {
         }
     }
 
-    public async sendNotificationFCM(toUserId: string, toUserType: string, fromUserId: string, fromUserType: string, notificationType: string, title: string, link: string, data?: any, displayName?: any, image?: any, count?: any): Promise<any> {
+    public async sendNotificationFCM(toUserId: string, toUserType: string, fromUserId: string, fromUserType: string, notificationType: string, title: string, link: string, data?: any, displayName?: any, image?: any, id?:any,count?: any): Promise<any> {
         const notification: Notification = new Notification();
         notification.isRead = false;
         notification.toUser = new ObjectID(toUserId);
@@ -98,6 +97,8 @@ export class NotificationService {
         const link_noti = String(link);
         const image_url = String(image);
         const count_data = String(count);
+        const notification_id = String(id);
+        console.log('notification_id',notification_id); 
         const payload =
         {
 
@@ -109,6 +110,7 @@ export class NotificationService {
                 notificationType,
                 displayNameFCM,
                 image_url,
+                notification_id,
                 count_data
 
             }
