@@ -194,7 +194,7 @@ export class UserNotificationController {
         } else {
             filter.whereConditions = { toUser: userObjId, toUserType: USER_TYPE.USER };
         }
-        const findAllCountNotification = await this.notificationService.find({toUser: userObjId, toUserType: USER_TYPE.USER,isRead:filter.whereConditions.isRead});
+        const findAllCountNotification = await this.notificationService.find({toUser: userObjId,isRead:filter.whereConditions.isRead});
         const userNotificationsList: any = await this.notificationService.search(filter);
         const notiResp = await this.parseNotificationsToResponses(userNotificationsList);
         if (userNotificationsList) {
