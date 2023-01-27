@@ -932,9 +932,9 @@ export class GuestController {
                 const currentDateTime = moment().toDate();
                 const userExrTime = await this.getUserLoginExpireTime();
                 const authTime = currentDateTime;
-                const expirationDate = moment().add(userExrTime, 'days').toDate();
+                const expirationDateAp = moment().add(userExrTime, 'days').toDate();
                 const query = { id: appleId.userId, providerName: PROVIDER.APPLE };
-                const newValue = { $set: { lastAuthenTime: authTime, storedCredentials: appleId.idToken, expirationDate: expirationDate, properties: { tokenSign: appleId.accessToken, signIn: appleId.metadata.lastSignInTime } } };
+                const newValue = { $set: { lastAuthenTime: authTime, storedCredentials: appleId.idToken, expirationDate: expirationDateAp, properties: { tokenSign: appleId.accessToken, signIn: appleId.metadata.lastSignInTime } } };
                 const update_Apple = await this.authenticationIdService.update(query, newValue);
                 if (update_Apple) {
                     const updatedAuth = await this.authenticationIdService.findOne({ where: { providerUserId: appleId.userId } });
