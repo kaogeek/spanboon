@@ -5,22 +5,15 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
  */
 
-import { Component, OnInit, Input, Inject, ViewChild, ElementRef, EventEmitter } from '@angular/core';
+import { Component, Inject, EventEmitter } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { SearchFilter, Asset } from '../../../models/models';
 import { PageFacade, AuthenManager, AssetFacade, PostFacade, PostCommentFacade, PostActionService } from '../../../services/services';
 import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { AbstractPage } from '../../pages/AbstractPage';
-import { DialogReboonTopic } from '../../shares/dialog/DialogReboonTopic.component';
 import { Router } from '@angular/router';
 import { FileHandle } from '../directive/DragAndDrop.directive';
-import * as moment from 'moment';
-import * as $ from 'jquery';
-import { fromEvent } from 'rxjs';
-import { map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { RePost } from '../../../models/RePost';
 import { CommentPosts } from '../../../models/CommentPosts';
-import { DomSanitizer } from '@angular/platform-browser';
 
 const PAGE_NAME: string = 'postcard';
 const SEARCH_LIMIT: number = 10;

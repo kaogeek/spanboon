@@ -8,9 +8,11 @@
 import { Component, EventEmitter, Input, OnInit } from "@angular/core";
 import { MatDialog } from "@angular/material";
 import { Router } from "@angular/router";
-import { AuthenManager } from "src/app/services/services";
+import { AuthenManager, ObservableManager } from "src/app/services/services";
 import { environment } from "src/environments/environment";
 import { AbstractPage } from "../../../pages/AbstractPage";
+
+const NOTI_READ_SUBJECT: string = 'noti.read';
 
 const PAGE_NAME: string = "NotificationCard";
 
@@ -30,10 +32,12 @@ export class NotificationCard extends AbstractPage implements OnInit {
   @Input()
   public date: Date = new Date();
 
+  private observManager: ObservableManager;
   private apiBaseURL = environment.apiBaseURL;
 
-  constructor(authenManager: AuthenManager, router: Router, dialog: MatDialog) {
+  constructor(authenManager: AuthenManager, router: Router, dialog: MatDialog, observManager: ObservableManager) {
     super(PAGE_NAME, authenManager, dialog, router);
+    this.observManager = observManager;
   }
 
   public ngOnInit(): void {
@@ -49,7 +53,18 @@ export class NotificationCard extends AbstractPage implements OnInit {
 
   public navigatetopage(link) {
     this.router.navigate([]).then(() => {
-      window.open(link);
+      this.observManager.publish(NOTI_READ_SUBJECT, {
+        data: {
+          title: link.title,
+          body: link.body,
+          image: link.image,
+          status: link.status,
+          isRead: true,
+          link: link.link,
+          displayName: link.displayName
+        },
+      });
+      window.open(link.link);
     });
   }
 
@@ -62,8 +77,4 @@ export class NotificationCard extends AbstractPage implements OnInit {
   public onDirtyDialogCancelButtonClick(): EventEmitter<any> {
     throw new Error("Method not implemented.");
   }
-
-  /* public setImage(){
-    return this.apiBaseURL + payload.data["gcm.notification.image_url"] + '/image' 
-  } **/
 }

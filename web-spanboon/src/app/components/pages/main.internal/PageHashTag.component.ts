@@ -24,7 +24,8 @@ import { UserEngagement } from '../../../models/UserEngagement';
 import { filter } from 'rxjs/internal/operators/filter';
 import { PLATFORM_NAME_TH } from 'src/custom/variable';
 import { fromEvent, Subject, Subscription } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
+import { FormControl } from '@angular/forms';
 
 const PAGE_NAME: string = 'search';
 const SEARCH_LIMIT: number = 20;
@@ -38,9 +39,9 @@ declare var $: any;
   templateUrl: './PageHashTag.component.html',
 })
 export class PageHashTag extends AbstractPageImageLoader implements OnInit {
-  valueinput: string;
-  valueChanged: Subject<string> = new Subject<string>();
-  inputSub: Subscription;
+  private unsubscriber = new Subject<void>();
+  searchUser = new FormControl();
+  debouncedValue = "";
 
   private destroy = new Subject<void>();
   public static readonly PAGE_NAME: string = PAGE_NAME;
@@ -78,9 +79,6 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   @ViewChild("recommendedLeft", { static: true }) recommendedLeft: ElementRef;
   @ViewChild("feedbodysearch", { static: true }) feedbodysearch: ElementRef;
   @ViewChild("inputAutocomp", { static: true }) inputAutocomp: ElementRef;
-  @ViewChild('mytexttt', { static: true }) mytexttt: ElementRef;
-  namettt = 'Angular';
-  resulttt = '';
 
   @Output()
   public submitRemove: EventEmitter<any> = new EventEmitter();
@@ -476,6 +474,16 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     //   console.log('Calling the API now with' + this.mytexttt.nativeElement.value);
     //   this.resulttt = this.mytexttt.nativeElement.value;
     // }));
+
+    this.searchUser.valueChanges
+      .pipe(
+        debounceTime(500)
+        , takeUntil(this.unsubscriber)
+      ).subscribe((value: any) => {
+        this.debouncedValue = value;
+        this.keyUpAutoComp(this.debouncedValue);
+      });
+
     this.searchEmergency();
     this.searchObjective();
     this.searchHashTag();
@@ -539,6 +547,8 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     super.ngOnDestroy();
     this.destroy.next();
     this.destroy.complete();
+    this.unsubscriber.next();
+    this.unsubscriber.complete();
   }
 
   isPageDirty(): boolean {
@@ -558,13 +568,13 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     try {
       this.isLoading = true;
       let data = {
-        keyword: text.target.value ? text.target.value : text
+        keyword: text
       }
 
       this.dataUser = await this.accountFacade.search(data);
 
       for (let data of this.dataUser) {
-        if (data.imageURL !== null && data.imageURL !== undefined) {
+        if (!data.signURL) {
           data.imageURL = await this.passSignUrl(data.imageURL);
         }
       }
@@ -1332,6 +1342,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     const indexCard = this.rowUser.indexOf(card);
     if (indexCard >= 0) {
       this.rowUser.splice(index, 1);
+      this.searchTrendTag();
     }
     for (let [i, user] of this.userId.entries()) {
       if (user.id === card.id) {
@@ -1339,7 +1350,6 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         break;
       }
     }
-    this.searchTrendTag();
   }
 
   onUserChangeStart(changeContext: ChangeContext, item: any): void {
@@ -1623,4 +1633,5 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       postion.addClass("active");
     }
   }
+
 }

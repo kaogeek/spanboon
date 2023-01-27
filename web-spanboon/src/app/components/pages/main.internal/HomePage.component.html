@@ -162,14 +162,13 @@
                                 model.emergencyEvents.contents:hashTag.length >1?
                                 hashTag:model.postSectionModel.contents.length > 0?model.postSectionModel.contents:[]) | slice:0:2;let index = index">
                                 <div class="colum-detail-1">
-                                    <div class="image" *ngIf="index === 0 && !item.type">
+                                    <!-- <div class="image" *ngIf="index === 0 && !item.type">
                                         <img
-                                            [src]="item.signURL?item.signURL:item.coverPageSignUrl?item.coverPageSignUrl:apiBaseURL+item.coverPageUrl+'/image'">
-                                    </div>
+                                            [src]="item.signURL ? item.signURL : item.coverPageSignUrl ? item.coverPageSignUrl : apiBaseURL + item.coverPageUrl + '/image'">
+                                    </div> -->
                                     <div class="detail">
-                                        <span class="title"
-                                            [innerHTML]='item.title?item.title:item.label?item.label:item.post.title'></span>
-                                        <div class="content" *ngIf="!item.type">
+                                        <span class="title">{{item.title ? item.title : item.label}}</span>
+                                        <!-- <div class="content" *ngIf="!item.type">
                                             <span class="count-aontrol">{{ item.post.commentCount}}</span>
                                             <span class="title-control">ความเห็น</span>
                                             <span class="drot">•</span>
@@ -181,11 +180,12 @@
                                             <span class="drot">•</span>
                                             <span class="count-aontrol">{{ item.post.sharecount }}</span>
                                             <span class="title-control">แชร์</span>
-                                        </div>
+                                        </div> -->
                                     </div>
                                 </div>
                                 <div class="colum-detail-2">
-                                    <span class="title">{{item.postCount?item.postCount:item.count?item.count:'0'}}
+                                    <span class="title">{{item.postCount ? item.postCount : item.count ?
+                                        item.count : '0'}}
                                         ครั้ง</span>
                                 </div>
                             </div>
@@ -194,7 +194,7 @@
                     <div class="col2" *ngIf="model.postSectionModel.contents.length > 0">
                         <div class="col2-col1">
                             <div class="title">
-                                <span class="text">โพสต์ใหม่ล่าสุด</span>
+                                <span class="text">ข่าวใหม่ล่าสุด</span>
                             </div>
                             <div class="posts">
                                 <div class="sub-post">
@@ -562,11 +562,11 @@
                         <div class="cards">
                             <div *ngIf="data.type === 'SMALL'" class="card-small-type">
                                 <div class="card" *ngFor="let content of data.contents;let index=index"
-                                    (click)="clickToPageUser(content.owner?content.data.objectiveId:content.data.pageUsername?content.data.pageUsername:content.data._id,content.owner?'ture':undefined)">
+                                    (click)="clickToPageUser(content.owner ? content.data.objectiveId : content.data.pageUsername ? content.data.pageUsername : content.data._id,content.owner ? 'ture' : undefined)">
                                     <img
-                                        [src]="content.signURL?content.signURL:content.iconSignUrl?content.iconSignUrl:apiBaseURL+content.iconUrl+'/image'">
+                                        [src]="content.signURL ? content.signURL : content.iconSignUrl ? content.iconSignUrl : apiBaseURL + content.iconUrl + '/image'">
                                     <div class="text">
-                                        <span [innerHTML]='content.subtitle?content.subtitle:content.title'></span>
+                                        <span [innerHTML]='content.subtitle ? content.subtitle : content.title'></span>
                                     </div>
                                 </div>
                             </div>
@@ -596,20 +596,20 @@
                                         </div>
                                     </div>
                                     <img *ngIf="content.post.gallery[0]" (click)="openDilogPost(content.post)"
-                                        [src]="content.signURL?content.signURL:content.coverPageSignUrl?content.coverPageSignUrl:apiBaseURL+content.post.gallery[0].imageURL+'/image'">
+                                        [src]="content.signURL ? content.signURL : content.coverPageSignUrl ? content.coverPageSignUrl : apiBaseURL + content.post.gallery[0].imageURL + '/image'">
                                     <span class="content-post-img" (click)="openDilogPost(content.post)"
                                         *ngIf="!content.post.gallery[0]"
                                         [innerHTML]='content.post.title | highlight'></span>
                                     <div class="text">
                                         <div class="col-text" (click)="openDilogPost(content.post)">
                                             <span
-                                                [innerHTML]='content.subtitle?content.subtitle:content.title?content.title:content.post.title'
+                                                [innerHTML]='content.subtitle ? content.subtitle : content.title ? content.title : content.post.title'
                                                 *ngIf="content.post.gallery[0]"></span>
                                         </div>
                                         <!-- <span class="more" *ngIf="content.coverPageUrl">อ่านต่อ...</span> -->
                                         <div class="bottom">
                                             <div class="owner-offical"
-                                                (click)="clickToPageUser(content.owner.uniqueId?content.owner.uniqueId:content.owner.id)">
+                                                (click)="clickToPageUser(content.owner.uniqueId ? content.owner.uniqueId : content.owner.id)">
                                                 <svg class="new-cards-offical" id="shield"
                                                     xmlns="http://www.w3.org/2000/svg" width="43.383" height="47.208"
                                                     viewBox="0 0 43.383 47.208" *ngIf="content.owner.isOfficial">

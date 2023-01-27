@@ -525,6 +525,7 @@ export class LoginPage extends AbstractPage implements OnInit {
     }
     let mode = "EMAIL"
     if (this.login) {
+      this.login = false;
       if (body.email.trim() === "") {
         return this.showAlertDialog("กรุณากรอกอีเมล");
       }
@@ -583,6 +584,7 @@ export class LoginPage extends AbstractPage implements OnInit {
                     btDisplay1: "none",
                   },
                 });
+                this.login = true;
                 dialog.afterClosed().subscribe((res) => {
                   if (res) {
                     this.observManager.publish("authen.check", null);
@@ -591,6 +593,7 @@ export class LoginPage extends AbstractPage implements OnInit {
                       this.router.navigateByUrl(this.redirection);
                     } else {
                       this.router.navigate(["home"]);
+                      this.login = true;
                     }
                   }
                 });
@@ -636,9 +639,11 @@ export class LoginPage extends AbstractPage implements OnInit {
               },
             });
             dialog.afterClosed().subscribe((res) => {
+              this.login = true;
             });
           } else {
             console.log(err);
+            this.login = true;
           }
           if (
             err.error.message === "User was not found." &&
@@ -656,10 +661,12 @@ export class LoginPage extends AbstractPage implements OnInit {
             dialog.afterClosed().subscribe((res) => {
               if (res) {
                 this.router.navigate(["/register"]);
+                this.login = true;
               }
             });
           } else {
             console.log(err);
+            this.login = true;
           }
         });
     }
