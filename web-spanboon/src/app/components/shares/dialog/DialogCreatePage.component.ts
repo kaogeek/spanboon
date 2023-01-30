@@ -14,6 +14,8 @@ import { AbstractPage } from '../../pages/AbstractPage';
 import { Router } from '@angular/router';
 import * as $ from 'jquery';
 import { environment } from '../../../../environments/environment';
+import { fromEvent, Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 const PAGE_NAME: string = 'editcomment';
 const SEARCH_LIMIT: number = 100;
@@ -28,7 +30,7 @@ declare var $: any;
 export class DialogCreatePage extends AbstractPage {
 
   public static readonly PAGE_NAME: string = PAGE_NAME;
-
+  private destroy = new Subject<void>();
   @ViewChild('pageName', { static: false }) pageName: ElementRef;
   @ViewChild('urlPage', { static: false }) urlPage: ElementRef;
 
@@ -96,11 +98,19 @@ export class DialogCreatePage extends AbstractPage {
   }
 
   public ngAfterViewInit(): void {
+    fromEvent(this.urlPage && this.urlPage.nativeElement, 'keyup').pipe(
+      debounceTime(500)
+      , distinctUntilChanged()
+    ).subscribe((text: any) => {
+      this.checkUUID(this.urlPage.nativeElement.value);
+    });
     this.tabWizard(currentTab);
   }
 
   public ngOnDestroy(): void {
     super.ngOnDestroy();
+    this.destroy.next();
+    this.destroy.complete();
   }
 
   isPageDirty(): boolean {

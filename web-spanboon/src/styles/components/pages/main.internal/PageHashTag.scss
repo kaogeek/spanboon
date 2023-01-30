@@ -908,6 +908,7 @@
                                             background-color: $brandcolor2;
                                             @include font-size-10($font-head-500);
                                             color: $white;
+                                            flex: 0 0 auto;
                                         }
 
                                         >.page-name {
@@ -920,6 +921,11 @@
                                             >.page-username {
                                                 color: $color-gray;
                                                 @include font-size-9($font-head-500);
+                                                -webkit-line-clamp: 1;
+                                                -webkit-box-orient: vertical;
+                                                overflow: hidden;
+                                                word-break: break-word;
+                                                display: -webkit-box;
                                             }
                                         }
                                     }
