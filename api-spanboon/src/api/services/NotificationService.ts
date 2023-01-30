@@ -49,6 +49,11 @@ export class NotificationService {
         return this.notificationRepository.updateOne(query, newValue);
     }
 
+    // updateMany
+    public updateMany(query:any,newValue:any): Promise<any>{
+        return this.notificationRepository.updateMany(query,newValue);
+    }
+
     // delete Notification
     public async delete(query: any, options?: any): Promise<any> {
         return await this.notificationRepository.deleteOne(query, options);

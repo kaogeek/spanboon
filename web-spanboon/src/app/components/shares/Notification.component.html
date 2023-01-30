@@ -5,7 +5,7 @@
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
 <div [class.active]="isActive()" class="btn-notfication" [matMenuTriggerFor]="beforeMenu"
-    (menuOpened)="isNotiAll = false">
+    (menuOpened)="isNotiAll = false; clickReadAll();">
     <div class="notiAlert" [class.active-plus]="noti!.countUnread > 9" *ngIf="noti!.countUnread > 0">
         <ng-container *ngIf="noti!.countUnread > 9; else elseTemplateNoti">
             <span>9+</span>

@@ -165,10 +165,8 @@ export class PageSocialAccountService {
         const fullStoryLink = ((spanboon_web.ROOT_URL === undefined || spanboon_web.ROOT_URL === null) ? '' : spanboon_web.ROOT_URL) + storyLink;
         const postLink = (storyLink !== '') ? fullStoryLink : fullLink;
         const messageForTW = TwitterUtils.generateTwitterText(posts.title, posts.detail, postLink, undefined, posts.emergencyEventTag, posts.objectiveTag);
-
         try {
             const twitterPost = await this.pagePostMessageToTwitter(postByPageId, messageForTW, imageBase64s);
-
             // create social post log
             if (twitterPost !== undefined) {
                 const socialPost = new SocialPost();

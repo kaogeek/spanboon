@@ -896,11 +896,11 @@
                     display: flex;
                     flex-direction: column;
                     line-height: 26px;
-                    width: calc(100%);
+                    width: 100%;
                     cursor: pointer;
 
                     > .top {
-                      width: calc(100%);
+                      width: 100%;
                       height: 30px;
                       display: flex;
                       flex-direction: row;
@@ -973,7 +973,6 @@
                         > span {
                           cursor: pointer;
                           @include font-size-9($font-head-500);
-                          padding: 20px 0px;
                         }
 
                         > .image {
@@ -1687,7 +1686,6 @@
 
 @media (max-width: $small) {
   .cdk-global-overlay-wrapper {
-
     .cdk-overlay-pane {
       max-width: 100vw !important;
     }

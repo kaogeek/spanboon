@@ -155,4 +155,23 @@ export class Notification extends AbstractPage implements OnInit {
       }
     }
   }
+
+  public clickReadAll() {
+    this.notificationFacade.clearAll().then((res) => {
+      if (res) {
+        this.noti.countUnread = 0;
+        !!this.noti!.unread.map((unread) => {
+          return unread.isRead = true;
+        });
+
+        !!this.noti!.all.map((unread) => {
+          return unread.isRead = true;
+        });
+      }
+    }).catch((error) => {
+      if (error) {
+        console.log(error);
+      }
+    });
+  }
 }

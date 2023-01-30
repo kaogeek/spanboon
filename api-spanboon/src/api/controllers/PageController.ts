@@ -491,7 +491,7 @@ export class PageController {
 
             const pageCreate: Page = new Page();
             pageCreate.name = socialBinding.facebookPageName;
-            pageCreate.pageUsername = null;
+            pageCreate.pageUsername = pageDetail ? pageDetail.username : '';
             pageCreate.subTitle = null;
             pageCreate.backgroundStory = null;
             pageCreate.detail = null;
