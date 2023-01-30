@@ -34,7 +34,7 @@ export const jobSchedulerLoader: MicroframeworkLoader = (settings: Microframewor
     });
     
     // fetch feed twitter
-    schedule.scheduleJob('0 */1 * * *', () =>{
+    schedule.scheduleJob('*/30 * * * *', () =>{
         axios.get(process.env.APP_TWITTER).then((res)=>{
             console.log(`Fetch Twitter : ${res.status}`);
         }).catch((err)=>{
