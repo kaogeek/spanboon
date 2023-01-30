@@ -399,10 +399,10 @@
                                                 <span
                                                     *ngIf="(model.postSectionModel.contents[5] !== null && model.postSectionModel.contents[5] !== undefined && model.postSectionModel.contents[5] !== '')"
                                                     [innerHTML]='model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1].title: model.postSectionModel.contents[5].post.title | highlight'></span>
-                                                <span *ngIf="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1?
+                                                <!-- <span *ngIf="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1?
                                                         model.objectiveEvents.contents[0].post[1].coverImage === '':
                                                         model.postSectionModel.contents[5].coverPageUrl === ''"
-                                                    [innerHTML]='model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1].detail: model.postSectionModel.contents[5].post.detail | highlight'></span>
+                                                    [innerHTML]='model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1].detail: model.postSectionModel.contents[5].post.detail | highlight'></span> -->
                                             </div>
                                         </div>
                                         <span class="text"
@@ -418,15 +418,15 @@
                                             thformatdatetime}}</span>
                                     </div>
                                     <div class="post-col2"
-                                        *ngIf="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[2]:model.postSectionModel.contents[6]">
+                                        *ngIf="model.objectiveEvents.contents.length > 0 && model.objectiveEvents.contents[0].post.length > 1 ? model.objectiveEvents.contents[0].post[2] : model.postSectionModel.contents[6]">
                                         <div class="top">
                                             <div class="status"
-                                                *ngIf="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1].type: model.postSectionModel.contents[6].post.type === 'GENERAL'">
+                                                *ngIf="model.objectiveEvents.contents.length > 0 && model.objectiveEvents.contents[0].post.length > 1 ? model.objectiveEvents.contents[0].post[1].type : model.postSectionModel.contents[6].post.type === 'GENERAL'">
                                                 <div class="status-g"></div>
                                                 <span>ทั่วไป</span>
                                             </div>
                                             <div class="status"
-                                                *ngIf="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[1].type: model.postSectionModel.contents[6].post.type === 'NEED'">
+                                                *ngIf="model.objectiveEvents.contents.length > 0 && model.objectiveEvents.contents[0].post.length > 1 ? model.objectiveEvents.contents[0].post[1].type : model.postSectionModel.contents[6].post.type === 'NEED'">
                                                 <div class="status-n"></div>
                                                 <span>มองหา</span>
                                             </div>
@@ -469,10 +469,10 @@
                                                 <span
                                                     *ngIf="(model.postSectionModel.contents[6] !== null && model.postSectionModel.contents[6] !== undefined && model.postSectionModel.contents[6] !== '')"
                                                     [innerHTML]='model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[2].title: model.postSectionModel.contents[6].post.title | highlight'></span>
-                                                <span *ngIf="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1?
+                                                <!-- <span *ngIf="model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1?
                                                         model.objectiveEvents.contents[0].post[2].coverImage === '':
                                                         model.postSectionModel.contents[6].coverPageUrl === ''"
-                                                    [innerHTML]='model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[2].detail: model.postSectionModel.contents[6].post.detail | highlight'></span>
+                                                    [innerHTML]='model.objectiveEvents.contents.length > 0 &&  model.objectiveEvents.contents[0].post.length > 1? model.objectiveEvents.contents[0].post[2].detail: model.postSectionModel.contents[6].post.detail | highlight'></span> -->
                                             </div>
                                         </div>
                                         <span class="text"
