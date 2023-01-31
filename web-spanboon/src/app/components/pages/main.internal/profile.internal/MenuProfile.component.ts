@@ -89,10 +89,12 @@ export class MenuProfile extends AbstractPage implements OnInit {
             this.assetFacade.getPathFile(data.imageURL).then((res: any) => {
                 if (res.status === 1) {
                     this.userImage = userCloneData;
-                    if (ValidBase64ImageUtil.validBase64Image(res.data)) {
-                        this.userImage.imageURL = res.data;
-                    } else {
-                        this.userImage.imageURL = null
+                    if (!this.userImage.signURL) {
+                        if (ValidBase64ImageUtil.validBase64Image(res.data)) {
+                            this.userImage.imageURL = res.data;
+                        } else {
+                            this.userImage.imageURL = null
+                        }
                     }
 
                 }
@@ -109,7 +111,7 @@ export class MenuProfile extends AbstractPage implements OnInit {
 
     public reloadUserImage() {
         let user = this.getCurrentUser();
-        if (user !== undefined && user !== null) {
+        if (!!user) {
             this.getProfileImage(user);
         }
     }

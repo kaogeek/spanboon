@@ -724,7 +724,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         this.recommendedRight.nativeElement.style.top = '-' + maxcount + 'px';
 
       } else {
-        this.recommendedRight.nativeElement.style.top = (this.hidebar ? '55pt' : '0');
+        this.recommendedRight.nativeElement.style.top = (this.hidebar ? '0' : '0');
       }
     }
   }
@@ -742,7 +742,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         }
       } else {
         if (this.recommendedLeft) {
-          this.recommendedLeft.nativeElement.style.top = (this.hidebar ? '55pt' : '0');
+          this.recommendedLeft.nativeElement.style.top = (this.hidebar ? '0' : '0');
         }
       }
     }

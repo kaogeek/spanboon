@@ -334,6 +334,12 @@ export class PageController {
         const userId = new ObjectID(req.user.id);
         const getUser = await this.userService.findOne({ _id: userId });
         const verifyObject = await this.twitterService.verifyCredentials(socialBinding.twitterOauthToken, socialBinding.twitterTokenSecret);
+        const regex = /[ก-ฮ]/g;
+        const found =  verifyObject.screen_name.match(regex);
+        if(found){
+            const errorResponse = ResponseUtil.getErrorResponse('Please fill in the box with english lanauage.', undefined);
+            return res.status(400).send(errorResponse);
+        }
         const ipAddress = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress).split(',')[0];
         const clientId = req.headers['client-id'];
         const query = { _id: userId };
@@ -352,7 +358,7 @@ export class PageController {
             const checkPageCate = await this.pageCategoryService.findOne({ name: 'อื่นๆ' });
             const pageCreate: Page = new Page();
             pageCreate.name = verifyObject.name;
-            pageCreate.pageUsername = null;
+            pageCreate.pageUsername = verifyObject ? verifyObject.screen_name : '';
             pageCreate.subTitle = null;
             pageCreate.backgroundStory = null;
             pageCreate.detail = null;
@@ -444,10 +450,16 @@ export class PageController {
         const getUser = await this.userService.findOne({ _id: userId });
         const query = { _id: userId };
         const newValue = { $set: { isSyncPage: true } };
+        const regex = /[ก-ฮ]/g;
         let assetCover: any;
         const pagePicture = await this.facebookService.getPagePicture(socialBinding.facebookPageId, socialBinding.pageAccessToken);
         const { data } = await axios.get('https://graph.facebook.com/v14.0/' + socialBinding.facebookPageId + '?fields=cover&access_token=' + socialBinding.pageAccessToken);
         const pageDetail = await this.facebookService.getPageFb(socialBinding.facebookPageId, socialBinding.pageAccessToken);
+        const found =  pageDetail.username.match(regex);
+        if(found){
+            const errorResponse = ResponseUtil.getErrorResponse('Please fill in the box with english lanauage.', undefined);
+            return res.status(400).send(errorResponse);
+        }
         const ipAddress = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress).split(',')[0];
         const clientId = req.headers['client-id'];
         let createCate = undefined;
