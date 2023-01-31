@@ -96,7 +96,7 @@ export class FacebookWebhookController {
             const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
             return res.status(200).send(successResponse);
         }
-
+        console.log('body.entry[0].changes[0].value',body.entry[0].changes[0].value);
         let realText = undefined;
         let TrimText = undefined;
         const hashTagList1 = [];
