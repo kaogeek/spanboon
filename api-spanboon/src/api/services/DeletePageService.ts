@@ -12,11 +12,13 @@ import { PageAccessLevelService } from './PageAccessLevelService';
 import { PageConfigService } from './PageConfigService';
 import { PageSocialAccountService } from './PageSocialAccountService';
 import { PostsService } from './PostsService';
+import { PostsCommentService } from './PostsCommentService';
 import { SocialPostLogsService } from './SocialPostLogsService';
 import { SocialPostService } from './SocialPostService';
 import { PageObjectiveService } from './PageObjectiveService';
 import { FulfillmentCaseService } from './FulfillmentCaseService';
 import { NeedsService } from './NeedsService';
+import { UserLikeService } from './UserLikeService';
 @Service()
 export class DeletePageService {
 
@@ -31,7 +33,9 @@ export class DeletePageService {
         private socialPostService: SocialPostService,
         private pageObjectiveService: PageObjectiveService,
         private fulfillmentCaseService: FulfillmentCaseService,
-        private needsService: NeedsService
+        private needsService: NeedsService,
+        private postsCommentService: PostsCommentService,
+        private userLikeService:UserLikeService
     ) {
     }
 
@@ -53,6 +57,10 @@ export class DeletePageService {
                 { $match: { '_id': pageId } },
                 { $lookup: { from: 'Posts', localField: '_id', foreignField: 'pageId', as: 'Posts' } },
                 { $unwind: { path: '$Posts', preserveNullAndEmptyArrays: true } },
+                { $lookup: { from: 'PostsComment', localField: '_id', foreignField: 'commentAsPage', as: 'PostsComment' } },
+                { $unwind: { path: '$PostComment', preserveNullAndEmptyArrays: true } },
+                { $lookup: { from: 'UserLike', localField: '_id', foreignField:'likeAsPage', as: 'UserLike'}},
+                { $unwind: { path: '$UserLike', preserveNullAndEmptyArrays: true}},
                 { $lookup: { from: 'SocialPostLogs', localField: '_id', foreignField: 'pageId', as: 'SocialPostLogs' } },
                 { $unwind: { path: '$SocialPostLogs', preserveNullAndEmptyArrays: true } },
                 { $lookup: { from: 'SocialPost', localField: '_id', foreignField: 'pageId', as: 'SocialPost' } },
@@ -113,6 +121,14 @@ export class DeletePageService {
                 const findSocialPostLog = await this.socialPostLogsService.findOne({ pageId: pageTest._id });
                 if (findSocialPostLog !== undefined) {
                     await this.socialPostLogsService.deleteMany({ pageId: pageTest._id });
+                }
+                const findPostsComment = await this.postsCommentService.findOne({ commentAsPage: pageTest._id });
+                if (findPostsComment !== undefined) {
+                    await this.postsCommentService.deleteMany({ commentAsPage: pageTest._id });
+                }
+                const findLikePage = await this.userLikeService.findOne({likeAsPage:pageTest._id });
+                if( findLikePage !== undefined){
+                    await this.userLikeService.deleteMany({likeAsPage:pageTest._id });
                 }
                 const findPostPage = await this.postsService.findOne({ pageId: pageTest._id });
                 if (findPostPage !== undefined) {
