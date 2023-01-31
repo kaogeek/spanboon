@@ -1,0 +1,51 @@
+.home-page {
+  section {
+    padding: 30px 15px;
+
+    &.section-1 {
+    }
+  }
+
+  .container {
+    margin: 0 auto;
+    max-width: 1280px;
+
+    @media (max-width: $xxlarge) {
+      max-width: 1024px;
+    }
+
+    @media (max-width: $large) {
+      max-width: 768px;
+    }
+
+    .grid {
+      display: grid;
+      align-items: flex-start;
+      grid-template-columns: repeat(4, 1fr);
+      grid-gap: 15px;
+
+      @media (max-width: $medium) {
+        grid-template-columns: auto;
+      }
+
+      > .grid-item {
+        height: 100%;
+
+        &:first-of-type {
+          grid-column: span 2;
+          grid-row: span 2;
+
+          @media (max-width: $medium) {
+            height: 315px;
+          }
+        }
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+      }
+    }
+  }
+}
