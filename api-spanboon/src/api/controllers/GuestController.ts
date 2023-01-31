@@ -105,7 +105,7 @@ export class GuestController {
         let userData: User;
         const regex = /[ก-ฮ]/g;
         const found =  uniqueId.match(regex);
-        if(found){
+        if(found !== null){
             const errorResponse = ResponseUtil.getErrorResponse('Please fill in the box with english lanauage.', undefined);
             return res.status(400).send(errorResponse);
         } if (mode === PROVIDER.EMAIL) {

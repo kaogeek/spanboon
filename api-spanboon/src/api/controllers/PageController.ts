@@ -336,7 +336,7 @@ export class PageController {
         const verifyObject = await this.twitterService.verifyCredentials(socialBinding.twitterOauthToken, socialBinding.twitterTokenSecret);
         const regex = /[ก-ฮ]/g;
         const found =  verifyObject.screen_name.match(regex);
-        if(found){
+        if(found !== null){
             const errorResponse = ResponseUtil.getErrorResponse('Please fill in the box with english lanauage.', undefined);
             return res.status(400).send(errorResponse);
         }
@@ -456,7 +456,7 @@ export class PageController {
         const { data } = await axios.get('https://graph.facebook.com/v14.0/' + socialBinding.facebookPageId + '?fields=cover&access_token=' + socialBinding.pageAccessToken);
         const pageDetail = await this.facebookService.getPageFb(socialBinding.facebookPageId, socialBinding.pageAccessToken);
         const found =  pageDetail.username.match(regex);
-        if(found){
+        if(found !== null){
             const errorResponse = ResponseUtil.getErrorResponse('Please fill in the box with english lanauage.', undefined);
             return res.status(400).send(errorResponse);
         }
