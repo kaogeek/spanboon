@@ -10,6 +10,9 @@ export class Otp {
     @IsMongoId()
     public id: ObjectID;
 
+    @Column({name:'userId'})
+    public userId:ObjectID;
+
     @Column({ name: 'email' })
     public email: string;
 

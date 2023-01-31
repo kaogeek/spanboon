@@ -139,11 +139,11 @@ export class FacebookWebhookController {
             const regex2 = /[.\-_,*+?^$|\\]/;
 
             const result = msg.lastIndexOf(']');
-            const title1 = msg.slice(0, result);
+            const title1 = msg.slice(0, (result + 1));
             realText = title1.replace(regex, '').trim();
             console.log('TITLE: ', realText);
 
-            const detail1 = msg.replace(title1 + ']', '').trim();
+            const detail1 = msg.replace(title1, '').trim();
             const checkDetail = detail1.startsWith('.\n');
 
             if (checkDetail) {
