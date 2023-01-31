@@ -56,7 +56,7 @@ export class CommentPost {
       this.editPost = false;
     }
     if (action === 'LIKE') {
-      this.submit.emit({ action: action, commentdata: comment.id, index: index, commentEdit: this.commentEdit });
+      // this.submit.emit({ action: action, commentdata: comment.id, index: index, commentEdit: this.commentEdit });
       this.editPost = false;
     }
     if (action === 'DELETE') {

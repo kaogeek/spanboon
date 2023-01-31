@@ -59,9 +59,9 @@
 
                 <input type="text" name="lastName" placeholder="นามสกุล" class="input-text-group"
                     [(ngModel)]="data.lastName">
-                <ng-container *ngIf="mode === 'facebook' || mode === 'google'; else elseEmail">
-                    <input #inputEmail type="email" id="email" name="email" placeholder="อีเมล"
-                        class="input-text readonly" shake [readonly]="data.email ? true : false"
+                <ng-container *ngIf="mode === 'facebook' || mode === 'google' || mode === 'twitter'; else elseEmail">
+                    <input #inputEmail type="email" id="email" name="email" placeholder="อีเมล" class="input-text" shake
+                        [readonly]="data.email ? true : false" [class.readonly]="data.email"
                         [value]="!!data!.email ? data.email : ''" required>
                 </ng-container>
                 <ng-template #elseEmail>
@@ -142,6 +142,7 @@
                     <spanboon-button [text]="'ยกเลิก'" [height]="'35pt'" [bgColor]="'rgb(248, 247, 242)'"
                         [color]="'#000'" [fontSize]="'16px'" (click)="clickBlack()"></spanboon-button>
                     <spanboon-button [text]="'ยืนยัน'" [height]="'35pt'" [color]="'#F8F7F2'" [fontSize]="'16px'"
+                        [ngClass]="checkedCon ? 'deactive' : 'active'"
                         (click)="checkedCon ? onClickregister(register.value) : null">
                     </spanboon-button>
                 </div>

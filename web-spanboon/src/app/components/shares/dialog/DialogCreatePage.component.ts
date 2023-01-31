@@ -63,6 +63,7 @@ export class DialogCreatePage extends AbstractPage {
   public isSkip: boolean = false;
   public isCanCel: boolean = true;
   public uuid: boolean;
+  public isValid: boolean;
   public isNull: boolean;
   public isNext: boolean;
   public isNextEmpty: boolean;
@@ -354,6 +355,19 @@ export class DialogCreatePage extends AbstractPage {
     this.fixStepIndicator(n);
   }
 
+  public checkNamePage() {
+    const regEx = '[~!@#$%^*?]';
+    let pName = this.pageName.nativeElement.value;
+    let patternPageName = pName.match(regEx);
+    if (!patternPageName) {
+      this.isValid = false;
+      $('.but-conf').removeClass('active');
+    } else {
+      this.isValid = true;
+      $('.but-conf').addClass('active');
+    }
+  }
+
   public nextPrev(n) {
     this.isActive = false;
     this.isSkip = false;
@@ -365,7 +379,7 @@ export class DialogCreatePage extends AbstractPage {
       return;
     }
 
-    this.pName = this.pageName.nativeElement.value.trim();
+    this.pName = this.pageName.nativeElement.value;
     var x = document.getElementsByClassName("box-create");
     if (this.isChooseCategory) {
       if (n == 1 && !this.validateForm()) return false;
@@ -404,7 +418,6 @@ export class DialogCreatePage extends AbstractPage {
         this.isBack = false;
       }
     }
-
     this.tabWizard(currentTab);
   }
 
