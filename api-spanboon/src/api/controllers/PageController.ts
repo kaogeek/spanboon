@@ -332,10 +332,13 @@ export class PageController {
     @Authorized('user')
     public async autoSyncPageTW(@Body({ validate: true }) socialBinding: PageSocialTWBindingRequest, @Res() res: any, @Req() req: any): Promise<any> {
         const userId = new ObjectID(req.user.id);
+        let found = undefined;
         const getUser = await this.userService.findOne({ _id: userId });
         const verifyObject = await this.twitterService.verifyCredentials(socialBinding.twitterOauthToken, socialBinding.twitterTokenSecret);
         const regex = /[ก-ฮ]/g;
-        const found =  verifyObject.screen_name.match(regex);
+        if(verifyObject.screen_name){
+            found =  verifyObject.screen_name.match(regex);
+        }
         if(found !== null){
             const errorResponse = ResponseUtil.getErrorResponse('Please fill in the box with english lanauage.', undefined);
             return res.status(400).send(errorResponse);
@@ -447,6 +450,7 @@ export class PageController {
     @Authorized('user')
     public async autoSyncPageFB(@Body({ validate: true }) socialBinding: PageSocialFBBindingRequest, @Res() res: any, @Req() req: any): Promise<any> {
         const userId = new ObjectID(req.user.id);
+        let found = undefined;
         const getUser = await this.userService.findOne({ _id: userId });
         const query = { _id: userId };
         const newValue = { $set: { isSyncPage: true } };
@@ -455,7 +459,9 @@ export class PageController {
         const pagePicture = await this.facebookService.getPagePicture(socialBinding.facebookPageId, socialBinding.pageAccessToken);
         const { data } = await axios.get('https://graph.facebook.com/v14.0/' + socialBinding.facebookPageId + '?fields=cover&access_token=' + socialBinding.pageAccessToken);
         const pageDetail = await this.facebookService.getPageFb(socialBinding.facebookPageId, socialBinding.pageAccessToken);
-        const found =  pageDetail.username.match(regex);
+        if(pageDetail.username){
+            found =  pageDetail.username.match(regex);
+        }
         if(found !== null){
             const errorResponse = ResponseUtil.getErrorResponse('Please fill in the box with english lanauage.', undefined);
             return res.status(400).send(errorResponse);
