@@ -507,7 +507,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
   public checkUUID(event) {
     this.isLoading = true;
     if (!!event) {
-      let pattern = event.match('^[A-Za-z0-9_.]*$');
+      let pattern = event.match('^[A-Za-z0-9_]*$');
       if (pattern) {
         this.uuid = true;
         this.userFacade.checkUniqueId({ uniqueId: event }).then((res) => {
@@ -575,7 +575,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
       this.images = user.photoUrl;
       this.data.gender = -1;
       this.data.birthday = new Date();
-      this.getBase64ImageFromUrl("https://lh3.googleusercontent.com/a/AEdFTp4XMMnvlS6b8-6k8McY00LJp8KtF8OL7Vj9Q1PB=s96-c").then((result: any) => {
+      this.getBase64ImageFromUrl(this.images).then((result: any) => {
         if (result) {
           this.imagesAvatar.image = result;
         }

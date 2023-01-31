@@ -109,6 +109,10 @@ export class GuestController {
             const errorResponse = ResponseUtil.getErrorResponse('Please fill in the box with english lanauage.', undefined);
             return res.status(400).send(errorResponse);
         } if (mode === PROVIDER.EMAIL) {
+<<<<<<< HEAD
+=======
+
+>>>>>>> a6d95d4aa7ff0efd5663cc732f950dd28b79f531
             const data: User = await this.userService.findOne({ where: { username: registerEmail } });
             if (data) {
                 const errorResponse = ResponseUtil.getErrorResponse('This Email already exists', undefined);
@@ -137,6 +141,7 @@ export class GuestController {
                 user.banned = false;
                 user.mergeEM = true;
                 user.customGender = users.customGender;
+                user.mergeEM = true;
 
                 if (gender !== null || gender !== undefined) {
                     user.gender = gender;
