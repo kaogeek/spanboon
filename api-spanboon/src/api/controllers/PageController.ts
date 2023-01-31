@@ -339,7 +339,7 @@ export class PageController {
         if(verifyObject.screen_name){
             found =  verifyObject.screen_name.match(regex);
         }
-        if(found !== null){
+        if(found !== null && found !== undefined){
             const errorResponse = ResponseUtil.getErrorResponse('Please fill in the box with english lanauage.', undefined);
             return res.status(400).send(errorResponse);
         }
@@ -462,7 +462,7 @@ export class PageController {
         if(pageDetail.username){
             found =  pageDetail.username.match(regex);
         }
-        if(found !== null){
+        if(found !== null && found !== undefined){
             const errorResponse = ResponseUtil.getErrorResponse('Please fill in the box with english lanauage.', undefined);
             return res.status(400).send(errorResponse);
         }
