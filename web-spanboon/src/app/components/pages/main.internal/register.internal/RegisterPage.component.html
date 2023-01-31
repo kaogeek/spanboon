@@ -59,9 +59,9 @@
 
                 <input type="text" name="lastName" placeholder="นามสกุล" class="input-text-group"
                     [(ngModel)]="data.lastName">
-                <ng-container *ngIf="mode === 'facebook' || mode === 'google'; else elseEmail">
-                    <input #inputEmail type="email" id="email" name="email" placeholder="อีเมล"
-                        class="input-text readonly" shake [readonly]="data.email ? true : false"
+                <ng-container *ngIf="mode === 'facebook' || mode === 'google' || mode === 'twitter'; else elseEmail">
+                    <input #inputEmail type="email" id="email" name="email" placeholder="อีเมล" class="input-text" shake
+                        [readonly]="data.email ? true : false" [class.readonly]="data.email"
                         [value]="!!data!.email ? data.email : ''" required>
                 </ng-container>
                 <ng-template #elseEmail>
