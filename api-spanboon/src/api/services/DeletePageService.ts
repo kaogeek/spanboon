@@ -18,6 +18,7 @@ import { SocialPostService } from './SocialPostService';
 import { PageObjectiveService } from './PageObjectiveService';
 import { FulfillmentCaseService } from './FulfillmentCaseService';
 import { NeedsService } from './NeedsService';
+import { UserLikeService } from './UserLikeService';
 @Service()
 export class DeletePageService {
 
@@ -34,6 +35,7 @@ export class DeletePageService {
         private fulfillmentCaseService: FulfillmentCaseService,
         private needsService: NeedsService,
         private postsCommentService: PostsCommentService,
+        private userLikeService:UserLikeService
     ) {
     }
 
@@ -57,6 +59,8 @@ export class DeletePageService {
                 { $unwind: { path: '$Posts', preserveNullAndEmptyArrays: true } },
                 { $lookup: { from: 'PostsComment', localField: '_id', foreignField: 'commentAsPage', as: 'PostsComment' } },
                 { $unwind: { path: '$PostComment', preserveNullAndEmptyArrays: true } },
+                { $lookup: { from: 'UserLike', localField: '_id', foreignField:'likeAsPage', as: 'UserLike'}},
+                { $unwind: { path: '$UserLike', preserveNullAndEmptyArrays: true}},
                 { $lookup: { from: 'SocialPostLogs', localField: '_id', foreignField: 'pageId', as: 'SocialPostLogs' } },
                 { $unwind: { path: '$SocialPostLogs', preserveNullAndEmptyArrays: true } },
                 { $lookup: { from: 'SocialPost', localField: '_id', foreignField: 'pageId', as: 'SocialPost' } },
@@ -121,6 +125,10 @@ export class DeletePageService {
                 const findPostsComment = await this.postsCommentService.findOne({ commentAsPage: pageTest._id });
                 if (findPostsComment !== undefined) {
                     await this.postsCommentService.deleteMany({ commentAsPage: pageTest._id });
+                }
+                const findLikePage = await this.userLikeService.findOne({likeAsPage:pageTest._id });
+                if( findLikePage !== undefined){
+                    await this.userLikeService.deleteMany({likeAsPage:pageTest._id });
                 }
                 const findPostPage = await this.postsService.findOne({ pageId: pageTest._id });
                 if (findPostPage !== undefined) {
