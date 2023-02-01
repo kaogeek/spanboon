@@ -495,7 +495,7 @@ export class LoginPage extends AbstractPage implements OnInit {
       }
     }).catch((error) => {
       const statusMsg = error.error.message;
-      if (statusMsg === "User was not found.") {
+      if (error.error.status === 0) {
         let navigationExtras: NavigationExtras = {
           state: {
             accessToken: this.accessToken,
