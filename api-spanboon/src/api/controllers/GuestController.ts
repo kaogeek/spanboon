@@ -1238,7 +1238,7 @@ export class GuestController {
             try {
                 fbUser = await this.facebookService.fetchFacebook(users.token);
                 authenticaTionFB = await this.authenticationIdService.findOne({providerUserId:fbUser.id,providerName:PROVIDER.FACEBOOK});
-                userFb = await this.userService.findOne({email:fbUser.email});
+                userFb = await this.userService.findOne({_id:authenticaTionFB.user});
             } catch (err) {
                 console.log(err);
             }
