@@ -198,7 +198,7 @@ export class DialogPost extends AbstractPage {
   public createPost(data) {
     if (this.isEdit) {
       if (data.title) {
-        let pageId = this.data.pageId;
+        let pageId = this.data.pageId ? this.data.pageId : '';
         this.isPostLoading = true;
         this.pageFacade.editPost(pageId, this.data._id, data).then((res) => {
           let alertMessages: string;
@@ -210,6 +210,7 @@ export class DialogPost extends AbstractPage {
               this.boxPost.clearDataAll();
               delete res.data.id;
               res.data._id = this.data._id;
+              this.isPostLoading = false;
               this.dialogRef.close(res.data);
             }
           }
@@ -218,9 +219,11 @@ export class DialogPost extends AbstractPage {
           let alertMessages: string;
           if (err && err.error && err.error.message === 'Objective was not found.') {
             alertMessages = 'เกิดข้อผิดพลาด กรุณาทำใหม่อีกครั้ง'
+            this.isPostLoading = false;
             this.showAlertDialogWarming(alertMessages, "none");
           } else if (err && err.error && err.error.message === 'Emergency Event was not found.') {
             alertMessages = 'เกิดข้อผิดพลาด กรุณาทำใหม่อีกครั้ง'
+            this.isPostLoading = false;
             this.showAlertDialogWarming(alertMessages, "none");
           }
         })
@@ -241,6 +244,7 @@ export class DialogPost extends AbstractPage {
                   }
                   this.showAlertDialogWarming(alertMessages, "none");
                 }
+                this.isPostLoading = false;
                 this.dialogRef.close(res.data);
                 this.postFacade.nextMessageTopic('');
                 this.postFacade.nextMessage('');
@@ -251,6 +255,7 @@ export class DialogPost extends AbstractPage {
           }
         }).catch((err: any) => {
           console.log(err);
+          this.isPostLoading = false;
         })
       }
     }

@@ -65,7 +65,7 @@
                         [value]="!!data!.email ? data.email : ''" required>
                 </ng-container>
                 <ng-template #elseEmail>
-                    <input type="email" id="email" name="email" placeholder="อีเมล" class="input-text" shake
+                    <input #inputEmail type="email" id="email" name="email" placeholder="อีเมล" class="input-text" shake
                         [shake]="activeEmail" [(ngModel)]="data.email" [email]="true" required>
                 </ng-template>
             </div>
