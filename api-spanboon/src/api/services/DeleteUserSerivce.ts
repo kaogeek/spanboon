@@ -68,10 +68,6 @@ export class DeleteUserService {
 
     public deleteUser(userObjId: string): Promise<any> {
         return new Promise(async (resolve, reject) => {
-            const findAssetOwn = await this.assetService.findOne({ userId: userObjId });
-            if (findAssetOwn !== undefined) {
-                await this.assetService.deleteMany({ userId: userObjId });
-            }
             const findAuthenOwn = await this.authenticationIdService.findOne({ user: userObjId });
             if (findAuthenOwn !== undefined) {
                 await this.authenticationIdService.deleteMany({ user: userObjId });
@@ -119,8 +115,18 @@ export class DeleteUserService {
                 await this.socialPostLogsService.deleteMany({ user: userObjId });
             }
             const findAccessLevel1St = await this.pageAccessLevelService.findOne({ user: ObjectID(userObjId) });
-            if(findAccessLevel1St.level === 'OWNER'){
+            const findOwnerPage = await this.pageService.findOne({ownerUser: ObjectID(userObjId) });
+            if(findAccessLevel1St.level === 'OWNER' && findOwnerPage !== undefined){
                 const postOwn = await this.postsService.findOne({ ownerUser: userObjId });
+                if (postOwn !== undefined) {
+                    await this.postsService.deleteMany({ ownerUser: userObjId });
+                }
+                const postCommentOwn = await this.postsCommentService.findOne({ user: userObjId });
+                if (postCommentOwn !== undefined) {
+                    await this.postsCommentService.deleteMany({commentAsPage:null, user: userObjId });
+                }
+            }else if(findOwnerPage === undefined){
+                const postOwn = await this.postsService.findOne({pageId:null, ownerUser: userObjId });
                 if (postOwn !== undefined) {
                     await this.postsService.deleteMany({ ownerUser: userObjId });
                 }
@@ -135,6 +141,7 @@ export class DeleteUserService {
             }
             const findOwnerLevel1St = await this.pageAccessLevelService.findOne({page:findAccessLevel1St.page,level:'OWNER'});
             // delete
+            const pageObjectiveOwn = await this.pageObjectiveService.findOne({ pageId: findAccessLevel1St.page });
 
             if (findAccessLevel1St !== undefined && findAccessLevel1St.level === 'OWNER') {
                 const findPageOwn_1 = await this.pageService.findOne({ ownerUser: ObjectID(findAccessLevel1St.user) });
@@ -150,9 +157,9 @@ export class DeleteUserService {
                 if (pageConfigOwn !== undefined) {
                     await this.pageConfigService.deleteMany({ page: findAccessLevel1St.page });
                 }
-                const pageObjectiveOwn = await this.pageObjectiveService.findOne({ pageId: findAccessLevel1St.page });
                 if (pageObjectiveOwn !== undefined) {
                     await this.pageObjectiveService.deleteMany({ pageId: findAccessLevel1St.page });
+                    await this.assetService.deleteMany({pageObjectiveId:pageObjectiveOwn.id});
                 }
                 const pageFulfillmentOwn = await this.fulfillmentCaseService.findOne({ pageId: findAccessLevel1St.page });
                 if (pageFulfillmentOwn !== undefined) {
@@ -181,8 +188,13 @@ export class DeleteUserService {
                 }
 
             }
-            // deleteOne User
             const userOwn = await this.userService.findOne({ _id: userObjId });
+            const findsla = userOwn.imageURL.lastIndexOf('/');
+            if(findsla !== undefined){
+                const trimString = userOwn.imageURL.substring(findsla+1,userOwn.imageURL.length);
+                await this.assetService.deleteMany({ _id:ObjectID(trimString)});
+            }
+            // deleteOne User
             if (userOwn) {
                 await this.userService.delete({ _id: userObjId });
                 resolve(userOwn.id);
