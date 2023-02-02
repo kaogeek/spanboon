@@ -2024,7 +2024,7 @@ export class PagePostController {
                 editPost.coverImage = pageUpdated.coverImage;
                 editPost.s3CoverImage = pageUpdated.s3CoverImage;
                 editPost.postsHashTags = pageUpdated.postsHashTags;
-                editPost.objective = pageUpdated.objective;
+                editPost.objective = { '_id': pageUpdated.objective};
                 editPost.emergencyEvent = { '_id': pageUpdated.emergencyEvent };
                 editPost.objectiveTag = pageUpdated.objectiveTag;
                 editPost.emergencyEventTag = pageUpdated.emergencyEventTag;
