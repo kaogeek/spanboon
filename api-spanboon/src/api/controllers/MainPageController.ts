@@ -682,23 +682,23 @@ export class MainPageController {
             // let emergencyEventTag:string;
             let startDate: string;
             let endDate: string;
-            let startViewCount: number;
-            let endViewCount: number;
+            const startViewCount: number = undefined;
+            const endViewCount: number = undefined;
             // Count All Action
-            let startActionCount: number;
-            let endActionCount: number;
+            const startActionCount: number = undefined;
+            const endActionCount: number = undefined;
             // Count Comment
-            let startCommentCount: number;
-            let endCommentCount: number;
+            const startCommentCount: number = undefined;
+            const endCommentCount: number = undefined;
             // Count Repost
-            let startRepostCount: number;
-            let endRepostCount: number;
+            const startRepostCount: number = undefined;
+            const endRepostCount: number = undefined;
             // Count Like
-            let startLikeCount: number;
-            let endLikeCount: number;
+            const startLikeCount: number = undefined;
+            const endLikeCount: number = undefined;
             // Count Share
-            let startShareCount: number;
-            let endShareCount: number;
+            const startShareCount: number = undefined;
+            const endShareCount: number = undefined;
             // Location
             // let locations: string[];
             // Page Catgory
@@ -717,18 +717,21 @@ export class MainPageController {
                 // emergencyEventTag = data.emergencyEventTag;
                 startDate = data.startDate;
                 endDate = data.endDate;
-                startViewCount = data.startViewCount;
-                endViewCount = data.endViewCount;
-                startActionCount = data.startActionCount;
-                endActionCount = data.endActionCount;
-                startCommentCount = data.startCommentCount;
-                endCommentCount = data.endCommentCount;
-                startRepostCount = data.startRepostCount;
-                endRepostCount = data.endRepostCount;
-                startLikeCount = data.startLikeCount;
-                endLikeCount = data.endLikeCount;
-                startShareCount = data.startShareCount;
-                endShareCount = data.endShareCount;
+
+                // Comnment This Because Mobile App Show Old Post
+                // startViewCount = data.startViewCount;
+                // endViewCount = data.endViewCount;
+                // startActionCount = data.startActionCount;
+                // endActionCount = data.endActionCount;
+                // startCommentCount = data.startCommentCount;
+                // endCommentCount = data.endCommentCount;
+                // startRepostCount = data.startRepostCount;
+                // endRepostCount = data.endRepostCount;
+                // startLikeCount = data.startLikeCount;
+                // endLikeCount = data.endLikeCount;
+                // startShareCount = data.startShareCount;
+                // endShareCount = data.endShareCount;
+
                 // locations = data.locations;
                 pageCategories = data.pageCategories;
                 sortBy = data.sortBy;
