@@ -191,8 +191,10 @@ export class ObjectiveController {
         objective.s3IconURL = assetCreate ? assetCreate.s3FilePath : '';
 
         const result: any = await this.pageObjectiveService.create(objective);
-
         if (result) {
+            const query = {_id:assetCreate.id};
+            const newValues = {$set:{pageObjectiveId:ObjectID(result.id)}};
+            await this.assetService.update(query,newValues);
             const newObjectiveHashTag = new ObjectID(result.hashTag);
 
             const objectiveHashTag: HashTag = await this.hashTagService.findOne({ _id: newObjectiveHashTag });

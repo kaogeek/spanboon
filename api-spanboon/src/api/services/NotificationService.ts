@@ -50,8 +50,8 @@ export class NotificationService {
     }
 
     // updateMany
-    public updateMany(query:any,newValue:any): Promise<any>{
-        return this.notificationRepository.updateMany(query,newValue);
+    public updateMany(query: any, newValue: any): Promise<any> {
+        return this.notificationRepository.updateMany(query, newValue);
     }
 
     // delete Notification
@@ -84,7 +84,7 @@ export class NotificationService {
         }
     }
 
-    public async sendNotificationFCM(toUserId: string, toUserType: string, fromUserId: string, fromUserType: string, notificationType: string, title: string, link: string, data?: any, displayName?: any, image?: any, id?:any,count?: any): Promise<any> {
+    public async sendNotificationFCM(toUserId: string, toUserType: string, fromUserId: string, fromUserType: string, notificationType: string, title: string, link: string, data?: any, displayName?: any, image?: any, id?: any, count?: any): Promise<any> {
         const notification: Notification = new Notification();
         notification.isRead = false;
         notification.toUser = new ObjectID(toUserId);
@@ -103,7 +103,6 @@ export class NotificationService {
         const image_url = String(image);
         const count_data = String(count);
         const notification_id = String(id);
-        console.log('notification_id',notification_id); 
         const payload =
         {
 

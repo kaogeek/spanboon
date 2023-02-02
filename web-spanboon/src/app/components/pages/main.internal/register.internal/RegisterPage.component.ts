@@ -548,7 +548,10 @@ export class RegisterPage extends AbstractPage implements OnInit {
     this.twitterService.accountVerify(body).then((account: any) => {
       this.data = account;
       this.data.displayName = account.name;
-      this.images = account.profile_image_url_https;
+      let str = account.profile_image_url_https;
+      let splitted = str.split("_normal", 2);
+      let splitImg = splitted[0] + splitted[1];
+      this.images = splitImg;
       this.data.gender = -1;
       this.data.birthday = this.data.birthday ? new Date(this.data.birthday) : undefined;
       this.getBase64ImageFromUrl(this.images).then((result: any) => {
@@ -568,7 +571,10 @@ export class RegisterPage extends AbstractPage implements OnInit {
       this.data.displayName = user.name;
       this.data.firstName = user.firstName;
       this.data.lastName = user.lastName;
-      this.images = user.photoUrl;
+      let str = user.photoUrl;
+      let splitted = str.split("s96", 2);
+      let splitImg = splitted[0] + "s400" + splitted[1];
+      this.images = splitImg;
       this.data.gender = -1;
       this.data.birthday = new Date();
       this.getBase64ImageFromUrl(this.images).then((result: any) => {
