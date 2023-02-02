@@ -1994,6 +1994,48 @@ export class PagePostController {
                 await this.userEngagementService.create(engagement);
 
                 const pageUpdated: Posts = await this.postsService.findOne({ _id: pagePostsObjId });
+                const postGalleryP = await this.postGalleryService.find({ post: pagePostsObjId });
+                const editPost: Posts = new Posts();
+                editPost.createdBy = pageUpdated.createdBy;
+                editPost.createdDate = pageUpdated.createdDate;
+                editPost.createdTime = pageUpdated.createdTime;
+                editPost.createdByUsername = pageUpdated.createdByUsername;
+                editPost.updateDate = pageUpdated.updateDate;
+                editPost.updateByUsername = pageUpdated.updateByUsername;
+                editPost.id = pageUpdated.id;
+                editPost.pageId = pageUpdated.pageId;
+                editPost.title = pageUpdated.title;
+                editPost.detail = pageUpdated.detail;
+                editPost.story = pageUpdated.story;
+                editPost.isDraft = pageUpdated.isDraft;
+                editPost.pinned = pageUpdated.pinned;
+                editPost.deleted = pageUpdated.deleted;
+                editPost.hidden = pageUpdated.hidden;
+                editPost.type = pageUpdated.type;
+                editPost.ownerUser = pageUpdated.ownerUser;
+                editPost.referencePost = pageUpdated.referencePost;
+                editPost.rootReferencePost = pageUpdated.rootReferencePost;
+                editPost.referenceMode = pageUpdated.referenceMode;
+                editPost.commentCount = pageUpdated.commentCount;
+                editPost.repostCount = pageUpdated.repostCount;
+                editPost.shareCount = pageUpdated.shareCount;
+                editPost.likeCount = pageUpdated.likeCount;
+                editPost.viewCount = pageUpdated.viewCount;
+                editPost.coverImage = pageUpdated.coverImage;
+                editPost.s3CoverImage = pageUpdated.s3CoverImage;
+                editPost.postsHashTags = pageUpdated.postsHashTags;
+                editPost.objective = { '_id': pageUpdated.objective};
+                editPost.emergencyEvent = { '_id': pageUpdated.emergencyEvent };
+                editPost.objectiveTag = pageUpdated.objectiveTag;
+                editPost.emergencyEventTag = pageUpdated.emergencyEventTag;
+                editPost.userTags = pageUpdated.userTags;
+                editPost.startDateTime = pageUpdated.startDateTime;
+                editPost.postAsPage = pageUpdated.postAsPage;
+                editPost.visibility = pageUpdated.visibility;
+                editPost.ranges = pageUpdated.ranges;
+                editPost.feedReachCount = pageUpdated.feedReachCount;
+                editPost.linkReachCount = pageUpdated.linkReachCount;
+                editPost.reachCount = pageUpdated.reachCount;
                 // update post hastag
                 try {
                     // beware slow becase count all post
@@ -2004,7 +2046,11 @@ export class PagePostController {
                     console.log(error);
                 }
 
-                return res.status(200).send(ResponseUtil.getSuccessResponse('Update PagePost Successful', pageUpdated));
+                const PostEdit = (ResponseUtil.getSuccessResponseEditPost('Update PagePost Successful', editPost));
+                const temp: any = PostEdit.data;
+                temp['gallery'] = postGalleryP;
+                // test['data']['postGallery'] = editPost,postGalleryP;
+                return res.status(200).send(PostEdit);
             } else {
                 return res.status(400).send(ResponseUtil.getErrorResponse('Cannot Update PagePost', undefined));
             }

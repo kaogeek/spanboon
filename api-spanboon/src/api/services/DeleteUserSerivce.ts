@@ -118,20 +118,22 @@ export class DeleteUserService {
             if (socialPostLogsOwn !== undefined) {
                 await this.socialPostLogsService.deleteMany({ user: userObjId });
             }
-
-            const postOwn = await this.postsService.findOne({ ownerUser: userObjId });
-            if (postOwn !== undefined) {
-                await this.postsService.deleteMany({ ownerUser: userObjId });
-            }
-            const postCommentOwn = await this.postsCommentService.findOne({ user: userObjId });
-            if (postCommentOwn !== undefined) {
-                await this.postsCommentService.deleteMany({ user: userObjId });
+            const findAccessLevel1St = await this.pageAccessLevelService.findOne({ user: ObjectID(userObjId) });
+            if(findAccessLevel1St.level === 'OWNER'){
+                const postOwn = await this.postsService.findOne({ ownerUser: userObjId });
+                if (postOwn !== undefined) {
+                    await this.postsService.deleteMany({ ownerUser: userObjId });
+                }
+                const postCommentOwn = await this.postsCommentService.findOne({ user: userObjId });
+                if (postCommentOwn !== undefined) {
+                    await this.postsCommentService.deleteMany({ user: userObjId });
+                }
             }
             const pageUsageOwn = await this.pageUsageHistoryService.findOne({ userId: userObjId });
             if (pageUsageOwn !== undefined) {
                 await this.pageUsageHistoryService.deleteMany({ userId: userObjId });
             }
-            const findAccessLevel1St = await this.pageAccessLevelService.findOne({ user: ObjectID(userObjId) });
+            const findOwnerLevel1St = await this.pageAccessLevelService.findOne({page:findAccessLevel1St.page,level:'OWNER'});
             // delete
 
             if (findAccessLevel1St !== undefined && findAccessLevel1St.level === 'OWNER') {
@@ -171,7 +173,13 @@ export class DeleteUserService {
                     await this.pageService.deleteMany({ _id: findAccessLevel1St.page });
                 }
             } else if (findAccessLevel1St !== undefined && findAccessLevel1St.level !== 'OWNER') {
-                await this.pageAccessLevelService.delete({ page: findAccessLevel1St.page, level: findAccessLevel1St.level, user: ObjectID(userObjId) });
+                const query = {pageId:ObjectID(findAccessLevel1St.page)};
+                const newValues = {$set:{ownerUser:ObjectID(findOwnerLevel1St.user)}};
+                const updatePermission = await this.postsService.updateMany(query,newValues);
+                if(updatePermission){
+                    await this.pageAccessLevelService.delete({ page: findAccessLevel1St.page, level: findAccessLevel1St.level, user: ObjectID(userObjId) });
+                }
+
             }
             // deleteOne User
             const userOwn = await this.userService.findOne({ _id: userObjId });
