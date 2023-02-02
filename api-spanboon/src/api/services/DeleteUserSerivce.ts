@@ -169,7 +169,7 @@ export class DeleteUserService {
             // delete
 
             if (findAccessLevel1St !== undefined && findAccessLevel1St.level === 'OWNER') {
-                await this.pageAccessLevelService.deleteMany({ page: findAccessLevel1St.page, user: ObjectID(userObjId) });
+                await this.pageAccessLevelService.deleteMany({ user: ObjectID(userObjId) });
                 const pageUsageOwn = await this.pageUsageHistoryService.findOne({ userId: userObjId });
                 if (pageUsageOwn !== undefined) {
                     await this.pageUsageHistoryService.deleteMany({ userId: userObjId });
