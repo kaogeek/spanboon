@@ -1694,7 +1694,7 @@ export class BoxPost extends AbstractPage implements OnInit {
         offset: SEARCH_OFFSET,
         relation: [],
         whereConditions: {
-          pageId: (this.dataPageId && this.dataPageId.id) ? (this.dataPageId.id || this.dataPageId) : '',
+          pageId: this.dataPageId.id ? this.dataPageId.id : this.dataPageId ? this.dataPageId : '',
         },
         count: false,
         orderBy: {
