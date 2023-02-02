@@ -139,10 +139,14 @@ export class DeleteUserService {
             if (pageUsageOwn !== undefined) {
                 await this.pageUsageHistoryService.deleteMany({ userId: userObjId });
             }
-            const findOwnerLevel1St = await this.pageAccessLevelService.findOne({page:findOwnerPage.id,user:findOwnerPage.ownerUser});
+            let findOwnerLevel1St = undefined; 
+            let pageObjectiveOwn = undefined;
+            if(findOwnerPage !== undefined){
+                findOwnerLevel1St = await this.pageAccessLevelService.findOne({page:findOwnerPage.id,user:findOwnerPage.ownerUser});
+                pageObjectiveOwn = await this.pageObjectiveService.findOne({ pageId: findOwnerPage.id });
+            }
             // delete
-            const pageObjectiveOwn = await this.pageObjectiveService.findOne({ pageId: findOwnerPage.id });
-
+            
             if (findOwnerPage !== undefined && findOwnerLevel1St.level === 'OWNER') {
                 const findPageOwn_1 = await this.pageService.findOne({ ownerUser: ObjectID(findOwnerPage.id) });
                 const postOwn_1 = await this.postsService.findOne({ pageId: findOwnerPage.id });
