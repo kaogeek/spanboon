@@ -43,21 +43,11 @@
                         shake [shake]="active">
                 </div>
                 <div class="user-grop">
-                    <ng-container *ngIf="uuid; else elseUUid">
-                        <label for="username">@</label>
-                        <input type="text" style="padding-left: 25pt; width: calc(100% - 25pt - 13pt - 4px);" #username
-                            id="username" name="username" placeholder="ยูสเซอร์เนม" maxlength="15" class="input-text"
-                            [class.correct]='uuid' [(ngModel)]="data.uniqueId" required
-                            (keyup)="checkUUID(username.value)">
-                    </ng-container>
-                    <ng-template #elseUUid>
-                        <label for="username">@</label>
-                        <input type="text" style="padding-left: 25pt; width: calc(100% - 25pt - 13pt - 4px);" #username
-                            id="username" name="username" placeholder="ยูสเซอร์เนม" maxlength="15" class="input-text"
-                            [class.incorrect]='uuid === false' [(ngModel)]="data.uniqueId" required
-                            (keyup)="checkUUID(username.value)">
-
-                    </ng-template>
+                    <label for="username">@</label>
+                    <input type="text" style="padding-left: 25pt; width: calc(100% - 25pt - 13pt - 4px);" #username
+                        id="username" name="username" placeholder="ยูสเซอร์เนม" maxlength="15" class="input-text"
+                        [ngClass]="{'correct': uuid, 'incorrect': !uuid && !!data!.uniqueId}"
+                        [(ngModel)]="data.uniqueId" required>
                     <div class="display-name">{{PLATFORM_URL}}/@{{data.uniqueId}}</div>
                 </div>
             </div>
@@ -70,8 +60,9 @@
                 <input type="text" name="lastName" placeholder="นามสกุล" class="input-text-group"
                     [(ngModel)]="data.lastName">
                 <ng-container *ngIf="mode === 'facebook' || mode === 'google'; else elseEmail">
-                    <input type="email" id="email" name="email" placeholder="อีเมล" class="input-text readonly" shake
-                        readonly [(ngModel)]="data.email" [email]="true" required>
+                    <input #inputEmail type="email" id="email" name="email" placeholder="อีเมล"
+                        class="input-text readonly" shake [readonly]="data.email ? true : false"
+                        [value]="!!data!.email ? data.email : ''" required>
                 </ng-container>
                 <ng-template #elseEmail>
                     <input type="email" id="email" name="email" placeholder="อีเมล" class="input-text" shake

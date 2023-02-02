@@ -115,8 +115,6 @@ export class AppComponent {
         });
   }
 
-
-
   public listen() {
     const messaging = getMessaging();
     onMessage(messaging, (payload) => {

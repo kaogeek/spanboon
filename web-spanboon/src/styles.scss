@@ -308,6 +308,9 @@ input:focus {
 //     font-style: normal;
 //     font-weight: 600;
 // }
+.readonly {
+    background: #efefef !important;
+}
 
 #canvas-wrap {
     position: relative;

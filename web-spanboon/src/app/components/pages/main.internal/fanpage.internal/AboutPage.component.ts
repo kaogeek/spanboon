@@ -12,6 +12,9 @@ import * as $ from 'jquery';
 import { AboutPageFacade, AssetFacade, AuthenManager, ObservableManager, PageFacade, UserAccessFacade } from '../../../../services/services';
 import { AbstractPage } from '../../AbstractPage';
 import { AboutPages } from '../../../../models/AboutPages';
+import { Subject } from "rxjs/internal/Subject";
+import { fromEvent } from "rxjs";
+import { debounceTime, distinctUntilChanged } from "rxjs/operators";
 
 const PAGE_NAME: string = 'account';
 const SEARCH_LIMIT: number = 20;
@@ -24,6 +27,8 @@ declare var $: any;
 })
 export class AboutPage extends AbstractPage implements OnInit {
     public static readonly PAGE_NAME: string = PAGE_NAME;
+    private destroy = new Subject<void>();
+    @ViewChild('pageUsername', { static: false }) pageUsername: ElementRef;
 
     @Input()
     public dirtyConfirmEvent: EventEmitter<any>;
@@ -195,8 +200,19 @@ export class AboutPage extends AbstractPage implements OnInit {
         this.getDataPage();
     }
 
+    public ngAfterViewInit(): void {
+        fromEvent(this.pageUsername && this.pageUsername.nativeElement, 'keyup').pipe(
+            debounceTime(500)
+            , distinctUntilChanged()
+        ).subscribe((text: any) => {
+            this.checkUniquePageUsername(this.pageUsername.nativeElement.value);
+        });
+    }
+
     public ngOnDestroy(): void {
         super.ngOnDestroy();
+        this.destroy.next();
+        this.destroy.complete();
     }
 
     public isPageDirty(): boolean {

@@ -449,7 +449,7 @@ export class FacebookService {
 
     public async getPageFb(fbPageId: string, accessToken: string): Promise<any> {
         try {
-            const { data } = await axios.get('https://graph.facebook.com/' + fbPageId + '?access_token=' + accessToken + '&fields=id,name,description,emails,category,birthday,about,cover,link,phone');
+            const { data } = await axios.get('https://graph.facebook.com/' + fbPageId + '?access_token=' + accessToken + '&fields=id,name,username,description,emails,category,birthday,about,cover,link,phone');
             return data;
         } catch (err) {
             console.log('Error cannot get page detail :' + err);

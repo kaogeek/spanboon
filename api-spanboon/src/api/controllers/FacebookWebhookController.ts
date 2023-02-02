@@ -96,7 +96,7 @@ export class FacebookWebhookController {
             const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
             return res.status(200).send(successResponse);
         }
-
+        console.log('body.entry[0].changes[0].value',body.entry[0].changes[0].value);
         let realText = undefined;
         let TrimText = undefined;
         const hashTagList1 = [];
@@ -139,11 +139,11 @@ export class FacebookWebhookController {
             const regex2 = /[.\-_,*+?^$|\\]/;
 
             const result = msg.lastIndexOf(']');
-            const title1 = msg.slice(0, result);
+            const title1 = msg.slice(0, (result + 1));
             realText = title1.replace(regex, '').trim();
             console.log('TITLE: ', realText);
 
-            const detail1 = msg.replace(title1 + ']', '').trim();
+            const detail1 = msg.replace(title1, '').trim();
             const checkDetail = detail1.startsWith('.\n');
 
             if (checkDetail) {
