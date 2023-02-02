@@ -489,26 +489,10 @@ export class RegisterPage extends AbstractPage implements OnInit {
   }
 
   public checkUUID(event) {
-<<<<<<< HEAD
-    this.isLoading = true
-    if (event === '') {
-      return;
-    }
-    if (event.length > 0) {
-      let pattern = event.match('^[A-Za-z0-9_.]*$');
-      if (!pattern) {
-        this.uuid = false;
-        document.getElementById('username').focus();
-      } else {
-        let body = {
-          uniqueId: event
-        }
-=======
     this.isLoading = true;
     if (!!event) {
       let pattern = event.match('^[A-Za-z0-9_]*$');
       if (pattern) {
->>>>>>> b6ab8ffd05cbcdfb219a17874c11a2944b8213b3
         this.uuid = true;
         this.userFacade.checkUniqueId(body).then((res) => {
           if (res && res.data) {
@@ -578,13 +562,9 @@ export class RegisterPage extends AbstractPage implements OnInit {
       this.data.gender = -1;
       this.data.birthday = new Date();
       this.getBase64ImageFromUrl(this.images).then((result: any) => {
-<<<<<<< HEAD
-        this.imagesAvatar.image = result;
-=======
         if (result) {
           this.imagesAvatar.image = result;
         }
->>>>>>> b6ab8ffd05cbcdfb219a17874c11a2944b8213b3
       }).catch(err => {
         console.log("เกิดข้อผิดพลาด");
       });
