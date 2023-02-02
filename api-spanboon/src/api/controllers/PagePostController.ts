@@ -2048,7 +2048,7 @@ export class PagePostController {
 
                 const PostEdit = (ResponseUtil.getSuccessResponseEditPost('Update PagePost Successful', editPost));
                 const temp: any = PostEdit.data;
-                temp['postGallery'] = postGalleryP;
+                temp['gallery'] = postGalleryP;
                 // test['data']['postGallery'] = editPost,postGalleryP;
                 return res.status(200).send(PostEdit);
             } else {
