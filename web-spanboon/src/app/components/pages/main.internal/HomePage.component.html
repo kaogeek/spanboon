@@ -597,9 +597,11 @@
                                     </div>
                                     <img *ngIf="content.post.gallery[0]" (click)="openDilogPost(content.post)"
                                         [src]="content.signURL ? content.signURL : content.coverPageSignUrl ? content.coverPageSignUrl : apiBaseURL + content.post.gallery[0].imageURL + '/image'">
-                                    <span class="content-post-img" (click)="openDilogPost(content.post)"
-                                        *ngIf="!content.post.gallery[0]"
-                                        [innerHTML]='content.post.title | highlight'></span>
+                                    <div class="content-no-img" *ngIf="!content.post.gallery[0]"
+                                        (click)="openDilogPost(content.post)">
+                                        <span class="content-post-img"
+                                            [innerHTML]='content.post.title | highlight'></span>
+                                    </div>
                                     <div class="text">
                                         <div class="col-text" (click)="openDilogPost(content.post)">
                                             <span
