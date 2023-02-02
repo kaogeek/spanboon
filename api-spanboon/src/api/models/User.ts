@@ -105,6 +105,9 @@ export class User extends BaseModel {
     @Column({ name: 'banned' })
     public banned: boolean;
 
+    @Column({ name: 'mergeEM'})
+    public mergeEM: boolean;
+
     @Column({ name: 'mergeFB' })
     public mergeFB: boolean;
 

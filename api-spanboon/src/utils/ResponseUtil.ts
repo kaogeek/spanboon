@@ -25,6 +25,24 @@ export class ResponseUtil {
 
     }
 
+    public static getSuccessResponseEditPost(msg:string,value:any,Gallery?:any):any{
+        if (value !== null || value !== undefined || value !== '') {
+            const sucessRes: any = {
+                status: 1,
+                message: msg,
+                data: value,
+                postGallery: Gallery,
+            };
+            return sucessRes;
+        } else {
+            const sucessRes: any = {
+                status: 1,
+                message: msg,
+            };
+            return sucessRes;
+        }
+    }
+
     public static getErrorResponse(msg: string, err: any): any {
         if (err !== null || err !== undefined || err !== '') {
             const errorResponse: any = {
