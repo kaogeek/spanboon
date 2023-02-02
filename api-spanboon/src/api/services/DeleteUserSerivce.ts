@@ -24,7 +24,6 @@ import { SocialPostLogsService } from './SocialPostLogsService';
 import { SocialPostService } from './SocialPostService';
 import { SearchHistoryService } from './SearchHistoryService';
 import { PostsService } from './PostsService';
-import { PostsGalleryService } from './PostsGalleryService';
 import { PostsCommentService } from './PostsCommentService';
 import { PageUsageHistoryService } from './PageUsageHistoryService';
 import { PageSocialAccountService } from './PageSocialAccountService';
@@ -60,7 +59,6 @@ export class DeleteUserService {
         private fulfillmentCaseService: FulfillmentCaseService,
         private pageObjectiveService: PageObjectiveService,
         private pageConfigService: PageConfigService,
-        private postsGalleryService: PostsGalleryService,
         private pageAccessLevelService: PageAccessLevelService
 
     ) {
