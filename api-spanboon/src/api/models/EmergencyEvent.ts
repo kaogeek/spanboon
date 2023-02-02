@@ -40,6 +40,9 @@ export class EmergencyEvent extends BaseModel {
     @Column({ name: 's3CoverPageURL' })
     public s3CoverPageURL: string;
 
+    @Column({ name: 'ordering'})
+    public ordering:number;
+
     @BeforeInsert()
     public async createDetails(): Promise<void> {
         this.createdDate = moment().toDate();

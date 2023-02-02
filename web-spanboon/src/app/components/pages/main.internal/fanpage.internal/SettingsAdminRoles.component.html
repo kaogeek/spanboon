@@ -35,8 +35,7 @@
                             <img class="profile" src="{{valueSt.imageURL}}"
                                 [ngStyle]="{'display': valueSt.imageURL != null || valueSt.imageURL != undefined ? 'block' : 'none'}">
                             <input #search class="search-input" matInput placeholder="พิมพ์ชื่อหรืออีเมล"
-                                (keyup)="keyUpAutoComp(search.value)" [matAutocomplete]="auto" [ngModel]="valueSt.name"
-                                [ngModelOptions]="{standalone: true}"
+                                [matAutocomplete]="auto" [ngModel]="valueSt.name" [ngModelOptions]="{standalone: true}"
                                 [ngStyle]="{'padding-left': valueSt.imageURL != null || valueSt.imageURL != undefined ? '30pt' : '10pt'}">
                             <mat-icon class="search-close" matRipple [matRippleCentered]="'centered'"
                                 (click)="clearInputData()">close</mat-icon>
@@ -98,7 +97,7 @@
                                     </ng-container>
                                     <ng-template #elseImage1>
                                         <div class="image-profile not-image">
-                                            {{item.user.displayName | slice: 0:1  }}
+                                            {{item.user.displayName | slice: 0:1 }}
                                         </div>
                                     </ng-template>
 
@@ -108,7 +107,7 @@
                                     </div>
                                     <button mat-stroked-button [disableRipple]="true" class="edit-selected"
                                         (click)="clickEditAdmin(i , 'OWNER')">แก้ไข</button>
-                                </div> 
+                                </div>
                                 <div class="edit" *ngIf="editOwnerIndex === i" [class.active]="isCancel">
                                     <div class="edit-top" *ngIf="item.level === 'OWNER'" style="pointer-events: none;">
                                         <div class="edit-mat-select">
@@ -119,7 +118,7 @@
                                                 </ng-container>
                                                 <ng-template #elseImage2>
                                                     <div class="profile not-image">
-                                                        {{item.user.displayName | slice: 0:1  }}
+                                                        {{item.user.displayName | slice: 0:1 }}
                                                     </div>
                                                 </ng-template>
                                                 <span>{{item.user.displayName}}</span>
@@ -175,7 +174,7 @@
                                     </ng-container>
                                     <ng-template #elseImage1>
                                         <div class="image-profile not-image">
-                                            {{item.user.displayName | slice: 0:1  }}
+                                            {{item.user.displayName | slice: 0:1 }}
                                         </div>
                                     </ng-template>
 
@@ -196,7 +195,7 @@
                                                 </ng-container>
                                                 <ng-template #elseImage2>
                                                     <div class="profile not-image">
-                                                        {{item.user.displayName | slice: 0:1  }}
+                                                        {{item.user.displayName | slice: 0:1 }}
                                                     </div>
                                                 </ng-template>
                                                 <span>{{item.user.displayName}}</span>
@@ -254,7 +253,7 @@
                                         </ng-container>
                                         <ng-template #elseListImage>
                                             <div class="image-profile not-image">
-                                                {{userList.user.displayName | slice: 0:1  }}
+                                                {{userList.user.displayName | slice: 0:1 }}
                                             </div>
                                         </ng-template>
 
@@ -275,7 +274,7 @@
                                                     </ng-container>
                                                     <ng-template #elseListImage>
                                                         <div class="profile not-image">
-                                                            {{userList.user.displayName | slice: 0:1  }}
+                                                            {{userList.user.displayName | slice: 0:1 }}
                                                         </div>
                                                     </ng-template>
                                                     <span>{{userList.user.displayName}}</span>
@@ -352,7 +351,7 @@
                                     </ng-container>
                                     <ng-template #elseImage1>
                                         <div class="image-profile not-image">
-                                            {{item.user.displayName | slice: 0:1  }}
+                                            {{item.user.displayName | slice: 0:1 }}
                                         </div>
                                     </ng-template>
 
@@ -373,7 +372,7 @@
                                                 </ng-container>
                                                 <ng-template #elseImage2>
                                                     <div class="profile not-image">
-                                                        {{item.user.displayName | slice: 0:1  }}
+                                                        {{item.user.displayName | slice: 0:1 }}
                                                     </div>
                                                 </ng-template>
                                                 <span>{{item.user.displayName}}</span>
@@ -452,7 +451,7 @@
                                         </ng-container>
                                         <ng-template #elseListImage>
                                             <div class="image-profile not-image">
-                                                {{userList.user.displayName | slice: 0:1  }}
+                                                {{userList.user.displayName | slice: 0:1 }}
                                             </div>
                                         </ng-template>
 
@@ -473,7 +472,7 @@
                                                     </ng-container>
                                                     <ng-template #elseListImage>
                                                         <div class="profile not-image">
-                                                            {{userList.user.displayName | slice: 0:1  }}
+                                                            {{userList.user.displayName | slice: 0:1 }}
                                                         </div>
                                                     </ng-template>
 
@@ -554,7 +553,7 @@
                                         </ng-container>
                                         <ng-template #elseListImage>
                                             <div class="image-profile not-image">
-                                                {{userList.user.displayName | slice: 0:1  }}
+                                                {{userList.user.displayName | slice: 0:1 }}
                                             </div>
                                         </ng-template>
 
@@ -575,7 +574,7 @@
                                                     </ng-container>
                                                     <ng-template #elseListImage>
                                                         <div class="profile not-image">
-                                                            {{userList.user.displayName | slice: 0:1  }}
+                                                            {{userList.user.displayName | slice: 0:1 }}
                                                         </div>
                                                     </ng-template>
 

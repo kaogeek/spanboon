@@ -332,11 +332,14 @@ export class PageController {
     @Authorized('user')
     public async autoSyncPageTW(@Body({ validate: true }) socialBinding: PageSocialTWBindingRequest, @Res() res: any, @Req() req: any): Promise<any> {
         const userId = new ObjectID(req.user.id);
+        let found = undefined;
         const getUser = await this.userService.findOne({ _id: userId });
         const verifyObject = await this.twitterService.verifyCredentials(socialBinding.twitterOauthToken, socialBinding.twitterTokenSecret);
         const regex = /[ก-ฮ]/g;
-        const found =  verifyObject.screen_name.match(regex);
-        if(found){
+        if(verifyObject.screen_name !== undefined){
+            found =  verifyObject.screen_name.match(regex);
+        }
+        if(found !== null && found !== undefined){
             const errorResponse = ResponseUtil.getErrorResponse('Please fill in the box with english lanauage.', undefined);
             return res.status(400).send(errorResponse);
         }
@@ -447,6 +450,7 @@ export class PageController {
     @Authorized('user')
     public async autoSyncPageFB(@Body({ validate: true }) socialBinding: PageSocialFBBindingRequest, @Res() res: any, @Req() req: any): Promise<any> {
         const userId = new ObjectID(req.user.id);
+        let found = undefined;
         const getUser = await this.userService.findOne({ _id: userId });
         const query = { _id: userId };
         const newValue = { $set: { isSyncPage: true } };
@@ -455,8 +459,10 @@ export class PageController {
         const pagePicture = await this.facebookService.getPagePicture(socialBinding.facebookPageId, socialBinding.pageAccessToken);
         const { data } = await axios.get('https://graph.facebook.com/v14.0/' + socialBinding.facebookPageId + '?fields=cover&access_token=' + socialBinding.pageAccessToken);
         const pageDetail = await this.facebookService.getPageFb(socialBinding.facebookPageId, socialBinding.pageAccessToken);
-        const found =  pageDetail.username.match(regex);
-        if(found){
+        if(pageDetail.username !== undefined){
+            found =  pageDetail.username.match(regex);
+        }
+        if(found !== null && found !== undefined){
             const errorResponse = ResponseUtil.getErrorResponse('Please fill in the box with english lanauage.', undefined);
             return res.status(400).send(errorResponse);
         }
@@ -701,6 +707,34 @@ export class PageController {
         const successResponse = ResponseUtil.getSuccessResponse('Successfully create refreshToken', undefined);
         return res.status(200).send(successResponse);
     }
+
+    // Delete Page Admin
+
+    @Delete('/:id/delete/admin')
+    @Authorized('user')
+    public async deletePageAdmin(@Param('id') pageId: string,@Req() req: any ,@Res() res: any):Promise<any>{
+        // request Userid 
+        const pageObjId = new ObjectID(pageId);
+        const userId = req.body.userId;
+        if(userId === null && userId === undefined && userId === ''){
+            const errorResponse: any = { status: 0, message: 'undefined' };
+            return res.status(400).send(errorResponse);
+        }
+        if(pageObjId !== undefined && pageObjId !== null){
+            const findPageAccess = await this.pageAccessLevelService.delete({page:pageObjId,user:ObjectID(userId)});
+            if(findPageAccess){
+                const successResponse = ResponseUtil.getSuccessResponse('Successfully delete user admin.', undefined);
+                return res.status(200).send(successResponse);
+            }else{
+                const errorResponse: any = { status: 0, message: 'undefined' };
+                return res.status(400).send(errorResponse);
+            }
+        }else{
+            const errorResponse: any = { status: 0, message: 'undefined' };
+            return res.status(400).send(errorResponse);
+        }
+    }
+
     @Post('/user/sync')
     @Authorized('user')
     public async getUserSyncPage(@Res() res: any, @Req() req: any): Promise<any> {

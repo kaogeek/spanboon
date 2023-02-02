@@ -1342,6 +1342,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     const indexCard = this.rowUser.indexOf(card);
     if (indexCard >= 0) {
       this.rowUser.splice(index, 1);
+      this.userId.splice(index, 1);
       this.searchTrendTag();
     }
     for (let [i, user] of this.userId.entries()) {

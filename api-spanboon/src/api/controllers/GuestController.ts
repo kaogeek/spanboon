@@ -105,10 +105,11 @@ export class GuestController {
         let userData: User;
         const regex = /[ก-ฮ]/g;
         const found =  uniqueId.match(regex);
-        if(found){
+        if(found !== null){
             const errorResponse = ResponseUtil.getErrorResponse('Please fill in the box with english lanauage.', undefined);
             return res.status(400).send(errorResponse);
         } if (mode === PROVIDER.EMAIL) {
+
             const data: User = await this.userService.findOne({ where: { username: registerEmail } });
             if (data) {
                 const errorResponse = ResponseUtil.getErrorResponse('This Email already exists', undefined);
@@ -135,8 +136,8 @@ export class GuestController {
                 user.isAdmin = false;
                 user.isSubAdmin = false;
                 user.banned = false;
-                user.mergeEM = true;
                 user.customGender = users.customGender;
+                user.mergeEM = true;
 
                 if (gender !== null || gender !== undefined) {
                     user.gender = gender;
@@ -210,9 +211,6 @@ export class GuestController {
             }
         } else if (mode === PROVIDER.FACEBOOK) {
             const resultUser: User = await this.userService.findOne({ where: { email: users.email } });
-            const activationCode = GenerateUUIDUtil.getUUID();
-            console.log('activationCode',activationCode);
-            const registerFbPassword = await User.hashPassword(activationCode);
             const fbUserId = users.fbUserId;
             const fbToken = users.fbToken;
             const fbAccessExpirationTime = users.fbAccessExpirationTime;
@@ -277,7 +275,7 @@ export class GuestController {
                 }
                 const user: User = new User();
                 user.username = registerEmail;
-                user.password = registerFbPassword;
+                user.password = registerPassword;
                 user.email = registerEmail;
                 user.isSyncPage = undefined;
                 user.uniqueId = uniqueId ? uniqueId : null;
@@ -521,8 +519,6 @@ export class GuestController {
         } else if (mode === PROVIDER.GOOGLE) {
             const resultUser: User = await this.userService.findOne({ where: { email: users.email } });
             const idToken = req.body.idToken;
-            const activationCode = GenerateUUIDUtil.getUUID();
-            const registerFbPassword = await User.hashPassword(activationCode);
             const checkIdToken = await this.googleService.verifyIdToken(idToken, req.headers.mod_modMobile);
             const googleUserId = users.googleUserId;
             const authToken = users.authToken;
@@ -587,7 +583,7 @@ export class GuestController {
 
                 const user: User = new User();
                 user.username = registerEmail;
-                user.password = registerFbPassword;
+                user.password = registerPassword;
                 user.email = registerEmail;
                 user.isSyncPage = undefined;
                 user.uniqueId = uniqueId ? uniqueId : null;
@@ -969,19 +965,13 @@ export class GuestController {
             const deviceFB = req.body.deviceName;
             // find email then -> authentication -> mode FB
             let fbUser = undefined;
-            let userFb = undefined;
-            let authenticaTionFB = undefined;
-            let refreshToken = undefined;
             try {
-                fbUser = await this.facebookService.fetchFacebook(loginParam.token);
-                refreshToken = await this.facebookService.getRefreshToken(loginParam.token);
-                userFb = await this.userService.find({ email: fbUser.email });
-                for (const userFind of userFb) {
-                    authenticaTionFB = await this.authenticationIdService.findOne({ where: { user: ObjectID(userFind.id), providerName: PROVIDER.FACEBOOK } });
-                }
+                fbUser = await this.facebookService.getFacebookUserFromToken(loginParam.token);
             } catch (err) {
                 console.log(err);
-            } if (fbUser === null || fbUser === undefined && authenticaTionFB === null || authenticaTionFB === undefined) {
+            }
+
+            if (fbUser === null || fbUser === undefined) {
                 const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
                 return res.status(400).send(errorUserNameResponse);
             } else {
@@ -989,9 +979,9 @@ export class GuestController {
                 const currentDateTime = moment().toDate();
                 const authTime = currentDateTime;
                 const expirationDate = moment().add(userExrTime, 'days').toDate();
-                const facebookUserId = authenticaTionFB.providerUserId;
+                const facebookUserId = fbUser.authId.providerUserId;
                 const query = { providerUserId: facebookUserId, providerName: PROVIDER.FACEBOOK };
-                const newValue = { $set: { providerUserId: fbUser.id, lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, storedCredentials: loginParam.token, refreshToken: refreshToken.access_token, expirationDate } };
+                const newValue = { $set: { providerUserId: facebookUserId, lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, storedCredentials: loginParam.token, expirationDate } };
                 const updateAuth = await this.authenticationIdService.update(query, newValue);
                 if (updateAuth) {
                     const updatedAuth = await this.authenticationIdService.findOne({ where: query });
@@ -1234,113 +1224,160 @@ export class GuestController {
                 return res.status(400).send(errorResponse);
             }
         } else if (mode === PROVIDER.FACEBOOK) {
-            let fbUser = undefined;
-            let userFb = undefined;
-            let authenticaTionFB = undefined;
             let authenFB = undefined;
-            let userFind = undefined;
             const stackAuth = [];
             const pic = [];
-            try {
-                fbUser = await this.facebookService.fetchFacebook(users.token);
-                pic.push(fbUser.picture.data.url);
-                userFb = await this.userService.find({ email: fbUser.email });
-                if (userFb[0] !== undefined) {
-                    for (userFind of userFb) {
-                        const authenAll = await this.authenticationIdService.findOne({ user: userFind.id });
-                        if (authenAll === undefined) {
-                            const userExrTime = await this.getUserLoginExpireTime();
-                            const token = jwt.sign({ id: userFind.id }, env.SECRET_KEY);
-                            const authenId = new AuthenticationId();
-                            authenId.user = userFind.id;
-                            authenId.lastAuthenTime = moment().toDate();
-                            authenId.providerUserId = userFind.id;
-                            authenId.providerName = PROVIDER.EMAIL;
-                            authenId.storedCredentials = token;
-                            authenId.expirationDate = moment().add(userExrTime, 'days').toDate();
-                            await this.authenticationIdService.create(authenId);
-                        } else if (userFind) {
-                            authenticaTionFB = await this.authenticationIdService.findOne({ where: { user: ObjectID(userFind.id), providerName: PROVIDER.FACEBOOK } });
-                        } else {
-                            const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
-                            return res.status(400).send(errorUserNameResponse);
-                        }
+            // userEmail
+            // fbUser (userId,email)
+            const fbUser = await this.facebookService.fetchFacebook(users.token);
+            if(fbUser.id !== undefined && fbUser.email !== undefined){
+                const findUserFb = await this.userService.findOne({email:fbUser.email});
+                const findAuthenFb = await this.authenticationIdService.findOne({providerUserId:fbUser.id,providerName:PROVIDER.FACEBOOK});
+                if (findUserFb !== undefined && findAuthenFb === undefined) {
+                    const authenAll = await this.authenticationIdService.find({ where: { user: findUserFb.id } });
+                    for (authenFB of authenAll) {
+                        stackAuth.push(authenFB.providerName);
                     }
-                } else {
-                    const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
-                    return res.status(400).send(errorUserNameResponse);
-                }
-            } catch (err) {
-                const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
-                return res.status(400).send(errorUserNameResponse);
-
-            } if (userFind && authenticaTionFB === undefined) {
-                const authenAll = await this.authenticationIdService.find({ where: { user: userFb[0].id } });
-                for (authenFB of authenAll) {
-                    stackAuth.push(authenFB.providerName);
-                }
-                const user: User = new User();
-                user.username = userFb[0].username;
-                user.email = userFb[0].email;
-                user.uniqueId = userFb[0].uniqueId;
-                user.firstName = userFb[0].firstName;
-                user.lastName = userFb[0].lastName;
-                user.imageURL = userFb[0].imageURL;
-                user.coverURL = userFb[0].coverURL;
-                user.coverPosition = 0;
-                user.displayName = userFb[0].displayName;
-                user.birthdate = new Date(userFb[0].birthdate);
-                user.isAdmin = userFb[0].isAdmin;
-                user.isSubAdmin = userFb[0].isSubAdmin;
-                user.banned = userFb[0].banned;
-                const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', user, stackAuth, pic);
-                return res.status(200).send(successResponse);
-            } else if (userFb && authenticaTionFB !== undefined) {
-
-                // find email then -> authentication -> mode FB
-                if (fbUser === null || fbUser === undefined && authenticaTionFB === null || authenticaTionFB === undefined) {
-                    const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
-                    return res.status(400).send(errorUserNameResponse);
-                } else {
-                    const userExrTime = await this.getUserLoginExpireTime();
-                    const currentDateTime = moment().toDate();
-                    const authTime = currentDateTime;
-                    const expirationDate = moment().add(userExrTime, 'days').toDate();
-                    const facebookUserId = authenticaTionFB.providerUserId;
-                    const query = { providerUserId: facebookUserId, providerName: PROVIDER.FACEBOOK };
-                    const newValue = { $set: { providerUserId: fbUser.id, lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, storedCredentials: users.token, expirationDate } };
-                    const updateAuth = await this.authenticationIdService.update(query, newValue);
-                    if (updateAuth) {
-                        const updatedAuth = await this.authenticationIdService.findOne({ where: query });
-                        loginUser = await this.userService.findOne({ where: { _id: ObjectID(updatedAuth.user) } });
-                        loginToken = updatedAuth.storedCredentials;
-                        loginToken = jwt.sign({ token: loginToken }, env.SECRET_KEY);
-                    }
-                    if (loginUser === undefined) {
-                        const errorResponse: any = { status: 0, message: 'Cannot login please try again.' };
-                        return res.status(400).send(errorResponse);
-                    }
-
-                    if (loginUser.banned === true) {
-                        const errorResponse = ResponseUtil.getErrorResponse('User Banned', undefined);
-                        return res.status(400).send(errorResponse);
-                    }
-
-                    const userFollowings = await this.userFollowService.find({ where: { userId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
-                    const userFollowers = await this.userFollowService.find({ where: { subjectId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
-
-                    loginUser = await this.userService.cleanUserField(loginUser);
-                    loginUser.followings = userFollowings.length;
-                    loginUser.followers = userFollowers.length;
-                    const result = { token: loginToken, user: loginUser };
-
-                    const successResponse = ResponseUtil.getSuccessResponse('Loggedin successful', result);
+                    const user: User = new User();
+                    user.username = findUserFb.username;
+                    user.email = findUserFb.email;
+                    user.uniqueId = findUserFb.uniqueId;
+                    user.firstName = findUserFb.firstName;
+                    user.lastName = findUserFb.lastName;
+                    user.imageURL = findUserFb.imageURL;
+                    user.coverURL = findUserFb.coverURL;
+                    user.coverPosition = 0;
+                    user.displayName = findUserFb.displayName;
+                    user.birthdate = new Date(findUserFb.birthdate);
+                    user.isAdmin = findUserFb.isAdmin;
+                    user.isSubAdmin = findUserFb.isSubAdmin;
+                    user.banned = findUserFb.banned;
+                    const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', user, stackAuth, pic);
                     return res.status(200).send(successResponse);
+                } else if (findAuthenFb !== undefined && findUserFb !== undefined) {
+                    // find email then -> authentication -> mode FB
+                    if (findUserFb === null && findAuthenFb === undefined ) {
+                        const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
+                        return res.status(400).send(errorUserNameResponse);
+                    } else {
+                        const userExrTime = await this.getUserLoginExpireTime();
+                        const currentDateTime = moment().toDate();
+                        const authTime = currentDateTime;
+                        const expirationDate = moment().add(userExrTime, 'days').toDate();
+                        const facebookUserId = findAuthenFb.providerUserId;
+                        const query = { providerUserId: facebookUserId, providerName: PROVIDER.FACEBOOK };
+                        const newValue = { $set: { providerUserId: facebookUserId, lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, storedCredentials: users.token, expirationDate } };
+                        const updateAuth = await this.authenticationIdService.update(query, newValue);
+                        if (updateAuth) {
+                            const updatedAuth = await this.authenticationIdService.findOne({ providerUserId: findAuthenFb.providerUserId, providerName: PROVIDER.FACEBOOK});
+                            loginUser = await this.userService.findOne({ where: { _id: ObjectID(updatedAuth.user) } });
+                            loginToken = updatedAuth.storedCredentials;
+                            loginToken = jwt.sign({ token: loginToken }, env.SECRET_KEY);
+                        }
+                        if (loginUser === undefined) {
+                            const errorResponse: any = { status: 0, message: 'Cannot login please try again.' };
+                            return res.status(400).send(errorResponse);
+                        }
+    
+                        if (loginUser.banned === true) {
+                            const errorResponse = ResponseUtil.getErrorResponse('User Banned', undefined);
+                            return res.status(400).send(errorResponse);
+                        }
+    
+                        const userFollowings = await this.userFollowService.find({ where: { userId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
+                        const userFollowers = await this.userFollowService.find({ where: { subjectId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
+    
+                        loginUser = await this.userService.cleanUserField(loginUser);
+                        loginUser.followings = userFollowings.length;
+                        loginUser.followers = userFollowers.length;
+                        const result = { token: loginToken, user: loginUser };
+    
+                        const successResponse = ResponseUtil.getSuccessResponse('Loggedin successful', result);
+                        return res.status(200).send(successResponse);
+                    }
+                } else {
+                    const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
+                    return res.status(400).send(errorResponse);
+                } 
+            }else if(fbUser.id !== undefined && fbUser.email === undefined){
+                if(users.email === null && users.email === undefined && users.email === ''){
+                    const errorResponse = ResponseUtil.getErrorResponse('We need your email to identify.', undefined);
+                    return res.status(400).send(errorResponse);
                 }
-            } else {
-                const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
+                const userEmailFB: string = users.email ? users.email.toLowerCase() : '';
+                const findUserFb = await this.userService.findOne({email:userEmailFB});
+                const findAuthenFb = await this.authenticationIdService.findOne({providerUserId:fbUser.id,providerName:PROVIDER.FACEBOOK});
+                if (findUserFb !== undefined && findAuthenFb === undefined) {
+                    const authenAll = await this.authenticationIdService.find({ where: { user: findUserFb.id } });
+                    for (authenFB of authenAll) {
+                        stackAuth.push(authenFB.providerName);
+                    }
+                    const user: User = new User();
+                    user.username = findUserFb.username;
+                    user.email = findUserFb.email;
+                    user.uniqueId = findUserFb.uniqueId;
+                    user.firstName = findUserFb.firstName;
+                    user.lastName = findUserFb.lastName;
+                    user.imageURL = findUserFb.imageURL;
+                    user.coverURL = findUserFb.coverURL;
+                    user.coverPosition = 0;
+                    user.displayName = findUserFb.displayName;
+                    user.birthdate = new Date(findUserFb.birthdate);
+                    user.isAdmin = findUserFb.isAdmin;
+                    user.isSubAdmin = findUserFb.isSubAdmin;
+                    user.banned = findUserFb.banned;
+                    const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', user, stackAuth, pic);
+                    return res.status(200).send(successResponse);
+                } else if (findAuthenFb !== undefined && findUserFb !== undefined) {
+                    // find email then -> authentication -> mode FB
+                    if (findAuthenFb !== undefined && findUserFb !== undefined) {
+                        const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
+                        return res.status(400).send(errorUserNameResponse);
+                    } else {
+                        const userExrTime = await this.getUserLoginExpireTime();
+                        const currentDateTime = moment().toDate();
+                        const authTime = currentDateTime;
+                        const expirationDate = moment().add(userExrTime, 'days').toDate();
+                        const facebookUserId = findAuthenFb.providerUserId;
+                        const query = { providerUserId: facebookUserId, providerName: PROVIDER.FACEBOOK };
+                        const newValue = { $set: { providerUserId: facebookUserId, lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, storedCredentials: users.token, expirationDate } };
+                        const updateAuth = await this.authenticationIdService.update(query, newValue);
+                        if (updateAuth) {
+                            const updatedAuth = await this.authenticationIdService.findOne({ providerUserId: findAuthenFb.providerUserId, providerName: PROVIDER.FACEBOOK});
+                            loginUser = await this.userService.findOne({ where: { _id: ObjectID(updatedAuth.user) } });
+                            loginToken = updatedAuth.storedCredentials;
+                            loginToken = jwt.sign({ token: loginToken }, env.SECRET_KEY);
+                        }
+                        if (loginUser === undefined) {
+                            const errorResponse: any = { status: 0, message: 'Cannot login please try again.' };
+                            return res.status(400).send(errorResponse);
+                        }
+    
+                        if (loginUser.banned === true) {
+                            const errorResponse = ResponseUtil.getErrorResponse('User Banned', undefined);
+                            return res.status(400).send(errorResponse);
+                        }
+    
+                        const userFollowings = await this.userFollowService.find({ where: { userId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
+                        const userFollowers = await this.userFollowService.find({ where: { subjectId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
+    
+                        loginUser = await this.userService.cleanUserField(loginUser);
+                        loginUser.followings = userFollowings.length;
+                        loginUser.followers = userFollowers.length;
+                        const result = { token: loginToken, user: loginUser };
+    
+                        const successResponse = ResponseUtil.getSuccessResponse('Loggedin successful', result);
+                        return res.status(200).send(successResponse);
+                    }
+                } else {
+                    const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
+                    return res.status(400).send(errorResponse);
+                } 
+            }else{
+                const errorResponse = ResponseUtil.getErrorResponse('Cannot encrypt token.', undefined);
                 return res.status(400).send(errorResponse);
             }
+
         } else if (mode === PROVIDER.APPLE) {
             const data: User = await this.userService.findOne({ where: { username: users.email } });
             const AllAuthen = await this.authenticationIdService.find({ user: ObjectID(String(data.id)) });
@@ -1596,7 +1633,12 @@ export class GuestController {
         const username = otpRequest.email;
         let saveOtp = undefined;
         const emailRes: string = username;
+        const expirationDate = moment().add(5, 'minutes').toDate().getTime();
         const user: User = await this.userService.findOne({ username: emailRes });
+        const checkOtp = await this.otpService.findOne({userId:ObjectID(user.id),email:user.email});
+        if(checkOtp !== undefined && checkOtp.expiration > expirationDate){
+            await this.otpService.delete({userId:ObjectID(user.id),email:user.email});
+        }
         const minm = 100000;
         const maxm = 999999;
         const getCache = await cache.get(user.id.toString());
@@ -1606,7 +1648,6 @@ export class GuestController {
             count += getCache[0].limit;
         }
         const otpRandom = Math.floor(Math.random() * (maxm - minm + 1)) + minm;
-        const expirationDate = moment().add(1, 'minutes').toDate().getTime();
         if(limitCount === undefined){
             saveOtp = await this.otpService.createOtp({userId:user.id,email:emailRes,otp:otpRandom,limit:count,expiration:expirationDate});
         }
@@ -1642,8 +1683,8 @@ export class GuestController {
         const otp = otpRequest.otp;
         const mode = req.headers.mode;
         const emailRes: string = username.toLowerCase();
-        const user: User = await this.userService.findOne({ username: emailRes });
-        const otpFind = await this.otpService.findOne({email:emailRes});
+        const user: User = await this.userService.findOne({ email: emailRes });
+        const otpFind = await this.otpService.findOne({email:emailRes,userId:ObjectID(user.id)});
         const expirationDate = moment().add(5, 'minutes').toDate().getTime();
         const userExrTime = await this.getUserLoginExpireTime();
         let loginUser: any;

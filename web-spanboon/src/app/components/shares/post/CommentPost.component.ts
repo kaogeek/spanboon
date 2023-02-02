@@ -49,6 +49,7 @@ export class CommentPost {
         setTimeout(() => {
           document.getElementById('textcomment').focus();
         }, 200);
+        this.editPost = false;
       }
     }
     if (action === 'CANCEL') {
@@ -56,7 +57,7 @@ export class CommentPost {
       this.editPost = false;
     }
     if (action === 'LIKE') {
-      this.submit.emit({ action: action, commentdata: comment.id, index: index, commentEdit: this.commentEdit });
+      // this.submit.emit({ action: action, commentdata: comment.id, index: index, commentEdit: this.commentEdit });
       this.editPost = false;
     }
     if (action === 'DELETE') {
@@ -66,6 +67,7 @@ export class CommentPost {
 
   public commentActionSave(action: any, comment: any, index: number) {
     this.submit.emit({ action: action, commentdata: comment.id, index: index, commentEdit: this.commentEdit });
+    this.editPost = false;
   }
 
   public testIimageURL(data: any): string {
