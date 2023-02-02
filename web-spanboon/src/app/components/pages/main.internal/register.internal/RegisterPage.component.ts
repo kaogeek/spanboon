@@ -21,8 +21,6 @@ import { Asset } from '../../../../models/Asset';
 import { SocialAuthService, SocialUser } from 'angularx-social-login';
 import * as $ from 'jquery';
 import { environment } from 'src/environments/environment';
-import { fromEvent, Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 const PAGE_NAME: string = 'register';
 
@@ -33,13 +31,11 @@ const PAGE_NAME: string = 'register';
 export class RegisterPage extends AbstractPage implements OnInit {
 
   public static readonly PAGE_NAME: string = PAGE_NAME;
-  private destroy = new Subject<void>();
+
   @ViewChild(MatDatepicker, { static: true }) datapicker: MatDatepicker<Date>;
   @ViewChild("birthday", { static: false }) private datapickerBirthday: any;
   @ViewChild('register', { static: false }) private registerForm: any;
   @ViewChild('birthday', { static: false }) private birthdayForm: ElementRef;
-  @ViewChild('inputEmail', { static: false }) private inputEmail: ElementRef;
-  @ViewChild('username', { static: false }) public username: ElementRef;
 
   @Output()
   public dateChange: EventEmitter<MatDatepickerInputEvent<any>>;
@@ -84,7 +80,6 @@ export class RegisterPage extends AbstractPage implements OnInit {
   public activePass: boolean;
   public activeRePass: boolean;
   public isLoading: boolean;
-  public isOnEdit: boolean;
   public genderTxt: string;
   public account_twitter: any;
   public isCheckDate: any;
@@ -165,19 +160,8 @@ export class RegisterPage extends AbstractPage implements OnInit {
     this.checkLoginAndRedirection();
   }
 
-  public ngAfterViewInit(): void {
-    fromEvent(this.username && this.username.nativeElement, 'keyup').pipe(
-      debounceTime(500)
-      , distinctUntilChanged()
-    ).subscribe((text: any) => {
-      this.checkUUID(this.username.nativeElement.value);
-    });
-  }
-
   public ngOnDestroy(): void {
     super.ngOnDestroy();
-    this.destroy.next();
-    this.destroy.complete();
   }
 
   isPageDirty(): boolean {
@@ -227,10 +211,10 @@ export class RegisterPage extends AbstractPage implements OnInit {
     if (!this.isRegister) {
       this.isRegister = true;
       const register = new User();
-      register.username = !!formData!.email ? formData.email : this.inputEmail.nativeElement.value;
+      register.username = formData.email;
       register.firstName = formData.firstName === undefined ? "" : formData.firstName;
       register.lastName = formData.lastName === undefined ? "" : formData.lastName;
-      register.email = !!formData!.email ? formData.email : this.inputEmail.nativeElement.value;
+      register.email = formData.email;
       register.password = formData.password;
       // unqueId
       if (formData.username === undefined || formData.username === '') {
@@ -238,7 +222,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
           if (isVaild) {
             register.uniqueId = formData.displayName;
           } else {
-            let emailSubstring = !!formData!.email ? formData.email.substring(1, 0) : this.inputEmail.nativeElement.value.substring(1, 0);
+            let emailSubstring = formData.email.substring(1, 0);
             let newUnique = formData.displayName + '.' + emailSubstring;
             this.generatorUnqueId(newUnique).then((isVaild1: any) => {
               if (isVaild1) {
@@ -269,7 +253,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
         document.getElementById('displayName').style.border = "unset";
         this.active = false;
       }
-      if (!this.inputEmail!.nativeElement!.value) {
+      if (formData.email === '' || formData.email === undefined) {
         this.activeEmail = true;
         document.getElementById('email').style.border = "1px solid red";
         return document.getElementById("email").focus();
@@ -279,7 +263,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
       }
       // mark
       let emailPattern = "[A-Za-z0-9._%-]+@[A-Za-z0-9._%-]+\\.[a-z]{2,3}";
-      if (!this.inputEmail!.nativeElement!.value.match(emailPattern)) {
+      if (!formData.email.match(emailPattern)) {
         this.activeEmail = true;
         document.getElementById('email').style.border = "1px solid red";
         return document.getElementById("email").focus();
@@ -505,30 +489,42 @@ export class RegisterPage extends AbstractPage implements OnInit {
   }
 
   public checkUUID(event) {
+<<<<<<< HEAD
+    this.isLoading = true
+    if (event === '') {
+      return;
+    }
+    if (event.length > 0) {
+      let pattern = event.match('^[A-Za-z0-9_.]*$');
+      if (!pattern) {
+        this.uuid = false;
+        document.getElementById('username').focus();
+      } else {
+        let body = {
+          uniqueId: event
+        }
+=======
     this.isLoading = true;
     if (!!event) {
-      let pattern = event.match('^[A-Za-z0-9_.]*$');
+      let pattern = event.match('^[A-Za-z0-9_]*$');
       if (pattern) {
+>>>>>>> b6ab8ffd05cbcdfb219a17874c11a2944b8213b3
         this.uuid = true;
-        this.userFacade.checkUniqueId({ uniqueId: event }).then((res) => {
-          if (res) {
-            this.isLoading = false;
-            if (res && res.data) {
-              this.uuid = res.data;
-            } else {
-              this.uuid = res.error;
-            }
-            document.getElementById('username').focus();
+        this.userFacade.checkUniqueId(body).then((res) => {
+          if (res && res.data) {
+            this.uuid = res.data;
+          } else {
+            this.uuid = res.error;
           }
+          document.getElementById('username').focus();
+
         }).catch((err) => {
           this.uuid = false;
-          this.isLoading = false;
           document.getElementById('username').focus();
         })
-      } else {
-        this.uuid = false;
       }
     }
+
   }
 
   public onShowDialog() {
@@ -575,27 +571,23 @@ export class RegisterPage extends AbstractPage implements OnInit {
       this.images = user.photoUrl;
       this.data.gender = -1;
       this.data.birthday = new Date();
-      this.getBase64ImageFromUrl("https://lh3.googleusercontent.com/a/AEdFTp4XMMnvlS6b8-6k8McY00LJp8KtF8OL7Vj9Q1PB=s96-c").then((result: any) => {
+      this.getBase64ImageFromUrl(this.images).then((result: any) => {
+<<<<<<< HEAD
+        this.imagesAvatar.image = result;
+=======
         if (result) {
           this.imagesAvatar.image = result;
         }
+>>>>>>> b6ab8ffd05cbcdfb219a17874c11a2944b8213b3
       }).catch(err => {
         console.log("เกิดข้อผิดพลาด");
       });
-      // this.getBase64ImageFromUrl(this.images).then((result: any) => {
-      //   if (result) {
-      //     console.log("ee", result)
-      //     this.imagesAvatar.image = result;
-      //   }
-      // }).catch(err => {
-      //   console.log("เกิดข้อผิดพลาด");
-      // });
     });
   }
 
   public getCurrentUserInfo(): any {
     window['FB'].api('/me', {
-      fields: 'name, first_name, last_name,birthday,picture.width(512).height(512),id,email,gender'
+      fields: 'name, first_name, last_name,birthday,picture,id,email,gender'
     }, (userInfo) => {
       this.data = userInfo;
       this.data.displayName = userInfo.name;
@@ -606,9 +598,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
       // this.images = 'https://graph.facebook.com/' + this.data.id + '/picture?type=large';
       this.images = userInfo.picture.data.url;
       this.getBase64ImageFromUrl(this.images).then((result: any) => {
-        if (result) {
-          this.imagesAvatar.image = result;
-        }
+        this.imagesAvatar.image = result;
       }).catch(err => {
         console.log("เกิดข้อผิดพลาด");
       });
@@ -661,4 +651,5 @@ export class RegisterPage extends AbstractPage implements OnInit {
   public checkedClick() {
     this.checkedCon = !this.checkedCon;
   }
+
 }

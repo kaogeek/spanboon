@@ -9,8 +9,8 @@ import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from "
 import { FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable } from 'rxjs';
-import { map, startWith } from 'rxjs/operators';
+import { fromEvent, Observable, Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, map, startWith } from 'rxjs/operators';
 import { POST_TYPE, USER_LEVEL } from '../../../../TypePost';
 import { AccountFacade, AssetFacade, AuthenManager, ObservableManager, PageFacade, UserAccessFacade } from '../../../../services/services';
 import { AbstractPage } from '../../AbstractPage';
@@ -60,6 +60,7 @@ export class SettingsAdminRoles extends AbstractPage implements OnInit {
     public isLoading: boolean = false;
     public isActive: boolean = false;
     public isButtonActive: boolean = false;
+    public isConfirm: boolean = false;
     public valueSt: any = '';
     public editIndex: any;
     public editAdminIndex: any;
@@ -74,6 +75,7 @@ export class SettingsAdminRoles extends AbstractPage implements OnInit {
     public accessPage: any;
     // public pageIdUrl: string;
 
+    private destroy = new Subject<void>();
     @ViewChild('formfield', { static: false }) formfield: ElementRef;
     @ViewChild('selectroles', { static: false }) selectroles: ElementRef;
     @ViewChild('search', { static: false }) search: ElementRef;
@@ -194,11 +196,18 @@ export class SettingsAdminRoles extends AbstractPage implements OnInit {
     }
 
     ngAfterViewInit(): void {
-
+        fromEvent(this.search && this.search.nativeElement, 'keyup').pipe(
+            debounceTime(500)
+            , distinctUntilChanged()
+        ).subscribe((text: any) => {
+            this.keyUpAutoComp(this.search.nativeElement.value);
+        });
     }
 
     public ngOnDestroy(): void {
         super.ngOnDestroy();
+        this.destroy.next();
+        this.destroy.complete();
     }
 
     isPageDirty(): boolean {
@@ -274,10 +283,12 @@ export class SettingsAdminRoles extends AbstractPage implements OnInit {
             if (this.dataUser) {
                 for (let data of this.dataUser) {
                     let index = 0;
-                    if (data && data.imageURL && data.imageURL !== '' && data.imageURL !== undefined && data.imageURL !== null) {
-                        this.getImageBase64(data, index);
+                    if (!data.signURL) {
+                        if (!!data!.imageURL) {
+                            this.getImageBase64(data, index);
+                        }
+                        index++;
                     }
-                    index++;
                 }
             }
             this.isLoading = false;
@@ -365,29 +376,35 @@ export class SettingsAdminRoles extends AbstractPage implements OnInit {
     }
 
     public addUserLevel() {
-        if (this.valueSt === '') {
-            return;
-        }
-        this.isActive = true;
-        let levelUser = this.getLevelUser(this.selectPower.label);
-        let access = {
-            level: levelUser,
-            user: this.valueSt.id || this.valueSt.uniqueId
-        }
-        this.pageFacade.addAccess(this.pageId, access).then((res) => {
-            if (res.message === "Successfully adding User Page Access") {
-                this.clearInputData();
-                this.getAccessPage();
-                if (res) {
-                    this.accessPage = res;
+        if (!this.isConfirm) {
+            this.isConfirm = true;
+            if (this.valueSt === '') {
+                this.isConfirm = false;
+                return;
+            }
+            this.isActive = true;
+            let levelUser = this.getLevelUser(this.selectPower.label);
+            let access = {
+                level: levelUser,
+                user: this.valueSt.id || this.valueSt.uniqueId
+            }
+            this.pageFacade.addAccess(this.pageId, access).then((res) => {
+                if (res.message === "Successfully adding User Page Access") {
+                    this.clearInputData();
+                    this.getAccessPage();
+                    if (res) {
+                        this.isConfirm = false;
+                        this.accessPage = res;
+                    }
                 }
-            }
-        }).catch((err) => {
-            console.log(err)
-            if (err.error.message === 'Access Level was duplicated.') {
-                this.showAlertDialog('ไม่สามารถแอดสิทธิซ้ำได้');
-            }
-        })
+            }).catch((err) => {
+                console.log(err)
+                if (err.error.message === 'Access Level was duplicated.') {
+                    this.isConfirm = false;
+                    this.showAlertDialog('ไม่สามารถแอดสิทธิซ้ำได้');
+                }
+            })
+        }
     }
 
     public getLevelUser(selected) {

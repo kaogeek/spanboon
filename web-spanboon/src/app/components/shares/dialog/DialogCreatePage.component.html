@@ -142,7 +142,9 @@
                             <mat-label class="title">ชื่อเพจ</mat-label>
                             <div class="drop-input">
                                 <input #pageName id="username" type="text" class="input-page"
-                                    placeholder="ใส่ชื่อเพจของคุณ" shake [shake]="isEmpty">
+                                    placeholder="ใส่ชื่อเพจของคุณ"
+                                    [ngClass]="{'correct': !isValid, 'invalid': isValid }" shake [shake]="isEmpty"
+                                    (keyup)="checkNamePage()">
                             </div>
                             <div class="label-show-error" *ngIf="isNull">กรุณากรอกชื่อเพจของคุณ</div>
                         </div>
