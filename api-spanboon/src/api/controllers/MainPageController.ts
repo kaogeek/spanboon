@@ -682,23 +682,23 @@ export class MainPageController {
             // let emergencyEventTag:string;
             let startDate: string;
             let endDate: string;
-            let startViewCount: number;
-            let endViewCount: number;
+            let startViewCount: number = undefined;
+            let endViewCount: number = undefined;
             // Count All Action
-            let startActionCount: number;
-            let endActionCount: number;
+            let startActionCount: number = undefined;
+            let endActionCount: number = undefined;
             // Count Comment
-            let startCommentCount: number;
-            let endCommentCount: number;
+            let startCommentCount: number = undefined;
+            let endCommentCount: number = undefined;
             // Count Repost
-            let startRepostCount: number;
-            let endRepostCount: number;
+            let startRepostCount: number = undefined;
+            let endRepostCount: number = undefined;
             // Count Like
-            let startLikeCount: number;
-            let endLikeCount: number;
+            let startLikeCount: number = undefined;
+            let endLikeCount: number = undefined;
             // Count Share
-            let startShareCount: number;
-            let endShareCount: number;
+            let startShareCount: number = undefined;
+            let endShareCount: number = undefined;
             // Location
             // let locations: string[];
             // Page Catgory
@@ -717,6 +717,8 @@ export class MainPageController {
                 // emergencyEventTag = data.emergencyEventTag;
                 startDate = data.startDate;
                 endDate = data.endDate;
+
+                // Comnment This Because Mobile App Show Old Post
                 startViewCount = data.startViewCount;
                 endViewCount = data.endViewCount;
                 startActionCount = data.startActionCount;
@@ -729,6 +731,7 @@ export class MainPageController {
                 endLikeCount = data.endLikeCount;
                 startShareCount = data.startShareCount;
                 endShareCount = data.endShareCount;
+
                 // locations = data.locations;
                 pageCategories = data.pageCategories;
                 sortBy = data.sortBy;
@@ -736,6 +739,11 @@ export class MainPageController {
 
             postStmt.push({ $match: { deleted: false } });
             postStmt.push({ $match: { pageId: { $ne: null } } });
+
+            if (keyword !== undefined && keyword.length === 1 && keyword[0] === '') {
+                keyword = undefined;
+            }
+
             if (keyword !== undefined && keyword !== null && keyword.length > 0) {
                 let matchKeywordTitleStmt: any = {};
                 let matchKeywordTitleStmtResult: any = {};
@@ -764,6 +772,10 @@ export class MainPageController {
                 if (matchKeywordStmtResult !== null && matchKeywordStmtResult !== undefined && matchKeywordStmtResult.length > 0) {
                     postStmt.push({ $match: { $or: matchKeywordStmtResult } });
                 }
+            }
+
+            if (hashTag !== undefined && hashTag.length === 1 && hashTag[0] === '') {
+                hashTag = undefined;
             }
 
             if (hashTag !== undefined && hashTag !== null && hashTag.length > 0) {
@@ -854,6 +866,10 @@ export class MainPageController {
 
             if (type !== null && type !== undefined && type !== '') {
                 postStmt.push({ $match: { type } });
+            }
+
+            if (createBy !== undefined && createBy.length === 1 && createBy[0] === '') {
+                createBy = undefined;
             }
 
             if (createBy !== null && createBy !== undefined && createBy.length > 0) {
@@ -982,6 +998,11 @@ export class MainPageController {
             } else {
                 postStmt.push({ $sort: { startDateTime: -1 } });
             }
+
+            if (pageCategories !== undefined && pageCategories.length === 1 && pageCategories[0] === '') {
+                pageCategories = undefined;
+            }
+
             if (pageCategories !== null && pageCategories !== undefined && pageCategories.length > 0) {
                 const categoryIdList = [];
 
