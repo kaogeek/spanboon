@@ -1308,6 +1308,8 @@ export class GuestController {
                 }
                 const findAuthenFb = await this.authenticationIdService.findOne({providerUserId:fbUser.id,providerName:PROVIDER.FACEBOOK});
                 if(findAuthenFb !== undefined){
+                    findUserFb = await this.userService.findOne({_id:findAuthenFb.user});
+                }else if(findAuthenFb === undefined){
                     findUserFb = await this.userService.findOne({email:userEmail});
                 }
                 if (findUserFb !== undefined && findAuthenFb === undefined) {
