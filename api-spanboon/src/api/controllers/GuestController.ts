@@ -1300,13 +1300,15 @@ export class GuestController {
                     return res.status(400).send(errorResponse);
                 } 
             }else if(fbUser.id !== undefined && fbUser.email === undefined){
+                let findUserFb = undefined;
                 if(users.email === null && users.email === undefined && users.email === ''){
                     const errorResponse = ResponseUtil.getErrorResponse('We need your email to identify.', undefined);
                     return res.status(400).send(errorResponse);
                 }
-                const userEmailFB: string = users.email ? users.email.toLowerCase() : '';
-                const findUserFb = await this.userService.findOne({email:userEmailFB});
                 const findAuthenFb = await this.authenticationIdService.findOne({providerUserId:fbUser.id,providerName:PROVIDER.FACEBOOK});
+                if(findAuthenFb !== undefined){
+                    findUserFb = await this.userService.findOne({_id:findAuthenFb.user});
+                }
                 if (findUserFb !== undefined && findAuthenFb === undefined) {
                     const authenAll = await this.authenticationIdService.find({ where: { user: findUserFb.id } });
                     for (authenFB of authenAll) {
@@ -1330,45 +1332,40 @@ export class GuestController {
                     return res.status(200).send(successResponse);
                 } else if (findAuthenFb !== undefined && findUserFb !== undefined) {
                     // find email then -> authentication -> mode FB
-                    if (findAuthenFb !== undefined && findUserFb !== undefined) {
-                        const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
-                        return res.status(400).send(errorUserNameResponse);
-                    } else {
-                        const userExrTime = await this.getUserLoginExpireTime();
-                        const currentDateTime = moment().toDate();
-                        const authTime = currentDateTime;
-                        const expirationDate = moment().add(userExrTime, 'days').toDate();
-                        const facebookUserId = findAuthenFb.providerUserId;
-                        const query = { providerUserId: facebookUserId, providerName: PROVIDER.FACEBOOK };
-                        const newValue = { $set: { providerUserId: facebookUserId, lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, storedCredentials: users.token, expirationDate } };
-                        const updateAuth = await this.authenticationIdService.update(query, newValue);
-                        if (updateAuth) {
-                            const updatedAuth = await this.authenticationIdService.findOne({ providerUserId: findAuthenFb.providerUserId, providerName: PROVIDER.FACEBOOK});
-                            loginUser = await this.userService.findOne({ where: { _id: ObjectID(updatedAuth.user) } });
-                            loginToken = updatedAuth.storedCredentials;
-                            loginToken = jwt.sign({ token: loginToken }, env.SECRET_KEY);
-                        }
-                        if (loginUser === undefined) {
-                            const errorResponse: any = { status: 0, message: 'Cannot login please try again.' };
-                            return res.status(400).send(errorResponse);
-                        }
-    
-                        if (loginUser.banned === true) {
-                            const errorResponse = ResponseUtil.getErrorResponse('User Banned', undefined);
-                            return res.status(400).send(errorResponse);
-                        }
-    
-                        const userFollowings = await this.userFollowService.find({ where: { userId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
-                        const userFollowers = await this.userFollowService.find({ where: { subjectId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
-    
-                        loginUser = await this.userService.cleanUserField(loginUser);
-                        loginUser.followings = userFollowings.length;
-                        loginUser.followers = userFollowers.length;
-                        const result = { token: loginToken, user: loginUser };
-    
-                        const successResponse = ResponseUtil.getSuccessResponse('Loggedin successful', result);
-                        return res.status(200).send(successResponse);
+                    const userExrTime = await this.getUserLoginExpireTime();
+                    const currentDateTime = moment().toDate();
+                    const authTime = currentDateTime;
+                    const expirationDate = moment().add(userExrTime, 'days').toDate();
+                    const facebookUserId = findAuthenFb.providerUserId;
+                    const query = { providerUserId: facebookUserId, providerName: PROVIDER.FACEBOOK };
+                    const newValue = { $set: { providerUserId: facebookUserId, lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, storedCredentials: users.token, expirationDate } };
+                    const updateAuth = await this.authenticationIdService.update(query, newValue);
+                    if (updateAuth) {
+                        const updatedAuth = await this.authenticationIdService.findOne({ providerUserId: findAuthenFb.providerUserId, providerName: PROVIDER.FACEBOOK});
+                        loginUser = await this.userService.findOne({ where: { _id: ObjectID(updatedAuth.user) } });
+                        loginToken = updatedAuth.storedCredentials;
+                        loginToken = jwt.sign({ token: loginToken }, env.SECRET_KEY);
                     }
+                    if (loginUser === undefined) {
+                        const errorResponse: any = { status: 0, message: 'Cannot login please try again.' };
+                        return res.status(400).send(errorResponse);
+                    }
+
+                    if (loginUser.banned === true) {
+                        const errorResponse = ResponseUtil.getErrorResponse('User Banned', undefined);
+                        return res.status(400).send(errorResponse);
+                    }
+
+                    const userFollowings = await this.userFollowService.find({ where: { userId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
+                    const userFollowers = await this.userFollowService.find({ where: { subjectId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
+
+                    loginUser = await this.userService.cleanUserField(loginUser);
+                    loginUser.followings = userFollowings.length;
+                    loginUser.followers = userFollowers.length;
+                    const result = { token: loginToken, user: loginUser };
+
+                    const successResponse = ResponseUtil.getSuccessResponse('Loggedin successful', result);
+                    return res.status(200).send(successResponse);
                 } else {
                     const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
                     return res.status(400).send(errorResponse);

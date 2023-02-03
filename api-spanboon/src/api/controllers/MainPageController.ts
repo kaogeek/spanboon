@@ -516,6 +516,7 @@ export class MainPageController {
             const search: any = {};
             const userId = data.userId;
             const keyword = data.keyword;
+            const filter: SearchFilter = data.filter;
             const exp = { $regex: '.*' + keyword + '.*', $options: 'si' };
             const pageResultStmt = [];
             const userResultStmt = [];
@@ -531,7 +532,6 @@ export class MainPageController {
             let hashTagRows = 0;
             let userObjId;
             let historyQuery = {};
-
             if (userId !== '' && userId !== null && userId !== undefined) {
                 userObjId = new ObjectID(userId);
                 historyQuery = [
@@ -550,80 +550,153 @@ export class MainPageController {
                     { $replaceRoot: { newRoot: '$result' } }
                 ];
             }
-
             const histories = await this.searchHistoryService.aggregate(historyQuery);
             historyRows = histories.length;
             pageLimit = historyLimit - historyRows;
-            if (historyRows !== null && historyRows !== undefined && historyRows > 0) {
-                for (const history of histories) {
-                    searchResults.push({ historyId: history._id, value: history.resultId, label: history.keyword, type: history.resultType });
-
-                    if (history.resultType === SEARCH_TYPE.PAGE) {
-                        pageResultStmt.push(new ObjectID(history.resultId));
-                    } else if (history.resultType === SEARCH_TYPE.USER) {
-                        userResultStmt.push(new ObjectID(history.resultId));
-                    } else if (history.resultType === SEARCH_TYPE.HASHTAG) {
-                        hashTagResultStmt.push(new ObjectID(history.resultId));
+            if(filter !== undefined){
+                if (historyRows !== null && historyRows !== undefined && historyRows > 0) {
+                    for (const history of histories) {
+                        searchResults.push({ historyId: history._id, value: history.resultId, label: history.keyword, type: history.resultType });
+                        if (history.resultType === SEARCH_TYPE.PAGE) {
+                            pageResultStmt.push(new ObjectID(history.resultId));
+                        } else if (history.resultType === SEARCH_TYPE.USER) {
+                            userResultStmt.push(new ObjectID(history.resultId));
+                        } else if (history.resultType === SEARCH_TYPE.HASHTAG) {
+                            hashTagResultStmt.push(new ObjectID(history.resultId));
+                        }
                     }
                 }
-            }
+                if (pageLimit !== null && pageLimit !== undefined && pageLimit > 0) {
+                    // const pageQuery = { $and: [{ _id: { $not: { $in: pageResultStmt } } }, { $or: [{ name: exp }, { pageUsername: exp }] }] };
+                    const pageQuery = [
+                        { $match: { $and: [{ _id: { $not: { $in: pageResultStmt } }, banned: false }, { $or: [{ name: exp }, { pageUsername: exp }] }] } },
+                        { $limit: pageLimit }
+                    ];
+                    const pages: any[] = await this.pageService.aggregate(pageQuery);
 
-            if (pageLimit !== null && pageLimit !== undefined && pageLimit > 0) {
-                // const pageQuery = { $and: [{ _id: { $not: { $in: pageResultStmt } } }, { $or: [{ name: exp }, { pageUsername: exp }] }] };
-                const pageQuery = [
-                    { $match: { $and: [{ _id: { $not: { $in: pageResultStmt } }, banned: false }, { $or: [{ name: exp }, { pageUsername: exp }] }] } },
-                    { $limit: pageLimit }
-                ];
-                const pages: any[] = await this.pageService.aggregate(pageQuery);
+                    pageRows = pages.length;
+                    if(filter.typeUser !== undefined){
+                        userLimit = pageLimit - pageRows;
+                    }
+                    if (pageRows !== null && pageRows !== undefined && pageRows > 0) {
+                        let pageId;
+                        let pageName;
 
-                pageRows = pages.length;
-                userLimit = pageLimit - pageRows;
-                if (pageRows !== null && pageRows !== undefined && pageRows > 0) {
-                    let pageId;
-                    let pageName;
-
-                    for (const page of pages) {
-                        pageId = page._id;
-                        pageName = page.name;
-                        searchResults.push({ value: pageId, label: pageName, type: SEARCH_TYPE.PAGE });
+                        for (const page of pages) {
+                            pageId = page._id;
+                            pageName = page.name;
+                            searchResults.push({ value: pageId, label: pageName, type: SEARCH_TYPE.PAGE });
+                        }
                     }
                 }
-            }
 
-            if (userLimit !== null && userLimit !== undefined && userLimit > 0) {
-                // const userQuery = { $and: [{ _id: { $not: { $in: userResultStmt } } }, { $or: [{ displayName: exp }, { firstName: exp }, { lastName: exp }] }] };
-                const userQuery = [
-                    { $match: { $and: [{ _id: { $not: { $in: userResultStmt } } }, { isAdmin: false, isSubAdmin: false, banned: false }, { $or: [{ displayName: exp }, { firstName: exp }, { lastName: exp }] }] } },
-                    { $limit: userLimit }
-                ];
-                const users = await this.userService.aggregate(userQuery);
+                if (userLimit !== null && userLimit !== undefined && userLimit > 0) {
+                    // const userQuery = { $and: [{ _id: { $not: { $in: userResultStmt } } }, { $or: [{ displayName: exp }, { firstName: exp }, { lastName: exp }] }] };
+                    const userQuery = [
+                        { $match: { $and: [{ _id: { $not: { $in: userResultStmt } } }, { isAdmin: false, isSubAdmin: false, banned: false }, { $or: [{ displayName: exp }, { firstName: exp }, { lastName: exp }] }] } },
+                        { $limit: userLimit }
+                    ];
+                    const users = await this.userService.aggregate(userQuery);
 
-                userRows = users.length;
-                hashTagLimit = userLimit - userRows;
-                if (userRows !== null && userRows !== undefined && userRows > 0) {
-                    for (const user of users) {
-                        searchResults.push({ value: user._id, label: user.displayName, type: SEARCH_TYPE.USER });
+                    userRows = users.length;
+                    hashTagLimit = userLimit - userRows;
+                    if (userRows !== null && userRows !== undefined && userRows > 0) {
+                        for (const user of users) {
+                            searchResults.push({ value: user._id, label: user.displayName, type: SEARCH_TYPE.USER });
+                        }
                     }
                 }
-            }
 
-            if (hashTagLimit !== null && hashTagLimit !== undefined && hashTagLimit > 0) {
-                // const hashTagQuery = { $and: [{ _id: { $not: { $in: hashTagResultStmt } } }, { $or: [{ name: exp }] }] };
-                const hashTagQuery = [
-                    { $match: { $and: [{ _id: { $not: { $in: hashTagResultStmt } } }, { $or: [{ name: exp }] }] } },
-                    { $limit: hashTagLimit }
-                ];
-                const hashTags = await this.hashTagService.aggregate(hashTagQuery);
+                if (filter.typeHashTag !== null && filter.typeHashTag !== undefined && filter.typeHashTag.length > 0) {
+                    // const hashTagQuery = { $and: [{ _id: { $not: { $in: hashTagResultStmt } } }, { $or: [{ name: exp }] }] };
+                    const hashTagQuery = [
+                        { $match: { $and: [{ _id: { $not: { $in: hashTagResultStmt } } }, { $or: [{ name: exp }] }] } },
+                        { $limit: 10 }
+                    ];
+                    const hashTags = await this.hashTagService.aggregate(hashTagQuery);
 
-                hashTagRows = hashTags.length;
-                if (hashTagRows !== null && hashTagRows !== undefined && hashTagRows > 0) {
-                    let tagName;
-                    let fullTagName;
+                    hashTagRows = hashTags.length;
+                    if (hashTagRows !== null && hashTagRows !== undefined && hashTagRows > 0) {
+                        let tagName;
+                        let fullTagName;
 
-                    for (const tag of hashTags) {
-                        tagName = tag.name;
-                        fullTagName = '#' + tagName;
-                        searchResults.push({ value: tagName, label: fullTagName, type: SEARCH_TYPE.HASHTAG });
+                        for (const tag of hashTags) {
+                            tagName = tag.name;
+                            fullTagName = '#' + tagName;
+                            searchResults.push({ value: tagName, label: fullTagName, type: SEARCH_TYPE.HASHTAG });
+                        }
+                    }
+                }
+            }else{
+                if (historyRows !== null && historyRows !== undefined && historyRows > 0) {
+                    for (const history of histories) {
+                        searchResults.push({ historyId: history._id, value: history.resultId, label: history.keyword, type: history.resultType });
+                        if (history.resultType === SEARCH_TYPE.PAGE) {
+                            pageResultStmt.push(new ObjectID(history.resultId));
+                        } else if (history.resultType === SEARCH_TYPE.USER) {
+                            userResultStmt.push(new ObjectID(history.resultId));
+                        } else if (history.resultType === SEARCH_TYPE.HASHTAG) {
+                            hashTagResultStmt.push(new ObjectID(history.resultId));
+                        }
+                    }
+                }
+                if (pageLimit !== null && pageLimit !== undefined && pageLimit > 0) {
+                    // const pageQuery = { $and: [{ _id: { $not: { $in: pageResultStmt } } }, { $or: [{ name: exp }, { pageUsername: exp }] }] };
+                    const pageQuery = [
+                        { $match: { $and: [{ _id: { $not: { $in: pageResultStmt } }, banned: false }, { $or: [{ name: exp }, { pageUsername: exp }] }] } },
+                        { $limit: pageLimit }
+                    ];
+                    const pages: any[] = await this.pageService.aggregate(pageQuery);
+
+                    pageRows = pages.length;
+                    userLimit = pageLimit - pageRows;
+                    if (pageRows !== null && pageRows !== undefined && pageRows > 0) {
+                        let pageId;
+                        let pageName;
+
+                        for (const page of pages) {
+                            pageId = page._id;
+                            pageName = page.name;
+                            searchResults.push({ value: pageId, label: pageName, type: SEARCH_TYPE.PAGE });
+                        }
+                    }
+                }
+
+                if (userLimit !== null && userLimit !== undefined && userLimit > 0) {
+                    // const userQuery = { $and: [{ _id: { $not: { $in: userResultStmt } } }, { $or: [{ displayName: exp }, { firstName: exp }, { lastName: exp }] }] };
+                    const userQuery = [
+                        { $match: { $and: [{ _id: { $not: { $in: userResultStmt } } }, { isAdmin: false, isSubAdmin: false, banned: false }, { $or: [{ displayName: exp }, { firstName: exp }, { lastName: exp }] }] } },
+                        { $limit: userLimit }
+                    ];
+                    const users = await this.userService.aggregate(userQuery);
+
+                    userRows = users.length;
+                    hashTagLimit = userLimit - userRows;
+                    if (userRows !== null && userRows !== undefined && userRows > 0) {
+                        for (const user of users) {
+                            searchResults.push({ value: user._id, label: user.displayName, type: SEARCH_TYPE.USER });
+                        }
+                    }
+                }
+
+                if (hashTagLimit !== null && hashTagLimit !== undefined && hashTagLimit > 0) {
+                    // const hashTagQuery = { $and: [{ _id: { $not: { $in: hashTagResultStmt } } }, { $or: [{ name: exp }] }] };
+                    const hashTagQuery = [
+                        { $match: { $and: [{ _id: { $not: { $in: hashTagResultStmt } } }, { $or: [{ name: exp }] }] } },
+                        { $limit: hashTagLimit }
+                    ];
+                    const hashTags = await this.hashTagService.aggregate(hashTagQuery);
+
+                    hashTagRows = hashTags.length;
+                    if (hashTagRows !== null && hashTagRows !== undefined && hashTagRows > 0) {
+                        let tagName;
+                        let fullTagName;
+
+                        for (const tag of hashTags) {
+                            tagName = tag.name;
+                            fullTagName = '#' + tagName;
+                            searchResults.push({ value: tagName, label: fullTagName, type: SEARCH_TYPE.HASHTAG });
+                        }
                     }
                 }
             }
