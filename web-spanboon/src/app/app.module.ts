@@ -81,7 +81,6 @@ import {
 
   // page
   HomePage,
-  HomePageV2,
   LoginPage,
   ProfilePage,
   NotificationAllPage,
@@ -206,6 +205,7 @@ import {
   SnackBarFulfill,
   TagEvent,
   CardFulfillItem,
+  HomePageV3,
 } from './components/components';
 
 // remove when finished test
@@ -296,7 +296,7 @@ const COMPONENTS: any[] = [
   FooterMobile,
   // Pages
   HomePage,
-  HomePageV2,
+  HomePageV3,
   NotificationAllPage,
   LoginPage,
   RegisterPage,

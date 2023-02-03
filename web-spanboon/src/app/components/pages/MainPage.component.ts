@@ -340,7 +340,7 @@ export class MainPage extends AbstractPage implements OnInit {
 
 
 export * from './main.internal/HomePage.component';
-export * from './main.internal/HomePageV2.component';
+export * from './main.internal/HomePageV3.component';
 export * from './main.internal/Redirect.component';
 export * from './main.internal/LoginPage.component';
 export * from './main.internal/ForgotPasswordPage.component';

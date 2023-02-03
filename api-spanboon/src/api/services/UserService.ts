@@ -80,7 +80,7 @@ export class UserService {
         if (count) {
             return this.userLoginRepository.count();
         } else {
-            return this.userLoginRepository.find(condition);
+            return this.find(condition);
         }
     }
 
@@ -159,7 +159,9 @@ export class UserService {
                 coverSignURL,
                 banned: user.banned,
                 isAdmin: user.isAdmin,
-                isSubAdmin: user.isSubAdmin
+                isSubAdmin: user.isSubAdmin,
+                createdDate: user.createdDate,
+                updateDate: user.updateDate
             };
             user = clearItem;
         }
@@ -173,9 +175,6 @@ export class UserService {
 
             const signURL = await ImageUtil.generateAssetSignURL(this.assetService, imageURL, { prefix: '/file/' });
             const coverSignURL = await ImageUtil.generateAssetSignURL(this.assetService, coverURL, { prefix: '/file/' });
-
-            console.log('signURL >>>> ', signURL);
-            console.log('coverSignURL >>>> ', coverSignURL);
 
             const clearItem = {
                 id: user._id,
@@ -195,7 +194,9 @@ export class UserService {
                 coverPosition: user.coverPosition,
                 banned: user.banned,
                 isAdmin: user.isAdmin,
-                isSubAdmin: user.isSubAdmin
+                isSubAdmin: user.isSubAdmin,
+                createdDate: user.createdDate,
+                updateDate: user.updateDate
             };
             user = clearItem;
         }
@@ -235,7 +236,9 @@ export class UserService {
                         coverPosition: user.coverPosition,
                         banned: user.banned,
                         isAdmin: user.isAdmin,
-                        isSubAdmin: user.isSubAdmin
+                        isSubAdmin: user.isSubAdmin,
+                        createdDate: user.createdDate,
+                        updateDate: user.updateDate
                     };
                     user = clearItem;
                 }
