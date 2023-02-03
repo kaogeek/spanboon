@@ -19,7 +19,7 @@
     </div>
 </div>
 
-<div class="home_page_v2" >
+<div class="home_page_v2">
     <div class="hoem_page_body">
 
         <!-- ///////////////////////// -->
@@ -62,7 +62,8 @@
                     </card-contant-home>
                 </div> -->
                 <div *ngIf="postSectionModel" class="tagCard">
-                    <card-contant-home [tagCard]='true' (clickEvent)="testCrad($event)" [tagData]='doingEventsNo1'></card-contant-home>
+                    <card-contant-home [tagCard]='true' (clickEvent)="testCrad($event)"
+                        [tagData]='doingEventsNo1'></card-contant-home>
                     <div class="post-tag-title" [class.dis]="!isDoing">
                         <span class="title">โพสต์ใหม่ล่าสุด</span>
                     </div>

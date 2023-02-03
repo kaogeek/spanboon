@@ -10,7 +10,7 @@ import { Routes, RouterModule } from '@angular/router';
 
 import {
   // Pages
-  LoginPage, MainPage, HomePage, HomePageV2, ProfilePage,
+  LoginPage, MainPage, HomePage, ProfilePage,
   FanPage,
   StoryPage,
   PostPage,
@@ -19,7 +19,7 @@ import {
   PageHashTag,
   PageRecommended,
   SettingsFanPage, forgotPasswordPage, ObjectiveTimeline,
-  EmergencyEventTimeline, Redirect, SettingAccount, AboutPage, SettingsAdminRoles, SecurityInfo, Policy, TOS,
+  EmergencyEventTimeline, Redirect, SettingAccount, AboutPage, SettingsAdminRoles, SecurityInfo, Policy, TOS, HomePageV3,
 } from './components/components';
 
 import { TestComponent } from './components/TestComponent.component';
@@ -43,6 +43,10 @@ export const APP_ROUTES: Routes = [
       {
         path: HomePage.PAGE_NAME,
         component: HomePage,
+      },
+      {
+        path: HomePageV3.PAGE_NAME,
+        component: HomePageV3,
       },
       {
         path: ProfilePage.PAGE_NAME + "/:id",

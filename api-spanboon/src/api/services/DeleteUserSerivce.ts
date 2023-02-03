@@ -24,7 +24,6 @@ import { SocialPostLogsService } from './SocialPostLogsService';
 import { SocialPostService } from './SocialPostService';
 import { SearchHistoryService } from './SearchHistoryService';
 import { PostsService } from './PostsService';
-import { PostsGalleryService } from './PostsGalleryService';
 import { PostsCommentService } from './PostsCommentService';
 import { PageUsageHistoryService } from './PageUsageHistoryService';
 import { PageSocialAccountService } from './PageSocialAccountService';
@@ -60,7 +59,6 @@ export class DeleteUserService {
         private fulfillmentCaseService: FulfillmentCaseService,
         private pageObjectiveService: PageObjectiveService,
         private pageConfigService: PageConfigService,
-        private postsGalleryService: PostsGalleryService,
         private pageAccessLevelService: PageAccessLevelService
 
     ) {
@@ -176,7 +174,8 @@ export class DeleteUserService {
                 }
             } else if (findAccessLevel1St !== undefined && findAccessLevel1St.level !== 'OWNER') {
                 const ownerPage = await this.pageService.findOne({_id:findOwnerLevel1St.page});
-                const query = {pageId:ObjectID(findAccessLevel1St.page)};
+                const ownerPost = await this.postsService.findOne({ownerUser:userObjId});
+                const query = {ownerUser:ObjectID(ownerPost.ownerUser),pageId:ObjectID(ownerPage.id)};
                 const newValues = {$set:{ownerUser:ObjectID(ownerPage.ownerUser)}};
                 const updatePermission = await this.postsService.updateMany(query,newValues);
                 if(updatePermission){

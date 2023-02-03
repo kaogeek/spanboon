@@ -249,7 +249,9 @@ export class RegisterPage extends AbstractPage implements OnInit {
             });
           }
         }).catch((err: any) => {
-          console.log(err)
+          if (err) {
+            console.log(err)
+          }
         });
       } else {
         register.uniqueId = formData.username;

@@ -23,4 +23,10 @@ export class SearchFilter {
     
     public count: boolean;
 
+    public typePage:string;
+
+    public typeUser:string;
+
+    public typeHashTag:string;
+
 }
