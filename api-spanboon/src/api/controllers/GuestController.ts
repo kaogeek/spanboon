@@ -210,32 +210,7 @@ export class GuestController {
                 }
             }
         } else if (mode === PROVIDER.FACEBOOK) {
-            let authenFB = undefined;
-            const stackAuth = [];
-            const pic = [];
             const resultUser: User = await this.userService.findOne({ where: { email: users.email } });
-            if(resultUser !== undefined){
-                const authenAll = await this.authenticationIdService.find({ where: { user: resultUser.id } });
-                for (authenFB of authenAll) {
-                    stackAuth.push(authenFB.providerName);
-                }
-                const user: User = new User();
-                user.username = resultUser.username;
-                user.email = resultUser.email;
-                user.uniqueId = resultUser.uniqueId;
-                user.firstName = resultUser.firstName;
-                user.lastName = resultUser.lastName;
-                user.imageURL = resultUser.imageURL;
-                user.coverURL = resultUser.coverURL;
-                user.coverPosition = 0;
-                user.displayName = resultUser.displayName;
-                user.birthdate = new Date(resultUser.birthdate);
-                user.isAdmin = resultUser.isAdmin;
-                user.isSubAdmin = resultUser.isSubAdmin;
-                user.banned = resultUser.banned;
-                const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', user, stackAuth, pic);
-                return res.status(200).send(successResponse);
-            }
             const fbUserId = users.fbUserId;
             const fbToken = users.fbToken;
             const fbAccessExpirationTime = users.fbAccessExpirationTime;
@@ -400,32 +375,7 @@ export class GuestController {
             }
         } else if (mode === PROVIDER.APPLE) {
             // register apple
-            let authenAP = undefined;
-            const stackAuth = [];
-            const pic = [];
-            const resultUser: User = await this.userService.findOne({ where: { email: users.email } });
-            if(resultUser !== undefined){
-                const authenAll = await this.authenticationIdService.find({ where: { user: resultUser.id } });
-                for (authenAP of authenAll) {
-                    stackAuth.push(authenAP.providerName);
-                }
-                const user: User = new User();
-                user.username = resultUser.username;
-                user.email = resultUser.email;
-                user.uniqueId = resultUser.uniqueId;
-                user.firstName = resultUser.firstName;
-                user.lastName = resultUser.lastName;
-                user.imageURL = resultUser.imageURL;
-                user.coverURL = resultUser.coverURL;
-                user.coverPosition = 0;
-                user.displayName = resultUser.displayName;
-                user.birthdate = new Date(resultUser.birthdate);
-                user.isAdmin = resultUser.isAdmin;
-                user.isSubAdmin = resultUser.isSubAdmin;
-                user.banned = resultUser.banned;
-                const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', user, stackAuth, pic);
-                return res.status(200).send(successResponse);
-            }               
+            const resultUser: User = await this.userService.findOne({ where: { email: users.email.toString() } });
             const appleUserId = users;
             if (appleUserId.userId === null || appleUserId.userId === undefined) {
                 const errorResponse = ResponseUtil.getErrorResponse('Apple UserId is required', undefined);
@@ -726,32 +676,7 @@ export class GuestController {
                 }
             }
         } else if (mode === PROVIDER.TWITTER) {
-            let authenTW = undefined;
-            const stackAuth = [];
-            const pic = [];
             const resultUser: User = await this.userService.findOne({ where: { email: users.email } });
-            if(resultUser !== undefined){
-                const authenAll = await this.authenticationIdService.find({ where: { user: resultUser.id } });
-                for (authenTW of authenAll) {
-                    stackAuth.push(authenTW.providerName);
-                }
-                const user: User = new User();
-                user.username = resultUser.username;
-                user.email = resultUser.email;
-                user.uniqueId = resultUser.uniqueId;
-                user.firstName = resultUser.firstName;
-                user.lastName = resultUser.lastName;
-                user.imageURL = resultUser.imageURL;
-                user.coverURL = resultUser.coverURL;
-                user.coverPosition = 0;
-                user.displayName = resultUser.displayName;
-                user.birthdate = new Date(resultUser.birthdate);
-                user.isAdmin = resultUser.isAdmin;
-                user.isSubAdmin = resultUser.isSubAdmin;
-                user.banned = resultUser.banned;
-                const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', user, stackAuth, pic);
-                return res.status(200).send(successResponse);
-            }            
             const twitterUserId = users.twitterUserId;
             const twitterOauthToken = users.twitterOauthToken;
             const twitterTokenSecret = users.twitterTokenSecret;
@@ -1299,6 +1224,7 @@ export class GuestController {
                 return res.status(400).send(errorResponse);
             }
         } else if (mode === PROVIDER.FACEBOOK) {
+            const userEmail: string = users.email ? users.email.toLowerCase() : '';
             let authenFB = undefined;
             const stackAuth = [];
             const pic = [];
@@ -1382,7 +1308,7 @@ export class GuestController {
                 }
                 const findAuthenFb = await this.authenticationIdService.findOne({providerUserId:fbUser.id,providerName:PROVIDER.FACEBOOK});
                 if(findAuthenFb !== undefined){
-                    findUserFb = await this.userService.findOne({_id:findAuthenFb.user});
+                    findUserFb = await this.userService.findOne({email:userEmail});
                 }
                 if (findUserFb !== undefined && findAuthenFb === undefined) {
                     const authenAll = await this.authenticationIdService.find({ where: { user: findUserFb.id } });
