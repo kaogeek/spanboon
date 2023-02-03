@@ -110,6 +110,7 @@ import {
   // shares
   DialogImage,
   DialogAlert,
+  DialogConfirmInput,
   DialogShare,
   DialogPassword,
   DialogManageImage,
@@ -327,6 +328,7 @@ const COMPONENTS: any[] = [
   DialogImage,
   AlertComponent,
   DialogAlert,
+  DialogConfirmInput,
   DialogShare,
   DialogPassword,
   DialogManageImage,

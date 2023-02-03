@@ -18,6 +18,7 @@ export class DialogData extends BaseModel {
   textColor: string;
   item: string;
   allo: boolean;
+  placeholder: string;
 
   //bottom
   bottomText1: string;

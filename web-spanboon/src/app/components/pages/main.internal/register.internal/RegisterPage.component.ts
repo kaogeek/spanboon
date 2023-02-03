@@ -8,7 +8,7 @@
 import { Component, ElementRef, EventEmitter, NgZone, OnInit, Output, ViewChild } from '@angular/core';
 import { MatDatepicker, MatDatepickerInputEvent } from '@angular/material';
 import { Router, ActivatedRoute } from '@angular/router';
-import { AuthenManager, ObservableManager, TwitterService, UserFacade } from '../../../../services/services';
+import { AuthenManager, NotificationManager, ObservableManager, TwitterService, UserFacade } from '../../../../services/services';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogImage } from '../../../shares/dialog/DialogImage.component';
 import { DateAdapter } from '@angular/material';
@@ -98,6 +98,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
     dialog: MatDialog,
     observManager: ObservableManager,
     userFacade: UserFacade,
+    private notificationManager: NotificationManager,
     dateAdapter: DateAdapter<Date>, twitterService: TwitterService) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.authenManager = authenManager;
@@ -237,6 +238,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
         this.generatorUnqueId(formData.displayName).then((isVaild: any) => {
           if (isVaild) {
             register.uniqueId = formData.displayName;
+            this.isRegister = false;
           } else {
             let emailSubstring = !!formData!.email ? formData.email.substring(1, 0) : this.inputEmail.nativeElement.value.substring(1, 0);
             let newUnique = formData.displayName + '.' + emailSubstring;
@@ -246,6 +248,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
               }
             }).catch((err: any) => {
               console.log(err)
+              this.isRegister = false;
             });
           }
         }).catch((err: any) => {
@@ -266,6 +269,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
       if (formData.displayName === '' || formData.displayName === undefined) {
         this.active = true;
         document.getElementById('displayName').style.border = "1px solid red";
+        this.isRegister = false;
         return document.getElementById("displayName").focus();
       } else {
         document.getElementById('displayName').style.border = "unset";
@@ -274,6 +278,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
       if (!this.inputEmail!.nativeElement!.value) {
         this.activeEmail = true;
         document.getElementById('email').style.border = "1px solid red";
+        this.isRegister = false;
         return document.getElementById("email").focus();
       } else {
         document.getElementById('email').style.border = "unset";
@@ -284,6 +289,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
       if (!this.inputEmail!.nativeElement!.value.match(emailPattern)) {
         this.activeEmail = true;
         document.getElementById('email').style.border = "1px solid red";
+        this.isRegister = false;
         return document.getElementById("email").focus();
       } else {
         document.getElementById('email').style.border = "unset";
@@ -291,6 +297,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
       }
 
       if (!this.uuid) {
+        this.isRegister = false;
         return;
       }
 
@@ -298,6 +305,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
         if (formData.password === "" && formData.repassword === "") {
           this.activePass = true;
           document.getElementById('password').style.border = "1px solid red";
+          this.isRegister = false;
           return document.getElementById("password").focus();
         } else {
           document.getElementById('password').style.border = "unset";
@@ -308,6 +316,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
           if (formData.password.length < 6 || formData.repassword.length < 6) {
             this.activePass = true;
             document.getElementById('password').style.border = "1px solid red";
+            this.isRegister = false;
             return document.getElementById("password").focus();
           } else {
             document.getElementById('password').style.border = "unset";
@@ -317,6 +326,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
         if (formData.password !== formData.repassword) {
           this.activeRePass = true;
           document.getElementById('repassword').style.border = "1px solid red";
+          this.isRegister = false;
           return document.getElementById("repassword").focus();
         } else {
           document.getElementById('repassword').style.border = "unset";
@@ -325,6 +335,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
       }
       if (formData.gender === -1 && formData.genderTxt === undefined) {
         document.getElementById('genderTxt').style.border = "1px solid red";
+        this.isRegister = false;
         return document.getElementById("genderTxt").focus();
       }
 
@@ -348,6 +359,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
         let modeType = "EMAIL";
         this.authenManager.register(body, modeType).then((res) => {
           if (res.status === 1) {
+            this.isRegister = false;
             let alertMessage: string = 'ลงทะเบียนสำเร็จ ' + MESSAGE.TEXT_TITLE_LOGIN;
             let isValid = false;
             this.isRegister = false;
@@ -358,18 +370,22 @@ export class RegisterPage extends AbstractPage implements OnInit {
             dialog.afterClosed().subscribe((res) => {
               if (isValid) {
                 this.observManager.publish('authen.check', null);
+                this.notificationManager.checkLoginSuccess();
                 if (this.redirection) {
                   this.router.navigateByUrl(this.redirection);
                 } else {
+                  this.isRegister = false;
                   this.router.navigate(['/login']);
                 }
               } else {
+                this.isRegister = false;
                 this.router.navigate(['/login']);
               }
             });
           }
         }).catch((err) => {
           if (err.error.status === 0) {
+            this.isRegister = false;
             let alertMessages: string;
             if (err.error.message === 'This Email already exists') {
               alertMessages = 'อีเมลนี้ถูกสมัครสมาชิกแล้ว กรุณาเข้าสู่ระบบ';
@@ -382,14 +398,17 @@ export class RegisterPage extends AbstractPage implements OnInit {
             dialog.afterClosed().subscribe((res) => {
               if (res) {
                 this.observManager.publish('authen.check', null);
+                this.notificationManager.checkLoginSuccess();
                 if (this.redirection) {
                   this.router.navigateByUrl(this.redirection);
                 } else {
+                  this.isRegister = false;
                   this.router.navigate(['/login']);
                 }
               }
             });
           } else {
+            this.isRegister = false;
             this.router.navigate(['/login']);
           }
           this.isRegister = false;
@@ -417,7 +436,9 @@ export class RegisterPage extends AbstractPage implements OnInit {
           register.twitterTokenSecret = this.accessToken.twitterOauthTokenSecret;
         }
         this.authenManager.registerSocial(register, this.mode).then((value: any) => {
+          console.log("value", value)
           if (value.status === 1) {
+            this.isRegister = false;
             let alertMessage: string = 'ลงทะเบียนสำเร็จ';
             let isValid = false;
             this.isRegister = false;
@@ -428,17 +449,21 @@ export class RegisterPage extends AbstractPage implements OnInit {
             dialog.afterClosed().subscribe((res) => {
               if (isValid) {
                 this.observManager.publish('authen.check', null);
+                this.notificationManager.checkLoginSuccess();
                 if (this.redirection) {
                   this.router.navigateByUrl(this.redirection);
                 } else {
+                  this.isRegister = false;
                   this.router.navigate(['/login']);
                 }
               } else {
+                this.isRegister = false;
                 this.router.navigate(['/login']);
               }
             });
           }
           else if (value.status === 2) {
+            this.isRegister = false;
             this.fbLibrary();
             window['FB'].login((response) => {
               if (response.authResponse) {
@@ -454,7 +479,9 @@ export class RegisterPage extends AbstractPage implements OnInit {
             }, { scope: 'public_profile, email, pages_manage_posts, pages_show_list, pages_read_engagement, pages_manage_metadata' });
           }
         }).catch((err: any) => {
+          console.log("err", err)
           if (err.error.status === 0) {
+            this.isRegister = false;
             let alertMessages: string;
             if (err.error.message === 'This Email already exists') {
               alertMessages = 'อีเมลนี้ถูกสมัครสมาชิกแล้ว กรุณาเข้าสู่ระบบ';
@@ -462,11 +489,14 @@ export class RegisterPage extends AbstractPage implements OnInit {
               alertMessages = 'คุณไม่สามารถสมัครสมาชิกได้ กรุณาติดต่อผู้ดูแลระบบ';
             } else if (err.error.message === 'Twitter TokenSecret is required') {
               alertMessages = 'โทเค็นของคุณหมดอายุ';
+            } else if (err.error.message === 'This Email not exists') {
+              alertMessages = 'ไม่พบอีเมลของคุณในระบบ';
             }
             let dialog = this.showAlertDialogWarming(alertMessages, "none");
             dialog.afterClosed().subscribe((res) => {
               if (res) {
                 this.observManager.publish('authen.check', null);
+                this.notificationManager.checkLoginSuccess();
                 if (this.redirection) {
                   this.router.navigateByUrl(this.redirection);
                 } else {
@@ -475,6 +505,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
               }
             });
           } else {
+            this.isRegister = false;
             this.router.navigate(['/login']);
           }
           this.isRegister = false;

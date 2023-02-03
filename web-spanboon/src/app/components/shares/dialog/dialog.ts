@@ -32,3 +32,4 @@ export * from './DialogListFacebook.component';
 export * from './DialogPostCrad.component';
 export * from './DialogIsSyncPage.component';
 export * from './DialogShare.component';
+export * from './DialogConfirmInput.component';
