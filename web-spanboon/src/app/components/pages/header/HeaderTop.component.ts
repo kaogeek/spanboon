@@ -145,6 +145,12 @@ export class HeaderTop extends AbstractPage implements OnInit {
   }
 
   ngOnInit() {
+    this.observManager.subscribe(this.loginText, (res) => {
+      if (res) {
+        this._getNotification(this.limitNotification, res.data.offset, '', '', {}, { 'createdDate': -1 }, false, 'push');
+        this._getNotification(this.limitNotification, res.data.offset, '', '', { isRead: false }, { 'createdDate': -1 }, false, 'push');
+      }
+    });
     this.checkLoginAndRedirection();
     this.reloadUserImage();
     let doRunAccessToken = false;
@@ -167,14 +173,6 @@ export class HeaderTop extends AbstractPage implements OnInit {
           } else {
             this._getNotification(this.limitNotification, res.data.offset, '', '', { isRead: false }, { 'createdDate': -1 }, false, 'push');
           }
-        }
-      });
-
-      this.observManager.subscribe(this.loginText, (res) => {
-        if (res) {
-          console.log(res);
-          // this._getNotification(this.limitNotification, res.data.offset, '', '', {}, { 'createdDate': -1 }, false, 'push');
-          // this._getNotification(this.limitNotification, res.data.offset, '', '', { isRead: false }, { 'createdDate': -1 }, false, 'push');
         }
       });
     }

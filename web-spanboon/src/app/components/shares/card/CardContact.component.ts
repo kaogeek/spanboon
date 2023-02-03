@@ -34,7 +34,7 @@ export class CardContact {
     @Input()
     public statusRead: string = '#FD545A';
     @Input()
-    public emergencyEvent: string = 'เหตุการณ์ด่วน';
+    public emergencyEvent: string = 'เกาะทุกก้าว';
     @Input()
     public objective: string = 'สิ่งที่กำลังทำ';
     @Input()

@@ -219,7 +219,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <card-checkbox *ngIf="resEmergency.length > 0 " [title]="'เหตุการณ์ด่วน'" [isDetail]="true"
+                            <card-checkbox *ngIf="resEmergency.length > 0 " [title]="'เกาะทุกก้าว'" [isDetail]="true"
                                 [data]="resEmergency" [dataParam]="emergency" (click)="getEmergency($event)"
                                 (loadMore)="loadMore($event)"></card-checkbox>
                             <card-checkbox [title]="'สิ่งที่กำลังทำ'" [data]="resObjective" [isObjective]="true"
@@ -556,7 +556,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <card-checkbox *ngIf="resEmergency.length > 0 " [title]="'เหตุการณ์ด่วน'" [isDetail]="true"
+                            <card-checkbox *ngIf="resEmergency.length > 0 " [title]="'เกาะทุกก้าว'" [isDetail]="true"
                                 [data]="resEmergency" [dataParam]="emergency" (click)="getEmergency($event)"
                                 (loadMore)="loadMore($event)" [isLoadMorePageEmergency]="isLoadMorePageEmergency">
                             </card-checkbox>

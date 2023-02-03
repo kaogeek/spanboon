@@ -182,6 +182,10 @@
                             <div class="fan-page-tag" [phxPreload]="resDataPage" [preloadClass]="'fan-page-tag'">
                                 {{resDataPage && resDataPage.pageUsername ? '@'+resDataPage.pageUsername : ''}}
                             </div>
+                            <div class="btn-link" *ngIf="!!resDataPage!.websiteURL">
+                                <a href="{{resDataPage && resDataPage.websiteURL}}" target="_blank"
+                                    class="btn-web">ไปหน้าเว็บไซต์</a>
+                            </div>
                         </div>
                         <div class="wrapper-btn-action" [phxPreload]="resDataPage"
                             [preloadClass]="'wrapper-btn-action'">
@@ -521,10 +525,8 @@
                                         </svg>
                                     </a>
                                 </ng-template>
-
-                                <ng-container
-                                    *ngIf="resDataPage && resDataPage.websiteURL  && resDataPage.websiteURL !== undefined  && resDataPage.websiteURL !== null  && resDataPage.websiteURL !== ''; else elseTemplateWeb">
-                                    <a href="//{{resDataPage && resDataPage.websiteURL}}" target="_blank"
+                                <ng-container *ngIf="!!resDataPage!.websiteURL; else elseTemplateWeb">
+                                    <a href="{{resDataPage && resDataPage.websiteURL}}" target="_blank"
                                         class="contact-social"
                                         [class.active]="resDataPage && resDataPage.websiteURL  && resDataPage.websiteURL !== undefined  && resDataPage.websiteURL !== null  && resDataPage.websiteURL !== '' ? true : false">
                                         <svg class="web" xmlns="http://www.w3.org/2000/svg" width="13.747"
