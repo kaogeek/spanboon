@@ -196,6 +196,16 @@ export class DialogPost extends AbstractPage {
   }
 
   public createPost(data) {
+    if (this.data.emergencyEvent) {
+      data.emergencyEvent = this.data.emergencyEvent ? this.data.emergencyEvent : this.data.emergencyEvent._id ? this.data.emergencyEvent._id : null;
+    } else {
+      data.emergencyEvent = '';
+    }
+    if (this.data.objective) {
+      data.objective = this.data.objective ? this.data.objective : this.data.objective._id ? this.data.objective._id : null;
+    } else {
+      data.objective = '';
+    }
     if (this.isEdit) {
       if (data.title) {
         let pageId = this.data.pageId ? this.data.pageId : '';
@@ -216,6 +226,7 @@ export class DialogPost extends AbstractPage {
           }
         }).catch((err: any) => {
           console.log(err);
+          this.isPostLoading = false;
           let alertMessages: string;
           if (err && err.error && err.error.message === 'Objective was not found.') {
             alertMessages = 'เกิดข้อผิดพลาด กรุณาทำใหม่อีกครั้ง'
