@@ -24,6 +24,7 @@ import { LOG_TYPE, EMERGENCY_LOG_ACTION } from '../../../constants/LogsAction';
 import { HashTagService } from '../../services/HashTagService';
 import { HashTag } from '../../models/HashTag';
 import moment from 'moment';
+import { PostsService } from '../../services/PostsService';
 
 @JsonController('/admin/emergency')
 export class EmergencyEventController {
@@ -31,7 +32,8 @@ export class EmergencyEventController {
         private emergencyEventService: EmergencyEventService,
         private hashTagService: HashTagService,
         private assetService: AssetService,
-        private actionLogService: AdminUserActionLogsService
+        private actionLogService: AdminUserActionLogsService,
+        private postsService:PostsService
     ) { }
 
     // Find EmergencyEvent API
@@ -282,9 +284,7 @@ export class EmergencyEventController {
         const isClose = emergencyEvents.isClose;
         const isPin = emergencyEvents.isPin;
         const assetData = emergencyEvents.asset;
-
-        const emergencyUpdate: EmergencyEvent = await this.emergencyEventService.findOne({ where: { _id: objId } });
-
+        const emergencyUpdate: EmergencyEvent = await this.emergencyEventService.findOne({ where: { _id: objId } });        
         if (!emergencyUpdate) {
             return res.status(400).send(ResponseUtil.getSuccessResponse('Invalid EmergencyEvent Id', undefined));
         }
@@ -355,9 +355,17 @@ export class EmergencyEventController {
                 const createHashTag = await this.hashTagService.create(newHashTag);
                 hashTag = createHashTag ? new ObjectID(createHashTag.id) : null;
             }
-
             const updateQuery = { _id: objId };
             const newValue = { $set: { title: emergencyTitle, detail: emergencyDetail, coverPageURL, hashTag, isClose, isPin, s3CoverPageURL } };
+            const queryHash = {_id:emergencyUpdate.hashTag};
+            const newValuesHashTag = {$set:{name:emergencyHashTag}};
+
+            const hashTagUpdate = await this.hashTagService.update(queryHash,newValuesHashTag);
+            if(hashTagUpdate){
+                const queryPost = {emergencyEvent:emergencyUpdate.id};
+                const newValuesPost = {$set:{emergencyEventTag:emergencyHashTag}};
+                await this.postsService.updateMany(queryPost,newValuesPost);
+            }
             const emergencySave = await this.emergencyEventService.update(updateQuery, newValue);
 
             if (emergencySave) {

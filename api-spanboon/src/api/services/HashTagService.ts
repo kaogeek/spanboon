@@ -32,6 +32,10 @@ export class HashTagService {
         return await this.hashTagRepository.updateOne(query, newValue);
     }
 
+    public async updateMany(query:any,newValue:any): Promise<any>{
+        return await this.hashTagRepository.updateMany(query,newValue);
+    }
+
     // delete hashTag
     public async delete(query: any, options?: any): Promise<any> {
         return this.hashTagRepository.deleteOne(query, options);
