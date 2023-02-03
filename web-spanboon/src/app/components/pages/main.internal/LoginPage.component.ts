@@ -24,13 +24,11 @@ import { NgOtpInputComponent } from "ng-otp-input/lib/components/ng-otp-input/ng
 
 const PAGE_NAME: string = 'login';
 
-
 @Component({
   selector: 'login-page',
   templateUrl: './LoginPage.component.html',
 })
 export class LoginPage extends AbstractPage implements OnInit {
-
   protected TWITTER_API_KEY = environment.consumerKeyTwitter
   protected TWITER_API_SECRET_KEY = environment.consumerSecretTwitter
   protected TWITTER_ACCESS_TOKEN = environment.accessTokenTwitter
@@ -87,6 +85,8 @@ export class LoginPage extends AbstractPage implements OnInit {
     social: undefined,
   };
 
+  private loginText: string = 'loginSuccess';
+
   public dataUser: any;
   public passwordOtp: string;
   public countOtp: number;
@@ -113,7 +113,6 @@ export class LoginPage extends AbstractPage implements OnInit {
     this.twitterService = twitterService;
     this.checkMergeUserFacade = checkMergeUserFacade;
 
-
     // this.cacheConfigInfo.getConfig(LOGIN_FACEBOOK_ENABLE).then((config: any) => {
     //   if (config.value !== undefined) {
     //     this.isShowFacebook = (config.value.toLowerCase() === 'true');
@@ -125,7 +124,6 @@ export class LoginPage extends AbstractPage implements OnInit {
     this.activatedRoute.params.subscribe((param) => {
       this.redirection = param['redirection'];
     });
-
   }
 
   public ngOnInit() {
@@ -173,6 +171,13 @@ export class LoginPage extends AbstractPage implements OnInit {
   onDirtyDialogCancelButtonClick(): EventEmitter<any> {
     // throw new Error('Method not implemented.');
     return;
+  }
+
+  private _checkLoginSuccess() {
+    this.observManager.createSubject(this.loginText);
+    this.observManager.publish(this.loginText, {
+      data: true
+    });
   }
 
   private checkLoginAndRedirection(): void {
@@ -254,10 +259,13 @@ export class LoginPage extends AbstractPage implements OnInit {
   public clickLoginTwitter() {
     let callback = environment.webBaseURL + "/login";
     this.twitterService.requestToken(callback).then((result: any) => {
-      this.authorizeLink += '?' + result;
-      this.router.navigate([]).then(() => {
-        window.open(this.authorizeLink, '_blank');
-      });
+      if (result) {
+        this.authorizeLink += '?' + result;
+        this.router.navigate([]).then(() => {
+          window.open(this.authorizeLink, '_blank');
+        });
+        this._checkLoginSuccess();
+      }
     }).catch((error: any) => {
       console.log(error);
       if (error && error.message) {
@@ -280,6 +288,7 @@ export class LoginPage extends AbstractPage implements OnInit {
         this.googleToken = googleToken;
 
         this._ngZone.run(() => this.loginGoogle());
+        this._checkLoginSuccess();
       }
     }).catch((error) => {
       console.log('error >>> ', error);
@@ -414,6 +423,7 @@ export class LoginPage extends AbstractPage implements OnInit {
         this.accessToken = accessToken;
 
         this._ngZone.run(() => this.loginFB());
+        this._checkLoginSuccess();
       }
     }, { scope: 'public_profile, email' });
   }
@@ -523,7 +533,7 @@ export class LoginPage extends AbstractPage implements OnInit {
       email: this.email.nativeElement.value.toLowerCase(),
       password: this.password.nativeElement.value
     }
-    let mode = "EMAIL"
+    let mode = "EMAIL";
     if (this.login) {
       this.login = false;
       if (body.email.trim() === "") {
@@ -575,6 +585,7 @@ export class LoginPage extends AbstractPage implements OnInit {
             .login(body.email, body.password, mode)
             .then((data) => {
               if (data) {
+                this._checkLoginSuccess();
                 let dialog = this.dialog.open(DialogAlert, {
                   disableClose: true,
                   data: {
