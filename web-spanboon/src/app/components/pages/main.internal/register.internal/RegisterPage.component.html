@@ -69,6 +69,7 @@
                         [shake]="activeEmail" [(ngModel)]="data.email" [email]="true" required>
                 </ng-template>
             </div>
+
             <ng-container *ngIf="mode === 'normal' ">
                 <div class="title-label" *ngIf="mode === 'normal' ">รหัสผ่านอย่างน้อย 6 ตัว</div>
                 <input type="password" id="password" name="password" minlength="6" placeholder="รหัสผ่าน"
@@ -78,6 +79,7 @@
                     placeholder="ใส่รหัสผ่าน อีกครั้ง" class="input-text" [(ngModel)]="repassword" required
                     [shake]="activeRePass">
             </ng-container>
+
             <div for="birthday" class="title-label">วันเกิด</div>
             <mat-form-field appearance="none">
                 <input #birthday matInput class="mat-birthday" [class.active]="!isCheckDate" [matDatepicker]="dp3"

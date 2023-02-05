@@ -378,7 +378,7 @@ export class MenuRegister extends AbstractPage implements OnInit {
             }
         }).catch((error) => {
             const statusMsg = error.error.message;
-            if (statusMsg === "User was not found.") {
+            if (statusMsg === "User was not found." && error.error.status === 0) {
                 let navigationExtras: NavigationExtras = {
                     state: {
                         accessToken: this.accessToken,
@@ -387,7 +387,7 @@ export class MenuRegister extends AbstractPage implements OnInit {
                     queryParams: { mode: 'facebook' }
                 }
                 this.router.navigate(['/register'], navigationExtras);
-            } else if (statusMsg === 'Baned PageUser.') {
+            } else if (statusMsg === 'Baned PageUser.' && error.error.status === 0) {
                 this.dialog.open(DialogAlert, {
                     disableClose: true,
                     data: {
@@ -397,6 +397,15 @@ export class MenuRegister extends AbstractPage implements OnInit {
                         btDisplay1: "none"
                     }
                 });
+            } else if (statusMsg === "This Email not exists" && error.error.status === 0) {
+                let navigationExtras: NavigationExtras = {
+                    state: {
+                        accessToken: this.accessToken,
+                        redirection: this.redirection
+                    },
+                    queryParams: { mode: 'facebook' }
+                }
+                this.router.navigate(['/register'], navigationExtras);
             }
         });
     }

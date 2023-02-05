@@ -754,7 +754,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       this.searchHashTag();
     } else if (event === 'ประเภทเพจ') {
       this.searchPageCategory(true);
-    } else if (event === 'เหตุการณ์ด่วน') {
+    } else if (event === 'เกาะทุกก้าว') {
       this.searchEmergency();
     } else if (event === 'สิ่งที่กำลังทำ') {
       this.searchObjective();

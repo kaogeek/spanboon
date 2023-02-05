@@ -25,7 +25,7 @@ export class ResponseUtil {
 
     }
 
-    public static getSuccessResponseEditPost(msg:string,value:any,Gallery?:any):any{
+    public static getSuccessResponseEditPost(msg: string, value: any, Gallery?: any): any {
         if (value !== null || value !== undefined || value !== '') {
             const sucessRes: any = {
                 status: 1,
@@ -43,12 +43,13 @@ export class ResponseUtil {
         }
     }
 
-    public static getErrorResponse(msg: string, err: any): any {
+    public static getErrorResponse(msg: string, err: any, twObj?: any): any {
         if (err !== null || err !== undefined || err !== '') {
             const errorResponse: any = {
                 status: 0,
                 message: msg,
                 error: err,
+                data: twObj
             };
             return errorResponse;
         } else {

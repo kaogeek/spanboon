@@ -18,19 +18,17 @@ import { DialogAlert } from '../../shares/dialog/DialogAlert.component';
 import { MESSAGE } from '../../../../custom/variable';
 import { GoogleLoginProvider, SocialAuthService } from 'angularx-social-login';
 import { TwitterService } from '../../../services/facade/TwitterService.service';
-import { CheckMergeUserFacade } from 'src/app/services/services';
+import { CheckMergeUserFacade, NotificationManager } from 'src/app/services/services';
 import { CountdownConfig, CountdownEvent } from "ngx-countdown";
 import { NgOtpInputComponent } from "ng-otp-input/lib/components/ng-otp-input/ng-otp-input.component";
 
 const PAGE_NAME: string = 'login';
-
 
 @Component({
   selector: 'login-page',
   templateUrl: './LoginPage.component.html',
 })
 export class LoginPage extends AbstractPage implements OnInit {
-
   protected TWITTER_API_KEY = environment.consumerKeyTwitter
   protected TWITER_API_SECRET_KEY = environment.consumerSecretTwitter
   protected TWITTER_ACCESS_TOKEN = environment.accessTokenTwitter
@@ -87,6 +85,8 @@ export class LoginPage extends AbstractPage implements OnInit {
     social: undefined,
   };
 
+  private loginText: string = 'loginSuccess';
+
   public dataUser: any;
   public passwordOtp: string;
   public countOtp: number;
@@ -99,7 +99,7 @@ export class LoginPage extends AbstractPage implements OnInit {
   public accountTwitter = 'https://api.twitter.com/1.1/account/verify_credentials.json';
   constructor(authenManager: AuthenManager, private socialAuthService: SocialAuthService, activatedRoute: ActivatedRoute, router: Router, _ngZone: NgZone,
     observManager: ObservableManager, cacheConfigInfo: CacheConfigInfo, dialog: MatDialog, twitterService: TwitterService,
-    checkMergeUserFacade: CheckMergeUserFacade,
+    checkMergeUserFacade: CheckMergeUserFacade, private notificationManager: NotificationManager,
   ) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.authenManager = authenManager;
@@ -113,7 +113,6 @@ export class LoginPage extends AbstractPage implements OnInit {
     this.twitterService = twitterService;
     this.checkMergeUserFacade = checkMergeUserFacade;
 
-
     // this.cacheConfigInfo.getConfig(LOGIN_FACEBOOK_ENABLE).then((config: any) => {
     //   if (config.value !== undefined) {
     //     this.isShowFacebook = (config.value.toLowerCase() === 'true');
@@ -125,7 +124,6 @@ export class LoginPage extends AbstractPage implements OnInit {
     this.activatedRoute.params.subscribe((param) => {
       this.redirection = param['redirection'];
     });
-
   }
 
   public ngOnInit() {
@@ -254,10 +252,13 @@ export class LoginPage extends AbstractPage implements OnInit {
   public clickLoginTwitter() {
     let callback = environment.webBaseURL + "/login";
     this.twitterService.requestToken(callback).then((result: any) => {
-      this.authorizeLink += '?' + result;
-      this.router.navigate([]).then(() => {
-        window.open(this.authorizeLink, '_blank');
-      });
+      if (result) {
+        this.authorizeLink += '?' + result;
+        this.router.navigate([]).then(() => {
+          window.open(this.authorizeLink, '_blank');
+          this.notificationManager.checkLoginSuccess();
+        });
+      }
     }).catch((error: any) => {
       console.log(error);
       if (error && error.message) {
@@ -328,6 +329,7 @@ export class LoginPage extends AbstractPage implements OnInit {
         this.authenManager.loginWithGoogle(this.googleToken.idToken, this.googleToken.authToken, mode).then((data: any) => {
           // login success redirect to main page
           this.observManager.publish('authen.check', null);
+          this.notificationManager.checkLoginSuccess();
           if (this.redirection) {
             this.router.navigateByUrl(this.redirection);
           } else {
@@ -464,6 +466,7 @@ export class LoginPage extends AbstractPage implements OnInit {
         this.authenManager.loginWithFacebook(this.accessToken.fbtoken, mode).then((data: any) => {
           // login success redirect to main page
           this.observManager.publish('authen.check', null);
+          this.notificationManager.checkLoginSuccess();
           if (this.redirection) {
             this.router.navigateByUrl(this.redirection);
           } else {
@@ -523,7 +526,7 @@ export class LoginPage extends AbstractPage implements OnInit {
       email: this.email.nativeElement.value.toLowerCase(),
       password: this.password.nativeElement.value
     }
-    let mode = "EMAIL"
+    let mode = "EMAIL";
     if (this.login) {
       this.login = false;
       if (body.email.trim() === "") {
@@ -589,6 +592,7 @@ export class LoginPage extends AbstractPage implements OnInit {
                   if (res) {
                     this.observManager.publish("authen.check", null);
                     this.observManager.publish("authen.profileUser", data.user);
+                    this.notificationManager.checkLoginSuccess();
                     if (this.redirection) {
                       this.router.navigateByUrl(this.redirection);
                     } else {

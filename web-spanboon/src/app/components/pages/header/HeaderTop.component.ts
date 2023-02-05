@@ -86,6 +86,8 @@ export class HeaderTop extends AbstractPage implements OnInit {
   //   this.resSize(); 
   // }  
 
+  private loginText: string = 'loginSuccess';
+
   constructor(router: Router, authenManager: AuthenManager, observManager: ObservableManager,
     editProfileFacade: EditProfileUserPageFacade, dialog: MatDialog, private renderer: Renderer2, _ngZone: NgZone,
     activatedRoute: ActivatedRoute,
@@ -143,6 +145,12 @@ export class HeaderTop extends AbstractPage implements OnInit {
   }
 
   ngOnInit() {
+    this.observManager.subscribe(this.loginText, (res) => {
+      if (res) {
+        this._getNotification(this.limitNotification, res.data.offset, '', '', {}, { 'createdDate': -1 }, false, 'push');
+        this._getNotification(this.limitNotification, res.data.offset, '', '', { isRead: false }, { 'createdDate': -1 }, false, 'push');
+      }
+    });
     this.checkLoginAndRedirection();
     this.reloadUserImage();
     let doRunAccessToken = false;
@@ -175,6 +183,12 @@ export class HeaderTop extends AbstractPage implements OnInit {
 
   public ngOnDestroy(): void {
     super.ngOnDestroy();
+    this.observManager.complete('authen.check');
+    this.observManager.complete('authen.logout');
+    this.observManager.complete('authen.registered');
+    this.observManager.complete('menu.click');
+    this.observManager.complete('scrollLoadNotification');
+    this.observManager.complete(this.loginText);
   }
 
   isPageDirty(): boolean {

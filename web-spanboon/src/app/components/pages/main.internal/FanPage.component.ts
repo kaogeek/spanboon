@@ -445,6 +445,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
       if (err.error.status === 0) {
         if (err.error.message === 'Unable got Page') {
           this.showAlertDialog('ไม่พบเพจ');
+          this.isLoading = false;
         }
       }
     });
@@ -552,6 +553,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
           if (this.resDataPost.length === 0) {
             this.msgPageNotFound = true;
             this.labelStatus = 'ไม่พบโพสต์';
+            this.isLoading = false;
           } else {
             this.showProfilePage(res[0].pageId);
             this.isMaxLoadingPost = true;
@@ -972,6 +974,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         if (err.error.message === 'Unable got Page') {
           this.msgPageNotFound = true;
           this.labelStatus = 'ไม่พบเพจ';
+          this.isLoading = false;
         }
         this.stopLoading();
       }

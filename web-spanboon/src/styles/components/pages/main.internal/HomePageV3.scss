@@ -1,9 +1,6 @@
 .home-page {
   section {
-    padding: 30px 15px;
-
-    &.section-1 {
-    }
+    padding: 15px;
   }
 
   .container {
@@ -18,32 +15,181 @@
       max-width: 768px;
     }
 
-    .grid {
-      display: grid;
-      align-items: flex-start;
-      grid-template-columns: repeat(4, 1fr);
-      grid-gap: 15px;
+    a:-webkit-any-link {
+      color: unset;
+    }
 
-      @media (max-width: $medium) {
-        grid-template-columns: auto;
+    .tag-link {
+      color: $black;
+      @include pointer();
+
+      &:hover {
+        color: $brandcolor2;
+      }
+    }
+
+    .amount-social {
+      @include font-size-11($font-head-400);
+      display: inline-flex;
+      gap: 8px;
+
+      > span {
+        flex: 0 0 auto;
+      }
+    }
+
+    .wrapper-banner-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 0 12px;
+      height: 50px;
+      border-bottom: solid 1px #d9d9d9;
+
+      > .banner-text-header {
+        @include font-size-8($font-head-400);
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        word-break: break-word;
       }
 
-      > .grid-item {
-        height: 100%;
+      > .banner-count-header {
+        @include font-size-9($font-head-500);
+        flex: 0 0 auto;
+      }
+    }
 
-        &:first-of-type {
-          grid-column: span 2;
-          grid-row: span 2;
+    .wrapper-1 {
+      display: flex;
+      align-items: flex-start;
+      gap: 30px;
 
-          @media (max-width: $medium) {
-            height: 315px;
-          }
+      @media (max-width: $large) {
+        flex-direction: column;
+      }
+
+      > .wrapper-1-left,
+      > .wrapper-1-right {
+        width: 50%;
+
+        @media (max-width: $large) {
+          width: 100%;
         }
 
-        img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
+        .wrapper-hastags {
+          padding: 20px 0;
+          @include font-size-10($font-head-400);
+
+          > .header-hastags {
+            color: $brandcolor2;
+          }
+        }
+      }
+
+      > .wrapper-1-left {
+        > .wrapper-box {
+          > .wrapper-copper-img {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+
+            > .image-background {
+              position: absolute;
+              background-size: cover;
+              filter: blur(5px);
+              width: 100%;
+            }
+
+            > .image {
+              width: 50%;
+              height: auto;
+              position: relative;
+              z-index: 1;
+            }
+          }
+
+          > .detail {
+            padding: 15px;
+
+            > .title {
+              @include font-size-7($font-head-500);
+              display: -webkit-box;
+              -webkit-line-clamp: 1;
+              -webkit-box-orient: vertical;
+              overflow: hidden;
+              word-break: break-word;
+            }
+
+            > .content {
+              @include font-size-9($font-content-light);
+              display: -webkit-box;
+              -webkit-line-clamp: 4;
+              -webkit-box-orient: vertical;
+              overflow: hidden;
+              word-break: break-word;
+              line-height: 1.5;
+            }
+          }
+        }
+      }
+
+      > .wrapper-1-right {
+        > .wrapper-news {
+          display: flex;
+          align-items: flex-start;
+          gap: 15px;
+
+          > .wrapper-news-left,
+          > .wrapper-news-right {
+            width: 50%;
+          }
+
+          > .wrapper-news-right {
+            > .wrapper-news-post {
+              > .wrapper-news-post-img {
+                height: 180px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                @include font-size-9($font-head-500);
+                background: rgb($black, 0.24);
+
+                > img {
+                  width: 100%;
+                  height: 100%;
+                  object-fit: cover;
+                }
+
+                > span {
+                  margin: 12px;
+                  display: -webkit-box;
+                  -webkit-line-clamp: 2;
+                  -webkit-box-orient: vertical;
+                  overflow: hidden;
+                  word-break: break-word;
+                }
+              }
+
+              > .detail {
+                padding: 10px;
+
+                > .title {
+                  @include font-size-9($font-head-500);
+                  display: -webkit-box;
+                  -webkit-line-clamp: 2;
+                  -webkit-box-orient: vertical;
+                  overflow: hidden;
+                  word-break: break-word;
+                }
+              }
+            }
+          }
         }
       }
     }
