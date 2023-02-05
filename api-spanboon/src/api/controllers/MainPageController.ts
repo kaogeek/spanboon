@@ -286,7 +286,7 @@ export class MainPageController {
             endDateTime: weekRanges[1]
         });
         userFollowProcessor.setConfig({
-            limit: 4,
+            limit: 6,
             showUserAction: true,
             searchOfficialOnly
         });
@@ -312,7 +312,7 @@ export class MainPageController {
             endDateTime: weekRanges[1]
         });
         followingRecommendProcessor.setConfig({
-            limit: 5,
+            limit: 6,
             searchOfficialOnly,
             showPage: true,
             showUserAction: true
@@ -327,7 +327,7 @@ export class MainPageController {
             endDateTime: weekRanges[1]
         });
         lastestObjProcessor.setConfig({
-            limit: 5,
+            limit: 6,
             showUserAction: true,
             searchOfficialOnly
         });
