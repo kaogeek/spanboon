@@ -241,11 +241,38 @@ export class LoginPage extends AbstractPage implements OnInit {
             }
           })
         } else if (res.data.status === 2) {
+          this.mockDataMergeSocial.social = mode;
+          this.pictureSocial = res.data.pic;
           this.modeSwitch = "mergeuser";
-          this.social.socialLogin = 'TWITTER';
-          this.login = false;
-          this.emailOtp = res.data.data.user.email;
-          this.dataUser = res.data.data;
+          const queue = res.data.data.authUser;
+          for (let i = 0; i < queue.length; i++) {
+            const current = queue.shift()
+            if (current === 'EMAIL') {
+              this.social.socialLogin = current;
+              this.login = false;
+              this.emailOtp = res.data.data.data.email;
+              this.dataUser = res.data.data;
+              this.socialMode = 'TWITTER';
+            } else if (current === 'GOOGLE') {
+              this.social.socialLogin = current;
+              this.login = false;
+              this.emailOtp = res.data.data.data.email;
+              this.dataUser = res.data.data;
+              this.socialMode = 'TWITTER';
+            } else if (current === 'FACEBOOK') {
+              this.social.socialLogin = current;
+              this.login = false;
+              this.emailOtp = res.data.data.data.email;
+              this.dataUser = res.data.data;
+              this.socialMode = 'TWITTER';
+            } else if (current === 'TWITTER') {
+              this.social.socialLogin = current;
+              this.login = false;
+              this.emailOtp = res.data.data.data.email;
+              this.dataUser = res.data.data;
+              this.socialMode = 'TWITTER';
+            }
+          }
         }
       }
     }).catch((err) => {
@@ -260,14 +287,15 @@ export class LoginPage extends AbstractPage implements OnInit {
         });
         dialog.afterClosed().subscribe((res) => {
           if (res) {
-            this.checkMergeUserFacade.loginWithTwitter(twitter, mode, res).then((data: any) => {
+            this.checkMergeUserFacade.loginWithTwitter(twitter, mode, 'testkubpom4@gmail.com').then((data: any) => {
               if (data) {
                 if (data.data.status === 2) {
                   this.modeSwitch = "mergeuser";
-                  this.social.socialLogin = 'TWITTER';
                   this.login = false;
                   this.emailOtp = data.data.data.email;
                   this.dataUser = data.data;
+                  this.mockDataMergeSocial.social = mode;
+                  this.socialMode = 'TWITTER';
                 }
               } else {
                 this.authenManager.loginWithTwitter(twitter, mode).then((data: any) => {
@@ -568,11 +596,38 @@ export class LoginPage extends AbstractPage implements OnInit {
             this.checkMergeUserFacade.loginWithFacebook(this.accessToken.fbtoken, mode, res).then((data: any) => {
               if (data) {
                 if (data.data.status === 2) {
+                  this.mockDataMergeSocial.social = mode;
+                  this.pictureSocial = data.pic;
                   this.modeSwitch = "mergeuser";
-                  this.social.socialLogin = 'FACEBOOK';
-                  this.login = false;
-                  this.emailOtp = data.data.data.email;
-                  this.dataUser = data.data;
+                  const queue = data.data.authUser;
+                  for (let i = 0; i < queue.length; i++) {
+                    const current = queue.shift()
+                    if (current === 'EMAIL') {
+                      this.social.socialLogin = current;
+                      this.login = false;
+                      this.emailOtp = data.data.data.email;
+                      this.dataUser = data.data;
+                      this.socialMode = 'FACEBOOK';
+                    } else if (current === 'GOOGLE') {
+                      this.social.socialLogin = current;
+                      this.login = false;
+                      this.emailOtp = data.data.data.email;
+                      this.dataUser = data.data;
+                      this.socialMode = 'FACEBOOK';
+                    } else if (current === 'FACEBOOK') {
+                      this.social.socialLogin = current;
+                      this.login = false;
+                      this.emailOtp = data.data.data.email;
+                      this.dataUser = data.data;
+                      this.socialMode = 'FACEBOOK';
+                    } else if (current === 'TWITTER') {
+                      this.social.socialLogin = current;
+                      this.login = false;
+                      this.emailOtp = data.data.data.email;
+                      this.dataUser = data.data;
+                      this.socialMode = 'FACEBOOK';
+                    }
+                  }
                 }
               }
             }).catch((error) => {
