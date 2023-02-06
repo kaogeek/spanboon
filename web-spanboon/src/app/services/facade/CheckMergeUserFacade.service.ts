@@ -197,10 +197,11 @@ export class CheckMergeUserFacade extends AbstractFacade {
       let url: string = this.baseURL + '/check_email_user';
       const tokenFCM = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
       let body: any = {
-        "tokenFCM": tokenFCM,
-        "deviceName": "Chrome",
-        "email": res
+        tokenFCM: tokenFCM,
+        deviceName: this.authMgr.myBrowser(),
+        email: res
       };
+      console.log("body", body)
       if (data !== null && data !== undefined) {
         body = Object.assign(data);
       }

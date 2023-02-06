@@ -669,9 +669,11 @@ export class LoginPage extends AbstractPage implements OnInit {
     if (this.login) {
       this.login = false;
       if (body.email.trim() === "") {
+        this.login = true;
         return this.showAlertDialog("กรุณากรอกอีเมล");
       }
       if (body.password.trim() === "") {
+        this.login = true;
         return this.showAlertDialog("กรุณากรอกรหัสผ่าน");
       }
       this.checkMergeUserFacade.checkMergeUser(mode, body).then((data) => {
