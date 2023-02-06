@@ -21,7 +21,6 @@ import { ObjectID } from 'mongodb';
 import { PROVIDER } from '../../constants/LoginProvider';
 import moment from 'moment';
 import { ForgotPasswordRequest } from './requests/ForgotPasswordRequest';
-import NodeCache from 'node-cache';
 import { OtpRequest } from './requests/OTP';
 import { FacebookService } from '../services/FacebookService';
 import { AssetService } from '../services/AssetService';
@@ -44,7 +43,6 @@ import { DeviceTokenService } from '../services/DeviceToken';
 import { CheckUser } from './requests/CheckUser';
 import { AutoSynz } from './requests/AutoSynz';
 import { OtpService } from '../services/OtpService';
-const cache = new NodeCache({ stdTTL: 300 });
 @JsonController()
 export class GuestController {
     constructor(
@@ -1076,7 +1074,6 @@ export class GuestController {
                 const errorResponse: any = { status: 0, message: 'Invalid Token.' };
                 return res.status(400).send(errorResponse);
             }
-            console.log('twitterUserId',twitterUserId);
             const twAuthenId = await this.twitterService.getTwitterUserAuthenId(twitterUserId);
             if (twAuthenId === null || twAuthenId === undefined) {
                 const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'Twitter was not registed.' };
@@ -1684,36 +1681,35 @@ export class GuestController {
         }
         const minm = 100000;
         const maxm = 999999;
-        const getCache = await cache.get(user.id.toString());
         const limitCount = await this.otpService.findOne({ where: { email: user.email } });
         let count = 1;
-        if (getCache !== undefined) {
-            count += getCache[0].limit;
-        }
+
         const otpRandom = Math.floor(Math.random() * (maxm - minm + 1)) + minm;
         if (limitCount === undefined) {
-            saveOtp = await this.otpService.createOtp({ userId: user.id, email: emailRes, otp: otpRandom, limit: count, expiration: expirationDate });
+            const sendMailRes = await this.sendActivateOTP(user, emailRes, otpRandom, 'Send OTP');
+            if (sendMailRes.status === 1) {
+                saveOtp = await this.otpService.createOtp({ userId: user.id, email: emailRes, otp: otpRandom, limit: count, expiration: expirationDate });
+            }
         }
 
         if (limitCount !== undefined && limitCount.limit <= 2) {
             count += limitCount.limit;
             const query = { email: emailRes };
             const newValues = { $set: { limit: count, otp: otpRandom } };
-            await this.otpService.updateToken(query, newValues);
+            const sendMailRes = await this.sendActivateOTP(user, emailRes, otpRandom, 'Send OTP');
+            if (sendMailRes.status === 1) {
+                await this.otpService.updateToken(query, newValues);
+            }
         }
 
         if (saveOtp !== undefined && limitCount === undefined) {
-            const sendMailRes = await this.sendActivateOTP(user, emailRes, otpRandom, 'Send OTP');
-            if (sendMailRes.status === 1) {
-                const successResponse = ResponseUtil.getSuccessOTP('The Otp have been send.', saveOtp.limit);
-                return res.status(200).send(successResponse);
-            }
+            // const sendMailRes = await this.sendActivateOTP(user, emailRes, otpRandom, 'Send OTP');
+            const successResponse = ResponseUtil.getSuccessOTP('The Otp have been send.', saveOtp.limit);
+            return res.status(200).send(successResponse);
         } else if (limitCount !== undefined && limitCount.limit <= 2 && limitCount.expiration < expirationDate) {
-            const sendMailRes = await this.sendActivateOTP(user, emailRes, limitCount.otp, 'Send OTP');
-            if (sendMailRes.status === 1) {
-                const successResponse = ResponseUtil.getSuccessOTP('The Otp have been send.', limitCount.limit);
-                return res.status(200).send(successResponse);
-            }
+            // const sendMailRes = await this.sendActivateOTP(user, emailRes, limitCount.otp, 'Send OTP');
+            const successResponse = ResponseUtil.getSuccessOTP('The Otp have been send.', limitCount.limit);
+            return res.status(200).send(successResponse);
         } else {
             return res.status(400).send(ResponseUtil.getErrorResponse('The Otp have been send more than 3 times, Please try add your OTP again', undefined));
         }
@@ -1877,8 +1873,8 @@ export class GuestController {
                 const errorResponse = ResponseUtil.getErrorResponse('The OTP is not correct.', undefined);
                 return res.status(400).send(errorResponse);
             }
-        } else if(user && mode === PROVIDER.TWITTER){
-            if(otp === otpFind.otp){
+        } else if (user && mode === PROVIDER.TWITTER) {
+            if (otp === otpFind.otp) {
                 let authIdCreate = undefined;
                 const twitterOauthToken = otpRequest.twitterOauthToken;
                 const twitterOauthTokenSecret = otpRequest.twitterOauthTokenSecret;
@@ -1941,7 +1937,7 @@ export class GuestController {
                     const errorResponse = ResponseUtil.getErrorResponse('The OTP is not correct.', undefined);
                     return res.status(400).send(errorResponse);
                 }
-            }else{
+            } else {
                 const errorResponse = ResponseUtil.getErrorResponse('The OTP is not correct.', undefined);
                 return res.status(400).send(errorResponse);
             }
