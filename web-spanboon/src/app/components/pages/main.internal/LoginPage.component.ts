@@ -287,7 +287,7 @@ export class LoginPage extends AbstractPage implements OnInit {
         });
         dialog.afterClosed().subscribe((res) => {
           if (res) {
-            this.checkMergeUserFacade.loginWithTwitter(twitter, mode, 'testkubpom4@gmail.com').then((data: any) => {
+            this.checkMergeUserFacade.loginWithTwitter(twitter, mode, res).then((data: any) => {
               if (data) {
                 if (data.data.status === 2) {
                   this.modeSwitch = "mergeuser";

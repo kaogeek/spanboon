@@ -196,21 +196,21 @@ export class CheckMergeUserFacade extends AbstractFacade {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/check_email_user';
       const tokenFCM = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
+
       let body: any = {
-        tokenFCM: tokenFCM,
-        deviceName: this.authMgr.myBrowser(),
-        email: res
+        "twitterOauthToken":data.twitterOauthToken,
+        "twitterOauthTokenSecret":data.twitterOauthTokenSecret,
+        "twitterUserId":data.twitterUserId,
+        "tokenFCM": tokenFCM,
+        "deviceName": "Chrome",
+        "email": res
       };
-      console.log("body", body)
-      if (data !== null && data !== undefined) {
-        body = Object.assign(data);
-      }
+
       let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
       if (mode !== undefined || mode !== "") {
         headers = headers.set('mode', mode);
       }
-
       let httpOptions = { headers };
       this.http.post(url, body, httpOptions).toPromise().then((response: any) => {
 
