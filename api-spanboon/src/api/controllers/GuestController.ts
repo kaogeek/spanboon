@@ -1877,6 +1877,74 @@ export class GuestController {
                 const errorResponse = ResponseUtil.getErrorResponse('The OTP is not correct.', undefined);
                 return res.status(400).send(errorResponse);
             }
+        } else if(user && mode === PROVIDER.TWITTER){
+            if(otp === otpFind.otp){
+                let authIdCreate = undefined;
+                const twitterOauthToken = otpRequest.twitterOauthToken;
+                const twitterOauthTokenSecret = otpRequest.twitterOauthTokenSecret;
+
+                let twitterUserId = undefined;
+                try {
+                    const verifyObject = await this.twitterService.verifyCredentials(twitterOauthToken, twitterOauthTokenSecret);
+                    twitterUserId = verifyObject.id_str;
+                } catch (ex) {
+                    const errorResponse: any = { status: 0, message: ex };
+                    return res.status(400).send(errorResponse);
+                }
+                const authenId = new AuthenticationId();
+                authenId.user = user.id;
+                authenId.lastAuthenTime = moment().toDate();
+                authenId.providerUserId = twitterUserId;
+                authenId.providerName = PROVIDER.TWITTER;
+                authenId.storedCredentials = 'oauth_token=' + twitterOauthToken + '&oauth_token_secret=' + twitterOauthTokenSecret + '&user_id=' + twitterUserId;
+                authenId.properties = {
+                    userId: twitterUserId,
+                    oauthToken: twitterOauthToken,
+                    oauthTokenSecret: twitterOauthTokenSecret
+                };
+                authenId.expirationDate = moment().add(userExrTime, 'days').toDate();
+                if (otpFind.expiration < expirationDate) {
+                    authIdCreate = await this.authenticationIdService.create(authenId);
+                    const queryMerge = { _id: user.id };
+                    const newValues = { $set: { mergeTW: true } };
+                    if (authIdCreate) {
+                        loginUser = await this.userService.findOne({ where: { _id: authIdCreate.user } });
+                        const query = { email: emailRes };
+                        await this.otpService.delete(query);
+                        if (loginUser === undefined) {
+                            const errorResponse: any = { status: 0, message: 'Cannot login please try again.' };
+                            return res.status(400).send(errorResponse);
+                        }
+
+                        if (loginUser.banned === true) {
+                            const errorResponse = ResponseUtil.getErrorResponse('User Banned', undefined);
+                            return res.status(400).send(errorResponse);
+                        }
+
+                        const userFollowings = await this.userFollowService.find({ where: { userId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
+                        const userFollowers = await this.userFollowService.find({ where: { subjectId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
+
+                        loginUser = await this.userService.cleanUserField(loginUser);
+                        loginUser.followings = userFollowings.length;
+                        loginUser.followers = userFollowers.length;
+
+                        const successResponse = ResponseUtil.getSuccessResponseAuth('Loggedin successful', otpRequest.idToken, PROVIDER.GOOGLE);
+                        const update = await this.userService.update(queryMerge, newValues);
+                        if (update) {
+                            return res.status(200).send(successResponse);
+                        } else {
+                            const errorResponse = ResponseUtil.getErrorResponse('Merge not successful.', undefined);
+                            return res.status(400).send(errorResponse);
+                        }
+                    }
+                } else {
+                    const errorResponse = ResponseUtil.getErrorResponse('The OTP is not correct.', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+            }else{
+                const errorResponse = ResponseUtil.getErrorResponse('The OTP is not correct.', undefined);
+                return res.status(400).send(errorResponse);
+            }
         }
     }
     // autoSyncPage
