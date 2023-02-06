@@ -198,9 +198,9 @@ export class CheckMergeUserFacade extends AbstractFacade {
       const tokenFCM = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
 
       let body: any = {
-        "twitterOauthToken":data.twitterOauthToken,
-        "twitterOauthTokenSecret":data.twitterOauthTokenSecret,
-        "twitterUserId":data.twitterUserId,
+        "twitterOauthToken": data.twitterOauthToken,
+        "twitterOauthTokenSecret": data.twitterOauthTokenSecret,
+        "twitterUserId": data.twitterUserId,
         "tokenFCM": tokenFCM,
         "deviceName": "Chrome",
         "email": res
@@ -267,6 +267,31 @@ export class CheckMergeUserFacade extends AbstractFacade {
         "otp": Number(otp),
         "idToken": idToken,
         "authToken": authToken
+      };
+      let headers = new HttpHeaders({
+        'Content-Type': 'application/json'
+      });
+      if (mode !== undefined || mode !== "") {
+        headers = headers.set('mode', mode);
+      }
+
+      let httpOptions = { headers };
+      this.http.post(url, body, httpOptions).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  };
+  public checkOtpTW(data: any, email: any, otp?: number, mode?: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/check_otp';
+      let body: any = {
+        "twitterOauthToken": data.twitterOauthToken,
+        "twitterOauthTokenSecret": data.twitterOauthTokenSecret,
+        "twitterUserId": data.twitterUserId,
+        "email": email,
+        "otp": Number(otp)
       };
       let headers = new HttpHeaders({
         'Content-Type': 'application/json'
