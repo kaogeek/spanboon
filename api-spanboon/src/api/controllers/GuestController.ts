@@ -1074,7 +1074,6 @@ export class GuestController {
                 const errorResponse: any = { status: 0, message: 'Invalid Token.' };
                 return res.status(400).send(errorResponse);
             }
-            console.log('twitterUserId',twitterUserId);
             const twAuthenId = await this.twitterService.getTwitterUserAuthenId(twitterUserId);
             if (twAuthenId === null || twAuthenId === undefined) {
                 const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'Twitter was not registed.' };
@@ -1688,7 +1687,7 @@ export class GuestController {
         const otpRandom = Math.floor(Math.random() * (maxm - minm + 1)) + minm;
         if (limitCount === undefined) {
             const sendMailRes = await this.sendActivateOTP(user, emailRes, otpRandom, 'Send OTP');
-            if(sendMailRes.status === 1){
+            if (sendMailRes.status === 1) {
                 saveOtp = await this.otpService.createOtp({ userId: user.id, email: emailRes, otp: otpRandom, limit: count, expiration: expirationDate });
             }
         }
@@ -1697,7 +1696,10 @@ export class GuestController {
             count += limitCount.limit;
             const query = { email: emailRes };
             const newValues = { $set: { limit: count, otp: otpRandom } };
-            await this.otpService.updateToken(query, newValues);
+            const sendMailRes = await this.sendActivateOTP(user, emailRes, otpRandom, 'Send OTP');
+            if (sendMailRes.status === 1) {
+                await this.otpService.updateToken(query, newValues);
+            }
         }
 
         if (saveOtp !== undefined && limitCount === undefined) {
@@ -1871,8 +1873,8 @@ export class GuestController {
                 const errorResponse = ResponseUtil.getErrorResponse('The OTP is not correct.', undefined);
                 return res.status(400).send(errorResponse);
             }
-        } else if(user && mode === PROVIDER.TWITTER){
-            if(otp === otpFind.otp){
+        } else if (user && mode === PROVIDER.TWITTER) {
+            if (otp === otpFind.otp) {
                 let authIdCreate = undefined;
                 const twitterOauthToken = otpRequest.twitterOauthToken;
                 const twitterOauthTokenSecret = otpRequest.twitterOauthTokenSecret;
@@ -1935,7 +1937,7 @@ export class GuestController {
                     const errorResponse = ResponseUtil.getErrorResponse('The OTP is not correct.', undefined);
                     return res.status(400).send(errorResponse);
                 }
-            }else{
+            } else {
                 const errorResponse = ResponseUtil.getErrorResponse('The OTP is not correct.', undefined);
                 return res.status(400).send(errorResponse);
             }
