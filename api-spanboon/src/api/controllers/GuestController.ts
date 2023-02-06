@@ -21,7 +21,6 @@ import { ObjectID } from 'mongodb';
 import { PROVIDER } from '../../constants/LoginProvider';
 import moment from 'moment';
 import { ForgotPasswordRequest } from './requests/ForgotPasswordRequest';
-import NodeCache from 'node-cache';
 import { OtpRequest } from './requests/OTP';
 import { FacebookService } from '../services/FacebookService';
 import { AssetService } from '../services/AssetService';
