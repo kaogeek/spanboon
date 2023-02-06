@@ -78,6 +78,9 @@ export class LoginPage extends AbstractPage implements OnInit {
   public limitOtpCount: number;
   public socialMode: any;
   public pictureSocial: any;
+  public TwAuthToken: string;
+  public TwAuthTokenSecret: string;
+  public TwUserId: string;
   public social: any = {
     socialLogin: undefined,
   };
@@ -223,6 +226,9 @@ export class LoginPage extends AbstractPage implements OnInit {
       twitterOauthTokenSecret: token_secret,
       twitterUserId: userId
     }
+    this.TwAuthToken = twitter.twitterOauthToken;
+    this.TwAuthTokenSecret = twitter.twitterOauthTokenSecret;
+    this.TwUserId = twitter.twitterUserId;
     this.checkMergeUserFacade.loginWithTwitter(twitter, mode).then((res: any) => {
       if (res) {
         if (res.data.status === 1) {
@@ -281,8 +287,8 @@ export class LoginPage extends AbstractPage implements OnInit {
         let dialog = this.dialog.open(DialogConfirmInput, {
           disableClose: true,
           data: {
-            title: "อีเมล",
-            placeholder: "อีเมล"
+            title: "อีเมลของคุณ",
+            placeholder: "example@email.com"
           },
         });
         dialog.afterClosed().subscribe((res) => {
@@ -587,8 +593,8 @@ export class LoginPage extends AbstractPage implements OnInit {
         let dialog = this.dialog.open(DialogConfirmInput, {
           disableClose: true,
           data: {
-            title: "อีเมล",
-            placeholder: "อีเมล"
+            title: "อีเมลของคุณ",
+            placeholder: "example@email.com"
           },
         });
         dialog.afterClosed().subscribe((res) => {
@@ -669,9 +675,11 @@ export class LoginPage extends AbstractPage implements OnInit {
     if (this.login) {
       this.login = false;
       if (body.email.trim() === "") {
+        this.login = true;
         return this.showAlertDialog("กรุณากรอกอีเมล");
       }
       if (body.password.trim() === "") {
+        this.login = true;
         return this.showAlertDialog("กรุณากรอกรหัสผ่าน");
       }
       this.checkMergeUserFacade.checkMergeUser(mode, body).then((data) => {
@@ -943,6 +951,54 @@ export class LoginPage extends AbstractPage implements OnInit {
       this.checkMergeUserFacade.checkOtp(this.emailOtp, this.countOtp, mode).then((res) => {
         if (res.message === "Loggedin successful" && res.authUser === 'EMAIL') {
           this.authenManager.login(this.emailOtp, this.passwordOtp, mode).then((data) => {
+            if (data) {
+              let dialog = this.dialog.open(DialogAlert, {
+                disableClose: true,
+                data: {
+                  text: MESSAGE.TEXT_LOGIN_SUCCESS,
+                  bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+                  bottomColorText2: "black",
+                  btDisplay1: "none",
+                },
+              });
+              dialog.afterClosed().subscribe((res) => {
+                if (res) {
+                  this.observManager.publish("authen.check", null);
+                  this.observManager.publish("authen.profileUser", data.user);
+                  if (this.redirection) {
+                    this.router.navigateByUrl(this.redirection);
+                  } else {
+                    this.router.navigate(["home"]);
+                  }
+                }
+              });
+            }
+          })
+        }
+      }).catch((err) => {
+        if (err.error.message === "The OTP is not correct.") {
+          let dialog = this.dialog.open(DialogAlert, {
+            disableClose: true,
+            data: {
+              text: "รหัส OTP ของท่านไม่ถูกต้อง",
+              bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+              bottomColorText2: "black",
+              btDisplay1: "none",
+            },
+          });
+          dialog.afterClosed().subscribe((res) => {
+          });
+        }
+      });
+    } else if (mode === 'TWITTER') {
+      let twitter = {
+        twitterOauthToken: this.TwAuthToken,
+        twitterOauthTokenSecret: this.TwAuthTokenSecret,
+        twitterUserId: this.TwUserId
+      }
+      this.checkMergeUserFacade.checkOtpTW(twitter, this.emailOtp, this.countOtp, mode).then((res) => {
+        if (res.message === "Loggedin successful" && res.authUser === 'TWITTER') {
+          this.authenManager.loginWithTwitter(twitter, mode).then((data) => {
             if (data) {
               let dialog = this.dialog.open(DialogAlert, {
                 disableClose: true,
