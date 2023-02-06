@@ -1076,7 +1076,7 @@ export class GuestController {
                 const errorResponse: any = { status: 0, message: 'Invalid Token.' };
                 return res.status(400).send(errorResponse);
             }
-
+            console.log('twitterUserId',twitterUserId);
             const twAuthenId = await this.twitterService.getTwitterUserAuthenId(twitterUserId);
             if (twAuthenId === null || twAuthenId === undefined) {
                 const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'Twitter was not registed.' };
@@ -1703,15 +1703,15 @@ export class GuestController {
         }
 
         if (saveOtp !== undefined && limitCount === undefined) {
-            const sendMailRes = await this.sendActivateOTP(user, emailRes, saveOtp.otp, 'Send OTP');
+            const sendMailRes = await this.sendActivateOTP(user, emailRes, otpRandom, 'Send OTP');
             if (sendMailRes.status === 1) {
-                const successResponse = ResponseUtil.getSuccessOTP('The Otp have been send.', saveOtp, saveOtp.limit);
+                const successResponse = ResponseUtil.getSuccessOTP('The Otp have been send.', saveOtp.limit);
                 return res.status(200).send(successResponse);
             }
         } else if (limitCount !== undefined && limitCount.limit <= 2 && limitCount.expiration < expirationDate) {
             const sendMailRes = await this.sendActivateOTP(user, emailRes, limitCount.otp, 'Send OTP');
             if (sendMailRes.status === 1) {
-                const successResponse = ResponseUtil.getSuccessOTP('The Otp have been send.', saveOtp, limitCount.limit);
+                const successResponse = ResponseUtil.getSuccessOTP('The Otp have been send.', limitCount.limit);
                 return res.status(200).send(successResponse);
             }
         } else {
@@ -2316,7 +2316,6 @@ export class GuestController {
     private async sendActivateOTP(user: User, email: string, code: any, subject: string): Promise<any> {
         let message = '<p> Hello ' + user.firstName + '</p>';
         message += '<p> Your Activation Code is: ' + code + '</p>';
-        message += code + '&email=' + email + '"> OTP </a>';
 
         const sendMail = MAILService.passwordForgotMail(message, email, subject);
 
