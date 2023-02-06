@@ -1,9 +1,10 @@
 import { IsNotEmpty, IsMongoId } from 'class-validator';
 import { Column, Entity, ObjectIdColumn } from 'typeorm';
 import { ObjectID } from 'mongodb';
+import { BaseModel } from './BaseModel';
 
 @Entity('Otp')
-export class Otp {
+export class Otp extends BaseModel {
 
     @ObjectIdColumn({ name: '_id' })
     @IsNotEmpty()
