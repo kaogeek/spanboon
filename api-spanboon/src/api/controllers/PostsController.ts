@@ -974,7 +974,7 @@ export class PostsController {
                             pageLike.imageURL,
                         );
                         for (const tokenFCM of tokenFCMId) {
-                            if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined) {
+                            if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
                                 await this.notificationService.sendNotificationFCM(
                                     page.id,
                                     undefined,
@@ -1010,7 +1010,7 @@ export class PostsController {
                             pageLike.imageURL
                         );
                         for (const tokenFCM of tokenFCMId) {
-                            if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined) {
+                            if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
                                 await this.notificationService.sendNotificationFCM(
                                     post_who.ownerUser,
                                     USER_TYPE.PAGE,
@@ -1050,7 +1050,7 @@ export class PostsController {
                                 userLikeId.imageURL
                             );
                         for (const tokenFCM of tokenFCMId) {
-                            if (tokenFCM.Tokens !== null) {
+                            if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
                                 await this.notificationService.sendNotificationFCM
                                     (
                                         post_who.pageId + '',
@@ -1090,7 +1090,7 @@ export class PostsController {
                                 userLikeId.imageURL
                             );
                         for (const tokenFCM of tokenFCMId) {
-                            if (tokenFCM.Tokens !== null) {
+                            if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
                                 await this.notificationService.sendNotificationFCM
                                     (
                                         tokenFCM.userId + '',
