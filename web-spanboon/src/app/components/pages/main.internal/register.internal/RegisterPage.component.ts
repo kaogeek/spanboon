@@ -5,7 +5,7 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-import { Component, ElementRef, EventEmitter, NgZone, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, NgZone, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { MatDatepicker, MatDatepickerInputEvent } from '@angular/material';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthenManager, NotificationManager, ObservableManager, TwitterService, UserFacade } from '../../../../services/services';
@@ -38,7 +38,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
   @ViewChild("birthday", { static: false }) private datapickerBirthday: any;
   @ViewChild('register', { static: false }) private registerForm: any;
   @ViewChild('birthday', { static: false }) private birthdayForm: ElementRef;
-  @ViewChild('inputEmail', { static: false }) private inputEmail: ElementRef;
+  @ViewChild('inputEmail', { static: false }) public inputEmail: ElementRef;
   @ViewChild('username', { static: false }) public username: ElementRef;
 
   @Output()
@@ -55,7 +55,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
   public dialog: MatDialog;
   public hide = true;
   public uuid: boolean;
-  public email: string = '';
+  public objectMerge: any = {};
 
   public avatar: any;
   public images: any;
@@ -90,6 +90,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
   public isCheckDate: any;
   public checkedCon: boolean = false;
   public isRegister: boolean = false;
+  public isInputEmail: boolean;
 
   constructor(authenManager: AuthenManager,
     private authService: SocialAuthService,
@@ -146,6 +147,11 @@ export class RegisterPage extends AbstractPage implements OnInit {
         if (state) {
           this.redirection = state.redirection;
           this.accessToken = state.accessToken;
+          this.objectMerge = {
+            email: state.email,
+            token: state.token
+          }
+          this.isInputEmail = true;
 
           if (this.mode === "facebook") {
             this.getCurrentUserInfo();
@@ -422,21 +428,20 @@ export class RegisterPage extends AbstractPage implements OnInit {
         }
 
         if (this.mode === "facebook" || this.mode === "FACEBOOK") {
-          register.fbAccessExpirationTime = this.accessToken.fbexptime;
-          register.fbSignedRequest = this.accessToken.fbsignedRequest;
-          register.fbToken = this.accessToken.fbtoken;
-          register.fbUserId = this.accessToken.fbid;
+          register.fbAccessExpirationTime = !!this.accessToken && !!this.accessToken!.fbexptime ? this.accessToken.fbexptime : this.objectMerge.token.fbexptime;
+          register.fbSignedRequest = !!this.accessToken && !!this.accessToken!.fbsignedRequest ? this.accessToken.fbsignedRequest : this.objectMerge.token.fbsignedRequest;
+          register.fbToken = !!this.accessToken && !!this.accessToken!.fbtoken ? this.accessToken.fbtoken : this.objectMerge.token.fbtoken;
+          register.fbUserId = !!this.accessToken && !!this.accessToken!.fbid ? this.accessToken.fbid : this.objectMerge.token.fbid;
         } else if (this.mode === "google" || this.mode === "GOOGLE") {
           register.googleUserId = this.accessToken.googleUserId;
           register.authToken = this.accessToken.authToken;
           register.idToken = this.accessToken.idToken;
         } else if (this.mode === "twitter" || this.mode === "TWITTER") {
-          register.twitterUserId = this.accessToken.twitterUserId;
-          register.twitterOauthToken = this.accessToken.twitterOauthToken;
-          register.twitterTokenSecret = this.accessToken.twitterOauthTokenSecret;
+          register.twitterUserId = !!this.accessToken && !!this.accessToken!.twitterUserId ? this.accessToken.twitterUserId : this.objectMerge.token.twitterUserId;
+          register.twitterOauthToken = !!this.accessToken && !!this.accessToken!.twitterOauthToken ? this.accessToken.twitterOauthToken : this.objectMerge.token.twitterOauthToken;
+          register.twitterTokenSecret = !!this.accessToken && !!this.accessToken!.twitterOauthTokenSecret ? this.accessToken.twitterOauthTokenSecret : this.objectMerge.token.twitterOauthTokenSecret;
         }
         this.authenManager.registerSocial(register, this.mode).then((value: any) => {
-          console.log("value", value)
           if (value.status === 1) {
             this.isRegister = false;
             let alertMessage: string = 'ลงทะเบียนสำเร็จ';
@@ -579,8 +584,8 @@ export class RegisterPage extends AbstractPage implements OnInit {
 
   public getTwitterUser() {
     let body = {
-      twitterOauthToken: this.accessToken.twitterOauthToken,
-      twitterOauthTokenSecret: this.accessToken.twitterOauthTokenSecret
+      twitterOauthToken: !!this.accessToken && !!this.accessToken!.twitterOauthToken ? this.accessToken.twitterOauthToken : this.objectMerge.token.twitterOauthToken,
+      twitterOauthTokenSecret: !!this.accessToken && !!this.accessToken!.twitterOauthTokenSecret ? this.accessToken.twitterOauthTokenSecret : this.objectMerge.token.twitterOauthToken
     }
     this.twitterService.accountVerify(body).then((account: any) => {
       this.data = account;

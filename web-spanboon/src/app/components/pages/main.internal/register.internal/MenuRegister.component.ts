@@ -57,6 +57,8 @@ export class MenuRegister extends AbstractPage implements OnInit {
         social: undefined,
     };
 
+    private regis_merge: string = 'register.merge';
+
     public dataUser: any;
 
     //twitter
@@ -87,6 +89,8 @@ export class MenuRegister extends AbstractPage implements OnInit {
         this.activatedRoute.params.subscribe(param => {
             this.redirection = param['redirection'];
         });
+
+        this.observManager.createSubject(this.regis_merge);
     }
 
     ngOnInit(): void {
@@ -331,18 +335,23 @@ export class MenuRegister extends AbstractPage implements OnInit {
 
         this.checkMergeUserFacade.loginWithFacebook(this.accessToken.fbtoken, mode).then((data: any) => {
             if (data.data.status === 2) {
-                let dialog = this.dialog.open(DialogAlert, {
-                    disableClose: true,
-                    data: {
-                        text: "พบแอคเคาท์ในระบบแล้ว กรุณาเข้าสู่ระบบด้วยโหมดเฟสบุ๊ค",
-                        btDisplay1: "none"
-                    }
+                this.observManager.publish(this.regis_merge, {
+                    data: data.data,
+                    token: this.accessToken.fbtoken
                 });
-                dialog.afterClosed().subscribe((res) => {
-                    if (res) {
-                        this.router.navigate(['/login']);
-                    }
-                });
+                this.router.navigate(['/login']);
+                // let dialog = this.dialog.open(DialogAlert, {
+                //     disableClose: true,
+                //     data: {
+                //         text: "พบแอคเคาท์ในระบบแล้ว กรุณาเข้าสู่ระบบด้วยโหมดเฟสบุ๊ค",
+                //         btDisplay1: "none"
+                //     }
+                // });
+                // dialog.afterClosed().subscribe((res) => {
+                //     if (res) {
+                //         this.router.navigate(['/login']);
+                //     }
+                // });
             } else {
                 this.authenManager.loginWithFacebook(this.accessToken.fbtoken, mode).then((data: any) => {
                     // login success redirect to main page

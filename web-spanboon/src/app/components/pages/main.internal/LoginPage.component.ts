@@ -21,6 +21,7 @@ import { TwitterService } from '../../../services/facade/TwitterService.service'
 import { CheckMergeUserFacade, NotificationManager } from 'src/app/services/services';
 import { CountdownConfig, CountdownEvent } from "ngx-countdown";
 import { NgOtpInputComponent } from "ng-otp-input/lib/components/ng-otp-input/ng-otp-input.component";
+import { DialogConfirmInput } from '../../shares/dialog/DialogConfirmInput.component';
 
 const PAGE_NAME: string = 'login';
 
@@ -86,6 +87,7 @@ export class LoginPage extends AbstractPage implements OnInit {
   };
 
   private loginText: string = 'loginSuccess';
+  private regis_merge: string = 'register.merge';
 
   public dataUser: any;
   public passwordOtp: string;
@@ -127,6 +129,10 @@ export class LoginPage extends AbstractPage implements OnInit {
   }
 
   public ngOnInit() {
+    this.observManager.subscribe(this.regis_merge, (res: any) => {
+      if (res) {
+      }
+    });
     this.checkLoginAndRedirection();
     this.fbLibrary();
     let doRunAccessToken = false;
@@ -158,6 +164,7 @@ export class LoginPage extends AbstractPage implements OnInit {
 
   public ngOnDestroy(): void {
     super.ngOnDestroy();
+    this.observManager.complete(this.regis_merge);
   }
 
   isPageDirty(): boolean {
@@ -216,33 +223,83 @@ export class LoginPage extends AbstractPage implements OnInit {
       twitterOauthTokenSecret: token_secret,
       twitterUserId: userId
     }
-    this.authenManager.loginWithTwitter(twitter, mode).then((data: any) => {
-      // login success redirect to main page
-      this.observManager.publish('authen.check', null);
-      if (this.redirection) {
-        this.router.navigateByUrl(this.redirection);
-      } else {
-        this.router.navigate(['home']);
+    this.checkMergeUserFacade.loginWithTwitter(twitter, mode).then((res: any) => {
+      if (res) {
+        if (res.data.status === 1) {
+          this.authenManager.loginWithTwitter(twitter, mode).then((data: any) => {
+            if (data) {
+              // login success redirect to main page
+              this.observManager.publish('authen.check', null);
+              if (this.redirection) {
+                this.router.navigateByUrl(this.redirection);
+              } else {
+                this.router.navigate(['home']);
+              }
+            }
+          }).catch((err) => {
+            if (err) {
+            }
+          })
+        } else if (res.data.status === 2) {
+          this.modeSwitch = "mergeuser";
+          this.social.socialLogin = 'TWITTER';
+          this.login = false;
+          this.emailOtp = res.data.data.user.email;
+          this.dataUser = res.data.data;
+        }
       }
     }).catch((err) => {
       const statusMsg = err.error.message;
-      if (statusMsg === "Twitter was not registed.") {
-        let navigationExtras: NavigationExtras = {
-          state: {
-            accessToken: twitter,
-            redirection: this.redirection
-          },
-          queryParams: { mode: 'twitter' }
-        }
-        this.router.navigate(['/register'], navigationExtras);
-      } else if (err.error.message === 'Baned PageUser.') {
-        this.dialog.open(DialogAlert, {
+      if (err.error.status === 0) {
+        let dialog = this.dialog.open(DialogConfirmInput, {
           disableClose: true,
           data: {
-            text: MESSAGE.TEXT_LOGIN_BANED,
-            bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-            bottomColorText2: "black",
-            btDsplay1: "none"
+            title: "อีเมล",
+            placeholder: "อีเมล"
+          },
+        });
+        dialog.afterClosed().subscribe((res) => {
+          if (res) {
+            this.checkMergeUserFacade.loginWithTwitter(twitter, mode, res).then((data: any) => {
+              if (data) {
+                if (data.data.status === 2) {
+                  this.modeSwitch = "mergeuser";
+                  this.social.socialLogin = 'TWITTER';
+                  this.login = false;
+                  this.emailOtp = data.data.data.email;
+                  this.dataUser = data.data;
+                }
+              } else {
+                this.authenManager.loginWithTwitter(twitter, mode).then((data: any) => {
+                  if (data) {
+                    // login success redirect to main page
+                    this.observManager.publish('authen.check', null);
+                    if (this.redirection) {
+                      this.router.navigateByUrl(this.redirection);
+                    } else {
+                      this.router.navigate(['home']);
+                    }
+                  }
+                }).catch((err) => {
+                  if (err) {
+                  }
+                })
+              }
+            }).catch((error) => {
+              if (error) {
+                console.log("error", error)
+                if (error.error.status === 0) {
+                  let navigationExtras: NavigationExtras = {
+                    state: {
+                      email: res,
+                      token: twitter
+                    },
+                    queryParams: { mode: 'twitter' }
+                  }
+                  this.router.navigate(['/register'], navigationExtras);
+                }
+              }
+            })
           }
         });
       }
@@ -283,7 +340,7 @@ export class LoginPage extends AbstractPage implements OnInit {
         this._ngZone.run(() => this.loginGoogle());
       }
     }).catch((error) => {
-      console.log('error >>> ', error);
+      console.log('error', error);
     });
 
   }
@@ -499,14 +556,41 @@ export class LoginPage extends AbstractPage implements OnInit {
     }).catch((error) => {
       const statusMsg = error.error.message;
       if (error.error.status === 0) {
-        let navigationExtras: NavigationExtras = {
-          state: {
-            accessToken: this.accessToken,
-            redirection: this.redirection
+        let dialog = this.dialog.open(DialogConfirmInput, {
+          disableClose: true,
+          data: {
+            title: "อีเมล",
+            placeholder: "อีเมล"
           },
-          queryParams: { mode: 'facebook' }
-        }
-        this.router.navigate(['/register'], navigationExtras);
+        });
+        dialog.afterClosed().subscribe((res) => {
+          if (res) {
+            this.checkMergeUserFacade.loginWithFacebook(this.accessToken.fbtoken, mode, res).then((data: any) => {
+              if (data) {
+                if (data.data.status === 2) {
+                  this.modeSwitch = "mergeuser";
+                  this.social.socialLogin = 'FACEBOOK';
+                  this.login = false;
+                  this.emailOtp = data.data.data.email;
+                  this.dataUser = data.data;
+                }
+              }
+            }).catch((error) => {
+              if (error) {
+                if (error.error.status === 0) {
+                  let navigationExtras: NavigationExtras = {
+                    state: {
+                      email: res,
+                      token: this.accessToken
+                    },
+                    queryParams: { mode: mode.toLowerCase() }
+                  }
+                  this.router.navigate(['/register'], navigationExtras);
+                }
+              }
+            })
+          }
+        });
       } else if (statusMsg === 'Baned PageUser.') {
         this.dialog.open(DialogAlert, {
           disableClose: true,
@@ -740,7 +824,7 @@ export class LoginPage extends AbstractPage implements OnInit {
                 }
               });
             }
-          })
+          });
         }
       }).catch((err) => {
         if (err.error.message === "The OTP is not correct.") {
