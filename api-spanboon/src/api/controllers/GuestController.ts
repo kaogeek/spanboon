@@ -1928,7 +1928,7 @@ export class GuestController {
                         loginUser.followings = userFollowings.length;
                         loginUser.followers = userFollowers.length;
 
-                        const successResponse = ResponseUtil.getSuccessResponseAuth('Loggedin successful', otpRequest.idToken, PROVIDER.GOOGLE);
+                        const successResponse = ResponseUtil.getSuccessResponseAuth('Loggedin successful', otpRequest.idToken, PROVIDER.TWITTER);
                         const update = await this.userService.update(queryMerge, newValues);
                         if (update) {
                             return res.status(200).send(successResponse);
