@@ -81,6 +81,7 @@ export class LoginPage extends AbstractPage implements OnInit {
   public TwAuthToken: string;
   public TwAuthTokenSecret: string;
   public TwUserId: string;
+  public otpInput: any;
   public social: any = {
     socialLogin: undefined,
   };
@@ -259,12 +260,6 @@ export class LoginPage extends AbstractPage implements OnInit {
               this.emailOtp = res.data.data.data.email;
               this.dataUser = res.data.data;
               this.socialMode = 'TWITTER';
-            } else if (current === 'GOOGLE') {
-              this.social.socialLogin = current;
-              this.login = false;
-              this.emailOtp = res.data.data.data.email;
-              this.dataUser = res.data.data;
-              this.socialMode = 'TWITTER';
             } else if (current === 'FACEBOOK') {
               this.social.socialLogin = current;
               this.login = false;
@@ -272,6 +267,12 @@ export class LoginPage extends AbstractPage implements OnInit {
               this.dataUser = res.data.data;
               this.socialMode = 'TWITTER';
             } else if (current === 'TWITTER') {
+              this.social.socialLogin = current;
+              this.login = false;
+              this.emailOtp = res.data.data.data.email;
+              this.dataUser = res.data.data;
+              this.socialMode = 'TWITTER';
+            } else if (current === 'GOOGLE') {
               this.social.socialLogin = current;
               this.login = false;
               this.emailOtp = res.data.data.data.email;
@@ -396,12 +397,6 @@ export class LoginPage extends AbstractPage implements OnInit {
             this.emailOtp = data.data.data.email;
             this.dataUser = data.data;
             this.socialMode = 'GOOGLE';
-          } else if (current === 'GOOGLE') {
-            this.social.socialLogin = current;
-            this.login = false;
-            this.emailOtp = data.data.data.email;
-            this.dataUser = data.data;
-            this.socialMode = 'GOOGLE';
           } else if (current === 'FACEBOOK') {
             this.social.socialLogin = current;
             this.login = false;
@@ -409,6 +404,12 @@ export class LoginPage extends AbstractPage implements OnInit {
             this.dataUser = data.data;
             this.socialMode = 'GOOGLE';
           } else if (current === 'TWITTER') {
+            this.social.socialLogin = current;
+            this.login = false;
+            this.emailOtp = data.data.data.email;
+            this.dataUser = data.data;
+            this.socialMode = 'GOOGLE';
+          } else if (current === 'GOOGLE') {
             this.social.socialLogin = current;
             this.login = false;
             this.emailOtp = data.data.data.email;
@@ -533,12 +534,6 @@ export class LoginPage extends AbstractPage implements OnInit {
             this.emailOtp = data.data.data.email;
             this.dataUser = data.data;
             this.socialMode = 'FACEBOOK';
-          } else if (current === 'GOOGLE') {
-            this.social.socialLogin = current;
-            this.login = false;
-            this.emailOtp = data.data.data.email;
-            this.dataUser = data.data;
-            this.socialMode = 'FACEBOOK';
           } else if (current === 'FACEBOOK') {
             this.social.socialLogin = current;
             this.login = false;
@@ -550,6 +545,12 @@ export class LoginPage extends AbstractPage implements OnInit {
             this.login = false;
             this.emailOtp = data.data.data.email;
             this.dataUser = data;
+            this.socialMode = 'FACEBOOK';
+          } else if (current === 'GOOGLE') {
+            this.social.socialLogin = current;
+            this.login = false;
+            this.emailOtp = data.data.data.email;
+            this.dataUser = data.data;
             this.socialMode = 'FACEBOOK';
           }
         }
@@ -614,12 +615,6 @@ export class LoginPage extends AbstractPage implements OnInit {
                       this.emailOtp = data.data.data.email;
                       this.dataUser = data.data;
                       this.socialMode = 'FACEBOOK';
-                    } else if (current === 'GOOGLE') {
-                      this.social.socialLogin = current;
-                      this.login = false;
-                      this.emailOtp = data.data.data.email;
-                      this.dataUser = data.data;
-                      this.socialMode = 'FACEBOOK';
                     } else if (current === 'FACEBOOK') {
                       this.social.socialLogin = current;
                       this.login = false;
@@ -627,6 +622,12 @@ export class LoginPage extends AbstractPage implements OnInit {
                       this.dataUser = data.data;
                       this.socialMode = 'FACEBOOK';
                     } else if (current === 'TWITTER') {
+                      this.social.socialLogin = current;
+                      this.login = false;
+                      this.emailOtp = data.data.data.email;
+                      this.dataUser = data.data;
+                      this.socialMode = 'FACEBOOK';
+                    } else if (current === 'GOOGLE') {
                       this.social.socialLogin = current;
                       this.login = false;
                       this.emailOtp = data.data.data.email;
@@ -699,25 +700,25 @@ export class LoginPage extends AbstractPage implements OnInit {
               this.login = false;
               this.emailOtp = data.data.data.email;
               this.dataUser = data.data;
-              // this.socialMode = 'GOOGLE';
-            } else if (current === 'GOOGLE') {
-              this.social.socialLogin = current;
-              this.login = false;
-              this.emailOtp = data.data.data.email;
-              this.dataUser = data.data;
-              // this.socialMode = 'GOOGLE';
+              this.socialMode = 'GOOGLE';
             } else if (current === 'FACEBOOK') {
               this.social.socialLogin = current;
               this.login = false;
               this.emailOtp = data.data.data.email;
               this.dataUser = data.data;
-              // this.socialMode = 'GOOGLE';
+              this.socialMode = 'GOOGLE';
             } else if (current === 'TWITTER') {
               this.social.socialLogin = current;
               this.login = false;
               this.emailOtp = data.data.data.email;
               this.dataUser = data.data;
-              // this.socialMode = 'GOOGLE';
+              this.socialMode = 'GOOGLE';
+            } else if (current === 'GOOGLE') {
+              this.social.socialLogin = current;
+              this.login = false;
+              this.emailOtp = data.data.data.email;
+              this.dataUser = data.data;
+              this.socialMode = 'GOOGLE';
             }
           }
         } else {
@@ -839,6 +840,10 @@ export class LoginPage extends AbstractPage implements OnInit {
   public onOtpChange(event: any) {
     if (event && event.length === 6) {
       this.countOtp = event;
+      this.otpInput = this.countOtp.toString().length;
+    } else {
+      this.countOtp = event;
+      this.otpInput = this.countOtp.toString().length;
     }
   }
   public sendNewOtp() {
@@ -863,6 +868,7 @@ export class LoginPage extends AbstractPage implements OnInit {
     let mode = this.socialMode;
     if (mode === 'GOOGLE') {
       this.checkMergeUserFacade.checkOtpGG(this.emailOtp, this.googleToken.idToken, this.googleToken.authToken, this.countOtp, mode).then((res) => {
+        this.ngOtpInput.otpForm.disable();
         if (res.message === "Loggedin successful" && res.authUser === 'GOOGLE') {
           this.authenManager.loginWithGoogle(this.googleToken.idToken, this.googleToken.authToken, mode).then((data) => {
             if (data) {
@@ -891,6 +897,7 @@ export class LoginPage extends AbstractPage implements OnInit {
         }
       }).catch((err) => {
         if (err.error.message === "The OTP is not correct.") {
+          this.ngOtpInput.otpForm.enable();
           let dialog = this.dialog.open(DialogAlert, {
             disableClose: true,
             data: {
@@ -906,6 +913,7 @@ export class LoginPage extends AbstractPage implements OnInit {
       });
     } else if (mode === 'FACEBOOK') {
       this.checkMergeUserFacade.checkOtpFB(this.emailOtp, this.accessToken, this.countOtp, mode).then((res) => {
+        this.ngOtpInput.otpForm.disable();
         if (res.message === "Loggedin successful" && res.authUser === 'FACEBOOK') {
           this.authenManager.loginWithFacebook(res.data, res.authUser).then((data) => {
             if (data) {
@@ -949,6 +957,7 @@ export class LoginPage extends AbstractPage implements OnInit {
       });
     } else if (mode === 'EMAIL') {
       this.checkMergeUserFacade.checkOtp(this.emailOtp, this.countOtp, mode).then((res) => {
+        this.ngOtpInput.otpForm.disable();
         if (res.message === "Loggedin successful" && res.authUser === 'EMAIL') {
           this.authenManager.login(this.emailOtp, this.passwordOtp, mode).then((data) => {
             if (data) {
@@ -997,6 +1006,7 @@ export class LoginPage extends AbstractPage implements OnInit {
         twitterUserId: this.TwUserId
       }
       this.checkMergeUserFacade.checkOtpTW(twitter, this.emailOtp, this.countOtp, mode).then((res) => {
+        this.ngOtpInput.otpForm.disable();
         if (res.message === "Loggedin successful" && res.authUser === 'TWITTER') {
           this.authenManager.loginWithTwitter(twitter, mode).then((data) => {
             if (data) {
