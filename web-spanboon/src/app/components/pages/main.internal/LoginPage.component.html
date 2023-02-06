@@ -164,7 +164,7 @@
                             <countdown [config]="configCountdown" (event)="otpCountdownHandleEvent($event)"></countdown>
                         </ng-template>
                         <spanboon-button class="verify-otp" [height]="'34pt'" [text]="'ยืนยัน'" [fontSize]="'18px'"
-                            [bgColor]="''" (click)="clickCheckOtp()">
+                            [bgColor]="''" (click)="otpInput === 6 ? clickCheckOtp() : null">
                         </spanboon-button>
                     </div>
                 </div>

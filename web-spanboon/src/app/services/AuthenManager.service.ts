@@ -57,7 +57,7 @@ export class AuthenManager {
     this.observManager.createSubject(REGISTERED_SUBJECT);
   }
 
-  myBrowser() {
+  public myBrowser() {
     if ((navigator.userAgent.indexOf("Opera") || navigator.userAgent.indexOf('OPR')) != -1) {
       return 'Opera';
     } else if (navigator.userAgent.indexOf("Chrome") != -1) {
