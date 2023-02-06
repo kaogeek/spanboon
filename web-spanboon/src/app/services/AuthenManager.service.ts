@@ -57,7 +57,7 @@ export class AuthenManager {
     this.observManager.createSubject(REGISTERED_SUBJECT);
   }
 
-  myBrowser() {
+  public myBrowser() {
     if ((navigator.userAgent.indexOf("Opera") || navigator.userAgent.indexOf('OPR')) != -1) {
       return 'Opera';
     } else if (navigator.userAgent.indexOf("Chrome") != -1) {
@@ -173,7 +173,7 @@ export class AuthenManager {
     });
   }
 
-  public loginWithTwitter(data: any, mode?: string): Promise<any> {
+  public loginWithTwitter(data: any, mode?: string, res?: any): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/login';
       const tokenFCM = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
@@ -183,6 +183,7 @@ export class AuthenManager {
         twitterUserId: data.twitterUserId,
         tokenFCM: tokenFCM,
         deviceName: this.myBrowser(),
+        email: res
       };
 
       let headers = new HttpHeaders({ 'Content-Type': 'application/json' });

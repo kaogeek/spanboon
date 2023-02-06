@@ -21,7 +21,6 @@ import { ObjectID } from 'mongodb';
 import { PROVIDER } from '../../constants/LoginProvider';
 import moment from 'moment';
 import { ForgotPasswordRequest } from './requests/ForgotPasswordRequest';
-import NodeCache from 'node-cache';
 import { OtpRequest } from './requests/OTP';
 import { FacebookService } from '../services/FacebookService';
 import { AssetService } from '../services/AssetService';
@@ -44,7 +43,6 @@ import { DeviceTokenService } from '../services/DeviceToken';
 import { CheckUser } from './requests/CheckUser';
 import { AutoSynz } from './requests/AutoSynz';
 import { OtpService } from '../services/OtpService';
-const cache = new NodeCache({ stdTTL: 300 });
 @JsonController()
 export class GuestController {
     constructor(
@@ -106,7 +104,7 @@ export class GuestController {
         const regex = /[ก-ฮ]/g;
         const found = uniqueId.match(regex);
         const checkEmail: User = await this.userService.findOne({ where: { username: registerEmail } });
-        if(checkEmail){
+        if (checkEmail) {
             const errorResponse = ResponseUtil.getErrorResponse('This Email already exists', undefined);
             return res.status(400).send(errorResponse);
         }
@@ -1076,7 +1074,6 @@ export class GuestController {
                 const errorResponse: any = { status: 0, message: 'Invalid Token.' };
                 return res.status(400).send(errorResponse);
             }
-
             const twAuthenId = await this.twitterService.getTwitterUserAuthenId(twitterUserId);
             if (twAuthenId === null || twAuthenId === undefined) {
                 const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'Twitter was not registed.' };
@@ -1158,11 +1155,6 @@ export class GuestController {
         let loginUser: any;
         const userEmail: string = users.email ? users.email.toLowerCase() : '';
         let authen = undefined;
-        const checkEmail: User = await this.userService.findOne({ where: { email: userEmail } });
-        if(checkEmail){
-            const errorResponse = ResponseUtil.getErrorResponse('This Email already exists', undefined);
-            return res.status(400).send(errorResponse);
-        }
         if (mode === PROVIDER.EMAIL) {
             const modeAuthen = [];
             const data: User = await this.userService.findOne({ where: { username: userEmail } });
@@ -1589,19 +1581,14 @@ export class GuestController {
                 const errorResponse: any = { status: 0, message: ex };
                 return res.status(400).send(errorResponse);
             }
-
             if (twitterUserId === undefined) {
                 const errorResponse: any = { status: 0, message: 'Invalid Token.' };
                 return res.status(400).send(errorResponse);
             }
             let userTw = undefined;
-            const twAuthenId = await this.twitterService.getTwitterUserAuthenId(twitterUserId);
-            if (twAuthenId === undefined) {
-                const errorResponse: any = { status: 0, message: 'This Email not exists' };
-                return res.status(400).send(errorResponse);
-            }
-            const authenTw = await this.authenticationIdService.findOne({ providerUserId: twAuthenId.providerUserId, providerName: PROVIDER.TWITTER });
-            if (userEmail !== undefined) {
+
+            const authenTw = await this.authenticationIdService.findOne({ providerUserId: twitterUserId, providerName: PROVIDER.TWITTER });
+            if (userEmail !== undefined && authenTw !== undefined) {
                 userTw = await this.userService.findOne({ _id: authenTw.user });
             } else {
                 userTw = await this.userService.findOne({ email: userEmail });
@@ -1610,11 +1597,11 @@ export class GuestController {
                 let authenTws = undefined;
                 const stackAuth = [];
                 const pic = [];
-                const findAuthenTw = await this.authenticationIdService.findOne({ providerUserId: twAuthenId.providerUserId, providerName: PROVIDER.TWITTER });
+                const findAuthenTw = await this.authenticationIdService.findOne({ providerUserId: twitterUserId, providerName: PROVIDER.TWITTER });
                 if (userTw !== undefined && findAuthenTw === undefined) {
                     const authenAll = await this.authenticationIdService.find({ where: { user: userTw.id } });
                     for (authenTws of authenAll) {
-                        stackAuth.push(authenTw.providerName);
+                        stackAuth.push(authenTws.providerName);
                     }
                     const user: User = new User();
                     user.username = userTw.username;
@@ -1632,45 +1619,9 @@ export class GuestController {
                     user.banned = userTw.banned;
                     const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', user, stackAuth, pic);
                     return res.status(200).send(successResponse);
-                } else {
-                    const userExrTime = await this.getUserLoginExpireTime();
-                    const currentDateTime = moment().toDate();
-                    const authTime = currentDateTime;
-                    const expirationDate = moment().add(userExrTime, 'days').toDate();
-                    const query = { _id: twAuthenId.id };
-                    const newValue = { $set: { lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, expirationDate } };
-                    const updateAuth = await this.authenticationIdService.update(query, newValue);
-
-                    if (updateAuth) {
-                        const updatedAuth = await this.authenticationIdService.findOne({ _id: twAuthenId.id });
-                        // await this.deviceToken.createDeviceToken({deviceName,token:tokenFCM,userId:updatedAuth.user});
-                        loginUser = await this.userService.findOne({ where: { _id: updatedAuth.user } });
-                        loginToken = updatedAuth.storedCredentials;
-                        loginToken = jwt.sign({ token: loginToken }, env.SECRET_KEY);
-                    }
-                    if (loginUser === undefined) {
-                        const errorResponse: any = { status: 0, message: 'Cannot login please try again.' };
-                        return res.status(400).send(errorResponse);
-                    }
-
-                    if (loginUser.banned === true) {
-                        const errorResponse = ResponseUtil.getErrorResponse('User Banned', undefined);
-                        return res.status(400).send(errorResponse);
-                    }
-
-                    const userFollowings = await this.userFollowService.find({ where: { userId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
-                    const userFollowers = await this.userFollowService.find({ where: { subjectId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
-
-                    loginUser = await this.userService.cleanUserField(loginUser);
-                    loginUser.followings = userFollowings.length;
-                    loginUser.followers = userFollowers.length;
-                    const result = { token: loginToken, user: loginUser };
-
-                    const successResponse = ResponseUtil.getSuccessResponse('Loggedin successful', result);
-                    return res.status(200).send(successResponse);
                 }
             } else if (authenTw !== undefined && userTw !== undefined) {
-                if (twAuthenId === null || twAuthenId === undefined) {
+                if (authenTw === null || authenTw === undefined) {
                     const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'Twitter was not registed.' };
                     return res.status(400).send(errorUserNameResponse);
                 } else {
@@ -1678,12 +1629,12 @@ export class GuestController {
                     const currentDateTime = moment().toDate();
                     const authTime = currentDateTime;
                     const expirationDate = moment().add(userExrTime, 'days').toDate();
-                    const query = { _id: twAuthenId.id };
+                    const query = { user: userTw.id };
                     const newValue = { $set: { lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, expirationDate } };
                     const updateAuth = await this.authenticationIdService.update(query, newValue);
 
                     if (updateAuth) {
-                        const updatedAuth = await this.authenticationIdService.findOne({ _id: twAuthenId.id });
+                        const updatedAuth = await this.authenticationIdService.findOne({ user: userTw.id });
                         // await this.deviceToken.createDeviceToken({deviceName,token:tokenFCM,userId:updatedAuth.user});
                         loginUser = await this.userService.findOne({ where: { _id: updatedAuth.user } });
                         loginToken = updatedAuth.storedCredentials;
@@ -1711,7 +1662,7 @@ export class GuestController {
                     return res.status(200).send(successResponse);
                 }
             } else {
-                const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined,obJectTw);
+                const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined, obJectTw);
                 return res.status(400).send(errorResponse);
             }
         }
@@ -1730,36 +1681,35 @@ export class GuestController {
         }
         const minm = 100000;
         const maxm = 999999;
-        const getCache = await cache.get(user.id.toString());
         const limitCount = await this.otpService.findOne({ where: { email: user.email } });
         let count = 1;
-        if (getCache !== undefined) {
-            count += getCache[0].limit;
-        }
+
         const otpRandom = Math.floor(Math.random() * (maxm - minm + 1)) + minm;
         if (limitCount === undefined) {
-            saveOtp = await this.otpService.createOtp({ userId: user.id, email: emailRes, otp: otpRandom, limit: count, expiration: expirationDate });
+            const sendMailRes = await this.sendActivateOTP(user, emailRes, otpRandom, 'Send OTP');
+            if (sendMailRes.status === 1) {
+                saveOtp = await this.otpService.createOtp({ userId: user.id, email: emailRes, otp: otpRandom, limit: count, expiration: expirationDate });
+            }
         }
 
         if (limitCount !== undefined && limitCount.limit <= 2) {
             count += limitCount.limit;
             const query = { email: emailRes };
             const newValues = { $set: { limit: count, otp: otpRandom } };
-            await this.otpService.updateToken(query, newValues);
+            const sendMailRes = await this.sendActivateOTP(user, emailRes, otpRandom, 'Send OTP');
+            if (sendMailRes.status === 1) {
+                await this.otpService.updateToken(query, newValues);
+            }
         }
 
         if (saveOtp !== undefined && limitCount === undefined) {
-            const sendMailRes = await this.sendActivateOTP(user, emailRes, saveOtp.otp, 'Send OTP');
-            if (sendMailRes.status === 1) {
-                const successResponse = ResponseUtil.getSuccessOTP('The Otp have been send.', saveOtp, saveOtp.limit);
-                return res.status(200).send(successResponse);
-            }
+            // const sendMailRes = await this.sendActivateOTP(user, emailRes, otpRandom, 'Send OTP');
+            const successResponse = ResponseUtil.getSuccessOTP('The Otp have been send.', saveOtp.limit);
+            return res.status(200).send(successResponse);
         } else if (limitCount !== undefined && limitCount.limit <= 2 && limitCount.expiration < expirationDate) {
-            const sendMailRes = await this.sendActivateOTP(user, emailRes, limitCount.otp, 'Send OTP');
-            if (sendMailRes.status === 1) {
-                const successResponse = ResponseUtil.getSuccessOTP('The Otp have been send.', saveOtp, limitCount.limit);
-                return res.status(200).send(successResponse);
-            }
+            // const sendMailRes = await this.sendActivateOTP(user, emailRes, limitCount.otp, 'Send OTP');
+            const successResponse = ResponseUtil.getSuccessOTP('The Otp have been send.', limitCount.limit);
+            return res.status(200).send(successResponse);
         } else {
             return res.status(400).send(ResponseUtil.getErrorResponse('The Otp have been send more than 3 times, Please try add your OTP again', undefined));
         }
@@ -1907,6 +1857,74 @@ export class GuestController {
                         loginUser.followers = userFollowers.length;
 
                         const successResponse = ResponseUtil.getSuccessResponseAuth('Loggedin successful', otpRequest.idToken, PROVIDER.GOOGLE);
+                        const update = await this.userService.update(queryMerge, newValues);
+                        if (update) {
+                            return res.status(200).send(successResponse);
+                        } else {
+                            const errorResponse = ResponseUtil.getErrorResponse('Merge not successful.', undefined);
+                            return res.status(400).send(errorResponse);
+                        }
+                    }
+                } else {
+                    const errorResponse = ResponseUtil.getErrorResponse('The OTP is not correct.', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+            } else {
+                const errorResponse = ResponseUtil.getErrorResponse('The OTP is not correct.', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        } else if (user && mode === PROVIDER.TWITTER) {
+            if (otp === otpFind.otp) {
+                let authIdCreate = undefined;
+                const twitterOauthToken = otpRequest.twitterOauthToken;
+                const twitterOauthTokenSecret = otpRequest.twitterOauthTokenSecret;
+
+                let twitterUserId = undefined;
+                try {
+                    const verifyObject = await this.twitterService.verifyCredentials(twitterOauthToken, twitterOauthTokenSecret);
+                    twitterUserId = verifyObject.id_str;
+                } catch (ex) {
+                    const errorResponse: any = { status: 0, message: ex };
+                    return res.status(400).send(errorResponse);
+                }
+                const authenId = new AuthenticationId();
+                authenId.user = user.id;
+                authenId.lastAuthenTime = moment().toDate();
+                authenId.providerUserId = twitterUserId;
+                authenId.providerName = PROVIDER.TWITTER;
+                authenId.storedCredentials = 'oauth_token=' + twitterOauthToken + '&oauth_token_secret=' + twitterOauthTokenSecret + '&user_id=' + twitterUserId;
+                authenId.properties = {
+                    userId: twitterUserId,
+                    oauthToken: twitterOauthToken,
+                    oauthTokenSecret: twitterOauthTokenSecret
+                };
+                authenId.expirationDate = moment().add(userExrTime, 'days').toDate();
+                if (otpFind.expiration < expirationDate) {
+                    authIdCreate = await this.authenticationIdService.create(authenId);
+                    const queryMerge = { _id: user.id };
+                    const newValues = { $set: { mergeTW: true } };
+                    if (authIdCreate) {
+                        loginUser = await this.userService.findOne({ where: { _id: authIdCreate.user } });
+                        const query = { email: emailRes };
+                        await this.otpService.delete(query);
+                        if (loginUser === undefined) {
+                            const errorResponse: any = { status: 0, message: 'Cannot login please try again.' };
+                            return res.status(400).send(errorResponse);
+                        }
+
+                        if (loginUser.banned === true) {
+                            const errorResponse = ResponseUtil.getErrorResponse('User Banned', undefined);
+                            return res.status(400).send(errorResponse);
+                        }
+
+                        const userFollowings = await this.userFollowService.find({ where: { userId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
+                        const userFollowers = await this.userFollowService.find({ where: { subjectId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
+
+                        loginUser = await this.userService.cleanUserField(loginUser);
+                        loginUser.followings = userFollowings.length;
+                        loginUser.followers = userFollowers.length;
+
+                        const successResponse = ResponseUtil.getSuccessResponseAuth('Loggedin successful', otpRequest.idToken, PROVIDER.TWITTER);
                         const update = await this.userService.update(queryMerge, newValues);
                         if (update) {
                             return res.status(200).send(successResponse);
@@ -2294,7 +2312,6 @@ export class GuestController {
     private async sendActivateOTP(user: User, email: string, code: any, subject: string): Promise<any> {
         let message = '<p> Hello ' + user.firstName + '</p>';
         message += '<p> Your Activation Code is: ' + code + '</p>';
-        message += code + '&email=' + email + '"> OTP </a>';
 
         const sendMail = MAILService.passwordForgotMail(message, email, subject);
 

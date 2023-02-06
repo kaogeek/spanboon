@@ -23,10 +23,10 @@
         border-bottom: whitesmoke 2px solid;
         padding: 10pt;
         display: flex;
-        align-items: center;
-        flex-direction: inherit;
         position: relative;
         overflow: hidden;
+        align-items: unset;
+        flex-direction: unset;
 
         >.edit-head-one {
             @include font-size-8($font-head-500);

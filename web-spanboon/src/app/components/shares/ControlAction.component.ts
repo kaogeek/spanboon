@@ -116,6 +116,7 @@ export class ControlAction {
 
   public ngOnInit(): void {
     this.valueSub();
+    this.emitpage.emit(this.accessPage[0]);
   }
 
   public selectAccessPage(page: any) {

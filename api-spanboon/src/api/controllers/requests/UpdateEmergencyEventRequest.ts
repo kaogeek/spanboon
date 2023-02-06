@@ -16,4 +16,5 @@ export class UpdateEmergencyEventRequest {
     public asset: any;
     public isClose: boolean;
     public isPin: boolean;
+    public ordering:number;
 }

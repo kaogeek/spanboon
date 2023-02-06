@@ -105,7 +105,7 @@ export class PageController {
         private socialPostLogsService: SocialPostLogsService,
         private deviceTokenService: DeviceTokenService,
         private pageNotificationService: PageNotificationService,
-        private notificationService:NotificationService
+        private notificationService: NotificationService
     ) { }
 
     // Find Page API
@@ -336,10 +336,10 @@ export class PageController {
         const getUser = await this.userService.findOne({ _id: userId });
         const verifyObject = await this.twitterService.verifyCredentials(socialBinding.twitterOauthToken, socialBinding.twitterTokenSecret);
         const regex = /[ก-ฮ]/g;
-        if(verifyObject.screen_name !== undefined){
-            found =  verifyObject.screen_name.match(regex);
+        if (verifyObject.screen_name !== undefined) {
+            found = verifyObject.screen_name.match(regex);
         }
-        if(found !== null && found !== undefined){
+        if (found !== null && found !== undefined) {
             const errorResponse = ResponseUtil.getErrorResponse('Please fill in the box with english lanauage.', undefined);
             return res.status(400).send(errorResponse);
         }
@@ -459,10 +459,10 @@ export class PageController {
         const pagePicture = await this.facebookService.getPagePicture(socialBinding.facebookPageId, socialBinding.pageAccessToken);
         const { data } = await axios.get('https://graph.facebook.com/v14.0/' + socialBinding.facebookPageId + '?fields=cover&access_token=' + socialBinding.pageAccessToken);
         const pageDetail = await this.facebookService.getPageFb(socialBinding.facebookPageId, socialBinding.pageAccessToken);
-        if(pageDetail.username !== undefined){
-            found =  pageDetail.username.match(regex);
+        if (pageDetail.username !== undefined) {
+            found = pageDetail.username.match(regex);
         }
-        if(found !== null && found !== undefined){
+        if (found !== null && found !== undefined) {
             const errorResponse = ResponseUtil.getErrorResponse('Please fill in the box with english lanauage.', undefined);
             return res.status(400).send(errorResponse);
         }
@@ -712,24 +712,24 @@ export class PageController {
 
     @Delete('/:id/delete/admin')
     @Authorized('user')
-    public async deletePageAdmin(@Param('id') pageId: string,@Req() req: any ,@Res() res: any):Promise<any>{
+    public async deletePageAdmin(@Param('id') pageId: string, @Req() req: any, @Res() res: any): Promise<any> {
         // request Userid 
         const pageObjId = new ObjectID(pageId);
         const userId = req.body.userId;
-        if(userId === null && userId === undefined && userId === ''){
+        if (userId === null && userId === undefined && userId === '') {
             const errorResponse: any = { status: 0, message: 'undefined' };
             return res.status(400).send(errorResponse);
         }
-        if(pageObjId !== undefined && pageObjId !== null){
-            const findPageAccess = await this.pageAccessLevelService.delete({page:pageObjId,user:ObjectID(userId)});
-            if(findPageAccess){
+        if (pageObjId !== undefined && pageObjId !== null) {
+            const findPageAccess = await this.pageAccessLevelService.delete({ page: pageObjId, user: ObjectID(userId) });
+            if (findPageAccess) {
                 const successResponse = ResponseUtil.getSuccessResponse('Successfully delete user admin.', undefined);
                 return res.status(200).send(successResponse);
-            }else{
+            } else {
                 const errorResponse: any = { status: 0, message: 'undefined' };
                 return res.status(400).send(errorResponse);
             }
-        }else{
+        } else {
             const errorResponse: any = { status: 0, message: 'undefined' };
             return res.status(400).send(errorResponse);
         }
@@ -2403,7 +2403,7 @@ export class PageController {
                     whoFollowYou.imageURL
                 );
                 for (const tokenFCM of tokenFCMId) {
-                    if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined) {
+                    if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
                         await this.notificationService.sendNotificationFCM(
                             followCreate.subjectId,
                             undefined,

@@ -176,7 +176,7 @@ export class PostsCommentController {
                             pageName.imageURL
                         );
                         for (const tokenFCM of tokenFCMId) {
-                            if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined) {
+                            if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
                                 await this.notificationService.sendNotificationFCM(
                                     getPost.pageId,
                                     undefined,
@@ -213,7 +213,7 @@ export class PostsCommentController {
                             pageName.imageURL
                         );
                         for (const tokenFCM of tokenFCMId) {
-                            if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined) {
+                            if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
                                 await this.notificationService.sendNotificationFCM(
                                     getPost.ownerUser,
                                     USER_TYPE.PAGE,
@@ -255,7 +255,7 @@ export class PostsCommentController {
                             userName.imageURL
                         );
                         for (const tokenFCM of tokenFCMId) {
-                            if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined) {
+                            if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
                                 await this.notificationService.sendNotificationFCM(
                                     page.id,
                                     undefined,
@@ -292,7 +292,7 @@ export class PostsCommentController {
                             userName.imageURL
                         );
                         for (const tokenFCM of tokenFCMId) {
-                            if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined) {
+                            if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
                                 await this.notificationService.sendNotificationFCM(
                                     postWho.ownerUser,
                                     USER_TYPE.USER,
@@ -758,7 +758,7 @@ export class PostsCommentController {
                             pageLike.imageURL
                         );
                         for (const tokenFCM of tokenFCMId) {
-                            if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined) {
+                            if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
                                 await this.notificationService.sendNotificationFCM(
                                     page.id + '',
                                     undefined,
@@ -794,7 +794,7 @@ export class PostsCommentController {
                             pageLike.imageURL
                         );
                         for (const tokenFCM of tokenFCMId) {
-                            if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined) {
+                            if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
                                 await this.notificationService.sendNotificationFCM(
                                     tokenFCMId.userId,
                                     USER_TYPE.PAGE,
@@ -834,7 +834,7 @@ export class PostsCommentController {
                                 user.imageURL
                             );
                         for (const tokenFCM of tokenFCMId) {
-                            if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined) {
+                            if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
                                 await this.notificationService.sendNotificationFCM
                                     (
                                         page.id + '',
@@ -872,7 +872,7 @@ export class PostsCommentController {
                                 user.imageURL
                             );
                         for (const tokenFCM of tokenFCMId) {
-                            if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined) {
+                            if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
                                 await this.notificationService.sendNotificationFCM
                                     (
                                         notifiUser.user + '',
