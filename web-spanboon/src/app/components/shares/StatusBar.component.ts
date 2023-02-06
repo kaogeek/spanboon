@@ -22,7 +22,7 @@ export class StatusBar extends AbstractPage implements OnInit {
   @Input()
   public dataName: any;
   @Input()
-  public topic: string = "เหตุการณ์ด่วน !";
+  public topic: string = "เกาะทุกก้าว !";
   @Input()
   public bgColor: string = "#fff";
   @Input()

@@ -17,7 +17,7 @@ import { PLATFORM_NAME_TH, PLATFORM_NAME_ENG, PLATFORM_SOPPORT_EMAIL, PLATFORM_U
 export class StatusBarLooking implements OnInit {
 
   @Input()
-  public topic: string = "เหตุการณ์ด่วน !";
+  public topic: string = "เกาะทุกก้าว !";
   @Input()
   public status: string = "กำลัง" + PLATFORM_NEEDS_TEXT;
   @Input()

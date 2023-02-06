@@ -19,6 +19,7 @@ import { NotificationFacade } from './facade/NotificationFacade.service';
 export class NotificationManager extends AbstractFacade {
 
     public static readonly USER_NOTIFICATION_SUBJECT: string = 'user.notification';
+    private loginText: string = 'loginSuccess';
 
     private notificationMap: any; // key = userId & value = array
     protected baseURL: string;
@@ -151,5 +152,12 @@ export class NotificationManager extends AbstractFacade {
         }
 
         this.notificationMap[userId] = [];
+    }
+
+    public checkLoginSuccess() {
+        this.observManager.createSubject(this.loginText);
+        this.observManager.publish(this.loginText, {
+            data: true
+        });
     }
 }

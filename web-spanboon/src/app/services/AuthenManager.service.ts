@@ -595,7 +595,8 @@ export class AuthenManager {
     let isCheck: boolean = false;
     this.routeActivated.queryParams.subscribe(params => {
       let hidebars = params['hidebar'];
-      if (hidebars === 'true') {
+      let mfpapp = params['mfpapp'];
+      if (hidebars === 'true' || mfpapp === 'true') {
         localStorage.setItem('hidebar', "true");
         isCheck = false;
       } else {
@@ -609,7 +610,8 @@ export class AuthenManager {
 
   public setHidebar() {
     let hidebar = localStorage.getItem('hidebar');
-    if (hidebar === "true") {
+    let mfpapp = localStorage.getItem('hidebar');
+    if (hidebar === "true" || mfpapp === "true") {
       return false;
     } else {
       return true;
