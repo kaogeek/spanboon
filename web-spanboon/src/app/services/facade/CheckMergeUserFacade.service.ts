@@ -116,11 +116,13 @@ export class CheckMergeUserFacade extends AbstractFacade {
       });
     });
   };
-  public loginWithFacebook(token: string, mode?: string): Promise<any> {
+  public loginWithFacebook(token: string, mode?: string, res?: any): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/check_email_user';
       let body: any = {
         "token": token,
+        "mode": mode,
+        "email": res
       };
       let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
       if (mode !== undefined || mode !== "") {
@@ -146,7 +148,6 @@ export class CheckMergeUserFacade extends AbstractFacade {
 
         resolve(result);
       }).catch((error: any) => {
-        console.log('error', error);
         reject(error);
       });
     });
@@ -191,14 +192,16 @@ export class CheckMergeUserFacade extends AbstractFacade {
       });
     });
   }
-  public loginWithTwitter(data: any, mode?: string): Promise<any> {
+  public loginWithTwitter(data: any, mode?: string, res?: any): Promise<any> {
     return new Promise((resolve, reject) => {
-      let url: string = this.baseURL + '/login';
+      let url: string = this.baseURL + '/check_email_user';
       const tokenFCM = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
       let body: any = {
-        "tokenFCM": tokenFCM,
-        "deviceName": "Chrome",
+        tokenFCM: tokenFCM,
+        deviceName: this.authMgr.myBrowser(),
+        email: res
       };
+      console.log("body", body)
       if (data !== null && data !== undefined) {
         body = Object.assign(data);
       }
@@ -213,7 +216,9 @@ export class CheckMergeUserFacade extends AbstractFacade {
 
         let result: any = {
           token: response.data.token,
-          user: response.data.user
+          user: response.data.user,
+          data: response,
+          pic: response.picture ? response.picture[0] : ''
         };
 
         this.token = result.token;

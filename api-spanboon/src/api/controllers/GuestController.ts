@@ -106,7 +106,7 @@ export class GuestController {
         const regex = /[ก-ฮ]/g;
         const found = uniqueId.match(regex);
         const checkEmail: User = await this.userService.findOne({ where: { username: registerEmail } });
-        if(checkEmail){
+        if (checkEmail) {
             const errorResponse = ResponseUtil.getErrorResponse('This Email already exists', undefined);
             return res.status(400).send(errorResponse);
         }
@@ -1156,13 +1156,10 @@ export class GuestController {
         const loginPassword = users.password;
         let loginToken: any;
         let loginUser: any;
+        console.log('users', users);
         const userEmail: string = users.email ? users.email.toLowerCase() : '';
         let authen = undefined;
-        const checkEmail: User = await this.userService.findOne({ where: { email: userEmail } });
-        if(checkEmail){
-            const errorResponse = ResponseUtil.getErrorResponse('This Email already exists', undefined);
-            return res.status(400).send(errorResponse);
-        }
+
         if (mode === PROVIDER.EMAIL) {
             const modeAuthen = [];
             const data: User = await this.userService.findOne({ where: { username: userEmail } });
@@ -1595,22 +1592,22 @@ export class GuestController {
                 return res.status(400).send(errorResponse);
             }
             let userTw = undefined;
-            const twAuthenId = await this.twitterService.getTwitterUserAuthenId(twitterUserId);
-            if (twAuthenId === undefined) {
-                const errorResponse: any = { status: 0, message: 'This Email not exists' };
-                return res.status(400).send(errorResponse);
-            }
-            const authenTw = await this.authenticationIdService.findOne({ providerUserId: twAuthenId.providerUserId, providerName: PROVIDER.TWITTER });
-            if (userEmail !== undefined) {
+            const authenTw = await this.authenticationIdService.findOne({ providerUserId: twitterUserId, providerName: PROVIDER.TWITTER });
+            if (userEmail !== undefined && authenTw !== undefined) {
                 userTw = await this.userService.findOne({ _id: authenTw.user });
             } else {
                 userTw = await this.userService.findOne({ email: userEmail });
             }
+            if (authenTw === undefined && userEmail === undefined) {
+                const errorResponse: any = { status: 0, message: 'This Email not exists' };
+                return res.status(400).send(errorResponse);
+            }
+
             if (authenTw === undefined && userTw !== undefined) {
                 let authenTws = undefined;
                 const stackAuth = [];
                 const pic = [];
-                const findAuthenTw = await this.authenticationIdService.findOne({ providerUserId: twAuthenId.providerUserId, providerName: PROVIDER.TWITTER });
+                const findAuthenTw = await this.authenticationIdService.findOne({ providerUserId: twitterUserId, providerName: PROVIDER.TWITTER });
                 if (userTw !== undefined && findAuthenTw === undefined) {
                     const authenAll = await this.authenticationIdService.find({ where: { user: userTw.id } });
                     for (authenTws of authenAll) {
@@ -1637,12 +1634,12 @@ export class GuestController {
                     const currentDateTime = moment().toDate();
                     const authTime = currentDateTime;
                     const expirationDate = moment().add(userExrTime, 'days').toDate();
-                    const query = { _id: twAuthenId.id };
+                    const query = { providerUserId: twitterUserId };
                     const newValue = { $set: { lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, expirationDate } };
                     const updateAuth = await this.authenticationIdService.update(query, newValue);
 
                     if (updateAuth) {
-                        const updatedAuth = await this.authenticationIdService.findOne({ _id: twAuthenId.id });
+                        const updatedAuth = await this.authenticationIdService.findOne({ providerUserId: twitterUserId });
                         // await this.deviceToken.createDeviceToken({deviceName,token:tokenFCM,userId:updatedAuth.user});
                         loginUser = await this.userService.findOne({ where: { _id: updatedAuth.user } });
                         loginToken = updatedAuth.storedCredentials;
@@ -1670,7 +1667,7 @@ export class GuestController {
                     return res.status(200).send(successResponse);
                 }
             } else if (authenTw !== undefined && userTw !== undefined) {
-                if (twAuthenId === null || twAuthenId === undefined) {
+                if (authenTw === null || userTw === undefined) {
                     const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'Twitter was not registed.' };
                     return res.status(400).send(errorUserNameResponse);
                 } else {
@@ -1678,12 +1675,12 @@ export class GuestController {
                     const currentDateTime = moment().toDate();
                     const authTime = currentDateTime;
                     const expirationDate = moment().add(userExrTime, 'days').toDate();
-                    const query = { _id: twAuthenId.id };
+                    const query = { providerUserId: twitterUserId };
                     const newValue = { $set: { lastAuthenTime: authTime, lastSuccessAuthenTime: authTime, expirationDate } };
                     const updateAuth = await this.authenticationIdService.update(query, newValue);
 
                     if (updateAuth) {
-                        const updatedAuth = await this.authenticationIdService.findOne({ _id: twAuthenId.id });
+                        const updatedAuth = await this.authenticationIdService.findOne({ providerUserId: twitterUserId });
                         // await this.deviceToken.createDeviceToken({deviceName,token:tokenFCM,userId:updatedAuth.user});
                         loginUser = await this.userService.findOne({ where: { _id: updatedAuth.user } });
                         loginToken = updatedAuth.storedCredentials;
@@ -1711,7 +1708,7 @@ export class GuestController {
                     return res.status(200).send(successResponse);
                 }
             } else {
-                const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined,obJectTw);
+                const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined, obJectTw);
                 return res.status(400).send(errorResponse);
             }
         }
