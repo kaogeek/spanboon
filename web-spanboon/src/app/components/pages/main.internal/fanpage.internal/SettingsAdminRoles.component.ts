@@ -481,6 +481,5 @@ export class SettingsAdminRoles extends AbstractPage implements OnInit {
 
     public clickcancel() {
         this.isCancel = true;
-
     }
 }
