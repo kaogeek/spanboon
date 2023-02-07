@@ -327,7 +327,7 @@
                                 [active]="activeLink == link.label">
                                 {{link.label}}
                             </a>
-                            <ng-container *ngIf="!isNotAccess">
+                            <ng-container *ngIf="!isNotAccess && isLogin()">
                                 <button mat-icon-button [matMenuTriggerFor]="menu" [disableRipple]="'false'"
                                     class="dropdown">
                                     <span class="material-icons">
