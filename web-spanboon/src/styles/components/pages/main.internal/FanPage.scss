@@ -19,10 +19,10 @@
       display: flex;
       flex-direction: column;
 
-      > .fan-page-background {
+      >.fan-page-background {
         position: relative;
 
-        > .wrapper-cover-image {
+        >.wrapper-cover-image {
           width: calc(100% - 4px);
           height: calc(#{$height-cover-img-fanpage} - 4px);
           // border: 2px dashed $brandcolor2;
@@ -37,37 +37,35 @@
             display: none;
           }
 
-          > .text-wrapper {
+          >.text-wrapper {
             display: flex;
             height: 100%;
             justify-content: center;
             align-items: center;
             @include font-size-9($font-head-500);
 
-            > .wrapper-icon-upload {
+            >.wrapper-icon-upload {
               display: flex;
               flex-direction: column;
               align-items: center;
 
-              > .icon-upload {
+              >.icon-upload {
                 width: 60pt;
                 height: 70pt;
               }
 
-              > .centered {
+              >.centered {
                 text-align: center;
                 margin: 10pt;
 
-                > .image-upload {
-                  > label {
-                  }
+                >.image-upload {
+                  >label {}
 
-                  #file-input {
-                  }
+                  #file-input {}
                 }
               }
 
-              > .browse {
+              >.browse {
                 padding: 5pt 10pt;
                 border-radius: 25px;
                 border: 3px solid $brandcolor2;
@@ -77,7 +75,7 @@
           }
         }
 
-        > .image-not-edit {
+        >.image-not-edit {
           border: $width-border solid $border-color !important;
           width: calc(100% - 2.4px) !important;
 
@@ -87,14 +85,14 @@
             opacity: unset !important;
           }
 
-          > .image-cover {
+          >.image-cover {
             width: 100%;
             height: 100%;
             object-fit: cover;
           }
         }
 
-        > .cover-img {
+        >.cover-img {
           position: relative;
           width: 100%;
           height: $height-cover-img-fanpage;
@@ -103,7 +101,7 @@
             display: none;
           }
 
-          > .wrapper-img {
+          >.wrapper-img {
             width: 100%;
             height: 100%;
             background-size: cover;
@@ -111,7 +109,7 @@
             background-position-x: 50%;
           }
 
-          > .img-phrase {
+          >.img-phrase {
             display: flex;
             width: calc(100% - #{$padding-right-img-phrase});
             height: 51pt;
@@ -127,15 +125,15 @@
           }
         }
 
-        > .set-cover {
+        >.set-cover {
           position: absolute;
           right: 15pt;
           bottom: 15pt;
           display: flex;
 
-          > .btn-edit-cover,
-          > .btn-save-cover,
-          > .btn-cancel-cover {
+          >.btn-edit-cover,
+          >.btn-save-cover,
+          >.btn-cancel-cover {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -154,13 +152,13 @@
               background: rgba($black, 0.4);
             }
 
-            > .image-upload {
-              > label {
+            >.image-upload {
+              >label {
                 cursor: pointer;
                 display: flex;
                 align-items: center;
 
-                > svg {
+                >svg {
                   margin: 0 7pt 0 0;
 
                   g,
@@ -169,12 +167,10 @@
                   }
                 }
 
-                > .label-edit-cover {
-                }
+                >.label-edit-cover {}
               }
 
-              #file-input {
-              }
+              #file-input {}
             }
           }
         }
@@ -198,7 +194,7 @@
         height: $height-cover-img-fanpage;
       }
 
-      > .wrapper-fan-page {
+      >.wrapper-fan-page {
         display: flex;
         flex-direction: row;
         align-items: flex-start;
@@ -206,20 +202,20 @@
         width: 100%;
         // height: calc(100% - #{$height-cover-img-fanpage});
 
-        > .wrapper-profile-fan-page {
+        >.wrapper-profile-fan-page {
           position: sticky;
           top: 55pt;
           width: $width-profile-fanpage;
           margin-bottom: 10pt;
 
-          > .profile-fan-page {
+          >.profile-fan-page {
             position: relative;
             text-align: center;
             border: $width-border solid $border-color;
             background-color: $white;
             padding: 0 15pt;
 
-            > .img-profile {
+            >.img-profile {
               width: 100pt;
               height: 100pt;
               margin: 0 auto;
@@ -229,7 +225,7 @@
               user-select: none;
               transition: 1s margin-top ease;
 
-              > .edit-profile-fan-page {
+              >.edit-profile-fan-page {
                 width: 30pt;
                 height: 30pt;
                 position: absolute;
@@ -243,15 +239,14 @@
                 justify-content: center;
                 align-items: center;
 
-                > .icon-image {
-                }
+                >.icon-image {}
 
                 &:hover {
                   opacity: 1;
                 }
               }
 
-              > .image-profile-fan-page {
+              >.image-profile-fan-page {
                 width: calc(100% - 8px);
                 height: calc(100% - 8px);
                 border-radius: 50%;
@@ -261,7 +256,7 @@
               }
             }
 
-            > .fan-page-name {
+            >.fan-page-name {
               display: flex;
               width: 100%;
               color: $brandcolor2;
@@ -270,14 +265,14 @@
               align-items: center;
               justify-content: center;
 
-              > .offical-page {
+              >.offical-page {
                 width: 20px;
                 height: 20px;
                 margin-right: 5pt;
                 flex: 0 0 auto;
               }
 
-              > .official-name {
+              >.official-name {
                 display: flex;
                 flex-direction: row;
                 align-items: center;
@@ -285,19 +280,19 @@
               }
             }
 
-            > .fan-page-subline {
+            >.fan-page-subline {
               @include font-size-9($font-head-500);
               margin-bottom: 5pt;
             }
 
-            > .fan-page-tag {
+            >.fan-page-tag {
               color: $color-gray;
               @include font-size-9($font-head-100);
               justify-content: center;
               margin-bottom: 10pt;
             }
 
-            > .btn-web {
+            >.btn-web {
               @include font-size-10($font-head-500);
               border: 1px solid $brandcolor2;
               color: $brandcolor2;
@@ -318,7 +313,7 @@
             }
           }
 
-          > .wrapper-btn-action {
+          >.wrapper-btn-action {
             border-radius: 0;
             display: flex;
             align-items: center;
@@ -331,7 +326,7 @@
             border-right: $width-border solid $border-color;
             @include font-size-9($font-head-500);
 
-            > .btn-follow-about {
+            >.btn-follow-about {
               display: flex;
               align-self: stretch;
               justify-content: space-between;
@@ -339,28 +334,25 @@
               @include font-size-9($font-head-500);
               padding: 0 8pt;
 
-              &:nth-child(1) {
-              }
+              &:nth-child(1) {}
 
-              &:nth-child(2) {
-              }
+              &:nth-child(2) {}
 
-              &:nth-child(3) {
-              }
+              &:nth-child(3) {}
 
-              > button-follow {
-                > .button-follow {
+              >button-follow {
+                >.button-follow {
                   &:hover {
                     background-color: rgba($brandcolor2, 0.1) !important;
                   }
 
-                  > .mat-ripple-element {
+                  >.mat-ripple-element {
                     display: none;
                   }
                 }
 
                 &.active {
-                  > .button-follow {
+                  >.button-follow {
                     background-color: $brandcolor2 !important;
                     color: $white !important;
 
@@ -371,18 +363,18 @@
                 }
               }
 
-              > .count-follow {
+              >.count-follow {
                 display: flex;
                 flex-direction: column;
                 align-items: center;
                 justify-content: center;
 
-                > .count-follow-top {
+                >.count-follow-top {
                   display: flex;
                   align-items: center;
                   justify-content: center;
 
-                  > .icon-user {
+                  >.icon-user {
                     width: $width-icon;
                     height: $height-icon;
                     margin: 0 4pt 0 0;
@@ -400,57 +392,57 @@
             // }
           }
 
-          > .wrapper-looking-for {
+          >.wrapper-looking-for {
             background-color: $white;
             border: $width-border solid $border-color;
             border-radius: $border-radius-4px;
             margin-top: 5pt;
             @include font-size-9($font-head-500);
 
-            > .wrapper-header {
+            >.wrapper-header {
               display: flex;
               justify-content: space-between;
               padding: 15pt;
               border-bottom: $width-border solid $border-color;
 
-              > .header-looking-for {
+              >.header-looking-for {
                 @include font-size-9($font-head-500);
                 flex: 1 1 0%;
                 padding-right: 15pt;
               }
 
-              > .material-icons {
+              >.material-icons {
                 font-family: "Material Icons" !important;
                 font-size: $font-size-icon-large;
                 @include pointer();
                 flex: 0 0 auto;
               }
 
-              > .label-looking-for {
+              >.label-looking-for {
                 @include font-size-9($font-head-400);
               }
 
-              > .subline-looking-for {
+              >.subline-looking-for {
                 @include font-size-10($font-head-500);
                 color: $color-gray;
               }
             }
 
-            > .wrapper-body-doing {
+            >.wrapper-body-doing {
               width: 100%;
               height: auto;
               padding: unset;
               border-bottom: unset;
               @include font-size-9($font-head-500);
 
-              > .con-text {
+              >.con-text {
                 padding: 10pt 15pt;
                 @include font-size-9($font-head-500);
               }
             }
 
-            > .list-looking-for {
-              > .item-looking-for {
+            >.list-looking-for {
+              >.item-looking-for {
                 padding: 10pt 15pt 10pt;
                 margin: 0;
                 @include font-size-10($font-head-100);
@@ -459,12 +451,11 @@
                   border-radius: 0;
                 }
 
-                > span {
-                  > .icon-looking-for {
-                  }
+                >span {
+                  >.icon-looking-for {}
 
-                  > .title-looking-for {
-                    > .top {
+                  >.title-looking-for {
+                    >.top {
                       display: -webkit-box;
                       -webkit-line-clamp: 1;
                       -webkit-box-orient: vertical;
@@ -472,7 +463,7 @@
                       word-break: break-all;
                     }
 
-                    > .bottom {
+                    >.bottom {
                       display: -webkit-box;
                       -webkit-line-clamp: 1;
                       -webkit-box-orient: vertical;
@@ -482,17 +473,15 @@
                   }
                 }
 
-                > .wrapper-option {
-                  > .amount-looking-for {
-                    > .top {
-                    }
+                >.wrapper-option {
+                  >.amount-looking-for {
+                    >.top {}
 
-                    > .bottom {
-                    }
+                    >.bottom {}
                   }
 
-                  > .option {
-                    > svg {
+                  >.option {
+                    >svg {
                       height: 12pt;
                     }
                   }
@@ -500,13 +489,13 @@
               }
             }
 
-            > .footer-contact-social {
+            >.footer-contact-social {
               display: flex;
               flex-direction: row;
               align-items: center;
               width: 100%;
 
-              > .contact-social {
+              >.contact-social {
                 flex: 1 1 0%;
                 padding: 5pt;
                 width: 25pt;
@@ -532,56 +521,63 @@
                 &.active {
                   cursor: pointer;
 
-                  > .facebook {
-                    > svg,
+                  >.facebook {
+
+                    >svg,
                     g,
                     path {
                       fill: #3b5999;
                     }
                   }
 
-                  > .twitter {
-                    > svg,
+                  >.twitter {
+
+                    >svg,
                     g,
                     path {
                       fill: #03a9f4;
                     }
                   }
 
-                  > .line {
-                    > svg,
+                  >.line {
+
+                    >svg,
                     g,
                     path {
                       fill: #6fc32e;
                     }
                   }
 
-                  > .location {
-                    > svg,
+                  >.location {
+
+                    >svg,
                     g,
                     path {
                       fill: #fd5454;
                     }
                   }
 
-                  > .phone {
-                    > svg,
+                  >.phone {
+
+                    >svg,
                     g,
                     path {
                       fill: #6fc32e;
                     }
                   }
 
-                  > .message {
-                    > svg,
+                  >.message {
+
+                    >svg,
                     g,
                     path {
                       fill: #fcd12a;
                     }
                   }
 
-                  > .web {
-                    > svg,
+                  >.web {
+
+                    >svg,
                     g,
                     path {
                       fill: #3b85c7;
@@ -591,7 +587,7 @@
               }
             }
 
-            > .btn-donate {
+            >.btn-donate {
               padding: 8pt 15pt;
               cursor: pointer;
               text-align: center;
@@ -602,12 +598,12 @@
               justify-content: center;
               align-items: center;
 
-              > .btn-donate-top {
+              >.btn-donate-top {
                 @include font-size-9($font-head-500);
                 color: $brandcolor2;
               }
 
-              > .btn-donate-bottom {
+              >.btn-donate-bottom {
                 @include font-size-10($font-head-500);
                 color: $color-gray;
               }
@@ -615,35 +611,34 @@
           }
         }
 
-        > .wrapper-feed-fan-page {
+        >.wrapper-feed-fan-page {
           flex: 1 1 0%;
           width: calc(100% - 255pt);
 
-          > .do-tablet {
+          >.do-tablet {
             display: none;
           }
 
-          > .wrapper-feed-menu {
+          >.wrapper-feed-menu {
             height: 52pt;
             width: calc(100% - 0.7px);
             border-bottom: $width-border solid $border-color;
             border-right: $width-border solid $border-color;
             background: $white;
 
-            > .mat-tab-header {
+            >.mat-tab-header {
               align-items: center;
 
-              > .mat-tab-header-pagination {
-                > .mat-tab-header-pagination-chevron {
-                }
+              >.mat-tab-header-pagination {
+                >.mat-tab-header-pagination-chevron {}
               }
 
-              > .mat-tab-link-container {
-                > .mat-tab-list {
-                  > .mat-tab-links {
+              >.mat-tab-link-container {
+                >.mat-tab-list {
+                  >.mat-tab-links {
                     height: 52pt;
 
-                    > .mat-tab-link {
+                    >.mat-tab-link {
                       height: 100%;
                       color: $color-black;
                       @include pointer();
@@ -656,7 +651,7 @@
                       }
                     }
 
-                    > .mat-tab-label-active {
+                    >.mat-tab-label-active {
                       color: $brandcolor2;
                     }
                   }
@@ -664,13 +659,13 @@
               }
             }
 
-            > .sub-page-ford {
+            >.sub-page-ford {
               width: 100%;
               height: 100%;
               display: flex;
               align-items: center;
 
-              > .back_ford {
+              >.back_ford {
                 margin-left: 10pt;
                 width: 30pt;
                 height: 30pt;
@@ -681,7 +676,7 @@
                 border-radius: 50%;
                 background: rgb($black, 0.1);
 
-                > img {
+                >img {
                   width: 60%;
                   height: 60%;
                 }
@@ -693,27 +688,26 @@
             }
           }
 
-          > .wrapper-feed {
+          >.wrapper-feed {
             display: flex;
             flex-direction: row;
             align-items: flex-start;
 
-            > .main-feed {
+            >.main-feed {
               position: relative;
               margin: 0 5pt;
               max-width: 600px;
               width: 600px;
 
-              > box-post {
-              }
+              >box-post {}
 
-              > .title-feed {
+              >.title-feed {
                 text-align: center;
                 padding: 10pt 0 5pt 0;
                 @include font-size-8($font-head-500);
               }
 
-              > .card-feed-post {
+              >.card-feed-post {
                 border: $width-border solid $border-color;
                 background-color: $white;
                 margin-bottom: 5pt;
@@ -721,7 +715,7 @@
                 overflow: hidden;
                 position: relative;
 
-                > .dropdown {
+                >.dropdown {
                   position: absolute;
                   top: 10px;
                   right: 10px;
@@ -735,16 +729,16 @@
                     opacity: 1;
                   }
 
-                  > .mat-button-wrapper {
-                    > .material-icons {
+                  >.mat-button-wrapper {
+                    >.material-icons {
                       font-family: "Material Icons" !important;
                       font-size: $font-size-icon-small;
                     }
                   }
                 }
 
-                > .div-image {
-                  > .cover-img {
+                >.div-image {
+                  >.cover-img {
                     width: 100%;
                     height: 250pt;
                     object-fit: cover;
@@ -754,7 +748,7 @@
                     align-items: center;
                   }
 
-                  > .wrapper-loader {
+                  >.wrapper-loader {
                     display: flex;
                     justify-content: center;
                     align-items: center;
@@ -763,11 +757,11 @@
                     margin-bottom: 3pt;
                   }
 
-                  > .box-sub-image {
+                  >.box-sub-image {
                     display: flex;
                     margin-top: 3pt;
 
-                    > .sub-list-image {
+                    >.sub-list-image {
                       width: calc(33.52% - 3pt);
                       height: 100pt;
                       object-fit: cover;
@@ -786,19 +780,19 @@
                       }
                     }
 
-                    > .fan_sub_list {
+                    >.fan_sub_list {
                       position: relative;
                       width: calc(33.52% - 3pt);
                       height: 100pt;
                       cursor: pointer;
 
-                      > .sub-list-image {
+                      >.sub-list-image {
                         width: 100%;
                         height: 100pt;
                         object-fit: cover;
                       }
 
-                      > .image-more {
+                      >.image-more {
                         display: flex;
                         justify-content: center;
                         align-items: center;
@@ -821,31 +815,31 @@
                   }
                 }
 
-                > .wrapper-content {
+                >.wrapper-content {
                   padding: 10pt 20pt 0;
 
-                  > .post-to {
+                  >.post-to {
                     display: flex;
                     flex-direction: row;
                     align-items: center;
 
-                    > .date-time {
+                    >.date-time {
                       @include font-size-11($font-head-300);
                       color: $black;
                       margin-right: 7px;
                     }
 
-                    > .post-name {
+                    >.post-name {
                       @include font-size-11($font-head-200);
                       color: $color-gray;
                     }
                   }
 
-                  > .title {
+                  >.title {
                     @include font-size-8($font-head-500);
                   }
 
-                  > .content {
+                  >.content {
                     white-space: pre-wrap;
                     color: $color-black;
                     margin-bottom: 10pt;
@@ -853,7 +847,7 @@
                     @include font-size-9($font-content-light);
                   }
 
-                  > .content-sub {
+                  >.content-sub {
                     white-space: pre-wrap;
                     display: inline-block;
                     margin-bottom: 10pt;
@@ -866,12 +860,12 @@
                     }
                   }
 
-                  > .tag_div {
+                  >.tag_div {
                     display: flex;
                     flex-direction: row;
                     white-space: nowrap;
 
-                    > .h_tag_list {
+                    >.h_tag_list {
                       width: max-content;
                       @include font-size-9($font-head-500);
                       @include pointer();
@@ -883,41 +877,36 @@
                     }
                   }
 
-                  > .list-looking-for {
+                  >.list-looking-for {
                     margin-top: 5pt;
                     border-top: $width-border solid $border-color;
 
-                    > .item-looking-for {
+                    >.item-looking-for {
                       border-bottom: unset !important;
                       margin: 0;
                       padding: 10pt 10pt 10pt 5pt;
                       @include font-size-9($font-head-500);
 
-                      > span {
-                        > .icon-looking-for {
-                        }
+                      >span {
+                        >.icon-looking-for {}
 
-                        > .title-looking-for {
-                          > .top {
-                          }
+                        >.title-looking-for {
+                          >.top {}
 
-                          > .bottom {
-                          }
+                          >.bottom {}
                         }
                       }
 
-                      > .amount-looking-for {
+                      >.amount-looking-for {
                         text-align: right;
 
-                        > .top {
-                        }
+                        >.top {}
 
-                        > .bottom {
-                        }
+                        >.bottom {}
                       }
                     }
 
-                    > .load-more {
+                    >.load-more {
                       display: flex;
                       justify-content: center;
                       align-items: center;
@@ -939,55 +928,54 @@
                     }
                   }
 
-                  > .group-event {
+                  >.group-event {
                     display: flex;
                     align-items: center;
                     color: $brandcolor2;
                     @include pointer();
 
-                    > .event-tag,
-                    > .objective-doing {
+                    >.event-tag,
+                    >.objective-doing {
                       display: flex;
                       align-items: center;
                       margin: 0 0 10pt 0;
                       padding-right: 8pt;
 
-                      > .icon-event {
+                      >.icon-event {
                         padding-right: 8pt;
                       }
 
-                      > span {
+                      >span {
                         @include font-size-9($font-head-500);
                       }
                     }
                   }
 
-                  > .wrapper-footer-post {
+                  >.wrapper-footer-post {
                     display: flex;
                     height: 50pt;
                     justify-content: space-between;
                     align-items: center;
-                    border-top: 0.7px solid
-                      rgba($color: $border-color, $alpha: 0.7);
+                    border-top: 0.7px solid rgba($color: $border-color, $alpha: 0.7);
 
-                    > .left {
+                    >.left {
                       display: flex;
                       align-items: center;
                       @include font-size-9($font-head-500);
                       color: $color-gray;
 
-                      > .icon-feed {
+                      >.icon-feed {
                         width: 10pt;
                         height: 10pt;
                         border-radius: 50%;
                         background-color: $color-gray;
                       }
 
-                      > .looking {
+                      >.looking {
                         background-color: $brandcolor2;
                       }
 
-                      > .fulfill {
+                      >.fulfill {
                         background-color: $status-post-fulfill;
                       }
 
@@ -996,7 +984,7 @@
                       }
                     }
 
-                    > .right {
+                    >.right {
                       display: flex;
                       align-items: center;
                       color: $brandcolor2;
@@ -1006,20 +994,20 @@
                 }
               }
 
-              > .feed-post-none {
+              >.feed-post-none {
                 display: flex;
                 justify-content: center;
                 height: 501pt;
                 background-color: $brandcolor;
                 @include font-size-9($font-head-500);
 
-                > .lable-timeline {
+                >.lable-timeline {
                   padding: 50pt;
                 }
               }
             }
 
-            > .side-feed {
+            >.side-feed {
               position: sticky;
               top: 55pt;
               // width: $width-side-feed-fan-page;
@@ -1027,7 +1015,7 @@
               flex: 1 1 0%;
               min-width: 210pt;
 
-              > .wrapper-doing-user-relate {
+              >.wrapper-doing-user-relate {
                 border-radius: $border-radius-4px;
                 display: flex;
                 justify-content: center;
@@ -1037,32 +1025,32 @@
                 background-color: $white;
                 margin-top: 5pt;
 
-                > .title {
+                >.title {
                   width: 100%;
                   padding: 15pt;
                   border-bottom: $width-border solid $border-color;
                   @include font-size-9($font-head-500);
                 }
 
-                > .side-feed-about-page {
+                >.side-feed-about-page {
                   border-radius: $border-radius-4px;
                   background: $white;
                   border: $width-border solid $border-color;
 
-                  > .label-about {
+                  >.label-about {
                     padding: 15pt;
                     @include font-size-9($font-head-500);
                     border-bottom: $width-border solid $border-color;
                   }
 
-                  > .content-about {
+                  >.content-about {
                     padding: 10pt 15pt;
                     width: calc(100% - 30pt);
                     @include font-size-9($font-head-500);
                     border-bottom: $width-border solid $border-color;
                   }
 
-                  > .content-all {
+                  >.content-all {
                     padding: 8pt 15pt;
                     text-align: center;
                     color: $brandcolor2;
@@ -1071,13 +1059,13 @@
                   }
                 }
 
-                > .wrapper-body-doing {
+                >.wrapper-body-doing {
                   width: 100%;
                   height: auto;
                   padding: unset !important;
                   // border-bottom: unset !important;
 
-                  > .wrapper-doing {
+                  >.wrapper-doing {
                     display: flex;
                     flex-direction: column;
                     justify-content: center;
@@ -1092,7 +1080,7 @@
                     }
 
                     display-image {
-                      > .image-tag {
+                      >.image-tag {
                         margin: unset !important;
                         margin-bottom: 5pt;
                         width: 45pt;
@@ -1101,12 +1089,11 @@
                       }
                     }
 
-                    > .loading-image {
-                      > .linear-background {
-                      }
+                    >.loading-image {
+                      >.linear-background {}
                     }
 
-                    > .i_title {
+                    >.i_title {
                       margin-top: 2pt;
                       display: -webkit-box;
                       -webkit-line-clamp: 1;
@@ -1118,7 +1105,7 @@
                   }
                 }
 
-                > .content-all {
+                >.content-all {
                   border-top: $width-border solid $border-color;
                   width: calc(100% - 30pt);
                   padding: 8pt 15pt;
@@ -1133,14 +1120,14 @@
                 }
               }
 
-              > .wrapper-recommend {
-                > .recommend-card {
+              >.wrapper-recommend {
+                >.recommend-card {
                   margin-top: 5pt;
                 }
               }
 
               recommend-card {
-                > .recommend-card {
+                >.recommend-card {
                   margin-top: 5pt;
                 }
               }
@@ -1153,12 +1140,11 @@
 }
 
 .cdk-overlay-container {
-  > .backdrop-tag {
-  }
+  >.backdrop-tag {}
 
-  > .cdk-overlay-connected-position-bounding-box {
-    > .cdk-overlay-pane {
-      > .mat-menu-panel {
+  >.cdk-overlay-connected-position-bounding-box {
+    >.cdk-overlay-pane {
+      >.mat-menu-panel {
         min-height: unset;
       }
     }
@@ -1166,7 +1152,7 @@
 }
 
 .list-dropdown {
-  > svg {
+  >svg {
     margin-right: 16px;
     display: inline-block;
     height: 20px;
@@ -1174,10 +1160,9 @@
     vertical-align: middle;
   }
 
-  > .mat-icon {
-  }
+  >.mat-icon {}
 
-  > span {
+  >span {
     @include font-size-10($font-head-500);
   }
 }
@@ -1213,13 +1198,13 @@
   align-items: center;
   @include font-size-8($font-head-500);
 
-  > #Group_142 {
+  >#Group_142 {
     width: 100pt;
     height: auto;
     max-width: 70vw;
   }
 
-  > .text-NotFound {
+  >.text-NotFound {
     margin-top: 15pt;
     @include font-size-7($font-head-500);
   }
@@ -1245,24 +1230,23 @@
   .fanpage {
     .container {
       .spanboon-fan-page {
-        > .fan-page-background {
-          > .wrapper-cover-image {
+        >.fan-page-background {
+          >.wrapper-cover-image {
             height: calc(#{$height-cover-img-fanpage} - 4px - 10pt);
 
-            > .text-wrapper {
+            >.text-wrapper {
               @include font-size-9($font-head-500);
 
-              > .wrapper-icon-upload {
-                > .icon-upload {
+              >.wrapper-icon-upload {
+                >.icon-upload {
                   width: 40pt;
                   height: 40pt;
                 }
 
-                > .centered {
+                >.centered {
                   margin: 5pt 0;
 
-                  &.browse {
-                  }
+                  &.browse {}
                 }
               }
             }
@@ -1272,22 +1256,21 @@
             height: calc(#{$height-cover-img-fanpage} - 10pt);
           }
 
-          > .cover-img {
+          >.cover-img {
             height: calc(#{$height-cover-img-fanpage} - 10pt);
           }
         }
 
-        > .wrapper-fan-page {
-          > .wrapper-profile-fan-page {
-          }
+        >.wrapper-fan-page {
+          >.wrapper-profile-fan-page {}
 
-          > .wrapper-feed-fan-page {
-            > .wrapper-feed-menu {
-              > .mat-tab-header {
-                > .mat-tab-link-container {
-                  > .mat-tab-list {
-                    > .mat-tab-links {
-                      > .mat-tab-link {
+          >.wrapper-feed-fan-page {
+            >.wrapper-feed-menu {
+              >.mat-tab-header {
+                >.mat-tab-link-container {
+                  >.mat-tab-list {
+                    >.mat-tab-links {
+                      >.mat-tab-link {
                         @include font-size-9($font-head-500);
                       }
                     }
@@ -1308,8 +1291,8 @@
       max-width: 991px;
 
       .spanboon-fan-page {
-        > .fan-page-background {
-          > .wrapper-cover-image {
+        >.fan-page-background {
+          >.wrapper-cover-image {
             height: calc(#{$height-cover-img-fanpage} - 4px - 20pt);
           }
 
@@ -1317,21 +1300,20 @@
             height: calc(#{$height-cover-img-fanpage} - 20pt);
           }
 
-          > .cover-img {
+          >.cover-img {
             height: calc(#{$height-cover-img-fanpage} - 20pt);
           }
         }
 
-        > .wrapper-fan-page {
-          > .wrapper-profile-fan-page {
-          }
+        >.wrapper-fan-page {
+          >.wrapper-profile-fan-page {}
 
-          > .wrapper-feed-fan-page {
-            > .do-tablet {
+          >.wrapper-feed-fan-page {
+            >.do-tablet {
               display: block;
 
-              > card-item {
-                > .card-item-looking-for {
+              >card-item {
+                >.card-item-looking-for {
                   // margin-bottom: 5pt;
 
                   .wrapper-body-doing {
@@ -1345,29 +1327,28 @@
               }
             }
 
-            > .wrapper-feed-menu {
+            >.wrapper-feed-menu {
               margin-top: 5pt;
 
-              > .mat-tab-header {
-                > .mat-tab-link-container {
-                  > .mat-tab-list {
-                    > .mat-tab-links {
-                      > .mat-tab-link {
-                      }
+              >.mat-tab-header {
+                >.mat-tab-link-container {
+                  >.mat-tab-list {
+                    >.mat-tab-links {
+                      >.mat-tab-link {}
                     }
                   }
                 }
               }
             }
 
-            > .wrapper-feed {
-              > .main-feed {
+            >.wrapper-feed {
+              >.main-feed {
                 max-width: unset;
                 width: calc(100% - 5pt);
                 margin-right: 0;
               }
 
-              > .side-feed {
+              >.side-feed {
                 display: none;
               }
             }
@@ -1382,17 +1363,18 @@
   .fanpage {
     .container {
       .spanboon-fan-page {
-        > .fan-page-background {
-          > .wrapper-cover-image {
+        >.fan-page-background {
+          >.wrapper-cover-image {
             height: calc(#{$height-cover-img-fanpage} - 4px - 40pt);
 
-            > .text-wrapper {
-              > .wrapper-icon-upload {
-                > .icon-upload {
+            >.text-wrapper {
+              >.wrapper-icon-upload {
+                >.icon-upload {
                   // display: none;
                 }
 
-                > .centered {
+                >.centered {
+
                   &.centered-1,
                   &.centered-2,
                   &.browse {
@@ -1407,20 +1389,20 @@
             height: calc(#{$height-cover-img-fanpage} - 40pt);
           }
 
-          > .cover-img {
+          >.cover-img {
             height: calc(#{$height-cover-img-fanpage} - 40pt);
           }
         }
 
-        > .wrapper-fan-page {
-          > .wrapper-feed-fan-page {
-            > .wrapper-feed-menu {
+        >.wrapper-fan-page {
+          >.wrapper-feed-fan-page {
+            >.wrapper-feed-menu {
               height: 48pt;
 
-              > .mat-tab-header {
-                > .mat-tab-link-container {
-                  > .mat-tab-list {
-                    > .mat-tab-links {
+              >.mat-tab-header {
+                >.mat-tab-link-container {
+                  >.mat-tab-list {
+                    >.mat-tab-links {
                       height: 48pt;
                     }
                   }
@@ -1441,8 +1423,8 @@
       padding: 0;
 
       .spanboon-fan-page {
-        > .fan-page-background {
-          > .wrapper-cover-image {
+        >.fan-page-background {
+          >.wrapper-cover-image {
             height: calc(#{$height-cover-img-fanpage} - 4px - 60pt);
           }
 
@@ -1450,38 +1432,38 @@
             height: calc(#{$height-cover-img-fanpage} - 60pt);
           }
 
-          > .cover-img {
+          >.cover-img {
             height: calc(#{$height-cover-img-fanpage} - 60pt);
           }
         }
 
-        > .wrapper-fan-page {
+        >.wrapper-fan-page {
           flex-direction: column;
 
-          > .wrapper-profile-fan-page {
+          >.wrapper-profile-fan-page {
             position: static;
             width: 100%;
             margin-bottom: unset;
 
-            > .profile-fan-page {
-              > .img-profile {
+            >.profile-fan-page {
+              >.img-profile {
                 // width: 120pt;
                 // height: 120pt;
                 margin-top: -55pt;
               }
             }
 
-            > .wrapper-btn-action {
-              > .btn-follow-about {
+            >.wrapper-btn-action {
+              >.btn-follow-about {
                 button-follow {
-                  > .button-follow {
+                  >.button-follow {
                     width: 90pt !important;
                   }
                 }
               }
             }
 
-            > .wrapper-looking-for {
+            >.wrapper-looking-for {
               // > .footer-contact-social {
               //   > .contact-social {
               //     height: 20pt;
@@ -1489,34 +1471,34 @@
               // }
             }
 
-            > card-item {
-              > .card-item-looking-for {
-                > .list-looking-for {
+            >card-item {
+              >.card-item-looking-for {
+                >.list-looking-for {
                   display: none;
                 }
 
-                > .looking-swipper {
+                >.looking-swipper {
                   display: block;
                 }
 
-                > .btn-donate {
+                >.btn-donate {
                   display: none;
                 }
               }
             }
           }
 
-          > .wrapper-feed-fan-page {
+          >.wrapper-feed-fan-page {
             width: 100%;
             max-width: unset;
 
-            > .wrapper-feed-menu {
+            >.wrapper-feed-menu {
               height: 40pt;
 
-              > .mat-tab-header {
-                > .mat-tab-link-container {
-                  > .mat-tab-list {
-                    > .mat-tab-links {
+              >.mat-tab-header {
+                >.mat-tab-link-container {
+                  >.mat-tab-list {
+                    >.mat-tab-links {
                       height: 40pt;
                     }
                   }
@@ -1524,8 +1506,8 @@
               }
             }
 
-            > .wrapper-feed {
-              > .main-feed {
+            >.wrapper-feed {
+              >.main-feed {
                 margin: 0 5pt;
                 width: calc(100% - 10pt);
               }
@@ -1541,12 +1523,12 @@
   .fanpage {
     .container {
       .spanboon-fan-page {
-        > .fan-page-background {
-          > .wrapper-cover-image {
+        >.fan-page-background {
+          >.wrapper-cover-image {
             height: calc(#{$height-cover-img-fanpage} - 4px - 80pt);
           }
 
-          > .set-cover {
+          >.set-cover {
             top: 10pt;
             left: 10pt;
             bottom: unset;
@@ -1557,15 +1539,15 @@
             height: calc(#{$height-cover-img-fanpage} - 80pt);
           }
 
-          > .cover-img {
+          >.cover-img {
             height: calc(#{$height-cover-img-fanpage} - 80pt);
           }
         }
 
-        > .wrapper-fan-page {
-          > .wrapper-feed-fan-page {
-            > .wrapper-feed {
-              > .main-feed {
+        >.wrapper-fan-page {
+          >.wrapper-feed-fan-page {
+            >.wrapper-feed {
+              >.main-feed {
                 margin: 0;
                 width: 100%;
               }
@@ -1583,8 +1565,8 @@
 
     .container {
       .spanboon-fan-page {
-        > .fan-page-background {
-          > .wrapper-cover-image {
+        >.fan-page-background {
+          >.wrapper-cover-image {
             height: calc(#{$height-cover-img-fanpage} - 4px - 100pt);
           }
 
@@ -1592,21 +1574,21 @@
             height: calc(#{$height-cover-img-fanpage} - 100pt);
           }
 
-          > .cover-img {
+          >.cover-img {
             height: calc(#{$height-cover-img-fanpage} - 100pt);
           }
 
-          > .set-cover {
-            > .btn-edit-cover {
+          >.set-cover {
+            >.btn-edit-cover {
               padding: 0 10pt;
 
-              > .image-upload {
-                > label {
-                  > svg {
+              >.image-upload {
+                >label {
+                  >svg {
                     margin: 0;
                   }
 
-                  > .label-edit-cover {
+                  >.label-edit-cover {
                     display: none;
                   }
                 }
@@ -1615,14 +1597,15 @@
           }
         }
 
-        > .wrapper-fan-page {
-          > .wrapper-profile-fan-page {
-            > .wrapper-btn-action {
+        >.wrapper-fan-page {
+          >.wrapper-profile-fan-page {
+            >.wrapper-btn-action {
               height: auto;
               padding: 10pt;
 
-              > .btn-follow-about {
+              >.btn-follow-about {
                 width: 100% !important;
+                justify-content: center;
 
                 &:nth-child(1) {
                   margin: 0;
@@ -1636,13 +1619,13 @@
                 }
 
                 button-follow {
-                  > .button-follow {
+                  >.button-follow {
                     width: 280px !important;
                   }
                 }
               }
 
-              > .dropdown {
+              >.dropdown {
                 width: 33.33%;
               }
             }
