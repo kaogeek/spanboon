@@ -120,6 +120,7 @@ export class TwitterController {
     public async FeedTwitter(@Req() request: any, @Res() response: any): Promise<any> {
         let title = undefined;
         let trimText = undefined;
+
         const lastUpdated = moment().toDate(); // current date
         // search only page mode
         const oAuth2Twitter = await this.twitterService.getOauth2AppAccessTokenTest();
@@ -127,6 +128,7 @@ export class TwitterController {
         const newPostResult = [];
         for (let i = 0; i < socialPostLogList.length; i++) {
             // search page
+            console.log('socialPostLogList[i].providerUserId', socialPostLogList[i].providerUserId);
             const getUserTimeline = await this.twitterService.getTimeLineUser(socialPostLogList[i].providerUserId, oAuth2Twitter);
             if (getUserTimeline.data[i].id !== undefined && socialPostLogList[i].pageId !== undefined) {
                 newPostResult.push({ 'postResult': getUserTimeline.data, 'pageTwi': socialPostLogList[i] });
@@ -191,6 +193,7 @@ export class TwitterController {
                     newSocialPost.socialId = twPostId;
                     newSocialPost.socialType = PROVIDER.TWITTER;
                     await this.socialPostService.create(newSocialPost);
+
                 } else {
                     continue;
                 }
@@ -201,4 +204,5 @@ export class TwitterController {
         const successResponse = ResponseUtil.getSuccessResponse('Feed Twitter is Successfully', undefined);
         return response.status(200).send(successResponse);
     }
+
 }

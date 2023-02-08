@@ -17,4 +17,7 @@ export class UpdateEmergencyEventRequest {
     public isClose: boolean;
     public isPin: boolean;
     public ordering:number;
+    public currentIndex:any;
+    public previousIndex:any;
+    public modeEmer:string;
 }
