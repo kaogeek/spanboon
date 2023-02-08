@@ -188,6 +188,7 @@
                             </a>
                         </div>
                         <div class="wrapper-btn-action" [phxPreload]="resDataPage"
+                            [ngStyle]="{'justify-content': !isLogin() ? 'center' : 'space-between','column-gap': !isLogin() ? '35px' : 'unsent'}"
                             [preloadClass]="'wrapper-btn-action'">
                             <div class="btn-follow-about">
                                 <button-follow [bgColor]="'#FFFFFF'" [inputId]="'follow'"
@@ -218,7 +219,7 @@
                                 เกี่ยวกับ
                             </div> -->
                             <!-- FBTEST-->
-                            <ng-container>
+                            <ng-container *ngIf="isLogin()">
                                 <button mat-icon-button [matMenuTriggerFor]="menu" [disableRipple]="'false'"
                                     class="dropdown">
                                     <span class="material-icons">

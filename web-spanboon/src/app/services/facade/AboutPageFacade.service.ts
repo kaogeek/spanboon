@@ -36,6 +36,24 @@ export class AboutPageFacade extends AbstractFacade {
         });
     }
 
+    public edit(id: string, aboutPage: AboutPages[]): Promise<any[]> {
+        return new Promise((resolve, reject) => {
+            let url: string = this.baseURL + '/page/' + id + '/about';
+            let body: any = {};
+
+            if (aboutPage !== null && aboutPage !== undefined) {
+                body = Object.assign(aboutPage);
+            }
+            let options = this.authMgr.getDefaultOptions();
+
+            this.http.put(url, body, options).toPromise().then((response: any) => {
+                resolve(response.data as AboutPages[]);
+            }).catch((error: any) => {
+                reject(error);
+            });
+        });
+    }
+
     public search(searchFilter: SearchFilter): Promise<any[]> {
         return new Promise((resolve, reject) => {
             let url: string = this.baseURL + '/page_about/search';
