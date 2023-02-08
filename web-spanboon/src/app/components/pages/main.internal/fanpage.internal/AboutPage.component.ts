@@ -5,16 +5,16 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-import { Component, ElementRef, EventEmitter, Input, OnInit, ViewChild } from "@angular/core";
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from "@angular/core";
 import { MatDialog } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
-import * as $ from 'jquery';
 import { AboutPageFacade, AssetFacade, AuthenManager, ObservableManager, PageFacade, UserAccessFacade } from '../../../../services/services';
 import { AbstractPage } from '../../AbstractPage';
 import { AboutPages } from '../../../../models/AboutPages';
 import { Subject } from "rxjs/internal/Subject";
 import { fromEvent } from "rxjs";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
+import { FormBuilder, FormGroup } from "@angular/forms";
 
 const PAGE_NAME: string = 'account';
 const SEARCH_LIMIT: number = 20;
@@ -34,6 +34,10 @@ export class AboutPage extends AbstractPage implements OnInit {
     public dirtyConfirmEvent: EventEmitter<any>;
     @Input()
     public dirtyCancelEvent: EventEmitter<any>;
+    @Input()
+    public dataPage: any;
+    @Output()
+    public dataUpdatePage: EventEmitter<any> = new EventEmitter();
 
     private userAccessFacade: UserAccessFacade;
     private assetFacade: AssetFacade;
@@ -41,6 +45,8 @@ export class AboutPage extends AbstractPage implements OnInit {
     private routeActivated: ActivatedRoute;
     private pageFacade: PageFacade;
     private aboutPageFacade: AboutPageFacade;
+
+    public groupAbout!: FormGroup;
 
     public isCard1: boolean = false;
     public isCard2: boolean = false;
@@ -53,7 +59,6 @@ export class AboutPage extends AbstractPage implements OnInit {
     public isCard9: boolean = false;
     public isCard10: boolean = false;
     public isCard11: boolean = false;
-    public isCard12: boolean = false;
     public isActiveButton1: boolean = false;
     public isActiveButton2: boolean = false;
     public isActiveButton3: boolean = false;
@@ -68,21 +73,10 @@ export class AboutPage extends AbstractPage implements OnInit {
 
     public isTimeSet: boolean = true;
 
-    @ViewChild('website', { static: false }) website: ElementRef;
-    @ViewChild('email', { static: false }) email: ElementRef;
-    @ViewChild('facebookURL', { static: false }) facebook: ElementRef;
-    @ViewChild('twitter', { static: false }) twitter: ElementRef;
-    @ViewChild('lineId', { static: false }) lineId: ElementRef;
-    @ViewChild('address', { static: false }) address: ElementRef;
-    @ViewChild('latitude', { static: false }) latitude: ElementRef;
-    @ViewChild('longtitude', { static: false }) longtitude: ElementRef;
-    @ViewChild('background', { static: false }) background: any;
-
     public pageId: string;
     public phone: any;
-    public resDataPage: any;
     public resAboutPage: any;
-    public cloneData: any;
+    // public cloneData: any;
     public arrAboutPage: any[] = [];
     public cloneAboutPage: any;
     public dataAboutPage: any;
@@ -178,7 +172,7 @@ export class AboutPage extends AbstractPage implements OnInit {
     ];
 
     constructor(authenManager: AuthenManager, dialog: MatDialog, router: Router, userAccessFacade: UserAccessFacade, assetFacade: AssetFacade,
-        observManager: ObservableManager, routeActivated: ActivatedRoute, pageFacade: PageFacade, aboutPageFacade: AboutPageFacade) {
+        observManager: ObservableManager, routeActivated: ActivatedRoute, pageFacade: PageFacade, aboutPageFacade: AboutPageFacade, private formBuilder: FormBuilder) {
         super(PAGE_NAME, authenManager, dialog, router);
         this.dialog = dialog
         this.userAccessFacade = userAccessFacade;
@@ -196,16 +190,18 @@ export class AboutPage extends AbstractPage implements OnInit {
 
     }
 
-    public ngOnInit(): void {
-        this.getDataPage();
+    public async ngOnInit(): Promise<void> {
+        this.crateValueAbout();
+        await this.getDataPage();
     }
 
     public ngAfterViewInit(): void {
+        const groupAbout = this.groupAbout;
         fromEvent(this.pageUsername && this.pageUsername.nativeElement, 'keyup').pipe(
             debounceTime(500)
             , distinctUntilChanged()
         ).subscribe((text: any) => {
-            this.checkUniquePageUsername(this.pageUsername.nativeElement.value);
+            this.checkUniquePageUsername(groupAbout!.get('pageUsername')!.value);
         });
     }
 
@@ -253,41 +249,46 @@ export class AboutPage extends AbstractPage implements OnInit {
             this.isCard10 = true;
         } else if (items === '11') {
             this.isCard11 = true;
-        } else if (items === '12') {
-            this.isCard12 = true;
         }
     }
 
     public clickClose($event: Event, items: any, data: any) {
+        console.log(items);
         $event.stopPropagation();
         if (items === '1') {
             this.isCard1 = false;
             this.isActiveButton1 = false;
+            document.getElementById('name')!.style.removeProperty("border");
             this.resetValue(data, 1);
         } else if (items === '2') {
             this.isCard2 = false;
             this.isActiveButton2 = false;
-            document.getElementById('pageUsername').style.removeProperty("border");
-            this.resetValue(data);
+            document.getElementById('pageUsername')!.style.removeProperty("border");
+            this.resetValue(data, 2);
         } else if (items === '3') {
             this.isCard3 = false;
-            this.isActiveButton4 = false;
+            this.isActiveButton3 = false;
+            document.getElementById('value')!.style.removeProperty("border");
             this.resetValue(data, 3);
         } else if (items === '4') {
             this.isCard4 = false;
-            this.isActiveButton5 = false;
+            this.isActiveButton4 = false;
+            document.getElementById('backgroundStory')!.style.removeProperty("border");
             this.resetValue(data, 4);
         } else if (items === '5') {
             this.isCard5 = false;
-            this.isActiveButton3 = false;
+            this.isActiveButton5 = false;
+            document.getElementById('mobileNo')!.style.removeProperty("border");
             this.resetValue(data, 5);
         } else if (items === '6') {
             this.isCard6 = false;
             this.isActiveButtonWeb = false;
+            document.getElementById('websiteURL')!.style.removeProperty("border");
             this.resetValue(data, 6);
         } else if (items === '7') {
             this.isCard7 = false;
             this.isActiveButtonEmail = false;
+            document.getElementById('email')!.style.removeProperty("border");
             this.resetValue(data, 7);
         } else if (items === '8') {
             this.isCard8 = false;
@@ -301,13 +302,10 @@ export class AboutPage extends AbstractPage implements OnInit {
             this.isCard10 = false;
             this.isActiveButton10 = false;
             this.resetValue(data, 10);
-        } else if (items === '11') {
+        } else if (items === '11' || items === '12' || items === '13') {
             this.isCard11 = false;
             this.isActiveButton11 = false;
             this.resetValue(data, 11);
-        } else if (items === '12') {
-            this.isCard12 = false;
-            this.resetValue(data, 12);
         }
     }
 
@@ -345,8 +343,6 @@ export class AboutPage extends AbstractPage implements OnInit {
         } else if (index === 11) {
             this.isCard11 = false;
             this.isActiveButton11 = false;
-        } else if (index === 12) {
-            this.isCard12 = false;
         }
     }
 
@@ -364,44 +360,75 @@ export class AboutPage extends AbstractPage implements OnInit {
         }
     }
 
-    public getDataPage() {
-        this.pageFacade.getProfilePage(this.pageId).then((res) => {
-            if (res) {
-                this.resDataPage = res.data
-                this.pageId = this.resDataPage.id;
-                this.searchAboutPage();
-            }
+    public async getDataPage() {
+        if (!!this.pageId) {
+            this.pageId = this.dataPage.id;
+            await this.searchAboutPage();
+            this.setValueAbout();
+        }
+    }
 
-            this.cloneData = JSON.parse(JSON.stringify(this.resDataPage));
-        }).catch((err) => {
-            console.log('error ', err)
+    private crateValueAbout() {
+        this.groupAbout = this.formBuilder.group({
+            name: [''],
+            pageUsername: [''],
+            value: [''],
+            backgroundStory: [''],
+            mobileNo: [''],
+            websiteURL: [''],
+            email: [''],
+            lineId: [''],
+            facebookURL: [''],
+            twitterURL: [''],
+            address: [''],
+            latitudeAboutPage: [''],
+            longtitudeAboutPage: ['']
         });
+    }
+
+    private setValueAbout() {
+        const groupAbout = this.groupAbout;
+        groupAbout!.get('name')!.setValue(this.dataPage && this.dataPage!.name ? this.dataPage!.name : '');
+        groupAbout!.get('pageUsername')!.setValue(this.dataPage && this.dataPage!.name ? this.dataPage!.name : '');
+        groupAbout!.get('value')!.setValue(this.dataAboutPage && this.dataAboutPage!.value ? this.dataAboutPage!.value : '');
+        groupAbout!.get('backgroundStory')!.setValue(this.dataPage && this.dataPage!.backgroundStory ? this.dataPage!.backgroundStory : '');
+        groupAbout!.get('mobileNo')!.setValue(this.dataPage && this.dataPage!.mobileNo ? this.dataPage!.mobileNo : '');
+        groupAbout!.get('websiteURL')!.setValue(this.dataPage && this.dataPage!.websiteURL ? this.dataPage!.websiteURL : '');
+        groupAbout!.get('email')!.setValue(this.dataPage && this.dataPage!.email ? this.dataPage!.email : '');
+        groupAbout!.get('lineId')!.setValue(this.dataPage && this.dataPage!.lineId ? this.dataPage!.lineId : '');
+        groupAbout!.get('facebookURL')!.setValue(this.dataPage && this.dataPage!.facebookURL ? this.dataPage!.facebookURL : '');
+        groupAbout!.get('twitterURL')!.setValue(this.dataPage && this.dataPage!.twitterURL ? this.dataPage!.twitterURL : '');
+        groupAbout!.get('address')!.setValue(this.dataPage && this.dataPage!.address ? this.dataPage!.address : '');
+        groupAbout!.get('latitudeAboutPage')!.setValue(this.latitudeAboutPage && this.latitudeAboutPage!.value ? this.latitudeAboutPage!.value : '');
+        groupAbout!.get('longtitudeAboutPage')!.setValue(this.longtitudeAboutPage && this.longtitudeAboutPage!.value ? this.longtitudeAboutPage!.value : '');
     }
 
     public searchAboutPage() {
         let limit = SEARCH_LIMIT;
         let offset = SEARCH_OFFSET;
         this.aboutPageFacade.searchPageAbout(this.pageId, offset, limit).then((res) => {
-            if (res && res.length > 0) {
-                this.resAboutPage = res;
-                for (let data of this.resAboutPage) {
-                    if (data.label === 'หน่วยงาน') {
-                        this.dataAboutPage = data;
-                    }
-                    if (data.label === 'ละติจูด') {
-                        this.latitudeAboutPage = data;
-                    }
-                    if (data.label === 'ลองจิจูด') {
-                        this.longtitudeAboutPage = data;
-                    }
+            if (res) {
+                if (res && res.length > 0) {
+                    this.resAboutPage = res;
+                    for (let data of this.resAboutPage) {
+                        if (data.label === 'หน่วยงาน') {
+                            this.dataAboutPage = data;
+                        }
+                        if (data.label === 'ละติจูด') {
+                            this.latitudeAboutPage = data;
+                        }
+                        if (data.label === 'ลองจิจูด') {
+                            this.longtitudeAboutPage = data;
+                        }
 
+                    }
+                    this.cloneAboutPage = JSON.parse(JSON.stringify(this.resAboutPage));
                 }
-                this.cloneAboutPage = JSON.parse(JSON.stringify(this.resAboutPage));
             }
         }).catch((err) => {
-            console.log('error ', err)
-            if (err.error.status === 0) {
-                if (err.error.message === 'Unable got Page') {
+            if (err) {
+                console.log('error ', err);
+                if (err.error && err.error.status === 0 && err.error.message === 'Unable got Page') {
                     this.showAlertDialog('ไม่พบเพจ');
                 }
             }
@@ -413,7 +440,7 @@ export class AboutPage extends AbstractPage implements OnInit {
             this.isActiveButton2 = true;
             return;
         }
-        const pageUsername = this.cloneData && this.cloneData.pageUsername;
+        const pageUsername = this.dataPage && this.dataPage.pageUsername;
         if (text === pageUsername) {
             this.isActiveButton2 = false;
         } else {
@@ -452,7 +479,7 @@ export class AboutPage extends AbstractPage implements OnInit {
 
     public changeActive(text: any, index: number) {
         if (index === 1) {
-            const name = this.cloneData && this.cloneData.name;
+            const name = this.dataPage && this.dataPage.name;
             if (text === name || text === '') {
                 this.isActiveButton1 = false;
             } else {
@@ -466,42 +493,42 @@ export class AboutPage extends AbstractPage implements OnInit {
                 this.isActiveButton4 = true;
             }
         } else if (index === 4) {
-            const backgroundStory = this.cloneData && this.cloneData.backgroundStory;
+            const backgroundStory = this.dataPage && this.dataPage.backgroundStory;
             if (text === backgroundStory || text === '') {
                 this.isActiveButton5 = false;
             } else {
                 this.isActiveButton5 = true;
             }
         } else if (index === 6) {
-            const web = this.cloneData && this.cloneData.websiteURL;
+            const web = this.dataPage && this.dataPage.websiteURL;
             if (text === web || text === '') {
                 this.isActiveButtonWeb = false;
             } else {
                 this.isActiveButtonWeb = true;
             }
         } else if (index === 8) {
-            const lineId = this.cloneData && this.cloneData.lineId;
+            const lineId = this.dataPage && this.dataPage.lineId;
             if (text === lineId || text === '') {
                 this.isActiveButton8 = false;
             } else {
                 this.isActiveButton8 = true;
             }
         } else if (index === 9) {
-            const facebook = this.cloneData && this.cloneData.facebookURL;
+            const facebook = this.dataPage && this.dataPage.facebookURL;
             if (text === facebook || text === '') {
                 this.isActiveButton9 = false;
             } else {
                 this.isActiveButton9 = true;
             }
         } else if (index === 10) {
-            const twitter = this.cloneData && this.cloneData.twitterURL;
+            const twitter = this.dataPage && this.dataPage.twitterURL;
             if (text === twitter || text === '') {
                 this.isActiveButton10 = false;
             } else {
                 this.isActiveButton10 = true;
             }
         } else if (index === 11) {
-            const address = this.cloneData && this.cloneData.address;
+            const address = this.dataPage && this.dataPage.address;
             if (text === address || text === '') {
                 this.isActiveButton11 = false;
             } else {
@@ -511,21 +538,21 @@ export class AboutPage extends AbstractPage implements OnInit {
     }
 
     public checkFormatNumber(phone: any) {
+        const clonePhone = this.dataPage && this.dataPage.phone;
         if (phone === '') {
-            this.isActiveButton3 = false;
+            this.isActiveButton5 = false;
             return;
         }
-        const clonePhone = this.cloneData && this.cloneData.phone;
+
         if (phone === clonePhone) {
-            this.isActiveButton3 = false;
+            this.isActiveButton5 = false;
         } else {
             if (phone.length > 0) {
-                this.isActiveButton3 = true;
+                this.isActiveButton5 = true;
                 let pattern = phone.match('^[0-9]{9}$|^[0-9]{10}$');
 
                 if (!pattern) {
                     return document.getElementById('phone').style.border = '2px solid red';
-
                 } else {
                     this.phone = phone;
                     return document.getElementById('phone').style.border = '2px solid green';
@@ -534,15 +561,15 @@ export class AboutPage extends AbstractPage implements OnInit {
         }
     }
 
-    public checkPatternEmail(mail: any) {
-        if (mail === '') {
+    public checkPatternEmail(email: any) {
+        if (email === '') {
             this.isActiveButtonEmail = false;
             document.getElementById('email').style.border = 'unset';
             return;
         }
-        if (mail.length > 0) {
+        if (email.length > 0) {
             this.isActiveButtonEmail = true;
-            let pattern = "[A-Za-z0-9._%-]+@[A-Za-z0-9._%-]+\\.[a-z]{2,3}";
+            let pattern = email.match('[A-Za-z0-9._%-]+@[A-Za-z0-9._%-]+\\.[a-z]{2,3}');
             if (!pattern) {
                 return document.getElementById('email').style.border = '2px solid red';
             } else {
@@ -552,52 +579,53 @@ export class AboutPage extends AbstractPage implements OnInit {
     }
 
     public editInfoPage(index: number) {
+        const groupAbout = this.groupAbout;
         let body;
         if (index === 1) {
             body = {
-                name: this.resDataPage.name
+                name: groupAbout!.get('name')!.value
             }
         } else if (index === 2) {
             body = {
-                pageUsername: this.resDataPage.pageUsername
+                pageUsername: groupAbout!.get('pageUsername')!.value
             }
         } else if (index === 4) {
             body = {
-                backgroundStory: this.resDataPage.backgroundStory
+                backgroundStory: groupAbout!.get('backgroundStory')!.value
             }
         } else if (index === 5) {
             body = {
-                mobileNo: this.phone
+                mobileNo: groupAbout!.get('mobileNo')!.value
             }
-        } else if (index === 6 && this.website.nativeElement.value !== '' && this.website.nativeElement.value !== undefined && this.website.nativeElement.value !== null) {
+        } else if (index === 6 && !!groupAbout!.get('websiteURL')!.value) {
             body = {
-                websiteURL: this.website.nativeElement.value
+                websiteURL: groupAbout!.get('websiteURL')!.value
             }
-        } else if (index === 7 && this.email.nativeElement.value !== '' && this.email.nativeElement.value !== undefined && this.email.nativeElement.value !== null) {
+        } else if (index === 7 && !!groupAbout!.get('email')!.value) {
             body = {
-                email: this.email.nativeElement.value
+                email: groupAbout!.get('email')!.value
             }
-        } else if (index === 8 && this.lineId.nativeElement.value !== '' && this.lineId.nativeElement.value !== undefined && this.lineId.nativeElement.value !== null) {
+        } else if (index === 8 && !!groupAbout!.get('lineId')!.value) {
             body = {
-                lineId: this.lineId.nativeElement.value
+                lineId: groupAbout!.get('lineId')!.value
             }
-        } else if (index === 9 && this.facebook.nativeElement.value !== '' && this.facebook.nativeElement.value !== undefined && this.facebook.nativeElement.value !== null) {
+        } else if (index === 9 && !!groupAbout!.get('facebookURL')!.value) {
             body = {
-                facebookURL: this.facebook.nativeElement.value
+                facebookURL: groupAbout!.get('facebookURL')!.value
             }
-        } else if (index === 10 && this.twitter.nativeElement.value !== '' && this.twitter.nativeElement.value !== undefined && this.twitter.nativeElement.value !== null) {
+        } else if (index === 10 && !!groupAbout!.get('twitterURL')!.value) {
             body = {
-                twitterURL: this.twitter.nativeElement.value
+                twitterURL: groupAbout!.get('twitterURL')!.value
             }
         }
         this.pageFacade.updateProfilePage(this.pageId, body).then((res) => {
             if (res.data) {
-                this.resDataPage = res.data;
-                if (this.resDataPage.pageUsername === "") {
+                this.dataPage = res.data;
+                this.dataUpdatePage.emit(this.dataPage);
+                if (this.dataPage.pageUsername === "") {
                     this.router.navigateByUrl('/page/' + this.pageId + '/settings');
                 } else {
-
-                    this.router.navigateByUrl('/page/' + this.resDataPage.pageUsername + '/settings');
+                    this.router.navigateByUrl('/page/' + this.dataPage.pageUsername + '/settings');
                 }
                 this.closeCard(index);
             }
@@ -620,87 +648,95 @@ export class AboutPage extends AbstractPage implements OnInit {
     }
 
     public resetValue(data: any, index?: number) {
+        const groupAbout = this.groupAbout;
         if (index === 1) {
-            if (this.cloneData && this.cloneData.name === undefined) {
-                this.resDataPage.name = '';
+            if (this.dataPage && this.dataPage.name === undefined) {
+                groupAbout!.get('name')!.reset();
             } else {
-                this.resDataPage.name = this.cloneData.name;
+                groupAbout!.get('name')!.setValue(this.dataPage.name);
             }
         } else if (index === 2) {
-            if (this.cloneData && this.cloneData.pageUsername === undefined) {
-                this.resDataPage.pageUsername = '';
+            if (this.dataPage && this.dataPage.pageUsername === undefined) {
+                groupAbout!.get('pageUsername')!.reset();
             } else {
-                this.resDataPage.pageUsername = this.cloneData.pageUsername;
+                groupAbout!.get('pageUsername')!.setValue(this.dataPage.pageUsername);
+            }
+        } else if (index === 3) {
+            if (this.dataAboutPage && this.dataAboutPage.value === undefined) {
+                groupAbout!.get('value')!.reset();
+            } else {
+                groupAbout!.get('value')!.setValue(this.dataAboutPage.value);
             }
         } else if (index === 4) {
-            if (this.cloneData && this.cloneData.backgroundStory === undefined) {
-                this.resDataPage.backgroundStory = '';
+            if (this.dataPage && this.dataPage.backgroundStory === undefined) {
+                groupAbout!.get('backgroundStory')!.reset();
             } else {
-                this.resDataPage.backgroundStory = this.cloneData.backgroundStory;
+                groupAbout!.get('backgroundStory')!.setValue(this.dataPage.backgroundStory);
             }
         } else if (index === 5) {
-            if (this.cloneData.mobileNo === undefined) {
-                this.resDataPage.mobileNo = '';
+            if (this.dataPage && this.dataPage.mobileNo === undefined) {
+                groupAbout!.get('mobileNo')!.reset();
             } else {
-                this.resDataPage.mobileNo = this.resDataPage.mobileNo;
+                groupAbout!.get('mobileNo')!.setValue(this.dataPage.mobileNo);
             }
         } else if (index === 6) {
-            if (this.cloneData.websiteURL === undefined) {
-                this.resDataPage.websiteURL = '';
+            if (this.dataPage && this.dataPage.websiteURL === undefined) {
+                groupAbout!.get('websiteURL')!.reset();
             } else {
-                this.resDataPage.websiteURL = this.resDataPage.websiteURL;
+                groupAbout!.get('websiteURL')!.setValue(this.dataPage.websiteURL);
             }
         } else if (index === 7) {
-            if (this.cloneData.email === undefined) {
-                let emailPattern = "[A-Za-z0-9._%-]+@[A-Za-z0-9._%-]+\\.[a-z]{2,3}";
-                if (!this.resDataPage.email.match(emailPattern)) {
-                    document.getElementById('email').style.border = "1px solid red";
-                    return document.getElementById("email").focus();
-                } else {
-                    document.getElementById('email').style.border = "unset";
-                }
+            if (this.dataPage && this.dataPage.email === undefined) {
+                groupAbout!.get('email')!.reset();
             } else {
-                let emailPattern = "[A-Za-z0-9._%-]+@[A-Za-z0-9._%-]+\\.[a-z]{2,3}";
-                if (!this.resDataPage.email.match(emailPattern)) {
-                    document.getElementById('email').style.border = "1px solid red";
-                    return document.getElementById("email").focus();
-                } else {
-                    document.getElementById('email').style.border = "unset";
-                }
+                groupAbout!.get('email')!.setValue(this.dataPage.email);
             }
         } else if (index === 8) {
-            if (this.cloneData.lineId === undefined) {
-                this.resDataPage.lineId = '';
+            console.log(this.dataPage.lineId);
+            if (this.dataPage && this.dataPage.lineId === undefined) {
+                groupAbout!.get('lineId')!.reset();
             } else {
-                this.resDataPage.lineId = this.resDataPage.lineId;
+                groupAbout!.get('lineId')!.setValue(this.dataPage.lineId);
             }
         } else if (index === 9) {
-            if (this.cloneData.facebookURL === undefined) {
-                this.resDataPage.facebookURL = '';
+            if (this.dataPage && this.dataPage.facebookURL === undefined) {
+                groupAbout!.get('facebookURL')!.reset();
             } else {
-                this.resDataPage.facebookURL = this.resDataPage.facebookURL;
+                groupAbout!.get('facebookURL')!.setValue(this.dataPage.facebookURL);
             }
         } else if (index === 10) {
             //twitter
-            if (this.cloneData.twitterURL === undefined) {
-                this.resDataPage.twitterURL = '';
+            if (this.dataPage && this.dataPage.twitterURL === undefined) {
+                groupAbout!.get('twitterURL')!.reset();
             } else {
-                this.resDataPage.twitterURL = this.resDataPage.twitterURL;
+                groupAbout!.get('twitterURL')!.setValue(this.dataPage.twitterURL);
             }
         } else if (index === 11) {
-            if (this.cloneData.address === undefined) {
-                this.resDataPage.address = '';
+            if (this.dataPage && this.dataPage.address === undefined) {
+                groupAbout!.get('address')!.reset();
             } else {
-                this.resDataPage.address = this.resDataPage.address;
+                groupAbout!.get('address')!.setValue(this.dataPage.address);
+            }
+
+            if (this.latitudeAboutPage && this.latitudeAboutPage!.value === undefined) {
+                groupAbout!.get('latitudeAboutPage')!.reset();
+            } else {
+                groupAbout!.get('latitudeAboutPage')!.setValue(this.latitudeAboutPage!.value);
+            }
+
+            if (this.latitudeAboutPage && this.longtitudeAboutPage!.value === undefined) {
+                groupAbout!.get('longtitudeAboutPage')!.reset();
+            } else {
+                groupAbout!.get('longtitudeAboutPage')!.setValue(this.longtitudeAboutPage!.value);
             }
         }
     }
 
     public aboutPage(text: string, index: any) {
+        const groupAbout = this.groupAbout;
         let pattern1, pattern2;
 
-        if (this.latitude.nativeElement.value !== undefined && this.latitude.nativeElement.value !== null && this.latitude.nativeElement.value !== ''
-            && this.longtitude.nativeElement.value !== undefined && this.longtitude.nativeElement.value !== null && this.longtitude.nativeElement.value !== '') {
+        if (!!groupAbout!.get('latitudeAboutPage').value && !!groupAbout!.get('longtitudeAboutPage').value) {
             this.isActiveButton11 = true;
         } else {
             this.isActiveButton11 = false;
@@ -709,17 +745,17 @@ export class AboutPage extends AbstractPage implements OnInit {
         if (index === '12') {
             pattern1 = text.match(/((\d+)+(\.\d+))$/);
             if (!pattern1) {
-                return document.getElementById('latitude').style.border = '2px solid red';
+                return document.getElementById('latitudeAboutPage').style.border = '2px solid red';
             } else {
-                return document.getElementById('latitude').style.border = '2px solid green';
+                return document.getElementById('latitudeAboutPage').style.border = '2px solid green';
             }
         }
         if (index === '13') {
             pattern2 = text.match(/((\d+)+(\.\d+))$/);
             if (!pattern2) {
-                return document.getElementById('longtitude').style.border = '2px solid red';
+                return document.getElementById('longtitudeAboutPage').style.border = '2px solid red';
             } else {
-                return document.getElementById('longtitude').style.border = '2px solid green';
+                return document.getElementById('longtitudeAboutPage').style.border = '2px solid green';
             }
         }
 
@@ -749,8 +785,9 @@ export class AboutPage extends AbstractPage implements OnInit {
     }
 
     public createAboutPage(name?: string, data?: any, index?: string) {
+        const groupAbout = this.groupAbout;
+        const aboutPage = new AboutPages();
         if (name === 'organzier') {
-            const aboutPage = new AboutPages();
             let arr: any = []
             aboutPage.label = 'หน่วยงาน';
             aboutPage.value = data;
@@ -766,14 +803,15 @@ export class AboutPage extends AbstractPage implements OnInit {
 
         } else {
             let body;
-            if (this.address.nativeElement.value !== undefined && this.address.nativeElement.value !== null && this.address.nativeElement.value !== '') {
+            if (!!groupAbout.get('address')!.value) {
                 body = {
-                    address: this.address.nativeElement.value
+                    address: groupAbout.get('address')!.value
                 }
                 this.pageFacade.updateProfilePage(this.pageId, body).then((res) => {
                     if (res.data) {
-                        this.resDataPage = res.data;
-                        this.router.navigateByUrl('/page/' + this.resDataPage.pageUsername + '/settings');
+                        this.dataPage = res.data;
+                        this.dataUpdatePage.emit(this.dataPage);
+                        this.router.navigateByUrl('/page/' + this.dataPage.pageUsername + '/settings');
                         this.closeCard(11);
                     }
                 }).catch((err) => {
@@ -781,25 +819,26 @@ export class AboutPage extends AbstractPage implements OnInit {
                 });
             }
 
-            const aboutPage = new AboutPages();
-            if (this.latitude.nativeElement.value !== undefined && this.latitude.nativeElement.value !== null && this.latitude.nativeElement.value !== '') {
+            if (!!groupAbout.get('latitudeAboutPage')!.value) {
                 aboutPage.label = 'ละติจูด';
-                aboutPage.value = this.latitude.nativeElement.value;
+                aboutPage.value = groupAbout.get('latitudeAboutPage')!.value;
                 aboutPage.ordering = 1;
                 this.arrAboutPage.push(aboutPage);
             }
-            const aboutPage1 = new AboutPages();
-            if (this.longtitude.nativeElement.value !== undefined && this.longtitude.nativeElement.value !== null && this.longtitude.nativeElement.value !== '') {
-                aboutPage1.label = 'ลองจิจูด';
-                aboutPage1.value = this.longtitude.nativeElement.value;
-                aboutPage1.ordering = 2;
-                this.arrAboutPage.push(aboutPage1);
+
+            if (!!groupAbout.get('longtitudeAboutPage')!.value) {
+                aboutPage.label = 'ลองจิจูด';
+                aboutPage.value = groupAbout.get('longtitudeAboutPage')!.value;
+                aboutPage.ordering = 2;
+                this.arrAboutPage.push(aboutPage);
             }
 
             if (this.arrAboutPage.length > 0) {
                 this.aboutPageFacade.create(this.pageId, this.arrAboutPage).then((res: any) => {
-                    let indexValue = Number(this.indexCard);
-                    this.closeCard(indexValue);
+                    if (res) {
+                        let indexValue = Number(this.indexCard);
+                        this.closeCard(indexValue);
+                    }
                 }).catch((err: any) => {
                     console.log('err ', err)
                 })

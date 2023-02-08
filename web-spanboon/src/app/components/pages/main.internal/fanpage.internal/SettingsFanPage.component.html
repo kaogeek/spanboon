@@ -6,24 +6,25 @@
 -->
 
 <div class="fanpage-settings">
-    <div class="container" [class.active]="isMobile"> 
+    <div class="container" [class.active]="isMobile">
         <div class="setting-back fix-hompage-bar" [class.active]="isMobile" (click)="backSetting()">
-            <div class="setting-back-left" >
-                <svg class="left" xmlns="http://www.w3.org/2000/svg" width="19.441" height="33.049" viewBox="0 0 19.441 33.049">
+            <div class="setting-back-left">
+                <svg class="left" xmlns="http://www.w3.org/2000/svg" width="19.441" height="33.049"
+                    viewBox="0 0 19.441 33.049">
                     <g id="Group_2602" data-name="Group 2602" transform="translate(5637.441 3171.049) rotate(180)">
                         <path id="chevron"
                             d="M19.773,16.524a1.834,1.834,0,0,1-.331,1.069L9.722,32.174a1.93,1.93,0,0,1-1.614.875H2.277A1.95,1.95,0,0,1,.332,31.1a1.834,1.834,0,0,1,.331-1.069l9-13.512-9-13.511A1.834,1.834,0,0,1,.332,1.943,1.95,1.95,0,0,1,2.277,0H8.109A1.93,1.93,0,0,1,9.722.874l9.72,14.581a1.833,1.833,0,0,1,.331,1.069Zm0,0"
                             transform="translate(5617.668 3138.001)" fill="#222e3f" />
                     </g>
                 </svg>
-            </div> 
+            </div>
             <span>การตั้งค่า</span>
-        </div> 
+        </div>
 
-        <div class="setting-top" *ngIf="!isPreload" >
+        <div class="setting-top" *ngIf="!isPreload">
             <div class="profile-page-settings" [class.active]="isMobile" (click)="backToPage()">
                 <div class="page">
-                    <ng-container *ngIf="resListPage && resListPage.imageURL && resListPage.imageURL !== ''  && resListPage.imageURL !== undefined  && resListPage.imageURL !== null; else elseImage">
+                    <ng-container *ngIf="resListPage && !!resListPage!.imageURL; else elseImage">
                         <img src="{{resListPage.imageURL}}" alt="">
                     </ng-container>
                     <ng-template #elseImage>
@@ -39,8 +40,8 @@
                 <a mat-tab-link *ngFor="let link of navLinks" [disableRipple]="'true'" [routerLink]="link.path"
                     (click)="selectedSetting(link);" [active]="activeLink == link.label">{{link.label}}
                 </a>
-            </nav>  
-        </div> 
+            </nav>
+        </div>
 
         <ng-container *ngIf="isPreload">
             <preload-data *ngFor="let item of [0]" [isShowCard1]="true" [isShowCard2]="false" class="setting-top">
@@ -72,12 +73,12 @@
 
                 </div>
             </div>
-           
             <div class="settings-right" [class.active]="isMobile">
                 <settings-info #settingInfo *ngIf="activeLink === 'จัดการเพจ'"
                     [bindingSocialTwitter]="bindingSocialTwitter" [selectedTab]="selected"
-                    [data]="resListPage && resListPage.id " [dirtyCancelEvent]="dirtyCancelEvent"
-                    [dirtyConfirmEvent]="dirtyConfirmEvent"></settings-info>
+                    [data]="resListPage && resListPage.id" [dataPage]="resListPage"
+                    [dirtyCancelEvent]="dirtyCancelEvent" [dirtyConfirmEvent]="dirtyConfirmEvent"
+                    (dataUpdatePage)="upDatePageData($event)"></settings-info>
             </div>
         </div>
         <ng-container *ngIf="isPreload">

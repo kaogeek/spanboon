@@ -5,8 +5,9 @@
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
 
-<div class="fanpage-info">
+<div class="fanpage-info" [formGroup]="groupAbout">
     <div class="info-title">ข้อมูลเพจ</div>
+
     <div class="card-info" (click)="clickCard('1')" [class.active]="isCard1">
         <div class="card-left">
             <div class="header">
@@ -15,8 +16,8 @@
         </div>
         <div class="card-right">
             <div class="card-detail">
-                <input #pageName type="text" class="input-data" placeholder="ชื่อเพจ"
-                    [(ngModel)]="resDataPage && resDataPage.name" (keyup)="changeActive(pageName.value , 1)">
+                <input type="text" class="input-data" placeholder="ชื่อเพจ" maxlength="255" formControlName="name"
+                    (keyup)="changeActive(groupAbout.getRawValue().name , 1)">
                 <div class="card-bottom" [class.active]="isCard1">
                     <div class="card-title">
                         <div>สรุปสั้นๆ เกี่ยวกับเพจของคุณ จำกัดตัวอักษรที่ 255 ตัวอักษร</div>
@@ -27,7 +28,7 @@
                         <button mat-flat-button [disableRipple]="true" class="save-card"
                             [class.active]="isActiveButton1" (click)="editInfoPage(1)">บันทึกการเปลี่ยนแปลง</button>
                         <button mat-flat-button [disableRipple]="true" class="cancel-card"
-                            (click)="clickClose($event , '1' , pageName.value)">ยกเลิก</button>
+                            (click)="clickClose($event , '1' , groupAbout.getRawValue().name)">ยกเลิก</button>
                     </div>
                 </div>
             </div>
@@ -45,14 +46,15 @@
                 <div class="crop-input">
                     <label for="add-username">@</label>
                     <input #pageUsername type="text" class="input-data" id="pageUsername" placeholder="ชื่อผู้ใช้"
-                        [(ngModel)]="resDataPage && resDataPage.pageUsername" style="padding: 0 28pt;">
-                    <span class="material-icons icon-close" (click)="resetValue(pageUsername.value, 2)">
+                        formControlName="pageUsername" style="padding: 0 28pt;">
+                    <span class="material-icons icon-close"
+                        (click)="resetValue(groupAbout.getRawValue().pageUsername, 2)">
                         close
                     </span>
                 </div>
                 <div class="card-bottom" [class.active]="isCard2">
                     <div class="card-title">
-                        <div class="display-name">{{PLATFORM_URL}}/{{resDataPage && resDataPage.pageUsername}}</div>
+                        <div class="display-name">{{PLATFORM_URL}}/{{groupAbout.getRawValue().pageUsername}}</div>
                         <div>ผู้คนจะค้นหาเพจของคุณพบได้ง่ายขึ้นในการค้นหาเมื่อเพจนั้นมีชื่อผู้ใช้ที่ไม่ซ้ำกับเพจอื่น
                             เพจที่มีชื่อผู้ใช้ยังสามารถสร้าง URL
                             แบบกำหนดเองซึ่งอนุญาตให้ผู้คนเข้ามาชมและส่งข้อความถึงเพจได้อย่างรวดเร็วอีกด้วย</div>
@@ -61,7 +63,7 @@
                         <button mat-flat-button [disableRipple]="true" class="save-card" (click)="editInfoPage(2)"
                             [class.active]="isActiveButton2">บันทึกการเปลี่ยนแปลง</button>
                         <button mat-flat-button [disableRipple]="true" class="cancel-card"
-                            (click)="clickClose($event , '2',pageUsername.value)">ยกเลิก</button>
+                            (click)="clickClose($event , '2' , groupAbout.getRawValue().pageUsername)">ยกเลิก</button>
                     </div>
                 </div>
             </div>
@@ -76,8 +78,8 @@
         </div>
         <div class="card-right">
             <div class="card-detail">
-                <input type="text" #organzier class="input-data" placeholder="ชื่อหน่วยงาน"
-                    (keyup)="changeActive(organzier.value,3)" [(ngModel)]="dataAboutPage && dataAboutPage.value">
+                <input type="text" class="input-data" placeholder="ชื่อหน่วยงาน"
+                    (keyup)="changeActive(groupAbout.getRawValue().value,3)" formControlName="value">
                 <div class="card-bottom" [class.active]="isCard3">
                     <div class="card-title">
                         <div>สรุปสั้นๆ เกี่ยวกับเพจของคุณ จำกัดตัวอักษรที่ 255 ตัวอักษร</div>
@@ -86,10 +88,10 @@
                     </div>
                     <div class="card-confirm">
                         <button mat-flat-button [disableRipple]="true" class="save-card"
-                            [class.active]="isActiveButton4"
-                            (click)="createAboutPage('organzier',organzier.value , '3')">บันทึกการเปลี่ยนแปลง</button>
+                            [class.active]="isActiveButton3"
+                            (click)="createAboutPage('organzier',groupAbout.getRawValue().value , '3')">บันทึกการเปลี่ยนแปลง</button>
                         <button mat-flat-button [disableRipple]="true" class="cancel-card"
-                            (click)="clickClose($event , '3' , organzier.value )">ยกเลิก</button>
+                            (click)="clickClose($event , '3' , groupAbout.getRawValue().value)">ยกเลิก</button>
                     </div>
                 </div>
             </div>
@@ -104,9 +106,9 @@
         </div>
         <div class="card-right">
             <div class="card-detail">
-                <textarea #background='ngModel' name="background" id="background" class="input-data textarea"
-                    placeholder="ความเป็นมา" [(ngModel)]="resDataPage && resDataPage.backgroundStory"
-                    (keyup)="changeActive(background.value , 4)"></textarea>
+                <textarea name="background" id="background" class="input-data textarea" placeholder="ความเป็นมา"
+                    formControlName="backgroundStory"
+                    (keyup)="changeActive(groupAbout.getRawValue().backgroundStory , 4)"></textarea>
                 <div class="card-bottom" [class.active]="isCard4">
                     <div class="card-title">
                         <div>สรุปสั้นๆ เกี่ยวกับเพจของคุณ จำกัดตัวอักษรที่ 255 ตัวอักษร</div>
@@ -115,9 +117,9 @@
                     </div>
                     <div class="card-confirm">
                         <button mat-flat-button [disableRipple]="true" class="save-card"
-                            [class.active]="isActiveButton5" (click)="editInfoPage(4)">บันทึกการเปลี่ยนแปลง</button>
+                            [class.active]="isActiveButton4" (click)="editInfoPage(4)">บันทึกการเปลี่ยนแปลง</button>
                         <button mat-flat-button [disableRipple]="true" class="cancel-card"
-                            (click)="clickClose($event , '4' , background.value)">ยกเลิก</button>
+                            (click)="clickClose($event , '4' , groupAbout.getRawValue().backgroundStory)">ยกเลิก</button>
                     </div>
                 </div>
             </div>
@@ -125,6 +127,7 @@
     </div>
 
     <div class="info-title">ติดต่อ</div>
+
     <div class="card-info" (click)="clickCard('5')" [class.active]="isCard5">
         <div class="card-left">
             <div class="header">
@@ -133,8 +136,8 @@
         </div>
         <div class="card-right">
             <div class="card-detail">
-                <input #phone type="text" id="phone" class="input-data" placeholder="ป้อนหมายเลขโทรศัพท์"
-                    [(ngModel)]="resDataPage && resDataPage.mobileNo" (keyup)="checkFormatNumber(phone.value)">
+                <input type="text" id="phone" class="input-data" placeholder="ป้อนหมายเลขโทรศัพท์"
+                    formControlName="mobileNo" (keyup)="checkFormatNumber(groupAbout.getRawValue().mobileNo)">
                 <!-- <input type="text" class="input-data" placeholder="หมายเลขต่อ (ระบุหรือไม่ก็ได้"style="margin-top: 4pt;"> -->
                 <!-- <div class="div-checkbox">
                     <mat-checkbox [disableRipple]="'true'"></mat-checkbox>
@@ -146,9 +149,9 @@
                     </div>
                     <div class="card-confirm">
                         <button mat-flat-button [disableRipple]="true" class="save-card" (click)="editInfoPage(5)"
-                            [class.active]="isActiveButton3">บันทึกการเปลี่ยนแปลง</button>
+                            [class.active]="isActiveButton5">บันทึกการเปลี่ยนแปลง</button>
                         <button mat-flat-button [disableRipple]="true" class="cancel-card"
-                            (click)="clickClose($event , '5' , phone.value )">ยกเลิก</button>
+                            (click)="clickClose($event , '5' , groupAbout.getRawValue().mobileNo )">ยกเลิก</button>
                     </div>
                 </div>
             </div>
@@ -163,9 +166,8 @@
         </div>
         <div class="card-right">
             <div class="card-detail">
-                <input #website type="text" class="input-data" placeholder="ป้อนเว็บไซต์"
-                    [(ngModel)]="resDataPage && resDataPage.websiteURL"
-                    (keyup)="changeActive(resDataPage.websiteURL,6)">
+                <input type="text" id="websiteURL" class="input-data" placeholder="ป้อนเว็บไซต์"
+                    formControlName="websiteURL" (keyup)="changeActive(groupAbout.getRawValue().websiteURL,6)">
                 <!-- <div class="div-checkbox">
                     <mat-checkbox [disableRipple]="'true'"></mat-checkbox>
                     <span>เพจของฉันไม่มีเว็บไซต์</span>
@@ -178,7 +180,7 @@
                         <button mat-flat-button [disableRipple]="true" class="save-card" (click)="editInfoPage(6)"
                             [class.active]="isActiveButtonWeb">บันทึกการเปลี่ยนแปลง</button>
                         <button mat-flat-button [disableRipple]="true" class="cancel-card"
-                            (click)="clickClose($event , '6',website.value)">ยกเลิก</button>
+                            (click)="clickClose($event , '6',groupAbout.getRawValue().websiteURL)">ยกเลิก</button>
                     </div>
                 </div>
             </div>
@@ -193,8 +195,8 @@
         </div>
         <div class="card-right">
             <div class="card-detail">
-                <input #email type="text" id="email" class="input-data" placeholder="อีเมล"
-                    [(ngModel)]="resDataPage && resDataPage.email" (keyup)="checkPatternEmail(email.value)" required>
+                <input type="text" id="email" class="input-data" placeholder="อีเมล" formControlName="email"
+                    (keyup)="checkPatternEmail(groupAbout.getRawValue().email)" required>
                 <!-- <div class="div-checkbox">
                     <mat-checkbox [disableRipple]="'true'"></mat-checkbox>
                     <span>เพจของฉันไม่มีอีเมล MARK</span>
@@ -208,7 +210,7 @@
                         <button mat-flat-button [disableRipple]="true" class="save-card" (click)="editInfoPage(7)"
                             [class.active]="isActiveButtonEmail">บันทึกการเปลี่ยนแปลง</button>
                         <button mat-flat-button [disableRipple]="true" class="cancel-card"
-                            (click)="clickClose($event , '7' , email.value)">ยกเลิก</button>
+                            (click)="clickClose($event , '7' , groupAbout.getRawValue().email)">ยกเลิก</button>
                     </div>
                 </div>
             </div>
@@ -223,8 +225,8 @@
         </div>
         <div class="card-right">
             <div class="card-detail">
-                <input #lineId type="text" class="input-data" placeholder="ป้อนไลน์"
-                    (keyup)="changeActive(lineId.value,8)" [(ngModel)]="resDataPage && resDataPage.lineId">
+                <input type="text" class="input-data" placeholder="ป้อนไลน์" formControlName="lineId"
+                    (keyup)="changeActive(groupAbout.getRawValue().lineId,8)">
                 <!-- <div class="div-checkbox">
                     <mat-checkbox [disableRipple]="'true'"></mat-checkbox>
                     <span>เพจของฉันไม่มีเว็บไซต์</span>
@@ -237,7 +239,7 @@
                         <button mat-flat-button [disableRipple]="true" class="save-card"
                             [class.active]="isActiveButton8" (click)="editInfoPage(8)">บันทึกการเปลี่ยนแปลง</button>
                         <button mat-flat-button [disableRipple]="true" class="cancel-card"
-                            (click)="clickClose($event , '8' , lineId.value)">ยกเลิก</button>
+                            (click)="clickClose($event , '8' , groupAbout.getRawValue().lineId)">ยกเลิก</button>
                     </div>
                 </div>
             </div>
@@ -252,8 +254,8 @@
         </div>
         <div class="card-right">
             <div class="card-detail">
-                <input #facebookURL type="text" class="input-data" placeholder="ป้อนเฟซบุ๊ค"
-                    [(ngModel)]="resDataPage && resDataPage.facebookURL" (keyup)="changeActive(facebookURL.value , 9)">
+                <input type="text" class="input-data" placeholder="ป้อนเฟซบุ๊ค" formControlName="facebookURL"
+                    (keyup)="changeActive(groupAbout.getRawValue().facebookURL , 9)">
                 <!-- <div class="div-checkbox">
                     <mat-checkbox [disableRipple]="'true'"></mat-checkbox>
                     <span>เพจของฉันไม่มีเว็บไซต์</span>
@@ -266,7 +268,7 @@
                         <button mat-flat-button [disableRipple]="true" class="save-card"
                             [class.active]="isActiveButton9" (click)="editInfoPage(9)">บันทึกการเปลี่ยนแปลง</button>
                         <button mat-flat-button [disableRipple]="true" class="cancel-card"
-                            (click)="clickClose($event , '9' , facebookURL.value)">ยกเลิก</button>
+                            (click)="clickClose($event , '9' , groupAbout.getRawValue().facebookURL)">ยกเลิก</button>
                     </div>
                 </div>
             </div>
@@ -281,8 +283,8 @@
         </div>
         <div class="card-right">
             <div class="card-detail">
-                <input #twitter type="text" class="input-data" placeholder="ป้อนทวิตเตอร์"
-                    (keyup)="changeActive(twitter.value , 10)" [(ngModel)]="resDataPage && resDataPage.twitterURL">
+                <input type="text" class="input-data" placeholder="ป้อนทวิตเตอร์"
+                    (keyup)="changeActive(groupAbout.getRawValue().twitterURL , 10)" formControlName="twitterURL">
                 <!-- <div class="div-checkbox">
                     <mat-checkbox [disableRipple]="'true'"></mat-checkbox>
                     <span>เพจของฉันไม่มีเว็บไซต์</span>
@@ -295,7 +297,7 @@
                         <button mat-flat-button [disableRipple]="true" class="save-card"
                             [class.active]="isActiveButton10" (click)="editInfoPage(10)">บันทึกการเปลี่ยนแปลง</button>
                         <button mat-flat-button [disableRipple]="true" class="cancel-card"
-                            (click)="clickClose($event , '10' , twitter.value)">ยกเลิก</button>
+                            (click)="clickClose($event , '10' , groupAbout.getRawValue().twitterURL)">ยกเลิก</button>
                     </div>
                 </div>
             </div>
@@ -303,7 +305,7 @@
     </div>
 
     <div class="info-title">ตำแหน่งที่ตั้ง</div>
-    <!-- <div class="card-info" [class.active]="isCard11"> -->
+
     <div class="card-info" (click)="clickCard('11')" [class.active]="isCard11">
         <div class="card-left">
             <div class="header">
@@ -319,18 +321,16 @@
                         <span class="checkbox-confirm">มีที่อยู่</span>
                     </mat-checkbox>
                 </div>
-                <input #address type="text" class="input-data" [(ngModel)]="resDataPage && resDataPage.address"
+                <input type="text" class="input-data" formControlName="address"
                     style="display: inline-block; margin-right: 5pt; width: calc(100% - 16pt - 2px);"
-                    placeholder="ที่อยู่" (keyup)="changeActive(address.value , 11)">
+                    placeholder="ที่อยู่" (keyup)="changeActive(groupAbout.getRawValue().address , 11)">
 
-                <input type="text" class="input-data" #latitude id="latitude"
-                    [(ngModel)]="latitudeAboutPage && latitudeAboutPage.value"
+                <input type="text" class="input-data" id="latitudeAboutPage" formControlName="latitudeAboutPage"
                     style="display: inline-block; width: calc(50% - 16pt - 2px - 2.5pt - 2px); margin-top: 10pt; margin-right: 5pt;"
-                    placeholder="ละติจูด" (keyup)="aboutPage(latitude.value , '12')">
-                <input type="text" class="input-data" #longtitude id="longtitude"
-                    [(ngModel)]="longtitudeAboutPage && longtitudeAboutPage.value"
+                    placeholder="ละติจูด" (keyup)="aboutPage(groupAbout.getRawValue().latitudeAboutPage , '12')">
+                <input type="text" class="input-data" id="longtitudeAboutPage" formControlName="longtitudeAboutPage"
                     style="display: inline-block; width: calc(50% - 16pt - 2px - 2.5pt - 2px); margin-top: 10pt;"
-                    placeholder="ลองจิจูด" (keyup)="aboutPage(longtitude.value , '13')">
+                    placeholder="ลองจิจูด" (keyup)="aboutPage(groupAbout.getRawValue().longtitudeAboutPage , '13')">
                 <!-- <div class="div-checkbox">
                     <mat-checkbox [disableRipple]="'true'"></mat-checkbox>
                     <span style="font-family: Kanit-600;">ลูกค้ามาเยี่ยมชมธุรกิจของฉันตามที่อยู่นี้
@@ -344,7 +344,7 @@
                         <button mat-flat-button [disableRipple]="true" class="save-card"
                             [class.active]="isActiveButton11" (click)="createAboutPage()">บันทึกการเปลี่ยนแปลง</button>
                         <button mat-flat-button [disableRipple]="true" class="cancel-card"
-                            (click)="clickClose($event , '11' , address.value)">ยกเลิก</button>
+                            (click)="clickClose($event , '11' , groupAbout.getRawValue().address)">ยกเลิก</button>
                     </div>
                 </div>
             </div>
