@@ -101,6 +101,24 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <div class="form-group">
+                                            <label>ลำดับเหตุการณ์</label>
+                                            <ng-container>
+                                                <input type="number" class="form-control" [(ngModel)]="dataForm.ordering"
+                                                    [ngModelOptions]="{standalone: true}">
+                                            </ng-container>
+                                            <div class="alert alert-danger" style="margin-top: 5pt;"
+                                                *ngIf="submitted && dataForm.ordering === ''">
+                                                กรุณาใส่ ลำดับ
+                                            </div>
+                                            <!-- <label style="color: white;padding: 10px;background-color: #fd545a;border-radius: 8px;margin-top:15px;" for="file">Choose File</label> -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </form>
                     </div>
                     <div class="wrapper-action">
@@ -111,7 +129,8 @@
             </div>
         </mat-drawer>
         <mat-drawer-content>
-            <div class="main-content">
+            <div class="main-content" 
+            >
                 <admin-table-component #table [isPin]="true" [facade]="emergencyEventFacade" [title]="'เหตุการณ์ด่วน'"
                     [fieldTable]="fieldTable" [actions]="actions" (create)="clickCreateForm()"
                     (edit)="clickEditForm($event)" (delete)="clickDelete($event)"></admin-table-component>

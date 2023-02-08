@@ -17,4 +17,5 @@ export class CreateEmergencyEventRequest {
     public asset: any;
     public hashTag: string;
     public isPin: boolean;
+    public ordering: number;
 }
