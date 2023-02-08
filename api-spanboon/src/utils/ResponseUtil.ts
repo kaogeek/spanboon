@@ -61,6 +61,23 @@ export class ResponseUtil {
         }
     }
 
+    public static getErrorResponseApple(msg: string, err: any, twObj?: any): any {
+        if (err !== null || err !== undefined || err !== '') {
+            const errorResponse: any = {
+                status: 3,
+                message: msg,
+                error: err,
+                data: twObj
+            };
+            return errorResponse;
+        } else {
+            const errorResponse: any = {
+                status: 0,
+                message: msg,
+            };
+            return errorResponse;
+        }
+    }
     public static getSuccessResponseAuth(msg: string, value: any, authen: any, pic?: any): any {
         if (value !== null || value !== undefined || value !== '') {
             const sucessRes: any = {
