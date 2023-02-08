@@ -1393,6 +1393,7 @@ export class GuestController {
             const appleId: any = req.body.apple.result.user;
             if(users.email  === undefined){
                 appleClient = await this.authenticationIdService.findOne({ where: { providerUserId: appleId.userId, providerName: PROVIDER.APPLE } });
+                userApple = await this.userService.findOne({ where: { _id: appleClient.user } });
                 if(appleClient === undefined){
                     const errorResponse = ResponseUtil.getErrorResponseApple('Cannot find your user Please Provide the email to check again.', undefined);
                     return res.status(400).send(errorResponse);
