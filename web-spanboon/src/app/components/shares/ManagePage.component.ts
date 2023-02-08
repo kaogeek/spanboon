@@ -215,15 +215,13 @@ export class ManagePage extends AbstractPage implements OnInit {
   }
 
   public fbLibrary() {
-    (window as any).fbAsyncInit = function () {
-      window["FB"].init({
-        appId: environment.facebookAppId,
-        cookie: true,
-        xfbml: true,
-        version: "v14.0",
-      });
-      window["FB"].AppEvents.logPageView();
-    };
+    window["FB"].init({
+      appId: environment.facebookAppId,
+      cookie: true,
+      xfbml: true,
+      version: "v14.0",
+    });
+    window["FB"].AppEvents.logPageView();
   }
   public clickLoginFB() {
     window["FB"].login(

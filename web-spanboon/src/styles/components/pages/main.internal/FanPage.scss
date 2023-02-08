@@ -292,29 +292,23 @@
               margin-bottom: 10pt;
             }
 
-            >.btn-link {
-              margin-bottom: 10pt;
-              width: 100%;
-              align-items: center;
-              display: flex;
-              justify-content: center;
+            >.btn-web {
+              @include font-size-10($font-head-500);
+              border: 1px solid $brandcolor2;
+              color: $brandcolor2;
+              background-color: rgba($brandcolor2, 0.1) !important;
+              display: inline-block;
+              @include pointer();
+              border-radius: 30px;
+              padding: 6px 35px;
+              text-decoration: none;
+              user-select: none;
+              margin-bottom: 10px;
 
-              >.btn-web {
-                @include font-size-10($font-head-500);
+              &:hover {
                 background-color: $brandcolor2 !important;
                 color: $white;
-                border-radius: 30px;
                 border: 1px solid $brandcolor2;
-                display: inline-block;
-                cursor: pointer;
-                padding: 4px 35px;
-                text-decoration: none;
-
-                &:hover {
-                  border: 1px solid $brandcolor2;
-                  color: $brandcolor2;
-                  background-color: rgba($brandcolor2, 0.1) !important;
-                }
               }
             }
           }
@@ -323,6 +317,7 @@
             border-radius: 0;
             display: flex;
             align-items: center;
+            justify-content: space-between;
             flex-wrap: wrap;
             height: $height-profile-btn-action-fan-page;
             background-color: $white;
@@ -334,15 +329,12 @@
             >.btn-follow-about {
               display: flex;
               align-self: stretch;
-              width: 25%;
-              justify-content: center;
+              justify-content: space-between;
               align-items: center;
               @include font-size-9($font-head-500);
+              padding: 0 8pt;
 
-              &:nth-child(1) {
-                margin: 0 8pt;
-                width: calc(38% - 16pt);
-              }
+              &:nth-child(1) {}
 
               &:nth-child(2) {}
 
@@ -1613,6 +1605,7 @@
 
               >.btn-follow-about {
                 width: 100% !important;
+                justify-content: center;
 
                 &:nth-child(1) {
                   margin: 0;
