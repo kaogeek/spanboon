@@ -420,9 +420,9 @@ export class GuestController {
                     registerPassword = await User.hashPassword(registerPassword);
                 }
                 const user: User = new User();
-                user.username = appleUserId.username;
+                user.username = registerEmail;
                 user.password = registerPassword;
-                user.email = appleUserId.email;
+                user.email = registerEmail;
                 user.isSyncPage = undefined;
                 user.uniqueId = uniqueId ? uniqueId : null;
                 user.firstName = appleUserId.firstName;
@@ -1235,6 +1235,10 @@ export class GuestController {
             if (fbUser.id !== undefined && fbUser.email !== undefined) {
                 const findUserFb = await this.userService.findOne({ email: fbUser.email });
                 const findAuthenFb = await this.authenticationIdService.findOne({ providerUserId: fbUser.id, providerName: PROVIDER.FACEBOOK });
+                if(findUserFb !== undefined && findAuthenFb !==undefined){
+                    const errorResponse = ResponseUtil.getErrorResponse('You already have User and authentication.', undefined);
+                    return res.status(400).send(errorResponse);
+                }
                 if (findUserFb !== undefined && findAuthenFb === undefined) {
                     const authenAll = await this.authenticationIdService.find({ where: { user: findUserFb.id } });
                     for (authenFB of authenAll) {
@@ -1313,6 +1317,10 @@ export class GuestController {
                 } else if (findAuthenFb === undefined) {
                     findUserFb = await this.userService.findOne({ email: userEmail });
                 }
+                if(findUserFb !== undefined && findAuthenFb !== undefined){
+                    const errorResponse = ResponseUtil.getErrorResponse('You already have User and authentication.', undefined);
+                    return res.status(400).send(errorResponse);
+                }
                 if (findUserFb !== undefined && findAuthenFb === undefined) {
                     const authenAll = await this.authenticationIdService.find({ where: { user: findUserFb.id } });
                     for (authenFB of authenAll) {
@@ -1380,47 +1388,59 @@ export class GuestController {
             }
 
         } else if (mode === PROVIDER.APPLE) {
-            const data: User = await this.userService.findOne({ where: { username: users.email } });
-            const AllAuthen = await this.authenticationIdService.find({ user: ObjectID(String(data.id)) });
-            const checkAuth = await this.authenticationIdService.findOne({ where: { user: ObjectID(String(data.id)), providerName: mode } });
+            let userApple = undefined;
+            let appleClient = undefined;
+            const appleId: any = req.body.apple.result.user;
+            if(userEmail === undefined){
+                appleClient = await this.authenticationIdService.findOne({ where: { providerUserId: appleId.userId, providerName: PROVIDER.APPLE } });
+                if(appleClient === undefined){
+                    const errorResponse = ResponseUtil.getErrorResponse('Cannot find your user Please Provide the email to check again.', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+            }else{
+                userApple = await this.userService.findOne({ where: { username: userEmail } });
+                if(userApple === undefined){
+                    const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
+                    return res.status(400).send(errorUserNameResponse);
+                }
+            }
+            const AllAuthen = await this.authenticationIdService.find({user:userApple.id});
             const stackAuth = [];
             const user: User = new User();
-            user.username = data.username;
-            user.email = data.email;
-            user.uniqueId = data.uniqueId;
-            user.firstName = data.firstName;
-            user.lastName = data.lastName;
-            user.imageURL = data.imageURL;
-            user.coverURL = data.coverURL;
+            user.username = userApple.username;
+            user.email = userApple.email;
+            user.uniqueId = userApple.uniqueId;
+            user.firstName = userApple.firstName;
+            user.lastName = userApple.lastName;
+            user.imageURL = userApple.imageURL;
+            user.coverURL = userApple.coverURL;
             user.coverPosition = 0;
-            user.displayName = data.displayName;
-            user.birthdate = new Date(data.birthdate);
-            user.isAdmin = data.isAdmin;
-            user.isSubAdmin = data.isSubAdmin;
-            user.banned = data.banned;
+            user.displayName = userApple.displayName;
+            user.birthdate = new Date(userApple.birthdate);
+            user.isAdmin = userApple.isAdmin;
+            user.isSubAdmin = userApple.isSubAdmin;
+            user.banned = userApple.banned;
             for (const authens of AllAuthen) {
                 stackAuth.push(authens.providerName);
             }
             // authen.providerName === PROVIDER.EMAIL && authen.providerName === PROVIDER.FACEBOOK && authen.providerName === PROVIDER.GOOGLE && authen.providerName === PROVIDER.TWITTER && authen.providerName === PROVIDER.APPLE 
-            if (data && checkAuth === undefined) {
+            if (userApple !== undefined && appleClient === undefined) {
                 const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', user, stackAuth);
                 return res.status(200).send(successResponse);
-            } else if (data && checkAuth !== undefined) {
-                const appleId: any = req.body.apple.result.user;
-                const tokenFCM_AP = req.body.tokenFCM_AP.tokenFCM;
-                const deviceAP = req.body.tokenFCM_AP.deviceName;
-                const appleClient = await this.authenticationIdService.findOne({ where: { providerUserId: appleId.userId } });
+            } else if (userApple !== undefined && appleClient !== undefined) {
                 if (appleClient === null || appleClient === undefined) {
                     const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
                     return res.status(400).send(errorUserNameResponse);
                 } else {
+                    const userExrTime = await this.getUserLoginExpireTime();
                     const currentDateTime = moment().toDate();
-                    const query = { id: appleId.userId, providerName: PROVIDER.APPLE };
-                    const newValue = { $set: { lastAuthenTime: currentDateTime, storedCredentials: appleId.idToken, expirationDate: appleId.metadata.creationTime, properties: { tokenSign: appleId.accessToken, signIn: appleId.metadata.lastSignInTime } } };
+                    const authTime = currentDateTime;
+                    const expirationDateAP = moment().add(userExrTime, 'days').toDate();                    
+                    const query = { providerUserId: appleId.userId, providerName: PROVIDER.APPLE };
+                    const newValue = { $set: { lastAuthenTime: authTime, storedCredentials: appleId.idToken, expirationDate: expirationDateAP, properties: { tokenSign: appleId.accessToken, signIn: currentDateTime} } };
                     const update_Apple = await this.authenticationIdService.update(query, newValue);
                     if (update_Apple) {
                         const updatedAuth = await this.authenticationIdService.findOne({ where: { providerUserId: appleId.userId } });
-                        await this.deviceToken.createDeviceToken({ deviceName: deviceAP, token: tokenFCM_AP, userId: update_Apple.user });
                         loginUser = await this.userService.findOne({ where: { _id: ObjectID(updatedAuth.user) } });
                         loginToken = jwt.sign({ token: updatedAuth.storedCredentials, userId: loginUser.id }, env.SECRET_KEY);
                     }
@@ -1479,7 +1499,10 @@ export class GuestController {
                 return res.status(400).send(errorUserNameResponse);
             }
             const authenGG = await this.authenticationIdService.findOne({ user: userGG.id, providerName: PROVIDER.GOOGLE });
-
+            if(userGG !== undefined && authenGG !== undefined){
+                const errorResponse = ResponseUtil.getErrorResponse('You already have User and authentication.', undefined);
+                return res.status(400).send(errorResponse);
+            }
             const stackAuth = [];
             pic.push(checkIdToken.imageURL);
             const AllAuthen = await this.authenticationIdService.find({ user: ObjectID(String(userGG.id)) });
@@ -1592,6 +1615,10 @@ export class GuestController {
                 userTw = await this.userService.findOne({ _id: authenTw.user });
             } else {
                 userTw = await this.userService.findOne({ email: userEmail });
+            }
+            if(authenTw !== undefined && userTw !== undefined){
+                const errorResponse = ResponseUtil.getErrorResponse('You already have User and authentication.', undefined);
+                return res.status(400).send(errorResponse);
             }
             if (authenTw === undefined && userTw !== undefined) {
                 let authenTws = undefined;
@@ -1938,6 +1965,63 @@ export class GuestController {
                     return res.status(400).send(errorResponse);
                 }
             } else {
+                const errorResponse = ResponseUtil.getErrorResponse('The OTP is not correct.', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        } else if(user && mode === PROVIDER.APPLE){
+            if(otp === otpFind.otp){
+                let authIdCreate = undefined;
+                const appleId: any = otpRequest.apple.result.user;
+                const authenId = new AuthenticationId();
+                authenId.user = user.id;        
+                authenId.lastAuthenTime = moment().toDate();  
+                authenId.providerName = PROVIDER.APPLE;
+                authenId.providerUserId = appleId.userId;
+                authenId.storedCredentials = appleId.idToken;
+                authenId.expirationDate = moment().add(userExrTime, 'days').toDate();
+                authenId.properties = {
+                    properties: { tokenSign: appleId.accessToken} 
+                };
+                
+                if(otpFind.expiration < expirationDate){
+                    authIdCreate = await this.authenticationIdService.create(authenId);
+                    const queryMerge = { _id: user.id };
+                    const newValues = { $set: { mergeAP: true } };
+                    if(authIdCreate){
+                        loginUser = await this.userService.findOne({ where: { _id: authIdCreate.user } });
+                        const query = { email: emailRes };
+                        await this.otpService.delete(query);
+                        if (loginUser === undefined) {
+                            const errorResponse: any = { status: 0, message: 'Cannot login please try again.' };
+                            return res.status(400).send(errorResponse);
+                        }
+
+                        if (loginUser.banned === true) {
+                            const errorResponse = ResponseUtil.getErrorResponse('User Banned', undefined);
+                            return res.status(400).send(errorResponse);
+                        }
+
+                        const userFollowings = await this.userFollowService.find({ where: { userId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
+                        const userFollowers = await this.userFollowService.find({ where: { subjectId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
+
+                        loginUser = await this.userService.cleanUserField(loginUser);
+                        loginUser.followings = userFollowings.length;
+                        loginUser.followers = userFollowers.length;
+
+                        const successResponse = ResponseUtil.getSuccessResponseAuth('Loggedin successful', otpRequest.idToken, PROVIDER.APPLE);
+                        const update = await this.userService.update(queryMerge, newValues);
+                        if (update) {
+                            return res.status(200).send(successResponse);
+                        } else {
+                            const errorResponse = ResponseUtil.getErrorResponse('Merge not successful.', undefined);
+                            return res.status(400).send(errorResponse);
+                        }
+                    }
+                }else{
+                    const errorResponse = ResponseUtil.getErrorResponse('The OTP is not correct.', undefined);
+                    return res.status(400).send(errorResponse);
+                } 
+            }else{
                 const errorResponse = ResponseUtil.getErrorResponse('The OTP is not correct.', undefined);
                 return res.status(400).send(errorResponse);
             }
