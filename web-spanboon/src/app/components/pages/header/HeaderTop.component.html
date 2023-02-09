@@ -83,7 +83,21 @@
                 fill="#343434" />
     </svg> ????????-->
     <div class="wrapper-menu" #menuRight>
-        <header-search class="menu-search list-right-menu" [color]="'#f47732'"></header-search>
+        <div class="about-us-icon list-right-menu" style="transition: opacity 0s ease 0.5s;"
+            [ngStyle]="{'opacity': isAbout ? 1 : 0 , 'visibility' : isAbout ? 'visible' : 'hidden'}"
+            (click)="clickAboutUs()">
+            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink"
+                xmlns:svgjs="http://svgjs.com/svgjs" width="25" height="25" x="0" y="0" viewBox="0 0 512 512"
+                style="enable-background:new 0 0 512 512" xml:space="preserve" class="">
+                <g transform="matrix(-1,0,0,1,512.0001220703125,0)">
+                    <path
+                        d="M501.874 482.794c-6.312-3.676-44.743-27.475-65.305-70.505 48.023-44.904 75.337-107.371 75.337-171.301C511.906 108.678 396.537.032 255.953.032S0 108.678 0 240.988s115.369 240.956 255.953 240.956c18.872 0 39.143-1.769 67.111-7.645 73.508 39.06 139.486 37.962 164.589 37.566 11.175-.139 19.288 1.879 23.463-9.666 2.826-7.744-1.354-16.689-9.242-19.405zM285.948 361.966c0 16.564-13.429 29.995-29.995 29.995-16.566 0-29.995-13.431-29.995-29.995V240.988c0-16.566 13.429-29.995 29.995-29.995 16.566 0 29.995 13.429 29.995 29.995v120.978zm-29.995-196.964c-16.566 0-29.995-13.431-29.995-29.995 0-16.566 13.429-29.995 29.995-29.995 16.566 0 29.995 13.429 29.995 29.995 0 16.565-13.429 29.995-29.995 29.995z"
+                        fill="#000000" data-original="#000000" class=""></path>
+                </g>
+            </svg>
+        </div>
+        <header-search class="menu-search list-right-menu" (aboutUs)="clickShowSearch($event)"
+            [color]="'#f47732'"></header-search>
         <!-- <a class="menu-chat list-right-menu" (click)="showAlertDevelopDialog()" *ngIf="isLogin()">
             <svg xmlns="http://www.w3.org/2000/svg" width="68.545" height="69.657" viewBox="0 0 68.545 69.657">
                 <g id="Group_2387" data-name="Group 2387" transform="translate(1788.491 -3310.346)">
