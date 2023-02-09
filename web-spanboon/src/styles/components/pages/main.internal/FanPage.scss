@@ -1455,12 +1455,23 @@
 
             >.wrapper-btn-action {
               >.btn-follow-about {
+
+                &:nth-child(1) {
+                  margin-left: 30px;
+                }
+
+                &.btn_fa {
+                  margin-left: unset;
+                }
+
                 button-follow {
                   >.button-follow {
                     width: 90pt !important;
                   }
                 }
               }
+
+              >.dropdown {}
             }
 
             >.wrapper-looking-for {
@@ -1613,7 +1624,7 @@
                 }
 
                 &.btn_fa {
-                  width: 33% !important;
+                  width: 40% !important;
                   height: 36pt;
                   margin-top: 5pt;
                 }
@@ -1626,7 +1637,7 @@
               }
 
               >.dropdown {
-                width: 33.33%;
+                width: 40% !important;
               }
             }
           }

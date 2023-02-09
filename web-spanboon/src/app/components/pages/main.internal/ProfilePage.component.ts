@@ -422,7 +422,6 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
       this.showAlertLoginDialog("/profile/" + this.resProfile.id);
     } else {
       this.resPost.posts[index].isLike = true;
-      this.resPost.posts[index].likeCount = 1;
       this.postFacade.like(post.postData._id, post.userAsPage.id).then((res: any) => {
         this.resPost.posts[index].isLike = res.isLike
         this.resPost.posts[index].likeCount = res.likeCount

@@ -10,6 +10,6 @@ import { BaseModel } from './BaseModel';
 export class AboutPages extends BaseModel {
     public label: string;
     public value: string;
-    public pageId: string;
+    public id: string;
     public ordering: number;
 }
