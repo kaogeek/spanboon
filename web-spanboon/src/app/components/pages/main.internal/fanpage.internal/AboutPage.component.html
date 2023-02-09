@@ -4,7 +4,6 @@
     License: MIT. https://opensource.org/licenses/MIT
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
-
 <div class="fanpage-info" [formGroup]="groupAbout">
     <div class="info-title">ข้อมูลเพจ</div>
 
@@ -17,7 +16,7 @@
         <div class="card-right">
             <div class="card-detail">
                 <input type="text" class="input-data" placeholder="ชื่อเพจ" maxlength="255" formControlName="name"
-                    (keyup)="changeActive(groupAbout.getRawValue().name , 1)">
+                    id="name" (keyup)="changeActive(groupAbout.getRawValue().name , 1)">
                 <div class="card-bottom" [class.active]="isCard1">
                     <div class="card-title">
                         <div>สรุปสั้นๆ เกี่ยวกับเพจของคุณ จำกัดตัวอักษรที่ 255 ตัวอักษร</div>
@@ -26,7 +25,8 @@
                     </div>
                     <div class="card-confirm">
                         <button mat-flat-button [disableRipple]="true" class="save-card"
-                            [class.active]="isActiveButton1" (click)="editInfoPage(1)">บันทึกการเปลี่ยนแปลง</button>
+                            [class.active]="isActiveButton1"
+                            (click)="isActiveButton1 ? editInfoPage(1) : null">บันทึกการเปลี่ยนแปลง</button>
                         <button mat-flat-button [disableRipple]="true" class="cancel-card"
                             (click)="clickClose($event , '1' , groupAbout.getRawValue().name)">ยกเลิก</button>
                     </div>
@@ -46,7 +46,8 @@
                 <div class="crop-input">
                     <label for="add-username">@</label>
                     <input #pageUsername type="text" class="input-data" id="pageUsername" placeholder="ชื่อผู้ใช้"
-                        formControlName="pageUsername" style="padding: 0 28pt;">
+                        formControlName="pageUsername" (keyup)="changeActive(groupAbout.getRawValue().pageUsername , 2)"
+                        style="padding: 0 28pt;">
                     <span class="material-icons icon-close"
                         (click)="resetValue(groupAbout.getRawValue().pageUsername, 2)">
                         close
@@ -60,7 +61,8 @@
                             แบบกำหนดเองซึ่งอนุญาตให้ผู้คนเข้ามาชมและส่งข้อความถึงเพจได้อย่างรวดเร็วอีกด้วย</div>
                     </div>
                     <div class="card-confirm">
-                        <button mat-flat-button [disableRipple]="true" class="save-card" (click)="editInfoPage(2)"
+                        <button mat-flat-button [disableRipple]="true" class="save-card"
+                            (click)="isActiveButton2 ? editInfoPage(2) : null"
                             [class.active]="isActiveButton2">บันทึกการเปลี่ยนแปลง</button>
                         <button mat-flat-button [disableRipple]="true" class="cancel-card"
                             (click)="clickClose($event , '2' , groupAbout.getRawValue().pageUsername)">ยกเลิก</button>
@@ -78,7 +80,7 @@
         </div>
         <div class="card-right">
             <div class="card-detail">
-                <input type="text" class="input-data" placeholder="ชื่อหน่วยงาน"
+                <input type="text" class="input-data" placeholder="ชื่อหน่วยงาน" id="value"
                     (keyup)="changeActive(groupAbout.getRawValue().value,3)" formControlName="value">
                 <div class="card-bottom" [class.active]="isCard3">
                     <div class="card-title">
@@ -106,7 +108,7 @@
         </div>
         <div class="card-right">
             <div class="card-detail">
-                <textarea name="background" id="background" class="input-data textarea" placeholder="ความเป็นมา"
+                <textarea name="background" id="backgroundStory" class="input-data textarea" placeholder="ความเป็นมา"
                     formControlName="backgroundStory"
                     (keyup)="changeActive(groupAbout.getRawValue().backgroundStory , 4)"></textarea>
                 <div class="card-bottom" [class.active]="isCard4">
@@ -117,7 +119,8 @@
                     </div>
                     <div class="card-confirm">
                         <button mat-flat-button [disableRipple]="true" class="save-card"
-                            [class.active]="isActiveButton4" (click)="editInfoPage(4)">บันทึกการเปลี่ยนแปลง</button>
+                            [class.active]="isActiveButton4"
+                            (click)="isActiveButton4 ? editInfoPage(4) : null">บันทึกการเปลี่ยนแปลง</button>
                         <button mat-flat-button [disableRipple]="true" class="cancel-card"
                             (click)="clickClose($event , '4' , groupAbout.getRawValue().backgroundStory)">ยกเลิก</button>
                     </div>
@@ -148,8 +151,8 @@
                         <div>การเพิ่มหมายเลขโทรศัพท์ช่วยลูกค้าเป้าหมายติดต่อคุณได้ง่ายขึ้น</div>
                     </div>
                     <div class="card-confirm">
-                        <button mat-flat-button [disableRipple]="true" class="save-card" (click)="editInfoPage(5)"
-                            [class.active]="isActiveButton5">บันทึกการเปลี่ยนแปลง</button>
+                        <button mat-flat-button [disableRipple]="true" class="save-card"
+                            (click)="isActiveButton5 ? editInfoPage(5) : null">บันทึกการเปลี่ยนแปลง</button>
                         <button mat-flat-button [disableRipple]="true" class="cancel-card"
                             (click)="clickClose($event , '5' , groupAbout.getRawValue().mobileNo )">ยกเลิก</button>
                     </div>
@@ -177,7 +180,8 @@
                         <div>ช่วยให้ลูกค้าเป้าหมายเรียนรู้เพิ่มเติมเกี่ยวกับธุรกิจของคุณได้อย่างง่ายๆ</div>
                     </div>
                     <div class="card-confirm">
-                        <button mat-flat-button [disableRipple]="true" class="save-card" (click)="editInfoPage(6)"
+                        <button mat-flat-button [disableRipple]="true" class="save-card"
+                            (click)="isActiveButtonWeb ? editInfoPage(6) : null"
                             [class.active]="isActiveButtonWeb">บันทึกการเปลี่ยนแปลง</button>
                         <button mat-flat-button [disableRipple]="true" class="cancel-card"
                             (click)="clickClose($event , '6',groupAbout.getRawValue().websiteURL)">ยกเลิก</button>
@@ -207,7 +211,8 @@
                             เราจะส่งอีเมลไปยังที่อยู่นี้เพื่อยืนยันว่าอีเมลนี้ถูกต้อง</div>
                     </div>
                     <div class="card-confirm">
-                        <button mat-flat-button [disableRipple]="true" class="save-card" (click)="editInfoPage(7)"
+                        <button mat-flat-button [disableRipple]="true" class="save-card"
+                            (click)="isActiveButtonEmail ? editInfoPage(7) : null"
                             [class.active]="isActiveButtonEmail">บันทึกการเปลี่ยนแปลง</button>
                         <button mat-flat-button [disableRipple]="true" class="cancel-card"
                             (click)="clickClose($event , '7' , groupAbout.getRawValue().email)">ยกเลิก</button>
@@ -237,7 +242,8 @@
                     </div>
                     <div class="card-confirm">
                         <button mat-flat-button [disableRipple]="true" class="save-card"
-                            [class.active]="isActiveButton8" (click)="editInfoPage(8)">บันทึกการเปลี่ยนแปลง</button>
+                            [class.active]="isActiveButton8"
+                            (click)="isActiveButton8 ? editInfoPage(8) : null">บันทึกการเปลี่ยนแปลง</button>
                         <button mat-flat-button [disableRipple]="true" class="cancel-card"
                             (click)="clickClose($event , '8' , groupAbout.getRawValue().lineId)">ยกเลิก</button>
                     </div>
@@ -266,7 +272,8 @@
                     </div>
                     <div class="card-confirm">
                         <button mat-flat-button [disableRipple]="true" class="save-card"
-                            [class.active]="isActiveButton9" (click)="editInfoPage(9)">บันทึกการเปลี่ยนแปลง</button>
+                            [class.active]="isActiveButton9"
+                            (click)="isActiveButton9 ? editInfoPage(9) : null">บันทึกการเปลี่ยนแปลง</button>
                         <button mat-flat-button [disableRipple]="true" class="cancel-card"
                             (click)="clickClose($event , '9' , groupAbout.getRawValue().facebookURL)">ยกเลิก</button>
                     </div>
@@ -295,7 +302,8 @@
                     </div>
                     <div class="card-confirm">
                         <button mat-flat-button [disableRipple]="true" class="save-card"
-                            [class.active]="isActiveButton10" (click)="editInfoPage(10)">บันทึกการเปลี่ยนแปลง</button>
+                            [class.active]="isActiveButton10"
+                            (click)="isActiveButton10 ? editInfoPage(10) : null">บันทึกการเปลี่ยนแปลง</button>
                         <button mat-flat-button [disableRipple]="true" class="cancel-card"
                             (click)="clickClose($event , '10' , groupAbout.getRawValue().twitterURL)">ยกเลิก</button>
                     </div>
