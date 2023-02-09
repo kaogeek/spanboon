@@ -242,6 +242,7 @@ export class SettingsAdminRoles extends AbstractPage implements OnInit {
     }
 
     public clickEditAdmin(i, type?: string) {
+        this.isCancel = false
         if (type === USER_LEVEL.POST_MODERATOR) {
             this.moderatorPostIndex = i
         } else if (type === USER_LEVEL.CHAT_MODERATOR) {
@@ -250,7 +251,9 @@ export class SettingsAdminRoles extends AbstractPage implements OnInit {
             this.moderatorFulFillIndex = i
         } else if (type === USER_LEVEL.OWNER) {
             this.editOwnerIndex = i
+            this.editAdminIndex = '';
         } else {
+            this.editOwnerIndex = '';
             this.editAdminIndex = i;
         }
     }
@@ -481,6 +484,5 @@ export class SettingsAdminRoles extends AbstractPage implements OnInit {
 
     public clickcancel() {
         this.isCancel = true;
-
     }
 }

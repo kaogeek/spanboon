@@ -70,10 +70,21 @@ export class EmergencyEventService {
         return await this.emergencyEventRepository.deleteOne(query, options);
     }
 
+    // Search EmergencyEventOrdering
+    public searchOrdering(filter: SearchFilter): Promise<any> {
+        const orderiSort = { 'ordering': 1 };
+        const condition: any = SearchUtil.createFindCondition(filter.limit, filter.offset, filter.select, filter.relation, filter.whereConditions, orderiSort);
+        if (filter.count) {
+            return this.emergencyEventRepository.count(filter.whereConditions);
+        } else {
+            return this.emergencyEventRepository.find(condition);
+        }
+    }
+
     // Search EmergencyEvent
     public search(filter: SearchFilter): Promise<any> {
-        const condition: any = SearchUtil.createFindCondition(filter.limit, filter.offset, filter.select, filter.relation, filter.whereConditions, filter.orderBy);
-
+        const dateSort = { 'createdDate': -1 };
+        const condition: any = SearchUtil.createFindCondition(filter.limit, filter.offset, filter.select, filter.relation, filter.whereConditions, dateSort);
         if (filter.count) {
             return this.emergencyEventRepository.count(filter.whereConditions);
         } else {

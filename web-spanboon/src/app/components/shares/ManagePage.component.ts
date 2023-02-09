@@ -108,6 +108,16 @@ export class ManagePage extends AbstractPage implements OnInit {
     this.observManager.subscribe("authen.check", (data: any) => {
       this.searchAllPage();
     });
+
+    this.observManager.subscribe("page.about", (data: any) => {
+      if (data) {
+        const countIndexPage = this.resListPage.findIndex(res => (res.page.id === data.data.id));
+        if (countIndexPage >= 0) {
+          this.resListPage[countIndexPage].page.pageUsername = data.data.pageUsername;
+          this.resListPage[countIndexPage].page.name = data.data.name;
+        }
+      }
+    });
   }
   public isLogin(): boolean {
     let user = this.authenManager.getCurrentUser();
@@ -135,6 +145,7 @@ export class ManagePage extends AbstractPage implements OnInit {
 
   public ngOnDestroy(): void {
     super.ngOnDestroy();
+    this.observManager.complete('page.about');
   }
 
   isPageDirty(): boolean {
@@ -215,15 +226,13 @@ export class ManagePage extends AbstractPage implements OnInit {
   }
 
   public fbLibrary() {
-    (window as any).fbAsyncInit = function () {
-      window["FB"].init({
-        appId: environment.facebookAppId,
-        cookie: true,
-        xfbml: true,
-        version: "v14.0",
-      });
-      window["FB"].AppEvents.logPageView();
-    };
+    window["FB"].init({
+      appId: environment.facebookAppId,
+      cookie: true,
+      xfbml: true,
+      version: "v14.0",
+    });
+    window["FB"].AppEvents.logPageView();
   }
   public clickLoginFB() {
     window["FB"].login(
@@ -444,12 +453,7 @@ export class ManagePage extends AbstractPage implements OnInit {
 
   public nextPage(item: any) {
     document.body.style.overflowY = "auto";
-    if (
-      item.page.pageUsername &&
-      item.page.pageUsername !== "" &&
-      item.page.pageUsername !== null &&
-      item.page.pageUsername !== undefined
-    ) {
+    if (!!item.page!.pageUsername) {
       this.router.navigate(["/page/", item.page.pageUsername]);
     } else {
       this.router.navigate(["/page/", item.page.id]);
@@ -458,12 +462,7 @@ export class ManagePage extends AbstractPage implements OnInit {
 
   public clickSetting(item: any) {
     document.body.style.overflowY = "auto";
-    if (
-      item.page.pageUsername &&
-      item.page.pageUsername !== "" &&
-      item.page.pageUsername !== null &&
-      item.page.pageUsername !== undefined
-    ) {
+    if (!!item.page!.pageUsername) {
       this.router.navigate(["/page/" + item.page.pageUsername + "/settings"]);
     } else {
       this.router.navigate(["/page/" + item.page.id + "/settings"]);

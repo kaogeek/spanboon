@@ -182,12 +182,13 @@
                             <div class="fan-page-tag" [phxPreload]="resDataPage" [preloadClass]="'fan-page-tag'">
                                 {{resDataPage && resDataPage.pageUsername ? '@'+resDataPage.pageUsername : ''}}
                             </div>
-                            <div class="btn-link" *ngIf="!!resDataPage!.websiteURL">
-                                <a href="{{resDataPage && resDataPage.websiteURL}}" target="_blank"
-                                    class="btn-web">ไปหน้าเว็บไซต์</a>
-                            </div>
+                            <a [href]="checkPathValidation(resDataPage.websiteURL)" target="_blank" class="btn-web"
+                                *ngIf="!!resDataPage!.websiteURL">
+                                ไปหน้าเว็บไซต์
+                            </a>
                         </div>
                         <div class="wrapper-btn-action" [phxPreload]="resDataPage"
+                            [ngStyle]="{'justify-content': !isLogin() ? 'center' : 'space-between','column-gap': !isLogin() ? '35px' : 'unsent'}"
                             [preloadClass]="'wrapper-btn-action'">
                             <div class="btn-follow-about">
                                 <button-follow [bgColor]="'#FFFFFF'" [inputId]="'follow'"
@@ -218,10 +219,7 @@
                                 เกี่ยวกับ
                             </div> -->
                             <!-- FBTEST-->
-                            <div class="btn-follow-about btn_fa">
-                                เกี่ยวกับ
-                            </div>
-                            <ng-container>
+                            <ng-container *ngIf="isLogin()">
                                 <button mat-icon-button [matMenuTriggerFor]="menu" [disableRipple]="'false'"
                                     class="dropdown">
                                     <span class="material-icons">
@@ -526,7 +524,7 @@
                                     </a>
                                 </ng-template>
                                 <ng-container *ngIf="!!resDataPage!.websiteURL; else elseTemplateWeb">
-                                    <a href="{{resDataPage && resDataPage.websiteURL}}" target="_blank"
+                                    <a [href]="checkPathValidation(resDataPage.websiteURL)" target="_blank"
                                         class="contact-social"
                                         [class.active]="resDataPage && resDataPage.websiteURL  && resDataPage.websiteURL !== undefined  && resDataPage.websiteURL !== null  && resDataPage.websiteURL !== '' ? true : false">
                                         <svg class="web" xmlns="http://www.w3.org/2000/svg" width="13.747"

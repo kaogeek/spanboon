@@ -14,6 +14,8 @@ import { DialogDeleteComponent } from './DialogDeleteComponent.component';
 import { DialogWarningComponent } from './DialogWarningComponent.component';
 import { SearchFilter } from '../../models/SearchFilter';
 import { FormControl } from '@angular/forms';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { EmergencyEventFacade } from '../../services/facade/EmergencyEventFacade.service';
 
 const SEARCH_LIMIT: number = 0;
 const SEARCH_OFFSET: number = 0;
@@ -135,8 +137,11 @@ export class TableComponent implements OnInit {
     public arr: any[]
     public seletc: any[]
     public selected: any
-
-    constructor(dialog: MatDialog) {
+    public selectItem: any;
+    public item:any[];
+    emergencyEventFacade: EmergencyEventFacade;
+    constructor(dialog: MatDialog, emergencyEventFacade: EmergencyEventFacade) {
+        this.emergencyEventFacade = emergencyEventFacade;
         this.dialog = dialog;
         this.search = "";
         this.fieldSearch = []
@@ -258,10 +263,12 @@ export class TableComponent implements OnInit {
         search.relation = this.relation;
         search.count = false;
         let facade: any;
+        let stack = [];
         facade = this.facade.search(search);
         facade.then((res: any) => {
             console.log('res', res)
             const o: any[] = []
+
             if (this.isApprovePage) {
                 for (let r of res) {
                     if (r.approveUser === "") {
@@ -339,7 +346,17 @@ export class TableComponent implements OnInit {
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
     }
-
+    drop(event: CdkDragDrop<any[]>) {
+        moveItemInArray(this.data, event.previousIndex, event.currentIndex);
+        this.setTableConfig(this.data);
+        const mode = 'emeregenecy';
+        let body = {
+            modeEmer: mode,
+            previousIndex: event.previousIndex,
+            currentIndex: event.currentIndex
+        }
+        // this.emergencyEventFacade.editSelect(this.selectItem[event.previousIndex].id, body)
+    }
     public getWidthAction(): string {
         let ationWidth: number = 75;
         let count: number = 0;

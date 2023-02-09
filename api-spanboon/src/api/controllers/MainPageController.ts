@@ -95,6 +95,7 @@ export class MainPageController {
         const mainPageSearchConfig = await this.pageService.searchPageOfficialConfig();
         const searchOfficialOnly = mainPageSearchConfig.searchOfficialOnly;
         if (section !== undefined && section !== '') {
+            // ordering 
             if (section === 'EMERGENCYEVENT') {
                 const emerProcessorSec: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service);
                 emerProcessorSec.setConfig({
@@ -553,7 +554,7 @@ export class MainPageController {
             const histories = await this.searchHistoryService.aggregate(historyQuery);
             historyRows = histories.length;
             pageLimit = historyLimit - historyRows;
-            if(filter !== undefined){
+            if (filter !== undefined) {
                 if (historyRows !== null && historyRows !== undefined && historyRows > 0) {
                     for (const history of histories) {
                         searchResults.push({ historyId: history._id, value: history.resultId, label: history.keyword, type: history.resultType });
@@ -575,7 +576,7 @@ export class MainPageController {
                     const pages: any[] = await this.pageService.aggregate(pageQuery);
 
                     pageRows = pages.length;
-                    if(filter.typeUser !== undefined){
+                    if (filter.typeUser !== undefined) {
                         userLimit = pageLimit - pageRows;
                     }
                     if (pageRows !== null && pageRows !== undefined && pageRows > 0) {
@@ -627,7 +628,7 @@ export class MainPageController {
                         }
                     }
                 }
-            }else{
+            } else {
                 if (historyRows !== null && historyRows !== undefined && historyRows > 0) {
                     for (const history of histories) {
                         searchResults.push({ historyId: history._id, value: history.resultId, label: history.keyword, type: history.resultType });

@@ -16,6 +16,8 @@ import { DialogWarningComponent } from '../../shares/DialogWarningComponent.comp
 import { AuthenManager } from '../../../services/AuthenManager.service';
 import { Router } from '@angular/router';
 import { data } from 'jquery';
+import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
+
 
 const PAGE_NAME: string = "emergency";
 
@@ -51,6 +53,7 @@ export class EmergencyEventPage extends AbstractPage implements OnInit {
     private imageSrc: string = '';
     public value: string = '';
     public imageName: any;
+    public ordering:number;
 
     constructor(emergencyEventFacade: EmergencyEventFacade, hashTagFacade: HashTagFacade, router: Router, dialog: MatDialog, authenManager: AuthenManager) {
         super(PAGE_NAME, dialog);
@@ -126,6 +129,7 @@ export class EmergencyEventPage extends AbstractPage implements OnInit {
             isBack: false
         };
         this.setFields();
+
     }
 
     public ngOnInit() {
@@ -153,10 +157,10 @@ export class EmergencyEventPage extends AbstractPage implements OnInit {
         this.dataForm.coverPageURL = "";
         this.dataForm.hashTag = "";
         this.imageName = false;
+        this.dataForm.ordering = undefined;
         this.fileToUpload = null
         this.orinalDataForm = JSON.parse(JSON.stringify(this.dataForm));
     }
-
     public clickCloseDrawer(): void {
         let pass = true;
         for (const key in this.orinalDataForm) {

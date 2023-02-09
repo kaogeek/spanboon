@@ -303,22 +303,22 @@ export class LoginPage extends AbstractPage implements OnInit {
                   this.dataUser = data.data;
                   this.mockDataMergeSocial.social = mode;
                   this.socialMode = 'TWITTER';
-                }
-              } else {
-                this.authenManager.loginWithTwitter(twitter, mode).then((data: any) => {
-                  if (data) {
-                    // login success redirect to main page
-                    this.observManager.publish('authen.check', null);
-                    if (this.redirection) {
-                      this.router.navigateByUrl(this.redirection);
-                    } else {
-                      this.router.navigate(['home']);
+                } else if (data.data.status === 1) {
+                  this.authenManager.loginWithTwitter(twitter, mode).then((data: any) => {
+                    if (data) {
+                      // login success redirect to main page
+                      this.observManager.publish('authen.check', null);
+                      if (this.redirection) {
+                        this.router.navigateByUrl(this.redirection);
+                      } else {
+                        this.router.navigate(['home']);
+                      }
                     }
-                  }
-                }).catch((err) => {
-                  if (err) {
-                  }
-                })
+                  }).catch((err) => {
+                    if (err) {
+                    }
+                  })
+                }
               }
             }).catch((error) => {
               if (error) {

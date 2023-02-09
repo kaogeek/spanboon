@@ -1571,6 +1571,7 @@
                       @include font-size-9($font-head-500);
                       text-align: center;
                       cursor: pointer;
+                      padding: 0px 40px;
                     }
                   }
 
@@ -1616,7 +1617,7 @@
                           width: 14px;
                           height: 14px;
                           fill: slategray;
-                          margin: 3pt 3pt 0 0;
+                          margin: 2px 5px 0 2px;
                           flex: 0 0 auto;
                         }
 

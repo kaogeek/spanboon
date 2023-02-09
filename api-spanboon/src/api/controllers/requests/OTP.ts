@@ -12,7 +12,7 @@ export class OtpRequest {
     public twitterOauthToken: string;
     public twitterOauthTokenSecret: string;
     public twitterUserId: string; // ! remove when fix a bug when verify
-    public apple: string;
+    public apple: any;
     public facebookObject: any;
     public facebook:any;
 }
