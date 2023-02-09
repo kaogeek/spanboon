@@ -1314,7 +1314,7 @@ export class GuestController {
                 const findAuthenFb = await this.authenticationIdService.findOne({ providerUserId: fbUser.id, providerName: PROVIDER.FACEBOOK });
                 if (findAuthenFb !== undefined) {
                     findUserFb = await this.userService.findOne({ _id: findAuthenFb.user });
-                } else if (findAuthenFb === undefined) {
+                } else {
                     findUserFb = await this.userService.findOne({ email: userEmail });
                 }
                 if(findUserFb === undefined && findAuthenFb === undefined){
@@ -1500,8 +1500,8 @@ export class GuestController {
                 return res.status(400).send(errorUserNameResponse);
             }
             const authenGG = await this.authenticationIdService.findOne({ user: userGG.id, providerName: PROVIDER.GOOGLE });
-            if(userGG !== undefined && authenGG !== undefined){
-                const errorResponse = ResponseUtil.getErrorResponse('You already have User and authentication.', undefined);
+            if(userGG === undefined && authenGG === undefined){
+                const errorResponse = ResponseUtil.getErrorResponse('User was not found.', undefined);
                 return res.status(400).send(errorResponse);
             }
             const stackAuth = [];
@@ -1610,15 +1610,14 @@ export class GuestController {
                 return res.status(400).send(errorResponse);
             }
             let userTw = undefined;
-
             const authenTw = await this.authenticationIdService.findOne({ providerUserId: twitterUserId, providerName: PROVIDER.TWITTER });
-            if (userEmail !== undefined && authenTw !== undefined) {
+            if (userEmail === undefined) {
                 userTw = await this.userService.findOne({ _id: authenTw.user });
             } else {
                 userTw = await this.userService.findOne({ email: userEmail });
             }
-            if(authenTw !== undefined && userTw !== undefined){
-                const errorResponse = ResponseUtil.getErrorResponse('You already have User and authentication.', undefined);
+            if(authenTw === undefined && userTw === undefined){
+                const errorResponse = ResponseUtil.getErrorResponse('User was not found.', undefined);
                 return res.status(400).send(errorResponse);
             }
             if (authenTw === undefined && userTw !== undefined) {
