@@ -1235,6 +1235,10 @@ export class GuestController {
             if (fbUser.id !== undefined && fbUser.email !== undefined) {
                 const findUserFb = await this.userService.findOne({ email: fbUser.email });
                 const findAuthenFb = await this.authenticationIdService.findOne({ providerUserId: fbUser.id, providerName: PROVIDER.FACEBOOK });
+                if(findUserFb !== undefined && findAuthenFb !==undefined){
+                    const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
+                    return res.status(400).send(errorResponse);
+                }
                 if (findUserFb !== undefined && findAuthenFb === undefined) {
                     const authenAll = await this.authenticationIdService.find({ where: { user: findUserFb.id } });
                     for (authenFB of authenAll) {
@@ -1314,7 +1318,7 @@ export class GuestController {
                     findUserFb = await this.userService.findOne({ email: userEmail });
                 }
                 if(findUserFb !== undefined && findAuthenFb !== undefined){
-                    const errorResponse = ResponseUtil.getErrorResponse('You already have User and authentication.', undefined);
+                    const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
                     return res.status(400).send(errorResponse);
                 }
                 if (findUserFb !== undefined && findAuthenFb === undefined) {
