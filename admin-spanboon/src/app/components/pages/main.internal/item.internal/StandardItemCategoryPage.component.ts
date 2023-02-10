@@ -249,7 +249,6 @@ export class StandardItemCategoryPage extends AbstractPage implements OnInit {
         if (this.statusImg === false) {
             return;
         }
-        console.log('this.statusImg', this.statusImg)
         this.dataForm.name = this.dataForm.name;
         if (this.orinalDataForm.name !== "") {
             let va = this.testVaridate(this.dataForm.parent);

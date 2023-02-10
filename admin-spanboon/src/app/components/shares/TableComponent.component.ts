@@ -5,7 +5,7 @@
  * Author: Americaso <treerayuth.o@absolute.co.th>
  */
 
-import { Component, OnInit, Input, ViewChild, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, Output, EventEmitter, SimpleChanges } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -16,6 +16,7 @@ import { SearchFilter } from '../../models/SearchFilter';
 import { FormControl } from '@angular/forms';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { EmergencyEventFacade } from '../../services/facade/EmergencyEventFacade.service';
+import { element } from 'protractor';
 
 const SEARCH_LIMIT: number = 0;
 const SEARCH_OFFSET: number = 0;
@@ -102,6 +103,8 @@ export class TableComponent implements OnInit {
     public userAdmin: boolean;
     @Input()
     public isBanfilter: boolean;
+    @Input()
+    public isOfficialPage: {};
     public fieldSearchs: string[];
     @Output() official: EventEmitter<any> = new EventEmitter();
     @Output() ban: EventEmitter<any> = new EventEmitter();
@@ -126,6 +129,7 @@ export class TableComponent implements OnInit {
     public displayedColumns: string[];
     public isLoading: boolean;
     public isBans: boolean;
+    public isEmer: boolean = false;
     public isShowSelect: boolean;
     public dataSource: MatTableDataSource<any>;
     public filters = new FormControl();
@@ -138,7 +142,7 @@ export class TableComponent implements OnInit {
     public seletc: any[]
     public selected: any
     public selectItem: any;
-    public item:any[];
+    public item: any[];
     emergencyEventFacade: EmergencyEventFacade;
     constructor(dialog: MatDialog, emergencyEventFacade: EmergencyEventFacade) {
         this.emergencyEventFacade = emergencyEventFacade;
@@ -216,9 +220,7 @@ export class TableComponent implements OnInit {
         }
         search.relation = this.relation;
         search.count = false;
-        let facade: any;
-        facade = this.facade.search(search);
-        facade.then((res: any) => {
+        this.facade.search(search).then((res: any) => {
             if (this.user) {
                 for (let r of res) {
                     if (!r.isAdmin) {
@@ -262,11 +264,8 @@ export class TableComponent implements OnInit {
         search.offset = isNextPage ? this.paginator.length : SEARCH_OFFSET;
         search.relation = this.relation;
         search.count = false;
-        let facade: any;
         let stack = [];
-        facade = this.facade.search(search);
-        facade.then((res: any) => {
-            console.log('res', res)
+        this.facade.search(search).then((res: any) => {
             const o: any[] = []
 
             if (this.isApprovePage) {
@@ -306,15 +305,13 @@ export class TableComponent implements OnInit {
                 res = o
             }
             if (isNextPage) {
-                for (let r of res) {
-                    this.data.push(r);
-                }
+                this.data = res;
             } else {
                 this.paginator.pageIndex = 0;
                 this.data = res ? res : [];
             }
             this.setTableConfig(this.data);
-            this.isLoading = false;
+            // this.isLoading = false;
         }).catch((err: any) => {
             if (!this.parentId) {
                 this.dialogWarning(err.error.message);
@@ -342,14 +339,22 @@ export class TableComponent implements OnInit {
         this.isLoading = false;
         this.dataSource = new MatTableDataSource<any>(this.data);
         this.paginator._intl.itemsPerPageLabel = ITEMS_PER_PAGE;
-        this.paginator._intl.getRangeLabel = (page: number, pageSize: number, length: number) => { if (length == 0 || pageSize == 0) { return `0 ของ ${length}`; } length = Math.max(length, 0); const startIndex = page * pageSize; const endIndex = startIndex < length ? Math.min(startIndex + pageSize, length) : startIndex + pageSize; return `${startIndex + 1} - ${endIndex} ของ ${length}`; };
+        this.paginator._intl.getRangeLabel = (page: number, pageSize: number, length: number) => {
+            if (length == 0 || pageSize == 0) {
+                return `0 ของ ${length}`;
+            }
+            length = Math.max(length, 0);
+            const startIndex = page * pageSize;
+            const endIndex = startIndex < length ? Math.min(startIndex + pageSize, length) : startIndex + pageSize;
+            return `${startIndex + 1} - ${endIndex} ของ ${length}`;
+        };
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
     }
-    drop(event: CdkDragDrop<any[]>) {
+    public drop(event: CdkDragDrop<any[]>) {
         moveItemInArray(this.data, event.previousIndex, event.currentIndex);
         this.setTableConfig(this.data);
-        const mode = 'emeregenecy';
+        const mode = 'emergency';
         let body = {
             modeEmer: mode,
             previousIndex: event.previousIndex,
@@ -385,9 +390,7 @@ export class TableComponent implements OnInit {
         search.whereConditions = {};
         search.relation = this.relation;
         search.count = false;
-        let facade: any;
-        facade = this.facade.search(search);
-        facade.then((res: any) => {
+        this.facade.search(search).then((res: any) => {
             if (this.user) {
                 if (data === 'OP') {
                     for (let r of res) {
