@@ -271,7 +271,6 @@ export class UserPage extends AbstractPage implements OnInit {
         });
     }
     public clickDelete(data: any): void {
-        console.log('data', data);
         this.userFacade.deleteuser(data.id).then((res) => {
             let index = 0;
             let dataTable = this.table.data;
