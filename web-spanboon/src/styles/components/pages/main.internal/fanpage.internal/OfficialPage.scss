@@ -1,0 +1,56 @@
+.page-official-wrapper {
+    display: flex;
+    margin: 30px;
+
+    > .page-official-body {
+        width: 100%;
+
+        > .tbl-page-wrapper {
+            position: relative;
+            max-height: 90vh;
+            overflow: auto;
+
+            > .mat-form-field {
+                @include font-size-9($font-content-light);
+            }
+
+            > .mat-table {
+                thead {
+                    > .mat-header-row {
+                        > .mat-header-cell {
+                            @include font-size-8($font-content-light);
+                            color: $white;
+                            background-color: $brandcolor3;
+                            font-weight: bold;
+                        }
+                    }
+                }
+
+                tbody {
+                    > .mat-row {
+                        @include font-size-9($font-content-light);
+                    }
+                }
+            }
+
+            > .search-page {
+                width: 80%;
+                padding-right: 30px;
+            }
+
+            > .tbl-page {
+                width: 100%;
+            }
+        }
+
+        > .page-official-footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+
+            > .mat-paginator {
+                padding: 0 40px 20px 0;
+            }
+        }
+    }
+}

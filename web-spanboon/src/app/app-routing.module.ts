@@ -15,6 +15,7 @@ import {
   StoryPage,
   PostPage,
   RegisterPage,
+  OfficialPage,
   MenuRegister,
   PageHashTag,
   PageRecommended,
@@ -32,6 +33,10 @@ export const APP_ROUTES: Routes = [
     redirectTo: '/home',
     pathMatch: 'full'
   },
+  // {
+  //   path: OfficialPage.PAGE_NAME,
+  //   component: OfficialPage,
+  // },
   {
     path: MainPage.PAGE_NAME,
     component: MainPage,

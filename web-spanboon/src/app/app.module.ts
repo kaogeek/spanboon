@@ -81,6 +81,7 @@ import {
 
   // page
   HomePage,
+  OfficialPage,
   LoginPage,
   ProfilePage,
   NotificationAllPage,
@@ -298,6 +299,7 @@ const COMPONENTS: any[] = [
   FooterMobile,
   // Pages
   HomePage,
+  OfficialPage,
   HomePageV3,
   NotificationAllPage,
   LoginPage,

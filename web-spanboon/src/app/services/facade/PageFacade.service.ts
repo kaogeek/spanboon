@@ -40,7 +40,7 @@ export class PageFacade extends AbstractFacade {
     });
   }
 
-  public search(filter: SearchFilter): Promise<Page> {
+  public search(filter: SearchFilter): Promise<Page[]> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/page/search';
       let body: any = {};
