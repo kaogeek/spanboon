@@ -13,7 +13,7 @@ import { MatDialog } from '@angular/material';
 import { AbstractPage } from '../AbstractPage';
 import { MESSAGE } from '../../../../app/AlertMessage';
 import { environment } from 'src/environments/environment';
-import { DialogAlert } from '../../components';
+import { DialogAboutUs, DialogAlert } from '../../components';
 import { DialogListFacebook } from '../../components';
 import { PageSoialFB } from 'src/app/models/PageSocialFB';
 import { TwitterService } from '../../../services/services';
@@ -74,6 +74,7 @@ export class HeaderTop extends AbstractPage implements OnInit {
   public isclickmenu: boolean;
   public isFrist: boolean;
   public isCheck: boolean = undefined;
+  public isAbout: boolean = true;
   private activatedRoute: ActivatedRoute;
   public redirection: string;
   public accessTokenLink = '';
@@ -498,15 +499,16 @@ export class HeaderTop extends AbstractPage implements OnInit {
     }
   }
 
-  // public notija() {
-  //   this.notificationFacade.findNotification('63b693401a69db32be899d25').then((res) => {
-  //     if (res) {
-  //       console.log("res findNotification", res);
-  //     }
-  //   }).catch((error) => {
-  //     if (error) {
-  //       console.log("error", error);
-  //     }
-  //   });
-  // }
+  public clickAboutUs() {
+    let dialog = this.dialog.open(DialogAboutUs, {
+    });
+  }
+
+  public clickShowSearch(data) {
+    if (data === 'hide') {
+      this.isAbout = false;
+    } else {
+      this.isAbout = true;
+    }
+  }
 }

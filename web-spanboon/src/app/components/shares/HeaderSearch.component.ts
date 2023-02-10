@@ -5,7 +5,7 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
  */
 
-import { Component, Input, ViewChild, ElementRef, OnInit, EventEmitter } from '@angular/core';
+import { Component, Input, ViewChild, ElementRef, OnInit, EventEmitter, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import * as $ from 'jquery';
 import { ObjectiveFacade, MainPageSlideFacade, AuthenManager, SearchHistoryFacade, AssetFacade, HashTagFacade } from '../../services/services';
@@ -43,6 +43,8 @@ export class HeaderSearch extends AbstractPage implements OnInit {
   public crColor: string = "";
   @Input()
   public link: string = "#";
+  @Output()
+  public aboutUs: EventEmitter<any> = new EventEmitter();
 
   @ViewChild('search', { static: false }) public search: ElementRef;
 
@@ -132,11 +134,13 @@ export class HeaderSearch extends AbstractPage implements OnInit {
     }, 250);
   }
 
-  public clickShowSearch() {
+  public clickShowSearch(value: string) {
+    if (value === 'hide') {
+      this.aboutUs.emit(value);
+    }
     // $("#menubottom").css({
     //   'overflow-y': "hidden"
     // });
-
     this.SearchShow = true;
     this.filled = true;
     this.searchPageRecent();
@@ -215,7 +219,10 @@ export class HeaderSearch extends AbstractPage implements OnInit {
     }
   }
 
-  public clickHideSearch() {
+  public clickHideSearch(value: string) {
+    if (value === 'show') {
+      this.aboutUs.emit(value);
+    }
     // $("#menubottom").css({
     //   'overflow-y': "auto"
     // });
@@ -460,13 +467,13 @@ export class HeaderSearch extends AbstractPage implements OnInit {
     } else {
       this.router.navigateByUrl('/search');
     }
-    this.clickHideSearch();
+    this.clickHideSearch('show');
     this.search.nativeElement.value = ''
     this.filled = false;
 
     this.searchHistoryFacade.create(result).then((res: any) => {
       // this.filled = false;
-      this.clickHideSearch();
+      this.clickHideSearch('show');
     }).catch((err: any) => {
       console.log(err)
     })
