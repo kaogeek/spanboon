@@ -421,7 +421,7 @@
                             @include font-size-9($font-head-500);
                             color: $brandcolor2;
                             > .date-case-close {
-                                text-align: end;
+                                text-align: flex-end;
                                 color: $color-gray;
                             }
                         }
@@ -980,7 +980,7 @@
                             }
                         }
                     }
-                    > .story-left { 
+                    > .story-left {
                         > .story-category {
                             > .lookfor {
                                 @include font-size-10($font-head-500);
@@ -988,7 +988,7 @@
                             > .date {
                                 @include font-size-10($font-head-500);
                             }
-                        } 
+                        }
 
                         > .contact-head {
                             @include font-size-7($font-head-500);
@@ -1396,7 +1396,7 @@
                             }
                         }
                     }
-                    > .story-left { 
+                    > .story-left {
                         > .story-category {
                             // display: none;
                             > .lookfor {
@@ -1413,7 +1413,7 @@
                                     overflow: hidden;
                                 }
                             }
-                            >.date {
+                            > .date {
                                 &:last-child {
                                     display: none;
                                 }
@@ -1437,12 +1437,12 @@
                             }
                         }
 
-                        > .contact-head { 
-                            margin-top: unset; 
+                        > .contact-head {
+                            margin-top: unset;
                         }
                         > .contact-hashtag {
-                            padding: unset; 
-                            >.date {
+                            padding: unset;
+                            > .date {
                                 @include font-size-10($font-head-300);
                             }
                             > .contact-content {
