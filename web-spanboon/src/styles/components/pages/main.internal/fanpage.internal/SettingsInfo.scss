@@ -342,10 +342,8 @@
     }
   }
 
-  .mat-checkbox-checked:not(.mat-checkbox-disabled).mat-accent
-    .mat-ripple-element,
-  .mat-checkbox:active:not(.mat-checkbox-disabled).mat-accent
-    .mat-ripple-element {
+  .mat-checkbox-checked:not(.mat-checkbox-disabled).mat-accent .mat-ripple-element,
+  .mat-checkbox:active:not(.mat-checkbox-disabled).mat-accent .mat-ripple-element {
     background: $brandcolor2;
   }
 
@@ -391,7 +389,7 @@
           //                     font-size: 11px;
           //                 }
           //                 > .card-confirm {
-          //                     text-align: end;
+          //                     text-align: flex-end;
           //                     > .save-card {
           //                         @include font-size-11($font-head-500);
           //                     }
@@ -436,7 +434,7 @@
           //                     font-size: 11px;
           //                 }
           //                 > .card-confirm {
-          //                     text-align: end;
+          //                     text-align: flex-end;
           //                     > .save-card {
           //                         @include font-size-11($font-head-500);
           //                     }
@@ -480,7 +478,7 @@
               font-size: 11px;
             }
             > .card-confirm {
-              text-align: end;
+              text-align: flex-end;
               > .save-card {
                 @include font-size-11($font-head-500);
               }
@@ -525,7 +523,7 @@
               font-size: 11px;
             }
             > .card-confirm {
-              text-align: end;
+              text-align: flex-end;
               > .save-card {
                 @include font-size-11($font-head-500);
               }
