@@ -1,4 +1,4 @@
-import { Column, Entity, BeforeInsert, ObjectIdColumn, ObjectID } from 'typeorm';
+import { Column, Entity, BeforeInsert, ObjectIdColumn, ObjectID, BeforeUpdate } from 'typeorm';
 import moment = require('moment/moment');
 import { IsNotEmpty, IsMongoId } from 'class-validator';
 import { BaseModel } from './BaseModel';
@@ -15,7 +15,13 @@ export class FacebookWebhookLogs extends BaseModel {
     public data: any;
 
     @BeforeInsert()
-    public async createDetails(): Promise<void> {
+    public createDetails(): any {
         this.createdDate = moment().toDate();
+        this.createdTime = moment().toDate();
+    }
+
+    @BeforeUpdate()
+    public updateDetails(): any {
+        this.updateDate = moment().toDate();
     }
 }

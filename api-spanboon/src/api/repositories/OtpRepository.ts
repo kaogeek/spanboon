@@ -6,7 +6,7 @@
  */
 
 import { EntityRepository, MongoRepository } from 'typeorm';
-import { Otp } from '../models/otp';
+import { Otp } from '../models/Otp';
 
 @EntityRepository(Otp)
 export class OtpRepository extends MongoRepository<Otp>  {
