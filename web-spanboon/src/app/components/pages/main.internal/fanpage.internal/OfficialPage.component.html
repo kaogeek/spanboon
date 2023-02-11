@@ -1,4 +1,7 @@
 <div class="page-official-wrapper">
+    <!-- <div class="page-official-header">
+        <div class="page-official-header-txt">รายชื่อเพจที่เป็นทางการและไม่เป็นทางการ</div>
+    </div> -->
     <div class="page-official-body">
         <div class="tbl-page-wrapper">
             <mat-form-field class="search-page">
@@ -25,9 +28,9 @@
                 <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
                 <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
             </table>
-        </div>
-        <div class="page-official-footer">
-            <mat-paginator showFirstLastButtons></mat-paginator>
+            <div class="page-official-footer">
+                <mat-paginator showFirstLastButtons></mat-paginator>
+            </div>
         </div>
     </div>
 </div>

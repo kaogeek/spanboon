@@ -33,10 +33,10 @@ export const APP_ROUTES: Routes = [
     redirectTo: '/home',
     pathMatch: 'full'
   },
-  // {
-  //   path: OfficialPage.PAGE_NAME,
-  //   component: OfficialPage,
-  // },
+  {
+    path: OfficialPage.PAGE_NAME,
+    component: OfficialPage,
+  },
   {
     path: MainPage.PAGE_NAME,
     component: MainPage,
