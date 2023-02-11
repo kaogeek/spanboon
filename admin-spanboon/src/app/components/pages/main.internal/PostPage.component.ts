@@ -40,6 +40,7 @@ export class PostPage extends AbstractPage implements OnInit {
     public valueNum: number;
     public orinalDataForm: Page;
     public submitted = false;
+    public isOfficialPage: {};
 
     constructor(pageFacade: PageFacade, router: Router, dialog: MatDialog, authenManager: AuthenManager) {
         super(PAGE_NAME, dialog);
@@ -160,11 +161,19 @@ export class PostPage extends AbstractPage implements OnInit {
                         for (let d of data) {
                             if (d.name == res.name) {
                                 data[index] = res;
+                                this.isOfficialPage = {
+                                    official: true,
+                                    index: index,
+                                    data: res
+                                }
                                 break;
                             }
                             index++;
                         }
-                        this.table.searchData();
+                        this.table.isLoading = true;
+                        setTimeout(() => {
+                            this.table.setTableConfig(data);
+                        }, 1000);
                     }).catch((err: any) => {
                         this.dialogWarning(err.error.message);
                     });
@@ -177,11 +186,19 @@ export class PostPage extends AbstractPage implements OnInit {
                         for (let d of data) {
                             if (d.name == res.name) {
                                 data[index] = res;
+                                this.isOfficialPage = {
+                                    official: false,
+                                    index: index,
+                                    data: res
+                                }
                                 break;
                             }
                             index++;
                         }
-                        this.table.searchData();
+                        this.table.isLoading = true;
+                        setTimeout(() => {
+                            this.table.setTableConfig(data);
+                        }, 1000);
                     }).catch((err: any) => {
                         this.dialogWarning(err.error.message);
                     });
