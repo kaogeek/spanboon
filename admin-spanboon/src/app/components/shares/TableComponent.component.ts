@@ -25,7 +25,8 @@ const ITEMS_PER_PAGE: string = 'รายการต่อหน้า';
 const BASE_MODEL: string[] = [
     'createdDate',
     'createdByUsername',
-    'modifiedDate',
+    'updateDate',
+    'updateByUsername',
     'action'
 ];
 const LOGS_BASE_MODEL: string[] = [
@@ -77,6 +78,8 @@ export class TableComponent implements OnInit {
 
     @Input()
     public facade: any;
+    @Input()
+    public orderBy: any;
     @Input()
     public isUser: any;
     @Input()
@@ -148,8 +151,8 @@ export class TableComponent implements OnInit {
         this.emergencyEventFacade = emergencyEventFacade;
         this.dialog = dialog;
         this.search = "";
-        this.fieldSearch = []
-        this.fieldSearchs = ["ที่ถูกระงับ",]
+        this.fieldSearch = [];
+        this.fieldSearchs = ["ที่ถูกระงับ"];
         this.data = [];
     }
 
@@ -185,19 +188,19 @@ export class TableComponent implements OnInit {
             this.searchData();
         }
         this.widthAction = this.getWidthAction();
-        this.sort.sortChange.subscribe(() =>
-            this.searchData(false, true)
-        );
-        this.paginator.page.subscribe(() =>
-            this.nextPage()
-        )
+        this.sort.sortChange.subscribe(() => {
+            this.searchData(false, true);
+        });
+        this.paginator.page.subscribe(() => {
+            this.nextPage();
+        });
         if (this.isUser === true) {
             this.fieldOpen = [{ viwe: "All", value: "ทั้งหมด" }, { viwe: "OP", value: "ใช้งาน" }, { viwe: "CO", value: "ไม่ถูกใช้งาน" }, { viwe: "ADMIN", value: "ผู้ดูแล" }];
-            this.Open.setValue(this.fieldOpen[0].value)
+            this.Open.setValue(this.fieldOpen[0].value);
         }
         if (this.isPin === true) {
             this.fieldOpen = [{ viwe: "All", value: "ทั้งหมด" }, { viwe: "PIN", value: "ที่ปักหมุด" },];
-            this.Open.setValue(this.fieldOpen[0].value)
+            this.Open.setValue(this.fieldOpen[0].value);
         }
     }
 
@@ -210,7 +213,7 @@ export class TableComponent implements OnInit {
     public banPage(isNextPage?: boolean, isSort?: boolean): void {
         this.isBans = !this.isBans
         this.isLoading = true;
-        const o: any[] = []
+        const o: any[] = [];
         let search: SearchFilter = new SearchFilter();
         search.orderBy = {};
         if (!this.isBans) {
@@ -224,18 +227,18 @@ export class TableComponent implements OnInit {
             if (this.user) {
                 for (let r of res) {
                     if (!r.isAdmin) {
-                        o.push(r)
+                        o.push(r);
                     }
                 }
-                res = o
+                res = o;
             }
             if (this.userAdmin) {
                 for (let r of res) {
                     if (r.isAdmin) {
-                        o.push(r)
+                        o.push(r);
                     }
                 }
-                res = o
+                res = o;
             }
             this.setTableConfig(res);
             this.isLoading = false;
@@ -256,17 +259,17 @@ export class TableComponent implements OnInit {
         search.whereConditions = {};
         if (this.search.trim() !== "") {
             for (let field of this.filters.value) {
-                search.whereConditions[field] = { $regex: '^' + this.search + '.*' };
+                search.whereConditions[field] = { $regex: this.search };
             }
         }
         search.limit = SEARCH_LIMIT;
-        search.orderBy = {};
+        search.orderBy = this.orderBy;
         search.offset = isNextPage ? this.paginator.length : SEARCH_OFFSET;
         search.relation = this.relation;
         search.count = false;
         let stack = [];
         this.facade.search(search).then((res: any) => {
-            const o: any[] = []
+            const o: any[] = [];
 
             if (this.isApprovePage) {
                 for (let r of res) {
@@ -274,35 +277,35 @@ export class TableComponent implements OnInit {
                         r.approveUser = 1
                     }
                     if (r.approveUser === null || r.approveUser === undefined || r.approveUser === '') {
-                        o.push(r)
+                        o.push(r);
                     }
                 }
-                res = o
+                res = o;
             }
             if (this.active) {
                 for (let r of res) {
                     if (r.active) {
-                        o.push(r)
+                        o.push(r);
                     }
                 }
-                res = o
+                res = o;
             }
             if (this.user) {
                 for (let r of res) {
-                    o.push(r)
+                    o.push(r);
                     // if (!r.isAdmin) {
-                    //     o.push(r)
+                    //     o.push(r);
                     // }
                 }
-                res = o
+                res = o;
             }
             if (this.userAdmin) {
                 for (let r of res) {
                     if (r.isAdmin) {
-                        o.push(r)
+                        o.push(r);
                     }
                 }
-                res = o
+                res = o;
             }
             if (isNextPage) {
                 this.data = res;
@@ -324,9 +327,9 @@ export class TableComponent implements OnInit {
 
     public disChek(data: any): boolean {
         if (data.standardItemId != null && data.standardItemId != undefined) {
-            return false
+            return false;
         } else {
-            return true
+            return true;
         }
     }
 
@@ -384,7 +387,7 @@ export class TableComponent implements OnInit {
 
     public searchDataByfield(data: any) {
         this.isLoading = true;
-        const o: any[] = []
+        const o: any[] = [];
         let search: SearchFilter = new SearchFilter();
         search.orderBy = {};
         search.whereConditions = {};
@@ -395,56 +398,56 @@ export class TableComponent implements OnInit {
                 if (data === 'OP') {
                     for (let r of res) {
                         if (r.banned === false) {
-                            o.push(r)
+                            o.push(r);
                         }
                     }
-                    res = o
+                    res = o;
                 } if (data === 'CO') {
                     for (let r of res) {
 
                         if (r.banned === true) {
-                            o.push(r)
+                            o.push(r);
                         }
                     }
-                    res = o
+                    res = o;
                 } if (data === 'ADMIN') {
                     for (let r of res) {
 
                         if (r.isAdmin === true) {
-                            o.push(r)
+                            o.push(r);
                         }
                     }
-                    res = o
+                    res = o;
                 }
             } else if (this.isPin) {
                 if (data === 'ALL') {
                     for (let r of res) {
-                        o.push(r)
+                        o.push(r);
                     }
-                    res = o
+                    res = o;
                 } if (data === 'PIN') {
                     for (let r of res) {
                         if (r.isPin === true) {
-                            o.push(r)
+                            o.push(r);
                         }
                     }
-                    res = o
+                    res = o;
                 }
             } else {
                 if (data === 'OP') {
                     for (let r of res) {
                         if (r.standardItemId != null && r.standardItemId != undefined) {
-                            o.push(r)
+                            o.push(r);
                         }
                     }
-                    res = o
+                    res = o;
                 } if (data === 'CO') {
                     for (let r of res) {
                         if (r.standardItemId === null) {
-                            o.push(r)
+                            o.push(r);
                         }
                     }
-                    res = o
+                    res = o;
                 }
             }
             this.setTableConfig(res);
@@ -491,16 +494,16 @@ export class TableComponent implements OnInit {
     public onSelect(data: any): void {
         if (this.arr.length != 0) {
             if (this.arr.includes(data._id)) {
-                this.arr.splice((this.arr.indexOf(data._id)), 1)
-                this.seletc.splice((this.seletc.indexOf(data._id)), 1)
+                this.arr.splice((this.arr.indexOf(data._id)), 1);
+                this.seletc.splice((this.seletc.indexOf(data._id)), 1);
 
             } else {
-                this.arr.push(data._id)
-                this.seletc.push(data)
+                this.arr.push(data._id);
+                this.seletc.push(data);
             }
         } else {
-            this.arr.push(data._id)
-            this.seletc.push(data)
+            this.arr.push(data._id);
+            this.seletc.push(data);
         }
     }
 
