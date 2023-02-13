@@ -1476,14 +1476,11 @@ export class GuestController {
             const checkIdToken = await this.googleService.verifyIdToken(idToken, modHeaders);
             const userGG = await this.userService.findOne({ email: checkIdToken.email });
             const pic = [];
-            let authenAll = undefined;
             if (checkIdToken === undefined) {
                 const errorResponse: any = { status: 0, message: 'Invalid Token.' };
                 return res.status(400).send(errorResponse);
             }
-            if (userGG !== undefined) {
-                authenAll = await this.authenticationIdService.findOne({ user: userGG.id });
-            }
+
             const authenGG = await this.authenticationIdService.findOne({ user: userGG.id, providerName: PROVIDER.GOOGLE });
             if (userGG !== undefined && authenGG === undefined) {
                 const stackAuth = [];

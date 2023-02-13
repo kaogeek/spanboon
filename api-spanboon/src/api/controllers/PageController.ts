@@ -3070,6 +3070,11 @@ export class PageController {
                     type: configValue.type
                 }
             });
+            await this.socialPostLogsService.update(query, {
+                $set: {
+                    enable: configValue.value,
+                }
+            });
         } else {
             // create if not exists
             const config = new PageConfig();
