@@ -86,6 +86,15 @@ export class Posts extends BaseModel {
 
     @Column({ name: 'objective' })
     public objective: ObjectID;
+    
+    @Column({name: 'commentCountFB' })
+    public commentCountFB:number;
+
+    @Column({name: 'shareCountFB'})
+    public shareCountFB:number;
+
+    @Column({ name: 'likCountFB'})
+    public likeCountFB:number;
 
     @Column({ name: 'emergencyEvent' })
     public emergencyEvent: ObjectID;

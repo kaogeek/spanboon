@@ -26,7 +26,7 @@ export class SearchUtil {
      *    take: number // limit
      * }
      */
-    public static createFindCondition(limit: number, offset: number, select: any[], relation: any, whereConditions: any, orderBy: any, join?: any): any {
+    public static createFindCondition(limit: any, offset: number, select: any[], relation: any, whereConditions: any, orderBy: any, join?: any): any {
         const condition: any = {};
         if (select !== undefined && select.length > 0) {
             condition.select = select;

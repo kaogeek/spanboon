@@ -8,7 +8,7 @@
 import { Component, OnInit, Input, ViewChild, Output, EventEmitter, SimpleChanges } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
+import { MatTableDataSource,MatTable } from '@angular/material/table';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogDeleteComponent } from './DialogDeleteComponent.component';
 import { DialogWarningComponent } from './DialogWarningComponent.component';
@@ -73,7 +73,7 @@ export interface ActionTable {
     templateUrl: './TableComponent.component.html'
 })
 export class TableComponent implements OnInit {
-
+    @ViewChild('table') table: MatTable<FieldTable>;
     private dialog: MatDialog;
 
     @Input()
@@ -354,17 +354,32 @@ export class TableComponent implements OnInit {
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
     }
-    public drop(event: CdkDragDrop<any[]>) {
-        moveItemInArray(this.data, event.previousIndex, event.currentIndex);
-        this.setTableConfig(this.data);
-        const mode = 'emergency';
-        let body = {
-            modeEmer: mode,
-            previousIndex: event.previousIndex,
-            currentIndex: event.currentIndex
+    dropTable(event: CdkDragDrop<FieldTable[]>) {
+        if (this.isInvalidDragEvent) {
+                this.isInvalidDragEvent = false;
+                return;
         }
-        // this.emergencyEventFacade.editSelect(this.selectItem[event.previousIndex].id, body)
+        let body = {
+            'previousIndex':event.previousIndex,
+            'currentIndex':event.currentIndex,
+            'filteredData':this.dataSource.filteredData
+        }
+        const prevIndex = this.dataSource.filteredData.findIndex((d) => d === event.item.data);
+        moveItemInArray(this.dataSource.filteredData, prevIndex, event.currentIndex);
+        this.setTableConfig(this.dataSource.filteredData);
+        this.emergencyEventFacade.editSelect(this.dataSource.filteredData[event.currentIndex].id, body)
+        // this.table.renderRows();
     }
+      isInvalidDragEvent:boolean=false;
+    onInvalidDragEventMouseDown(){
+        this.isInvalidDragEvent=true;
+    }
+    dragStarted(event){
+        if(this.isInvalidDragEvent){
+           document.dispatchEvent(new Event('mouseup'));
+        }
+    }
+    
     public getWidthAction(): string {
         let ationWidth: number = 75;
         let count: number = 0;

@@ -69,11 +69,21 @@ export class EmergencyEventService {
     public async delete(query: any, options?: any): Promise<any> {
         return await this.emergencyEventRepository.deleteOne(query, options);
     }
-
+    // findMax
+    public maxOrdering(filter: SearchFilter): Promise<any> {
+        const orderingSort = { 'ordering': -1 };
+        const limitMax = {'limit':1};
+        const condition: any = SearchUtil.createFindCondition(limitMax, filter.offset, filter.select, filter.relation, filter.whereConditions, orderingSort);
+        if (filter.count) {
+            return this.emergencyEventRepository.count(filter.whereConditions);
+        } else {
+            return this.emergencyEventRepository.find(condition);
+        }
+    }
     // Search EmergencyEventOrdering
     public searchOrdering(filter: SearchFilter): Promise<any> {
-        const orderiSort = { 'ordering': 1 };
-        const condition: any = SearchUtil.createFindCondition(filter.limit, filter.offset, filter.select, filter.relation, filter.whereConditions, orderiSort);
+        const orderingSort = { 'ordering': 1 };
+        const condition: any = SearchUtil.createFindCondition(filter.limit, filter.offset, filter.select, filter.relation, filter.whereConditions, orderingSort);
         if (filter.count) {
             return this.emergencyEventRepository.count(filter.whereConditions);
         } else {
