@@ -5,7 +5,7 @@
  * Author:  shiorin <junsuda.s@absolute.co.th>, chalucks <chaluck.s@absolute.co.th>
  */
 
-import { Column, Entity, BeforeInsert, ObjectIdColumn } from 'typeorm';
+import { Column, Entity, BeforeInsert, ObjectIdColumn, BeforeUpdate } from 'typeorm';
 import { ObjectID } from 'mongodb';
 import moment from 'moment';
 import { IsNotEmpty, IsMongoId } from 'class-validator';
@@ -18,10 +18,10 @@ export class PageUsageHistory extends BaseModel {
     @IsNotEmpty()
     @IsMongoId()
     public id: ObjectID;
-    
+
     @Column({ name: 'pageId' })
     public pageId: ObjectID;
-    
+
     @Column({ name: 'userId' })
     public userId: ObjectID;
 
@@ -35,7 +35,13 @@ export class PageUsageHistory extends BaseModel {
     public data: any;
 
     @BeforeInsert()
-    public async createDetails(): Promise<void> {
+    public createDetails(): any {
         this.createdDate = moment().toDate();
+        this.createdTime = moment().toDate();
+    }
+
+    @BeforeUpdate()
+    public updateDetails(): any {
+        this.updateDate = moment().toDate();
     }
 }

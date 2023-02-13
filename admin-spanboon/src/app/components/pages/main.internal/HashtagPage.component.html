@@ -65,9 +65,9 @@
         </mat-drawer>
         <mat-drawer-content>
             <div class="main-content">
-                <admin-table-component #table [facade]="hashTagFacade" [title]="'แฮชแท็ก'" [fieldTable]="fieldTable"
-                    [actions]="actions" (create)="clickCreateForm()" (edit)="clickEditForm($event)"
-                    (delete)="clickDelete($event)"></admin-table-component>
+                <admin-table-component #table [orderBy]="orderBy" [facade]="hashTagFacade" [title]="'แฮชแท็ก'"
+                    [fieldTable]="fieldTable" [actions]="actions" (create)="clickCreateForm()"
+                    (edit)="clickEditForm($event)" (delete)="clickDelete($event)"></admin-table-component>
             </div>
         </mat-drawer-content>
     </mat-drawer-container>

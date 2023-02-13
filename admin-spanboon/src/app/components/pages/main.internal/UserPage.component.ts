@@ -46,6 +46,7 @@ export class UserPage extends AbstractPage implements OnInit {
     private imageSrc: string = '';
     public imageName: string = '';
     public value: string = '';
+    public orderBy: any = {};
 
     constructor(pageUserFacade: PageUserFacade,
         router: Router,
@@ -58,6 +59,7 @@ export class UserPage extends AbstractPage implements OnInit {
         this.isGender = false
         this.authenManager = authenManager;
         this.userFacade = userFacade;
+        this.orderBy = { createdDate: -1 };
         this.fieldSearch = [
             "username"
         ]
@@ -271,7 +273,6 @@ export class UserPage extends AbstractPage implements OnInit {
         });
     }
     public clickDelete(data: any): void {
-        console.log('data', data);
         this.userFacade.deleteuser(data.id).then((res) => {
             let index = 0;
             let dataTable = this.table.data;

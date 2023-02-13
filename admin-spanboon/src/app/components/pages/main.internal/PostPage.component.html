@@ -24,8 +24,10 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label>ชื่อ *</label>
-                                        <input type="text" class="form-control" [(ngModel)]="dataForm.name" [ngModelOptions]="{standalone: true}">
-                                        <div class="alert alert-danger" style="margin-top: 5pt;" *ngIf="submitted && dataForm.name.trim() === ''">
+                                        <input type="text" class="form-control" [(ngModel)]="dataForm.name"
+                                            [ngModelOptions]="{standalone: true}">
+                                        <div class="alert alert-danger" style="margin-top: 5pt;"
+                                            *ngIf="submitted && dataForm.name.trim() === ''">
                                             กรุณาใส่ ชื่อ
                                         </div>
                                     </div>
@@ -42,7 +44,10 @@
         </mat-drawer>
         <mat-drawer-content>
             <div class="main-content">
-                <admin-table-component #table [facade]="pageFacade" [isApprovePage]="'true'" [title]="'ตรวจสอบเพจ'" (official)="clickOfficial($event)" (ban)="clickBan($event)" [fieldTable]="fieldTable" [actions]="actions" (delete)="clickDelete($event)"></admin-table-component>
+                <admin-table-component #table [orderBy]="orderBy" [facade]="pageFacade" [isApprovePage]="'true'"
+                    [title]="'ตรวจสอบเพจ'" (official)="clickOfficial($event)" (ban)="clickBan($event)"
+                    [fieldTable]="fieldTable" [actions]="actions" [isOfficialPage]="isOfficialPage"
+                    (delete)="clickDelete($event)"></admin-table-component>
             </div>
         </mat-drawer-content>
     </mat-drawer-container>

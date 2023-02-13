@@ -40,6 +40,8 @@ export class PostPage extends AbstractPage implements OnInit {
     public valueNum: number;
     public orinalDataForm: Page;
     public submitted = false;
+    public isOfficialPage: {};
+    public orderBy: any = {};
 
     constructor(pageFacade: PageFacade, router: Router, dialog: MatDialog, authenManager: AuthenManager) {
         super(PAGE_NAME, dialog);
@@ -49,6 +51,7 @@ export class PostPage extends AbstractPage implements OnInit {
         // if (!this.authenManager.isCurrentUserType()) {
         //     this.router.navigateByUrl("/main/home_content/pageslide")
         // }
+        this.orderBy = { createdDate: -1 };
         this.fieldTable = [
             {
                 name: "name",
@@ -160,11 +163,19 @@ export class PostPage extends AbstractPage implements OnInit {
                         for (let d of data) {
                             if (d.name == res.name) {
                                 data[index] = res;
+                                this.isOfficialPage = {
+                                    official: true,
+                                    index: index,
+                                    data: res
+                                }
                                 break;
                             }
                             index++;
                         }
-                        this.table.searchData();
+                        this.table.isLoading = true;
+                        setTimeout(() => {
+                            this.table.setTableConfig(data);
+                        }, 1000);
                     }).catch((err: any) => {
                         this.dialogWarning(err.error.message);
                     });
@@ -177,11 +188,19 @@ export class PostPage extends AbstractPage implements OnInit {
                         for (let d of data) {
                             if (d.name == res.name) {
                                 data[index] = res;
+                                this.isOfficialPage = {
+                                    official: false,
+                                    index: index,
+                                    data: res
+                                }
                                 break;
                             }
                             index++;
                         }
-                        this.table.searchData();
+                        this.table.isLoading = true;
+                        setTimeout(() => {
+                            this.table.setTableConfig(data);
+                        }, 1000);
                     }).catch((err: any) => {
                         this.dialogWarning(err.error.message);
                     });

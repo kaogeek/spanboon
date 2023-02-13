@@ -16,7 +16,7 @@ import { DialogWarningComponent } from '../../shares/DialogWarningComponent.comp
 import { AuthenManager } from '../../../services/AuthenManager.service';
 import { Router } from '@angular/router';
 import { data } from 'jquery';
-import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 
 const PAGE_NAME: string = "emergency";
@@ -53,7 +53,8 @@ export class EmergencyEventPage extends AbstractPage implements OnInit {
     private imageSrc: string = '';
     public value: string = '';
     public imageName: any;
-    public ordering:number;
+    public ordering: number;
+    public orderBy: any = {};
 
     constructor(emergencyEventFacade: EmergencyEventFacade, hashTagFacade: HashTagFacade, router: Router, dialog: MatDialog, authenManager: AuthenManager) {
         super(PAGE_NAME, dialog);
@@ -64,7 +65,8 @@ export class EmergencyEventPage extends AbstractPage implements OnInit {
         // if (!this.authenManager.isCurrentUserType()) {
         //     this.router.navigateByUrl("/main/home_content/pageslide")
         // }
-        this.imagesAvatar = {}
+        this.imagesAvatar = {};
+        this.orderBy = { ordering: -1 };
         this.fieldTable = [
             {
                 name: "isPin",
@@ -133,6 +135,7 @@ export class EmergencyEventPage extends AbstractPage implements OnInit {
     }
 
     public ngOnInit() {
+        this.table.isEmer = true;
         this.getHashtag();
     }
 
