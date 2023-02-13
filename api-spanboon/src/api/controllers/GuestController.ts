@@ -1235,7 +1235,7 @@ export class GuestController {
             if (fbUser.id !== undefined && fbUser.email !== undefined) {
                 const findUserFb = await this.userService.findOne({ email: fbUser.email });
                 const findAuthenFb = await this.authenticationIdService.findOne({ providerUserId: fbUser.id, providerName: PROVIDER.FACEBOOK });
-                if(findUserFb !== undefined && findAuthenFb !==undefined){
+                if (findUserFb === undefined && findAuthenFb === undefined) {
                     const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
                     return res.status(400).send(errorResponse);
                 }
@@ -1317,7 +1317,7 @@ export class GuestController {
                 } else if (findAuthenFb === undefined) {
                     findUserFb = await this.userService.findOne({ email: userEmail });
                 }
-                if(findUserFb !== undefined && findAuthenFb !== undefined){
+                if (findUserFb !== undefined && findAuthenFb !== undefined) {
                     const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
                     return res.status(400).send(errorResponse);
                 }
@@ -1391,21 +1391,21 @@ export class GuestController {
             let userApple = undefined;
             let appleClient = undefined;
             const appleId: any = req.body.apple.result.user;
-            if(users.email  === undefined){
+            if (users.email === undefined) {
                 appleClient = await this.authenticationIdService.findOne({ where: { providerUserId: appleId.userId, providerName: PROVIDER.APPLE } });
                 userApple = await this.userService.findOne({ where: { _id: appleClient.user } });
-                if(appleClient === undefined){
+                if (appleClient === undefined) {
                     const errorResponse = ResponseUtil.getErrorResponseApple('Cannot find your user Please Provide the email to check again.', undefined);
                     return res.status(400).send(errorResponse);
                 }
-            }else{
+            } else {
                 userApple = await this.userService.findOne({ where: { username: users.email.toLowerCase() } });
-                if(userApple === undefined){
+                if (userApple === undefined) {
                     const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
                     return res.status(400).send(errorUserNameResponse);
                 }
             }
-            const AllAuthen = await this.authenticationIdService.find({user:userApple.id});
+            const AllAuthen = await this.authenticationIdService.find({ user: userApple.id });
             const stackAuth = [];
             const user: User = new User();
             user.username = userApple.username;
@@ -1436,9 +1436,9 @@ export class GuestController {
                     const userExrTime = await this.getUserLoginExpireTime();
                     const currentDateTime = moment().toDate();
                     const authTime = currentDateTime;
-                    const expirationDateAP = moment().add(userExrTime, 'days').toDate();                    
+                    const expirationDateAP = moment().add(userExrTime, 'days').toDate();
                     const query = { providerUserId: appleId.userId, providerName: PROVIDER.APPLE };
-                    const newValue = { $set: { lastAuthenTime: authTime, storedCredentials: appleId.idToken, expirationDate: expirationDateAP, properties: { tokenSign: appleId.accessToken, signIn: currentDateTime} } };
+                    const newValue = { $set: { lastAuthenTime: authTime, storedCredentials: appleId.idToken, expirationDate: expirationDateAP, properties: { tokenSign: appleId.accessToken, signIn: currentDateTime } } };
                     const update_Apple = await this.authenticationIdService.update(query, newValue);
                     if (update_Apple) {
                         const updatedAuth = await this.authenticationIdService.findOne({ where: { providerUserId: appleId.userId } });
@@ -1500,8 +1500,8 @@ export class GuestController {
                 return res.status(400).send(errorUserNameResponse);
             }
             const authenGG = await this.authenticationIdService.findOne({ user: userGG.id, providerName: PROVIDER.GOOGLE });
-            if(userGG !== undefined && authenGG !== undefined){
-                const errorResponse = ResponseUtil.getErrorResponse('You already have User and authentication.', undefined);
+            if (userGG !== undefined && authenGG !== undefined) {
+                const errorResponse = ResponseUtil.getErrorResponse('User was not found.', undefined);
                 return res.status(400).send(errorResponse);
             }
             const stackAuth = [];
@@ -1610,15 +1610,14 @@ export class GuestController {
                 return res.status(400).send(errorResponse);
             }
             let userTw = undefined;
-
             const authenTw = await this.authenticationIdService.findOne({ providerUserId: twitterUserId, providerName: PROVIDER.TWITTER });
             if (userEmail !== undefined && authenTw !== undefined) {
                 userTw = await this.userService.findOne({ _id: authenTw.user });
             } else {
                 userTw = await this.userService.findOne({ email: userEmail });
             }
-            if(authenTw !== undefined && userTw !== undefined){
-                const errorResponse = ResponseUtil.getErrorResponse('You already have User and authentication.', undefined);
+            if (authenTw === undefined && userTw === undefined) {
+                const errorResponse = ResponseUtil.getErrorResponse('Not found user.', undefined);
                 return res.status(400).send(errorResponse);
             }
             if (authenTw === undefined && userTw !== undefined) {
@@ -1969,26 +1968,26 @@ export class GuestController {
                 const errorResponse = ResponseUtil.getErrorResponse('The OTP is not correct.', undefined);
                 return res.status(400).send(errorResponse);
             }
-        } else if(user && mode === PROVIDER.APPLE){
-            if(otp === otpFind.otp){
+        } else if (user && mode === PROVIDER.APPLE) {
+            if (otp === otpFind.otp) {
                 let authIdCreate = undefined;
                 const appleId: any = otpRequest.apple.result.user;
                 const authenId = new AuthenticationId();
-                authenId.user = user.id;        
-                authenId.lastAuthenTime = moment().toDate();  
+                authenId.user = user.id;
+                authenId.lastAuthenTime = moment().toDate();
                 authenId.providerName = PROVIDER.APPLE;
                 authenId.providerUserId = appleId.userId;
                 authenId.storedCredentials = appleId.idToken;
                 authenId.expirationDate = moment().add(userExrTime, 'days').toDate();
                 authenId.properties = {
-                    properties: { tokenSign: appleId.accessToken} 
+                    properties: { tokenSign: appleId.accessToken }
                 };
-                
-                if(otpFind.expiration < expirationDate){
+
+                if (otpFind.expiration < expirationDate) {
                     authIdCreate = await this.authenticationIdService.create(authenId);
                     const queryMerge = { _id: user.id };
                     const newValues = { $set: { mergeAP: true } };
-                    if(authIdCreate){
+                    if (authIdCreate) {
                         loginUser = await this.userService.findOne({ where: { _id: authIdCreate.user } });
                         const query = { email: emailRes };
                         await this.otpService.delete(query);
@@ -2018,11 +2017,11 @@ export class GuestController {
                             return res.status(400).send(errorResponse);
                         }
                     }
-                }else{
+                } else {
                     const errorResponse = ResponseUtil.getErrorResponse('The OTP is not correct.', undefined);
                     return res.status(400).send(errorResponse);
-                } 
-            }else{
+                }
+            } else {
                 const errorResponse = ResponseUtil.getErrorResponse('The OTP is not correct.', undefined);
                 return res.status(400).send(errorResponse);
             }
