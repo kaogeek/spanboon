@@ -121,7 +121,12 @@ export class EmergencyEventController {
                 return res.status(400).send(errorResponse);
             }
         }
-
+        if (orderingSequence === 0) {
+            return res.status(400).send(ResponseUtil.getErrorResponse('The ordering number must greater than 0 ', undefined));
+        }
+        if(orderingSequence < 0){
+            return res.status(400).send(ResponseUtil.getErrorResponse('The ordering number must greater than 0 ', undefined));
+        }
         let assetCreate: Asset;
 
         if (assets !== null && assets !== undefined && assets !== '') {
