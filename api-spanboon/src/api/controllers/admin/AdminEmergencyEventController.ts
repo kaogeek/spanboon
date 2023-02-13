@@ -438,6 +438,17 @@ export class EmergencyEventController {
                                 continue;
                             }
                         }
+                        const findOrderingLt = await this.emergencyEventService.find({ $lte: [{ ordering: { $lte: emergencyEvents.ordering } }, { ordering: { $ne: null } }] });
+                        for (const orderingLt of findOrderingLt) {
+                            // if higher 
+                            if (findOrderingGt !== undefined && findOrderingGt !== null) {
+                                const queryOrder = { _id: ObjectID(orderingLt.id) };
+                                const newValueOrder = { $set: { ordering: orderingLt.ordering - 1 } };
+                                await this.emergencyEventService.update(queryOrder, newValueOrder);
+                            } else {
+                                continue;
+                            }
+                        }
                         // higher
                     } else if (emergencyUpdate.ordering !== null && emergencyEvents.ordering > emergencyUpdate.ordering) {
                         const findOrderingGt = await this.emergencyEventService.find({ $and: [{ ordering: { $gte: emergencyUpdate.ordering } }, { ordering: { $ne: null } }] });
