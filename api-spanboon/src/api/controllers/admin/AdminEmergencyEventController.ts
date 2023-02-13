@@ -124,7 +124,7 @@ export class EmergencyEventController {
         if (orderingSequence === 0) {
             return res.status(400).send(ResponseUtil.getErrorResponse('The ordering number must greater than 0 ', undefined));
         }
-        if(orderingSequence < 0){
+        if (orderingSequence < 0) {
             return res.status(400).send(ResponseUtil.getErrorResponse('The ordering number must greater than 0 ', undefined));
         }
         let assetCreate: Asset;
@@ -462,6 +462,7 @@ export class EmergencyEventController {
                                 continue;
                             }
                         }
+
                     }// edit
                     else {
                         const queryOrder = { _id: objId };
