@@ -274,7 +274,6 @@ export class EmergencyEventController {
     @Authorized()
     public async updateEmeregencySelectItem(@Body({ validate: true }) emergencyEvents: UpdateEmergencyEventRequest, @Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
         const objId = new ObjectID(id);
-        console.log('objId',objId);
         const emergencyUpdate: EmergencyEvent = await this.emergencyEventService.findOne({ where: { _id: objId } });
         if (emergencyUpdate) {
             // The ordering cannot be equal >>>>>
@@ -407,6 +406,10 @@ export class EmergencyEventController {
             const emergencySave = await this.emergencyEventService.update(updateQuery, newValue);
             if (ordering !== undefined) {
                 if (ordering < 0) {
+                    return res.status(400).send(ResponseUtil.getErrorResponse('The ordering number must greater than 0 ', undefined));
+                }
+
+                if( emergencyUpdate.ordering === 0 ){
                     return res.status(400).send(ResponseUtil.getErrorResponse('The ordering number must greater than 0 ', undefined));
                 }
                 // check emergencyEvent Higher or Lower

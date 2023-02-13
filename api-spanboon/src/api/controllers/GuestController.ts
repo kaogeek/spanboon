@@ -1394,17 +1394,19 @@ export class GuestController {
             const appleId: any = req.body.apple.result.user;
             if (users.email === undefined) {
                 appleClient = await this.authenticationIdService.findOne({ where: { providerUserId: appleId.userId, providerName: PROVIDER.APPLE } });
-                userApple = await this.userService.findOne({ where: { _id: appleClient.user } });
                 if (appleClient === undefined) {
                     const errorResponse = ResponseUtil.getErrorResponseApple('Cannot find your user Please Provide the email to check again.', undefined);
                     return res.status(400).send(errorResponse);
                 }
+                userApple = await this.userService.findOne({ where: { _id: appleClient.user } });
+
             } else {
                 userApple = await this.userService.findOne({ where: { username: users.email.toLowerCase() } });
                 if (userApple === undefined) {
                     const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
                     return res.status(400).send(errorUserNameResponse);
                 }
+                appleClient = await this.authenticationIdService.findOne({ where: { user: userApple.id, providerName: PROVIDER.APPLE } });
             }
             // authen.providerName === PROVIDER.EMAIL && authen.providerName === PROVIDER.FACEBOOK && authen.providerName === PROVIDER.GOOGLE && authen.providerName === PROVIDER.TWITTER && authen.providerName === PROVIDER.APPLE 
             if (userApple !== undefined && appleClient === undefined) {
