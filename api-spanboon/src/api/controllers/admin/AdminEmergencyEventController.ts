@@ -279,9 +279,9 @@ export class EmergencyEventController {
             // The ordering cannot be equal >>>>>
             // check if drag is null
             for (const [j, filteredData] of emergencyEvents.filteredData.entries()) {
-                const queryValue = {_id:ObjectID(filteredData.id)};
-                const newValues = {$set:{ordering:j+1}};
-                await this.emergencyEventService.update(queryValue,newValues);
+                const queryValue = { _id: ObjectID(filteredData.id) };
+                const newValues = { $set: { ordering: j + 1 } };
+                await this.emergencyEventService.update(queryValue, newValues);
             }
             const successResponse = ResponseUtil.getSuccessResponse('Successfully Search EmergencyEvent', undefined);
             return res.status(200).send(successResponse);
@@ -329,6 +329,9 @@ export class EmergencyEventController {
         const emergency: EmergencyEvent = await this.emergencyEventService.findOne({ _id: { $ne: new ObjectID(emergencyUpdate.id) }, $or: [{ title: emergencyTitle }, { hashTag: emergencyHashTag }] });
 
         if (emergency === null || emergency === undefined) {
+            if (ordering === 0) {
+                return res.status(400).send(ResponseUtil.getErrorResponse('The ordering number must greater than 0 ', undefined));
+            }
             const emergencyCoverPageURL = emergencyUpdate.coverPageURL;
             let assetResult;
             let assetId;
@@ -403,15 +406,13 @@ export class EmergencyEventController {
                 const newValuesPost = { $set: { emergencyEventTag: emergencyHashTag } };
                 await this.postsService.updateMany(queryPost, newValuesPost);
             }
+
             const emergencySave = await this.emergencyEventService.update(updateQuery, newValue);
             if (ordering !== undefined) {
                 if (ordering < 0) {
                     return res.status(400).send(ResponseUtil.getErrorResponse('The ordering number must greater than 0 ', undefined));
                 }
 
-                if( emergencyUpdate.ordering === 0 ){
-                    return res.status(400).send(ResponseUtil.getErrorResponse('The ordering number must greater than 0 ', undefined));
-                }
                 // check emergencyEvent Higher or Lower
                 if (emergencyEvents.ordering !== null) {
                     // insert
