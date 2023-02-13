@@ -53,7 +53,6 @@ export class EmergencyEventFacade extends AbstractFacade {
     if (id === undefined || id === null) {
       new Error("Id is required.");
     }
-
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/admin/emergency/select/' + id;
       let options = this.getDefaultOptions();
@@ -96,7 +95,6 @@ export class EmergencyEventFacade extends AbstractFacade {
         body = Object.assign(searchFilter)
       }
       let options = this.getDefaultOptions();
-      console.log('body',body);
       this.http.post(url, body, options).toPromise().then((response: any) => {
         for (let r of response.data) {
           if (r.coverPageURL != null && r.coverPageURL != undefined) {
