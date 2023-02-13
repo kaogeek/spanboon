@@ -1406,27 +1406,27 @@ export class GuestController {
                     return res.status(400).send(errorUserNameResponse);
                 }
             }
-            const AllAuthen = await this.authenticationIdService.find({ user: userApple.id });
-            const stackAuth = [];
-            const user: User = new User();
-            user.username = userApple.username;
-            user.email = userApple.email;
-            user.uniqueId = userApple.uniqueId;
-            user.firstName = userApple.firstName;
-            user.lastName = userApple.lastName;
-            user.imageURL = userApple.imageURL;
-            user.coverURL = userApple.coverURL;
-            user.coverPosition = 0;
-            user.displayName = userApple.displayName;
-            user.birthdate = new Date(userApple.birthdate);
-            user.isAdmin = userApple.isAdmin;
-            user.isSubAdmin = userApple.isSubAdmin;
-            user.banned = userApple.banned;
-            for (const authens of AllAuthen) {
-                stackAuth.push(authens.providerName);
-            }
             // authen.providerName === PROVIDER.EMAIL && authen.providerName === PROVIDER.FACEBOOK && authen.providerName === PROVIDER.GOOGLE && authen.providerName === PROVIDER.TWITTER && authen.providerName === PROVIDER.APPLE 
             if (userApple !== undefined && appleClient === undefined) {
+                const AllAuthen = await this.authenticationIdService.find({ user: userApple.id });
+                const stackAuth = [];
+                const user: User = new User();
+                user.username = userApple.username;
+                user.email = userApple.email;
+                user.uniqueId = userApple.uniqueId;
+                user.firstName = userApple.firstName;
+                user.lastName = userApple.lastName;
+                user.imageURL = userApple.imageURL;
+                user.coverURL = userApple.coverURL;
+                user.coverPosition = 0;
+                user.displayName = userApple.displayName;
+                user.birthdate = new Date(userApple.birthdate);
+                user.isAdmin = userApple.isAdmin;
+                user.isSubAdmin = userApple.isSubAdmin;
+                user.banned = userApple.banned;
+                for (const authens of AllAuthen) {
+                    stackAuth.push(authens.providerName);
+                }
                 const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', user, stackAuth);
                 return res.status(200).send(successResponse);
             } else if (userApple !== undefined && appleClient !== undefined) {
