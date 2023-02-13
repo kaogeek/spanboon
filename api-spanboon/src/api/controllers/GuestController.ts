@@ -1232,6 +1232,7 @@ export class GuestController {
             // userEmail
             // fbUser (userId,email)
             const fbUser = await this.facebookService.fetchFacebook(users.token);
+            console.log('fbUser', fbUser);
             if (fbUser.id !== undefined && fbUser.email !== undefined) {
                 const findUserFb = await this.userService.findOne({ email: fbUser.email });
                 const findAuthenFb = await this.authenticationIdService.findOne({ providerUserId: fbUser.id, providerName: PROVIDER.FACEBOOK });
@@ -1483,48 +1484,28 @@ export class GuestController {
             if (userGG !== undefined) {
                 authenAll = await this.authenticationIdService.findOne({ user: userGG.id });
             }
-            if (authenAll === undefined && userGG !== undefined) {
-                const userExrTime = await this.getUserLoginExpireTime();
-                const token = jwt.sign({ id: userGG.id }, env.SECRET_KEY);
-                const authenId = new AuthenticationId();
-                authenId.user = userGG.id;
-                authenId.lastAuthenTime = moment().toDate();
-                authenId.providerUserId = checkIdToken.userId;
-                authenId.providerName = PROVIDER.EMAIL;
-                authenId.storedCredentials = token;
-                authenId.expirationDate = moment().add(userExrTime, 'days').toDate();
-                await this.authenticationIdService.create(authenId);
-            }
-            if (userGG === undefined) {
-                const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
-                return res.status(400).send(errorUserNameResponse);
-            }
             const authenGG = await this.authenticationIdService.findOne({ user: userGG.id, providerName: PROVIDER.GOOGLE });
-            if (userGG !== undefined && authenGG !== undefined) {
-                const errorResponse = ResponseUtil.getErrorResponse('User was not found.', undefined);
-                return res.status(400).send(errorResponse);
-            }
-            const stackAuth = [];
-            pic.push(checkIdToken.imageURL);
-            const AllAuthen = await this.authenticationIdService.find({ user: ObjectID(String(userGG.id)) });
-            const user: User = new User();
-            user.username = userGG.username;
-            user.email = userGG.email;
-            user.uniqueId = userGG.uniqueId;
-            user.firstName = userGG.firstName;
-            user.lastName = userGG.lastName;
-            user.imageURL = userGG.imageURL;
-            user.coverURL = userGG.coverURL;
-            user.coverPosition = 0;
-            user.displayName = userGG.displayName;
-            user.birthdate = new Date(userGG.birthdate);
-            user.isAdmin = userGG.isAdmin;
-            user.isSubAdmin = userGG.isSubAdmin;
-            user.banned = userGG.banned;
-            for (const authens of AllAuthen) {
-                stackAuth.push(authens.providerName);
-            }
-            if (userGG && authenGG === undefined) {
+            if (userGG !== undefined && authenGG === undefined) {
+                const stackAuth = [];
+                pic.push(checkIdToken.imageURL);
+                const AllAuthen = await this.authenticationIdService.find({ user: ObjectID(String(userGG.id)) });
+                const user: User = new User();
+                user.username = userGG.username;
+                user.email = userGG.email;
+                user.uniqueId = userGG.uniqueId;
+                user.firstName = userGG.firstName;
+                user.lastName = userGG.lastName;
+                user.imageURL = userGG.imageURL;
+                user.coverURL = userGG.coverURL;
+                user.coverPosition = 0;
+                user.displayName = userGG.displayName;
+                user.birthdate = new Date(userGG.birthdate);
+                user.isAdmin = userGG.isAdmin;
+                user.isSubAdmin = userGG.isSubAdmin;
+                user.banned = userGG.banned;
+                for (const authens of AllAuthen) {
+                    stackAuth.push(authens.providerName);
+                }
                 const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', user, stackAuth, pic);
                 return res.status(200).send(successResponse);
             } else if (userGG !== undefined && authenGG !== undefined) {
