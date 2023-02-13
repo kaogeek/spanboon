@@ -20,14 +20,24 @@ import { PostsService } from '../services/PostsService';
 import { POST_TYPE } from '../../constants/PostType';
 import { PROVIDER } from '../../constants/LoginProvider';
 import moment from 'moment';
-
+import { HashTag } from '../models/HashTag';
+import { ObjectID } from 'typeorm';
+import { HashTagService } from '../services/HashTagService';
+import { PageObjectiveCategoryService } from '../services/PageObjectiveCategoryService';
+import { EmergencyEventService } from '../services/EmergencyEventService';
+import { PageObjectiveService } from '../services/PageObjectiveService';
 @JsonController('/twitter')
 export class TwitterController {
+
     constructor(
         private twitterService: TwitterService,
         private socialPostLogsService: SocialPostLogsService,
         private socialPostService: SocialPostService,
-        private postsService: PostsService
+        private postsService: PostsService,
+        private hashTagService: HashTagService,
+        private pageObjectiveCategoryService: PageObjectiveCategoryService,
+        private emergencyEventService: EmergencyEventService,
+        private pageObjectiveService: PageObjectiveService
     ) { }
 
     /**
@@ -120,7 +130,9 @@ export class TwitterController {
     public async FeedTwitter(@Req() request: any, @Res() response: any): Promise<any> {
         let title = undefined;
         let trimText = undefined;
-
+        const hashTagList2 = [];
+        const postMasterHashTagList = [];
+        const masterHashTagMap = {};
         const lastUpdated = moment().toDate(); // current date
         // search only page mode
         const oAuth2Twitter = await this.twitterService.getOauth2AppAccessTokenTest();
@@ -193,7 +205,77 @@ export class TwitterController {
                     newSocialPost.socialId = twPostId;
                     newSocialPost.socialType = PROVIDER.TWITTER;
                     await this.socialPostService.create(newSocialPost);
+                    if (hashTagList2 !== null && hashTagList2 !== undefined && hashTagList2.length > 0) {
+                        const masterHashTagList: HashTag[] = await this.findMasterHashTag(hashTagList2);
+                        const textLength = masterHashTagList.length;
+                        for (const hashTag of masterHashTagList) {
+                            const id = hashTag.id;
+                            const name = hashTag.name;
+                            postMasterHashTagList.push(new ObjectID(id));
+                            masterHashTagMap[name] = hashTag;
+                        }
 
+                        const findPageObjective = await this.pageObjectiveCategoryService.findOne({ pageId: PostResult.pageTwi.pageId, hashTag: masterHashTagList[textLength - 1].id });
+                        if (findPageObjective) {
+                            const queryPic = { _id: createPostPageData.id };
+                            const newValuesPic = {
+                                $set:
+                                {
+                                    objective: findPageObjective.id,
+                                    objectiveTag: findPageObjective.title
+                                }
+                            };
+                            await this.postsService.update(queryPic, newValuesPic);
+                        }
+                        const findEmergencyEvent = await this.emergencyEventService.findOne({ hashTag: masterHashTagList[textLength - 1].id });
+                        if (findEmergencyEvent) {
+                            const queryEmergency = { _id: createPostPageData.id };
+                            const newValuesEmergecy = { $set: { emergencyEvent: findEmergencyEvent.id, emergencyEventTag: findEmergencyEvent.title } };
+                            await this.postsService.update(queryEmergency, newValuesEmergecy);
+                        }
+
+                        for (const hashTag of hashTagList2) {
+                            if (masterHashTagMap[hashTag] === undefined) {
+                                const newHashTag: HashTag = new HashTag();
+                                newHashTag.name = hashTag;
+                                newHashTag.lastActiveDate = today;
+                                newHashTag.count = 0;
+                                newHashTag.iconURL = '';
+
+                                const newMasterHashTag: HashTag = await this.hashTagService.create(newHashTag);
+
+                                if (newMasterHashTag !== null && newMasterHashTag !== undefined) {
+                                    postMasterHashTagList.push(new ObjectID(newMasterHashTag.id));
+
+                                    masterHashTagMap[hashTag] = newMasterHashTag;
+                                }
+                            }
+                        }
+                        postPage.postsHashTags = postMasterHashTagList;
+                        for (const pageObjective of postMasterHashTagList) {
+                            const pageFindtag = await this.pageObjectiveService.aggregate(
+                                [
+                                    { '$match': { 'pageId': PostResult.pageTwi.pageId, 'hashTag': pageObjective } },
+                                    { '$sort': { 'createdDate': -1 } },
+                                    { '$limit': 1 }
+                                ]);
+                            const foundPageTag = pageFindtag.shift();
+                            if (foundPageTag) {
+                                const query = { _id: createPostPageData.id };
+                                const newValues = {
+                                    $set: {
+                                        objective: foundPageTag._id, objectiveTag: foundPageTag.title
+                                    }
+                                };
+                                const updateTag = await this.postsService.update(query, newValues);
+                                if (updateTag) {
+                                    break;
+                                }
+                            } else {
+                                break;
+                            }
+                        }
+                    }
                 } else {
                     continue;
                 }
@@ -204,5 +286,7 @@ export class TwitterController {
         const successResponse = ResponseUtil.getSuccessResponse('Feed Twitter is Successfully', undefined);
         return response.status(200).send(successResponse);
     }
-
+    private async findMasterHashTag(hashTagNameList: string[]): Promise<HashTag[]> {
+        return await this.hashTagService.find({ name: { $in: hashTagNameList } });
+    }
 }
