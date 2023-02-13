@@ -417,11 +417,6 @@ export class EmergencyEventController {
                 if (ordering < 0) {
                     return res.status(400).send(ResponseUtil.getErrorResponse('The ordering number must greater than 0 ', undefined));
                 }
-                const findOrderingExist = await this.emergencyEventService.findOne({ordering:emergencyEvents.ordering});
-                if(findOrderingExist !== null && findOrderingExist !==undefined){
-                    return res.status(400).send(ResponseUtil.getErrorResponse('The ordering number is already exists. ', undefined));
-                }
-
                 // check emergencyEvent Higher or Lower
                 if (emergencyEvents.ordering !== null) {
                     // insert
