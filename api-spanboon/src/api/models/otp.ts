@@ -1,7 +1,8 @@
 import { IsNotEmpty, IsMongoId } from 'class-validator';
-import { Column, Entity, ObjectIdColumn } from 'typeorm';
+import { BeforeInsert, BeforeUpdate, Column, Entity, ObjectIdColumn } from 'typeorm';
 import { ObjectID } from 'mongodb';
 import { BaseModel } from './BaseModel';
+import moment from 'moment';
 
 @Entity('Otp')
 export class Otp extends BaseModel {
@@ -11,8 +12,8 @@ export class Otp extends BaseModel {
     @IsMongoId()
     public id: ObjectID;
 
-    @Column({name:'userId'})
-    public userId:ObjectID;
+    @Column({ name: 'userId' })
+    public userId: ObjectID;
 
     @Column({ name: 'email' })
     public email: string;
@@ -25,4 +26,15 @@ export class Otp extends BaseModel {
 
     @Column({ name: 'expiration' })
     public expiration: Date;
+
+    @BeforeInsert()
+    public createDetails(): any {
+        this.createdDate = moment().toDate();
+        this.createdTime = moment().toDate();
+    }
+
+    @BeforeUpdate()
+    public updateDetails(): any {
+        this.updateDate = moment().toDate();
+    }
 }

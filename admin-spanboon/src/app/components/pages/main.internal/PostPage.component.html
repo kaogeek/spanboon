@@ -44,9 +44,9 @@
         </mat-drawer>
         <mat-drawer-content>
             <div class="main-content">
-                <admin-table-component #table [facade]="pageFacade" [isApprovePage]="'true'" [title]="'ตรวจสอบเพจ'"
-                    (official)="clickOfficial($event)" (ban)="clickBan($event)" [fieldTable]="fieldTable"
-                    [actions]="actions" [isOfficialPage]="isOfficialPage"
+                <admin-table-component #table [orderBy]="orderBy" [facade]="pageFacade" [isApprovePage]="'true'"
+                    [title]="'ตรวจสอบเพจ'" (official)="clickOfficial($event)" (ban)="clickBan($event)"
+                    [fieldTable]="fieldTable" [actions]="actions" [isOfficialPage]="isOfficialPage"
                     (delete)="clickDelete($event)"></admin-table-component>
             </div>
         </mat-drawer-content>

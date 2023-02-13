@@ -30,7 +30,7 @@
 // }
 
 .wrapper-page {
-  >.background {
+  > .background {
     position: fixed;
     height: 120%;
     left: 0%;
@@ -38,7 +38,7 @@
     z-index: -1;
   }
 
-  >.wrapper-login-page {
+  > .wrapper-login-page {
     min-height: calc(100vh - 55pt);
     position: relative;
     height: auto;
@@ -46,19 +46,19 @@
     align-items: center;
     justify-content: flex-end;
 
-    >.wrapper-box-detail {
+    > .wrapper-box-detail {
       width: 320pt;
       margin: 50pt 100pt 50pt 0;
 
-      >.label {
+      > .label {
         text-align: center;
         @include font-size-6($font-head-500);
         color: $brandcolor2;
         margin-bottom: 20pt;
       }
 
-      >.form-group {
-        >.input-text {
+      > .form-group {
+        > .input-text {
           display: block;
           width: calc(100% - 45pt);
           height: 30pt;
@@ -74,12 +74,12 @@
         }
       }
 
-      >.wrapper-forget-password {
+      > .wrapper-forget-password {
         display: flex;
         justify-content: flex-end;
         padding: 10pt 0;
 
-        >.forget {
+        > .forget {
           @include font-size-10($font-head-500);
           @include pointer();
 
@@ -89,24 +89,24 @@
         }
       }
 
-      >.login-div {
+      > .login-div {
         .login {
           margin-top: 10pt;
         }
 
-        >.center-line {
+        > .center-line {
           margin: 30pt 0;
           text-align: center;
           display: flex;
           justify-content: center;
           align-items: center;
 
-          >.border-span {
+          > .border-span {
             border-top: $width-border solid $bg-fog-gray;
             flex: 1 1 0;
           }
 
-          >.span-for {
+          > .span-for {
             flex: 0 0 auto;
             display: inline-block;
             @include font-size-9($font-head-500);
@@ -125,13 +125,13 @@
         }
       }
 
-      >.wrapper-footer-login {
+      > .wrapper-footer-login {
         text-align: center;
         font-weight: 300;
         margin-top: 30pt;
         @include font-size-9($font-content-light);
 
-        >.wrapper-register {
+        > .wrapper-register {
           color: $brandcolor2;
           @include font-size-9($font-head-500);
           @include pointer();
@@ -142,7 +142,7 @@
         }
       }
 
-      >.policy-terms {
+      > .policy-terms {
         align-items: center;
         gap: 5px 18px;
         display: flex;
@@ -153,7 +153,7 @@
         @include pointer();
         color: $color-gray;
 
-        >.policy {
+        > .policy {
           @include font-size-10($font-head-500);
           padding-top: 5px;
           @include pointer();
@@ -167,53 +167,53 @@
     }
   }
 
-  >.wrapper-mergeuser-page {
+  > .wrapper-mergeuser-page {
     min-height: calc(100vh - 55pt);
     display: flex;
     align-items: center;
-    justify-content: end;
+    justify-content: flex-end;
 
-    >.box-detail {
+    > .box-detail {
       max-width: 80vw;
       width: 600px;
 
-      >.merge-user {
+      > .merge-user {
         text-align: center;
         @include font-size-5($font-head-500);
         color: $brandcolor2;
         text-shadow: 1px 1px 1px#cacaca;
       }
 
-      >.wrapper-user-to-user {
+      > .wrapper-user-to-user {
         display: flex;
         justify-content: center;
         column-gap: 30px;
         margin-top: 50px;
 
-        >.profile-card {
+        > .profile-card {
           width: 180px;
 
-          >.profile-box {
+          > .profile-box {
             position: relative;
             margin-bottom: 15px;
             display: flex;
             justify-content: center;
 
-            >.wrapper-img {
+            > .wrapper-img {
               position: relative;
               width: 150px;
               height: 150px;
               border-radius: 100%;
               border: 4px solid $brandcolor2;
 
-              >img {
+              > img {
                 width: 100%;
                 height: 100%;
                 object-fit: cover;
                 border-radius: 100%;
               }
 
-              >.not-image {
+              > .not-image {
                 width: 100%;
                 height: 100%;
                 border-radius: 50%;
@@ -231,7 +231,7 @@
                 @include font-size-1($font-head-200);
               }
 
-              >.icon-social {
+              > .icon-social {
                 position: absolute;
                 right: 0px;
                 bottom: 0px;
@@ -257,7 +257,7 @@
                   background-color: #f8f7f2;
                 }
 
-                >img {
+                > img {
                   width: 70%;
                   height: 70%;
                 }
@@ -265,7 +265,7 @@
             }
           }
 
-          >.label {
+          > .label {
             text-align: center;
             @include font-size-10($font-head-500);
             color: $brandcolor2;
@@ -276,7 +276,7 @@
             flex-direction: column;
             word-break: break-all;
 
-            >.label-tag {
+            > .label-tag {
               text-align: center;
               margin-top: 2px;
               @include font-size-10($font-head-500);
@@ -285,13 +285,13 @@
           }
         }
 
-        >.arrow {
+        > .arrow {
           height: calc(150px + 8px);
           display: flex;
           justify-content: center;
           align-items: center;
 
-          >mat-icon {
+          > mat-icon {
             height: 40px;
             width: 40px;
             font-size: 40px;
@@ -299,30 +299,30 @@
         }
       }
 
-      >.description {
+      > .description {
         text-align: center;
         @include font-size-9($font-head-500);
         margin-top: 50px;
       }
 
-      >.next-merge,
-      >.back-merge {
+      > .next-merge,
+      > .back-merge {
         width: 75%;
         display: block;
       }
 
-      >.next-merge {
+      > .next-merge {
         margin: 20px auto 0px auto;
 
-        >.spanboon-button {
+        > .spanboon-button {
           background-color: $brandcolor2;
         }
       }
 
-      >.back-merge {
+      > .back-merge {
         margin: 10px auto 0px auto;
 
-        >.spanboon-button {
+        > .spanboon-button {
           background-color: $brandcolor;
           color: $black !important;
         }
@@ -330,25 +330,25 @@
     }
   }
 
-  >.wrapper-otp-page {
+  > .wrapper-otp-page {
     min-height: calc(100vh - 55pt);
     display: flex;
     align-items: center;
-    justify-content: end;
+    justify-content: flex-end;
 
-    >.otp-box-border {
+    > .otp-box-border {
       margin-right: 20px;
       width: 600px;
       display: flex;
       align-items: center;
       justify-content: center;
 
-      >.otp-box-details {
+      > .otp-box-details {
         width: 450px;
         height: 500px;
         text-align: center;
 
-        >.title {
+        > .title {
           text-align: center;
           @include font-size-5($font-head-500);
           color: $brandcolor2;
@@ -356,14 +356,14 @@
           text-shadow: 1px 1px 1px#cacaca;
         }
 
-        >.otp-box {
+        > .otp-box {
           height: 100px;
           align-items: center;
           display: flex;
           justify-content: center;
           margin-top: 20px;
 
-          >ng-otp-input {
+          > ng-otp-input {
             .otp-input {
               width: 52px;
               height: 52px;
@@ -371,30 +371,31 @@
           }
         }
 
-        >.refresh {
+        > .refresh {
           display: inline-flex;
           align-items: center;
           justify-content: center;
           width: 250px;
-          transition-duration: .22s;
+          transition-duration: 0.22s;
           transition-property: transform;
           transform: translateZ(0);
           box-shadow: 0 0 1px rgba(0, 0, 0, 0);
           cursor: pointer;
 
           &:hover {
-            transform: scale(.9);
+            transform: scale(0.9);
             color: #444444;
           }
 
-          >.refresh-icon {}
+          > .refresh-icon {
+          }
 
-          >.box-refresh-otp {
+          > .box-refresh-otp {
             @include font-size-8($font-head-500);
           }
         }
 
-        >.otp-fail {
+        > .otp-fail {
           width: 450px;
           text-align: center;
           color: red;
@@ -402,15 +403,15 @@
           @include font-size-8($font-head-500);
         }
 
-        >.count-down {
+        > .count-down {
           @include font-size-8($font-head-500);
         }
 
-        >.verify-otp {
+        > .verify-otp {
           display: block;
           margin-top: 40px;
 
-          >.spanboon-button {
+          > .spanboon-button {
             width: 50%;
           }
         }
@@ -419,89 +420,90 @@
   }
 }
 
-
 @media (max-width: $xxlarge) {
   .wrapper-page {
-    >.background {
+    > .background {
       left: -115pt;
     }
 
-    >.wrapper-login-page {}
-
+    > .wrapper-login-page {
+    }
   }
 }
 
 @media (max-width: $large) {
   .wrapper-page {
-    >.background {
+    > .background {
       display: none;
     }
 
-    >.wrapper-login-page {
-      >.wrapper-box-detail {
+    > .wrapper-login-page {
+      > .wrapper-box-detail {
         margin: 50pt auto;
         justify-content: center;
       }
     }
 
-    >.wrapper-mergeuser-page {
-      >.box-detail {
+    > .wrapper-mergeuser-page {
+      > .box-detail {
         margin: 50pt auto;
 
-        >.merge-user {}
+        > .merge-user {
+        }
 
-        >.wrapper-user-to-user {
+        > .wrapper-user-to-user {
           margin-top: 40px;
           column-gap: 50px;
 
-          >.profile-card {
+          > .profile-card {
             width: 158px;
 
-            >.profile-box {
+            > .profile-box {
               margin-bottom: 0px;
 
-              >.wrapper-img {
+              > .wrapper-img {
                 width: 130px;
                 height: 130px;
 
-                >.icon-social {
+                > .icon-social {
                   width: 37px;
                   height: 37px;
                 }
               }
             }
 
-            >.label {
-              >.label-tag {}
+            > .label {
+              > .label-tag {
+              }
             }
           }
 
-          >.arrow {
+          > .arrow {
             height: calc(150px + 1px);
           }
         }
 
-        >.description {
+        > .description {
           margin-top: 40px;
         }
 
-        >.next-merge {}
+        > .next-merge {
+        }
       }
     }
 
-    >.wrapper-otp-page {
+    > .wrapper-otp-page {
       margin: 50pt auto;
       justify-content: center;
 
-      >.otp-box-border {
+      > .otp-box-border {
         margin-right: 0px;
 
-        >.otp-box-details {
+        > .otp-box-details {
           width: 400px;
 
-          >.otp-box {
-
-            >ng-otp-input {
+          > .otp-box {
+            > ng-otp-input {
               .otp-input {
                 width: 48px;
                 height: 48px;
@@ -510,7 +512,7 @@
             }
           }
 
-          >.verify-otp {
+          > .verify-otp {
             .spanboon-button {
               width: 90%;
             }
@@ -523,13 +525,13 @@
 
 @media (max-width: $lmedium) {
   .wrapper-page {
-    >.wrapper-otp-page {
-      >.otp-box-border {
-        >.otp-box-details {
+    > .wrapper-otp-page {
+      > .otp-box-border {
+        > .otp-box-details {
           width: 370px;
 
-          >.otp-box {
-            >ng-otp-input {
+          > .otp-box {
+            > ng-otp-input {
               .otp-input {
                 width: 45px;
                 height: 45px;
@@ -545,117 +547,123 @@
 
 @media (max-width: $medium) {
   .wrapper-page {
-    >.wrapper-mergeuser-page {
-      >.box-detail {
-        >.merge-user {}
+    > .wrapper-mergeuser-page {
+      > .box-detail {
+        > .merge-user {
+        }
 
-        >.wrapper-user-to-user {
+        > .wrapper-user-to-user {
           column-gap: 20px;
 
-          >.profile-card {
+          > .profile-card {
             width: 140px;
 
-            >.profile-box {
-              >.wrapper-img {
+            > .profile-box {
+              > .wrapper-img {
                 width: 110px;
                 height: 110px;
 
-                >.not-image {
+                > .not-image {
                   @include font-size-2($font-head-200);
                 }
 
-                >.icon-social {
+                > .icon-social {
                   width: 35px;
                   height: 35px;
                 }
               }
             }
 
-            >.label {
-              >.label-tag {}
+            > .label {
+              > .label-tag {
+              }
             }
           }
 
-          >.arrow {
+          > .arrow {
             height: calc(120px + 1px);
           }
         }
 
-        >.description {}
+        > .description {
+        }
 
-        >.next-merge {}
+        > .next-merge {
+        }
       }
     }
-
   }
 }
 
 @media (max-width: $small) {
   .wrapper-page {
-    >.wrapper-login-page {
+    > .wrapper-login-page {
       min-height: calc(100vh - 39pt);
 
-      >.wrapper-box-detail {
+      > .wrapper-box-detail {
         width: 80%;
       }
     }
 
-    >.wrapper-mergeuser-page {
-      >.box-detail {
-        >.merge-user {}
+    > .wrapper-mergeuser-page {
+      > .box-detail {
+        > .merge-user {
+        }
 
-        >.wrapper-user-to-user {
+        > .wrapper-user-to-user {
           margin-top: 30px;
 
-          >.profile-card {
-            >.profile-box {
-              >.wrapper-img {
+          > .profile-card {
+            > .profile-box {
+              > .wrapper-img {
                 width: 90px;
                 height: 90px;
 
-                >.not-image {
+                > .not-image {
                   @include font-size-3($font-head-200);
                 }
 
-                >.icon-social {
+                > .icon-social {
                   width: 30px;
                   height: 30px;
                 }
               }
             }
 
-            >.label {
-              >.label-tag {}
+            > .label {
+              > .label-tag {
+              }
             }
           }
 
-          >.arrow {}
+          > .arrow {
+          }
         }
 
-        >.description {
+        > .description {
           margin-top: 30px;
         }
 
-        >.next-merge,
-        >.back-merge {
+        > .next-merge,
+        > .back-merge {
           width: 90%;
         }
       }
     }
 
-    >.wrapper-otp-page {
+    > .wrapper-otp-page {
       justify-content: center;
 
-      >.otp-box-border {
-        >.otp-box-details {
+      > .otp-box-border {
+        > .otp-box-details {
           width: 300px;
 
-          >.title {
+          > .title {
             @include font-size-7($font-head-500);
           }
 
-          >.otp-box {
-            >ng-otp-input {
+          > .otp-box {
+            > ng-otp-input {
               .otp-input {
                 width: 34px;
                 height: 34px;

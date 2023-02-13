@@ -113,7 +113,7 @@
                                                     [ngModelOptions]="{standalone: true}">
                                             </ng-container>
                                             <div class="alert alert-danger" style="margin-top: 5pt;"
-                                                *ngIf="submitted && dataForm.ordering === ''">
+                                                *ngIf="submitted && (dataForm.ordering === null || dataForm.ordering === undefined)">
                                                 กรุณาใส่ ลำดับ
                                             </div>
                                             <!-- <label style="color: white;padding: 10px;background-color: #fd545a;border-radius: 8px;margin-top:15px;" for="file">Choose File</label> -->
@@ -132,8 +132,8 @@
         </mat-drawer>
         <mat-drawer-content>
             <div class="main-content">
-                <admin-table-component #table [isPin]="true" [facade]="emergencyEventFacade" [title]="'เหตุการณ์ด่วน'"
-                    [fieldTable]="fieldTable" [actions]="actions" (create)="clickCreateForm()"
+                <admin-table-component #table [isPin]="true" [orderBy]="orderBy" [facade]="emergencyEventFacade"
+                    [title]="'เหตุการณ์ด่วน'" [fieldTable]="fieldTable" [actions]="actions" (create)="clickCreateForm()"
                     (edit)="clickEditForm($event)" (delete)="clickDelete($event)"></admin-table-component>
             </div>
         </mat-drawer-content>

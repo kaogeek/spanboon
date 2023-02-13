@@ -41,6 +41,7 @@ export class PostPage extends AbstractPage implements OnInit {
     public orinalDataForm: Page;
     public submitted = false;
     public isOfficialPage: {};
+    public orderBy: any = {};
 
     constructor(pageFacade: PageFacade, router: Router, dialog: MatDialog, authenManager: AuthenManager) {
         super(PAGE_NAME, dialog);
@@ -50,6 +51,7 @@ export class PostPage extends AbstractPage implements OnInit {
         // if (!this.authenManager.isCurrentUserType()) {
         //     this.router.navigateByUrl("/main/home_content/pageslide")
         // }
+        this.orderBy = { createdDate: -1 };
         this.fieldTable = [
             {
                 name: "name",

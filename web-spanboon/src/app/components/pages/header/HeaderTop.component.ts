@@ -13,11 +13,12 @@ import { MatDialog } from '@angular/material';
 import { AbstractPage } from '../AbstractPage';
 import { MESSAGE } from '../../../../app/AlertMessage';
 import { environment } from 'src/environments/environment';
-import { DialogAboutUs, DialogAlert } from '../../components';
-import { DialogListFacebook } from '../../components';
 import { PageSoialFB } from 'src/app/models/PageSocialFB';
 import { TwitterService } from '../../../services/services';
 import { PageSocialTW } from 'src/app/models/PageSocialTW';
+import { DialogListFacebook } from '../../shares/dialog/DialogListFacebook.component';
+import { DialogAlert } from '../../shares/dialog/DialogAlert.component';
+import { DialogAboutUs } from '../../shares/dialog/DialogAboutUs.component';
 
 const DEFAULT_USER_ICON: string = '../../../assets/components/pages/icons8-female-profile-128.png';
 const REDIRECT_PATH: string = '/main';

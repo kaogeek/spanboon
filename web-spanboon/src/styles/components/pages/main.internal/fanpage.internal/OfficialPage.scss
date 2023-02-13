@@ -1,0 +1,83 @@
+.page-official-wrapper {
+    display: flex;
+
+    > .page-official-header {
+        display: flex;
+        width: 100%;
+        height: 60px;
+        position: fixed;
+        justify-content: center;
+        align-items: center;
+        background-color: $brandcolor2;
+    }
+
+    > .page-official-body {
+        width: 100%;
+        // padding: 30px;
+
+        > .tbl-page-wrapper {
+            position: relative;
+            overflow: auto;
+            max-height: 90vh;
+            padding: 30px 30px 0 30px;
+
+            > .mat-form-field {
+                @include font-size-9($font-content-light);
+            }
+
+            > .mat-slide-toggle {
+                > .mat-slide-toggle-label {
+                    > .mat-slide-toggle-content {
+                        @include font-size-9($font-content-light);
+                        font-weight: bold;
+                    }
+                }
+            }
+
+            > .mat-table {
+                thead {
+                    > .mat-header-row {
+                        > .mat-header-cell {
+                            @include font-size-8($font-content-light);
+                            color: $white;
+                            background-color: $brandcolor3;
+                            font-weight: bold;
+
+                            > .mat-sort-header-container {
+                                > .mat-sort-header-arrow {
+                                    color: $white;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                tbody {
+                    > .mat-row {
+                        @include font-size-9($font-content-light);
+                    }
+                }
+            }
+
+            > .search-page {
+                width: 80%;
+                padding-right: 30px;
+            }
+
+            > .tbl-page {
+                width: 100%;
+            }
+
+            > .page-official-footer {
+                position: fixed;
+                bottom: 0;
+                width: 100%;
+
+                > .mat-paginator {
+                    padding: 0 40px 20px 0;
+                    @include font-size-9($font-content-light);
+                }
+            }
+        }
+    }
+}

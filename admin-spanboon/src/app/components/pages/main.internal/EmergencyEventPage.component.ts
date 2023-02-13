@@ -54,6 +54,7 @@ export class EmergencyEventPage extends AbstractPage implements OnInit {
     public value: string = '';
     public imageName: any;
     public ordering: number;
+    public orderBy: any = {};
 
     constructor(emergencyEventFacade: EmergencyEventFacade, hashTagFacade: HashTagFacade, router: Router, dialog: MatDialog, authenManager: AuthenManager) {
         super(PAGE_NAME, dialog);
@@ -64,7 +65,8 @@ export class EmergencyEventPage extends AbstractPage implements OnInit {
         // if (!this.authenManager.isCurrentUserType()) {
         //     this.router.navigateByUrl("/main/home_content/pageslide")
         // }
-        this.imagesAvatar = {}
+        this.imagesAvatar = {};
+        this.orderBy = { ordering: -1 };
         this.fieldTable = [
             {
                 name: "isPin",

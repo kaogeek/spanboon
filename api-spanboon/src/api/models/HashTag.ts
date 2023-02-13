@@ -6,7 +6,7 @@
  */
 
 import { IsNotEmpty, IsMongoId } from 'class-validator';
-import { Column, Entity, ObjectIdColumn, BeforeInsert } from 'typeorm';
+import { Column, Entity, ObjectIdColumn, BeforeInsert, BeforeUpdate } from 'typeorm';
 import { ObjectID } from 'mongodb';
 import { BaseModel } from './BaseModel';
 import moment from 'moment';
@@ -32,7 +32,13 @@ export class HashTag extends BaseModel {
     public lastActiveDate: Date;
 
     @BeforeInsert()
-    public async createDetails(): Promise<void> {
+    public createDetails(): any {
         this.createdDate = moment().toDate();
+        this.createdTime = moment().toDate();
+    }
+
+    @BeforeUpdate()
+    public updateDetails(): any {
+        this.updateDate = moment().toDate();
     }
 }
