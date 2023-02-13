@@ -1318,7 +1318,7 @@ export class GuestController {
                 } else if (findAuthenFb === undefined) {
                     findUserFb = await this.userService.findOne({ email: userEmail });
                 }
-                if (findUserFb !== undefined && findAuthenFb !== undefined) {
+                if (findUserFb === undefined && findAuthenFb === undefined) {
                     const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
                     return res.status(400).send(errorResponse);
                 }
