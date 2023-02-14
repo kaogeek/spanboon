@@ -426,11 +426,11 @@ export class EmergencyEventController {
                         await this.emergencyEventService.update(queryOrder, newValueOrder);
                     }
                     // lower
-                    else if (emergencyUpdate.ordering !== null && emergencyUpdate.ordering < emergencyEvents.ordering ) {
-                        const findOrderingGt = await this.emergencyEventService.find({ $and: [{ ordering: { $gt: emergencyUpdate.ordering,$lte:emergencyEvents.ordering} }, { ordering: { $ne: null } }]});
+                    else if (emergencyUpdate.ordering !== null && emergencyUpdate.ordering < emergencyEvents.ordering) {
+                        const findOrderingGt = await this.emergencyEventService.find({ $and: [{ ordering: { $gt: emergencyUpdate.ordering, $lte: emergencyEvents.ordering } }, { ordering: { $ne: null } }] });
                         for (const orderingGt of findOrderingGt) {
                             // if higher 
-                            if (orderingGt !== undefined && orderingGt !== null ) {
+                            if (orderingGt !== undefined && orderingGt !== null) {
                                 const queryOrder = { _id: ObjectID(orderingGt.id) };
                                 const newValueOrder = { $set: { ordering: orderingGt.ordering - 1 } };
                                 await this.emergencyEventService.update(queryOrder, newValueOrder);
@@ -454,8 +454,8 @@ export class EmergencyEventController {
                         const newValuesOrdering = { $set: { ordering: emergencyEvents.ordering } };
                         await this.emergencyEventService.update(updateOrdering, newValuesOrdering);
                         // higher
-                    } else if (emergencyUpdate.ordering !== null && emergencyUpdate.ordering > emergencyEvents.ordering ) {
-                        const findOrderingGt = await this.emergencyEventService.find({ $and: [{ ordering: { $lt: emergencyUpdate.ordering,$gte: emergencyEvents.ordering } }, { ordering: { $ne: null } }] });
+                    } else if (emergencyUpdate.ordering !== null && emergencyUpdate.ordering > emergencyEvents.ordering) {
+                        const findOrderingGt = await this.emergencyEventService.find({ $and: [{ ordering: { $lt: emergencyUpdate.ordering, $gte: emergencyEvents.ordering } }, { ordering: { $ne: null } }] });
                         for (const orderingGt of findOrderingGt) {
                             // if higher 
                             if (findOrderingGt !== undefined && findOrderingGt !== null) {
@@ -470,14 +470,12 @@ export class EmergencyEventController {
                         const newValuesOrdering = { $set: { ordering: emergencyEvents.ordering } };
                         await this.emergencyEventService.update(updateOrdering, newValuesOrdering);
 
-                    }// edit
-                    else {
+                    } else {
                         const queryOrder = { _id: objId };
                         const newValueOrder = { $set: { ordering: emergencyEvents.ordering } };
                         await this.emergencyEventService.update(queryOrder, newValueOrder);
                     }
-                }
-                else if (emergencyUpdate.ordering === emergencyEvents.ordering) {
+                } else if (emergencyUpdate.ordering === emergencyEvents.ordering) {
                     const queryEqual = { _id: objId };
                     const newValueEqual = { $set: { ordering: emergencyEvents.ordering } };
                     await this.emergencyEventService.update(queryEqual, newValueEqual);

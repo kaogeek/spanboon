@@ -73,7 +73,23 @@ export class MainPageController {
         private postsCommentService: PostsCommentService,
         private assetService: AssetService
     ) { }
-
+    // Home page content V2
+    @Get('/content/v2')
+    public async getContentListV2(@QueryParam('offset') offset: number, @QueryParam('section') section: string, @QueryParam('date') date: string, @Res() res: any, @Req() req: any): Promise<any> {
+        // const userId = req.headers.userid;
+        const mainPageSearchConfig = await this.pageService.searchPageOfficialConfig();
+        const searchOfficialOnly = mainPageSearchConfig.searchOfficialOnly;
+        const emerProcessor: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service);
+        emerProcessor.setConfig({
+            showUserAction: true,
+            offset,
+            date,
+            searchOfficialOnly
+        });
+        const emerSectionModel = await emerProcessor.process2();
+        const successResponse = ResponseUtil.getSuccessResponse('Successfully Main Page Data', emerSectionModel);
+        return res.status(200).send(successResponse);
+    }
     // Find Page API
     /**
      * @api {get} /api/main/content Find Main Page Data API
@@ -196,7 +212,6 @@ export class MainPageController {
         }
 
         let processorList: any[] = [];
-
         const weekRanges: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 7);
         const emerProcessor: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service);
         emerProcessor.setConfig({
@@ -206,7 +221,6 @@ export class MainPageController {
             searchOfficialOnly
         });
         const emerSectionModel = await emerProcessor.process();
-
         // setup search date range for lastest post
         const monthRanges: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 365);
         const postProcessor: PostSectionProcessor = new PostSectionProcessor(this.postsService, this.s3Service, this.userLikeService);
