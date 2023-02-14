@@ -16,13 +16,15 @@
             </div>
         </div>
         <div class="edit-input">
-            <input type="text" [formControl]="input" [placeholder]="data!.placeholder ? data.placeholder : ''">
+            <input type="text" [formControl]="input" [placeholder]="data!.placeholder ? data.placeholder : ''"
+                (keyup.enter)="input.valid ? onConfirm() : null">
         </div>
         <div class="dialog-footer">
             <div class="butt but-cancel" [ngStyle]="{'display': data.btDisplay1}" (click)="onClose() ">
                 {{data.bottomText1 ? data.bottomText1 : "ปิด"}}</div>
             <div class="butt but-submit" [ngStyle]="{'display': data.btDisplay2}" appDebounceClick
-                (debounceClick)="input.valid ? onConfirm() : null">{{data.bottomText2 ? data.bottomText2 : "ยืนยัน"}}
+                (debounceClick)="input.valid ? onConfirm() : null">
+                {{data.bottomText2 ? data.bottomText2 : "ยืนยัน"}}
             </div>
         </div>
     </div>
