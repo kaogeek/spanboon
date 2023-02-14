@@ -396,6 +396,7 @@ export class SettingsAdminRoles extends AbstractPage implements OnInit {
                     this.clearInputData();
                     this.getAccessPage();
                     if (res) {
+                        this.valueSt = '';
                         this.isConfirm = false;
                         this.accessPage = res;
                     }
@@ -403,6 +404,7 @@ export class SettingsAdminRoles extends AbstractPage implements OnInit {
             }).catch((err) => {
                 console.log(err)
                 if (err.error.message === 'Access Level was duplicated.') {
+                    this.valueSt = '';
                     this.isConfirm = false;
                     this.showAlertDialog('ไม่สามารถแอดสิทธิซ้ำได้');
                 }

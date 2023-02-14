@@ -124,7 +124,7 @@ export class EmergencyEventController {
         if (orderingSequence === 0) {
             return res.status(400).send(ResponseUtil.getErrorResponse('The ordering number must greater than 0 ', undefined));
         }
-        if(orderingSequence < 0){
+        if (orderingSequence < 0) {
             return res.status(400).send(ResponseUtil.getErrorResponse('The ordering number must greater than 0 ', undefined));
         }
         let assetCreate: Asset;
@@ -426,8 +426,36 @@ export class EmergencyEventController {
                         await this.emergencyEventService.update(queryOrder, newValueOrder);
                     }
                     // lower
-                    else if (emergencyUpdate.ordering !== null && emergencyEvents.ordering < emergencyUpdate.ordering) {
-                        const findOrderingGt = await this.emergencyEventService.find({ $and: [{ ordering: { $gte: emergencyEvents.ordering } }, { ordering: { $ne: null } }] });
+                    else if (emergencyUpdate.ordering !== null && emergencyUpdate.ordering < emergencyEvents.ordering ) {
+                        const findOrderingGt = await this.emergencyEventService.find({ $and: [{ ordering: { $gt: emergencyUpdate.ordering,$lte:emergencyEvents.ordering} }, { ordering: { $ne: null } }]});
+                        for (const orderingGt of findOrderingGt) {
+                            // if higher 
+                            if (orderingGt !== undefined && orderingGt !== null ) {
+                                const queryOrder = { _id: ObjectID(orderingGt.id) };
+                                const newValueOrder = { $set: { ordering: orderingGt.ordering - 1 } };
+                                await this.emergencyEventService.update(queryOrder, newValueOrder);
+                            }
+                            else {
+                                continue;
+                            }
+                        }/*
+                        const findOrderingLt = await this.emergencyEventService.find({ $and: [{ ordering: { $gte: emergencyEvents.ordering } }, { ordering: { $ne: null } }] });
+                        for (const orderingLt of findOrderingLt) {
+                            // if higher 
+                            if (findOrderingGt !== undefined && findOrderingGt !== null) {
+                                const queryOrder = { _id: ObjectID(orderingLt.id) };
+                                const newValueOrder = { $set: { ordering: orderingLt.ordering + 1 } };
+                                await this.emergencyEventService.update(queryOrder, newValueOrder);
+                            } else {
+                                continue;
+                            }
+                        } */
+                        const updateOrdering = { _id: objId };
+                        const newValuesOrdering = { $set: { ordering: emergencyEvents.ordering } };
+                        await this.emergencyEventService.update(updateOrdering, newValuesOrdering);
+                        // higher
+                    } else if (emergencyUpdate.ordering !== null && emergencyUpdate.ordering > emergencyEvents.ordering ) {
+                        const findOrderingGt = await this.emergencyEventService.find({ $and: [{ ordering: { $lt: emergencyUpdate.ordering,$gte: emergencyEvents.ordering } }, { ordering: { $ne: null } }] });
                         for (const orderingGt of findOrderingGt) {
                             // if higher 
                             if (findOrderingGt !== undefined && findOrderingGt !== null) {
@@ -438,30 +466,10 @@ export class EmergencyEventController {
                                 continue;
                             }
                         }
-                        const findOrderingLt = await this.emergencyEventService.find({ $lte: [{ ordering: { $lte: emergencyEvents.ordering } }, { ordering: { $ne: null } }] });
-                        for (const orderingLt of findOrderingLt) {
-                            // if higher 
-                            if (findOrderingGt !== undefined && findOrderingGt !== null) {
-                                const queryOrder = { _id: ObjectID(orderingLt.id) };
-                                const newValueOrder = { $set: { ordering: orderingLt.ordering - 1 } };
-                                await this.emergencyEventService.update(queryOrder, newValueOrder);
-                            } else {
-                                continue;
-                            }
-                        }
-                        // higher
-                    } else if (emergencyUpdate.ordering !== null && emergencyEvents.ordering > emergencyUpdate.ordering) {
-                        const findOrderingGt = await this.emergencyEventService.find({ $and: [{ ordering: { $gte: emergencyUpdate.ordering } }, { ordering: { $ne: null } }] });
-                        for (const orderingGt of findOrderingGt) {
-                            // if higher 
-                            if (findOrderingGt !== undefined && findOrderingGt !== null) {
-                                const queryOrder = { _id: ObjectID(orderingGt.id) };
-                                const newValueOrder = { $set: { ordering: orderingGt.ordering - 1 } };
-                                await this.emergencyEventService.update(queryOrder, newValueOrder);
-                            } else {
-                                continue;
-                            }
-                        }
+                        const updateOrdering = { _id: objId };
+                        const newValuesOrdering = { $set: { ordering: emergencyEvents.ordering } };
+                        await this.emergencyEventService.update(updateOrdering, newValuesOrdering);
+
                     }// edit
                     else {
                         const queryOrder = { _id: objId };
@@ -478,9 +486,7 @@ export class EmergencyEventController {
                     const newValueEqual = { $set: { ordering: emergencyEvents.ordering } };
                     await this.emergencyEventService.update(queryEqual, newValueEqual);
                 }
-                const updateOrdering = { _id: objId };
-                const newValuesOrdering = { $set: { ordering: emergencyEvents.ordering } };
-                await this.emergencyEventService.update(updateOrdering, newValuesOrdering);
+
             }
             if (emergencySave) {
                 const emergencyUpdated: EmergencyEvent = await this.emergencyEventService.findOne({ where: { _id: objId } });
