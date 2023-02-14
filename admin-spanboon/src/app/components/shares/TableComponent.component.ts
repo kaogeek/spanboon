@@ -5,19 +5,20 @@
  * Author: Americaso <treerayuth.o@absolute.co.th>
  */
 
-import { Component, OnInit, Input, ViewChild, Output, EventEmitter, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, Output, EventEmitter, SimpleChanges, ElementRef } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { MatTableDataSource,MatTable } from '@angular/material/table';
+import { MatTableDataSource, MatTable } from '@angular/material/table';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogDeleteComponent } from './DialogDeleteComponent.component';
 import { DialogWarningComponent } from './DialogWarningComponent.component';
 import { SearchFilter } from '../../models/SearchFilter';
 import { FormControl } from '@angular/forms';
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { CdkDragDrop, CdkDragMove, moveItemInArray } from '@angular/cdk/drag-drop';
 import { EmergencyEventFacade } from '../../services/facade/EmergencyEventFacade.service';
 import { element } from 'protractor';
 
+const speed = 10;
 const SEARCH_LIMIT: number = 0;
 const SEARCH_OFFSET: number = 0;
 const DEFAULT_DATE_TIME_FORMAT: string = "dd-MM-yyyy HH:mm:ss";
@@ -74,6 +75,7 @@ export interface ActionTable {
 })
 export class TableComponent implements OnInit {
     @ViewChild('table') table: MatTable<FieldTable>;
+    @ViewChild('scrollEl') scrollEl: ElementRef<HTMLElement>;
     private dialog: MatDialog;
 
     @Input()
@@ -356,30 +358,36 @@ export class TableComponent implements OnInit {
     }
     dropTable(event: CdkDragDrop<FieldTable[]>) {
         if (this.isInvalidDragEvent) {
-                this.isInvalidDragEvent = false;
-                return;
-        }
-        let body = {
-            'previousIndex':event.previousIndex,
-            'currentIndex':event.currentIndex,
-            'filteredData':this.dataSource.filteredData
+            this.isInvalidDragEvent = false;
+            return;
         }
         const prevIndex = this.dataSource.filteredData.findIndex((d) => d === event.item.data);
+        let body = {
+            'previousIndex': prevIndex,
+            'currentIndex': event.currentIndex,
+            'filteredData': this.dataSource.filteredData
+        }
         moveItemInArray(this.dataSource.filteredData, prevIndex, event.currentIndex);
-        this.setTableConfig(this.dataSource.filteredData);
-        this.emergencyEventFacade.editSelect(this.dataSource.filteredData[event.currentIndex].id, body)
+        this.dataSource = new MatTableDataSource<any>(this.data);
+        let dataItem = this.dataSource.filteredData[event.currentIndex].id;
+        this.emergencyEventFacade.editSelect(dataItem, body).then((res: any) => {
+            if (res) {
+                this.searchData();
+            }
+        }).catch((err: any) => {
+        })
         // this.table.renderRows();
     }
-      isInvalidDragEvent:boolean=false;
-    onInvalidDragEventMouseDown(){
-        this.isInvalidDragEvent=true;
+    isInvalidDragEvent: boolean = false;
+    onInvalidDragEventMouseDown() {
+        this.isInvalidDragEvent = true;
     }
-    dragStarted(event){
-        if(this.isInvalidDragEvent){
-           document.dispatchEvent(new Event('mouseup'));
+    dragStarted(event) {
+        if (this.isInvalidDragEvent) {
+            document.dispatchEvent(new Event('mouseup'));
         }
     }
-    
+
     public getWidthAction(): string {
         let ationWidth: number = 75;
         let count: number = 0;
