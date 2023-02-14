@@ -72,7 +72,7 @@ export class EmergencyEventService {
     // findMax
     public maxOrdering(filter: SearchFilter): Promise<any> {
         const orderingSort = { 'ordering': -1 };
-        const limitMax = {'limit':1};
+        const limitMax = 1;
         const condition: any = SearchUtil.createFindCondition(limitMax, filter.offset, filter.select, filter.relation, filter.whereConditions, orderingSort);
         if (filter.count) {
             return this.emergencyEventRepository.count(filter.whereConditions);
