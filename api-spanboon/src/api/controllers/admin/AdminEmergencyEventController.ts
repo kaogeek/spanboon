@@ -288,7 +288,7 @@ export class EmergencyEventController {
                 const newValues = { $set: { ordering: j + 1 } };
                 await this.emergencyEventService.update(queryValue, newValues);
             }
-            const successResponse = ResponseUtil.getSuccessResponse('Successfully Search EmergencyEvent', undefined);
+            const successResponse = ResponseUtil.getSuccessResponse('Successfully Search EmergencyEvent', 'DragAndDrop');
             return res.status(200).send(successResponse);
         } else {
             return res.status(400).send(ResponseUtil.getSuccessResponse('Invalid EmergencyEvent Id', undefined));
