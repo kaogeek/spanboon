@@ -252,13 +252,6 @@ export class EmergencyEventSectionProcessor extends AbstractSectionModelProcesso
                         }
                     },
                     {
-                        $match: {
-                            'samplePost.0': { $exists: true }
-                        }
-                    },
-                    { $skip: offset },
-                    { $limit: limit },
-                    {
                         $lookup: {
                             from: 'HashTag',
                             localField: 'hashTag',

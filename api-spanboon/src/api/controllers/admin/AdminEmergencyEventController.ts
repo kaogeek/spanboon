@@ -288,7 +288,7 @@ export class EmergencyEventController {
                 const newValues = { $set: { ordering: j + 1 } };
                 await this.emergencyEventService.update(queryValue, newValues);
             }
-            const successResponse = ResponseUtil.getSuccessResponse('Successfully Search EmergencyEvent', undefined);
+            const successResponse = ResponseUtil.getSuccessResponse('Successfully Search EmergencyEvent', 'DragAndDrop');
             return res.status(200).send(successResponse);
         } else {
             return res.status(400).send(ResponseUtil.getSuccessResponse('Invalid EmergencyEvent Id', undefined));
@@ -438,18 +438,7 @@ export class EmergencyEventController {
                             else {
                                 continue;
                             }
-                        }/*
-                        const findOrderingLt = await this.emergencyEventService.find({ $and: [{ ordering: { $gte: emergencyEvents.ordering } }, { ordering: { $ne: null } }] });
-                        for (const orderingLt of findOrderingLt) {
-                            // if higher 
-                            if (findOrderingGt !== undefined && findOrderingGt !== null) {
-                                const queryOrder = { _id: ObjectID(orderingLt.id) };
-                                const newValueOrder = { $set: { ordering: orderingLt.ordering + 1 } };
-                                await this.emergencyEventService.update(queryOrder, newValueOrder);
-                            } else {
-                                continue;
-                            }
-                        } */
+                        }
                         const updateOrdering = { _id: objId };
                         const newValuesOrdering = { $set: { ordering: emergencyEvents.ordering } };
                         await this.emergencyEventService.update(updateOrdering, newValuesOrdering);

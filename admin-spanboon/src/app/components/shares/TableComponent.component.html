@@ -56,11 +56,9 @@
                 </mat-select>
             </mat-form-field>
         </div>
-        <div class="table-responsive">
-            <table mat-table cdkDropList [dataSource]="dataSource" matSort style="width: 100%;"
-                cdkDropList
-                [cdkDropListData]="dataSource"
-                (cdkDropListDropped)="dropTable($event)">
+        <div #scrollEl cdk-scrollable class="table-responsive">
+            <table mat-table cdkDropList class="table-container" [dataSource]="dataSource" matSort style="width: 100%;"
+                [cdkDropListData]="dataSource" (cdkDropListDropped)="dropTable($event)">
                 <ng-container *ngFor="let field of fieldTable">
                     <ng-container matColumnDef="{{field.name}}">
                         <th mat-header-cell *matHeaderCellDef mat-sort-header> {{field.label}} </th>
@@ -197,7 +195,9 @@
 
                 <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
                 <ng-container *ngIf="isEmer === true; else elseEmergency">
-                    <tr class="select-box" mat-row *matRowDef="let row; columns: displayedColumns;" cdkDrag (cdkDragStarted)="dragStarted($event)" [cdkDragData]="row"></tr>
+                    <tr class="select-box" mat-row *matRowDef="let row; columns: displayedColumns;" cdkDrag
+                        (cdkDragStarted)="dragStarted($event)" [cdkDragData]="row">
+                    </tr>
                 </ng-container>
                 <ng-template #elseEmergency>
                     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
