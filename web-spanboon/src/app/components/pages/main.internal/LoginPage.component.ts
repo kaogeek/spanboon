@@ -56,6 +56,9 @@ export class LoginPage extends AbstractPage implements OnInit {
   public modeSwitch: "login" | "mergeuser" | "otp" = "login";
   private accessToken: any;
   private googleToken: any;
+  public images: any;
+  public imagesAvatar: any;
+  public data: any;
   private observManager: ObservableManager;
   private _ngZone: NgZone;
   private cacheConfigInfo: CacheConfigInfo;
@@ -107,7 +110,7 @@ export class LoginPage extends AbstractPage implements OnInit {
   public accountTwitter = 'https://api.twitter.com/1.1/account/verify_credentials.json';
   constructor(authenManager: AuthenManager, private socialAuthService: SocialAuthService, activatedRoute: ActivatedRoute, router: Router, _ngZone: NgZone,
     observManager: ObservableManager, cacheConfigInfo: CacheConfigInfo, dialog: MatDialog, twitterService: TwitterService,
-    checkMergeUserFacade: CheckMergeUserFacade, private notificationManager: NotificationManager,
+    checkMergeUserFacade: CheckMergeUserFacade, private notificationManager: NotificationManager, private authService: SocialAuthService,
   ) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.authenManager = authenManager;
@@ -160,7 +163,6 @@ export class LoginPage extends AbstractPage implements OnInit {
         const userId = spilt[2].split('=')[1];
         const name = spilt[3];
         this.loginTwitter(token, token_secret, userId);
-
       }).catch((err: any) => [
         console.log('err ', err)
       ])
@@ -250,9 +252,9 @@ export class LoginPage extends AbstractPage implements OnInit {
             }
           })
         } else if (res.data.status === 2) {
+          this.getTwitterUser(token, token_secret);
           this.mockDataMergeSocial.social = mode;
           this.pictureSocial = res.data.pic;
-          this.modeSwitch = "mergeuser";
           const queue = res.data.data.authUser;
           for (let i = 0; i < queue.length; i++) {
             const current = queue.shift()
@@ -288,6 +290,7 @@ export class LoginPage extends AbstractPage implements OnInit {
               this.socialMode = 'TWITTER';
             }
           }
+          this.modeSwitch = "mergeuser";
         }
       }
     }).catch((err) => {
@@ -305,12 +308,13 @@ export class LoginPage extends AbstractPage implements OnInit {
             this.checkMergeUserFacade.loginWithTwitter(twitter, mode, res).then((data: any) => {
               if (data) {
                 if (data.data.status === 2) {
-                  this.modeSwitch = "mergeuser";
+                  this.getTwitterUser(token, token_secret);
                   this.login = false;
                   this.emailOtp = data.data.data.email;
                   this.dataUser = data.data;
                   this.mockDataMergeSocial.social = mode;
                   this.socialMode = 'TWITTER';
+                  this.modeSwitch = "mergeuser";
                 } else if (data.data.status === 1) {
                   this.authenManager.loginWithTwitter(twitter, mode).then((data: any) => {
                     if (data) {
@@ -398,6 +402,7 @@ export class LoginPage extends AbstractPage implements OnInit {
     this.checkMergeUserFacade.loginWithGoogle(this.googleToken.idToken, this.googleToken.authToken, mode).then((data: any) => {
       // login success redirect to main page  
       if (data.data.status === 2) {
+        this.getGoogleUser();
         this.mockDataMergeSocial.social = mode;
         this.pictureSocial = data.pic;
         this.modeSwitch = "mergeuser";
@@ -542,9 +547,14 @@ export class LoginPage extends AbstractPage implements OnInit {
 
   private loginFB() {
     let mode = 'FACEBOOK'
+    this.getCurrentUserInfo();
     if (!this.isFBLogin) {
       this.isFBLogin = true;
       this.checkMergeUserFacade.loginWithFacebook(this.accessToken.fbtoken, mode).then((data: any) => {
+        let state = {
+          accessToken: this.accessToken,
+          redirection: this.redirection
+        }
         // login success redirect to main page
         if (data.data.status === 2) {
           this.mockDataMergeSocial.social = mode;
@@ -632,6 +642,10 @@ export class LoginPage extends AbstractPage implements OnInit {
             },
           });
           dialog.afterClosed().subscribe((res) => {
+            let state2 = {
+              accessToken: this.accessToken,
+              redirection: this.redirection
+            }
             if (res) {
               this.isFBLogin = true;
               this.checkMergeUserFacade.loginWithFacebook(this.accessToken.fbtoken, mode, res).then((data: any) => {
@@ -769,6 +783,7 @@ export class LoginPage extends AbstractPage implements OnInit {
               this.socialMode = 'EMAIL';
             }
           }
+          this.login = true;
         } else {
           this.authenManager
             .login(body.email, body.password, mode)
@@ -823,6 +838,7 @@ export class LoginPage extends AbstractPage implements OnInit {
 
                   }
                 });
+                this.login = true;
               }
             });
         }
@@ -1097,6 +1113,91 @@ export class LoginPage extends AbstractPage implements OnInit {
         }
       });
     }
+  }
+
+  public getCurrentUserInfo(): any {
+    window['FB'].api('/me', {
+      fields: 'name, first_name, last_name,birthday,picture.width(512).height(512),id,email,gender'
+    }, (userInfo) => {
+      this.data = userInfo;
+      this.data.displayName = userInfo.name;
+      this.data.firstName = userInfo.first_name;
+      this.data.lastName = userInfo.last_name;
+      this.images = userInfo.picture.data.url;
+      this.imagesAvatar = {};
+      this.getBase64ImageFromUrl(this.images).then((result: any) => {
+        if (result) {
+          this.imagesAvatar.image = result;
+        }
+      }).catch(err => {
+        console.log("เกิดข้อผิดพลาด");
+      });
+    });
+  }
+
+  public getTwitterUser(token: string, token_secret: string) {
+    let body = {
+      twitterOauthToken: token,
+      twitterOauthTokenSecret: token_secret
+    }
+    this.twitterService.accountVerify(body).then((account: any) => {
+      this.data = account;
+      this.data.displayName = account.name;
+      let str = account.profile_image_url_https;
+      let splitted = str.split("_normal", 2);
+      let splitImg = splitted[0] + splitted[1];
+      this.images = splitImg;
+      this.imagesAvatar = {};
+      this.getBase64ImageFromUrl(splitImg).then((result: any) => {
+        if (result) {
+          this.imagesAvatar.image = result;
+        }
+      }).catch((err) => {
+        console.log("เกิดข้อผิดพลาด");
+      });
+    }).catch((err: any) => {
+      console.log('err ', err)
+    })
+  }
+
+  public getGoogleUser(): any {
+    this.authService.authState.subscribe((user) => {
+      this.data = user;
+      this.data.email = user.email;
+      this.data.displayName = user.name;
+      this.data.firstName = user.firstName;
+      this.data.lastName = user.lastName;
+      let str = user.photoUrl;
+      let splitted = str.split("s96", 2);
+      let splitImg = splitted[0] + "s400" + splitted[1];
+      this.images = splitImg;
+      this.imagesAvatar = {};
+      this.getBase64ImageFromUrl(splitImg).then((result: any) => {
+        if (result) {
+          this.imagesAvatar.image = result;
+        }
+      }).catch((err) => {
+        console.log("เกิดข้อผิดพลาด");
+      });
+    });
+  }
+
+  public async getBase64ImageFromUrl(imageUrl) {
+    var res = await fetch(imageUrl);
+    var blob = await res.blob();
+
+    return new Promise((resolve, reject) => {
+      var reader = new FileReader();
+      reader.addEventListener("load", function () {
+        const imagesAvatar = reader.result;
+        resolve(imagesAvatar);
+      }, false);
+
+      reader.onerror = () => {
+        return reject(this);
+      };
+      reader.readAsDataURL(blob);
+    });
   }
 
   public checkAuthUser(data: any): string {
