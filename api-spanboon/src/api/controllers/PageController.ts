@@ -3097,12 +3097,13 @@ export class PageController {
         }
     }
     // 
+    // * @api {delete} /api/page/:pageId/delete Successfully delete Page
     @Delete('/:pageId/delete')
     @Authorized('user')
-    public async deletePageUser(@Param('id') pageId: string, @Param('name') name: string, @Res() res: any, @Req() req: any): Promise<any>{
+    public async deletePageUser(@Param('pageId') pageId: string, @Res() res: any, @Req() req: any): Promise<any>{
         const userId = new ObjectID(req.user.id);
         const pageObjId = new ObjectID(pageId);
-        const findPage = await this.pageService.findOne({_id:pageObjId,ownerUser:userId})
+        const findPage = await this.pageService.findOne({_id:pageObjId,ownerUser:userId});
         if(findPage !== undefined && findPage !== null){
             const deletePage = await this.deletePageService.deletePage(findPage.id);
             if(deletePage){
@@ -3114,15 +3115,15 @@ export class PageController {
             return res.status(400).send(ResponseUtil.getErrorResponse('You have no permission to delete this page', undefined));
         }
     }
-    @Delete('/:pageId/delete/:userId')
+    @Delete('/:pageId/delete/:deleteUser')
     @Authorized('user')
-    public async deletePageUserPermission(@Param('pageId') pageId: string, @Param('userId') Id: string, @Res() res: any, @Req() req: any):Promise<any>{
+    public async deletePageUserPermission(@Param('pageId') pageId: string, @Param('deleteUser') deleteUser: string, @Res() res: any, @Req() req: any):Promise<any>{
         const userId = new ObjectID(req.user.id);
         const pageObjId = new ObjectID(pageId);
         const pageAccess = await this.pageAccessLevelService.findOne({page:pageObjId,user:userId});
-        if(pageAccess === 'OWNER'){
-            const deletePermission = await this.pageAccessLevelService.findOne({page:pageObjId,user:ObjectID(Id)});
-            if(deletePermission !== 'OWNER'){
+        if(pageAccess.level === 'OWNER'){
+            const deletePermission = await this.pageAccessLevelService.findOne({page:pageObjId,user:ObjectID(deleteUser)});
+            if(deletePermission.level !== 'OWNER'){
                 const query = {page:deletePermission.page,user:deletePermission.user};
                 await this.pageAccessLevelService.delete(query);
                 return res.status(200).send(ResponseUtil.getSuccessResponse('Delete Permission succesfully. ', undefined));
