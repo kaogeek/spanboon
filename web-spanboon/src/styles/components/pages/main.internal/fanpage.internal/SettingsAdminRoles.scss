@@ -8,36 +8,36 @@
 .fanpage-admin-roles {
     // padding: 20pt 40pt 0 40pt;
 
-    > .header-admin {
+    >.header-admin {
         background: rgba($bg-grey, 0.3);
         padding: 20pt 40pt;
 
-        > .head {
+        >.head {
             @include font-size-7($font-head-500);
             color: $black;
         }
 
-        > .title {
+        >.title {
             @include font-size-10($font-head-300);
             color: rgba($black, 0.5);
             margin-top: 5pt;
         }
     }
 
-    > .body-admin {
-        > .admin-y1 {
+    >.body-admin {
+        >.admin-y1 {
             padding: 15pt 40pt;
 
-            > .y1-title {
+            >.y1-title {
                 @include font-size-9($font-head-400);
             }
 
-            > .set-your {
+            >.set-your {
                 margin-top: 15pt;
                 // padding-bottom: 15pt;
                 border-bottom: 1px solid $border-color;
 
-                > .set-how-title {
+                >.set-how-title {
                     width: inherit;
                     height: auto;
                     border: 0.7pt solid #ffc107;
@@ -47,7 +47,7 @@
                     justify-content: flex-start;
                     align-items: center;
 
-                    > .please-note {
+                    >.please-note {
                         padding: 5pt;
                         background: #ffc107;
                         color: $white;
@@ -60,31 +60,31 @@
                         }
                     }
 
-                    > .how-title {
+                    >.how-title {
                         color: #ffc107;
                         @include font-size-10($font-head-500);
                         padding: 5pt 8pt;
                     }
                 }
 
-                > .set-your-admin {
+                >.set-your-admin {
                     display: flex;
                     flex-direction: row;
                     justify-content: flex-start;
                     align-items: center;
                     margin-top: 5pt;
 
-                    > .form-field {
+                    >.form-field {
                         flex: 1 0 0px;
 
-                        > .search-form {
+                        >.search-form {
                             position: relative;
                             height: 26pt;
                             display: flex;
                             flex-direction: row;
                             align-items: center;
 
-                            > .profile {
+                            >.profile {
                                 height: 22pt;
                                 width: 22pt;
                                 position: absolute;
@@ -93,7 +93,7 @@
                                 border-radius: 50%;
                             }
 
-                            > .search-input {
+                            >.search-input {
                                 height: 100%;
                                 width: 100%;
                                 @include font-size-9($font-content-light);
@@ -103,7 +103,7 @@
                                 margin: 0;
                             }
 
-                            > .search-close {
+                            >.search-close {
                                 position: absolute;
                                 z-index: 1;
                                 right: 6pt;
@@ -124,8 +124,8 @@
                         }
                     }
 
-                    > .select-roles {
-                        > .mat-select {
+                    >.select-roles {
+                        >.mat-select {
                             width: 100pt;
                             height: 26pt;
                             border: 0.7pt solid $border-color;
@@ -136,14 +136,14 @@
                             padding: 0 5pt 0 10pt;
                             background: $bg-fog-gray2;
 
-                            > .mat-select-trigger {
+                            >.mat-select-trigger {
                                 height: 100%;
                                 display: flex;
                                 flex-direction: row;
                                 justify-content: space-between;
                                 align-items: center;
 
-                                > .mat-select-value {
+                                >.mat-select-value {
                                     display: block;
                                     max-width: unset;
                                     width: auto;
@@ -151,7 +151,7 @@
                                     text-overflow: unset;
                                     white-space: unset;
 
-                                    > .mat-select-value-text {
+                                    >.mat-select-value-text {
                                         padding-right: 5pt;
                                         @include font-size-9($font-head-500);
                                     }
@@ -160,7 +160,7 @@
                         }
                     }
 
-                    > .save-card {
+                    >.save-card {
                         margin-left: 5pt;
                         width: 70pt;
                         min-width: 70pt;
@@ -180,29 +180,29 @@
                     }
                 }
 
-                > .title-power {
+                >.title-power {
                     @include font-size-10($font-head-500);
                     color: rgba($black, 0.5);
                     margin: 5pt 0 20pt 0;
                 }
 
-                > .true-selected {
+                >.true-selected {
                     margin-bottom: 20pt;
 
-                    > .top-selected {
-                        > .header {
+                    >.top-selected {
+                        >.header {
                             @include font-size-9($font-head-400);
                             color: $black;
                         }
 
-                        > .title {
+                        >.title {
                             @include font-size-10($font-head-500);
                             color: rgba($black, 0.5);
                         }
                     }
 
-                    > .body-selected {
-                        > .card-selected {
+                    >.body-selected {
+                        >.card-selected {
                             width: 100%;
                             border-bottom: 1px solid $border-color;
 
@@ -210,14 +210,14 @@
                                 border-bottom: none;
                             }
 
-                            > .selected-con {
+                            >.selected-con {
                                 display: flex;
                                 flex-direction: row;
                                 justify-content: flex-start;
                                 align-items: center;
                                 padding: 8pt 0;
 
-                                > .image-profile {
+                                >.image-profile {
                                     width: 55px;
                                     height: 55px;
                                     border-radius: 50%;
@@ -225,7 +225,8 @@
                                     color: $white;
                                     @include font-size-9($font-head-500);
                                 }
-                                > .not-image {
+
+                                >.not-image {
                                     display: flex;
                                     align-items: center;
                                     justify-content: center;
@@ -234,22 +235,22 @@
                                     font-family: 16px;
                                 }
 
-                                > .profile {
+                                >.profile {
                                     padding: 0 15pt 0 7pt;
                                     flex: 1 0 0px;
 
-                                    > .name {
+                                    >.name {
                                         @include font-size-9($font-head-400);
                                         color: $black;
                                     }
 
-                                    > .access {
+                                    >.access {
                                         @include font-size-10($font-head-500);
                                         color: rgba($black, 0.5);
                                     }
                                 }
 
-                                > .edit-selected {
+                                >.edit-selected {
                                     font-size: "16px";
                                     font-family: "Kanit-500";
                                     color: $black;
@@ -257,25 +258,42 @@
                                     min-width: 70pt;
                                     background: $bg-fog-gray2;
                                 }
+
+                                >.delete-card {
+                                    margin-left: 5pt;
+                                    width: 70pt;
+                                    min-width: 70pt;
+                                    color: $white;
+                                    background: $brandcolor2;
+                                    opacity: 1;
+                                    @include font-size-9($font-head-500);
+
+                                    &:hover {
+                                        opacity: 0.9;
+                                    }
+                                }
                             }
 
-                            > .edit {
+                            >.edit {
                                 background: rgba($bg-fog-gray, 0.4);
                                 padding: 10pt;
                                 border-bottom: 1px solid $border-color;
+
                                 &.active {
                                     display: none;
                                 }
 
-                                > .edit-top {
+                                >.edit-top {
                                     display: flex;
                                     flex-direction: row;
                                     align-items: center;
                                     flex-wrap: wrap;
-                                    > .edit-mat-select {
+
+                                    >.edit-mat-select {
                                         width: 100%;
                                         display: flex;
-                                        > .card-edit {
+
+                                        >.card-edit {
                                             position: relative;
                                             height: 26pt;
                                             display: flex;
@@ -283,7 +301,7 @@
                                             align-items: center;
                                             width: 100%;
 
-                                            > .profile {
+                                            >.profile {
                                                 height: 22pt;
                                                 width: 22pt;
                                                 position: absolute;
@@ -291,7 +309,8 @@
                                                 z-index: 1;
                                                 left: 2pt;
                                             }
-                                            > .not-image {
+
+                                            >.not-image {
                                                 display: flex;
                                                 align-items: center;
                                                 justify-content: center;
@@ -300,7 +319,7 @@
                                                 @include font-size-9($font-head-500);
                                             }
 
-                                            > span {
+                                            >span {
                                                 height: 100%;
                                                 width: 100%;
                                                 @include font-size-9($font-head-400);
@@ -313,8 +332,8 @@
                                             }
                                         }
 
-                                        > .select-edit {
-                                            > .mat-select {
+                                        >.select-edit {
+                                            >.mat-select {
                                                 width: 100pt;
                                                 height: 26pt;
                                                 border: 0.7pt solid #d3d6db;
@@ -325,14 +344,14 @@
                                                 padding: 0 5pt 0 10pt;
                                                 background: $bg-fog-gray2;
 
-                                                > .mat-select-trigger {
+                                                >.mat-select-trigger {
                                                     height: 100%;
                                                     display: flex;
                                                     flex-direction: row;
                                                     justify-content: space-between;
                                                     align-items: center;
 
-                                                    > .mat-select-value {
+                                                    >.mat-select-value {
                                                         display: block;
                                                         max-width: unset;
                                                         width: auto;
@@ -340,7 +359,7 @@
                                                         text-overflow: unset;
                                                         white-space: unset;
 
-                                                        > .mat-select-value-text {
+                                                        >.mat-select-value-text {
                                                             padding-right: 5pt;
                                                             @include font-size-10($font-head-500);
                                                         }
@@ -350,7 +369,7 @@
                                         }
                                     }
 
-                                    > .edit-title {
+                                    >.edit-title {
                                         @include font-size-10($font-head-400);
                                         color: rgba($black, 0.5);
                                         margin-top: 3pt;
@@ -359,34 +378,37 @@
                                     }
                                 }
 
-                                > .edit-bottom {
+                                >.edit-bottom {
                                     margin-top: 10pt;
                                     display: flex;
                                     flex-direction: row;
                                     justify-content: space-between;
                                     align-items: center;
 
-                                    > .delete-card {
+                                    >.delete-card {
                                         color: $brandcolor2;
                                         background: transparent;
                                         @include font-size-9($font-head-500);
                                         width: 22pt;
                                         height: 14pt;
                                         @include pointer();
+
                                         &:hover {
+
                                             svg,
                                             g,
                                             path {
                                                 fill: $brandcolor2;
                                             }
+
                                             // > .mat-button-wrapper {
                                             //     color: rgba($brandcolor2, 0.95);
                                             // }
                                         }
                                     }
 
-                                    > .edit-bottom-right {
-                                        > .cancel-card {
+                                    >.edit-bottom-right {
+                                        >.cancel-card {
                                             @include font-size-9($font-head-500);
                                             color: $black;
                                             width: 70pt;
@@ -394,7 +416,7 @@
                                             background: $bg-fog-gray2;
                                         }
 
-                                        > .save-card {
+                                        >.save-card {
                                             margin-left: 5pt;
                                             width: 70pt;
                                             min-width: 70pt;
@@ -423,7 +445,7 @@
 }
 
 .autocom-dropdow {
-    > .mat-option {
+    >.mat-option {
         padding: 5pt !important;
 
         &:hover {
@@ -434,32 +456,33 @@
             }
         }
 
-        > .mat-option-text {
+        >.mat-option-text {
             display: flex;
             flex-direction: row;
             justify-content: flex-start;
             align-items: center;
 
-            > .option-img {
+            >.option-img {
                 height: 26pt;
                 width: 26pt;
                 border-radius: 50%;
             }
 
-            > span {
+            >span {
                 margin-left: 6pt;
             }
         }
     }
 }
+
 @media (max-width: $xlarge) {
     .fanpage-admin-roles {
-        > .body-admin {
-            > .admin-y1 {
+        >.body-admin {
+            >.admin-y1 {
                 padding: 0 40pt 15pt 40pt;
-                > .set-your {
-                    > .set-your-admin {
-                    }
+
+                >.set-your {
+                    >.set-your-admin {}
                 }
             }
         }
@@ -468,14 +491,16 @@
 
 @media (max-width: $lmedium) {
     .fanpage-admin-roles {
-        > .header-admin {
+        >.header-admin {
             padding: 20pt 25pt;
         }
-        > .body-admin {
-            > .admin-y1 {
+
+        >.body-admin {
+            >.admin-y1 {
                 padding: 0 25pt 15pt 25pt;
-                > .set-your {
-                    > .set-your-admin {
+
+                >.set-your {
+                    >.set-your-admin {
                         margin-top: 10pt;
                     }
                 }
@@ -486,14 +511,16 @@
 
 @media (max-width: $medium) {
     .fanpage-admin-roles {
-        > .header-admin {
+        >.header-admin {
             padding: 20pt 30pt;
         }
-        > .body-admin {
-            > .admin-y1 {
+
+        >.body-admin {
+            >.admin-y1 {
+
                 // padding: 15pt 30pt;
-                > .set-your {
-                    > .set-your-admin {
+                >.set-your {
+                    >.set-your-admin {
                         margin-top: 10pt;
                     }
                 }
@@ -504,25 +531,29 @@
 
 @media (max-width: $small) {
     .fanpage-admin-roles {
-        > .header-admin {
+        >.header-admin {
             padding: 15pt;
         }
-        > .body-admin {
-            > .admin-y1 {
+
+        >.body-admin {
+            >.admin-y1 {
                 padding: 0 15pt 15pt 15pt;
-                > .set-your {
-                    > .set-your-admin {
+
+                >.set-your {
+                    >.set-your-admin {
                         margin-top: 10pt;
-                        > .save-card {
+
+                        >.save-card {
                             width: 50pt;
                             min-width: 50pt;
                         }
                     }
-                    > .true-selected {
-                        > .body-selected {
-                            > .card-selected {
-                                > .selected-con {
-                                    > .edit-selected {
+
+                    >.true-selected {
+                        >.body-selected {
+                            >.card-selected {
+                                >.selected-con {
+                                    >.edit-selected {
                                         width: 50pt;
                                         min-width: 50pt;
                                     }

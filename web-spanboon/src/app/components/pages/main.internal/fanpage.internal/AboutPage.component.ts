@@ -15,6 +15,7 @@ import { Subject } from "rxjs/internal/Subject";
 import { fromEvent } from "rxjs";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
 import { FormBuilder, FormGroup } from "@angular/forms";
+import { DialogAlert } from "src/app/components/shares/dialog/dialog";
 
 const PAGE_NAME: string = 'account';
 const SEARCH_LIMIT: number = 20;
@@ -861,5 +862,28 @@ export class AboutPage extends AbstractPage implements OnInit {
 
     public getDirtyConfirmEvent(): EventEmitter<any> {
         return this.dirtyConfirmEvent;
+    }
+
+    public deletePage() {
+        let dialog = this.dialog.open(DialogAlert, {
+            disableClose: true,
+            data: {
+                text: 'ยืนยันการลบเพจ',
+                bottomColorText2: "black"
+            }
+        });
+        dialog.afterClosed().subscribe((res) => {
+            if (res) {
+                this.pageFacade.deletePage(this.pageId).then((res) => {
+                    if (res) {
+                        this.observManager.publish('page.about', this.pageId);
+                        this.router.navigateByUrl("/home");
+                    }
+                }).catch((err) => {
+                    if (err) {
+                    }
+                });
+            }
+        });
     }
 }

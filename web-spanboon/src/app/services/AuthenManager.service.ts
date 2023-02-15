@@ -470,6 +470,8 @@ export class AuthenManager {
 
     if (this.getToken().mode === "FB" || this.getToken().mode === "TW" || this.getToken().mode === "GG") {
       headers = headers.set('mode', this.getToken().mode);
+    } else {
+      headers = headers.set('mode', 'EMAIL');
     }
 
     return headers;

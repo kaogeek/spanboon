@@ -109,10 +109,17 @@ export class ManagePage extends AbstractPage implements OnInit {
 
     this.observManager.subscribe("page.about", (data: any) => {
       if (data) {
-        const countIndexPage = this.resListPage.findIndex(res => (res.page.id === data.data.id));
-        if (countIndexPage >= 0) {
-          this.resListPage[countIndexPage].page.pageUsername = data.data.pageUsername;
-          this.resListPage[countIndexPage].page.name = data.data.name;
+        if (!!data!.data) {
+          const countIndexPage = this.resListPage.findIndex(res => (res.page.id === data.data.id));
+          if (countIndexPage >= 0) {
+            this.resListPage[countIndexPage].page.pageUsername = data.data.pageUsername;
+            this.resListPage[countIndexPage].page.name = data.data.name;
+          }
+        } else {
+          const countIndexPage = this.resListPage.findIndex(res => (res.page.id === data));
+          if (countIndexPage >= 0) {
+            this.resListPage.splice(countIndexPage, 1);
+          }
         }
       }
     });
