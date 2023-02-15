@@ -79,10 +79,8 @@
                                                 [src]="mockDataMergeSocial.social === 'FACEBOOK' ? '../../../../assets/img/facebook-logo.svg' : (mockDataMergeSocial.social === 'TWITTER' ? '../../../../assets/img/twitter.svg' : (mockDataMergeSocial.social === 'GOOGLE' ? '../../../../assets/img/google.svg' : '../../../../assets/img/logo/mfp.svg'))">
                                         </div>
                                     </ng-container>
-                                    <ng-container
-                                        *ngIf="!!dataUser!.data!.signURL || !!dataUser!.data!.imageURL; else elsePhotoSocial">
-                                        <img class="social-pic"
-                                            [src]="dataUser.data.signURL ? dataUser.data.signURL : apiBaseURL + dataUser.data.imageURL + '/image'" />
+                                    <ng-container *ngIf="!!imagesAvatar!.image; else elsePhotoSocial">
+                                        <img class="social-pic" [src]="imagesAvatar.image" />
                                     </ng-container>
                                     <ng-template #elsePhotoSocial>
                                         <div class="not-image">
