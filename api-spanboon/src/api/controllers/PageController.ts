@@ -76,6 +76,7 @@ import { USER_TYPE, NOTIFICATION_TYPE } from '../../constants/NotificationType';
 import { DeviceTokenService } from '../services/DeviceToken';
 import { PageNotificationService } from '../services/PageNotificationService';
 import { NotificationService } from '../services/NotificationService';
+import { DeletePageService } from '../services/DeletePageService';
 import axios from 'axios';
 @JsonController('/page')
 export class PageController {
@@ -105,7 +106,8 @@ export class PageController {
         private socialPostLogsService: SocialPostLogsService,
         private deviceTokenService: DeviceTokenService,
         private pageNotificationService: PageNotificationService,
-        private notificationService: NotificationService
+        private notificationService: NotificationService,
+        private deletePageService:DeletePageService
     ) { }
 
     // Find Page API
@@ -3094,7 +3096,43 @@ export class PageController {
             return res.status(400).send(ResponseUtil.getErrorResponse('Unable to edit Page Config', undefined));
         }
     }
-
+    // 
+    @Delete('/:pageId/delete')
+    @Authorized('user')
+    public async deletePageUser(@Param('id') pageId: string, @Param('name') name: string, @Res() res: any, @Req() req: any): Promise<any>{
+        const userId = new ObjectID(req.user.id);
+        const pageObjId = new ObjectID(pageId);
+        const findPage = await this.pageService.findOne({_id:pageObjId,ownerUser:userId})
+        if(findPage !== undefined && findPage !== null){
+            const deletePage = await this.deletePageService.deletePage(findPage.id);
+            if(deletePage){
+                return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully delete Page ', undefined));
+            }else{
+                return res.status(400).send(ResponseUtil.getErrorResponse('Cannot Delete Page.', undefined));
+            }
+        }else{
+            return res.status(400).send(ResponseUtil.getErrorResponse('You have no permission to delete this page', undefined));
+        }
+    }
+    @Delete('/:pageId/delete/:userId')
+    @Authorized('user')
+    public async deletePageUserPermission(@Param('pageId') pageId: string, @Param('userId') Id: string, @Res() res: any, @Req() req: any):Promise<any>{
+        const userId = new ObjectID(req.user.id);
+        const pageObjId = new ObjectID(pageId);
+        const pageAccess = await this.pageAccessLevelService.findOne({page:pageObjId,user:userId});
+        if(pageAccess === 'OWNER'){
+            const deletePermission = await this.pageAccessLevelService.findOne({page:pageObjId,user:ObjectID(Id)});
+            if(deletePermission !== 'OWNER'){
+                const query = {page:deletePermission.page,user:deletePermission.user};
+                await this.pageAccessLevelService.delete(query);
+                return res.status(200).send(ResponseUtil.getSuccessResponse('Delete Permission succesfully. ', undefined));
+            }else{
+                return res.status(400).send(ResponseUtil.getErrorResponse('You do not had a permission to delete this page', undefined));
+            }
+        }else{
+            return res.status(400).send(ResponseUtil.getErrorResponse('You do not had a permission to delete this page', undefined));
+        }
+    }
     /**
      * @api {delete} /api/page/:id/config/:name Delete Page Config API
      * @apiGroup Page

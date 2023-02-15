@@ -447,6 +447,7 @@ export class PagePostController {
         postPage.shareCount = 0;
         postPage.likeCount = 0;
         postPage.viewCount = 0;
+        postPage.newsFlag = false;
         postPage.createdDate = createdDate;
         postPage.startDateTime = postDateTime;
         postPage.story = (postStory !== null && postStory !== undefined) ? postStory : null;

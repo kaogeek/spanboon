@@ -27,6 +27,7 @@ import { HashTagService } from '../services/HashTagService';
 import { PageObjectiveService } from '../services/PageObjectiveService';
 import { EmergencyEventService } from '../services/EmergencyEventService';
 import { ResponseUtil } from '../../utils/ResponseUtil';
+import { FacebookWebhookLogsService } from '../services/FacebookWebhookLogsService';
 @JsonController('/fb_webhook')
 export class FacebookWebhookController {
     constructor(
@@ -36,6 +37,7 @@ export class FacebookWebhookController {
         private hashTagService: HashTagService,
         private pageObjectiveService: PageObjectiveService,
         private emergencyEventService: EmergencyEventService,
+        private facebookWebhookLogsService:FacebookWebhookLogsService
     ) { }
 
     /**
@@ -191,6 +193,10 @@ export class FacebookWebhookController {
                     postPage.shareCount = 0;
                     postPage.likeCount = 0;
                     postPage.viewCount = 0;
+                    postPage.likeCountFB = 0;
+                    postPage.commentCountFB = 0;
+                    postPage.shareCountFB = 0;
+                    postPage.newsFlag = false;
                     postPage.createdDate = body.entry[0].changes[0].value.created_time;
                     postPage.startDateTime = moment().toDate();
                     postPage.story = null;
@@ -285,7 +291,9 @@ export class FacebookWebhookController {
                                         foreignField: 'hashTag',
                                         as: 'EmergencyHaghTag'
                                     }
-                                }]);
+                                }
+                            ]
+                        );
                         for (const EmergencyHash of findMostHashTag) {
                             EmergencyFound.push(EmergencyHash);
                         }
@@ -293,7 +301,7 @@ export class FacebookWebhookController {
                     for (const findEmergencyPost of EmergencyFound) {
                         for (const realEmergencyPost of findEmergencyPost.EmergencyHaghTag) {
                             const queryEmergency = { _id: createPostPageData.id };
-                            const newValuesTagEmergency = { $set: { emergencyEvent: realEmergencyPost._id, emergencyEventTag: realEmergencyPost.title } };
+                            const newValuesTagEmergency = { $set: { emergencyEvent: realEmergencyPost._id, emergencyEventTag: findEmergencyPost.name } };
                             const updateEmeg = await this.postsService.update(queryEmergency, newValuesTagEmergency);
                             if (updateEmeg) {
                                 break;
@@ -328,6 +336,10 @@ export class FacebookWebhookController {
                     postPage.shareCount = 0;
                     postPage.likeCount = 0;
                     postPage.viewCount = 0;
+                    postPage.likeCountFB = 0;
+                    postPage.commentCountFB = 0;
+                    postPage.shareCountFB = 0;
+                    postPage.newsFlag = false;
                     postPage.createdDate = body.entry[0].changes[0].value.created_time;
                     postPage.startDateTime = moment().toDate();
                     postPage.story = null;
@@ -450,7 +462,7 @@ export class FacebookWebhookController {
                     for (const findEmergencyPost of EmergencyFound) {
                         for (const realEmergencyPost of findEmergencyPost.EmergencyHaghTag) {
                             const queryEmergency = { _id: createPostPageData.id };
-                            const newValuesTagEmergency = { $set: { emergencyEvent: realEmergencyPost._id, emergencyEventTag: realEmergencyPost.title } };
+                            const newValuesTagEmergency = { $set: { emergencyEvent: realEmergencyPost._id, emergencyEventTag: findEmergencyPost.name } };
                             const updateEmeg = await this.postsService.update(queryEmergency, newValuesTagEmergency);
                             if (updateEmeg) {
                                 break;
@@ -514,6 +526,10 @@ export class FacebookWebhookController {
                     postPage.shareCount = 0;
                     postPage.likeCount = 0;
                     postPage.viewCount = 0;
+                    postPage.likeCountFB = 0;
+                    postPage.commentCountFB = 0;
+                    postPage.shareCountFB = 0;
+                    postPage.newsFlag = false;
                     postPage.createdDate = body.entry[0].changes[0].value.created_time;
                     postPage.startDateTime = moment().toDate();
                     postPage.story = null;
@@ -615,7 +631,7 @@ export class FacebookWebhookController {
                     for (const findEmergencyPost of EmergencyFound) {
                         for (const realEmergencyPost of findEmergencyPost.EmergencyHaghTag) {
                             const queryEmergency = { _id: createPostPageData.id };
-                            const newValuesTagEmergency = { $set: { emergencyEvent: realEmergencyPost._id, emergencyEventTag: realEmergencyPost.title } };
+                            const newValuesTagEmergency = { $set: { emergencyEvent: realEmergencyPost._id, emergencyEventTag: findEmergencyPost.name } };
                             const updateEmeg = await this.postsService.update(queryEmergency, newValuesTagEmergency);
                             if (updateEmeg) {
                                 break;
@@ -682,7 +698,6 @@ export class FacebookWebhookController {
 
             } else if(body.entry[0].changes[0].value.verb === 'edited' && body.entry[0].changes[0].value.item === 'status' && body.entry[0].changes[0].value.photos.length> 0){
                 const multiPics = [];
-                console.log('edit post && add photos');
                 const checkPost = await this.socialPostService.findOne({ socialId: body.entry[0].changes[0].value.post_id ,socialType:'FACEBOOK'});
                 if(checkPost === undefined && checkPost === null){
                     const successResponseError = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
@@ -711,7 +726,6 @@ export class FacebookWebhookController {
                 return res.status(200).send(successResponse);
             } else if (body.entry[0].changes[0].value.verb === 'edited' && body.entry[0].changes[0].value.link !== undefined && body.entry[0].changes[0].value.item === 'photo') {
                 // update single photo
-                console.log('edit post && add photo');
                 const findPost = await this.socialPostService.findOne({socialId:body.entry[0].changes[0].value.post_id,socialType:'FACEBOOK'});
                 if(findPost === undefined && findPost === null){
                     const successResponseError = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
@@ -791,6 +805,21 @@ export class FacebookWebhookController {
             return res.status(200).send(successResponse);
         }
     }
+    
+    @Post('/summation')
+    public async summationScores(@Res() res: any): Promise<any> {
+        const queryScore = await this.facebookWebhookLogsService.searchScores();
+        for(const query of queryScore){
+            //  
+            const summation = query.likeCount + query.commentCount + query.shareCount + query.likeCountFB + query.commentCountFB + query.shareCountFB;
+            const queryNew = {_id:query.id};
+            const newValues = {$set:{summationScore:summation}};
+            await this.postsService.update(queryNew,newValues);
+        } 
+        const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', queryScore);
+        return res.status(200).send(successResponse);
+    }
+
     private async findMasterHashTag(hashTagNameList: string[]): Promise<HashTag[]> {
         return await this.hashTagService.find({ name: { $in: hashTagNameList } });
     }

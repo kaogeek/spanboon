@@ -93,8 +93,14 @@ export class Posts extends BaseModel {
     @Column({name: 'shareCountFB'})
     public shareCountFB:number;
 
-    @Column({ name: 'likCountFB'})
+    @Column({ name: 'likeCountFB'})
     public likeCountFB:number;
+
+    @Column({ name: 'summationScore'})
+    public summationScore:number;
+
+    @Column({ name: 'newsFlag'})
+    public newsFlag:boolean;
 
     @Column({ name: 'emergencyEvent' })
     public emergencyEvent: ObjectID;
