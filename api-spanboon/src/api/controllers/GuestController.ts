@@ -1232,7 +1232,6 @@ export class GuestController {
             // userEmail
             // fbUser (userId,email)
             const fbUser = await this.facebookService.fetchFacebook(users.token);
-            console.log('fbUser', fbUser);
             if (fbUser.id !== undefined && fbUser.email !== undefined) {
                 const findUserFb = await this.userService.findOne({ email: fbUser.email });
                 const findAuthenFb = await this.authenticationIdService.findOne({ providerUserId: fbUser.id, providerName: PROVIDER.FACEBOOK });
