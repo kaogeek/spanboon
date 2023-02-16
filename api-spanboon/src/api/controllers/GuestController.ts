@@ -1714,10 +1714,12 @@ export class GuestController {
             return res.status(200).send(successResponse);
         } else if (limitCount !== undefined && limitCount.limit <= 2 && limitCount.expiration < expirationDate) {
             // const sendMailRes = await this.sendActivateOTP(user, emailRes, limitCount.otp, 'Send OTP');
-            const query = { email: emailRes };
-            await this.otpService.delete(query);
             const successResponse = ResponseUtil.getSuccessOTP('The Otp have been send.', limitCount.limit);
             return res.status(200).send(successResponse);
+        } else if(limitCount.limit === 3 && limitCount.expiration >expirationDate){
+            const query = { email: emailRes };
+            await this.otpService.delete(query);
+            return res.status(400).send(ResponseUtil.getErrorResponse('The Otp have been send more than 3 times And expiration OTP.', undefined));
         } else {
             return res.status(400).send(ResponseUtil.getErrorResponse('The Otp have been send more than 3 times, Please try add your OTP again', undefined));
         }
