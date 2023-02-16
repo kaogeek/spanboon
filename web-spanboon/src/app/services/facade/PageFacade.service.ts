@@ -282,6 +282,32 @@ export class PageFacade extends AbstractFacade {
     });
   }
 
+  public deletePermission(pageId: string, id: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/page/' + pageId + '/delete/' + id;
+      let options = this.authMgr.getDefaultOptions();
+
+      this.http.delete(url, options).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public deletePage(pageId: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/page/' + pageId + '/delete';
+      let options = this.authMgr.getDefaultOptions();
+
+      this.http.delete(url, options).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
   public deletePost(pageId: string, postId: string): Promise<Post> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/page/' + pageId + '/post/' + postId;

@@ -184,6 +184,8 @@
                                     </div>
                                     <button mat-stroked-button [disableRipple]="true" class="edit-selected"
                                         (click)="clickEditAdmin(i)">แก้ไข</button>
+                                    <button mat-flat-button *ngIf="item.level === 'ADMIN'" [disableRipple]="true"
+                                        class="delete-card" (click)="deleteRole(item, i)">ลบ</button>
                                 </div>
                                 <div class="edit" *ngIf="editAdminIndex === i" [class.active]="isCancel">
                                     <div class="edit-top" *ngIf="item.level === 'ADMIN'" style="pointer-events: none;">
