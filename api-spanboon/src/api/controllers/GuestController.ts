@@ -1714,6 +1714,8 @@ export class GuestController {
             return res.status(200).send(successResponse);
         } else if (limitCount !== undefined && limitCount.limit <= 2 && limitCount.expiration < expirationDate) {
             // const sendMailRes = await this.sendActivateOTP(user, emailRes, limitCount.otp, 'Send OTP');
+            const query = { email: emailRes };
+            await this.otpService.delete(query);
             const successResponse = ResponseUtil.getSuccessOTP('The Otp have been send.', limitCount.limit);
             return res.status(200).send(successResponse);
         } else {
