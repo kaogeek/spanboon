@@ -107,7 +107,7 @@ export class PageController {
         private deviceTokenService: DeviceTokenService,
         private pageNotificationService: PageNotificationService,
         private notificationService: NotificationService,
-        private deletePageService:DeletePageService
+        private deletePageService: DeletePageService
     ) { }
 
     // Find Page API
@@ -3100,37 +3100,37 @@ export class PageController {
     // * @api {delete} /api/page/:pageId/delete Successfully delete Page
     @Delete('/:pageId/delete')
     @Authorized('user')
-    public async deletePageUser(@Param('pageId') pageId: string, @Res() res: any, @Req() req: any): Promise<any>{
+    public async deletePageUser(@Param('pageId') pageId: string, @Res() res: any, @Req() req: any): Promise<any> {
         const userId = new ObjectID(req.user.id);
         const pageObjId = new ObjectID(pageId);
-        const findPage = await this.pageService.findOne({_id:pageObjId,ownerUser:userId});
-        if(findPage !== undefined && findPage !== null){
+        const findPage = await this.pageService.findOne({ _id: pageObjId, ownerUser: userId });
+        if (findPage !== undefined && findPage !== null) {
             const deletePage = await this.deletePageService.deletePage(findPage.id);
-            if(deletePage){
+            if (deletePage) {
                 return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully delete Page ', undefined));
-            }else{
+            } else {
                 return res.status(400).send(ResponseUtil.getErrorResponse('Cannot Delete Page.', undefined));
             }
-        }else{
+        } else {
             return res.status(400).send(ResponseUtil.getErrorResponse('You have no permission to delete this page', undefined));
         }
     }
     @Delete('/:pageId/delete/:deleteUser')
     @Authorized('user')
-    public async deletePageUserPermission(@Param('pageId') pageId: string, @Param('deleteUser') deleteUser: string, @Res() res: any, @Req() req: any):Promise<any>{
+    public async deletePageUserPermission(@Param('pageId') pageId: string, @Param('deleteUser') deleteUser: string, @Res() res: any, @Req() req: any): Promise<any> {
         const userId = new ObjectID(req.user.id);
         const pageObjId = new ObjectID(pageId);
-        const pageAccess = await this.pageAccessLevelService.findOne({page:pageObjId,user:userId});
-        if(pageAccess.level === 'OWNER'){
-            const deletePermission = await this.pageAccessLevelService.findOne({page:pageObjId,user:ObjectID(deleteUser)});
-            if(deletePermission.level !== 'OWNER'){
-                const query = {page:deletePermission.page,user:deletePermission.user};
+        const pageAccess = await this.pageAccessLevelService.findOne({ page: pageObjId, user: userId });
+        if (pageAccess.level === 'OWNER' || pageAccess.level === 'ADMIN') {
+            const deletePermission = await this.pageAccessLevelService.findOne({ page: pageObjId, user: ObjectID(deleteUser) });
+            if (deletePermission.level !== 'OWNER') {
+                const query = { page: deletePermission.page, user: deletePermission.user };
                 await this.pageAccessLevelService.delete(query);
                 return res.status(200).send(ResponseUtil.getSuccessResponse('Delete Permission succesfully. ', undefined));
-            }else{
+            } else {
                 return res.status(400).send(ResponseUtil.getErrorResponse('You do not had a permission to delete this page', undefined));
             }
-        }else{
+        } else {
             return res.status(400).send(ResponseUtil.getErrorResponse('You do not had a permission to delete this page', undefined));
         }
     }
