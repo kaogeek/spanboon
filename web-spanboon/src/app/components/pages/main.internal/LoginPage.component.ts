@@ -551,10 +551,6 @@ export class LoginPage extends AbstractPage implements OnInit {
     if (!this.isFBLogin) {
       this.isFBLogin = true;
       this.checkMergeUserFacade.loginWithFacebook(this.accessToken.fbtoken, mode).then((data: any) => {
-        let state = {
-          accessToken: this.accessToken,
-          redirection: this.redirection
-        }
         // login success redirect to main page
         if (data.data.status === 2) {
           this.mockDataMergeSocial.social = mode;
@@ -598,7 +594,7 @@ export class LoginPage extends AbstractPage implements OnInit {
         } else if (data.data.status === 1) {
           this.authenManager.loginWithFacebook(this.accessToken.fbtoken, mode).then((data: any) => {
             // login success redirect to main page
-            this.isFBLogin = true;
+            this.isFBLogin = false;
             this.observManager.publish('authen.check', null);
             this.notificationManager.checkLoginSuccess();
             if (this.redirection) {
@@ -607,7 +603,7 @@ export class LoginPage extends AbstractPage implements OnInit {
               this.router.navigate(['home']);
             }
           }).catch((err) => {
-            this.isFBLogin = true;
+            this.isFBLogin = false;
             const statusMsg = err.error.message;
             if (statusMsg === "User was not found.") {
               let navigationExtras: NavigationExtras = {
@@ -642,12 +638,8 @@ export class LoginPage extends AbstractPage implements OnInit {
             },
           });
           dialog.afterClosed().subscribe((res) => {
-            let state2 = {
-              accessToken: this.accessToken,
-              redirection: this.redirection
-            }
             if (res) {
-              this.isFBLogin = true;
+              this.isFBLogin = false;
               this.checkMergeUserFacade.loginWithFacebook(this.accessToken.fbtoken, mode, res).then((data: any) => {
                 if (data) {
                   if (data.data.status === 2) {
@@ -693,7 +685,7 @@ export class LoginPage extends AbstractPage implements OnInit {
                 }
               }).catch((error) => {
                 if (error) {
-                  this.isFBLogin = true;
+                  this.isFBLogin = false;
                   if (error.error.status === 0) {
                     let navigationExtras: NavigationExtras = {
                       state: {
