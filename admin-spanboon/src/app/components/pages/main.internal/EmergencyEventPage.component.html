@@ -132,8 +132,8 @@
         </mat-drawer>
         <mat-drawer-content>
             <div class="main-content">
-                <admin-table-component #table [isPin]="true" [orderBy]="orderBy" [facade]="emergencyEventFacade"
-                    [title]="'เหตุการณ์ด่วน'" [fieldTable]="fieldTable" [actions]="actions" (create)="clickCreateForm()"
+                <admin-table-component #table [isPin]="true" [facade]="emergencyEventFacade" [title]="'เหตุการณ์ด่วน'"
+                    [fieldTable]="fieldTable" [actions]="actions" (create)="clickCreateForm()"
                     (edit)="clickEditForm($event)" (delete)="clickDelete($event)"></admin-table-component>
             </div>
         </mat-drawer-content>
