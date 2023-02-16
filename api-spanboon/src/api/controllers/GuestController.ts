@@ -1166,9 +1166,22 @@ export class GuestController {
             const checkAuth = await this.authenticationIdService.findOne({ where: { user: ObjectID(String(data.id)), providerName: mode } });
 
             const AllAuthen = await this.authenticationIdService.find({ user: data.id });
+            // ONE-HOT ENCODING
+            // [1,0,0,0,0]
+            // [0,1,0,0,0]
             // authen.providerName === PROVIDER.EMAIL && authen.providerName === PROVIDER.FACEBOOK && authen.providerName === PROVIDER.GOOGLE && authen.providerName === PROVIDER.TWITTER && authen.providerName === PROVIDER.APPLE 
             for (authen of AllAuthen) {
-                modeAuthen.push(authen.providerName);
+                if (authen.providerName === 'EMAIL') {
+                    modeAuthen.push(authen.providerName);
+                } else if (authen.providerName === 'FACEBOOK') {
+                    modeAuthen.push(authen.providerName);
+                } else if (authen.providerName === 'TWIITER') {
+                    modeAuthen.push(authen.providerName);
+                } else if (authen.providerName === 'GOOGLE') {
+                    modeAuthen.push(authen.providerName);
+                } else if (authen.providerName === 'APPLE') {
+                    modeAuthen.push(authen.providerName);
+                }
             }
             if (data && checkAuth === undefined) {
                 const user: User = new User();
@@ -1242,7 +1255,17 @@ export class GuestController {
                 if (findUserFb !== undefined && findAuthenFb === undefined) {
                     const authenAll = await this.authenticationIdService.find({ where: { user: findUserFb.id } });
                     for (authenFB of authenAll) {
-                        stackAuth.push(authenFB.providerName);
+                        if (authenFB.providerName === 'EMAIL') {
+                            stackAuth.push(authenFB.providerName);
+                        } else if (authenFB.providerName === 'FACEBOOK') {
+                            stackAuth.push(authenFB.providerName);
+                        } else if (authenFB.providerName === 'TWIITER') {
+                            stackAuth.push(authenFB.providerName);
+                        } else if (authenFB.providerName === 'GOOGLE') {
+                            stackAuth.push(authenFB.providerName);
+                        } else if (authenFB.providerName === 'APPLE') {
+                            stackAuth.push(authenFB.providerName);
+                        }
                     }
                     const user: User = new User();
                     user.username = findUserFb.username;
@@ -1324,7 +1347,17 @@ export class GuestController {
                 if (findUserFb !== undefined && findAuthenFb === undefined) {
                     const authenAll = await this.authenticationIdService.find({ where: { user: findUserFb.id } });
                     for (authenFB of authenAll) {
-                        stackAuth.push(authenFB.providerName);
+                        if (authenFB.providerName === 'EMAIL') {
+                            stackAuth.push(authenFB.providerName);
+                        } else if (authenFB.providerName === 'FACEBOOK') {
+                            stackAuth.push(authenFB.providerName);
+                        } else if (authenFB.providerName === 'TWIITER') {
+                            stackAuth.push(authenFB.providerName);
+                        } else if (authenFB.providerName === 'GOOGLE') {
+                            stackAuth.push(authenFB.providerName);
+                        } else if (authenFB.providerName === 'APPLE') {
+                            stackAuth.push(authenFB.providerName);
+                        }
                     }
                     const user: User = new User();
                     user.username = findUserFb.username;
@@ -1426,7 +1459,17 @@ export class GuestController {
                 user.isSubAdmin = userApple.isSubAdmin;
                 user.banned = userApple.banned;
                 for (const authens of AllAuthen) {
-                    stackAuth.push(authens.providerName);
+                    if (authens.providerName === 'EMAIL') {
+                        stackAuth.push(authens.providerName);
+                    } else if (authens.providerName === 'FACEBOOK') {
+                        stackAuth.push(authens.providerName);
+                    } else if (authens.providerName === 'TWIITER') {
+                        stackAuth.push(authens.providerName);
+                    } else if (authens.providerName === 'GOOGLE') {
+                        stackAuth.push(authens.providerName);
+                    } else if (authens.providerName === 'APPLE') {
+                        stackAuth.push(authens.providerName);
+                    }
                 }
                 const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', user, stackAuth);
                 return res.status(200).send(successResponse);
@@ -1482,7 +1525,7 @@ export class GuestController {
                 return res.status(400).send(errorResponse);
             }
 
-            const authenGG = await this.authenticationIdService.findOne({ user: userGG.id, providerName: PROVIDER.GOOGLE });
+            const authenGG = await this.authenticationIdService.findOne({ providerUserId: checkIdToken.userId, providerName: PROVIDER.GOOGLE });
             if (userGG !== undefined && authenGG === undefined) {
                 const stackAuth = [];
                 pic.push(checkIdToken.imageURL);
@@ -1502,7 +1545,17 @@ export class GuestController {
                 user.isSubAdmin = userGG.isSubAdmin;
                 user.banned = userGG.banned;
                 for (const authens of AllAuthen) {
-                    stackAuth.push(authens.providerName);
+                    if (authens.providerName === 'EMAIL') {
+                        stackAuth.push(authens.providerName);
+                    } else if (authens.providerName === 'FACEBOOK') {
+                        stackAuth.push(authens.providerName);
+                    } else if (authens.providerName === 'TWIITER') {
+                        stackAuth.push(authens.providerName);
+                    } else if (authens.providerName === 'GOOGLE') {
+                        stackAuth.push(authens.providerName);
+                    } else if (authens.providerName === 'APPLE') {
+                        stackAuth.push(authens.providerName);
+                    }
                 }
                 const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', user, stackAuth, pic);
                 return res.status(200).send(successResponse);
@@ -1607,7 +1660,17 @@ export class GuestController {
                 if (userTw !== undefined && findAuthenTw === undefined) {
                     const authenAll = await this.authenticationIdService.find({ where: { user: userTw.id } });
                     for (authenTws of authenAll) {
-                        stackAuth.push(authenTws.providerName);
+                        if (authenTws.providerName === 'EMAIL') {
+                            stackAuth.push(authenTws.providerName);
+                        } else if (authenTws.providerName === 'FACEBOOK') {
+                            stackAuth.push(authenTws.providerName);
+                        } else if (authenTws.providerName === 'TWIITER') {
+                            stackAuth.push(authenTws.providerName);
+                        } else if (authenTws.providerName === 'GOOGLE') {
+                            stackAuth.push(authenTws.providerName);
+                        } else if (authenTws.authenTws === 'APPLE') {
+                            stackAuth.push(authenTws.providerName);
+                        }
                     }
                     const user: User = new User();
                     user.username = userTw.username;
@@ -1717,7 +1780,7 @@ export class GuestController {
             // const sendMailRes = await this.sendActivateOTP(user, emailRes, limitCount.otp, 'Send OTP');
             const successResponse = ResponseUtil.getSuccessOTP('The Otp have been send.', limitCount.limit);
             return res.status(200).send(successResponse);
-        } else if(limitCount.limit === 3 && limitCount.expiration > momentExpiration ){
+        } else if (limitCount.limit === 3 && limitCount.expiration > momentExpiration) {
             const query = { email: emailRes };
             await this.otpService.delete(query);
             return res.status(400).send(ResponseUtil.getErrorResponse('The Otp have been send more than 3 times And expiration OTP.', undefined));
