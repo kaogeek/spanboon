@@ -460,10 +460,8 @@ export class AboutPage extends AbstractPage implements OnInit {
                 document.getElementById('pageUsername').style.border = '2px solid green';
                 this.pageFacade.checkUniqueId(this.pageId, body).then((res) => {
                     if (res && res.data) {
-                        this.uuid = res.data;
                         document.getElementById('pageUsername').style.border = '2px solid green';
                     } else {
-                        this.uuid = res.error;
                         document.getElementById('pageUsername').style.border = '2px solid red';
                     }
                     document.getElementById('pageUsername').focus();
@@ -491,10 +489,11 @@ export class AboutPage extends AbstractPage implements OnInit {
             }
         } else if (index === 2) {
             const value = this.dataPage && this.dataPage.pageUsername;
-            if (text === value || text === '') {
-                this.isActiveButton2 = false;
-            } else {
+            let pattern = text.match('^[A-Za-z0-9_]*$');
+            if (pattern) {
                 this.isActiveButton2 = true;
+            } else {
+                this.isActiveButton2 = false;
             }
         } else if (index === 3) {
             const value = this.cloneAboutPage && this.cloneAboutPage[0].value;
