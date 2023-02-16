@@ -54,11 +54,11 @@
         </div>
         <div class="form-register">
             <div class="form-group">
-                <input type="text" name="firstName" placeholder="ชื่อ" class="input-text-group"
-                    [(ngModel)]="data.firstName" required>
+                <input type="text" id="firstName" name="firstName" placeholder="ชื่อ" class="input-text-group"
+                    [(ngModel)]="data.firstName" shake [shake]="activeFirstName" required>
 
-                <input type="text" name="lastName" placeholder="นามสกุล" class="input-text-group"
-                    [(ngModel)]="data.lastName" required>
+                <input type="text" id="lastName" name="lastName" placeholder="นามสกุล" class="input-text-group"
+                    [(ngModel)]="data.lastName" shake [shake]="activeLastName" required>
                 <ng-container *ngIf="mode === 'facebook' || mode === 'google' || mode === 'twitter'; else elseEmail">
                     <input #inputEmail type="email" id="email" name="email" placeholder="อีเมล" class="input-text" shake
                         [readonly]="data.email || objectMerge.email ? true : false"

@@ -165,23 +165,22 @@ export class DeleteUserService {
                 findOwnerLevel1St = await this.pageAccessLevelService.findOne({page:findAccessLevel1St.page,level:findAccessLevel1St.level});
             }
             // delete
-
             if (findAccessLevel1St !== undefined && findAccessLevel1St.level === 'OWNER') {
-                await this.pageAccessLevelService.deleteMany({ user: ObjectID(userObjId) });
+                // await this.pageAccessLevelService.delete({ user: ObjectID(userObjId) });
                 const pageUsageOwn = await this.pageUsageHistoryService.findOne({ userId: userObjId });
                 if (pageUsageOwn !== undefined) {
                     await this.pageUsageHistoryService.deleteMany({ userId: userObjId });
                 }
             } else if (findAccessLevel1St !== undefined && findAccessLevel1St.level !== 'OWNER') {
+                await this.pageAccessLevelService.delete({ page: findAccessLevel1St.page, level: findAccessLevel1St.level, user: ObjectID(userObjId) });
                 const ownerPage = await this.pageService.findOne({_id:findOwnerLevel1St.page});
-                const ownerPost = await this.postsService.findOne({ownerUser:userObjId});
-                const query = {ownerUser:ObjectID(ownerPost.ownerUser),pageId:ObjectID(ownerPage.id)};
-                const newValues = {$set:{ownerUser:ObjectID(ownerPage.ownerUser)}};
-                const updatePermission = await this.postsService.updateMany(query,newValues);
-                if(updatePermission){
-                    await this.pageAccessLevelService.delete({ page: findAccessLevel1St.page, level: findAccessLevel1St.level, user: ObjectID(userObjId) });
-                }
+                const ownerPost = await this.postsService.findOne({ownerUser:ownerPage.ownerUser});
+                if (ownerPost !== undefined && ownerPage !== undefined) {  
+                    const query = {ownerUser:ObjectID(ownerPost.ownerUser),pageId:ObjectID(ownerPage.id)};
+                    const newValues = {$set:{ownerUser:ObjectID(ownerPage.ownerUser)}};
+                    await this.postsService.updateMany(query,newValues);
 
+                }
             }
 
             // deleteOne User

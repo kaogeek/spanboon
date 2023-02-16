@@ -80,6 +80,8 @@ export class RegisterPage extends AbstractPage implements OnInit {
   public user: SocialUser;
   public loggedIn: boolean;
   public active: boolean;
+  public activeFirstName: boolean;
+  public activeLastName: boolean;
   public activeEmail: boolean;
   public activePass: boolean;
   public activeRePass: boolean;
@@ -280,6 +282,24 @@ export class RegisterPage extends AbstractPage implements OnInit {
       } else {
         document.getElementById('displayName').style.border = "unset";
         this.active = false;
+      }
+      if (formData.firstName === '' || formData.firstName === undefined) {
+        this.activeFirstName = true;
+        document.getElementById('firstName').style.border = "1px solid red";
+        this.isRegister = false;
+        return document.getElementById("firstName").focus();
+      } else {
+        document.getElementById('firstName').style.border = "unset";
+        this.activeFirstName = false;
+      }
+      if (formData.lastName === '' || formData.lastName === undefined) {
+        this.activeLastName = true;
+        document.getElementById('lastName').style.border = "1px solid red";
+        this.isRegister = false;
+        return document.getElementById("lastName").focus();
+      } else {
+        document.getElementById('lastName').style.border = "unset";
+        this.activeLastName = false;
       }
       if (!this.inputEmail!.nativeElement!.value) {
         this.activeEmail = true;
@@ -649,8 +669,8 @@ export class RegisterPage extends AbstractPage implements OnInit {
         console.log("เกิดข้อผิดพลาด");
       });
     });
-
   }
+
   public async getBase64ImageFromUrl(imageUrl) {
     var res = await fetch(imageUrl);
     var blob = await res.blob();
