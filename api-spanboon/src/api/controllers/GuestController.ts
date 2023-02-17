@@ -1742,11 +1742,11 @@ export class GuestController {
         const username = otpRequest.email;
         let saveOtp = undefined;
         const emailRes: string = username;
-        const expirationDate = moment().add(5, 'minutes').toDate().getTime();
-        const momentExpiration = moment().add(10, 'minutes').toDate().getTime();
+        const expirationDate = moment().add(5, 'minutes').toDate().getTime()/1000;
+        const minute = Math.floor(expirationDate);
         const user: User = await this.userService.findOne({ username: emailRes });
         const checkOtp = await this.otpService.findOne({ userId: ObjectID(user.id), email: user.email });
-        if (checkOtp !== undefined && checkOtp.expiration > expirationDate) {
+        if (checkOtp !== undefined && checkOtp.expiration > minute) {
             await this.otpService.delete({ userId: ObjectID(user.id), email: user.email });
         }
         const minm = 100000;
@@ -1758,7 +1758,7 @@ export class GuestController {
         if (limitCount === undefined) {
             const sendMailRes = await this.sendActivateOTP(user, emailRes, otpRandom, 'Send OTP');
             if (sendMailRes.status === 1) {
-                saveOtp = await this.otpService.createOtp({ userId: user.id, email: emailRes, otp: otpRandom, limit: count, expiration: expirationDate });
+                saveOtp = await this.otpService.createOtp({ userId: user.id, email: emailRes, otp: otpRandom, limit: count, expiration: minute });
             }
         }
 
@@ -1776,11 +1776,11 @@ export class GuestController {
             // const sendMailRes = await this.sendActivateOTP(user, emailRes, otpRandom, 'Send OTP');
             const successResponse = ResponseUtil.getSuccessOTP('The Otp have been send.', saveOtp.limit);
             return res.status(200).send(successResponse);
-        } else if (limitCount !== undefined && limitCount.limit <= 2 && limitCount.expiration < expirationDate) {
+        } else if (limitCount !== undefined && limitCount.limit <= 2 && limitCount.expiration < minute) {
             // const sendMailRes = await this.sendActivateOTP(user, emailRes, limitCount.otp, 'Send OTP');
             const successResponse = ResponseUtil.getSuccessOTP('The Otp have been send.', limitCount.limit);
             return res.status(200).send(successResponse);
-        } else if (limitCount.limit === 3 && limitCount.expiration > momentExpiration) {
+        } else if (limitCount.limit === 3 && limitCount.expiration > minute) {
             const query = { email: emailRes };
             await this.otpService.delete(query);
             return res.status(400).send(ResponseUtil.getErrorResponse('The Otp have been send more than 3 times And expiration OTP.', undefined));
