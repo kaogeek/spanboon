@@ -1744,9 +1744,11 @@ export class GuestController {
         const emailRes: string = username;
         const expirationDate = moment().add(5, 'minutes').toDate().getTime()/1000;
         const minute = Math.floor(expirationDate);
+        const expirationCompare = moment().add(1, "minutes").toDate().getTime() / 1000;
+        const momentCompare = Math.floor(expirationCompare);
         const user: User = await this.userService.findOne({ username: emailRes });
         const checkOtp = await this.otpService.findOne({ userId: ObjectID(user.id), email: user.email });
-        if (checkOtp !== undefined && checkOtp.expiration > minute) {
+        if (checkOtp !== undefined && checkOtp.expiration < momentCompare) {
             await this.otpService.delete({ userId: ObjectID(user.id), email: user.email });
         }
         const minm = 100000;
@@ -1776,14 +1778,10 @@ export class GuestController {
             // const sendMailRes = await this.sendActivateOTP(user, emailRes, otpRandom, 'Send OTP');
             const successResponse = ResponseUtil.getSuccessOTP('The Otp have been send.', saveOtp.limit);
             return res.status(200).send(successResponse);
-        } else if (limitCount !== undefined && limitCount.limit <= 2 && limitCount.expiration < minute) {
+        } else if (limitCount !== undefined && limitCount.limit <= 2 && limitCount.expiration < momentCompare) {
             // const sendMailRes = await this.sendActivateOTP(user, emailRes, limitCount.otp, 'Send OTP');
             const successResponse = ResponseUtil.getSuccessOTP('The Otp have been send.', limitCount.limit);
             return res.status(200).send(successResponse);
-        } else if (limitCount.limit === 3 && limitCount.expiration > minute) {
-            const query = { email: emailRes };
-            await this.otpService.delete(query);
-            return res.status(400).send(ResponseUtil.getErrorResponse('The Otp have been send more than 3 times And expiration OTP.', undefined));
         } else {
             return res.status(400).send(ResponseUtil.getErrorResponse('The Otp have been send more than 3 times, Please try add your OTP again', undefined));
         }
