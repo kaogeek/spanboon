@@ -6,7 +6,7 @@
  */
 
 import 'reflect-metadata';
-import { JsonController, Res, Get, Param, Post, Body, Authorized, Req } from 'routing-controllers';
+import { JsonController, Res, Get, Param, Post, Body, Authorized, Req, QueryParam } from 'routing-controllers';
 import { EmergencyEventService } from '../services/EmergencyEventService';
 import { ObjectID } from 'mongodb';
 import { ObjectUtil, ResponseUtil } from '../../utils/Utils';
@@ -281,10 +281,18 @@ export class EmergencyEventController {
      * HTTP/1.1 500 Internal Server Error
      */
     @Get('/:id/timeline')
-    public async getEmergencyEventTimeline(@Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
+    public async getEmergencyEventTimeline(@QueryParam('limit') limit: number, @QueryParam('offset') offset: number, @Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
         const userId = req.headers.userid;
         let emergencyEvent: EmergencyEvent;
         const objId = new ObjectID(id);
+
+        if (offset === null || offset === undefined) {
+            offset = 0;
+        }
+
+        if (limit === null || limit === undefined || limit <= 0) {
+            limit = 10;
+        }
 
         try {
             emergencyEvent = await this.emergencyEventService.findOne({ where: { _id: objId } });
@@ -426,7 +434,8 @@ export class EmergencyEventController {
             const lastestPostProcessor = new EmergencyLastestProcessor(this.postsService);
             lastestPostProcessor.setData({
                 emergencyEventId: objId,
-                limit: 10,
+                limit,
+                offset,
                 userId
             });
             const lastestProcsResult = await lastestPostProcessor.process();
