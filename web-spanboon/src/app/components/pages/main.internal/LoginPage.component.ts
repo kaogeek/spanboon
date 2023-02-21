@@ -499,7 +499,7 @@ export class LoginPage extends AbstractPage implements OnInit {
       } else if (statusMsg === "This Email not exists") {
         let navigationExtras: NavigationExtras = {
           state: {
-            accessToken: this.accessToken,
+            accessToken: this.googleToken,
             redirection: this.redirection
           },
           queryParams: { mode: 'google' }

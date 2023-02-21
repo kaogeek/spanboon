@@ -253,6 +253,15 @@ export class MenuRegister extends AbstractPage implements OnInit {
                             queryParams: { mode: 'google' }
                         }
                         this.router.navigate(['/register'], navigationExtras);
+                    } else if (statusMsg === "This Email not exists") {
+                        let navigationExtras: NavigationExtras = {
+                            state: {
+                                accessToken: this.googleToken,
+                                redirection: this.redirection
+                            },
+                            queryParams: { mode: 'google' }
+                        }
+                        this.router.navigate(['/register'], navigationExtras);
                     } else if (err.error.message === 'Baned PageUser.') {
                         this.dialog.open(DialogAlert, {
                             disableClose: true,
