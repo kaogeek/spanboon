@@ -115,4 +115,19 @@ export class PageFacade extends AbstractFacade {
     }); 
   }
 
+  public edit(id: any, body: any): Promise<Page[]> {
+    if (id === undefined || id === null) {
+      new Error("Id is required.");
+    }
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/admin/page/' + id + '/roundrobin';
+      let options = this.getDefaultOptions();
+      this.http.put(url, body, options).toPromise().then((response: any) => {
+        resolve(response.data);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
 }

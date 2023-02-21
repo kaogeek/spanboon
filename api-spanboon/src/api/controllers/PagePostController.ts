@@ -1572,7 +1572,6 @@ export class PagePostController {
             let assetResultUpload: Asset;
 
             if (postGallery !== undefined && postGallery !== null && postGallery.length > 0) {
-
                 let isCreateAssetGallery = false;
                 let postIdGallery;
                 const deleteGalleryList = [];
@@ -1599,10 +1598,20 @@ export class PagePostController {
                     ]
                     // }
                 });
-
                 for (const data of UpdateGalleryList) {
                     // find gallery update ordering
                     const gallery: PostsGallery[] = await this.postGalleryService.find({ where: { _id: new ObjectID(data.id) } });
+                    if(gallery.length > 0){
+                        // delete Update 
+                        const deleteGallery = await this.postGalleryService.delete({_id:ObjectID(data.id)});
+                        if(deleteGallery){
+                            await this.assetService.delete({_id:ObjectID(data.fileId)});
+                        }
+                    }else {
+                        createGalleyList.push(data);
+                        isCreateAssetGallery = true;
+                    }
+                    /* 
                     if (gallery.length > 0) {
                         const updateImageQuery = { _id: new ObjectID(data.id) };
                         const newImageValue = {
@@ -1614,8 +1623,9 @@ export class PagePostController {
                     } else {
                         createGalleyList.push(data);
                         isCreateAssetGallery = true;
-                    }
+                    } */
                 }
+
                 if (isCreateAssetGallery) {
                     for (const image of createGalleyList) {
                         const newFileName = ownerUser + FileUtil.renameFile();

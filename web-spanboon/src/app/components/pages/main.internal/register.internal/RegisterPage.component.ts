@@ -322,8 +322,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
       register.email = !!formData!.email ? formData.email : this.inputEmail.nativeElement.value;
       register.password = formData.password;
       register.province = formData.province;
-      console.log('formData',formData);
-      console.log('register.province',register.province);
+
       // unqueId
       if (formData.username === undefined || formData.username === '') {
         this.generatorUnqueId(formData.displayName).then((isVaild: any) => {

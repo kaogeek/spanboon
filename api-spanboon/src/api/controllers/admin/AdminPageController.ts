@@ -6,7 +6,7 @@
  */
 
 import 'reflect-metadata';
-import { JsonController, Res, Post, Body, Req, Delete, Authorized, Param } from 'routing-controllers';
+import { JsonController, Res, Post, Body, Req, Delete, Authorized, Param, Put } from 'routing-controllers';
 import { ResponseUtil } from '../../../utils/ResponseUtil';
 import { PageService } from '../../services/PageService';
 import moment from 'moment';
@@ -83,8 +83,6 @@ export class AdminPageController {
     public async deletePageAd(@Param('id') pageId: string, @Res() res: any, @Req() req: any): Promise<any> {
         const pageObjId = new ObjectID(pageId);
         const findPage = await this.pageService.findOne({ _id: ObjectID(pageObjId) });
-        const ownerPage = req.body;
-        console.log('ownerPage', ownerPage);
         if (findPage !== undefined) {
             await this.deletePageService.deletePage(pageObjId);
             return res.status(200).send(ResponseUtil.getSuccessResponse('Delete page is successfully.', true));
@@ -92,6 +90,40 @@ export class AdminPageController {
             const errorResponse: any = { status: 0, message: 'Sorry cannnot delete page.' };
             return res.status(400).send(errorResponse);
         }
+    }
+
+    @Put('/:id/roundrobin')
+    @Authorized()
+    public async editPageRoundRobin(@Param('id') pageId: string, @Res() res: any, @Req() req: any): Promise<any>{
+        const pageObjId = new ObjectID(pageId);
+        const body = req.body;
+
+        if(body.roundRobin < 0){
+            const errorResponse: any = { status: 0, message: 'RoundRobin must greater than 0 ' };
+            return res.status(400).send(errorResponse);
+        }
+        if(body.roundRobin > 3){
+            const errorResponse: any = { status: 0, message: 'RoundRobin must less than 3 ' };
+            return res.status(400).send(errorResponse);
+        }
+        if(pageObjId === undefined && pageObjId === null){
+            const errorResponse: any = { status: 0, message: 'Page was not found.' };
+            return res.status(400).send(errorResponse);        
+        }
+        if (body !== undefined) {
+            const query = {_id:pageObjId};
+            const newValues = {$set:{roundRobin:body.roundRobin}};
+            const update = await this.pageService.update(query,newValues);
+            if(update){
+                return res.status(200).send(ResponseUtil.getSuccessResponse('Delete page is successfully.', true));
+            }else{
+                const errorResponse: any = { status: 0, message: 'Cannot update.' };
+                return res.status(400).send(errorResponse);
+            }
+        } else {
+            const errorResponse: any = { status: 0, message: 'Sorry cannnot delete page.' };
+            return res.status(400).send(errorResponse);
+        } 
     }
     /**
      * @api {post} /api/admin/page/:id/unapprove UnApprove Page API
