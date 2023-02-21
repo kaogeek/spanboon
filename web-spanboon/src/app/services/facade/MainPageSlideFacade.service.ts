@@ -54,6 +54,40 @@ export class MainPageSlideFacade extends AbstractFacade {
     });
   }
 
+  public getMainPageModelV3(userId?: string, offset?: string, section?: string, date?: string): Promise<any[]> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/main/content/v2';
+      if (offset !== undefined) {
+        url = (url + '?offset=' + offset)
+      }
+      if (section !== undefined) {
+        url = (url + '&section=' + section)
+      }
+      if (date !== undefined) {
+        url = (url + '&date=' + date)
+      }
+      let option = this.authMgr.getDefaultOptions();
+      let httpOptions
+      if (userId !== null && userId !== undefined) {
+        let headers = new HttpHeaders({
+          'userid': userId
+        });
+        httpOptions = {
+          headers: headers
+        };
+      } else {
+        httpOptions = {
+          headers: option
+        };
+      }
+      this.http.get(url, httpOptions).toPromise().then((response: any) => {
+        resolve(response.data as MainPageModel[]);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
   public getSearchAll(search: any): Promise<any[]> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/main/search';

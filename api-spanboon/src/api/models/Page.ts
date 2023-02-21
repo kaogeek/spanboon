@@ -89,6 +89,9 @@ export class Page extends BaseModel {
     @Column({ name: 's3CoverURL' })
     public s3CoverURL: string;
 
+    @Column({ name:'province'})
+    public province: string;
+
     @BeforeInsert()
     public createDetails(): any {
         this.createdDate = moment().toDate();

@@ -12,9 +12,9 @@ import { PostsService } from './PostsService';
 import { SearchUtil } from '../../utils/SearchUtil';
 @Service()
 export class FacebookWebhookLogsService {
-    constructor(@OrmRepository() 
+    constructor(@OrmRepository()
     private fbLogRepository: FacebookWebhookLogsRepository,
-    private postsService:PostsService) { }
+        private postsService: PostsService) { }
 
     // create actionLog
     public async create(actionLog: any): Promise<any> {
@@ -42,15 +42,55 @@ export class FacebookWebhookLogsService {
     }
 
     // search
-    public searchScores(): Promise<any> {
-        const limit = 6;
+    public searchScores(startDateTime?:any,endDateTime?:any): Promise<any> {
+        const limit = undefined;
         const offset = 0;
         const select = undefined;
-        const whereConditions = {'newsFlag':false};      
+        const whereConditions = { 'newsFlag': false,
+                                'startDateTime':startDateTime,
+                                'endDateTime':endDateTime};
         const count = {};
-        const orderingSort = { 'likeCountFB':-1,'commentCountFB':-1,'shareCountFB':-1,'likeCount':-1,'commentCount':-1,'shareCount':-1};
-        const condition: any = SearchUtil.createFindCondition(limit,offset,select,whereConditions,count,orderingSort);
+        const orderingSort = { 'likeCountFB': -1, 'commentCountFB': -1, 'shareCountFB': -1, 'likeCount': -1, 'commentCount': -1, 'shareCount': -1 };
+        const condition: any = SearchUtil.createFindCondition(limit, offset, select, whereConditions, count, orderingSort);
         return this.postsService.find(condition);
 
+    }
+
+    // round-robin
+    // political
+    public political(): Promise<any> {
+        const limit = 1;
+        const offset = 0;
+        const select = undefined;
+        const whereConditions = { 'category': { $eq: 'political' }, 'newsFlag': false };
+        const count = {};
+        const orderingSort = { 'likeCountFB': -1, 'commentCountFB': -1, 'shareCountFB': -1, 'likeCount': -1, 'commentCount': -1, 'shareCount': -1 };
+        const condition: any = SearchUtil.createFindCondition(limit, offset, select, whereConditions, count, orderingSort);
+        return this.postsService.find(condition);
+    }
+
+    // round-robin
+    // boss
+    public boss(): Promise<any> {
+        const limit = 1;
+        const offset = 0;
+        const select = undefined;
+        const whereConditions = { 'category': { $eq: 'boss' }, 'newsFlag': false };
+        const count = {};
+        const orderingSort = { 'likeCountFB': -1, 'commentCountFB': -1, 'shareCountFB': -1, 'likeCount': -1, 'commentCount': -1, 'shareCount': -1 };
+        const condition: any = SearchUtil.createFindCondition(limit, offset, select, whereConditions, count, orderingSort);
+        return this.postsService.find(condition);
+    }
+    // round-robin
+    // secretary
+    public secretary(): Promise<any> {
+        const limit = 1;
+        const offset = 0;
+        const select = undefined;
+        const whereConditions = { 'category': { $eq: 'secretary' }, 'newsFlag': false };
+        const count = {};
+        const orderingSort = { 'likeCountFB': -1, 'commentCountFB': -1, 'shareCountFB': -1, 'likeCount': -1, 'commentCount': -1, 'shareCount': -1 };
+        const condition: any = SearchUtil.createFindCondition(limit, offset, select, whereConditions, count, orderingSort);
+        return this.postsService.find(condition);
     }
 }

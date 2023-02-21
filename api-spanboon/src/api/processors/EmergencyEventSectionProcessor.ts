@@ -233,13 +233,13 @@ export class EmergencyEventSectionProcessor extends AbstractSectionModelProcesso
 
                 };
                 searchFilter.whereConditions = {
-                    isPin:true,
+                    isPin: true,
                     isClose: false,
                 };
 
                 const searchResult = await this.emergencyEvent.aggregate([
                     { $match: searchFilter.whereConditions },
-                    { $sort: {  ordering: 1 } },
+                    { $sort: { ordering: 1 } },
                     { // sample post for one
                         $lookup: {
                             from: 'Posts',
@@ -260,7 +260,6 @@ export class EmergencyEventSectionProcessor extends AbstractSectionModelProcesso
                         }
                     }
                 ]);
-                console.log('searchResult',searchResult);
                 const searchCountFilter: SearchFilter = new SearchFilter();
                 searchCountFilter.count = true;
                 searchCountFilter.whereConditions = {

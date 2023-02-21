@@ -6,9 +6,11 @@
  */
 
 import 'reflect-metadata';
+import { IsNotEmpty } from 'class-validator';
 
-export class UserTagRequest {
-    
-    public name: string;
-    public hashTag:any;
+export class IsReadPost {
+
+    @IsNotEmpty({ message: 'isRead is required' })
+    public isRead: boolean;
+
 }

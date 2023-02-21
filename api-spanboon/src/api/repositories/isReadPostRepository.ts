@@ -5,10 +5,10 @@
  * Author:  shiorin <junsuda.s@absolute.co.th>, chalucks <chaluck.s@absolute.co.th>
  */
 
-import 'reflect-metadata';
+import { EntityRepository, MongoRepository } from 'typeorm';
+import { IsReadPost } from '../models/IsReadPost';
 
-export class UserTagRequest {
-    
-    public name: string;
-    public hashTag:any;
+@EntityRepository(IsReadPost)
+export class IsReadPostRepository extends MongoRepository<IsReadPost>  {
+
 }

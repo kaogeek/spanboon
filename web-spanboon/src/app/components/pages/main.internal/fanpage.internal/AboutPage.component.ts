@@ -48,7 +48,85 @@ export class AboutPage extends AbstractPage implements OnInit {
     private aboutPageFacade: AboutPageFacade;
 
     public groupAbout!: FormGroup;
-
+    public provinces: any = [
+        { value: 'นครราชสีมา', viewValue: 'นครราชสีมา' },
+        { value: 'สมุทรสงคราม', viewValue: 'สมุทรสงคราม' },
+        { value: 'กาญจนบุรี', viewValue: 'กาญจนบุรี' },
+        { value: 'ตาก', viewValue: 'ตาก' },
+        { value: 'อุบลราชธานี', viewValue: 'อุบลราชธานี' },
+        { value: 'สุราษฎร์ธานี', viewValue: 'สุราษฎร์ธานี' },
+        { value: 'ชัยภูมิ', viewValue: 'ชัยภูมิ' },
+        { value: 'แม่ฮ่องสอน', viewValue: 'แม่ฮ่องสอน' },
+        { value: 'เพชรบูรณ์', viewValue: 'เพชรบูรณ์' },
+        { value: 'ลำปาง', viewValue: 'ลำปาง' },
+        { value: 'อุดรธานี', viewValue: 'อุดรธานี' },
+        { value: 'เชียงราย', viewValue: 'เชียงราย' },
+        { value: 'น่าน', viewValue: 'น่าน' },
+        { value: 'เลย', viewValue: 'เลย' },
+        { value: 'ขอนแก่น', viewValue: 'ขอนแก่น' },
+        { value: 'พิษณุโลก', viewValue: 'พิษณุโลก' },
+        { value: 'บุรีรัมย์', viewValue: 'บุรีรัมย์' },
+        { value: 'นครศรีธรรมราช', viewValue: 'นครศรีธรรมราช' },
+        { value: 'สกลนคร', viewValue: 'สกลนคร' },
+        { value: 'นครสวรรค์', viewValue: 'นครสวรรค์' },
+        { value: 'ศรีสะเกษ', viewValue: 'ศรีสะเกษ' },
+        { value: 'กำแพงเพชร', viewValue: 'กำแพงเพชร' },
+        { value: 'ร้อยเอ็ด', viewValue: 'ร้อยเอ็ด' },
+        { value: 'สุรินทร์', viewValue: 'สุรินทร์' },
+        { value: 'อุตรดิตถ์', viewValue: 'อุตรดิตถ์' },
+        { value: 'สงขลา', viewValue: 'สงขลา' },
+        { value: 'สระแก้ว', viewValue: 'สระแก้ว' },
+        { value: 'กาฬสินธุ์', viewValue: 'กาฬสินธุ์' },
+        { value: 'อุทัยธานี', viewValue: 'อุทัยธานี' },
+        { value: 'สุโขทัย', viewValue: 'สุโขทัย' },
+        { value: 'แพร่', viewValue: 'แพร่' },
+        { value: 'ประจวบคีรีขันธ์', viewValue: 'ประจวบคีรีขันธ์' },
+        { value: 'จันทบุรี', viewValue: 'จันทบุรี' },
+        { value: 'พะเยา', viewValue: 'พะเยา' },
+        { value: 'เพชรบุรี', viewValue: 'เพชรบุรี' },
+        { value: 'ลพบุรี', viewValue: 'ลพบุรี' },
+        { value: 'ชุมพร', viewValue: 'ชุมพร' },
+        { value: 'นครพนม', viewValue: 'นครพนม' },
+        { value: 'สุพรรณบุรี', viewValue: 'สุพรรณบุรี' },
+        { value: 'ฉะเชิงเทรา', viewValue: 'ฉะเชิงเทรา' },
+        { value: 'มหาสารคาม', viewValue: 'มหาสารคาม' },
+        { value: 'ราชบุรี', viewValue: 'ราชบุรี' },
+        { value: 'ตรัง', viewValue: 'ตรัง' },
+        { value: 'ปราจีนบุรี', viewValue: 'ปราจีนบุรี' },
+        { value: 'กระบี่', viewValue: 'กระบี่' },
+        { value: 'พิจิตร', viewValue: 'พิจิตร' },
+        { value: 'ยะลา', viewValue: 'ยะลา' },
+        { value: 'ลำพูน', viewValue: 'ลำพูน' },
+        { value: 'นราธิวาส', viewValue: 'นราธิวาส' },
+        { value: 'ชลบุรี', viewValue: 'ชลบุรี' },
+        { value: 'มุกดาหาร', viewValue: 'มุกดาหาร' },
+        { value: 'บึงกาฬ', viewValue: 'บึงกาฬ' },
+        { value: 'พังงา', viewValue: 'พังงา' },
+        { value: 'ยโสธร', viewValue: 'ยโสธร' },
+        { value: 'หนองบัวลำภู', viewValue: 'หนองบัวลำภู' },
+        { value: 'สระบุรี', viewValue: 'สระบุรี' },
+        { value: 'ระยอง', viewValue: 'ระยอง' },
+        { value: 'พัทลุง', viewValue: 'พัทลุง' },
+        { value: 'ระนอง', viewValue: 'ระนอง' },
+        { value: 'อำนาจเจริญ', viewValue: 'อำนาจเจริญ' },
+        { value: 'หนองคาย', viewValue: 'หนองคาย' },
+        { value: 'ตราด', viewValue: 'ตราด' },
+        { value: 'พระนครศรีอยุธยา', viewValue: 'พระนครศรีอยุธยา' },
+        { value: 'สตูล', viewValue: 'สตูล' },
+        { value: 'ชัยนาท', viewValue: 'ชัยนาท' },
+        { value: 'นครปฐม', viewValue: 'นครปฐม' },
+        { value: 'นครนายก', viewValue: 'นครนายก' },
+        { value: 'ปัตตานี', viewValue: 'ปัตตานี' },
+        { value: 'กรุงเทพมหานคร', viewValue: 'กรุงเทพมหานคร' },
+        { value: 'ปทุมธานี', viewValue: 'ปทุมธานี' },
+        { value: 'สมุทรปราการ', viewValue: 'สมุทรปราการ' },
+        { value: 'อ่างทอง', viewValue: 'อ่างทอง' },
+        { value: 'สมุทรสาคร', viewValue: 'สมุทรสาคร' },
+        { value: 'สิงห์บุรี', viewValue: 'สิงห์บุรี' },
+        { value: 'นนทบุรี', viewValue: 'นนทบุรี' },
+        { value: 'ภูเก็ต', viewValue: 'ภูเก็ต' },
+        { value: 'สมุทรสงคราม', viewValue: 'สมุทรสงคราม' }
+    ];
     public isCard1: boolean = false;
     public isCard2: boolean = false;
     public isCard3: boolean = false;
@@ -60,6 +138,7 @@ export class AboutPage extends AbstractPage implements OnInit {
     public isCard9: boolean = false;
     public isCard10: boolean = false;
     public isCard11: boolean = false;
+    public isCard12: boolean = false;
     public isActiveButton1: boolean = false;
     public isActiveButton2: boolean = false;
     public isActiveButton3: boolean = false;
@@ -69,6 +148,7 @@ export class AboutPage extends AbstractPage implements OnInit {
     public isActiveButton9: boolean = false;
     public isActiveButton10: boolean = false;
     public isActiveButton11: boolean = false;
+    public isActiveButton12: boolean = false;
     public isActiveButtonEmail: boolean = false;
     public isActiveButtonWeb: boolean = false;
 
@@ -254,6 +334,8 @@ export class AboutPage extends AbstractPage implements OnInit {
             this.isCard10 = true;
         } else if (items === '11') {
             this.isCard11 = true;
+        } else if (items === '12'){
+            this.isCard12 = true;
         }
     }
 
@@ -306,10 +388,14 @@ export class AboutPage extends AbstractPage implements OnInit {
             this.isCard10 = false;
             this.isActiveButton10 = false;
             this.resetValue(data, 10);
-        } else if (items === '11' || items === '12' || items === '13') {
+        } else if (items === '11' ) {
             this.isCard11 = false;
             this.isActiveButton11 = false;
             this.resetValue(data, 11);
+        } else if (items === '12'){
+            this.isCard12 = false;
+            this.isActiveButton12 = false;
+            this.resetValue(data,12);
         }
     }
 
@@ -347,6 +433,9 @@ export class AboutPage extends AbstractPage implements OnInit {
         } else if (index === 11) {
             this.isCard11 = false;
             this.isActiveButton11 = false;
+        } else if (index === 12){
+            this.isCard12 = false;
+            this.isActiveButton12 = false;
         }
     }
 
@@ -543,6 +632,13 @@ export class AboutPage extends AbstractPage implements OnInit {
                 this.isActiveButton11 = false;
             } else {
                 this.isActiveButton11 = true;
+            }
+        } else if (index === 12){
+            const province = this.dataPage && this.dataPage.province;
+            if (text === province) {
+                this.isActiveButton12 = false;
+            } else {
+                this.isActiveButton12 = true;
             }
         }
     }
