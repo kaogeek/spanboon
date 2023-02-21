@@ -46,6 +46,7 @@ import { SocialPostLogs } from '../models/SocialPostLogs';
 import { NotificationService } from '../services/NotificationService';
 import { USER_TYPE, NOTIFICATION_TYPE } from '../../constants/NotificationType';
 import { DeviceTokenService } from '../services/DeviceToken';
+import { HashTagService } from '../services/HashTagService';
 @JsonController('/user')
 export class UserController {
     constructor(
@@ -62,6 +63,7 @@ export class UserController {
         private socialPostLogsService: SocialPostLogsService,
         private notificationService: NotificationService,
         private deviceTokenService: DeviceTokenService,
+        private hashTagService:HashTagService,
     ) { }
 
     // Logout API
@@ -143,6 +145,48 @@ export class UserController {
                 const deleteErrorResponse: any = { status: 0, message: 'Cannot delete accesstoken' };
                 return res.status(400).send(deleteErrorResponse);
             }
+        }
+    }
+
+    @Get('/subject/search')
+    @Authorized('user')
+    public async subject(@QueryParam('mode') mode: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const uid = new ObjectID(req.user.id);
+        if (mode !== undefined) {
+            mode = mode.toLocaleLowerCase();
+        }
+        if(uid !== undefined){
+            const HashTag = await this.hashTagService.searchHash();
+            if(HashTag !== undefined && HashTag !== null){
+                const successResponse = ResponseUtil.getSuccessResponse('Search HashTag.', HashTag);
+                return res.status(200).send(successResponse);
+            }
+        }else{
+            const ErrorResponse: any = { status: 0, message: 'Error maybe login is not success.' };
+            return res.status(400).send(ErrorResponse);
+        }
+    }
+
+    @Post('/subject')
+    @Authorized('user')
+    public async subjectUser(@Body({ validate: true }) userHashtag: UserTagRequest, @QueryParam('mode') mode: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const uid = new ObjectID(req.user.id);
+        if (mode !== undefined) {
+            mode = mode.toLocaleLowerCase();
+        }
+        if(uid === undefined && uid === null){
+            const ErrorResponse: any = { status: 0, message: 'Error maybe login is not success.' };
+            return res.status(400).send(ErrorResponse);
+        }
+        const query = {_id:uid};
+        const newValues = {$set:{subjectAttention:userHashtag.hashTag}};
+        const update = await this.userService.update(query,newValues);
+        if(update){
+            const successResponse = ResponseUtil.getSuccessResponse('Update HashTag is successfully.', undefined);
+            return res.status(200).send(successResponse);
+        }else{
+            const ErrorResponse: any = { status: 0, message: 'Cannot be update.' };
+            return res.status(400).send(ErrorResponse);
         }
     }
 

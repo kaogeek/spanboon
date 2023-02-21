@@ -270,7 +270,17 @@ export class PagePostController {
             return res.status(400).send(errorResponse);
         }
     }
-
+    @Post('/:pageId/isReadPost/:postId')
+    @Authorized('user')
+    public async isReadPost(@Body({ validate: true }) pagePost: PagePostRequest, @Param('pageId') pageId: string, @Param('postId') postId: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const userObjId = new ObjectID(req.user.id);
+        if (userObjId !== undefined && userObjId !== null) {
+            // check read owner post 
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot identify reading post', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
     /**
      * @api {post} /api/page/:pageId/post Create PagePost API
      * @apiGroup PagePost
@@ -2025,7 +2035,7 @@ export class PagePostController {
                 editPost.coverImage = pageUpdated.coverImage;
                 editPost.s3CoverImage = pageUpdated.s3CoverImage;
                 editPost.postsHashTags = pageUpdated.postsHashTags;
-                editPost.objective = { '_id': pageUpdated.objective};
+                editPost.objective = { '_id': pageUpdated.objective };
                 editPost.emergencyEvent = { '_id': pageUpdated.emergencyEvent };
                 editPost.objectiveTag = pageUpdated.objectiveTag;
                 editPost.emergencyEventTag = pageUpdated.emergencyEventTag;

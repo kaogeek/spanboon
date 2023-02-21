@@ -79,6 +79,22 @@
                     placeholder="ใส่รหัสผ่าน อีกครั้ง" class="input-text" [(ngModel)]="repassword" required
                     [shake]="activeRePass">
             </ng-container>
+            <div for="province" class="title-label">จังหวัด</div>
+            <mat-form-field appearance="none">
+                <mat-select  [(ngModel)]="data.province" name="province" placeholder = 'จังหวัด'  required>
+                    <mat-option *ngFor="let province of provinces" [value]="province.value">
+                        {{province.viewValue}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <!-- 
+                <mat-form-field appearance="none">
+                    <mat-select  [ngModel]="province" (ngModelChane)="province" placeholder = 'จังหวัด' multiple required>
+                    <mat-option *ngFor="let province of provinces" [value]="province.value">
+                        {{province.viewValue}}
+                    </mat-option>
+                    </mat-select>
+                </mat-form-field> -->
             <div for="birthday" class="title-label">วันเกิด</div>
             <mat-form-field appearance="none">
                 <input #birthday matInput class="mat-birthday" [class.active]="!isCheckDate" [matDatepicker]="dp3"

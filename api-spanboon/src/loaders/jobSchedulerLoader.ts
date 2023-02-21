@@ -33,6 +33,15 @@ export const jobSchedulerLoader: MicroframeworkLoader = (settings: Microframewor
         });
     });
     
+    // Run Every 24 Hours
+    schedule.scheduleJob('0 */24 * * *', () =>{
+        axios.post(process.env.APP_SUMMATION).then((res) =>{
+            console.log(`Update summation : ${res.status}`);
+        }).catch((err) =>{
+            console.log('err:' +err);
+        });
+    });
+
     // fetch feed twitter
     schedule.scheduleJob('*/30 * * * *', () =>{
         axios.get(process.env.APP_TWITTER).then((res)=>{

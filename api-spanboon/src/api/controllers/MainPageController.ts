@@ -27,6 +27,8 @@ import { LastestLookingSectionProcessor } from '../processors/LastestLookingSect
 // import { StillLookingSectionProcessor } from '../processors/StillLookingSectionProcessor';
 import { EmergencyEventSectionProcessor } from '../processors/EmergencyEventSectionProcessor';
 import { PostSectionProcessor } from '../processors/PostSectionProcessor';
+import { PageRoundRobinProcessor } from '../processors/PageRoundRobinProcessor';
+import { MajorTrendSectionModelProcessor } from '../processors/majorTrendSectionModelProcessor';
 import { ObjectiveProcessor } from '../processors/ObjectiveProcessor';
 import { NeedsService } from '../services/NeedsService';
 import { EmergencyEventService } from '../services/EmergencyEventService';
@@ -74,10 +76,13 @@ export class MainPageController {
         private assetService: AssetService
     ) { }
     // Home page content V2
-    @Get('/content/v2')
+    @Get('/content/v3')
     public async getContentListV2(@QueryParam('offset') offset: number, @QueryParam('section') section: string, @QueryParam('date') date: string, @Res() res: any, @Req() req: any): Promise<any> {
-        // const userId = req.headers.userid;
+        const userId = req.headers.userid;
         const mainPageSearchConfig = await this.pageService.searchPageOfficialConfig();
+        // searchPageCategoryPoliticalCandidate
+        // searchPageCategoryPoliticalParty
+        // searchPageCategoryBoss
         const searchOfficialOnly = mainPageSearchConfig.searchOfficialOnly;
         const emerProcessor: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service);
         emerProcessor.setConfig({
@@ -87,7 +92,61 @@ export class MainPageController {
             searchOfficialOnly
         });
         const emerSectionModel = await emerProcessor.process2();
-        const successResponse = ResponseUtil.getSuccessResponse('Successfully Main Page Data', emerSectionModel);
+        const monthRanges: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 365);
+        const dayRanges: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 1);
+        const postProcessor: PostSectionProcessor = new PostSectionProcessor(this.postsService, this.s3Service, this.userLikeService);
+        postProcessor.setData({
+            userId,
+            startDateTime: monthRanges[0],
+            endDateTime: monthRanges[1]
+        });
+        postProcessor.setConfig({
+            searchOfficialOnly
+        });
+        // political
+        // boss
+        // secretary
+        // (political>boss>secretary) -> (100>80>20)
+        // (political>boss) -> (100*2>80)
+        // (political) -> (100*3)
+        // (boss>secretary) -> (80*2>20)
+        // (boss) -> (80*3)
+        // (secretary) -> (20*3)
+        //
+        const postSectionModel = await postProcessor.processV2();
+        const pageProcessor: PageRoundRobinProcessor = new PageRoundRobinProcessor(this.postsService, this.s3Service, this.userLikeService);
+        pageProcessor.setData({
+            userId,
+            startDateTime: dayRanges[0],
+            endDateTime: dayRanges[1]
+        });
+
+        pageProcessor.setConfig({
+            searchOfficialOnly
+        });
+        // party executive committee
+        // deputy leader
+        // deputy secretary of the party
+        const pageRoundRobin = await pageProcessor.process();
+
+        const majorTrendProcessor:MajorTrendSectionModelProcessor = new MajorTrendSectionModelProcessor(this.postsService, this.s3Service, this.userLikeService);
+        majorTrendProcessor.setData({
+            userId,
+            startDateTime: dayRanges[0],
+            endDateTime: dayRanges[1]
+        });
+
+        majorTrendProcessor.setConfig({
+            searchOfficialOnly
+        });
+        
+        const majorTrend = await majorTrendProcessor.process();
+        const result: any = {};
+        result.emergencyEvents = emerSectionModel;
+        result.postSectionModel = postSectionModel;
+        result.pageRoundRobin = pageRoundRobin;
+        result.majorTrend = majorTrend;
+        const successResponse = ResponseUtil.getSuccessResponse('Successfully Main Page Data', result);
         return res.status(200).send(successResponse);
     }
     // Find Page API

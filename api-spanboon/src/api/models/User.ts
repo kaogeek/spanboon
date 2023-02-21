@@ -132,6 +132,9 @@ export class User extends BaseModel {
     @Column({ name:'UaVersion'})
     public UaVersion:boolean;
 
+    @Column({ name: 'subjectAttention'})
+    public subjectAttention:any;
+
     // @Column(type => AuthenticationId)
     // public authenticationId: AuthenticationId;
 

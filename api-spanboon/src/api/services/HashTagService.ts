@@ -61,4 +61,16 @@ export class HashTagService {
             return this.hashTagRepository.find(condition);
         }
     }
+
+    public searchHash(): Promise<any> {
+        const limit = 10;
+        const offset = 0;
+        const select = undefined;
+        const whereConditions = undefined;
+        const count = {};
+        const orderingSort = { 'count': -1};
+        const condition: any = SearchUtil.createFindCondition(limit, offset, select, whereConditions, count, orderingSort);
+        return this.hashTagRepository.find(condition);
+
+    }
 }
