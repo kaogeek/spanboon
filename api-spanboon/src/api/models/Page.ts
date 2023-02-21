@@ -92,6 +92,9 @@ export class Page extends BaseModel {
     @Column({ name:'province'})
     public province: string;
 
+    @Column({ name: 'subject'})
+    public subject:any;
+
     @BeforeInsert()
     public createDetails(): any {
         this.createdDate = moment().toDate();

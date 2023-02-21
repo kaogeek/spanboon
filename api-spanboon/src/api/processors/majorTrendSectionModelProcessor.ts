@@ -83,8 +83,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                 const postMatchStmt: any = {
                     isDraft: false,
                     deleted: false,
-                    hidden: false,
-                    objective:{$ne:null}
+                    hidden: false
                 };
                 /*
                 historyQuery = [

@@ -56,7 +56,7 @@ export class MainPageSlideFacade extends AbstractFacade {
 
   public getMainPageModelV3(userId?: string, offset?: string, section?: string, date?: string): Promise<any[]> {
     return new Promise((resolve, reject) => {
-      let url: string = this.baseURL + '/main/content/v2';
+      let url: string = this.baseURL + '/main/content/v3';
       if (offset !== undefined) {
         url = (url + '?offset=' + offset)
       }

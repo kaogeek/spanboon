@@ -80,6 +80,7 @@ export class MainPageController {
     public async getContentListV2(@QueryParam('offset') offset: number, @QueryParam('section') section: string, @QueryParam('date') date: string, @Res() res: any, @Req() req: any): Promise<any> {
         const userId = req.headers.userid;
         const mainPageSearchConfig = await this.pageService.searchPageOfficialConfig();
+        const pageSearchCategory = await this.pageService.searchPageCategory();
         // searchPageCategoryPoliticalCandidate
         // searchPageCategoryPoliticalParty
         // searchPageCategoryBoss
@@ -132,8 +133,8 @@ export class MainPageController {
         const majorTrendProcessor:MajorTrendSectionModelProcessor = new MajorTrendSectionModelProcessor(this.postsService, this.s3Service, this.userLikeService);
         majorTrendProcessor.setData({
             userId,
-            startDateTime: dayRanges[0],
-            endDateTime: dayRanges[1]
+            startDateTime: monthRanges[0],
+            endDateTime: monthRanges[1]
         });
 
         majorTrendProcessor.setConfig({

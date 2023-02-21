@@ -321,4 +321,69 @@
       }
     }
   }
+  .container_other{
+    padding-top: 15px;
+    margin: 0 auto;
+    max-width: 1280px;
+
+    @media (max-width: $xxlarge) {
+      max-width: 1024px;
+    }
+
+    @media (max-width: $large) {
+      max-width: 768px;
+    }
+
+    a:-webkit-any-link {
+      color: unset;
+    }
+    > .section{
+      width: calc(100%- 30px);
+      padding:15px;
+      display: flex;
+      flex-direction: column;
+      > .title{
+        font-size:18pt;
+        font-family: "Anakotmai-Medium";
+        color: #ee7623;
+        position: relative;
+        width:100%;
+        display:flex
+        > .text{
+          background-color: #fff;
+          position: relative;
+          width: auto;
+          z-index:1;
+          padding: 0 10px 0 0;
+          display: flex;
+          flex-direction: column;
+        }
+        > .line{
+          width: 100%;
+          height: 1px;
+          background-color: #000;
+          position: absolute;
+          top:50%;
+        }
+      }
+      > .cards{
+        margin: 15pt 0;
+        > .card-me-type{
+          width: calc(100%);
+          display: flex;
+          > .card{
+            cursor: pointer;
+            transition: .1s;
+            width: 390px;
+            height:auto;
+            padding: 5px;
+            display: flex;
+            margin:  5px;
+            flex-direction: column;
+            border-radius: 10px;
+          }
+        }
+      }
+    }
+  }
 }
