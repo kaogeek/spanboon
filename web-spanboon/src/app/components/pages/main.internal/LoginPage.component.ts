@@ -462,7 +462,17 @@ export class LoginPage extends AbstractPage implements OnInit {
               queryParams: { mode: 'google' }
             }
             this.router.navigate(['/register'], navigationExtras);
-          } else if (err.error.message === 'Baned PageUser.') {
+          } else if (statusMsg === "This Email not exists") {
+            let navigationExtras: NavigationExtras = {
+              state: {
+                accessToken: this.accessToken,
+                redirection: this.redirection
+              },
+              queryParams: { mode: 'google' }
+            }
+            this.router.navigate(['/register'], navigationExtras);
+          }
+          else if (err.error.message === 'Baned PageUser.') {
             this.dialog.open(DialogAlert, {
               disableClose: true,
               data: {
