@@ -33,6 +33,7 @@ export class PostPage extends AbstractPage implements OnInit {
     public pageFacade: PageFacade;
     private authenManager: AuthenManager;
     private router: Router;
+    public isSave: boolean = false;
 
     public dataForm: Page;
     public valueBool: boolean;
@@ -56,13 +57,23 @@ export class PostPage extends AbstractPage implements OnInit {
             {
                 name: "name",
                 label: "ชื่อ",
-                width: "700pt",
+                width: "330pt",
                 class: "", formatColor: false, formatImage: false,
                 link: [],
                 formatDate: false,
                 formatId: false,
                 align: "left"
             },
+            {
+                name: "roundRobin",
+                label: "RoundRobin",
+                width: "40pt",
+                class: "", formatColor: false, formatImage: false,
+                link: [],
+                formatDate: false,
+                formatId: false,
+                align: "left"
+            }
         ];
         this.actions = {
             isOfficial: true,
@@ -71,7 +82,7 @@ export class PostPage extends AbstractPage implements OnInit {
             isUnApprove: false,
             isSelect: false,
             isCreate: false,
-            isEdit: false,
+            isEdit: true,
             isDelete: true,
             isComment: false,
             isBack: false
@@ -86,6 +97,7 @@ export class PostPage extends AbstractPage implements OnInit {
     private setFields(): void {
         this.dataForm = new Page();
         this.dataForm.name = "";
+        this.dataForm.roundRobin = undefined;
         this.valueBool = true;
         this.valuetring = "";
         this.valueNum = 0;
@@ -259,6 +271,16 @@ export class PostPage extends AbstractPage implements OnInit {
         });
     }
     public clickSave() {
-
+        let data = this.dataForm;
+        this.isSave = true;
+        this.submitted = true;
+        this.pageFacade.edit(data.id,data).then((res) =>{
+            this.submitted = false;
+            this.isSave = false;
+            this.drawer.toggle();
+        }).catch((err:any) =>{
+            this.isSave = false;
+            this.dialogWarning(err.error.message);
+        })
     }
 }

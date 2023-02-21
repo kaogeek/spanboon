@@ -21,4 +21,5 @@ export class PageApproveRequest extends BaseModel {
     public category: string;
     public asset: any;
     public pageAccessLevel: number;
+    public roundRobin:any;
 }
