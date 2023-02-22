@@ -139,12 +139,29 @@ export class FacebookWebhookController {
         console.log('PATTERN: ', checkPattern);
 
         if (checkPattern) {
+            
             console.log('pass1');
             // check last ] after find [
             // try to find /n 
             // to cut and trim the title 
             const regex2 = /[.\-_,*+?^$|\\]/;
-            const blackSlash = msg.search('/n');
+            const result = msg.lastIndexOf(']');
+            console.log('result',result);
+            const title1 = msg.slice(0, (result + 1));
+            realText = title1.replace(regex, '').trim();
+            console.log('TITLE: ', realText);
+
+            const detail1 = msg.replace(title1, '').trim();
+            const checkDetail = detail1.startsWith('.\n');
+
+            if (checkDetail) {
+                TrimText = detail1.replace(regex2, '').trim();
+                console.log('DETAIL: ', TrimText);
+            } else {
+                TrimText = detail1;
+                console.log('DETAIL: ', TrimText);
+            } 
+            /* 
             if (blackSlash) {
                 const findIndexBlackSlash = msg.indexOf(']', -blackSlash);
                 const title1 = msg.slice(0, (findIndexBlackSlash + 1));
@@ -177,23 +194,7 @@ export class FacebookWebhookController {
                     console.log('DETAIL: ', TrimText);
                 }
             }
-            /* 
-            const result = msg.lastIndexOf(']');
-            console.log('result',result);
-            const title1 = msg.slice(0, (result + 1));
-            realText = title1.replace(regex, '').trim();
-            console.log('TITLE: ', realText);
-
-            const detail1 = msg.replace(title1, '').trim();
-            const checkDetail = detail1.startsWith('.\n');
-
-            if (checkDetail) {
-                TrimText = detail1.replace(regex2, '').trim();
-                console.log('DETAIL: ', TrimText);
-            } else {
-                TrimText = detail1;
-                console.log('DETAIL: ', TrimText);
-            }  */
+             */
         } else {
             console.log('pass2');
             const title1 = msg.split('\n')[0];

@@ -1598,20 +1598,10 @@ export class PagePostController {
                     ]
                     // }
                 });
+
                 for (const data of UpdateGalleryList) {
                     // find gallery update ordering
                     const gallery: PostsGallery[] = await this.postGalleryService.find({ where: { _id: new ObjectID(data.id) } });
-                    if(gallery.length > 0){
-                        // delete Update 
-                        const deleteGallery = await this.postGalleryService.delete({_id:ObjectID(data.id)});
-                        if(deleteGallery){
-                            await this.assetService.delete({_id:ObjectID(data.fileId)});
-                        }
-                    }else {
-                        createGalleyList.push(data);
-                        isCreateAssetGallery = true;
-                    }
-                    /* 
                     if (gallery.length > 0) {
                         const updateImageQuery = { _id: new ObjectID(data.id) };
                         const newImageValue = {
@@ -1623,9 +1613,9 @@ export class PagePostController {
                     } else {
                         createGalleyList.push(data);
                         isCreateAssetGallery = true;
-                    } */
+                    }
                 }
-
+                
                 if (isCreateAssetGallery) {
                     for (const image of createGalleyList) {
                         const newFileName = ownerUser + FileUtil.renameFile();
@@ -1785,6 +1775,7 @@ export class PagePostController {
                 objectiveID = new ObjectID(objective);
                 const obj = await this.objectiveService.findOne({ _id: objectiveID });
                 if (!obj) {
+                    console.log('error1');
                     return res.status(400).send(ResponseUtil.getErrorResponse('Objective was not found.', undefined));
                 }
 
