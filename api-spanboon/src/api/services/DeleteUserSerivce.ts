@@ -186,7 +186,7 @@ export class DeleteUserService {
                     const ownerPage = await this.pageService.findOne({ _id: updateStatus.page });
                     const ownerPost = await this.postsService.findOne({ ownerUser: ownerPage.ownerUser, pageId: ownerPage.id });
                     if (ownerPost !== undefined && ownerPage !== undefined) {
-                        const query = { pageId: ObjectID(ownerPage.id) };
+                        const query = { pageId: ObjectID(ownerPage.id),ownerUser: userObjId};
                         const newValues = { $set: { ownerUser: ObjectID(ownerPage.ownerUser) } };
                         await this.postsService.updateMany(query, newValues);
 

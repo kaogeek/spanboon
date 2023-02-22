@@ -1583,30 +1583,22 @@ export class PagePostController {
                     deleteGalleryList.push(new ObjectID(image.fileId));
                     UpdateGalleryList.push(image);
                 }
-
                 // find post have not in image  
-                await this.postGalleryService.deleteMany({
-                    // where: {
-                    $and: [
-                        {
-                            post: postIdGallery
-                        }, {
-                            fileId: {
-                                $nin: deleteGalleryList
-                            }
-                        }
-                    ]
-                    // }
-                });
-
+                await this.postGalleryService.deleteMany({ $and: [ { post: postIdGallery }, { fileId: { $nin: deleteGalleryList }}]});
+                for( const deleteGallery of deleteGalleryList){
+                    const deleteGallerySuc = await this.postGalleryService.delete({fileId: deleteGallery});
+                    if(deleteGallerySuc){
+                        await this.assetService.delete({_id:deleteGallery});
+                    }
+                }
                 for (const data of UpdateGalleryList) {
                     // find gallery update ordering
-                    const gallery: PostsGallery[] = await this.postGalleryService.find({ where: { _id: new ObjectID(data.id) } });
+                    const gallery: PostsGallery[] = await this.postGalleryService.find({ where: { _id: new ObjectID(data._id) } });
                     if (gallery.length > 0) {
-                        const updateImageQuery = { _id: new ObjectID(data.id) };
+                        const updateImageQuery = { _id: new ObjectID(data._id) };
                         const newImageValue = {
                             $set: {
-                                ordering: data.asset.ordering,
+                                ordering: data.ordering,
                             }
                         };
                         await this.postGalleryService.update(updateImageQuery, newImageValue);
@@ -1615,7 +1607,6 @@ export class PagePostController {
                         isCreateAssetGallery = true;
                     }
                 }
-                
                 if (isCreateAssetGallery) {
                     for (const image of createGalleyList) {
                         const newFileName = ownerUser + FileUtil.renameFile();
@@ -1643,7 +1634,8 @@ export class PagePostController {
                         await this.postGalleryService.create(gallery);
                     }
                 }
-
+                const successResponse = ResponseUtil.getSuccessResponse('You have been delete Post gallery ', UpdateGalleryList);
+                return res.status(200).send(successResponse);
             }
 
             let assetResult: Asset;
@@ -2064,6 +2056,7 @@ export class PagePostController {
                 // test['data']['postGallery'] = editPost,postGalleryP;
                 return res.status(200).send(PostEdit);
             } else {
+                
                 return res.status(400).send(ResponseUtil.getErrorResponse('Cannot Update PagePost', undefined));
             }
         } catch (error) {

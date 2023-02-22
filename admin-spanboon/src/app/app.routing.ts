@@ -10,9 +10,24 @@ import { CommonModule, } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 import { Routes, RouterModule } from '@angular/router';
 import {
-  MainPage, StandardItemCategoryPage, UserAdminPage, PostPage, EmergencyEventPage, PageObjectiveCategoryPage, StandardItemCustomPage, StandardItemReqRequestPage, HashtagPage, testPage, StandardItemPage, LoginPage, ConfigPage, UserPage, AdminPage, PageCategoryPage,
+  MainPage, 
+  StandardItemCategoryPage, 
+  UserAdminPage, 
+  PostPage, 
+  EmergencyEventPage, 
+  PageObjectiveCategoryPage, 
+  StandardItemCustomPage, 
+  StandardItemReqRequestPage, 
+  HashtagPage, 
+  testPage, 
+  StandardItemPage, 
+  LoginPage,
+  ConfigPage, 
+  UserPage, 
+  AdminPage, 
+  PageCategoryPage,
+  TodayPage
 } from './components/components';
-
 const routes: Routes = [
   {
     path: '',
@@ -37,6 +52,10 @@ const routes: Routes = [
       {
         path: EmergencyEventPage.PAGE_NAME,
         component: EmergencyEventPage
+      },
+      {
+        path:TodayPage.PAGE_NAME,
+        component:TodayPage
       },
       {
         path: StandardItemCategoryPage.PAGE_NAME,

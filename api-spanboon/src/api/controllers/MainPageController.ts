@@ -80,7 +80,7 @@ export class MainPageController {
     public async getContentListV2(@QueryParam('offset') offset: number, @QueryParam('section') section: string, @QueryParam('date') date: string, @Res() res: any, @Req() req: any): Promise<any> {
         const userId = req.headers.userid;
         const mainPageSearchConfig = await this.pageService.searchPageOfficialConfig();
-        const pageSearchCategory = await this.pageService.searchPageCategory();
+        // const pageSearchCategory = await this.pageService.searchPageCategory();
         // searchPageCategoryPoliticalCandidate
         // searchPageCategoryPoliticalParty
         // searchPageCategoryBoss

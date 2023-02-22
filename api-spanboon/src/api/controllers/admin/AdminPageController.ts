@@ -6,7 +6,7 @@
  */
 
 import 'reflect-metadata';
-import { JsonController, Res, Post, Body, Req, Delete, Authorized, Param, Put } from 'routing-controllers';
+import { JsonController, Res, Post, Body, Req, Delete, Authorized, Param, Put, Get } from 'routing-controllers';
 import { ResponseUtil } from '../../../utils/ResponseUtil';
 import { PageService } from '../../services/PageService';
 import moment from 'moment';
@@ -18,9 +18,11 @@ import { AdminUserActionLogs } from '../../models/AdminUserActionLogs';
 import { LOG_TYPE, PAGE_LOG_ACTION } from '../../../constants/LogsAction';
 import { DeletePageService } from '../../services/DeletePageService';
 import { PostsService } from '../../services/PostsService';
+import { KaokaiTodayService } from '../../services/KaokaiTodayService';
 @JsonController('/admin/page')
 export class AdminPageController {
     constructor(private pageService: PageService, private actionLogService: AdminUserActionLogsService, private deletePageService: DeletePageService,
+        private kaokaiTodayService:KaokaiTodayService,
         private postsService:PostsService) { }
 
     /**
@@ -78,6 +80,25 @@ export class AdminPageController {
             return res.status(400).send(errorResponse);
         }
     }
+    @Get('/receive/bucket')
+    @Authorized()
+    public async receiveBucket(@Res() res: any, @Req() req: any): Promise<any>{
+        const bucketAll = await this.kaokaiTodayService.find();
+        if(bucketAll.length > 0){
+            const successResponse = ResponseUtil.getSuccessResponse('Here this is your bucket boi.', bucketAll);
+            return res.status(200).send(successResponse);
+        }else{
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot find KaokaiToday Bucket', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+    /*
+    @Post('/create/bucket')
+    @Authorized()
+    public async pageBucket(@Res() res: any, @Req() req: any): Promise<any>{
+
+    } */
+
     @Delete('/:id/delete/page')
     @Authorized()
     public async deletePageAd(@Param('id') pageId: string, @Res() res: any, @Req() req: any): Promise<any> {
