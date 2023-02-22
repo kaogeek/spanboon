@@ -6,9 +6,9 @@
  */
 
 import { EntityRepository, MongoRepository } from 'typeorm';
-import { KaokaiToday } from '../models/TodayModel';
+import { KaokaiToday } from '../models/KaokaiToday';
 
 @EntityRepository(KaokaiToday)
 export class KaokaiTodayRepository extends MongoRepository<KaokaiToday>{
-    
+
 }

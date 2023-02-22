@@ -98,6 +98,9 @@ export class Page extends BaseModel {
     @Column({ name: 'roundRobin'})
     public roundRobin:any;
 
+    @Column({ name: 'context'})
+    public context:string;
+
     @BeforeInsert()
     public createDetails(): any {
         this.createdDate = moment().toDate();

@@ -18,12 +18,15 @@ import { AdminUserActionLogs } from '../../models/AdminUserActionLogs';
 import { LOG_TYPE, PAGE_LOG_ACTION } from '../../../constants/LogsAction';
 import { DeletePageService } from '../../services/DeletePageService';
 import { PostsService } from '../../services/PostsService';
+import { KaokaiToday } from '../../models/KaokaiToday';
 import { KaokaiTodayService } from '../../services/KaokaiTodayService';
+import { CreateKaokaiTodayRequest } from '../requests/CreateKaokaiTodayRequest';
 @JsonController('/admin/page')
 export class AdminPageController {
+    pageObjectiveService: any;
     constructor(private pageService: PageService, private actionLogService: AdminUserActionLogsService, private deletePageService: DeletePageService,
-        private kaokaiTodayService:KaokaiTodayService,
-        private postsService:PostsService) { }
+        private kaokaiTodayService: KaokaiTodayService,
+        private postsService: PostsService) { }
 
     /**
      * @api {post} /api/admin/page/:id/approve Approve Page API
@@ -80,24 +83,134 @@ export class AdminPageController {
             return res.status(400).send(errorResponse);
         }
     }
+
+    @Post('/request/title')
+    public async getTitle(@Res() res: any, @Req() req: any): Promise<any> {
+        const title = req.body.title;
+        if(title){
+            // one-hot encoding 
+            const requestTitle = title;
+            if(requestTitle === 'ก้าวไกลวันนี้'){
+                // roundRobin
+                const bucket1 = await this.pageService.find({roundRobin:1,isOfficial:true});
+                const bucket2 = await this.pageService.find({roundRobin:2,isOfficial:true});
+                const bucket3 = await this.pageService.find({roundRobin:3,isOfficial:true});
+                const result: any = {};
+                result.title = requestTitle;
+                result.bucket1 = bucket1;
+                result.bucket2 = bucket2;
+                result.bucket3 = bucket3;
+                const successResponse = ResponseUtil.getSuccessResponse('Successfully Bucket KaokaiToday', result);
+                return res.status(200).send(successResponse);
+            }else if(requestTitle === 'สภาก้าวไกล'){
+                // #HashTag
+                // db.Page.aggregate([{
+                    // $match:{'isOfficial':true}},
+                    // {'$lookup':
+                    //  {from:'Posts',
+                        // 'let':{'id':'$_id'},
+                    // 'pipeline':[{'$match':{'$expr':{'$eq':['$$id','$pageId']}}},{$limit:1}],as:'Posts'}
+                    // }
+                // ])
+                const pageObjStmt = [
+                    { // sample post for one
+                        $lookup: {
+                            from: 'Posts',
+                            let: { 'id': '$_id' },
+                            pipeline: [
+                                { $match: { $expr: { $eq: ['$$id', '$objective'] } } },
+                                { $limit: 1 }
+                            ],
+                            as: 'samplePost'
+                        }
+                    },
+                    {
+                        $match: {
+                            'samplePost.0': { $exists: true }
+                        }
+                    },
+                    /*
+                    {
+                        $lookup: {
+                            from: 'Page',
+                            localField: 'pageId',
+                            foreignField: '_id',
+                            as: 'page'
+                        }
+                    }, */
+                    {
+                        $lookup:{
+                            from:'Page',
+                            let:{'id':'$_id'},
+                            pipeline:[{
+                                $match:{$expr:{$eq:['$$','$pageId']}}
+                            }],
+                            as:'page'
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'HashTag',
+                            localField: 'hashTag',
+                            foreignField: '_id',
+                            as: 'hashTagObj'
+                        }
+                    }
+                ];
+                /* 
+                if (searchOfficialOnly) {
+                    pageObjStmt.splice(7, 0, { $match: { 'page.isOfficial': true, 'page.banned': false } });
+                } */
+
+                const searchResult = await this.pageObjectiveService.aggregate(pageObjStmt);
+                const successResponse = ResponseUtil.getSuccessResponse('Successfully Bucket KaokaiToday', searchResult);
+                return res.status(200).send(successResponse);
+            }else if(requestTitle === 'ก้าวไกลทั่วไทย'){
+                // #จังหวัด province
+            }else if(requestTitle === 'ก้าวไกลรอบด้าน'){
+                // #บริบทเพจ ประเด็น
+
+            }
+        }else{
+            const errorResponse = ResponseUtil.getErrorResponse('Please select the title.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+
     @Get('/receive/bucket')
     @Authorized()
-    public async receiveBucket(@Res() res: any, @Req() req: any): Promise<any>{
+    public async receiveBucket(@Res() res: any, @Req() req: any): Promise<any> {
         const bucketAll = await this.kaokaiTodayService.find();
-        if(bucketAll.length > 0){
+        if (bucketAll.length > 0) {
             const successResponse = ResponseUtil.getSuccessResponse('Here this is your bucket boi.', bucketAll);
             return res.status(200).send(successResponse);
-        }else{
+        } else {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find KaokaiToday Bucket', undefined);
             return res.status(400).send(errorResponse);
         }
     }
-    /*
+
     @Post('/create/bucket')
     @Authorized()
-    public async pageBucket(@Res() res: any, @Req() req: any): Promise<any>{
+    public async pageBucket(@Body({ validate: true }) createKaokaiTodayRequest: CreateKaokaiTodayRequest, @Res() res: any, @Req() req: any): Promise<any> {
+        const titleRequest = createKaokaiTodayRequest.title;
 
-    } */
+        if (titleRequest) {
+            const createKaokaiToday = new KaokaiToday();
+            createKaokaiToday.title = titleRequest;
+            createKaokaiToday.firstBucket = createKaokaiTodayRequest.bucket1;
+            createKaokaiToday.secondBucket = createKaokaiTodayRequest.bucket2;
+            createKaokaiToday.thirdBucket = createKaokaiTodayRequest.bucket3;
+            const CKaokaiToday = await this.kaokaiTodayService.create(createKaokaiToday);
+            if(CKaokaiToday){
+                const successResponse = ResponseUtil.getSuccessResponse('Create KaokaiToday is successfully.', CKaokaiToday);
+                return res.status(200).send(successResponse);
+            }
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot create KaokaiToday, We request the title.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
 
     @Delete('/:id/delete/page')
     @Authorized()
@@ -115,36 +228,36 @@ export class AdminPageController {
 
     @Put('/:id/roundrobin')
     @Authorized()
-    public async editPageRoundRobin(@Param('id') pageId: string, @Res() res: any, @Req() req: any): Promise<any>{
+    public async editPageRoundRobin(@Param('id') pageId: string, @Res() res: any, @Req() req: any): Promise<any> {
         const pageObjId = new ObjectID(pageId);
         const body = req.body;
 
-        if(body.roundRobin < 0){
+        if (body.roundRobin < 0) {
             const errorResponse: any = { status: 0, message: 'RoundRobin must greater than 0 ' };
             return res.status(400).send(errorResponse);
         }
-        if(body.roundRobin > 3){
+        if (body.roundRobin > 3) {
             const errorResponse: any = { status: 0, message: 'RoundRobin must less than 3 ' };
             return res.status(400).send(errorResponse);
         }
-        if(pageObjId === undefined && pageObjId === null){
+        if (pageObjId === undefined && pageObjId === null) {
             const errorResponse: any = { status: 0, message: 'Page was not found.' };
-            return res.status(400).send(errorResponse);        
+            return res.status(400).send(errorResponse);
         }
         if (body !== undefined) {
-            const query = {_id:pageObjId};
-            const newValues = {$set:{roundRobin:body.roundRobin}};
-            const update = await this.pageService.update(query,newValues);
-            if(update){
+            const query = { _id: pageObjId };
+            const newValues = { $set: { roundRobin: body.roundRobin } };
+            const update = await this.pageService.update(query, newValues);
+            if (update) {
                 return res.status(200).send(ResponseUtil.getSuccessResponse('Delete page is successfully.', true));
-            }else{
+            } else {
                 const errorResponse: any = { status: 0, message: 'Cannot update.' };
                 return res.status(400).send(errorResponse);
             }
         } else {
             const errorResponse: any = { status: 0, message: 'Sorry cannnot delete page.' };
             return res.status(400).send(errorResponse);
-        } 
+        }
     }
     /**
      * @api {post} /api/admin/page/:id/unapprove UnApprove Page API
@@ -246,9 +359,9 @@ export class AdminPageController {
             const query = { _id: pageObjId };
             const newValue = { $set: { banned: pageBanned, updateDate: moment().toDate(), updateByUsername: username } };
             const result = await this.pageService.update(query, newValue);
-            const hiddenPageId = {pageId:pageObjId};
-            const hiddenPost = {$set:{hidden:true}};
-            await this.postsService.updateMany(hiddenPageId,hiddenPost);
+            const hiddenPageId = { pageId: pageObjId };
+            const hiddenPost = { $set: { hidden: true } };
+            await this.postsService.updateMany(hiddenPageId, hiddenPost);
             if (result) {
                 const pageResult: Page = await this.pageService.findOne(pageQuery);
                 const userObjId = new ObjectID(req.user.id);

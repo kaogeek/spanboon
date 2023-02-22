@@ -18,7 +18,7 @@ export class KaokaiTodayService {
     }
 
     // create Device token and find the user who is login !!!!!
-    public async createOtp(data: any): Promise<any> {
+    public async create(data: any): Promise<any> {
         this.log.info('Send OTP.');
         return await this.kaokaiTodayRepository.save(data);
     }
