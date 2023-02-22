@@ -43,6 +43,13 @@ export const ROUTES: Routes[] = [
     path: "/main/emergency"
   },
   {
+    icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="15" viewBox="0 0 24 19">  <g id="chat_bubble" data-name="chat bubble" transform="translate(169 -252)">    <path id="Path_9" data-name="Path 9" d="M-162.5,252.5h11a6,6,0,0,1,6,6v2a6,6,0,0,1-6,6h-11l-6,4v-12A6,6,0,0,1-162.5,252.5Z" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>    <line id="Line_1" data-name="Line 1" x2="12" transform="translate(-162.5 257.5)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>    <line id="Line_2" data-name="Line 2" x2="12" transform="translate(-162.5 261.5)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>  </g></svg>',
+    title: "ก้าวไกลวันนี้",
+    subRoutes: [
+    ],
+    path: "/main/today"
+  },
+  {
     icon: "<svg xmlns='http://www.w3.org/2000/svg' width='20' height='12' viewBox='0 0 24 16'><g id='Group_7' data-name='Group 7' transform='translate(166 -331)'><rect id='Rectangle_2' data-name='Rectangle 2' width='23' height='15' rx='1' transform='translate(-165.5 331.5)' stroke-width='1' stroke='#fff' stroke-linecap='round' stroke-linejoin='round' fill='none'/><rect id='Rectangle_3' data-name='Rectangle 3' width='23' height='3' transform='translate(-165.5 334.5)' stroke-width='1' stroke='#fff' stroke-linecap='round' stroke-linejoin='round' fill='none'/><line id='Line_7' data-name='Line 7' x2='4' transform='translate(-163.5 342.5)' fill='none' stroke='#fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1'/><line id='Line_8' data-name='Line 8' x2='3' transform='translate(-156.5 342.5)' fill='none' stroke='#fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1'/></g></svg>",
     title: "ตรวจสอบเพจ",
     subRoutes: [
