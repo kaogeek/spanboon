@@ -15,6 +15,12 @@ export class KaokaiToday extends BaseModel {
     @Column({ name: 'title' })
     public title: string;
 
+    @Column({ name: 'type'})
+    public type: string;
+
+    @Column({ name: 'field'})
+    public field:string;
+    
     @Column({ name: 'firstBucket' })
     public firstBucket: any;
 
