@@ -45,19 +45,18 @@ export class TagEvent extends AbstractPage implements OnInit {
   public emergencyClick: EventEmitter<any> = new EventEmitter();
   @Output()
   public objectiveClick: EventEmitter<any> = new EventEmitter();
-  
+
 
   constructor(authenManager: AuthenManager, dialog: MatDialog, router: Router) {
     super(null, authenManager, dialog, router);
   }
 
   public ngOnInit(): void {
-
   }
   public ngOnDestroy(): void {
     super.ngOnDestroy();
   }
-   
+
   isPageDirty(): boolean {
     // throw new Error('Method not implemented.');
     return false;
@@ -75,13 +74,13 @@ export class TagEvent extends AbstractPage implements OnInit {
     // this.clickEmergency.emit(true);
   }
 
-  public onResize(){
-    if(window.innerWidth < 479){
+  public onResize() {
+    if (window.innerWidth < 479) {
       return true;
     }
   }
 
-  public emergency(event){
+  public emergency(event) {
     let data = {
       index: 1,
       event
@@ -89,7 +88,7 @@ export class TagEvent extends AbstractPage implements OnInit {
     this.emergencyClick.emit(data)
   }
 
-  public objective(event){
+  public objective(event) {
     let data = {
       index: 2,
       event

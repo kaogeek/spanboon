@@ -330,7 +330,6 @@ export class PageFacade extends AbstractFacade {
       if (data !== null && data !== undefined) {
         body = Object.assign(data)
       }
-
       let options = this.authMgr.getDefaultOptions();
 
       this.http.put(url, body, options).toPromise().then((response: any) => {

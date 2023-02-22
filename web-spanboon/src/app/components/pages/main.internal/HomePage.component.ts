@@ -63,16 +63,16 @@ export class HomePage extends AbstractPage implements OnInit {
   }
 
   constructor(
-    private gallery: Gallery, 
-    router: Router, 
-    authenManager: AuthenManager, 
-    postFacade: PostFacade, 
-    dialog: MatDialog, 
+    private gallery: Gallery,
+    router: Router,
+    authenManager: AuthenManager,
+    postFacade: PostFacade,
+    dialog: MatDialog,
     cacheConfigInfo: CacheConfigInfo,
-    mainPageModelFacade: MainPageSlideFacade, 
-    pageFacade: PageFacade, 
-    hashTagFacade: HashTagFacade, 
-    assetFacade: AssetFacade, 
+    mainPageModelFacade: MainPageSlideFacade,
+    pageFacade: PageFacade,
+    hashTagFacade: HashTagFacade,
+    assetFacade: AssetFacade,
     seoService: SeoService) {
     super(null, authenManager, dialog, router);
 
