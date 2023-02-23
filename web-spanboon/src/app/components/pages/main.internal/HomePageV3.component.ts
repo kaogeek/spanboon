@@ -81,6 +81,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   public async getMainPageModelV3(userId?) {
     this.isLoading = true;
     this.model = await this.mainPageModelFacade.getMainPageModelV3(userId);
+    console.log("this.model", this.model)
     for (let index = 0; index < this.model.postSectionModel.contents.length; index++) {
       if (this.model.postSectionModel.contents[index].post.type === "FULFILLMENT") {
         this.model.postSectionModel.contents.splice(index, 1);

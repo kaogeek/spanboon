@@ -66,7 +66,7 @@
                     </div>
                     <div class="wrapper-banner-header banner-header-bg-gray">
                         <span class="banner-text-header">
-                            #{{model.postSectionModel.contents[0].post.objectiveTag}}
+                            #{{model && model.postSectionModel.contents[0].post.objectiveTag}}
                         </span>
                     </div>
                     <div class="wrapper-news">
@@ -93,14 +93,14 @@
                                 </div>
                                 <div class="detail">
                                     <p class="title md-none-min">
-                                        {{model.postSectionModel.contents[0].post.title}}
+                                        {{model && model.postSectionModel.contents[0].post.title}}
                                     </p>
                                     <div class="wrapper-title-topic md-none-max">
                                         <p class="title-topic">
-                                            {{model.postSectionModel.contents[0].post.title}}
+                                            {{model && model.postSectionModel.contents[0].post.title}}
                                         </p>
-                                        <a class="tag-link gray time"
-                                            href="">{{model.postSectionModel.contents[0].post.createdDate |
+                                        <a class="tag-link gray time" href="">{{model &&
+                                            model.postSectionModel.contents[0].post.createdDate |
                                             thformatdatetime}}</a>
                                     </div>
                                 </div>
@@ -127,14 +127,14 @@
                                 </div>
                                 <div class="detail">
                                     <p class="title md-none-min">
-                                        {{model.postSectionModel.contents[1].post.title}}
+                                        {{model && model.postSectionModel.contents[1].post.title}}
                                     </p>
                                     <div class="wrapper-title-topic md-none-max">
                                         <p class="title-topic">
-                                            {{model.postSectionModel.contents[1].post.title}}
+                                            {{model && model.postSectionModel.contents[1].post.title}}
                                         </p>
-                                        <a class="tag-link gray time"
-                                            href="">{{model.postSectionModel.contents[1].post.createdDate |
+                                        <a class="tag-link gray time" href="">{{model &&
+                                            model.postSectionModel.contents[1].post.createdDate |
                                             thformatdatetime}}</a>
                                     </div>
                                 </div>
@@ -153,19 +153,19 @@
                                         <path
                                             d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 " />
                                     </svg>
-                                    <a class="tag-link gray time"
-                                        href="">{{model.postSectionModel.contents[2].post.createdDate |
+                                    <a class="tag-link gray time" href="">{{model &&
+                                        model.postSectionModel.contents[2].post.createdDate |
                                         thformatdatetime}}</a>
                                 </span>
                             </div>
                             <div class="wrapper-news-post">
                                 <div class="wrapper-news-post-img">
-                                    <img src="{{apiBaseURL + model.postSectionModel.contents[2].coverPageUrl + '/image'}}"
+                                    <img src="{{apiBaseURL + (model && model.postSectionModel.contents[2].coverPageUrl) + '/image'}}"
                                         alt="">
                                 </div>
                                 <div class="detail">
                                     <p class="title">
-                                        {{model.postSectionModel.contents[2].post.title}}
+                                        {{model && model.postSectionModel.contents[2].post.title}}
                                     </p>
                                 </div>
                             </div>
@@ -200,14 +200,14 @@
                                 </div>
                                 <div class="detail">
                                     <p class="title md-none-min">
-                                        {{model.pageRoundRobin.contents[0].post.title}}
+                                        {{model && model.pageRoundRobin.contents[0].post.title}}
                                     </p>
                                     <div class="wrapper-title-topic md-none-max">
                                         <p class="title-topic">
-                                            {{model.pageRoundRobin.contents[0].post.title}}
+                                            {{model && model.pageRoundRobin.contents[0].post.title}}
                                         </p>
-                                        <a class="tag-link gray time"
-                                            href="">{{model.pageRoundRobin.contents[0].post.createdDate |
+                                        <a class="tag-link gray time" href="">{{model &&
+                                            model.pageRoundRobin.contents[0].post.createdDate |
                                             thformatdatetime}}</a>
                                     </div>
                                 </div>
@@ -234,14 +234,14 @@
                                 </div>
                                 <div class="detail">
                                     <p class="title md-none-min">
-                                        {{model.pageRoundRobin.contents[1].post.title}}
+                                        {{model && model.pageRoundRobin.contents[1].post.title}}
                                     </p>
                                     <div class="wrapper-title-topic md-none-max">
                                         <p class="title-topic">
-                                            {{model.pageRoundRobin.contents[1].post.title}}
+                                            {{model && model.pageRoundRobin.contents[1].post.title}}
                                         </p>
-                                        <a class="tag-link gray time"
-                                            href="">{{model.pageRoundRobin.contents[1].post.createdDate |
+                                        <a class="tag-link gray time" href="">{{model &&
+                                            model.pageRoundRobin.contents[1].post.createdDate |
                                             thformatdatetime}}</a>
                                     </div>
                                 </div>
@@ -260,19 +260,19 @@
                                         <path
                                             d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 " />
                                     </svg>
-                                    <a class="tag-link gray time"
-                                        href="">{{model.pageRoundRobin.contents[2].post.createdDate |
+                                    <a class="tag-link gray time" href="">{{model &&
+                                        model.pageRoundRobin.contents[2].post.createdDate |
                                         thformatdatetime}}</a>
                                 </span>
                             </div>
                             <div class="wrapper-news-post">
                                 <div class="wrapper-news-post-img">
-                                    <img src="{{apiBaseURL + model.pageRoundRobin.contents[2].coverPageUrl + '/image'}}"
+                                    <img src="{{apiBaseURL + (model && model.pageRoundRobin.contents[2].coverPageUrl) + '/image'}}"
                                         alt="">
                                 </div>
                                 <div class="detail">
                                     <p class="title">
-                                        {{model.pageRoundRobin.contents[2].post.title}}
+                                        {{model && model.pageRoundRobin.contents[2].post.title}}
                                     </p>
                                 </div>
                             </div>
@@ -281,7 +281,7 @@
                 </div>
             </div>
         </div>
-        <!-- <div class="container_other">
+        <div class="container_other">
             <div class="section">
                 <div class="title">
                     <div class="text">
@@ -291,7 +291,8 @@
                 </div>
                 <div class="cards">
                     <div class="card-me-type">
-                        <div class="card" *ngFor="let item of model.majorTrend.contents | slice:0:4 ;let index = index">
+                        <div class="card"
+                            *ngFor="let item of model && model.majorTrend.contents | slice:0:4 ;let index = index">
                             <div class="top">
                                 <div class="status">
                                     <div class="status-g"></div>
@@ -340,6 +341,6 @@
                     </div>
                 </div>
             </div>
-        </div> -->
+        </div>
     </section>
 </div>
