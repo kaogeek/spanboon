@@ -8,6 +8,7 @@ import { UserLike } from '../models/UserLike';
 import { LIKE_TYPE } from '../../constants/LikeType';
 import moment from 'moment';
 import { ObjectID } from 'mongodb';
+import { KaokaiTodayService } from '../services/KaokaiTodayService';
 
 export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcessor {
     private DEFAULT_SEARCH_LIMIT = 3;
@@ -17,6 +18,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
         private postsService: PostsService,
         private s3Service: S3Service,
         private userLikeService: UserLikeService,
+        private kaokaiTodayService:KaokaiTodayService
     ) {
         super();
     }
@@ -73,6 +75,29 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     hidden: false,
 
                 };
+                const bucketF = [];
+                const bucketS = [];
+                const bucketT = [];
+                const provincePage = await this.kaokaiTodayService.findOne({title:'สภาก้าวไกล',flag:true});
+                if(provincePage.buckets.length >= 0){
+                    if(provincePage.buckets[0] !== undefined && provincePage.buckets[0] !== null){
+                        for(const provincesF of provincePage.buckets[0].values){
+                            bucketF.push(new ObjectID(provincesF));
+                        }
+                    }
+                    // bucket 2 
+                    if(provincePage.buckets[1] !== undefined && provincePage.buckets[1] !== null){
+                        for(const provinceS of provincePage.buckets[1].values){
+                            bucketS.push(new ObjectID(provinceS));
+                        }
+                    }
+                    // bucket 3
+                    if(provincePage.buckets[2] !== undefined && provincePage.buckets[2] !== null){
+                        for(const provinceT of provincePage.buckets[2].values){
+                            bucketT.push(new ObjectID(provinceT));
+                        }
+                    }
+                }
                 /* 
                 historyQuery = [
                     { $match: { keyword: exp, userId: userObjId } },
@@ -83,7 +108,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                 ];  */
  
                 // overide start datetime
-                 const dateTimeAndArray = [];
+                const dateTimeAndArray = [];
                 if (startDateTime !== undefined && startDateTime !== null) {
                     dateTimeAndArray.push({ startDateTime: { $gte: startDateTime } });
                 }
@@ -121,7 +146,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                             {
                                 from: 'Page',
                                 let: { 'pageId': '$pageId' },
-                                pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true, category: ObjectID('63e78bd510c3161f7b2be9fc') } }],
+                                pipeline: [{ $match: { $expr: { $in: ['$_id', bucketF] }, isOfficial: true, category: ObjectID('63e78bd510c3161f7b2be9fc') } }],
                                 as: 'Page'
                             }
                         },
@@ -225,7 +250,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                             {
                                 from: 'Page',
                                 let: { 'pageId': '$pageId' },
-                                pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true, category: ObjectID('63f2eebb34c5c5b698c1810c') } }],
+                                pipeline: [{ $match: { $expr: { $in: ['$_id', bucketS] }, isOfficial: true, category: ObjectID('63f2eebb34c5c5b698c1810c') } }],
                                 as: 'Page'
                             }
                         },
@@ -321,7 +346,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                             {
                                 from: 'Page',
                                 let: { 'pageId': '$pageId' },
-                                pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true, category: ObjectID('63f2efa0142d22b79a0b54be') } }],
+                                pipeline: [{ $match: { $expr: { $in: ['$_id', bucketT] }, isOfficial: true, category: ObjectID('63f2efa0142d22b79a0b54be') } }],
                                 as: 'Page'
                             }
                         },

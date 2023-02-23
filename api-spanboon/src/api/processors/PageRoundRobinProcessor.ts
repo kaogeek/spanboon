@@ -6,8 +6,9 @@ import { S3Service } from '../services/S3Service';
 import { UserLikeService } from '../services/UserLikeService';
 import { UserLike } from '../models/UserLike';
 import { LIKE_TYPE } from '../../constants/LikeType';
-import moment from 'moment';
 import { ObjectID } from 'mongodb';
+import { KaokaiTodayService } from '../services/KaokaiTodayService';
+import moment from 'moment';
 
 export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
     private DEFAULT_SEARCH_LIMIT = 3;
@@ -17,6 +18,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
         private postsService: PostsService,
         private s3Service: S3Service,
         private userLikeService: UserLikeService,
+        private kaokaiTodayService:KaokaiTodayService
     ) {
         super();
     }
@@ -27,7 +29,6 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                 // get config
                 let limit: number = undefined;
                 let offset: number = undefined;
-                let searchOfficialOnly: number = undefined;
                 if (this.config !== undefined && this.config !== null) {
                     if (typeof this.config.limit === 'number') {
                         limit = this.config.limit;
@@ -37,9 +38,6 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                         offset = this.config.offset;
                     }
 
-                    if (typeof this.config.searchOfficialOnly === 'boolean') {
-                        searchOfficialOnly = this.config.searchOfficialOnly;
-                    }
                 }
 
                 limit = (limit === undefined || limit === null) ? this.DEFAULT_SEARCH_LIMIT : limit;
@@ -54,7 +52,6 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     endDateTime = this.data.endDateTime;
                     userId = this.data.userId;
                 }
-
                 const searchFilter: SearchFilter = new SearchFilter();
                 searchFilter.limit = limit;
                 searchFilter.offset = offset;
@@ -77,17 +74,31 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     hidden: false,
 
                 };
-                /*
-                historyQuery = [
-                    { $match: { keyword: exp, userId: userObjId } },
-                    { $sort: { createdDate: -1 } },
-                    { $limit: historyLimit },
-                    { $group: { _id: '$keyword', result: { $first: '$$ROOT' } } },
-                    { $replaceRoot: { newRoot: '$result' } }
-                ]; */
-
-                // overide start datetime
-                /* const dateTimeAndArray = [];
+                // const today = moment().add(month, 'month').toDate();
+                const bucketF = [];
+                const bucketS = [];
+                const bucketT = [];
+                const provincePage = await this.kaokaiTodayService.findOne({title:'ก้าวไกลวันนี้',flag:true});
+                if(provincePage.buckets.length >= 0){
+                    if(provincePage.buckets[0] !== undefined && provincePage.buckets[0] !== null){
+                        for(const provincesF of provincePage.buckets[0].values){
+                            bucketF.push(new ObjectID(provincesF));
+                        }
+                    }
+                    // bucket 2 
+                    if(provincePage.buckets[1] !== undefined && provincePage.buckets[1] !== null){
+                        for(const provinceS of provincePage.buckets[1].values){
+                            bucketS.push(new ObjectID(provinceS));
+                        }
+                    }
+                    // bucket 3
+                    if(provincePage.buckets[2] !== undefined && provincePage.buckets[2] !== null){
+                        for(const provinceT of provincePage.buckets[2].values){
+                            bucketT.push(new ObjectID(provinceT));
+                        }
+                    }
+                }
+                const dateTimeAndArray = [];
                 if (startDateTime !== undefined && startDateTime !== null) {
                     dateTimeAndArray.push({ startDateTime: { $gte: startDateTime } });
                 }
@@ -102,18 +113,16 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     postMatchStmt.startDateTime = { $lte: today };
                 }
 
-                // db.Posts.aggregate(
-                    // [{$match:{'isDraft':false,'deleted':false,'hidden':false}},
-                    // {$sort:{'summationScore':-1}},
-                    // {'$lookup':{from:'Page','let':{'pageId':'$pageId'},'pipeline':[{'$match':{'$expr':{'$eq':['$_id','$$pageId']}}}],'as':'Page'}},
-                    // {$limit:3},
-                    // {$unwind:{path:'$page',preserveNullAndEmptyArrays:true}},
-                    // {'$lookup':{from:'SocialPost',localField:'_id',foreignField:'postId',as:'socialPosts'}},
-                    // {$project:{'socialPosts':{'_id':0,'pageId':0,'postId':0,'postBy':0,'postByType':0}}},
-                    // {'$lookup':{from:'PostsGallery','localField':'_id','foreignField':'post',as:'gallery'}},
-                    // {'$lookup':{from:'User',localField:'ownerUser',foreignField:'_id',as:'user'}},
-                    // {$project:{story:0}}
-                // ]) */
+                /*
+                historyQuery = [
+                    { $match: { keyword: exp, userId: userObjId } },
+                    { $sort: { createdDate: -1 } },
+                    { $limit: historyLimit },
+                    { $group: { _id: '$keyword', result: { $first: '$$ROOT' } } },
+                    { $replaceRoot: { newRoot: '$result' } }
+                ]; */
+
+                // overide start datetime
 
                 // set 1
                 const postAggregateSet1 = await this.postsService.aggregate(
@@ -125,7 +134,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                             {
                                 from: 'Page',
                                 let: { 'pageId': '$pageId' },
-                                pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true, category: ObjectID('63e78bd510c3161f7b2be9fc') } }],
+                                pipeline: [{ $match: { $expr: { $in: ['$_id', bucketF] }, isOfficial: true} }],
                                 as: 'Page'
                             }
                         },
@@ -229,7 +238,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                             {
                                 from: 'Page',
                                 let: { 'pageId': '$pageId' },
-                                pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true, category: ObjectID('63f2eebb34c5c5b698c1810c') } }],
+                                pipeline: [{ $match: { $expr: { $in: ['$_id', bucketF] }, isOfficial: true} }],
                                 as: 'Page'
                             }
                         },
@@ -325,7 +334,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                             {
                                 from: 'Page',
                                 let: { 'pageId': '$pageId' },
-                                pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true, category: ObjectID('63f2efa0142d22b79a0b54be') } }],
+                                pipeline: [{ $match: { $expr: { $in: ['$_id', bucketT] }, isOfficial: true } }],
                                 as: 'Page'
                             }
                         },

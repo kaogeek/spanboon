@@ -18,7 +18,7 @@ import { ObjectID } from 'mongodb';
 
 export class PostSectionProcessor extends AbstractSeparateSectionProcessor {
 
-    private DEFAULT_SEARCH_LIMIT = 6;
+    private DEFAULT_SEARCH_LIMIT = 4;
     private DEFAULT_SEARCH_OFFSET = 0;
 
     constructor(

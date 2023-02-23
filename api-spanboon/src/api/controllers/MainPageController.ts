@@ -57,7 +57,6 @@ import { PostsCommentService } from '../services/PostsCommentService';
 import { PostsComment } from '../models/PostsComment';
 import { AssetService } from '../services/AssetService';
 import { ImageUtil } from '../../utils/ImageUtil';
-import { KaokaiContentModelProcessor } from '../processors/KaokaiContentModelProcessor';
 import { KaoKaiHashTagModelProcessor } from '../processors/KaoKaiHashTagModelProcessor';
 import { KaokaiAllProvinceModelProcessor } from '../processors/KaokaiAllProvinceModelProcessor';
 import { KaokaiTodayService } from '../services/KaokaiTodayService';
@@ -114,7 +113,7 @@ export class MainPageController {
 
         const postSectionModel = await postProcessor.processV2();
         // roundRobin
-        const pageProcessor: PageRoundRobinProcessor = new PageRoundRobinProcessor(this.postsService, this.s3Service, this.userLikeService);
+        const pageProcessor: PageRoundRobinProcessor = new PageRoundRobinProcessor(this.postsService, this.s3Service, this.userLikeService,this.kaokaiTodayService);
         pageProcessor.setData({
             userId,
             startDateTime: dayRanges[0],
@@ -144,8 +143,8 @@ export class MainPageController {
         const majorTrend = await majorTrendProcessor.process();
 
         // ก้าวไกลสภา #hashTag
-        /* 
-        const kaokaiHashTagProcessor:KaoKaiHashTagModelProcessor = new KaoKaiHashTagModelProcessor(this.postsService, this.s3Service, this.userLikeService);
+        
+        const kaokaiHashTagProcessor:KaoKaiHashTagModelProcessor = new KaoKaiHashTagModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService);
         kaokaiHashTagProcessor.setData({
             userId,
             startDateTime: monthRanges[0],
@@ -156,7 +155,7 @@ export class MainPageController {
             searchOfficialOnly
         });
 
-        const kaokaiHashTag = await kaokaiHashTagProcessor.process(); */
+        const kaokaiHashTag = await kaokaiHashTagProcessor.process(); 
 
         // ก้าวไกลทุกจังหวัด
         const kaokaiProvinceProcessor:KaokaiAllProvinceModelProcessor = new KaokaiAllProvinceModelProcessor(this.postsService, this.s3Service, this.userLikeService,this.kaokaiTodayService);
@@ -191,7 +190,7 @@ export class MainPageController {
         result.postSectionModel = postSectionModel;
         result.pageRoundRobin = pageRoundRobin;
         result.majorTrend = majorTrend;
-        // result.kaokaiHashTag = kaokaiHashTag;
+        result.kaokaiHashTag = kaokaiHashTag;
         result.kaokaiProvince = kaokaiProvince;
         // result.kaokaiContent = kaokaiContent;
         const successResponse = ResponseUtil.getSuccessResponse('Successfully Main Page Data', result);
