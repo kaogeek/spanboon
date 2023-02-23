@@ -9,7 +9,7 @@ import { LIKE_TYPE } from '../../constants/LikeType';
 import moment from 'moment';
 import { ObjectID } from 'mongodb';
 
-export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
+export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcessor {
     private DEFAULT_SEARCH_LIMIT = 3;
     private DEFAULT_SEARCH_OFFSET = 0;
 
@@ -27,7 +27,6 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                 // get config
                 let limit: number = undefined;
                 let offset: number = undefined;
-                let searchOfficialOnly: number = undefined;
                 if (this.config !== undefined && this.config !== null) {
                     if (typeof this.config.limit === 'number') {
                         limit = this.config.limit;
@@ -37,9 +36,6 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                         offset = this.config.offset;
                     }
 
-                    if (typeof this.config.searchOfficialOnly === 'boolean') {
-                        searchOfficialOnly = this.config.searchOfficialOnly;
-                    }
                 }
 
                 limit = (limit === undefined || limit === null) ? this.DEFAULT_SEARCH_LIMIT : limit;
@@ -77,17 +73,17 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     hidden: false,
 
                 };
-                /*
+                /* 
                 historyQuery = [
                     { $match: { keyword: exp, userId: userObjId } },
                     { $sort: { createdDate: -1 } },
                     { $limit: historyLimit },
                     { $group: { _id: '$keyword', result: { $first: '$$ROOT' } } },
                     { $replaceRoot: { newRoot: '$result' } }
-                ]; */
-
+                ];  */
+ 
                 // overide start datetime
-                /* const dateTimeAndArray = [];
+                 const dateTimeAndArray = [];
                 if (startDateTime !== undefined && startDateTime !== null) {
                     dateTimeAndArray.push({ startDateTime: { $gte: startDateTime } });
                 }

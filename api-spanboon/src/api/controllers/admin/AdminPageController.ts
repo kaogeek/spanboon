@@ -21,11 +21,12 @@ import { PostsService } from '../../services/PostsService';
 import { KaokaiToday } from '../../models/KaokaiToday';
 import { KaokaiTodayService } from '../../services/KaokaiTodayService';
 import { CreateKaokaiTodayRequest } from '../requests/CreateKaokaiTodayRequest';
+import { PageObjectiveService } from '../../services/PageObjectiveService';
 @JsonController('/admin/page')
 export class AdminPageController {
-    pageObjectiveService: any;
     constructor(private pageService: PageService, private actionLogService: AdminUserActionLogsService, private deletePageService: DeletePageService,
         private kaokaiTodayService: KaokaiTodayService,
+        private pageObjectiveService: PageObjectiveService,
         private postsService: PostsService) { }
 
     /**
@@ -87,14 +88,14 @@ export class AdminPageController {
     @Post('/request/title')
     public async getTitle(@Res() res: any, @Req() req: any): Promise<any> {
         const title = req.body.title;
-        if(title){
+        if (title) {
             // one-hot encoding 
             const requestTitle = title;
-            if(requestTitle === 'ก้าวไกลวันนี้'){
+            if (requestTitle === 'ก้าวไกลวันนี้') {
                 // roundRobin
-                const bucket1 = await this.pageService.find({roundRobin:1,isOfficial:true});
-                const bucket2 = await this.pageService.find({roundRobin:2,isOfficial:true});
-                const bucket3 = await this.pageService.find({roundRobin:3,isOfficial:true});
+                const bucket1 = await this.pageService.find({ roundRobin: 1, isOfficial: true });
+                const bucket2 = await this.pageService.find({ roundRobin: 2, isOfficial: true });
+                const bucket3 = await this.pageService.find({ roundRobin: 3, isOfficial: true });
                 const result: any = {};
                 result.title = requestTitle;
                 result.bucket1 = bucket1;
@@ -102,15 +103,15 @@ export class AdminPageController {
                 result.bucket3 = bucket3;
                 const successResponse = ResponseUtil.getSuccessResponse('Successfully Bucket KaokaiToday', result);
                 return res.status(200).send(successResponse);
-            }else if(requestTitle === 'สภาก้าวไกล'){
+            } else if (requestTitle === 'สภาก้าวไกล') {
                 // #HashTag
                 // db.Page.aggregate([{
-                    // $match:{'isOfficial':true}},
-                    // {'$lookup':
-                    //  {from:'Posts',
-                        // 'let':{'id':'$_id'},
-                    // 'pipeline':[{'$match':{'$expr':{'$eq':['$$id','$pageId']}}},{$limit:1}],as:'Posts'}
-                    // }
+                // $match:{'isOfficial':true}},
+                // {'$lookup':
+                //  {from:'Posts',
+                // 'let':{'id':'$_id'},
+                // 'pipeline':[{'$match':{'$expr':{'$eq':['$$id','$pageId']}}},{$limit:1}],as:'Posts'}
+                // }
                 // ])
                 const pageObjStmt = [
                     { // sample post for one
@@ -139,13 +140,13 @@ export class AdminPageController {
                         }
                     }, */
                     {
-                        $lookup:{
-                            from:'Page',
-                            let:{'id':'$_id'},
-                            pipeline:[{
-                                $match:{$expr:{$eq:['$$','$pageId']}}
+                        $lookup: {
+                            from: 'Page',
+                            let: { 'id': '$_id' },
+                            pipeline: [{
+                                $match: { $expr: { $eq: ['$$', '$pageId'] } }
                             }],
-                            as:'page'
+                            as: 'page'
                         }
                     },
                     {
@@ -165,13 +166,13 @@ export class AdminPageController {
                 const searchResult = await this.pageObjectiveService.aggregate(pageObjStmt);
                 const successResponse = ResponseUtil.getSuccessResponse('Successfully Bucket KaokaiToday', searchResult);
                 return res.status(200).send(successResponse);
-            }else if(requestTitle === 'ก้าวไกลทั่วไทย'){
+            } else if (requestTitle === 'ก้าวไกลทั่วไทย') {
                 // #จังหวัด province
-            }else if(requestTitle === 'ก้าวไกลรอบด้าน'){
+            } else if (requestTitle === 'ก้าวไกลรอบด้าน') {
                 // #บริบทเพจ ประเด็น
 
             }
-        }else{
+        } else {
             const errorResponse = ResponseUtil.getErrorResponse('Please select the title.', undefined);
             return res.status(400).send(errorResponse);
         }
@@ -190,24 +191,73 @@ export class AdminPageController {
         }
     }
 
-    @Post('/create/bucket')
-    @Authorized()
-    public async pageBucket(@Body({ validate: true }) createKaokaiTodayRequest: CreateKaokaiTodayRequest, @Res() res: any, @Req() req: any): Promise<any> {
+    @Post('/processor')
+    public async createKaokaiToday(@Body({ validate: true }) createKaokaiTodayRequest: CreateKaokaiTodayRequest, @Res() res: any, @Req() req: any): Promise<any> {
         const titleRequest = createKaokaiTodayRequest.title;
 
         if (titleRequest) {
             const createKaokaiToday = new KaokaiToday();
             createKaokaiToday.title = titleRequest;
-            createKaokaiToday.firstBucket = createKaokaiTodayRequest.bucket1;
-            createKaokaiToday.secondBucket = createKaokaiTodayRequest.bucket2;
-            createKaokaiToday.thirdBucket = createKaokaiTodayRequest.bucket3;
+            createKaokaiToday.type = createKaokaiTodayRequest.type;
+            createKaokaiToday.field = createKaokaiTodayRequest.field;
+            createKaokaiToday.flag = createKaokaiTodayRequest.flag;
+            createKaokaiToday.buckets = createKaokaiTodayRequest.buckets;
+
             const CKaokaiToday = await this.kaokaiTodayService.create(createKaokaiToday);
-            if(CKaokaiToday){
-                const successResponse = ResponseUtil.getSuccessResponse('Create KaokaiToday is successfully.', CKaokaiToday);
+            if (CKaokaiToday) {
+                const successResponse = ResponseUtil.getSuccessResponse('Create KaokaiToday is successfully.', createKaokaiToday);
                 return res.status(200).send(successResponse);
             }
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot create KaokaiToday, We request the title.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+
+    @Put('/:id/processor')
+    public async updateKaokaiToday(@Body({ validate: true }) createKaokaiTodayRequest: CreateKaokaiTodayRequest, @Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const objId = new ObjectID(id);
+        const kaoKaiToday = await this.kaokaiTodayService.findOne({ _id: objId });
+        if (kaoKaiToday) {
+            for (const [i, updateKaokaiToday] of createKaokaiTodayRequest.buckets.Entity()) {
+                if (updateKaokaiToday.name !== undefined && updateKaokaiToday.values !== null) {
+                    const query = { _id: objId };
+                    const newValues = {
+                        $set: {
+                            title: createKaokaiTodayRequest.title,
+                            [`buckets.${i}.name`]: `${updateKaokaiToday.name}`,
+                            'buckets.0.values': [updateKaokaiToday.values]
+                        }
+                    };
+                    await this.kaokaiTodayService.updateToken(query, newValues);
+                } else {
+                    continue;
+                }
+            }
+
+            const successResponse = ResponseUtil.getSuccessResponse('Update KaokaiToday is successfully.', undefined);
+            return res.status(200).send(successResponse);
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot find object ID.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+
+    @Delete('/:id/processor')
+    public async deleteKaokaiToday(@Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const objId = new ObjectID(id);
+        const kaoKaiToday = await this.kaokaiTodayService.findOne({ _id: objId });
+        if (kaoKaiToday) {
+            const deleteKaokai = await this.kaokaiTodayService.delete({ _id: objId });
+            if (deleteKaokai) {
+                const successResponse = ResponseUtil.getSuccessResponse('Delete KaokaiToday is successfully.', undefined);
+                return res.status(200).send(successResponse);
+            } else {
+                const errorResponse = ResponseUtil.getErrorResponse('Cannot delete kaokaiToday please check it is correct id.', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot find object ID.', undefined);
             return res.status(400).send(errorResponse);
         }
     }

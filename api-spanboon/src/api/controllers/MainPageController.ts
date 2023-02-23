@@ -57,7 +57,10 @@ import { PostsCommentService } from '../services/PostsCommentService';
 import { PostsComment } from '../models/PostsComment';
 import { AssetService } from '../services/AssetService';
 import { ImageUtil } from '../../utils/ImageUtil';
-
+import { KaokaiContentModelProcessor } from '../processors/KaokaiContentModelProcessor';
+import { KaoKaiHashTagModelProcessor } from '../processors/KaoKaiHashTagModelProcessor';
+import { KaokaiAllProvinceModelProcessor } from '../processors/KaokaiAllProvinceModelProcessor';
+import { KaokaiTodayService } from '../services/KaokaiTodayService';
 @JsonController('/main')
 export class MainPageController {
     constructor(
@@ -73,7 +76,8 @@ export class MainPageController {
         private s3Service: S3Service,
         private userLikeService: UserLikeService,
         private postsCommentService: PostsCommentService,
-        private assetService: AssetService
+        private assetService: AssetService,
+        private kaokaiTodayService:KaokaiTodayService
     ) { }
     // Home page content V2
     @Get('/content/v3')
@@ -85,6 +89,8 @@ export class MainPageController {
         // searchPageCategoryPoliticalParty
         // searchPageCategoryBoss
         const searchOfficialOnly = mainPageSearchConfig.searchOfficialOnly;
+
+        // ordering
         const emerProcessor: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service);
         emerProcessor.setConfig({
             showUserAction: true,
@@ -95,6 +101,7 @@ export class MainPageController {
         const emerSectionModel = await emerProcessor.process2();
         const monthRanges: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 365);
         const dayRanges: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 1);
+        // summation
         const postProcessor: PostSectionProcessor = new PostSectionProcessor(this.postsService, this.s3Service, this.userLikeService);
         postProcessor.setData({
             userId,
@@ -104,17 +111,9 @@ export class MainPageController {
         postProcessor.setConfig({
             searchOfficialOnly
         });
-        // political
-        // boss
-        // secretary
-        // (political>boss>secretary) -> (100>80>20)
-        // (political>boss) -> (100*2>80)
-        // (political) -> (100*3)
-        // (boss>secretary) -> (80*2>20)
-        // (boss) -> (80*3)
-        // (secretary) -> (20*3)
-        //
+
         const postSectionModel = await postProcessor.processV2();
+        // roundRobin
         const pageProcessor: PageRoundRobinProcessor = new PageRoundRobinProcessor(this.postsService, this.s3Service, this.userLikeService);
         pageProcessor.setData({
             userId,
@@ -130,6 +129,7 @@ export class MainPageController {
         // deputy secretary of the party
         const pageRoundRobin = await pageProcessor.process();
 
+        // เกาะกระแส
         const majorTrendProcessor:MajorTrendSectionModelProcessor = new MajorTrendSectionModelProcessor(this.postsService, this.s3Service, this.userLikeService);
         majorTrendProcessor.setData({
             userId,
@@ -142,11 +142,58 @@ export class MainPageController {
         });
         
         const majorTrend = await majorTrendProcessor.process();
+
+        // ก้าวไกลสภา #hashTag
+        /* 
+        const kaokaiHashTagProcessor:KaoKaiHashTagModelProcessor = new KaoKaiHashTagModelProcessor(this.postsService, this.s3Service, this.userLikeService);
+        kaokaiHashTagProcessor.setData({
+            userId,
+            startDateTime: monthRanges[0],
+            endDateTime: monthRanges[1]
+        });
+
+        kaokaiHashTagProcessor.setConfig({
+            searchOfficialOnly
+        });
+
+        const kaokaiHashTag = await kaokaiHashTagProcessor.process(); */
+
+        // ก้าวไกลทุกจังหวัด
+        const kaokaiProvinceProcessor:KaokaiAllProvinceModelProcessor = new KaokaiAllProvinceModelProcessor(this.postsService, this.s3Service, this.userLikeService,this.kaokaiTodayService);
+        kaokaiProvinceProcessor.setData({
+            userId,
+            startDateTime: monthRanges[0],
+            endDateTime: monthRanges[1]
+        });
+
+        kaokaiProvinceProcessor.setConfig({
+            searchOfficialOnly
+        });
+
+        const kaokaiProvince = await kaokaiProvinceProcessor.process();
+        // ก้าวไกลประเด็น
+        /*
+        const kaokaiContentProcessor:KaokaiContentModelProcessor = new KaokaiContentModelProcessor(this.postsService, this.s3Service, this.userLikeService);
+        kaokaiContentProcessor.setData({
+            userId,
+            startDateTime: monthRanges[0],
+            endDateTime: monthRanges[1]
+        });
+
+        kaokaiContentProcessor.setConfig({
+            searchOfficialOnly
+        });
+
+        const kaokaiContent = await kaokaiContentProcessor.process(); */
+
         const result: any = {};
         result.emergencyEvents = emerSectionModel;
         result.postSectionModel = postSectionModel;
         result.pageRoundRobin = pageRoundRobin;
         result.majorTrend = majorTrend;
+        // result.kaokaiHashTag = kaokaiHashTag;
+        result.kaokaiProvince = kaokaiProvince;
+        // result.kaokaiContent = kaokaiContent;
         const successResponse = ResponseUtil.getSuccessResponse('Successfully Main Page Data', result);
         return res.status(200).send(successResponse);
     }

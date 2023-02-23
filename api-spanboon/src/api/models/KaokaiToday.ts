@@ -20,15 +20,12 @@ export class KaokaiToday extends BaseModel {
 
     @Column({ name: 'field'})
     public field:string;
-    
-    @Column({ name: 'firstBucket' })
-    public firstBucket: any;
 
-    @Column({ name: 'secondBucket' })
-    public secondBucket: any;
+    @Column({ name: 'flag'})
+    public flag:boolean;
 
-    @Column({ name: 'thirdBucket' })
-    public thirdBucket: any;
+    @Column({ name: 'buckets' })
+    public buckets: any;
 
     @BeforeInsert()
     public createDetails(): any {

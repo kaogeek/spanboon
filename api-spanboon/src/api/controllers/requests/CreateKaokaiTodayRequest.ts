@@ -12,7 +12,8 @@ export class CreateKaokaiTodayRequest {
 
     @IsNotEmpty({ message: 'title is required' })
     public title: string;
-    public bucket1: any;
-    public bucket2: any;
-    public bucket3: any;
+    public type: string;
+    public field: string;
+    public flag: boolean;
+    public buckets: any;
 }
