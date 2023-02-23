@@ -31,7 +31,7 @@ const PAGE_NAME: string = 'register';
   templateUrl: './RegisterPage.component.html'
 })
 export class RegisterPage extends AbstractPage implements OnInit {
-  selectProvide:any;
+  selectProvide: any;
   public static readonly PAGE_NAME: string = PAGE_NAME;
   private destroy = new Subject<void>();
   @ViewChild(MatDatepicker, { static: true }) datapicker: MatDatepicker<Date>;
@@ -322,7 +322,6 @@ export class RegisterPage extends AbstractPage implements OnInit {
       register.email = !!formData!.email ? formData.email : this.inputEmail.nativeElement.value;
       register.password = formData.password;
       register.province = formData.province;
-
       // unqueId
       if (formData.username === undefined || formData.username === '') {
         this.generatorUnqueId(formData.displayName).then((isVaild: any) => {
@@ -528,7 +527,6 @@ export class RegisterPage extends AbstractPage implements OnInit {
         } else {
           register.password = this.passwordModeSocial === undefined ? "" : this.passwordModeSocial;
         }
-
         if (this.mode === "facebook" || this.mode === "FACEBOOK") {
           register.fbAccessExpirationTime = !!this.accessToken && !!this.accessToken!.fbexptime ? this.accessToken.fbexptime : this.objectMerge.token.fbexptime;
           register.fbSignedRequest = !!this.accessToken && !!this.accessToken!.fbsignedRequest ? this.accessToken.fbsignedRequest : this.objectMerge.token.fbsignedRequest;

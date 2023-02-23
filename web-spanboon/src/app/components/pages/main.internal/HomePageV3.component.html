@@ -6,45 +6,34 @@
                     <div>
                         <div class="wrapper-hastags">
                             <span class="header-hastags">มาแรง : </span>
-                            <a class="tag-link" href="">#บางแคกำลัง3</a>
+                            <a class="tag-link" href="">{{model && model!.emergencyEvents!.contents[3]!.title}}</a>
                             <span> | </span>
-                            <a class="tag-link" href="">#บางแคกำลัง3</a>
+                            <a class="tag-link" href="">{{model && model!.emergencyEvents!.contents[4]!.title}}</a>
                         </div>
                         <a class="wrapper-box" href="">
                             <div class="wrapper-copper-img">
                                 <img class="image-background"
-                                    src="https://d1evz9svx3lh53.cloudfront.net/6020f8720f755b346c231ba5/6020f8720f755b346c231ba56f4o10n6vm216745444917614oxr8woeara.jpg?AWSAccessKeyId=AKIATCMHTO4YJZYKAD7U&Expires=1675051208&Signature=re4eADiyHqGnVhKgta5wJnIYQ04%3D"
+                                    [src]="apiBaseURL + (model && model.emergencyEvents.contents[0].coverPageUrl) + '/image'"
                                     alt="">
                                 <img class="image"
-                                    src="https://d1evz9svx3lh53.cloudfront.net/6020f8720f755b346c231ba5/6020f8720f755b346c231ba56f4o10n6vm216745444917614oxr8woeara.jpg?AWSAccessKeyId=AKIATCMHTO4YJZYKAD7U&Expires=1675051208&Signature=re4eADiyHqGnVhKgta5wJnIYQ04%3D"
+                                    [src]="apiBaseURL + (model && model.emergencyEvents.contents[0].coverPageUrl) + '/image'"
                                     alt="">
                             </div>
                             <div class="detail">
                                 <p class="title">
-                                    #กาก้าวไกล
+                                    {{model && model.emergencyEvents.contents[0].title}}
                                 </p>
                                 <p class="content-detail">
-                                    เลือกตั้งใหญ่ 2566 คือเวลาที่คุณต้องตัดสินใจ จะอยู่กับปัญหาเดิมๆ ที่เจอมาชั่วชีวิต
-                                    หรือเลือกคนและพรรคที่จะสร้างการเปลี่ยนแปลงอย่างถึงราก ครบทุกมิติปัญหา
-                                    เปลี่ยนประเทศไทยให้ การเมืองดี | ปากท้องดี | มีอนาคต
-                                    .
-                                    28 มกราคมนี้ เวลา 13.00 น. เป็นต้นไป ที่อุทยานการเรียนรู้ป๋วย 100 ปี ธรรมศาสตร์
-                                    รังสิต
-                                    .
-                                    ขอเชิญชวนผู้ต้องการเปลี่ยนแปลงประเทศไทยทุกคน
-                                    มาร่วมรับฟังพรรคก้าวไกลประกาศเจตนารมณ์ทางการเมืองในการเลือกตั้ง 2566
-                                    พร้อมฟังชุดนโยบายเรือธง การเมืองดี | ปากท้องดี | มีอนาคต
-                                    .
-                                    เลือกสีส้ม เพื่อประเทศไทยที่ไม่เหมือนเดิม
+                                    {{model && model.emergencyEvents.contents[0].description}}
                                 </p>
                                 <p class="amount-social">
-                                    <span>0 ความคิดเห็น</span>
+                                    <span>{{model && model.emergencyEvents.contents[0].commentCount}} ความคิดเห็น</span>
                                     <span>•</span>
-                                    <span>0 บอกต่อ</span>
+                                    <span>{{model && model.emergencyEvents.contents[0].shareCount}} บอกต่อ</span>
                                     <span>•</span>
-                                    <span>0 ถูกใจ</span>
+                                    <span>{{model && model.emergencyEvents.contents[0].likeCount}} ถูกใจ</span>
                                     <span>•</span>
-                                    <span>0 แชร์</span>
+                                    <span>{{model && model.emergencyEvents.contents[0].repostCount}} แชร์</span>
                                 </p>
                             </div>
                         </a>
@@ -52,18 +41,18 @@
                     <div>
                         <div class="wrapper-banner-header">
                             <a class="banner-text-header tag-link" href="">
-                                #ก้าวไกล
+                                {{model && model.emergencyEvents.contents[1].title}}
                             </a>
                             <a class="banner-count-header tag-link" href="">
-                                0 ครั้ง
+                                {{model && model.emergencyEvents.contents[1].postCount}} ครั้ง
                             </a>
                         </div>
                         <div class="wrapper-banner-header">
                             <a class="banner-text-header tag-link" href="">
-                                #สวัสดี2022
+                                {{model && model.emergencyEvents.contents[2].title}}
                             </a>
                             <a class="banner-count-header tag-link" href="">
-                                0 ครั้ง
+                                {{model && model.emergencyEvents.contents[2].postCount}} ครั้ง
                             </a>
                         </div>
                     </div>
@@ -77,7 +66,7 @@
                     </div>
                     <div class="wrapper-banner-header banner-header-bg-gray">
                         <span class="banner-text-header">
-                            ข่าวใหม่ล่าสุด
+                            #{{model && model.postSectionModel.contents[0].post.objectiveTag}}
                         </span>
                     </div>
                     <div class="wrapper-news">
@@ -104,13 +93,15 @@
                                 </div>
                                 <div class="detail">
                                     <p class="title md-none-min">
-                                        บางแคกำลัง3 พบปะพี่น้องย่านหนองใหญ่ พร้อมส่ง สู่มือทุกท่าน
+                                        {{model && model.postSectionModel.contents[0].post.title}}
                                     </p>
                                     <div class="wrapper-title-topic md-none-max">
                                         <p class="title-topic">
-                                            บางแคกำลัง3 พบปะพี่น้องย่านหนองใหญ่ พร้อมส่ง สู่มือทุกท่าน
+                                            {{model && model.postSectionModel.contents[0].post.title}}
                                         </p>
-                                        <a class="tag-link gray time" href="">31 มกราคม เวลา 14:05 น.</a>
+                                        <a class="tag-link gray time" href="">{{model &&
+                                            model.postSectionModel.contents[0].post.createdDate |
+                                            thformatdatetime}}</a>
                                     </div>
                                 </div>
                             </div>
@@ -136,13 +127,15 @@
                                 </div>
                                 <div class="detail">
                                     <p class="title md-none-min">
-                                        เพนันออนไลน์ ประโยชน์หรือโทษ ไปทางไหนดี?
+                                        {{model && model.postSectionModel.contents[1].post.title}}
                                     </p>
                                     <div class="wrapper-title-topic md-none-max">
                                         <p class="title-topic">
-                                            พนันออนไลน์ ประโยชน์หรือโทษ ไปทางไหนดี?
+                                            {{model && model.postSectionModel.contents[1].post.title}}
                                         </p>
-                                        <a class="tag-link gray time" href="">31 มกราคม เวลา 14:05 น.</a>
+                                        <a class="tag-link gray time" href="">{{model &&
+                                            model.postSectionModel.contents[1].post.createdDate |
+                                            thformatdatetime}}</a>
                                     </div>
                                 </div>
                             </div>
@@ -160,19 +153,19 @@
                                         <path
                                             d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 " />
                                     </svg>
-                                    <a class="tag-link gray time" href="">31 มกราคม เวลา 14:05 น.</a>
+                                    <a class="tag-link gray time" href="">{{model &&
+                                        model.postSectionModel.contents[2].post.createdDate |
+                                        thformatdatetime}}</a>
                                 </span>
                             </div>
                             <div class="wrapper-news-post">
                                 <div class="wrapper-news-post-img">
-                                    <img src="https://today-api.moveforwardparty.org/api/file/63dbc25bb9462453d68346db/image"
+                                    <img src="{{apiBaseURL + (model && model.postSectionModel.contents[2].coverPageUrl) + '/image'}}"
                                         alt="">
                                 </div>
                                 <div class="detail">
                                     <p class="title">
-                                        เราสร้างพรรคการเมืองขึ้นมาด้วยความคิดว่า พรรคจะต้องอยู่ได้ด้วยประชาชน
-                                        รายได้ส่วนใหญ่ต้องมาจากประชาชน
-                                        การทำงานและการตัดสินใจทางการเมืองของเราถึงจะมีอิส...
+                                        {{model && model.postSectionModel.contents[2].post.title}}
                                     </p>
                                 </div>
                             </div>
@@ -180,7 +173,7 @@
                     </div>
                     <div class="wrapper-banner-header banner-header-bg-gray">
                         <span class="banner-text-header">
-                            #ก้าวไกลชุมพร
+                            ก้าวไกลวันนี้
                         </span>
                     </div>
                     <div class="wrapper-news">
@@ -207,15 +200,15 @@
                                 </div>
                                 <div class="detail">
                                     <p class="title md-none-min">
-                                        ไทยต้องมีเทคโนโลยี-นวัตกรรมของตัวเอง
-                                        เป็นทางออกเดียวจากวิกฤติสังคมสูงวัย-ขาดแคลนแรงงาน
+                                        {{model && model.pageRoundRobin.contents[0].post.title}}
                                     </p>
                                     <div class="wrapper-title-topic md-none-max">
                                         <p class="title-topic">
-                                            ไทยต้องมีเทคโนโลยี-นวัตกรรมของตัวเอง
-                                            เป็นทางออกเดียวจากวิกฤติสังคมสูงวัย-ขาดแคลนแรงงาน
+                                            {{model && model.pageRoundRobin.contents[0].post.title}}
                                         </p>
-                                        <a class="tag-link gray time" href="">31 มกราคม เวลา 14:05 น.</a>
+                                        <a class="tag-link gray time" href="">{{model &&
+                                            model.pageRoundRobin.contents[0].post.createdDate |
+                                            thformatdatetime}}</a>
                                     </div>
                                 </div>
                             </div>
@@ -241,13 +234,15 @@
                                 </div>
                                 <div class="detail">
                                     <p class="title md-none-min">
-                                        กา X ก้าวไกล เพื่อสร้างรัฐบาลที่ไม่เอามรดกบาปคณะรัฐประหาร
+                                        {{model && model.pageRoundRobin.contents[1].post.title}}
                                     </p>
                                     <div class="wrapper-title-topic md-none-max">
                                         <p class="title-topic">
-                                            กา X ก้าวไกล เพื่อสร้างรัฐบาลที่ไม่เอามรดกบาปคณะรัฐประหาร
+                                            {{model && model.pageRoundRobin.contents[1].post.title}}
                                         </p>
-                                        <a class="tag-link gray time" href="">31 มกราคม เวลา 14:05 น.</a>
+                                        <a class="tag-link gray time" href="">{{model &&
+                                            model.pageRoundRobin.contents[1].post.createdDate |
+                                            thformatdatetime}}</a>
                                     </div>
                                 </div>
                             </div>
@@ -265,17 +260,19 @@
                                         <path
                                             d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 " />
                                     </svg>
-                                    <a class="tag-link gray time" href="">31 มกราคม เวลา 14:05 น.</a>
+                                    <a class="tag-link gray time" href="">{{model &&
+                                        model.pageRoundRobin.contents[2].post.createdDate |
+                                        thformatdatetime}}</a>
                                 </span>
                             </div>
                             <div class="wrapper-news-post">
                                 <div class="wrapper-news-post-img">
-                                    <img src="https://d1evz9svx3lh53.cloudfront.net/63b7a4a51a69db32be899f6a/r8888m2l0e1674731760490wvs362mgxzg.jpg?AWSAccessKeyId=AKIATCMHTO4YJZYKAD7U&Expires=1675418088&Signature=VGH6OEPcrjdTKTPOSW3NsngW4wk%3D"
+                                    <img src="{{apiBaseURL + (model && model.pageRoundRobin.contents[2].coverPageUrl) + '/image'}}"
                                         alt="">
                                 </div>
                                 <div class="detail">
                                     <p class="title">
-                                        ผลสอบป้าย 33 ล้าน ‘โปร่งใสแต่แพง’ ?!
+                                        {{model && model.pageRoundRobin.contents[2].post.title}}
                                     </p>
                                 </div>
                             </div>
@@ -294,186 +291,49 @@
                 </div>
                 <div class="cards">
                     <div class="card-me-type">
-                        <div class="card">
+                        <div class="card"
+                            *ngFor="let item of model && model.majorTrend.contents | slice:0:4 ;let index = index">
                             <div class="top">
                                 <div class="status">
                                     <div class="status-g"></div>
                                     <span>ทั่วไป</span>
                                 </div>
+                                <div class="date-time">
+                                    <svg style="margin: 0px 5px 0px 14px;" height="10px" viewBox="0 0 512 512"
+                                        width="10px" xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
+                                            class="svg-color-gray" />
+                                        <path
+                                            d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
+                                            class="svg-color-gray" />
+                                    </svg>
+                                    <span class="date-post">{{item.post.createdDate |
+                                        thformatdatetime}}</span>
+                                </div>
                             </div>
-                            <div class="date-time">
-                                <svg style="margin: 0px 5px 0px 14px;" height="10px" viewBox="0 0 512 512"
-                                width="10px" xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
-                                    class="svg-color-gray" />
-                                <path
-                                    d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
-                                    class="svg-color-gray" />
-                            </svg>
-                            <span
-                                >DateTime</span>
-                            </div>
-                            <img src="" style="width: 300px; height: 350px;">
+                            <img src="{{apiBaseURL + item.coverPageUrl + '/image'}}">
                             <div class="text">
                                 <div class="col-text">
-                                    <span></span>
+                                    <span>{{item.post.title}}</span>
                                 </div>
                                 <div class="bottom">
                                     <div class="owner-offical">
 
                                     </div>
-                                    <span class="owner">ประยุทธ์ จันทร์โอชา</span>
+                                    <span class="owner">{{item.owner.name}}</span>
                                 </div>
                                 <div class="count">
-                                    <span class="count-aontrol">0</span>
+                                    <span class="count-aontrol">{{item.post.commentCount}}</span>
                                     <span class="title-control">ความเห็น</span>
                                     <span class="drot">•</span>
-                                    <span class="count-aontrol">0</span>
+                                    <span class="count-aontrol">{{item.post.repostCount}}</span>
                                     <span class="title-control">บอกต่อ</span>
                                     <span class="drot">•</span>
-                                    <span class="count-aontrol">0</span>
+                                    <span class="count-aontrol">{{item.post.likeCount}}</span>
                                     <span class="title-control">ถูกใจ</span>
                                     <span class="drot">•</span>
-                                    <span class="count-aontrol">0</span>
-                                    <span class="title-control">แชร์</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card">
-                            <div class="top">
-                                <div class="status">
-                                    <div class="status-g"></div>
-                                    <span>ทั่วไป</span>
-                                </div>
-                            </div>
-                            <div class="date-time">
-                                <svg style="margin: 0px 5px 0px 14px;" height="10px" viewBox="0 0 512 512"
-                                width="10px" xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
-                                    class="svg-color-gray" />
-                                <path
-                                    d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
-                                    class="svg-color-gray" />
-                            </svg>
-                            <span
-                                >DateTime</span>
-                            </div>
-                            <img src="" style="width: 300px; height: 350px;">
-                            <div class="text">
-                                <div class="col-text">
-                                    <span></span>
-                                </div>
-                                <div class="bottom">
-                                    <div class="owner-offical">
-
-                                    </div>
-                                    <span class="owner">ประยุทธ์ จันทร์โอชา</span>
-                                </div>
-                                <div class="count">
-                                    <span class="count-aontrol">0</span>
-                                    <span class="title-control">ความเห็น</span>
-                                    <span class="drot">•</span>
-                                    <span class="count-aontrol">0</span>
-                                    <span class="title-control">บอกต่อ</span>
-                                    <span class="drot">•</span>
-                                    <span class="count-aontrol">0</span>
-                                    <span class="title-control">ถูกใจ</span>
-                                    <span class="drot">•</span>
-                                    <span class="count-aontrol">0</span>
-                                    <span class="title-control">แชร์</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card">
-                            <div class="top">
-                                <div class="status">
-                                    <div class="status-g"></div>
-                                    <span>ทั่วไป</span>
-                                </div>
-                            </div>
-                            <div class="date-time">
-                                <svg style="margin: 0px 5px 0px 14px;" height="10px" viewBox="0 0 512 512"
-                                width="10px" xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
-                                    class="svg-color-gray" />
-                                <path
-                                    d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
-                                    class="svg-color-gray" />
-                            </svg>
-                            <span
-                                >DateTime</span>
-                            </div>
-                            <img src="" style="width: 300px; height: 350px;">
-                            <div class="text">
-                                <div class="col-text">
-                                    <span></span>
-                                </div>
-                                <div class="bottom">
-                                    <div class="owner-offical">
-
-                                    </div>
-                                    <span class="owner">ประยุทธ์ จันทร์โอชา</span>
-                                </div>
-                                <div class="count">
-                                    <span class="count-aontrol">0</span>
-                                    <span class="title-control">ความเห็น</span>
-                                    <span class="drot">•</span>
-                                    <span class="count-aontrol">0</span>
-                                    <span class="title-control">บอกต่อ</span>
-                                    <span class="drot">•</span>
-                                    <span class="count-aontrol">0</span>
-                                    <span class="title-control">ถูกใจ</span>
-                                    <span class="drot">•</span>
-                                    <span class="count-aontrol">0</span>
-                                    <span class="title-control">แชร์</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card">
-                            <div class="top">
-                                <div class="status">
-                                    <div class="status-g"></div>
-                                    <span>ทั่วไป</span>
-                                </div>
-                            </div>
-                            <div class="date-time">
-                                <svg style="margin: 0px 5px 0px 14px;" height="10px" viewBox="0 0 512 512"
-                                width="10px" xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
-                                    class="svg-color-gray" />
-                                <path
-                                    d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
-                                    class="svg-color-gray" />
-                            </svg>
-                            <span
-                                >DateTime</span>
-                            </div>
-                            <img src="" style="width: 300px; height: 350px">
-                            <div class="text">
-                                <div class="col-text">
-                                    <span></span>
-                                </div>
-                                <div class="bottom">
-                                    <div class="owner-offical">
-
-                                    </div>
-                                    <span class="owner">ประยุทธ์ จันทร์โอชา</span>
-                                </div>
-                                <div class="count">
-                                    <span class="count-aontrol">0</span>
-                                    <span class="title-control">ความเห็น</span>
-                                    <span class="drot">•</span>
-                                    <span class="count-aontrol">0</span>
-                                    <span class="title-control">บอกต่อ</span>
-                                    <span class="drot">•</span>
-                                    <span class="count-aontrol">0</span>
-                                    <span class="title-control">ถูกใจ</span>
-                                    <span class="drot">•</span>
-                                    <span class="count-aontrol">0</span>
+                                    <span class="count-aontrol">{{item.post.shareCount}}</span>
                                     <span class="title-control">แชร์</span>
                                 </div>
                             </div>

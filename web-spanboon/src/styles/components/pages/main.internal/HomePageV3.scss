@@ -53,7 +53,7 @@
       display: inline-flex;
       gap: 8px;
 
-      > span {
+      >span {
         flex: 0 0 auto;
       }
     }
@@ -79,7 +79,7 @@
         }
       }
 
-      > .banner-text-header {
+      >.banner-text-header {
         @include font-size-8($font-head-400);
         display: -webkit-box;
         -webkit-line-clamp: 1;
@@ -88,7 +88,7 @@
         word-break: break-word;
       }
 
-      > .banner-count-header {
+      >.banner-count-header {
         @include font-size-9($font-head-500);
         flex: 0 0 auto;
       }
@@ -102,29 +102,30 @@
       justify-content: space-between;
       gap: 12px;
 
-      > .news-post-bar-left,
-      > .news-post-bar-right {
+      >.news-post-bar-left,
+      >.news-post-bar-right {
         flex: 0 0 auto;
         display: flex;
         align-items: center;
         gap: 6px;
       }
 
-      > .news-post-bar-left {
-        > .post-point {
+      >.news-post-bar-left {
+        >.post-point {
           color: gray;
           font-size: x-large;
           line-height: 16px;
         }
       }
 
-      > .news-post-bar-right {
+      >.news-post-bar-right {
+
         svg,
         path {
           fill: $svg-color-gray-icon;
         }
 
-        > svg {
+        >svg {
           width: 12px;
           height: 12px;
         }
@@ -143,7 +144,7 @@
         }
       }
 
-      > .wrapper-news-post-img {
+      >.wrapper-news-post-img {
         aspect-ratio: 16 / 9;
         display: flex;
         align-items: center;
@@ -152,13 +153,13 @@
         @include font-size-9($font-head-500);
         background: rgb($black, 0.24);
 
-        > img {
+        >img {
           width: 100%;
           height: 100%;
           object-fit: cover;
         }
 
-        > span {
+        >span {
           margin: 12px;
           display: -webkit-box;
           -webkit-line-clamp: 2;
@@ -168,14 +169,14 @@
         }
       }
 
-      > .detail {
+      >.detail {
         padding: 10px;
 
         @media (max-width: $medium) {
           padding: 15px;
         }
 
-        > .title {
+        >.title {
           @include font-size-9($font-head-500);
           display: -webkit-box;
           -webkit-line-clamp: 2;
@@ -184,14 +185,14 @@
           word-break: break-word;
         }
 
-        > .wrapper-title-topic {
+        >.wrapper-title-topic {
           align-self: stretch;
           display: flex;
           flex-direction: column;
           align-items: flex-start;
           justify-content: center;
 
-          > .title-topic {
+          >.title-topic {
             @include font-size-10($font-head-500);
             display: -webkit-box;
             -webkit-line-clamp: 3;
@@ -204,7 +205,7 @@
       }
     }
 
-    > .wrapper-1 {
+    >.wrapper-1 {
       display: flex;
       align-items: flex-start;
       gap: 30px;
@@ -213,8 +214,8 @@
         flex-direction: column;
       }
 
-      > .wrapper-1-left,
-      > .wrapper-1-right {
+      >.wrapper-1-left,
+      >.wrapper-1-right {
         width: 50%;
         align-self: stretch;
         display: flex;
@@ -228,31 +229,31 @@
           padding: 20px 0;
           @include font-size-10($font-head-400);
 
-          > .header-hastags {
+          >.header-hastags {
             color: $brandcolor2;
           }
         }
       }
 
-      > .wrapper-1-left {
+      >.wrapper-1-left {
         justify-content: space-between;
 
         .wrapper-box {
-          > .wrapper-copper-img {
+          >.wrapper-copper-img {
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
             overflow: hidden;
 
-            > .image-background {
+            >.image-background {
               position: absolute;
               background-size: cover;
               filter: blur(5px);
               width: 100%;
             }
 
-            > .image {
+            >.image {
               width: 50%;
               height: auto;
               position: relative;
@@ -260,10 +261,10 @@
             }
           }
 
-          > .detail {
+          >.detail {
             padding: 15px;
 
-            > .title {
+            >.title {
               @include font-size-7($font-head-500);
               display: -webkit-box;
               -webkit-line-clamp: 1;
@@ -272,7 +273,7 @@
               word-break: break-word;
             }
 
-            > .content-detail {
+            >.content-detail {
               @include font-size-9($font-content-light);
               display: -webkit-box;
               -webkit-line-clamp: 4;
@@ -285,8 +286,8 @@
         }
       }
 
-      > .wrapper-1-right {
-        > .wrapper-news {
+      >.wrapper-1-right {
+        >.wrapper-news {
           flex: 1 1 0%;
           display: flex;
           align-items: flex-start;
@@ -298,8 +299,8 @@
             gap: 0px;
           }
 
-          > .wrapper-news-left,
-          > .wrapper-news-right {
+          >.wrapper-news-left,
+          >.wrapper-news-right {
             flex: 1 1 0%;
             width: 50%;
             align-self: stretch;
@@ -309,19 +310,19 @@
             }
           }
 
-          > .wrapper-news-left {
+          >.wrapper-news-left {
             @media (min-width: $medium) {
               display: grid;
             }
           }
 
-          > .wrapper-news-right {
-          }
+          >.wrapper-news-right {}
         }
       }
     }
   }
-  .container_other{
+
+  .container_other {
     padding-top: 15px;
     margin: 0 auto;
     max-width: 1280px;
@@ -337,50 +338,186 @@
     a:-webkit-any-link {
       color: unset;
     }
-    > .section{
+
+    >.section {
       width: calc(100%- 30px);
-      padding:15px;
+      padding: 5px;
       display: flex;
       flex-direction: column;
-      > .title{
-        font-size:18pt;
+
+      >.title {
+        font-size: 18pt;
         font-family: "Anakotmai-Medium";
         color: #ee7623;
         position: relative;
-        width:100%;
-        display:flex
-        > .text{
+        width: 100%;
+        display: flex;
+
+        >.text {
           background-color: #fff;
           position: relative;
           width: auto;
-          z-index:1;
+          z-index: 1;
           padding: 0 10px 0 0;
           display: flex;
           flex-direction: column;
         }
-        > .line{
+
+        >.line {
           width: 100%;
           height: 1px;
           background-color: #000;
           position: absolute;
-          top:50%;
+          top: 50%;
         }
       }
-      > .cards{
+
+      >.cards {
         margin: 15pt 0;
-        > .card-me-type{
-          width: calc(100%);
+
+        >.card-me-type {
+          width: 100%;
           display: flex;
-          > .card{
+
+          >.card {
             cursor: pointer;
             transition: .1s;
             width: 390px;
-            height:auto;
+            height: auto;
             padding: 5px;
             display: flex;
-            margin:  5px;
+            margin: 5px;
             flex-direction: column;
             border-radius: 10px;
+
+            >span {
+              background-color: red;
+            }
+
+            >.top {
+              width: calc(100%);
+              height: 30px;
+              display: flex;
+              flex-direction: row;
+              align-content: center;
+              justify-content: space-between;
+              align-items: center;
+
+              // padding: 0px 10px;
+              >.status {
+                display: flex;
+                align-content: center;
+                align-items: center;
+
+                >.status-g {
+                  width: 10px;
+                  height: 10px;
+                  border-radius: 50px;
+                  background-color: $status-post-general;
+                }
+
+                >.status-n {
+                  width: 10px;
+                  height: 10px;
+                  border-radius: 50px;
+                  background-color: $status-post-need;
+                }
+
+                >span {
+                  @include font-size-11($font-head-500);
+                  margin-left: 6px;
+                }
+              }
+
+              >.date-time {
+                >span {
+                  cursor: pointer;
+                  @include font-size-11($font-head-500);
+                  color: gray;
+
+                  &:hover {
+                    color: rgba($brandcolor2, 0.95);
+                  }
+                }
+              }
+            }
+
+            >img {
+              width: 100%;
+              height: 260px;
+              object-fit: cover;
+            }
+
+            >.text {
+              width: 100%;
+              @include font-size-8($font-head-500);
+              margin: 10pt 0pt;
+              height: 150px;
+              display: flex;
+              flex-direction: column;
+              justify-content: space-between;
+
+              >.col-text {
+                height: 100%;
+
+                >span {
+                  display: -webkit-box;
+                  -webkit-line-clamp: 3;
+                  line-height: 26px;
+                  -webkit-box-orient: vertical;
+                  overflow: hidden;
+
+                  &:hover {
+                    color: rgba($brandcolor2, 0.95);
+                  }
+                }
+              }
+
+              >.bottom {
+                width: 100%;
+
+                >.owner-offical {
+                  display: flex;
+                  align-content: center;
+                  align-items: stretch;
+                  justify-content: flex-start;
+
+                }
+
+                >.owner {
+                  @include font-size-11($font-head-500);
+                  color: slategray;
+                  cursor: pointer;
+                  -webkit-line-clamp: 1;
+                  -webkit-box-orient: vertical;
+                  overflow: hidden;
+                  word-break: break-word;
+                  display: -webkit-box;
+
+                  &:hover {
+                    color: rgba($brandcolor2, 0.95);
+                  }
+                }
+              }
+
+              >.count {
+                display: flex;
+                align-items: flex-end;
+                color: slategray;
+                margin-top: 5px;
+                @include font-size-11($font-head-400);
+
+                >.count-aontrol {}
+
+                >.title-control {
+                  margin-left: 2px;
+                }
+
+                >.drot {
+                  margin: 0 5pt;
+                }
+              }
+            }
           }
         }
       }
