@@ -127,7 +127,6 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                 const postAggregateSet1 = await this.postsService.aggregate(
                     [
                         { $match: { isDraft: false, deleted: false, hidden: false } },
-                        { $sort: { summationScore: -1 } },
                         {
                             $lookup:
                             {
@@ -229,7 +228,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                 const postAggregateSet2 = await this.postsService.aggregate(
                     [
                         { $match: { isDraft: false, deleted: false, hidden: false } },
-                        { $sort: { summationScore: -1 } },
+                        { $sort: { createdDate: -1 } },
                         {
                             $lookup:
                             {
