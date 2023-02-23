@@ -195,7 +195,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                 );
                 const lastestDate = null;
                 const result: SectionModel = new SectionModel();
-                result.title = (this.config === undefined || this.config.title === undefined) ? 'โพสต์ใหม่ ๆ ที่เกิดขึ้นในเดือนนี้' : this.config.title;
+                result.title = (this.config === undefined || this.config.title === undefined) ?  provincePage.title: this.config.title;
                 result.subtitle = (this.config === undefined || this.config.subtitle === undefined) ? 'โพสต์ที่เกิดขึ้นในเดือนนี้ ภายในแพลตฟอร์ม' : this.config.subtitle;
                 result.description = '';
                 result.iconUrl = '';
