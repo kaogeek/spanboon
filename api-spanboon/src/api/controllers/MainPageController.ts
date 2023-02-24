@@ -82,13 +82,14 @@ export class MainPageController {
     @Get('/content/v3')
     public async getContentListV2(@QueryParam('offset') offset: number, @QueryParam('section') section: string, @QueryParam('date') date: string, @Res() res: any, @Req() req: any): Promise<any> {
         const userId = req.headers.userid;
+        console.log('userId',userId);
         const mainPageSearchConfig = await this.pageService.searchPageOfficialConfig();
         // const pageSearchCategory = await this.pageService.searchPageCategory();
         // searchPageCategoryPoliticalCandidate
         // searchPageCategoryPoliticalParty
         // searchPageCategoryBoss
         const searchOfficialOnly = mainPageSearchConfig.searchOfficialOnly;
-
+        
         // ordering
         const emerProcessor: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service);
         emerProcessor.setConfig({
@@ -168,11 +169,30 @@ export class MainPageController {
         kaokaiProvinceProcessor.setConfig({
             searchOfficialOnly
         });
+        // pipeline: [{ $match: { $expr: { $in: ['$_id', bucketF] }, isOfficial: true } }],
 
         const kaokaiProvince = await kaokaiProvinceProcessor.process();
+        let kaokaiContent = undefined;
+        if(userId !== undefined && userId !== null){
+            const userContent = await this.userService.find({_id:ObjectID(userId)});
+            if(userContent.subjectAttention !== undefined && userContent.subjectAttention !== null &&userContent.subjectAttention.length > 0){
+                kaokaiContent = await this.pageService.aggregate([
+                    {
+                        $match:{isOfficial:true}
+                    },
+                    {
+                        $match:{$in:{$subject:userContent.subjectAttention}}
+                    },
+                    {
+                        $limit:20
+                    }
+                ]);
+            }
+        }
+        console.log('kaokaiContent',kaokaiContent);
         // ก้าวไกลประเด็น
-        /*
-        const kaokaiContentProcessor:KaokaiContentModelProcessor = new KaokaiContentModelProcessor(this.postsService, this.s3Service, this.userLikeService);
+        /* 
+        const kaokaiContentProcessor:KaokaiContentModelProcessor = new KaokaiContentModelProcessor(this.postsService, this.s3Service, this.userLikeService,this.kaokaiTodayService);
         kaokaiContentProcessor.setData({
             userId,
             startDateTime: monthRanges[0],
@@ -184,7 +204,8 @@ export class MainPageController {
         });
 
         const kaokaiContent = await kaokaiContentProcessor.process(); */
-
+        // hashTag
+        const hashTagSumma = await this.hashTagService.aggregate([{$sort:{count:-1}},{$limit:3}]);
         const result: any = {};
         result.emergencyEvents = emerSectionModel;
         result.postSectionModel = postSectionModel;
@@ -192,6 +213,7 @@ export class MainPageController {
         result.majorTrend = majorTrend;
         result.kaokaiHashTag = kaokaiHashTag;
         result.kaokaiProvince = kaokaiProvince;
+        result.hashTagSumma = hashTagSumma;
         // result.kaokaiContent = kaokaiContent;
         const successResponse = ResponseUtil.getSuccessResponse('Successfully Main Page Data', result);
         return res.status(200).send(successResponse);

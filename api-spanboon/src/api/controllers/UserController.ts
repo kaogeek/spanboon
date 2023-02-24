@@ -46,7 +46,6 @@ import { SocialPostLogs } from '../models/SocialPostLogs';
 import { NotificationService } from '../services/NotificationService';
 import { USER_TYPE, NOTIFICATION_TYPE } from '../../constants/NotificationType';
 import { DeviceTokenService } from '../services/DeviceToken';
-import { HashTagService } from '../services/HashTagService';
 @JsonController('/user')
 export class UserController {
     constructor(
@@ -63,7 +62,6 @@ export class UserController {
         private socialPostLogsService: SocialPostLogsService,
         private notificationService: NotificationService,
         private deviceTokenService: DeviceTokenService,
-        private hashTagService:HashTagService,
     ) { }
 
     // Logout API
@@ -155,10 +153,19 @@ export class UserController {
         if (mode !== undefined) {
             mode = mode.toLocaleLowerCase();
         }
+        const userObjId = await this.userService.findOne({_id:ObjectID(uid)});
+        if(userObjId.subjectAttention !== undefined && userObjId.subjectAttention !== null){
+            const ErrorResponse: any = { status: 0, message: 'You already selected subjectAttention.' };
+            return res.status(400).send(ErrorResponse);
+        }
         if(uid !== undefined){
-            const HashTag = await this.hashTagService.searchHash();
-            if(HashTag !== undefined && HashTag !== null){
-                const successResponse = ResponseUtil.getSuccessResponse('Search HashTag.', HashTag);
+            // subject 
+            const contentPage = await this.pageService.aggregate([
+                {$match:{subject:{$ne:null}}},
+                {$group:{_id:{subject:'$subject'}}}
+            ]);
+            if(contentPage !== undefined && contentPage !== null){
+                const successResponse = ResponseUtil.getSuccessResponse('Search HashTag.', contentPage);
                 return res.status(200).send(successResponse);
             }
         }else{
@@ -178,11 +185,16 @@ export class UserController {
             const ErrorResponse: any = { status: 0, message: 'Error maybe login is not success.' };
             return res.status(400).send(ErrorResponse);
         }
+        if(userHashtag.subject.length > 5){
+            const ErrorResponse: any = { status: 0, message: 'Error Please select content at less than or equal 5.' };
+            return res.status(400).send(ErrorResponse);
+        }
+
         const query = {_id:uid};
-        const newValues = {$set:{subjectAttention:userHashtag.hashTag}};
+        const newValues = {$set:{subjectAttention:userHashtag.subject}};
         const update = await this.userService.update(query,newValues);
         if(update){
-            const successResponse = ResponseUtil.getSuccessResponse('Update HashTag is successfully.', undefined);
+            const successResponse = ResponseUtil.getSuccessResponse('Update HashTag is successfully.', newValues);
             return res.status(200).send(successResponse);
         }else{
             const ErrorResponse: any = { status: 0, message: 'Cannot be update.' };
