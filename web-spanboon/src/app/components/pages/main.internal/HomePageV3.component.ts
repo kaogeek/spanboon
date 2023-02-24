@@ -8,7 +8,7 @@
 import { Component, OnInit, ViewChild, EventEmitter, HostListener } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Gallery } from '@ngx-gallery/core';
-import { AuthenManager, MainPageSlideFacade, HashTagFacade, AssetFacade, PageFacade, SeoService } from '../../../services/services';
+import { AuthenManager, MainPageSlideFacade, HashTagFacade, AssetFacade, PageFacade, SeoService, UserSubjectFacade } from '../../../services/services';
 import { AbstractPage } from '../AbstractPage';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PostFacade } from '../../../services/facade/PostFacade.service';
@@ -16,6 +16,7 @@ import { CacheConfigInfo } from '../../../services/CacheConfigInfo.service';
 import { PLATFORM_NAME_TH } from 'src/custom/variable';
 import { SearchFilter } from '../../../models/SearchFilter';
 import { environment } from 'src/environments/environment';
+import { DialogAlert, DialogCheckBox } from '../../components';
 
 declare var $: any;
 
@@ -31,7 +32,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   public isLoading: boolean;
   public isPostNewTab: boolean = false;
   public windowWidth: any;
-  public mainPageModelFacade: any;
+  public mainPageModelFacade: MainPageSlideFacade;
   public model: any = undefined;
   private cacheConfigInfo: CacheConfigInfo;
   private postFacade: PostFacade;
@@ -39,6 +40,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   private pageFacade: PageFacade;
   private assetFacade: AssetFacade;
   private seoService: SeoService;
+  private userSubject: UserSubjectFacade;
   public hashTag: any = [];
   public pageUser: any;
   public apiBaseURL = environment.apiBaseURL;
@@ -54,7 +56,8 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     pageFacade: PageFacade,
     hashTagFacade: HashTagFacade,
     assetFacade: AssetFacade,
-    seoService: SeoService
+    seoService: SeoService,
+    userSubject: UserSubjectFacade
   ) {
     super(null, authenManager, dialog, router);
     this.pageFacade = pageFacade;
@@ -62,6 +65,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     this.assetFacade = assetFacade;
     this.hashTagFacade = hashTagFacade;
     this.seoService = seoService;
+    this.userSubject = userSubject;
   }
 
   public ngOnInit(): void {
@@ -81,13 +85,15 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   public async getMainPageModelV3(userId?) {
     this.isLoading = true;
     this.model = await this.mainPageModelFacade.getMainPageModelV3(userId);
-    console.log("this.model", this.model)
     for (let index = 0; index < this.model.postSectionModel.contents.length; index++) {
       if (this.model.postSectionModel.contents[index].post.type === "FULFILLMENT") {
         this.model.postSectionModel.contents.splice(index, 1);
       } else if (this.model.postSectionModel.contents[index].coverPageUrl === undefined) {
         this.model.postSectionModel.contents.splice(index, 1);
       }
+    }
+    if (this.isLogin) {
+      this.getSubject();
     }
     this.seoService.updateTitle(PLATFORM_NAME_TH);
     let filter: SearchFilter = new SearchFilter();
@@ -131,15 +137,32 @@ export class HomePageV3 extends AbstractPage implements OnInit {
         }
       }
     }
-
-  }
-  public ngAfterViewInit(): void {
-
   }
 
-  public ngOnDestroy(): void {
-
+  public getSubject() {
+    this.userSubject.getSubject().then((res) => {
+      if (res) {
+        let dialog = this.dialog.open(DialogCheckBox, {
+          disableClose: false,
+          data: {
+            title: 'Suggested Topics',
+            subject: res,
+            bottomText2: 'ตกลง',
+            bottomColorText2: "black",
+          }
+        });
+        dialog.afterClosed().subscribe((res) => {
+          if (res) {
+          }
+        });
+      }
+    }).catch((err) => {
+      if (err) {
+        console.log("err", err)
+      }
+    })
   }
+
   @HostListener('window:resize', ['$event'])
   public getScreenSize(event?) {
     this.windowWidth = window.innerWidth;

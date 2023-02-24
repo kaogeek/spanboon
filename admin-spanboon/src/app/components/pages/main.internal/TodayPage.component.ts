@@ -15,6 +15,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { DialogWarningComponent } from '../../shares/DialogWarningComponent.component';
 import { AuthenManager } from '../../../services/AuthenManager.service';
 import { Router } from '@angular/router';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 
 const PAGE_NAME: string = "today";
 
@@ -52,6 +53,16 @@ export class TodayPage extends AbstractPage implements OnInit {
     public imageName: any;
     public ordering: number;
     public isSave: boolean = false;
+    public typeBucket: any = [{ value: 'page' }, { value: 'post' }, { value: 'hashtag' }];
+    public titleBucket: any = [{ value: 'ก้าวไกลวันนี้' }, { value: 'ก้าวไกลทั่วไทย' }, { value: 'สภาก้าวไกล' }, { value: 'ก้าวไกลรอบด้าน' }];
+    public fieldBucket: any = [{ value: 'province' }, { value: 'emergency' }, { value: 'objective' }, { value: 'hashtag' }, { value: 'id' }, { value: 'pageCatagory' }];
+    public formType: FormGroup;
+    public selectedValueType: string;
+    public selectedValueField: string;
+    public selectedValueTitle: string;
+    public bucketList: any[] = [];
+    public valueList: any[] = [];
+    public isShowClose: boolean = true;
 
     constructor(emergencyEventFacade: EmergencyEventFacade, hashTagFacade: HashTagFacade, router: Router, dialog: MatDialog, authenManager: AuthenManager) {
         super(PAGE_NAME, dialog);
@@ -121,6 +132,9 @@ export class TodayPage extends AbstractPage implements OnInit {
     }
 
     public ngOnInit() {
+        this.formType = new FormGroup({
+            'id': new FormControl(null, { validators: [Validators.required] })
+        });
         this.table.isEmer = true;
         this.getHashtag();
     }
@@ -177,7 +191,7 @@ export class TodayPage extends AbstractPage implements OnInit {
 
     public clickCreateForm(): void {
         this.setFields();
-        this.myInputVariable.nativeElement.value = "";
+        // this.myInputVariable.nativeElement.value = "";
         this.drawer.toggle();
     }
 
@@ -295,5 +309,25 @@ export class TodayPage extends AbstractPage implements OnInit {
         }).catch((err) => {
             this.dialogWarning(err.error.message);
         });
+    }
+
+    public addBucket() {
+        this.bucketList.push(this.bucketList.length);
+    }
+
+    public addValue(index, value: string) {
+        this.valueList.push(this.valueList.length);
+        // this.bucketList.splice(index, 0, [{ value: this.valueList.length }])
+        // this.valueList.splice(index, 0, this.valueList.length);
+        // this.valueList.splice(this.valueList.length);
+    }
+
+    public check55(index, value: string) {
+        if (value === 'value') {
+            // console.log("value", this.valueList)
+        } else {
+            // console.log("buck", this.bucketList)
+        }
+        // console.log("index", index)
     }
 }

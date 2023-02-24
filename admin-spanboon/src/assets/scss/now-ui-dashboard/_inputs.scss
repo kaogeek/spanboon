@@ -420,9 +420,9 @@ textarea.form-control {
 }
 
 /* Chrome, Safari, Edge, Opera */
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
+.inputArrow::-webkit-outer-spin-button,
+.inputArrow::-webkit-inner-spin-button {
+    -webkit-appearance: unset;
     margin: 0;
 }
 

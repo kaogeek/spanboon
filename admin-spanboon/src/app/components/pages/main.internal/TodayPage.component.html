@@ -35,37 +35,134 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label>ชื่อ *</label>
+                                        <!-- <label>Title *</label>
                                         <input type="text" class="form-control" [(ngModel)]="dataForm.title"
                                             [ngModelOptions]="{standalone: true}">
                                         <div class="alert alert-danger" style="margin-top: 5pt;"
                                             *ngIf="submitted && dataForm.title === ''">
                                             กรุณาใส่ ชื่อ
-                                        </div>
+                                        </div> -->
+                                        <mat-form-field>
+                                            <mat-label>Title *</mat-label>
+                                            <mat-select [(ngModel)]="selectedValueTitle" name="title">
+                                                <mat-option *ngFor="let type of titleBucket" [value]="type.value">
+                                                    {{type.value}}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label>Bucket</label>
-                                        <div class="form-group">
-                                            <mat-form-field class="example-form-field">
-                                                <mat-label>Bucket 1 เลือกเพจพรรค</mat-label>
-                                                <input *ngIf="!imageName" disabled matInput type="text"
-                                                    [(ngModel)]="dataForm.coverPageURL"
-                                                    [ngModelOptions]="{standalone: true}">
-                                                <input *ngIf="imageName" disabled matInput type="text"
-                                                    [(ngModel)]="imageName" [ngModelOptions]="{standalone: true}">
-                                                <button style="font-size: 25px;color: #a32126;" class="form-group"
-                                                    mat-button matSuffix mat-icon-button (click)="value=''">
-                                                    <mat-icon>add_photo_alternate</mat-icon>
-                                                    <input #myInput type="file" id="file"
-                                                        (change)="handleInputChange($event)">
-                                                </button>
-                                            </mat-form-field>
-                                            <!-- <label style="color: white;padding: 10px;background-color: #fd545a;border-radius: 8px;margin-top:15px;" for="file">Choose File</label> -->
+                                        <mat-form-field>
+                                            <mat-label>Type</mat-label>
+                                            <mat-select [(ngModel)]="selectedValueType" name="type">
+                                                <mat-option *ngFor="let type of typeBucket" [value]="type.value">
+                                                    {{type.value}}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                        <mat-form-field>
+                                            <mat-label>Field</mat-label>
+                                            <mat-select [(ngModel)]="selectedValueField" name="field">
+                                                <mat-option *ngFor="let type of fieldBucket" [value]="type.value">
+                                                    {{type.value}}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                        <div class="container-bucket">
+                                            <span>bucket</span>
+                                            <svg width="200px" height="200px" viewBox="0 0 24 24" fill="none"
+                                                (click)="addBucket()" style="width: 18px;height: 18px;margin-left: 5px;"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                                <g id="SVGRepo_tracerCarrier" stroke-linecap="round"
+                                                    stroke-linejoin="round"></g>
+                                                <g id="SVGRepo_iconCarrier">
+                                                    <path
+                                                        d="M12 6C12.5523 6 13 6.44772 13 7V11H17C17.5523 11 18 11.4477 18 12C18 12.5523 17.5523 13 17 13H13V17C13 17.5523 12.5523 18 12 18C11.4477 18 11 17.5523 11 17V13H7C6.44772 13 6 12.5523 6 12C6 11.4477 6.44772 11 7 11H11V7C11 6.44772 11.4477 6 12 6Z"
+                                                        fill="#000000"></path>
+                                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                                        d="M2 4.5C2 3.11929 3.11929 2 4.5 2H19.5C20.8807 2 22 3.11929 22 4.5V19.5C22 20.8807 20.8807 22 19.5 22H4.5C3.11929 22 2 20.8807 2 19.5V4.5ZM4.5 4C4.22386 4 4 4.22386 4 4.5V19.5C4 19.7761 4.22386 20 4.5 20H19.5C19.7761 20 20 19.7761 20 19.5V4.5C20 4.22386 19.7761 4 19.5 4H4.5Z"
+                                                        fill="#000000"></path>
+                                                </g>
+                                            </svg>
+                                            <div class="wrapper-bucket">
+                                                <div *ngFor="let bucket of bucketList;let index = index">
+                                                    <div *ngIf="bucket <= 2" class="field-data">
+                                                        <mat-form-field>
+                                                            <input matInput type="name" placeholder="Name"
+                                                                (click)="check55(index,'bucket')">
+                                                            <button mat-button matSuffix mat-icon-button
+                                                                aria-label="Clear">
+                                                                <mat-icon>close</mat-icon>
+                                                            </button>
+                                                        </mat-form-field>
+                                                        <mat-form-field>
+                                                            <input matInput type="text" placeholder="Value">
+                                                            <svg width="18px" height="18px" viewBox="0 0 24 24"
+                                                                fill="none"
+                                                                (click)="addValue(index,'value');check55(index,'value')"
+                                                                style="float: right;;margin-left: 5px;"
+                                                                xmlns="http://www.w3.org/2000/svg">
+                                                                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                                                <g id="SVGRepo_tracerCarrier" stroke-linecap="round"
+                                                                    stroke-linejoin="round"></g>
+                                                                <g id="SVGRepo_iconCarrier">
+                                                                    <path
+                                                                        d="M12 6C12.5523 6 13 6.44772 13 7V11H17C17.5523 11 18 11.4477 18 12C18 12.5523 17.5523 13 17 13H13V17C13 17.5523 12.5523 18 12 18C11.4477 18 11 17.5523 11 17V13H7C6.44772 13 6 12.5523 6 12C6 11.4477 6.44772 11 7 11H11V7C11 6.44772 11.4477 6 12 6Z"
+                                                                        fill="#000000"></path>
+                                                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                                                        d="M2 4.5C2 3.11929 3.11929 2 4.5 2H19.5C20.8807 2 22 3.11929 22 4.5V19.5C22 20.8807 20.8807 22 19.5 22H4.5C3.11929 22 2 20.8807 2 19.5V4.5ZM4.5 4C4.22386 4 4 4.22386 4 4.5V19.5C4 19.7761 4.22386 20 4.5 20H19.5C19.7761 20 20 19.7761 20 19.5V4.5C20 4.22386 19.7761 4 19.5 4H4.5Z"
+                                                                        fill="#000000"></path>
+                                                                </g>
+                                                            </svg>
+                                                        </mat-form-field>
+                                                        <div *ngFor="let item of valueList;let index = index">
+                                                            <mat-form-field>
+                                                                <input matInput type="text" placeholder="Value">
+                                                                <svg width="18px" height="18px" viewBox="0 0 24 24"
+                                                                    fill="none"
+                                                                    (click)="addValue(index,'value');check55(index,'value')"
+                                                                    style="float: right;;margin-left: 5px;"
+                                                                    xmlns="http://www.w3.org/2000/svg">
+                                                                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                                                    <g id="SVGRepo_tracerCarrier" stroke-linecap="round"
+                                                                        stroke-linejoin="round"></g>
+                                                                    <g id="SVGRepo_iconCarrier">
+                                                                        <path
+                                                                            d="M12 6C12.5523 6 13 6.44772 13 7V11H17C17.5523 11 18 11.4477 18 12C18 12.5523 17.5523 13 17 13H13V17C13 17.5523 12.5523 18 12 18C11.4477 18 11 17.5523 11 17V13H7C6.44772 13 6 12.5523 6 12C6 11.4477 6.44772 11 7 11H11V7C11 6.44772 11.4477 6 12 6Z"
+                                                                            fill="#000000"></path>
+                                                                        <path fill-rule="evenodd" clip-rule="evenodd"
+                                                                            d="M2 4.5C2 3.11929 3.11929 2 4.5 2H19.5C20.8807 2 22 3.11929 22 4.5V19.5C22 20.8807 20.8807 22 19.5 22H4.5C3.11929 22 2 20.8807 2 19.5V4.5ZM4.5 4C4.22386 4 4 4.22386 4 4.5V19.5C4 19.7761 4.22386 20 4.5 20H19.5C19.7761 20 20 19.7761 20 19.5V4.5C20 4.22386 19.7761 4 19.5 4H4.5Z"
+                                                                            fill="#000000"></path>
+                                                                    </g>
+                                                                </svg>
+                                                            </mat-form-field>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
+                                        <!-- <div class="form-group"> -->
+                                        <!-- <mat-form-field class="example-form-field"> -->
+                                        <!-- <mat-label>Bucket 1 เลือกเพจพรรค</mat-label> -->
+                                        <!-- <input *ngIf="!imageName" disabled matInput type="text"
+                                                [(ngModel)]="dataForm.coverPageURL"
+                                                [ngModelOptions]="{standalone: true}"> -->
+                                        <!-- <input *ngIf="imageName" disabled matInput type="text"
+                                                    [(ngModel)]="imageName" [ngModelOptions]="{standalone: true}"> -->
+                                        <!-- <button style="font-size: 25px;color: #a32126;" class="form-group"
+                                                mat-button matSuffix mat-icon-button (click)="value=''">
+                                                <mat-icon>add_photo_alternate</mat-icon>
+                                                <input #myInput type="file" id="file"
+                                                        (change)="handleInputChange($event)">
+                                            </button> -->
+                                        <!-- </mat-form-field> -->
+                                        <!-- <label style="color: white;padding: 10px;background-color: #fd545a;border-radius: 8px;margin-top:15px;" for="file">Choose File</label> -->
+                                        <!-- </div> -->
                                     </div>
                                 </div>
                             </div>

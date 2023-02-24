@@ -8,7 +8,7 @@
 import { Component, OnInit, ViewChild, EventEmitter, HostListener } from '@angular/core';
 import { MatPaginator, MatDialog } from '@angular/material';
 import { Gallery } from '@ngx-gallery/core';
-import { AuthenManager, MainPageSlideFacade, HashTagFacade, AssetFacade, PageFacade, SeoService } from '../../../services/services';
+import { AuthenManager, MainPageSlideFacade, HashTagFacade, AssetFacade, PageFacade, SeoService, UserSubjectFacade } from '../../../services/services';
 import { AbstractPage } from '../AbstractPage';
 import { CacheConfigInfo } from '../../../services/CacheConfigInfo.service';
 import { PostFacade } from '../../../services/facade/PostFacade.service';
@@ -236,7 +236,6 @@ export class HomePage extends AbstractPage implements OnInit {
       dialogRef.afterClosed().subscribe(result => {
       });
     }
-
   }
 
   isPageDirty(): boolean {

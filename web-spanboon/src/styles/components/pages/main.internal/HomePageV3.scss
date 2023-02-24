@@ -70,6 +70,7 @@
       &.banner-header-bg-gray {
         background: #f8f8f8;
         border-bottom: unset;
+        justify-content: unset;
 
         @media (max-width: $medium) {
           position: sticky;
@@ -245,6 +246,17 @@
             justify-content: center;
             position: relative;
             overflow: hidden;
+
+            >.teg_event {
+              background-color: black;
+              position: absolute;
+              color: white;
+              padding: 10px;
+              top: 0;
+              left: 0;
+              @include font-size-9($font-head-500);
+              z-index: 5;
+            }
 
             >.image-background {
               position: absolute;
