@@ -67,6 +67,7 @@ import {
   DragAndDrop,
   Preload,
   Shake,
+  HorizontalScrollDirective,
   Highlight
 } from './components/shares/directive/directives';
 
@@ -451,6 +452,7 @@ const DIRECTIVE_CLASSES: any[] = [
   DragAndDrop,
   Preload,
   Shake,
+  HorizontalScrollDirective,
   Highlight
 ];
 
