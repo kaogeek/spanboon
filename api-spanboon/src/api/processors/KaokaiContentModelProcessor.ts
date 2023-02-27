@@ -76,14 +76,9 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                 };
                 const follower = [];
                 const followed = await this.userFollowService.find({userId: new ObjectID(userId),subjectType:'PAGE'});
-                
-                if(followed.length >0){
-                    for(const following of followed){
-                        if(following !== undefined && following !== null){
-                            followed.push(following.subjectId);
-                        }else{
-                            continue;
-                        }
+                for(const following of followed){
+                    if(following.subjectId !== undefined && following.subjectId !== null){
+                        follower.push(new ObjectID(following.subjectId));
                     }
                 }
                 /* 
@@ -114,18 +109,17 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                 // set 1
                 const postAggregateSet1 = await this.postsService.aggregate(
                     [
-                        { $match: { isDraft: false, deleted: false, hidden: false } },
+                        { $match: { isDraft: false, deleted: false, hidden: false,pageId: { $ne:null,$in: follower } } },
                         {
                             $lookup:
                             {
                                 from: 'Page',
                                 let: { 'pageId': '$pageId' },
-                                pipeline: [{ $match: { $expr: { $in: ['$_id', follower] }, isOfficial: true ,createdDate:-1} }],
-                                as: 'page'
+                                pipeline: [
+                                    { $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },{$limit:1}
+                                ],                                
+                                  as: 'page'
                             }
-                        },
-                        {
-                            '$limit': limit
                         },
                         {
                             $unwind: {
@@ -170,10 +164,13 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                         },
                         {
                             $project: { story: 0 }
+                        },
+                        { $sort: { createdDate: -1 } },
+                        {
+                            $limit:20
                         }
                     ]
                 );
-                console.log('postAggregateSet1',postAggregateSet1);
                 const lastestDate = null;
                 const result: SectionModel = new SectionModel();
                 result.title = (this.config === undefined || this.config.title === undefined) ? 'ก้าวไกลรอบด้าน' : 'ก้าวไกลรอบด้าน';

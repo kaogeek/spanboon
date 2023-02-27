@@ -125,40 +125,65 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                 // set 1
                 const postAggregateSet1 = await this.postsService.aggregate(
                     [
-                        { $match: { isDraft: false, deleted: false, hidden: false } },
-                        { $sort: { createdDate: -1 } },
+                        { $match: { isDraft: false, deleted: false, hidden: false,pageId: { $ne:null,$in: buckets } } },
                         {
                             $lookup:
                             {
                                 from: 'Page',
-                                let: { 'buckets': buckets },
-                                pipeline: [{ $match: { $expr: { $in: ['$_id', buckets] }, isOfficial: true,createdDate:-1 } }, { $limit: 1 }
-                                ],
-                                as: 'Page'
+                                let: { 'pageId': '$pageId' },
+                                pipeline: [
+                                    { $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },{$limit:1}
+                                ],                                
+                                  as: 'page'
                             }
                         },
                         {
-                            '$limit': limit
+                            $unwind: {
+                                path: '$page',
+                                preserveNullAndEmptyArrays: true
+                            }
                         },
                         {
-                            $unwind: { path: '$page', preserveNullAndEmptyArrays: true },
-                        }, {
+                            $lookup: {
+                                from: 'SocialPost',
+                                localField: '_id',
+                                foreignField: 'postId',
+                                as: 'socialPosts'
+                            }
+                        },
+                        {
+                            $project: {
+                                'socialPosts': {
+                                    '_id': 0,
+                                    'pageId': 0,
+                                    'postId': 0,
+                                    'postBy': 0,
+                                    'postByType': 0
+                                }
+                            }
+                        },
+                        {
                             $lookup: {
                                 from: 'PostsGallery',
                                 localField: '_id',
                                 foreignField: 'post',
                                 as: 'gallery'
                             }
-                        }, {
+                        },
+                        {
                             $lookup: {
                                 from: 'User',
                                 localField: 'ownerUser',
                                 foreignField: '_id',
-                                as: 'User'
+                                as: 'user'
                             }
                         },
                         {
                             $project: { story: 0 }
+                        },
+                        { $sort: { createdDate: -1 } },
+                        {
+                            $limit:3
                         }
                     ]
                 );

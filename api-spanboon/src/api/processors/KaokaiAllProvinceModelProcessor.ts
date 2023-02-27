@@ -73,7 +73,6 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                         }
                     }
                 }
-  
                 const searchFilter: SearchFilter = new SearchFilter();
                 searchFilter.limit = limit;
                 searchFilter.offset = offset;
@@ -124,18 +123,17 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                 // set 1
                 const postAggregateSet1 = await this.postsService.aggregate(
                     [
-                        { $match: { isDraft: false, deleted: false, hidden: false } },
+                        { $match: { isDraft: false, deleted: false, hidden: false,pageId: { $ne:null,$in: bucketF } } },
                         {
                             $lookup:
                             {
                                 from: 'Page',
                                 let: { 'pageId': '$pageId' },
-                                pipeline: [{ $match: { $expr: { $in: ['$_id', bucketF] }, isOfficial: true,createdDate:-1 } }],
-                                as: 'page'
+                                pipeline: [
+                                    { $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },{$limit:1}
+                                ],                                
+                                  as: 'page'
                             }
-                        },
-                        {
-                            '$limit': limit
                         },
                         {
                             $unwind: {
@@ -180,10 +178,13 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                         },
                         {
                             $project: { story: 0 }
+                        },
+                        { $sort: { createdDate: -1 } },
+                        {
+                            $limit:4
                         }
                     ]
                 );
-                console.log('postAggregateSet1',postAggregateSet1);
                 const lastestDate = null;
                 const result: SectionModel = new SectionModel();
                 result.title = (this.config === undefined || this.config.title === undefined) ? provincePage.title : this.config.title;

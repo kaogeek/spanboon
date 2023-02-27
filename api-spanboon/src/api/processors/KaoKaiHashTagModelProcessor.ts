@@ -144,7 +144,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                             {
                                 from: 'Page',
                                 let: { 'pageId': '$pageId' },
-                                pipeline: [{ $match: { $expr: { $in: ['$_id', bucketF] }, isOfficial: true,createdDate:-1,category: ObjectID('63e78bd510c3161f7b2be9fc') } }],
+                                pipeline: [{ $match: { $expr: { $in: ['$_id', bucketF] }, isOfficial: true,category: ObjectID('63e78bd510c3161f7b2be9fc') } }, { $limit: 1 }],
                                 as: 'page'
                             }
                         },
