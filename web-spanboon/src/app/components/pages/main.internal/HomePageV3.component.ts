@@ -92,9 +92,9 @@ export class HomePageV3 extends AbstractPage implements OnInit {
         this.model.postSectionModel.contents.splice(index, 1);
       }
     }
-    if (this.isLogin) {
-      this.getSubject();
-    }
+    // if (this.isLogin) {
+    //   this.getSubject();
+    // }
     this.seoService.updateTitle(PLATFORM_NAME_TH);
     let filter: SearchFilter = new SearchFilter();
     filter.limit = 5;

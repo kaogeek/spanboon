@@ -363,11 +363,11 @@
 
     >.wrapper-content {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr 1fr;
+      grid-template-columns: repeat(4, 1fr);
       gap: 15px;
 
       @media (max-width: $xlarge) {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(2, 1fr);
         row-gap: 40px;
       }
 
