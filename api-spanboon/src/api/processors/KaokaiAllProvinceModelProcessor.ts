@@ -130,15 +130,18 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                             {
                                 from: 'Page',
                                 let: { 'pageId': '$pageId' },
-                                pipeline: [{ $match: { $expr: { $in: ['$_id', bucketF] }, isOfficial: true } }],
-                                as: 'Page'
+                                pipeline: [{ $match: { $expr: { $in: ['$_id', bucketF] }, isOfficial: true,createdDate:-1 } }],
+                                as: 'page'
                             }
                         },
                         {
                             '$limit': limit
                         },
                         {
-                            $unwind: { path: '$page', preserveNullAndEmptyArrays: true },
+                            $unwind: {
+                                path: '$page',
+                                preserveNullAndEmptyArrays: true
+                            }
                         },
                         {
                             $lookup: {
@@ -147,7 +150,8 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                                 foreignField: 'postId',
                                 as: 'socialPosts'
                             }
-                        }, {
+                        },
+                        {
                             $project: {
                                 'socialPosts': {
                                     '_id': 0,
@@ -157,19 +161,21 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                                     'postByType': 0
                                 }
                             }
-                        }, {
+                        },
+                        {
                             $lookup: {
                                 from: 'PostsGallery',
                                 localField: '_id',
                                 foreignField: 'post',
                                 as: 'gallery'
                             }
-                        }, {
+                        },
+                        {
                             $lookup: {
                                 from: 'User',
                                 localField: 'ownerUser',
                                 foreignField: '_id',
-                                as: 'User'
+                                as: 'user'
                             }
                         },
                         {
@@ -177,7 +183,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                         }
                     ]
                 );
-
+                console.log('postAggregateSet1',postAggregateSet1);
                 const lastestDate = null;
                 const result: SectionModel = new SectionModel();
                 result.title = (this.config === undefined || this.config.title === undefined) ? provincePage.title : this.config.title;

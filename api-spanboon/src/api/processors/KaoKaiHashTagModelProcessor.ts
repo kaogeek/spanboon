@@ -144,15 +144,18 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                             {
                                 from: 'Page',
                                 let: { 'pageId': '$pageId' },
-                                pipeline: [{ $match: { $expr: { $in: ['$_id', bucketF] }, isOfficial: true, category: ObjectID('63e78bd510c3161f7b2be9fc') } }],
-                                as: 'Page'
+                                pipeline: [{ $match: { $expr: { $in: ['$_id', bucketF] }, isOfficial: true,createdDate:-1,category: ObjectID('63e78bd510c3161f7b2be9fc') } }],
+                                as: 'page'
                             }
                         },
                         {
                             '$limit': limit
                         },
                         {
-                            $unwind: { path: '$page', preserveNullAndEmptyArrays: true },
+                            $unwind: {
+                                path: '$page',
+                                preserveNullAndEmptyArrays: true
+                            }
                         },
                         {
                             $lookup: {
@@ -161,7 +164,8 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                                 foreignField: 'postId',
                                 as: 'socialPosts'
                             }
-                        }, {
+                        },
+                        {
                             $project: {
                                 'socialPosts': {
                                     '_id': 0,
@@ -171,19 +175,21 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                                     'postByType': 0
                                 }
                             }
-                        }, {
+                        },
+                        {
                             $lookup: {
                                 from: 'PostsGallery',
                                 localField: '_id',
                                 foreignField: 'post',
                                 as: 'gallery'
                             }
-                        }, {
+                        },
+                        {
                             $lookup: {
                                 from: 'User',
                                 localField: 'ownerUser',
                                 foreignField: '_id',
-                                as: 'User'
+                                as: 'user'
                             }
                         },
                         {
