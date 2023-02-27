@@ -178,6 +178,7 @@ export class UserController {
     @Authorized('user')
     public async subjectUser(@Body({ validate: true }) userHashtag: UserTagRequest, @QueryParam('mode') mode: string, @Res() res: any, @Req() req: any): Promise<any> {
         const uid = new ObjectID(req.user.id);
+        const userContent = await this.userService.findOne({_id:uid});
         if (mode !== undefined) {
             mode = mode.toLocaleLowerCase();
         }
@@ -189,7 +190,10 @@ export class UserController {
             const ErrorResponse: any = { status: 0, message: 'Error Please select content at less than or equal 5.' };
             return res.status(400).send(ErrorResponse);
         }
-
+        if(userContent.subjectAttention !== undefined && userContent.subjectAttention !== null && userContent.subjectAttention.length >0){
+            const ErrorResponse: any = { status: 0, message: 'You have been selected content.' };
+            return res.status(400).send(ErrorResponse);
+        }
         const query = {_id:uid};
         const newValues = {$set:{subjectAttention:userHashtag.subject}};
         const update = await this.userService.update(query,newValues);
