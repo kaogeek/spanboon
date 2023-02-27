@@ -53,8 +53,6 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     userId = this.data.userId;
                 }
                 const bucketF = [];
-                const bucketS = [];
-                const bucketT = [];
                 const provincePage = await this.kaokaiTodayService.findOne({title:'ก้าวไกลทุกจังหวัด',flag:true});
                 if(provincePage.buckets.length >= 0){
                     if(provincePage.buckets[0] !== undefined && provincePage.buckets[0] !== null){
@@ -65,13 +63,13 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     // bucket 2 
                     if(provincePage.buckets[1] !== undefined && provincePage.buckets[1] !== null){
                         for(const provinceS of provincePage.buckets[1].values){
-                            bucketS.push(new ObjectID(provinceS));
+                            bucketF.push(new ObjectID(provinceS));
                         }
                     }
                     // bucket 3
                     if(provincePage.buckets[2] !== undefined && provincePage.buckets[2] !== null){
                         for(const provinceT of provincePage.buckets[2].values){
-                            bucketT.push(new ObjectID(provinceT));
+                            bucketF.push(new ObjectID(provinceT));
                         }
                     }
                 }
@@ -224,197 +222,6 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     contents.post = row;
                     result.contents.push(contents);
                 }
-                // set 2
-                const postAggregateSet2 = await this.postsService.aggregate(
-                    [
-                        { $match: { isDraft: false, deleted: false, hidden: false } },
-                        { $sort: { createdDate: -1 } },
-                        {
-                            $lookup:
-                            {
-                                from: 'Page',
-                                let: { 'pageId': '$pageId' },
-                                pipeline: [{ $match: { $expr: { $in: ['$_id', bucketS] }, isOfficial: true } }],
-                                as: 'Page'
-                            }
-                        },
-                        {
-                            '$limit': 3
-                        },
-                        {
-                            $unwind: { path: '$page', preserveNullAndEmptyArrays: true },
-                        },
-                        {
-                            $lookup: {
-                                from: 'SocialPost',
-                                localField: '_id',
-                                foreignField: 'postId',
-                                as: 'socialPosts'
-                            }
-                        }, {
-                            $project: {
-                                'socialPosts': {
-                                    '_id': 0,
-                                    'pageId': 0,
-                                    'postId': 0,
-                                    'postBy': 0,
-                                    'postByType': 0
-                                }
-                            }
-                        }, {
-                            $lookup: {
-                                from: 'PostsGallery',
-                                localField: '_id',
-                                foreignField: 'post',
-                                as: 'gallery'
-                            }
-                        }, {
-                            $lookup: {
-                                from: 'User',
-                                localField: 'ownerUser',
-                                foreignField: '_id',
-                                as: 'User'
-                            }
-                        },
-                        {
-                            $project: { story: 0 }
-                        }
-                    ]
-                );
-
-                for (const row of postAggregateSet2) {
-                    const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
-                    const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
-
-                    const contents: any = {};
-                    contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                    if (firstImage !== undefined && firstImage.s3FilePath !== undefined && firstImage.s3FilePath !== '') {
-                        try {
-                            const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3FilePath);
-                            contents.coverPageSignUrl = signUrl;
-                        } catch (error) {
-                            console.log('PostSectionProcessor: ' + error);
-                        }
-                    }
-
-                    // search isLike
-                    row.isLike = false;
-                    if (userId !== undefined && userId !== undefined && userId !== '') {
-                        const userLikes: UserLike[] = await this.userLikeService.find({ userId: new ObjectID(userId), subjectId: row._id, subjectType: LIKE_TYPE.POST });
-                        if (userLikes.length > 0) {
-                            row.isLike = true;
-                        }
-                    }
-
-                    contents.owner = {};
-                    if (row.page !== undefined) {
-                        contents.owner = this.parsePageField(row.page);
-                    } else {
-                        contents.owner = this.parseUserField(user);
-                    }
-                    // remove page agg
-                    // delete row.page;
-                    delete row.user;
-
-                    contents.post = row;
-                    result.contents.push(contents);
-                }
-
-                const postAggregateSet3 = await this.postsService.aggregate(
-                    [
-                        { $match: { isDraft: false, deleted: false, hidden: false } },
-                        { $sort: { summationScore: -1 } },
-                        {
-                            $lookup:
-                            {
-                                from: 'Page',
-                                let: { 'pageId': '$pageId' },
-                                pipeline: [{ $match: { $expr: { $in: ['$_id', bucketT] }, isOfficial: true } }],
-                                as: 'Page'
-                            }
-                        },
-                        {
-                            '$limit': 3
-                        },
-                        {
-                            $unwind: { path: '$page', preserveNullAndEmptyArrays: true },
-                        },
-                        {
-                            $lookup: {
-                                from: 'SocialPost',
-                                localField: '_id',
-                                foreignField: 'postId',
-                                as: 'socialPosts'
-                            }
-                        }, {
-                            $project: {
-                                'socialPosts': {
-                                    '_id': 0,
-                                    'pageId': 0,
-                                    'postId': 0,
-                                    'postBy': 0,
-                                    'postByType': 0
-                                }
-                            }
-                        }, {
-                            $lookup: {
-                                from: 'PostsGallery',
-                                localField: '_id',
-                                foreignField: 'post',
-                                as: 'gallery'
-                            }
-                        }, {
-                            $lookup: {
-                                from: 'User',
-                                localField: 'ownerUser',
-                                foreignField: '_id',
-                                as: 'User'
-                            }
-                        },
-                        {
-                            $project: { story: 0 }
-                        }
-                    ]
-                );
-
-                for (const row of postAggregateSet3) {
-                    const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
-                    const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
-
-                    const contents: any = {};
-                    contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                    if (firstImage !== undefined && firstImage.s3FilePath !== undefined && firstImage.s3FilePath !== '') {
-                        try {
-                            const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3FilePath);
-                            contents.coverPageSignUrl = signUrl;
-                        } catch (error) {
-                            console.log('PostSectionProcessor: ' + error);
-                        }
-                    }
-
-                    // search isLike
-                    row.isLike = false;
-                    if (userId !== undefined && userId !== undefined && userId !== '') {
-                        const userLikes: UserLike[] = await this.userLikeService.find({ userId: new ObjectID(userId), subjectId: row._id, subjectType: LIKE_TYPE.POST });
-                        if (userLikes.length > 0) {
-                            row.isLike = true;
-                        }
-                    }
-
-                    contents.owner = {};
-                    if (row.page !== undefined) {
-                        contents.owner = this.parsePageField(row.page);
-                    } else {
-                        contents.owner = this.parseUserField(user);
-                    }
-                    // remove page agg
-                    // delete row.page;
-                    delete row.user;
-
-                    contents.post = row;
-                    result.contents.push(contents);
-                }
-
                 result.dateTime = lastestDate;
 
                 resolve(result);

@@ -60,6 +60,7 @@ import { ImageUtil } from '../../utils/ImageUtil';
 import { KaoKaiHashTagModelProcessor } from '../processors/KaoKaiHashTagModelProcessor';
 import { KaokaiAllProvinceModelProcessor } from '../processors/KaokaiAllProvinceModelProcessor';
 import { KaokaiTodayService } from '../services/KaokaiTodayService';
+import { KaokaiContentModelProcessor } from '../processors/KaokaiContentModelProcessor';
 @JsonController('/main')
 export class MainPageController {
     constructor(
@@ -172,11 +173,12 @@ export class MainPageController {
         // pipeline: [{ $match: { $expr: { $in: ['$_id', bucketF] }, isOfficial: true } }],
 
         const kaokaiProvince = await kaokaiProvinceProcessor.process();
-        let kaokaiContent = undefined;
+        /* 
+        let kaokaiSubject = undefined;
         if(userId !== undefined && userId !== null){
             const userContent = await this.userService.find({_id:ObjectID(userId)});
             if(userContent.subjectAttention !== undefined && userContent.subjectAttention !== null &&userContent.subjectAttention.length > 0){
-                kaokaiContent = await this.pageService.aggregate([
+                kaokaiSubject = await this.pageService.aggregate([
                     {
                         $match:{isOfficial:true}
                     },
@@ -188,11 +190,10 @@ export class MainPageController {
                     }
                 ]);
             }
-        }
-        console.log('kaokaiContent',kaokaiContent);
+        } */
         // ก้าวไกลประเด็น
-        /* 
-        const kaokaiContentProcessor:KaokaiContentModelProcessor = new KaokaiContentModelProcessor(this.postsService, this.s3Service, this.userLikeService,this.kaokaiTodayService);
+        
+        const kaokaiContentProcessor:KaokaiContentModelProcessor = new KaokaiContentModelProcessor(this.postsService, this.s3Service, this.userLikeService,this.userFollowService);
         kaokaiContentProcessor.setData({
             userId,
             startDateTime: monthRanges[0],
@@ -203,7 +204,7 @@ export class MainPageController {
             searchOfficialOnly
         });
 
-        const kaokaiContent = await kaokaiContentProcessor.process(); */
+        const kaokaiContent = await kaokaiContentProcessor.process(); 
         // hashTag
         const hashTagSumma = await this.hashTagService.aggregate([{$sort:{count:-1}},{$limit:3}]);
         const result: any = {};
@@ -214,7 +215,7 @@ export class MainPageController {
         result.kaokaiHashTag = kaokaiHashTag;
         result.kaokaiProvince = kaokaiProvince;
         result.hashTagSumma = hashTagSumma;
-        // result.kaokaiContent = kaokaiContent;
+        result.kaokaiContent = kaokaiContent;
         const successResponse = ResponseUtil.getSuccessResponse('Successfully Main Page Data', result);
         return res.status(200).send(successResponse);
     }

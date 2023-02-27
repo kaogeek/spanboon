@@ -92,17 +92,29 @@ export class AdminPageController {
             // one-hot encoding 
             const requestTitle = title;
             if (requestTitle === 'ก้าวไกลวันนี้') {
-                // roundRobin
-                const bucket1 = await this.pageService.find({ roundRobin: 1, isOfficial: true });
-                const bucket2 = await this.pageService.find({ roundRobin: 2, isOfficial: true });
-                const bucket3 = await this.pageService.find({ roundRobin: 3, isOfficial: true });
-                const result: any = {};
-                result.title = requestTitle;
-                result.bucket1 = bucket1;
-                result.bucket2 = bucket2;
-                result.bucket3 = bucket3;
-                const successResponse = ResponseUtil.getSuccessResponse('Successfully Bucket KaokaiToday', result);
-                return res.status(200).send(successResponse);
+                for(const roundRobin of req.body.buckets){
+                    if(roundRobin.name === 'คณะกรรมการบริหารพรรค'){
+                        const page_1 = await this.pageService.find({isOfficial:true,roundRobin:'คณะกรรมการบริหารพรรค'});
+                        const successResponse = ResponseUtil.getSuccessResponse('Successfully Bucket KaokaiToday', page_1);
+                        return res.status(200).send(successResponse);
+                    }else if(roundRobin.name === 'รองหัวหน้าพรรคก้าวไกล'){
+                        const page_2 = await this.pageService.find({isOfficial:true,roundRobin:'รองหัวหน้าพรรคก้าวไกล'});
+                        const successResponse = ResponseUtil.getSuccessResponse('Successfully Bucket KaokaiToday', page_2);
+                        return res.status(200).send(successResponse);
+                    }else if(roundRobin.name === 'รองเลขาธิการพรรคก้าวไกล'){
+                        const page_3 = await this.pageService.find({isOfficial:true,roundRobin:'รองเลขาธิการพรรคก้าวไกล'});
+                        const successResponse = ResponseUtil.getSuccessResponse('Successfully Bucket KaokaiToday', page_3);
+                        return res.status(200).send(successResponse);
+                    }else if(roundRobin.name === 'กองโฆษกพรรคก้าวไกล'){
+                        const page_4 = await this.pageService.find({isOfficial:true,roundRobin:'กองโฆษกพรรคก้าวไกล'});
+                        const successResponse = ResponseUtil.getSuccessResponse('Successfully Bucket KaokaiToday', page_4);
+                        return res.status(200).send(successResponse);
+                    }else if(roundRobin.name === 'ผู้สมัครของพรรคก้าวไกล'){
+                        const page_5 = await this.pageService.find({isOfficial:true,roundRobin:'ผู้สมัครของพรรคก้าวไกล'});
+                        const successResponse = ResponseUtil.getSuccessResponse('Successfully Bucket KaokaiToday', page_5);
+                        return res.status(200).send(successResponse);
+                    }
+                }
             } else if (requestTitle === 'สภาก้าวไกล') {
                 // #HashTag
                 // db.Page.aggregate([{
