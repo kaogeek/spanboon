@@ -11,7 +11,7 @@ import { ObjectID } from 'mongodb';
 import { KaokaiTodayService } from '../services/KaokaiTodayService';
 
 export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProcessor {
-    private DEFAULT_SEARCH_LIMIT = 3;
+    private DEFAULT_SEARCH_LIMIT = 4;
     private DEFAULT_SEARCH_OFFSET = 0;
 
     constructor(
@@ -135,7 +135,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                             }
                         },
                         {
-                            '$limit': 3
+                            '$limit': limit
                         },
                         {
                             $unwind: { path: '$page', preserveNullAndEmptyArrays: true },

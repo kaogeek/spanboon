@@ -11,7 +11,7 @@ import { ObjectID } from 'mongodb';
 import { KaokaiTodayService } from '../services/KaokaiTodayService';
 
 export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcessor {
-    private DEFAULT_SEARCH_LIMIT = 3;
+    private DEFAULT_SEARCH_LIMIT = 4;
     private DEFAULT_SEARCH_OFFSET = 0;
 
     constructor(
