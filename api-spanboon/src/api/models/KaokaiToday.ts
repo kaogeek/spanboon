@@ -27,6 +27,12 @@ export class KaokaiToday extends BaseModel {
     @Column({ name: 'buckets' })
     public buckets: any;
 
+    @Column({ name: 'limit'})
+    public limit: number;
+
+    @Column({ name: 'position'})
+    public sectionRound: number;
+
     @BeforeInsert()
     public createDetails(): any {
         this.createdDate = moment().toDate();

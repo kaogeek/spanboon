@@ -27,6 +27,7 @@ import { LastestLookingSectionProcessor } from '../processors/LastestLookingSect
 // import { StillLookingSectionProcessor } from '../processors/StillLookingSectionProcessor';
 import { EmergencyEventSectionProcessor } from '../processors/EmergencyEventSectionProcessor';
 import { PostSectionProcessor } from '../processors/PostSectionProcessor';
+import { PostSectionProcessor2 } from '../processors/PostSectionProcessor2';
 import { PageRoundRobinProcessor } from '../processors/PageRoundRobinProcessor';
 import { MajorTrendSectionModelProcessor } from '../processors/majorTrendSectionModelProcessor';
 import { ObjectiveProcessor } from '../processors/ObjectiveProcessor';
@@ -77,20 +78,15 @@ export class MainPageController {
         private userLikeService: UserLikeService,
         private postsCommentService: PostsCommentService,
         private assetService: AssetService,
-        private kaokaiTodayService:KaokaiTodayService
+        private kaokaiTodayService: KaokaiTodayService
     ) { }
     // Home page content V2
     @Get('/content/v3')
     public async getContentListV2(@QueryParam('offset') offset: number, @QueryParam('section') section: string, @QueryParam('date') date: string, @Res() res: any, @Req() req: any): Promise<any> {
         const userId = req.headers.userid;
-        console.log('userId',userId);
         const mainPageSearchConfig = await this.pageService.searchPageOfficialConfig();
-        // const pageSearchCategory = await this.pageService.searchPageCategory();
-        // searchPageCategoryPoliticalCandidate
-        // searchPageCategoryPoliticalParty
-        // searchPageCategoryBoss
         const searchOfficialOnly = mainPageSearchConfig.searchOfficialOnly;
-        
+
         // ordering
         const emerProcessor: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service);
         emerProcessor.setConfig({
@@ -103,7 +99,7 @@ export class MainPageController {
         const monthRanges: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 365);
         const dayRanges: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 1);
         // summation
-        const postProcessor: PostSectionProcessor = new PostSectionProcessor(this.postsService, this.s3Service, this.userLikeService);
+        const postProcessor: PostSectionProcessor2 = new PostSectionProcessor2(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService);
         postProcessor.setData({
             userId,
             startDateTime: monthRanges[0],
@@ -113,9 +109,9 @@ export class MainPageController {
             searchOfficialOnly
         });
 
-        const postSectionModel = await postProcessor.processV2();
+        const postSectionModel = await postProcessor.process();
         // roundRobin
-        const pageProcessor: PageRoundRobinProcessor = new PageRoundRobinProcessor(this.postsService, this.s3Service, this.userLikeService,this.kaokaiTodayService);
+        const pageProcessor: PageRoundRobinProcessor = new PageRoundRobinProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService);
         pageProcessor.setData({
             userId,
             startDateTime: dayRanges[0],
@@ -131,7 +127,7 @@ export class MainPageController {
         const pageRoundRobin = await pageProcessor.process();
 
         // เกาะกระแส
-        const majorTrendProcessor:MajorTrendSectionModelProcessor = new MajorTrendSectionModelProcessor(this.postsService, this.s3Service, this.userLikeService);
+        const majorTrendProcessor: MajorTrendSectionModelProcessor = new MajorTrendSectionModelProcessor(this.postsService, this.s3Service, this.userLikeService);
         majorTrendProcessor.setData({
             userId,
             startDateTime: monthRanges[0],
@@ -141,12 +137,12 @@ export class MainPageController {
         majorTrendProcessor.setConfig({
             searchOfficialOnly
         });
-        
+
         const majorTrend = await majorTrendProcessor.process();
 
         // ก้าวไกลสภา #hashTag
-        
-        const kaokaiHashTagProcessor:KaoKaiHashTagModelProcessor = new KaoKaiHashTagModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService);
+
+        const kaokaiHashTagProcessor: KaoKaiHashTagModelProcessor = new KaoKaiHashTagModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService);
         kaokaiHashTagProcessor.setData({
             userId,
             startDateTime: monthRanges[0],
@@ -157,10 +153,10 @@ export class MainPageController {
             searchOfficialOnly
         });
 
-        const kaokaiHashTag = await kaokaiHashTagProcessor.process(); 
+        const kaokaiHashTag = await kaokaiHashTagProcessor.process();
 
         // ก้าวไกลทุกจังหวัด
-        const kaokaiProvinceProcessor:KaokaiAllProvinceModelProcessor = new KaokaiAllProvinceModelProcessor(this.postsService, this.s3Service, this.userLikeService,this.kaokaiTodayService);
+        const kaokaiProvinceProcessor: KaokaiAllProvinceModelProcessor = new KaokaiAllProvinceModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService);
         kaokaiProvinceProcessor.setData({
             userId,
             startDateTime: monthRanges[0],
@@ -173,27 +169,10 @@ export class MainPageController {
         // pipeline: [{ $match: { $expr: { $in: ['$_id', bucketF] }, isOfficial: true } }],
 
         const kaokaiProvince = await kaokaiProvinceProcessor.process();
-        /* 
-        let kaokaiSubject = undefined;
-        if(userId !== undefined && userId !== null){
-            const userContent = await this.userService.find({_id:ObjectID(userId)});
-            if(userContent.subjectAttention !== undefined && userContent.subjectAttention !== null &&userContent.subjectAttention.length > 0){
-                kaokaiSubject = await this.pageService.aggregate([
-                    {
-                        $match:{isOfficial:true}
-                    },
-                    {
-                        $match:{$in:{$subject:userContent.subjectAttention}}
-                    },
-                    {
-                        $limit:20
-                    }
-                ]);
-            }
-        } */
+
         // ก้าวไกลประเด็น
-        
-        const kaokaiContentProcessor:KaokaiContentModelProcessor = new KaokaiContentModelProcessor(this.postsService, this.s3Service, this.userLikeService,this.userFollowService);
+
+        const kaokaiContentProcessor: KaokaiContentModelProcessor = new KaokaiContentModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.userFollowService);
         kaokaiContentProcessor.setData({
             userId,
             startDateTime: monthRanges[0],
@@ -204,9 +183,9 @@ export class MainPageController {
             searchOfficialOnly
         });
 
-        const kaokaiContent = await kaokaiContentProcessor.process(); 
+        const kaokaiContent = await kaokaiContentProcessor.process();
         // hashTag
-        const hashTagSumma = await this.hashTagService.aggregate([{$sort:{count:-1}},{$limit:3}]);
+        const hashTagSumma = await this.hashTagService.aggregate([{ $sort: { count: -1 } }, { $limit: 3 }]);
         const result: any = {};
         result.emergencyEvents = emerSectionModel;
         result.postSectionModel = postSectionModel;

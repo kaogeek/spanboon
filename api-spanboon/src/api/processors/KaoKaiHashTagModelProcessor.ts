@@ -9,7 +9,7 @@ import { LIKE_TYPE } from '../../constants/LikeType';
 import moment from 'moment';
 import { ObjectID } from 'mongodb';
 import { KaokaiTodayService } from '../services/KaokaiTodayService';
-
+import { HashTagService } from '../services/HashTagService';
 export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcessor {
     private DEFAULT_SEARCH_LIMIT = 4;
     private DEFAULT_SEARCH_OFFSET = 0;
@@ -18,7 +18,8 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
         private postsService: PostsService,
         private s3Service: S3Service,
         private userLikeService: UserLikeService,
-        private kaokaiTodayService:KaokaiTodayService
+        private kaokaiTodayService: KaokaiTodayService,
+        private hashTagService: HashTagService
     ) {
         super();
     }
@@ -76,24 +77,31 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
 
                 };
                 const bucketF = [];
-                const provincePage = await this.kaokaiTodayService.findOne({title:'สภาก้าวไกล',flag:true});
-                if(provincePage.buckets.length >= 0){
-                    if(provincePage.buckets[0] !== undefined && provincePage.buckets[0] !== null){
-                        for(const provincesF of provincePage.buckets[0].values){
-                            bucketF.push(new ObjectID(provincesF));
+                const provincePage = await this.kaokaiTodayService.findOne({ title: 'สภาก้าวไกล', flag: true });
+                if (provincePage.buckets.length >= 0) {
+                    if (provincePage.buckets[0] !== undefined && provincePage.buckets[0] !== null) {
+                        for (const provincesF of provincePage.buckets[0].values) {
+                            bucketF.push(provincesF);
                         }
                     }
                     // bucket 2 
-                    if(provincePage.buckets[1] !== undefined && provincePage.buckets[1] !== null){
-                        for(const provinceS of provincePage.buckets[1].values){
-                            bucketF.push(new ObjectID(provinceS));
+                    if (provincePage.buckets[1] !== undefined && provincePage.buckets[1] !== null) {
+                        for (const provinceS of provincePage.buckets[1].values) {
+                            bucketF.push(provinceS);
                         }
                     }
                     // bucket 3
-                    if(provincePage.buckets[2] !== undefined && provincePage.buckets[2] !== null){
-                        for(const provinceT of provincePage.buckets[2].values){
-                            bucketF.push(new ObjectID(provinceT));
+                    if (provincePage.buckets[2] !== undefined && provincePage.buckets[2] !== null) {
+                        for (const provinceT of provincePage.buckets[2].values) {
+                            bucketF.push(provinceT);
                         }
+                    }
+                }
+                const hashTagStack = [];
+                const hashTagSearch = await this.hashTagService.searchHash(bucketF);
+                if (hashTagSearch.length > 0) {
+                    for (const hashTag of hashTagSearch) {
+                        hashTagStack.push(new ObjectID(hashTag.id));
                     }
                 }
                 /* 
@@ -104,7 +112,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     { $group: { _id: '$keyword', result: { $first: '$$ROOT' } } },
                     { $replaceRoot: { newRoot: '$result' } }
                 ];  */
- 
+
                 // overide start datetime
                 const dateTimeAndArray = [];
                 if (startDateTime !== undefined && startDateTime !== null) {
@@ -122,34 +130,34 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                 }
 
                 // db.Posts.aggregate(
-                    // [{$match:{'isDraft':false,'deleted':false,'hidden':false}},
-                    // {$sort:{'summationScore':-1}},
-                    // {'$lookup':{from:'Page','let':{'pageId':'$pageId'},'pipeline':[{'$match':{'$expr':{'$eq':['$_id','$$pageId']}}}],'as':'Page'}},
-                    // {$limit:3},
-                    // {$unwind:{path:'$page',preserveNullAndEmptyArrays:true}},
-                    // {'$lookup':{from:'SocialPost',localField:'_id',foreignField:'postId',as:'socialPosts'}},
-                    // {$project:{'socialPosts':{'_id':0,'pageId':0,'postId':0,'postBy':0,'postByType':0}}},
-                    // {'$lookup':{from:'PostsGallery','localField':'_id','foreignField':'post',as:'gallery'}},
-                    // {'$lookup':{from:'User',localField:'ownerUser',foreignField:'_id',as:'user'}},
-                    // {$project:{story:0}}
+                // [{$match:{'isDraft':false,'deleted':false,'hidden':false}},
+                // {$sort:{'summationScore':-1}},
+                // {'$lookup':{from:'Page','let':{'pageId':'$pageId'},'pipeline':[{'$match':{'$expr':{'$eq':['$_id','$$pageId']}}}],'as':'Page'}},
+                // {$limit:3},
+                // {$unwind:{path:'$page',preserveNullAndEmptyArrays:true}},
+                // {'$lookup':{from:'SocialPost',localField:'_id',foreignField:'postId',as:'socialPosts'}},
+                // {$project:{'socialPosts':{'_id':0,'pageId':0,'postId':0,'postBy':0,'postByType':0}}},
+                // {'$lookup':{from:'PostsGallery','localField':'_id','foreignField':'post',as:'gallery'}},
+                // {'$lookup':{from:'User',localField:'ownerUser',foreignField:'_id',as:'user'}},
+                // {$project:{story:0}}
                 // ]) */
 
                 // set 1
                 const postAggregateSet1 = await this.postsService.aggregate(
                     [
-                        { $match: { isDraft: false, deleted: false, hidden: false } },
-                        { $sort: { createdDate: -1 } },
+                        { $match: { isDraft: false, deleted: false, hidden: false, postsHashTags: { $ne: null, $in: hashTagStack } } },
+                        { $sort: { summationScore: -1 } },
+                        {
+                            '$limit': limit
+                        },
                         {
                             $lookup:
                             {
                                 from: 'Page',
                                 let: { 'pageId': '$pageId' },
-                                pipeline: [{ $match: { $expr: { $in: ['$_id', bucketF] }, isOfficial: true,category: ObjectID('63e78bd510c3161f7b2be9fc') } }, { $limit: 1 }],
+                                pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } }, { $limit: 1 }],
                                 as: 'page'
                             }
-                        },
-                        {
-                            '$limit': limit
                         },
                         {
                             $unwind: {
@@ -199,7 +207,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                 );
                 const lastestDate = null;
                 const result: SectionModel = new SectionModel();
-                result.title = (this.config === undefined || this.config.title === undefined) ?  provincePage.title: this.config.title;
+                result.title = (this.config === undefined || this.config.title === undefined) ? provincePage.title : this.config.title;
                 result.subtitle = (this.config === undefined || this.config.subtitle === undefined) ? 'โพสต์ที่เกิดขึ้นในเดือนนี้ ภายในแพลตฟอร์ม' : this.config.subtitle;
                 result.description = '';
                 result.iconUrl = '';

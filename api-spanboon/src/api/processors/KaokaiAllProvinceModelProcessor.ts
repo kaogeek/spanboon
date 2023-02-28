@@ -9,7 +9,7 @@ import { LIKE_TYPE } from '../../constants/LikeType';
 import moment from 'moment';
 import { ObjectID } from 'mongodb';
 import { KaokaiTodayService } from '../services/KaokaiTodayService';
-
+import { HashTagService } from '../services/HashTagService';
 export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProcessor {
     private DEFAULT_SEARCH_LIMIT = 4;
     private DEFAULT_SEARCH_OFFSET = 0;
@@ -18,7 +18,9 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
         private postsService: PostsService,
         private s3Service: S3Service,
         private userLikeService: UserLikeService,
-        private kaokaiTodayService:KaokaiTodayService
+        private kaokaiTodayService: KaokaiTodayService,
+        private hashTagService: HashTagService
+
     ) {
         super();
     }
@@ -53,26 +55,28 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     userId = this.data.userId;
                 }
                 const bucketF = [];
-                const provincePage = await this.kaokaiTodayService.findOne({title:'ก้าวไกลทุกจังหวัด',flag:true});
-                if(provincePage.buckets.length >= 0){
-                    if(provincePage.buckets[0] !== undefined && provincePage.buckets[0] !== null){
-                        for(const provincesF of provincePage.buckets[0].values){
-                            bucketF.push(new ObjectID(provincesF));
+                const provincePage = await this.kaokaiTodayService.findOne({ position: 3, flag: true });
+                if (provincePage.buckets.length >= 0) {
+                    if (provincePage.buckets[0] !== undefined && provincePage.buckets[0] !== null) {
+                        for (const provincesF of provincePage.buckets[0].values) {
+                            bucketF.push(String(provincesF));
                         }
                     }
                     // bucket 2 
-                    if(provincePage.buckets[1] !== undefined && provincePage.buckets[1] !== null){
-                        for(const provinceS of provincePage.buckets[1].values){
-                            bucketF.push(new ObjectID(provinceS));
+                    if (provincePage.buckets[1] !== undefined && provincePage.buckets[1] !== null) {
+                        for (const provinceS of provincePage.buckets[1].values) {
+                            bucketF.push(String(provinceS));
                         }
                     }
                     // bucket 3
-                    if(provincePage.buckets[2] !== undefined && provincePage.buckets[2] !== null){
-                        for(const provinceT of provincePage.buckets[2].values){
-                            bucketF.push(new ObjectID(provinceT));
+                    if (provincePage.buckets[2] !== undefined && provincePage.buckets[2] !== null) {
+                        for (const provinceT of provincePage.buckets[2].values) {
+                            bucketF.push(String(provinceT));
                         }
                     }
                 }
+                console.log('provincePage',provincePage);
+                console.log('bucketF',bucketF);
                 const searchFilter: SearchFilter = new SearchFilter();
                 searchFilter.limit = limit;
                 searchFilter.offset = offset;
@@ -103,9 +107,9 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     { $group: { _id: '$keyword', result: { $first: '$$ROOT' } } },
                     { $replaceRoot: { newRoot: '$result' } }
                 ];  */
- 
+
                 // overide start datetime
-                 const dateTimeAndArray = [];
+                const dateTimeAndArray = [];
                 if (startDateTime !== undefined && startDateTime !== null) {
                     dateTimeAndArray.push({ startDateTime: { $gte: startDateTime } });
                 }
@@ -123,17 +127,22 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                 // set 1
                 const postAggregateSet1 = await this.postsService.aggregate(
                     [
-                        { $match: { isDraft: false, deleted: false, hidden: false,pageId: { $ne:null,$in: bucketF } } },
+                        { $match: { isDraft: false, deleted: false, hidden: false ,pageId:{$ne:null}} },
+                        { $sort: { createdDate: -1 } },
                         {
                             $lookup:
                             {
                                 from: 'Page',
                                 let: { 'pageId': '$pageId' },
                                 pipeline: [
-                                    { $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },{$limit:1}
-                                ],                                
-                                  as: 'page'
+                                    { $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true} },
+                                    { $limit: 1 },
+                                ],
+                                as: 'page'
                             }
+                        },
+                        {
+                            '$limit': 4
                         },
                         {
                             $unwind: {
@@ -178,16 +187,12 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                         },
                         {
                             $project: { story: 0 }
-                        },
-                        { $sort: { createdDate: -1 } },
-                        {
-                            $limit:4
                         }
                     ]
                 );
                 const lastestDate = null;
                 const result: SectionModel = new SectionModel();
-                result.title = (this.config === undefined || this.config.title === undefined) ? provincePage.title : this.config.title;
+                result.title = (this.config === undefined || this.config.title === undefined) ? provincePage.title : provincePage.title;
                 result.description = '';
                 result.iconUrl = '';
                 result.contents = [];
