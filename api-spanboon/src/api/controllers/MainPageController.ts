@@ -102,8 +102,8 @@ export class MainPageController {
         const postProcessor: PostSectionProcessor2 = new PostSectionProcessor2(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService,this.pageService);
         postProcessor.setData({
             userId,
-            startDateTime: dayRanges[0],
-            endDateTime: dayRanges[1]
+            startDateTime: monthRanges[0],
+            endDateTime: monthRanges[1]
         });
         postProcessor.setConfig({
             searchOfficialOnly
@@ -114,8 +114,8 @@ export class MainPageController {
         const pageProcessor: PageRoundRobinProcessor = new PageRoundRobinProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService,this.pageService);
         pageProcessor.setData({
             userId,
-            startDateTime: dayRanges[0],
-            endDateTime: dayRanges[1]
+            startDateTime: monthRanges[0],
+            endDateTime: monthRanges[1]
         });
 
         pageProcessor.setConfig({
