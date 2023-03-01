@@ -194,7 +194,6 @@ export class AdminPageController {
     }
 
     @Get('/receive/bucket')
-    @Authorized()
     public async receiveBucket(@Res() res: any, @Req() req: any): Promise<any> {
         const bucketAll = await this.kaokaiTodayService.find({});
         if (bucketAll.length > 0) {
@@ -207,6 +206,7 @@ export class AdminPageController {
     }
 
     @Post('/processor')
+    @Authorized()
     public async createKaokaiToday(@Body({ validate: true }) createKaokaiTodayRequest: CreateKaokaiTodayRequest, @Res() res: any, @Req() req: any): Promise<any> {
         const titleRequest = createKaokaiTodayRequest.title;
 
@@ -230,6 +230,7 @@ export class AdminPageController {
     }
 
     @Put('/:id/processor')
+    @Authorized()
     public async updateKaokaiToday(@Body({ validate: true }) createKaokaiTodayRequest: CreateKaokaiTodayRequest, @Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
         const objId = new ObjectID(id);
         const kaoKaiToday = await this.kaokaiTodayService.findOne({ _id: objId });
@@ -259,6 +260,7 @@ export class AdminPageController {
     }
 
     @Delete('/:id/processor')
+    @Authorized()
     public async deleteKaokaiToday(@Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
         const objId = new ObjectID(id);
         const kaoKaiToday = await this.kaokaiTodayService.findOne({ _id: objId });
