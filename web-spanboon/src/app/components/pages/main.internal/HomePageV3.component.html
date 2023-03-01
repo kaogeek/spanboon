@@ -170,12 +170,12 @@
                                     </svg>
                                     <a class="tag-link gray time"
                                         (click)="clickToPost(model && model.postSectionModel.contents[0].post._id)"
-                                        [innerHTML]="model && model.postSectionModel.contents[0].post.createdDate | highlight"></a>
+                                        [innerHTML]="model && model.postSectionModel.contents[0].post.createdDate | thformatdatetime"></a>
                                 </span>
                             </div>
                             <div class="wrapper-news-post flex-content">
                                 <div class="wrapper-news-post-img md-none-min">
-                                    <img src="https://d1evz9svx3lh53.cloudfront.net/604a2148b8a2d345758ffc91/nrwa1d2umvq167508583868598852stw0as.jpg?AWSAccessKeyId=AKIATCMHTO4YJZYKAD7U&Expires=1675416603&Signature=mTYTDYcamfwX2gvq7WDShmrz0LU%3D"
+                                    <img src="{{apiBaseURL + (model && model.postSectionModel.contents[1].coverPageUrl) + '/image'}}"
                                         alt="">
                                 </div>
                                 <div class="detail">
@@ -207,12 +207,14 @@
                                         <path
                                             d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 " />
                                     </svg>
-                                    <a class="tag-link gray time" href="">31 มกราคม เวลา 14:05 น.</a>
+                                    <a class="tag-link gray time"
+                                        (click)="clickToPost(model && model.postSectionModel.contents[2].post._id)"
+                                        [innerHTML]="model && model.postSectionModel.contents[2].post.createdDate | thformatdatetime"></a>
                                 </span>
                             </div>
                             <div class="wrapper-news-post flex-content">
                                 <div class="wrapper-news-post-img md-none-min">
-                                    <img src="https://d1evz9svx3lh53.cloudfront.net/604a2148b8a2d345758ffc91/c69obyaqr681674127065394ptgl5ly24t.jpg?AWSAccessKeyId=AKIATCMHTO4YJZYKAD7U&Expires=1675416624&Signature=UAWEF7fgN%2BYUyzhCJt%2BhOK8V8YA%3D"
+                                    <img src="{{apiBaseURL + (model && model.postSectionModel.contents[2].coverPageUrl) + '/image'}}"
                                         alt="">
                                 </div>
                                 <div class="detail">
@@ -293,12 +295,14 @@
                                         <path
                                             d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 " />
                                     </svg>
-                                    <a class="tag-link gray time" href="">31 มกราคม เวลา 14:05 น.</a>
+                                    <a class="tag-link gray time"
+                                        (click)="clickToPost(model && model.pageRoundRobin.contents[1].post._id)"
+                                        [innerHTML]="model && model.pageRoundRobin.contents[1].post.createdDate | thformatdatetime"></a>
                                 </span>
                             </div>
                             <div class="wrapper-news-post flex-content">
                                 <div class="wrapper-news-post-img md-none-min">
-                                    <img src="https://d1evz9svx3lh53.cloudfront.net/63b7a4a51a69db32be899f6a/uf7xrfa63oo1675396170299dj1w7lkpir.jpg?AWSAccessKeyId=AKIATCMHTO4YJZYKAD7U&Expires=1675417581&Signature=gqRhOcXlWTYL0Mtn1C8tRj9jyBA%3D"
+                                    <img src="{{apiBaseURL + (model && model.pageRoundRobin.contents[1].coverPageUrl) + '/image'}}"
                                         alt="">
                                 </div>
                                 <div class="detail">
@@ -335,7 +339,7 @@
                             </div>
                             <div class="wrapper-news-post flex-content">
                                 <div class="wrapper-news-post-img md-none-min">
-                                    <img src="https://d1evz9svx3lh53.cloudfront.net/63b7a4a51a69db32be899f6a/4w2nikht0ec1674903312348eg9mkb6zan5.jpg?AWSAccessKeyId=AKIATCMHTO4YJZYKAD7U&Expires=1675417974&Signature=6obqqD91j98MP19uRWRySwpj3Bk%3D"
+                                    <img src="{{apiBaseURL + (model && model.pageRoundRobin.contents[2].coverPageUrl) + '/image'}}"
                                         alt="">
                                 </div>
                                 <div class="detail">
