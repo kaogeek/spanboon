@@ -14,6 +14,8 @@ export class CreateKaokaiTodayRequest {
     public title: string;
     public type: string;
     public field: string;
+    public position:number;
     public flag: boolean;
     public buckets: any;
+
 }

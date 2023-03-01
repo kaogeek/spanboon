@@ -209,8 +209,28 @@ export class AdminPageController {
     @Authorized()
     public async createKaokaiToday(@Body({ validate: true }) createKaokaiTodayRequest: CreateKaokaiTodayRequest, @Res() res: any, @Req() req: any): Promise<any> {
         const titleRequest = createKaokaiTodayRequest.title;
-
-        if (titleRequest) {
+        const positionNumber = createKaokaiTodayRequest.position;
+        const checkKaokai = await this.kaokaiTodayService.findOne({position:positionNumber});
+        if(checkKaokai !== null && checkKaokai !== undefined){
+            const query = {_id:checkKaokai.id};
+            const newValues = {$set:{position:null}};
+            const update = await this.kaokaiTodayService.update(query,newValues);
+            if(update){
+                const createKaokaiToday = new KaokaiToday();
+                createKaokaiToday.title = titleRequest;
+                createKaokaiToday.type = createKaokaiTodayRequest.type;
+                createKaokaiToday.field = createKaokaiTodayRequest.field;
+                createKaokaiToday.flag = createKaokaiTodayRequest.flag;
+                createKaokaiToday.buckets = createKaokaiTodayRequest.buckets;
+    
+                const CKaokaiToday = await this.kaokaiTodayService.create(createKaokaiToday);
+                if (CKaokaiToday) {
+                    const successResponse = ResponseUtil.getSuccessResponse('Create KaokaiToday is successfully.', createKaokaiToday);
+                    return res.status(200).send(successResponse);
+                }
+            }
+        }
+        else if(checkKaokai === undefined && checkKaokai === null){
             const createKaokaiToday = new KaokaiToday();
             createKaokaiToday.title = titleRequest;
             createKaokaiToday.type = createKaokaiTodayRequest.type;
@@ -245,7 +265,7 @@ export class AdminPageController {
                             'buckets.0.values': [updateKaokaiToday.values]
                         }
                     };
-                    await this.kaokaiTodayService.updateToken(query, newValues);
+                    await this.kaokaiTodayService.update(query, newValues);
                 } else {
                     continue;
                 }

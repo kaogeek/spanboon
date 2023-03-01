@@ -99,11 +99,11 @@ export class MainPageController {
         const monthRanges: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 365);
         const dayRanges: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 1);
         // summation
-        const postProcessor: PostSectionProcessor2 = new PostSectionProcessor2(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService);
+        const postProcessor: PostSectionProcessor2 = new PostSectionProcessor2(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService,this.pageService);
         postProcessor.setData({
             userId,
-            startDateTime: monthRanges[0],
-            endDateTime: monthRanges[1]
+            startDateTime: dayRanges[0],
+            endDateTime: dayRanges[1]
         });
         postProcessor.setConfig({
             searchOfficialOnly
@@ -111,11 +111,11 @@ export class MainPageController {
 
         const postSectionModel = await postProcessor.process();
         // roundRobin
-        const pageProcessor: PageRoundRobinProcessor = new PageRoundRobinProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService);
+        const pageProcessor: PageRoundRobinProcessor = new PageRoundRobinProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService,this.pageService);
         pageProcessor.setData({
             userId,
-            startDateTime: monthRanges[0],
-            endDateTime: monthRanges[1]
+            startDateTime: dayRanges[0],
+            endDateTime: dayRanges[1]
         });
 
         pageProcessor.setConfig({
@@ -130,8 +130,8 @@ export class MainPageController {
         const majorTrendProcessor: MajorTrendSectionModelProcessor = new MajorTrendSectionModelProcessor(this.postsService, this.s3Service, this.userLikeService);
         majorTrendProcessor.setData({
             userId,
-            startDateTime: monthRanges[0],
-            endDateTime: monthRanges[1]
+            startDateTime: dayRanges[0],
+            endDateTime: dayRanges[1]
         });
 
         majorTrendProcessor.setConfig({
@@ -145,8 +145,8 @@ export class MainPageController {
         const kaokaiHashTagProcessor: KaoKaiHashTagModelProcessor = new KaoKaiHashTagModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService);
         kaokaiHashTagProcessor.setData({
             userId,
-            startDateTime: monthRanges[0],
-            endDateTime: monthRanges[1]
+            startDateTime: dayRanges[0],
+            endDateTime: dayRanges[1]
         });
 
         kaokaiHashTagProcessor.setConfig({
@@ -159,8 +159,8 @@ export class MainPageController {
         const kaokaiProvinceProcessor: KaokaiAllProvinceModelProcessor = new KaokaiAllProvinceModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService,this.pageService);
         kaokaiProvinceProcessor.setData({
             userId,
-            startDateTime: monthRanges[0],
-            endDateTime: monthRanges[1]
+            startDateTime: dayRanges[0],
+            endDateTime: dayRanges[1]
         });
 
         kaokaiProvinceProcessor.setConfig({
@@ -175,8 +175,8 @@ export class MainPageController {
         const kaokaiContentProcessor: KaokaiContentModelProcessor = new KaokaiContentModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.userFollowService);
         kaokaiContentProcessor.setData({
             userId,
-            startDateTime: monthRanges[0],
-            endDateTime: monthRanges[1]
+            startDateTime: dayRanges[0],
+            endDateTime: dayRanges[1]
         });
 
         kaokaiContentProcessor.setConfig({

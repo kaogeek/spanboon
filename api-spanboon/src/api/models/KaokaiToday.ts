@@ -31,7 +31,7 @@ export class KaokaiToday extends BaseModel {
     public limit: number;
 
     @Column({ name: 'position'})
-    public sectionRound: number;
+    public position: number;
 
     @BeforeInsert()
     public createDetails(): any {
