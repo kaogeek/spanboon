@@ -114,8 +114,8 @@ export class MainPageController {
         const pageProcessor: PageRoundRobinProcessor = new PageRoundRobinProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService);
         pageProcessor.setData({
             userId,
-            startDateTime: dayRanges[0],
-            endDateTime: dayRanges[1]
+            startDateTime: monthRanges[0],
+            endDateTime: monthRanges[1]
         });
 
         pageProcessor.setConfig({
@@ -156,7 +156,7 @@ export class MainPageController {
         const kaokaiHashTag = await kaokaiHashTagProcessor.process();
 
         // ก้าวไกลทุกจังหวัด
-        const kaokaiProvinceProcessor: KaokaiAllProvinceModelProcessor = new KaokaiAllProvinceModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService);
+        const kaokaiProvinceProcessor: KaokaiAllProvinceModelProcessor = new KaokaiAllProvinceModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService,this.pageService);
         kaokaiProvinceProcessor.setData({
             userId,
             startDateTime: monthRanges[0],

@@ -10,6 +10,7 @@ import moment from 'moment';
 import { ObjectID } from 'mongodb';
 import { KaokaiTodayService } from '../services/KaokaiTodayService';
 import { HashTagService } from '../services/HashTagService';
+import { PageService } from '../services/PageService';
 export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProcessor {
     private DEFAULT_SEARCH_LIMIT = 4;
     private DEFAULT_SEARCH_OFFSET = 0;
@@ -19,7 +20,8 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
         private s3Service: S3Service,
         private userLikeService: UserLikeService,
         private kaokaiTodayService: KaokaiTodayService,
-        private hashTagService: HashTagService
+        private hashTagService: HashTagService,
+        private pageService:PageService
 
     ) {
         super();
@@ -75,8 +77,36 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                         }
                     }
                 }
-                console.log('provincePage',provincePage);
-                console.log('bucketF',bucketF);
+                const pageStackId = [];
+                const pageStackprovince = [];
+                /* 
+                const pageProvince = await this.pageService.searchPageProvince(bucketF);
+                console.log('pageProvince',pageProvince);
+                for(const pageStack of pageProvince){
+                    if(pageStack !== undefined && pageStack !== null){
+                        pageStackId.push(pageStack.id);
+                    }
+                } */
+                const pageProvince = await this.pageService.aggregate(
+                    [
+                        {
+                            $match:{isOfficial: true,banned:false,province:{$in:bucketF}}
+                        },
+                        {
+                            $limit:10
+                        }
+                    ]
+                );
+                for(const pageStack of pageProvince){
+                    if(pageStack !== undefined && pageStack !== null){
+                        pageStackId.push(pageStack);
+                    }
+                }
+                for(const Stackprovince of pageStackId){
+                    if(Stackprovince._id !== null && Stackprovince._id !== undefined){
+                        pageStackprovince.push(Stackprovince._id);
+                    }
+                } 
                 const searchFilter: SearchFilter = new SearchFilter();
                 searchFilter.limit = limit;
                 searchFilter.offset = offset;
@@ -123,26 +153,24 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     // default if startDateTime and endDateTime is not defined.
                     postMatchStmt.startDateTime = { $lte: today };
                 }
-
                 // set 1
                 const postAggregateSet1 = await this.postsService.aggregate(
                     [
-                        { $match: { isDraft: false, deleted: false, hidden: false ,pageId:{$ne:null}} },
+                        { $match: { isDraft: false, deleted: false, hidden: false,pageId:{$in:pageStackprovince}} },
                         { $sort: { createdDate: -1 } },
+                        {
+                            $limit: 4
+                        },
                         {
                             $lookup:
                             {
                                 from: 'Page',
                                 let: { 'pageId': '$pageId' },
                                 pipeline: [
-                                    { $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true} },
-                                    { $limit: 1 },
+                                    { $match: { $expr: { $eq: ['$_id', '$$pageId'] }} },{$limit:1},
                                 ],
                                 as: 'page'
                             }
-                        },
-                        {
-                            '$limit': 4
                         },
                         {
                             $unwind: {
@@ -187,7 +215,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                         },
                         {
                             $project: { story: 0 }
-                        }
+                        },
                     ]
                 );
                 const lastestDate = null;

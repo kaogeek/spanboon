@@ -129,8 +129,8 @@ export class User extends BaseModel {
     @Column({ name: 'acceptUA'})
     public acceptUA: boolean;
 
-    @Column({ name:'UaVersion'})
-    public UaVersion:boolean;
+    @Column({ name:'uaVersion'})
+    public uaVersion:boolean;
 
     @Column({ name: 'subjectAttention'})
     public subjectAttention:any;

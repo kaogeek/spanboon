@@ -117,14 +117,18 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     // set 1
                     const postAggregateSet1 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $ne: null, $in: buckets } } },
+                            { $match: { isDraft: false, deleted: false, hidden: false,pageId:{$in:buckets}} },
+                            { $sort: { createdDate: -1 } },
+                            {
+                                $limit: 4
+                            },
                             {
                                 $lookup:
                                 {
                                     from: 'Page',
                                     let: { 'pageId': '$pageId' },
                                     pipeline: [
-                                        { $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } }, { $limit: 1 }
+                                        { $match: { $expr: { $eq: ['$_id', '$$pageId'] }} }, { $limit: 4 }
                                     ],
                                     as: 'page'
                                 }
@@ -173,10 +177,6 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                             {
                                 $project: { story: 0 }
                             },
-                            { $sort: { createdDate: -1 } },
-                            {
-                                $limit: 3
-                            }
                         ]
                     );
                     const lastestDate = null;
