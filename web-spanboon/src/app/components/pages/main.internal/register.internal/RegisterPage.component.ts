@@ -407,9 +407,14 @@ export class RegisterPage extends AbstractPage implements OnInit {
         this.isRegister = false;
         return;
       }
-
+      let passwordPattern = " ";
       if (this.mode === "normal") {
         if (formData.password === "" && formData.repassword === "") {
+          this.activePass = true;
+          document.getElementById('password').style.border = "1px solid red";
+          this.isRegister = false;
+          return document.getElementById("password").focus();
+        } else if (formData.password.match(passwordPattern)) {
           this.activePass = true;
           document.getElementById('password').style.border = "1px solid red";
           this.isRegister = false;

@@ -16,7 +16,7 @@ import { CacheConfigInfo } from '../../../services/CacheConfigInfo.service';
 import { PLATFORM_NAME_TH } from 'src/custom/variable';
 import { SearchFilter } from '../../../models/SearchFilter';
 import { environment } from 'src/environments/environment';
-import { DialogAlert, DialogCheckBox } from '../../components';
+import { DialogAlert, DialogCheckBox, DialogPostCrad } from '../../components';
 
 declare var $: any;
 
@@ -30,6 +30,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   public static readonly PAGE_NAME: string = PAGE_NAME;
   public userCloneDatas: any;
   public isLoading: boolean;
+  public showLoading: boolean;
   public isPostNewTab: boolean = false;
   public windowWidth: any;
   public mainPageModelFacade: MainPageSlideFacade;
@@ -66,6 +67,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     this.hashTagFacade = hashTagFacade;
     this.seoService = seoService;
     this.userSubject = userSubject;
+    this.showLoading = true;
   }
 
   public ngOnInit(): void {
@@ -95,6 +97,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     // if (this.isLogin) {
     //   this.getSubject();
     // }
+    this.showLoading = false;
     this.seoService.updateTitle(PLATFORM_NAME_TH);
     let filter: SearchFilter = new SearchFilter();
     filter.limit = 5;
@@ -161,6 +164,49 @@ export class HomePageV3 extends AbstractPage implements OnInit {
         console.log("err", err)
       }
     })
+  }
+
+  public clickToPost(postId: any) {
+    this.router.navigate([]).then(() => {
+      window.open('/post/' + postId);
+    });
+  }
+
+  public clickToPageUser(pageId: any, owner?: any) {
+    this.router.navigate([]).then(() => {
+      if (owner !== undefined && owner !== null) {
+        window.open('/objective/' + pageId);
+      } else {
+        window.open('/page/' + pageId);
+      }
+    });
+  }
+
+  public clickToPage(dataId: any, type?: any) {
+    if (type !== null && type !== undefined) {
+      this.router.navigate([]).then(() => {
+        window.open('/search?hashtag=' + dataId, '_blank');
+      });
+    } else {
+      if (typeof (dataId) === 'object') {
+        const dialogRef = this.dialog.open(DialogPostCrad, {
+          width: 'auto',
+          disableClose: false,
+          data: {
+            post: dataId,
+            isNotAccess: false,
+            user: this.userCloneDatas,
+            pageUser: this.pageUser,
+          }
+        });
+        dialogRef.afterClosed().subscribe(result => {
+        });
+      } else {
+        this.router.navigate([]).then(() => {
+          window.open('/emergencyevent/' + dataId);
+        });
+      }
+    }
   }
 
   @HostListener('window:resize', ['$event'])

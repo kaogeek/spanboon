@@ -1,5 +1,20 @@
+<div *ngIf="model === undefined" class="loding">
+    <div class="top">
+        <div class="top_for_loding" *ngFor="let number of [0,1 ]">
+            <Preload-card [isShowCard1]="true" [isShowCard2]="false">
+            </Preload-card>
+        </div>
+    </div>
+    <div class="buttom">
+        <div class="buttom_for_loding" *ngFor="let number of [0,1,2,3 ]">
+            <Preload-card [isShowCard1]="true" [isShowCard2]="false">
+            </Preload-card>
+        </div>
+    </div>
+</div>
+
 <div class="home-page">
-    <section class="section-1">
+    <section class="section-1" *ngIf="!showLoading">
         <div class="container">
             <div class="wrapper-1">
                 <div class="wrapper-1-left">
@@ -150,14 +165,14 @@
                                 </div>
                                 <div class="detail">
                                     <p class="title md-none-min"
-                                        [innerHTML]="model && model.postSectionModel.contents[0].post.title | highlight">
+                                        [innerHTML]="model && model.postSectionModel.contents[1].post.title | highlight">
                                     </p>
                                     <div class="wrapper-title-topic md-none-max">
                                         <p class="title-topic"
-                                            [innerHTML]="model && model.postSectionModel.contents[0].post.title | highlight">
+                                            [innerHTML]="model && model.postSectionModel.contents[1].post.title | highlight">
                                         </p>
                                         <a class="tag-link gray time" href="" [innerHTML]="model &&
-                                        model.postSectionModel.contents[0].post.createdDate |
+                                        model.postSectionModel.contents[1].post.createdDate |
                                         thformatdatetime"></a>
                                     </div>
                                 </div>
@@ -184,14 +199,14 @@
                                 </div>
                                 <div class="detail">
                                     <p class="title md-none-min"
-                                        [innerHTML]="model && model.postSectionModel.contents[1].post.title | highlight">
+                                        [innerHTML]="model && model.postSectionModel.contents[2].post.title | highlight">
                                     </p>
                                     <div class="wrapper-title-topic md-none-max">
                                         <p class="title-topic"
-                                            [innerHTML]="model && model.postSectionModel.contents[1].post.title | highlight">
+                                            [innerHTML]="model && model.postSectionModel.contents[2].post.title | highlight">
                                         </p>
                                         <a class="tag-link gray time" href="" [innerHTML]="model &&
-                                        model.postSectionModel.contents[1].post.createdDate |
+                                        model.postSectionModel.contents[2].post.createdDate |
                                         thformatdatetime"></a>
                                     </div>
                                 </div>
@@ -211,25 +226,25 @@
                                             d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 " />
                                     </svg>
                                     <a class="tag-link gray time" href="" [innerHTML]="model &&
-                                    model.postSectionModel.contents[2].post.createdDate |
+                                    model.postSectionModel.contents[0].post.createdDate |
                                     thformatdatetime"></a>
                                 </span>
                             </div>
                             <div class="wrapper-news-post">
                                 <div class="wrapper-news-post-img">
                                     <ng-container
-                                        *ngIf="model && model.postSectionModel.contents[2].coverPageUrl; else elseImageSection">
-                                        <img src="{{apiBaseURL + (model && model.postSectionModel.contents[2].coverPageUrl) + '/image'}}"
+                                        *ngIf="model && model.postSectionModel.contents[0].coverPageUrl; else elseImageSection">
+                                        <img src="{{apiBaseURL + (model && model.postSectionModel.contents[0].coverPageUrl) + '/image'}}"
                                             alt="">
                                     </ng-container>
                                     <ng-template #elseImageSection>
                                         <span
-                                            [innerHTML]="model && model.postSectionModel.contents[2].coverPageUrl.post.title"></span>
+                                            [innerHTML]="model && model.postSectionModel.contents[0].coverPageUrl.post.title"></span>
                                     </ng-template>
                                 </div>
                                 <div class="detail">
                                     <p class="title"
-                                        [innerHTML]="model && model.postSectionModel.contents[2].coverPageUrl ? model && model.postSectionModel.contents[2].post.title : model && model.postSectionModel.contents[2].post.detail">
+                                        [innerHTML]="model && model.postSectionModel.contents[0].coverPageUrl ? model && model.postSectionModel.contents[0].post.title : model && model.postSectionModel.contents[0].post.detail">
                                     </p>
                                 </div>
                             </div>
@@ -264,14 +279,14 @@
                                 </div>
                                 <div class="detail">
                                     <p class="title md-none-min"
-                                        [innerHTML]="model && model.pageRoundRobin.contents[0].post.title | highlight">
+                                        [innerHTML]="model && model.pageRoundRobin.contents[1].post.title | highlight">
                                     </p>
                                     <div class="wrapper-title-topic md-none-max">
                                         <p class="title-topic"
-                                            [innerHTML]="model && model.pageRoundRobin.contents[0].post.title | highlight">
+                                            [innerHTML]="model && model.pageRoundRobin.contents[1].post.title | highlight">
                                         </p>
                                         <a class="tag-link gray time" href="" [innerHTML]="model &&
-                                        model.pageRoundRobin.contents[0].post.createdDate |
+                                        model.pageRoundRobin.contents[1].post.createdDate |
                                         thformatdatetime"></a>
                                     </div>
                                 </div>
@@ -298,14 +313,14 @@
                                 </div>
                                 <div class="detail">
                                     <p class="title md-none-min"
-                                        [innerHTML]="model && model.pageRoundRobin.contents[1].post.title | highlight">
+                                        [innerHTML]="model && model.pageRoundRobin.contents[2].post.title | highlight">
                                     </p>
                                     <div class="wrapper-title-topic md-none-max">
                                         <p class="title-topic"
-                                            [innerHTML]="model && model.pageRoundRobin.contents[1].post.title | highlight">
+                                            [innerHTML]="model && model.pageRoundRobin.contents[2].post.title | highlight">
                                         </p>
                                         <a class="tag-link gray time" href="" [innerHTML]="model &&
-                                        model.pageRoundRobin.contents[1].post.createdDate |
+                                        model.pageRoundRobin.contents[2].post.createdDate |
                                         thformatdatetime"></a>
                                     </div>
                                 </div>
@@ -325,24 +340,24 @@
                                             d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 " />
                                     </svg>
                                     <a class="tag-link gray time" href="" [innerHTML]="model &&
-                                    model.pageRoundRobin.contents[2].post.createdDate |
+                                    model.pageRoundRobin.contents[0].post.createdDate |
                                     thformatdatetime"></a>
                                 </span>
                             </div>
                             <div class="wrapper-news-post">
                                 <div class="wrapper-news-post-img">
                                     <ng-container
-                                        *ngIf="model && model.pageRoundRobin.contents[2].coverPageUrl; else elseImageRoundRobin">
-                                        <img src="{{apiBaseURL + (model && model.pageRoundRobin.contents[2].coverPageUrl) + '/image'}}"
+                                        *ngIf="model && model.pageRoundRobin.contents[0].coverPageUrl; else elseImageRoundRobin">
+                                        <img src="{{apiBaseURL + (model && model.pageRoundRobin.contents[0].coverPageUrl) + '/image'}}"
                                             alt="">
                                     </ng-container>
                                     <ng-template #elseImageRoundRobin>
-                                        <span [innerHTML]="model && model.pageRoundRobin.contents[2].post.title"></span>
+                                        <span [innerHTML]="model && model.pageRoundRobin.contents[0].post.title"></span>
                                     </ng-template>
                                 </div>
                                 <div class="detail">
                                     <p class="title"
-                                        [innerHTML]="model && model.pageRoundRobin.contents[2].coverPageUrl ? model && model.pageRoundRobin.contents[2].post.title : model && model.pageRoundRobin.contents[2].post.detail">
+                                        [innerHTML]="model && model.pageRoundRobin.contents[0].coverPageUrl ? model && model.pageRoundRobin.contents[0].post.title : model && model.pageRoundRobin.contents[0].post.detail">
                                     </p>
                                 </div>
                             </div>
@@ -352,7 +367,7 @@
             </div>
         </div>
     </section>
-    <section class="section-2">
+    <section class="section-2" *ngIf="!showLoading">
         <div class="container">
             <div class="header-title">
                 <div class="wrapper-title">
@@ -411,7 +426,7 @@
             </div>
         </div>
     </section>
-    <section class="section-3">
+    <section class="section-3" *ngIf="!showLoading">
         <div class="container">
             <div class="header-title">
                 <div class="wrapper-title">
@@ -470,7 +485,7 @@
             </div>
         </div>
     </section>
-    <section class="section-4">
+    <section class="section-4" *ngIf="!showLoading">
         <div class="container">
             <div class="header-title">
                 <div class="wrapper-title">

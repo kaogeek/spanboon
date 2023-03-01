@@ -421,7 +421,7 @@
             line-height: 26px;
             -webkit-box-orient: vertical;
             overflow: hidden;
-            padding: 10px 0;
+            margin-top: 10px;
             @include font-size-9($font-head-500);
 
             &:hover {
