@@ -196,7 +196,7 @@ export class AdminPageController {
     @Get('/receive/bucket')
     @Authorized()
     public async receiveBucket(@Res() res: any, @Req() req: any): Promise<any> {
-        const bucketAll = await this.configService.find({value:'ข่าวหน้าหนึ่ง'});
+        const bucketAll = await this.kaokaiTodayService.find({});
         if (bucketAll.length > 0) {
             const successResponse = ResponseUtil.getSuccessResponse('Here this is your bucket boi.', bucketAll);
             return res.status(200).send(successResponse);
