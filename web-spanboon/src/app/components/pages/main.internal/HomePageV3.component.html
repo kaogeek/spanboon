@@ -21,11 +21,16 @@
                     <div>
                         <div class="wrapper-hastags">
                             <span class="header-hastags">ก่อนหน้า : </span>
-                            <a class="tag-link" href="">{{model && model!.emergencyEvents!.contents[3]!.title}}</a>
+                            <a class="tag-link"
+                                (click)="clickToPage(model && model!.emergencyEvents!.contents[3].data.emergencyEventId)">{{model
+                                && model!.emergencyEvents!.contents[3]!.title}}</a>
                             <span> | </span>
-                            <a class="tag-link" href="">{{model && model!.emergencyEvents!.contents[4]!.title}}</a>
+                            <a class="tag-link"
+                                (click)="clickToPage(model && model!.emergencyEvents!.contents[4].data.emergencyEventId)">{{model
+                                && model!.emergencyEvents!.contents[4]!.title}}</a>
                         </div>
-                        <a class="wrapper-box" href="">
+                        <a class="wrapper-box"
+                            (click)="clickToPage(model && model!.emergencyEvents!.contents[0].data.emergencyEventId)">
                             <div class="wrapper-copper-img">
                                 <div class="teg_event" *ngIf="model && model.emergencyEvents.contents.length > 0">
                                     <svg style="margin-right: 10px;" xmlns="http://www.w3.org/2000/svg" width="23"
@@ -97,13 +102,15 @@
                     </div>
                     <div>
                         <div class="wrapper-banner-header">
-                            <a class="banner-text-header tag-link" href=""
+                            <a class="banner-text-header tag-link"
+                                (click)="clickToPage(model && model!.emergencyEvents!.contents[1].data.emergencyEventId)"
                                 [innerHTML]="model && model.emergencyEvents.contents[1].title"></a>
                             <a class="banner-count-header tag-link" href=""
                                 [innerHTML]="(model && model.emergencyEvents.contents[1].postCount | shortNumber) + ' ครั้ง'"></a>
                         </div>
                         <div class="wrapper-banner-header">
-                            <a class="banner-text-header tag-link" href=""
+                            <a class="banner-text-header tag-link"
+                                (click)="clickToPage(model && model!.emergencyEvents!.contents[2].data.emergencyEventId)"
                                 [innerHTML]="model && model.emergencyEvents.contents[2].title"></a>
                             <a class="banner-count-header tag-link" href=""
                                 [innerHTML]="(model && model.emergencyEvents.contents[2].postCount | shortNumber) + ' ครั้ง'"></a>
@@ -113,11 +120,17 @@
                 <div class="wrapper-1-right">
                     <div class="wrapper-hastags">
                         <span class="header-hastags">มาใหม่ : </span>
-                        <a class="tag-link" href="">#{{model && model.hashTagSumma[0].name}}</a>
+                        <a class="tag-link"
+                            (click)="clickToPage(model && model.hashTagSumma[0].name,'hashTagSumma')">#{{model &&
+                            model.hashTagSumma[0].name}}</a>
                         <span> | </span>
-                        <a class="tag-link" href="">#{{model && model.hashTagSumma[1].name}}</a>
+                        <a class="tag-link"
+                            (click)="clickToPage(model && model.hashTagSumma[1].name,'hashTagSumma')">#{{model &&
+                            model.hashTagSumma[1].name}}</a>
                         <span> | </span>
-                        <a class="tag-link" href="">#{{model && model.hashTagSumma[2].name}}</a>
+                        <a class=" tag-link"
+                            (click)="clickToPage(model && model.hashTagSumma[2].name,'hashTagSumma')">#{{model &&
+                            model.hashTagSumma[2].name}}</a>
                     </div>
                     <div class="wrapper-banner-header banner-header-bg-gray">
                         <svg class="img-objective" xmlns="http://www.w3.org/2000/svg" width="22.899" height="22.899"
@@ -138,6 +151,7 @@
                             </g>
                         </svg>
                         <span class="banner-text-header"
+                            (click)="clickToPageUser(model && model.postSectionModel.contents[0].post.objective,'objective')"
                             [innerHTML]="'#' + (model && model.postSectionModel.contents[0].post.objectiveTag)"></span>
                     </div>
                     <div class="wrapper-news">
@@ -154,7 +168,8 @@
                                         <path
                                             d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 " />
                                     </svg>
-                                    <a class="tag-link gray time" href=""
+                                    <a class="tag-link gray time"
+                                        (click)="clickToPost(model && model.postSectionModel.contents[0].post._id)"
                                         [innerHTML]="model && model.postSectionModel.contents[0].post.createdDate | highlight"></a>
                                 </span>
                             </div>
@@ -169,9 +184,12 @@
                                     </p>
                                     <div class="wrapper-title-topic md-none-max">
                                         <p class="title-topic"
+                                            (click)="openDilogPost(model && model.postSectionModel.contents[1])"
                                             [innerHTML]="model && model.postSectionModel.contents[1].post.title | highlight">
                                         </p>
-                                        <a class="tag-link gray time" href="" [innerHTML]="model &&
+                                        <a class="tag-link gray time"
+                                            (click)="clickToPost(model && model.postSectionModel.contents[1].post._id)"
+                                            [innerHTML]="model &&
                                         model.postSectionModel.contents[1].post.createdDate |
                                         thformatdatetime"></a>
                                     </div>
@@ -203,9 +221,12 @@
                                     </p>
                                     <div class="wrapper-title-topic md-none-max">
                                         <p class="title-topic"
+                                            (click)="openDilogPost(model && model.postSectionModel.contents[2])"
                                             [innerHTML]="model && model.postSectionModel.contents[2].post.title | highlight">
                                         </p>
-                                        <a class="tag-link gray time" href="" [innerHTML]="model &&
+                                        <a class="tag-link gray time"
+                                            (click)="clickToPost(model && model.postSectionModel.contents[2].post._id)"
+                                            [innerHTML]="model &&
                                         model.postSectionModel.contents[2].post.createdDate |
                                         thformatdatetime"></a>
                                     </div>
@@ -225,12 +246,15 @@
                                         <path
                                             d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 " />
                                     </svg>
-                                    <a class="tag-link gray time" href="" [innerHTML]="model &&
+                                    <a class="tag-link gray time"
+                                        (click)="clickToPost(model && model.postSectionModel.contents[0].post._id)"
+                                        [innerHTML]="model &&
                                     model.postSectionModel.contents[0].post.createdDate |
                                     thformatdatetime"></a>
                                 </span>
                             </div>
-                            <div class="wrapper-news-post">
+                            <div class="wrapper-news-post"
+                                (click)="openDilogPost(model && model.postSectionModel.contents[0])">
                                 <div class="wrapper-news-post-img">
                                     <ng-container
                                         *ngIf="model && model.postSectionModel.contents[0].coverPageUrl; else elseImageSection">
@@ -283,9 +307,12 @@
                                     </p>
                                     <div class="wrapper-title-topic md-none-max">
                                         <p class="title-topic"
+                                            (click)="openDilogPost(model && model.pageRoundRobin.contents[1])"
                                             [innerHTML]="model && model.pageRoundRobin.contents[1].post.title | highlight">
                                         </p>
-                                        <a class="tag-link gray time" href="" [innerHTML]="model &&
+                                        <a class="tag-link gray time"
+                                            (click)="clickToPost(model && model.pageRoundRobin.contents[1].post._id)"
+                                            [innerHTML]="model &&
                                         model.pageRoundRobin.contents[1].post.createdDate |
                                         thformatdatetime"></a>
                                     </div>
@@ -317,9 +344,12 @@
                                     </p>
                                     <div class="wrapper-title-topic md-none-max">
                                         <p class="title-topic"
+                                            (click)="openDilogPost(model && model.pageRoundRobin.contents[2])"
                                             [innerHTML]="model && model.pageRoundRobin.contents[2].post.title | highlight">
                                         </p>
-                                        <a class="tag-link gray time" href="" [innerHTML]="model &&
+                                        <a class="tag-link gray time"
+                                            (click)="clickToPost(model && model.pageRoundRobin.contents[2].post._id)"
+                                            [innerHTML]="model &&
                                         model.pageRoundRobin.contents[2].post.createdDate |
                                         thformatdatetime"></a>
                                     </div>
@@ -339,12 +369,15 @@
                                         <path
                                             d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 " />
                                     </svg>
-                                    <a class="tag-link gray time" href="" [innerHTML]="model &&
+                                    <a class="tag-link gray time"
+                                        (click)="clickToPost(model && model.pageRoundRobin.contents[0].post._id)"
+                                        [innerHTML]="model &&
                                     model.pageRoundRobin.contents[0].post.createdDate |
                                     thformatdatetime"></a>
                                 </span>
                             </div>
-                            <div class="wrapper-news-post">
+                            <div class="wrapper-news-post"
+                                (click)="openDilogPost(model && model.pageRoundRobin.contents[0])">
                                 <div class="wrapper-news-post-img">
                                     <ng-container
                                         *ngIf="model && model.pageRoundRobin.contents[0].coverPageUrl; else elseImageRoundRobin">
@@ -392,11 +425,11 @@
                                     <path
                                         d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 " />
                                 </svg>
-                                <a class="tag-link gray time" href=""
+                                <a class="tag-link gray time" (click)="clickToPost(item.post._id)"
                                     [innerHTML]="item.post.createdDate | thformatdatetime"></a>
                             </span>
                         </div>
-                        <div class="container-content">
+                        <div class="container-content" (click)="openDilogPost(item)">
                             <ng-container *ngIf="item.coverPageUrl; else elseImage">
                                 <img class="image-content" [src]="apiBaseURL + (item.coverPageUrl) + '/image'">
                             </ng-container>
@@ -409,7 +442,7 @@
                             </p>
                         </div>
                         <div class="owner-post">
-                            <p class="owner-name"
+                            <p class="owner-name" (click)="clickToPageUser(item.owner.id)"
                                 [innerHTML]="item.owner.name ? item.owner.name : item.owner.displayName"></p>
                         </div>
                         <p class="amount-social">
@@ -451,11 +484,11 @@
                                     <path
                                         d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 " />
                                 </svg>
-                                <a class="tag-link gray time" href=""
+                                <a class="tag-link gray time" (click)="clickToPost(item.post._id)"
                                     [innerHTML]="item.post.createdDate | thformatdatetime"></a>
                             </span>
                         </div>
-                        <div class="container-content">
+                        <div class="container-content" (click)="openDilogPost(item)">
                             <ng-container *ngIf="item.coverPageUrl; else elseImage">
                                 <img class="image-content" [src]="apiBaseURL + (item.coverPageUrl) + '/image'">
                             </ng-container>
@@ -468,7 +501,7 @@
                             </p>
                         </div>
                         <div class="owner-post">
-                            <p class="owner-name"
+                            <p class="owner-name" (click)="clickToPageUser(item.owner.id)"
                                 [innerHTML]="item.owner.name ? item.owner.name : item.owner.displayName"></p>
                         </div>
                         <p class="amount-social">
@@ -510,11 +543,11 @@
                                     <path
                                         d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 " />
                                 </svg>
-                                <a class="tag-link gray time" href=""
+                                <a class="tag-link gray time" (click)="clickToPost(item.post._id)"
                                     [innerHTML]="item.post.createdDate | thformatdatetime"></a>
                             </span>
                         </div>
-                        <div class="container-content">
+                        <div class="container-content" (click)="openDilogPost(item)">
                             <ng-container *ngIf="item.coverPageUrl; else elseImage">
                                 <img class="image-content" [src]="apiBaseURL + (item.coverPageUrl) + '/image'">
                             </ng-container>
@@ -527,7 +560,7 @@
                             </p>
                         </div>
                         <div class="owner-post">
-                            <p class="owner-name"
+                            <p class="owner-name" (click)="clickToPageUser(item.owner.id)"
                                 [innerHTML]="item.owner.name ? item.owner.name : item.owner.displayName"></p>
                         </div>
                         <p class="amount-social">

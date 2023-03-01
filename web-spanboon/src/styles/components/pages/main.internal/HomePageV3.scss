@@ -87,6 +87,11 @@
         -webkit-box-orient: vertical;
         overflow: hidden;
         word-break: break-word;
+
+        &:hover {
+          color: rgba($brandcolor2, 0.95);
+          cursor: pointer;
+        }
       }
 
       >.banner-count-header {

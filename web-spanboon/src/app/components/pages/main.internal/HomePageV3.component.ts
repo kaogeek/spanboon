@@ -166,6 +166,40 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     })
   }
 
+  public openDilogPost($event) {
+    if ($event.post) {
+      const dialogRef = this.dialog.open(DialogPostCrad, {
+        width: 'auto',
+        disableClose: false,
+        data: {
+          post: $event.post,
+          isNotAccess: false,
+          user: this.userCloneDatas,
+          pageUser: this.pageUser,
+          panelClass: 'dialog-postcard',
+          backdropClass: 'dialog-postcard',
+        }
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+      });
+    } else if ($event._id) {
+      const dialogRef = this.dialog.open(DialogPostCrad, {
+        width: 'auto',
+        disableClose: false,
+        data: {
+          post: $event,
+          isNotAccess: false,
+          user: this.userCloneDatas,
+          pageUser: this.pageUser,
+        }
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+      });
+    }
+  }
+
   public clickToPost(postId: any) {
     this.router.navigate([]).then(() => {
       window.open('/post/' + postId);
@@ -174,7 +208,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
 
   public clickToPageUser(pageId: any, owner?: any) {
     this.router.navigate([]).then(() => {
-      if (owner !== undefined && owner !== null) {
+      if (owner === 'objective') {
         window.open('/objective/' + pageId);
       } else {
         window.open('/page/' + pageId);
