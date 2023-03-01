@@ -404,7 +404,7 @@
             </div>
         </div>
     </section>
-    <section class="section-2" *ngIf="!showLoading">
+    <section class="section-2" *ngIf="!showLoading && (model && model.majorTrend.contents.length !== 0)">
         <div class="container">
             <div class="header-title">
                 <div class="wrapper-title">
@@ -463,7 +463,7 @@
             </div>
         </div>
     </section>
-    <section class="section-3" *ngIf="!showLoading">
+    <section class="section-3" *ngIf="!showLoading && (model && model.kaokaiProvince.contents.length !== 0)">
         <div class="container">
             <div class="header-title">
                 <div class="wrapper-title">
@@ -522,7 +522,7 @@
             </div>
         </div>
     </section>
-    <section class="section-4" *ngIf="!showLoading">
+    <section class="section-4" *ngIf="!showLoading && (model && model.kaokaiHashTag.contents.length !== 0)">
         <div class="container">
             <div class="header-title">
                 <div class="wrapper-title">
