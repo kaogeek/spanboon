@@ -131,9 +131,6 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                             { $match: { isDraft: false, deleted: false, hidden: false, postsHashTags: { $ne: null, $in: hashTagStack } } },
                             { $sort: { summationScore: -1 } },
                             {
-                                '$limit': limit
-                            },
-                            {
                                 $lookup:
                                 {
                                     from: 'Page',
@@ -141,6 +138,9 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                                     pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } }, { $limit: 1 }],
                                     as: 'page'
                                 }
+                            },
+                            {
+                                '$limit': hashTagProcessor.limit
                             },
                             {
                                 $unwind: {
@@ -299,7 +299,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
 
                         },
                         {
-                            '$limit': 3
+                            '$limit': hashTagProcessor.limit
                         }
 
                     ];
@@ -440,7 +440,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
 
                         },
                         {
-                            '$limit': 3
+                            '$limit': hashTagProcessor.limit
                         }
 
                     ];
@@ -577,7 +577,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
 
                         },
                         {
-                            '$limit': 3
+                            '$limit': hashTagProcessor.limit
                         }
 
                     ];
@@ -679,9 +679,6 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                             { $match: { isDraft: false, deleted: false, hidden: false,pageId:{$in:pageStackprovince}} },
                             { $sort: { createdDate: -1 } },
                             {
-                                $limit: 4
-                            },
-                            {
                                 $lookup:
                                 {
                                     from: 'Page',
@@ -691,6 +688,9 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                                     ],
                                     as: 'page'
                                 }
+                            },
+                            {
+                                $limit: hashTagProcessor.limit
                             },
                             {
                                 $unwind: {
@@ -814,7 +814,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                                 $match:{isOfficial: true,banned:false,province:{$in:bucketF}}
                             },
                             {
-                                $limit:10
+                                $limit:hashTagProcessor.limit
                             }
                         ]
                     );
@@ -833,9 +833,6 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                             { $match: { isDraft: false, deleted: false, hidden: false,pageId:{$in:pageStackprovince}} },
                             { $sort: { createdDate: -1 } },
                             {
-                                $limit: 4
-                            },
-                            {
                                 $lookup:
                                 {
                                     from: 'Page',
@@ -845,6 +842,9 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                                     ],
                                     as: 'page'
                                 }
+                            },
+                            {
+                                $limit: hashTagProcessor.limit
                             },
                             {
                                 $unwind: {
@@ -967,9 +967,6 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                             { $match: { isDraft: false, deleted: false, hidden: false,pageId:{$in:buckets}} },
                             { $sort: { createdDate: -1 } },
                             {
-                                $limit: 4
-                            },
-                            {
                                 $lookup:
                                 {
                                     from: 'Page',
@@ -979,6 +976,9 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                                     ],
                                     as: 'page'
                                 }
+                            },
+                            {
+                                $limit: hashTagProcessor.limit
                             },
                             {
                                 $unwind: {
@@ -1144,7 +1144,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
 
                         },
                         {
-                            '$limit': 3
+                            '$limit': hashTagProcessor.limit
                         }
 
                     ];

@@ -126,9 +126,6 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                             { $match: { isDraft: false, deleted: false, hidden: false,pageId:{$in:buckets}} },
                             { $sort: { createdDate: -1 } },
                             {
-                                $limit: 4
-                            },
-                            {
                                 $lookup:
                                 {
                                     from: 'Page',
@@ -138,6 +135,9 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                                     ],
                                     as: 'page'
                                 }
+                            },
+                            {
+                                $limit: roundRobin.limit
                             },
                             {
                                 $unwind: {
@@ -258,13 +258,21 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     }
                     const pageStackId = [];
                     const pageStackprovince = [];
+                    /* 
+                    const pageProvince = await this.pageService.searchPageProvince(bucketF);
+                    console.log('pageProvince',pageProvince);
+                    for(const pageStack of pageProvince){
+                        if(pageStack !== undefined && pageStack !== null){
+                            pageStackId.push(pageStack.id);
+                        }
+                    } */
                     const pageProvince = await this.pageService.aggregate(
                         [
                             {
                                 $match:{isOfficial: true,banned:false,province:{$in:bucketF}}
                             },
                             {
-                                $limit:10
+                                $limit:roundRobin.limit
                             }
                         ]
                     );
@@ -278,23 +286,25 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                             pageStackprovince.push(Stackprovince._id);
                         }
                     } 
+
+                    // set 1
                     const postAggregateSet1 = await this.postsService.aggregate(
                         [
                             { $match: { isDraft: false, deleted: false, hidden: false,pageId:{$in:pageStackprovince}} },
                             { $sort: { createdDate: -1 } },
-                            {
-                                $limit: 4
-                            },
                             {
                                 $lookup:
                                 {
                                     from: 'Page',
                                     let: { 'pageId': '$pageId' },
                                     pipeline: [
-                                        { $match: { $expr: { $eq: ['$_id', '$$pageId'] }} },{$limit:1},
+                                        { $match: { $expr: { $eq: ['$_id', '$$pageId'] }} }
                                     ],
                                     as: 'page'
                                 }
+                            },
+                            {
+                                $limit: roundRobin.limit
                             },
                             {
                                 $unwind: {
@@ -591,7 +601,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
 
                         },
                         {
-                            '$limit': 3
+                            '$limit': roundRobin.limit
                         }
 
                     ];
@@ -728,7 +738,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
 
                         },
                         {
-                            '$limit': 3
+                            '$limit': roundRobin.limit
                         }
 
                     ];
@@ -816,9 +826,6 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                             { $match: { isDraft: false, deleted: false, hidden: false, postsHashTags: { $ne: null, $in: hashTagStack } } },
                             { $sort: { summationScore: -1 } },
                             {
-                                '$limit': limit
-                            },
-                            {
                                 $lookup:
                                 {
                                     from: 'Page',
@@ -826,6 +833,9 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                                     pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } }, { $limit: 1 }],
                                     as: 'page'
                                 }
+                            },
+                            {
+                                '$limit': roundRobin.limit
                             },
                             {
                                 $unwind: {
@@ -991,7 +1001,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
 
                         },
                         {
-                            '$limit': 3
+                            '$limit': roundRobin.limit
                         }
 
                     ];
@@ -1075,7 +1085,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                                 $match:{isOfficial: true,banned:false,group:{$in:bucketF}}
                             },
                             {
-                                $limit:10
+                                $limit:roundRobin.limit
                             }
                         ]
                     );
@@ -1094,9 +1104,6 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                             { $match: { isDraft: false, deleted: false, hidden: false,pageId:{$in:pageStackprovince}} },
                             { $sort: { createdDate: -1 } },
                             {
-                                $limit: 4
-                            },
-                            {
                                 $lookup:
                                 {
                                     from: 'Page',
@@ -1106,6 +1113,9 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                                     ],
                                     as: 'page'
                                 }
+                            },
+                            {
+                                $limit: roundRobin.limit
                             },
                             {
                                 $unwind: {
