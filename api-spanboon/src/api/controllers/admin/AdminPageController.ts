@@ -22,14 +22,12 @@ import { KaokaiToday } from '../../models/KaokaiToday';
 import { KaokaiTodayService } from '../../services/KaokaiTodayService';
 import { CreateKaokaiTodayRequest } from '../requests/CreateKaokaiTodayRequest';
 import { PageObjectiveService } from '../../services/PageObjectiveService';
-import { ConfigService } from '../../services/ConfigService';
 @JsonController('/admin/page')
 export class AdminPageController {
     constructor(private pageService: PageService, private actionLogService: AdminUserActionLogsService, private deletePageService: DeletePageService,
         private kaokaiTodayService: KaokaiTodayService,
         private pageObjectiveService: PageObjectiveService,
         private postsService: PostsService,
-        private configService: ConfigService
         ) { }
 
     /**
