@@ -176,7 +176,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
 
                         },
                         {
-                            '$limit': 6
+                            '$limit': majorTrend.limit
                         }
                     ];
 
@@ -318,7 +318,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
 
                         },
                         {
-                            '$limit': 3
+                            '$limit': majorTrend.limit
                         }
 
                     ];
@@ -455,7 +455,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
 
                         },
                         {
-                            '$limit': 3
+                            '$limit': majorTrend.limit
                         }
 
                     ];
@@ -543,9 +543,6 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                             { $match: { isDraft: false, deleted: false, hidden: false, postsHashTags: { $ne: null, $in: hashTagStack } } },
                             { $sort: { summationScore: -1 } },
                             {
-                                '$limit': limit
-                            },
-                            {
                                 $lookup:
                                 {
                                     from: 'Page',
@@ -553,6 +550,9 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                                     pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } }, { $limit: 1 }],
                                     as: 'page'
                                 }
+                            },
+                            {
+                                '$limit': majorTrend.limit
                             },
                             {
                                 $unwind: {
@@ -718,7 +718,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
 
                         },
                         {
-                            '$limit': 3
+                            '$limit': majorTrend.limit
                         }
 
                     ];
@@ -802,7 +802,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                                 $match:{isOfficial: true,banned:false,group:{$in:bucketF}}
                             },
                             {
-                                $limit:10
+                                $limit:majorTrend.limit
                             }
                         ]
                     );
@@ -821,9 +821,6 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                             { $match: { isDraft: false, deleted: false, hidden: false,pageId:{$in:pageStackprovince}} },
                             { $sort: { createdDate: -1 } },
                             {
-                                $limit: 4
-                            },
-                            {
                                 $lookup:
                                 {
                                     from: 'Page',
@@ -833,6 +830,9 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                                     ],
                                     as: 'page'
                                 }
+                            },
+                            {
+                                $limit: majorTrend.limit
                             },
                             {
                                 $unwind: {
@@ -956,7 +956,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                                 $match:{isOfficial: true,banned:false,province:{$in:bucketF}}
                             },
                             {
-                                $limit:10
+                                $limit:majorTrend.limit
                             }
                         ]
                     );
@@ -975,9 +975,6 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                             { $match: { isDraft: false, deleted: false, hidden: false,pageId:{$in:pageStackprovince}} },
                             { $sort: { createdDate: -1 } },
                             {
-                                $limit: 4
-                            },
-                            {
                                 $lookup:
                                 {
                                     from: 'Page',
@@ -987,6 +984,9 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                                     ],
                                     as: 'page'
                                 }
+                            },
+                            {
+                                $limit: majorTrend.limit
                             },
                             {
                                 $unwind: {
@@ -1109,9 +1109,6 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                             { $match: { isDraft: false, deleted: false, hidden: false,pageId:{$in:buckets}} },
                             { $sort: { createdDate: -1 } },
                             {
-                                $limit: 4
-                            },
-                            {
                                 $lookup:
                                 {
                                     from: 'Page',
@@ -1121,6 +1118,9 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                                     ],
                                     as: 'page'
                                 }
+                            },
+                            {
+                                $limit: majorTrend.limit
                             },
                             {
                                 $unwind: {

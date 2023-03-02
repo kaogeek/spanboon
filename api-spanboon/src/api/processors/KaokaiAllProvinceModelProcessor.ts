@@ -48,7 +48,6 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     }
                 }
 
-
                 limit = (limit === undefined || limit === null) ? this.DEFAULT_SEARCH_LIMIT : limit;
                 offset = (offset === undefined || offset === null) ? this.DEFAULT_SEARCH_OFFSET : offset;
 
@@ -146,7 +145,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                                 $match:{isOfficial: true,banned:false,province:{$in:bucketF}}
                             },
                             {
-                                $limit:10
+                                $limit:provincePage.limit
                             }
                         ]
                     );
@@ -167,18 +166,18 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                             { $match: { isDraft: false, deleted: false, hidden: false,pageId:{$in:pageStackprovince}} },
                             { $sort: { createdDate: -1 } },
                             {
-                                $limit: 10
-                            },
-                            {
                                 $lookup:
                                 {
                                     from: 'Page',
                                     let: { 'pageId': '$pageId' },
                                     pipeline: [
-                                        { $match: { $expr: { $eq: ['$_id', '$$pageId'] }} },{$limit:1},
+                                        { $match: { $expr: { $eq: ['$_id', '$$pageId'] }} }
                                     ],
                                     as: 'page'
                                 }
+                            },
+                            {
+                                $limit: provincePage.limit
                             },
                             {
                                 $unwind: {
@@ -302,7 +301,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                                 $match:{isOfficial: true,banned:false,group:{$in:bucketF}}
                             },
                             {
-                                $limit:10
+                                $limit:provincePage.limit
                             }
                         ]
                     );
@@ -321,7 +320,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                             { $match: { isDraft: false, deleted: false, hidden: false,pageId:{$in:pageStackprovince}} },
                             { $sort: { createdDate: -1 } },
                             {
-                                $limit: 4
+                                $limit: provincePage.limit
                             },
                             {
                                 $lookup:
@@ -455,9 +454,6 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                             { $match: { isDraft: false, deleted: false, hidden: false,pageId:{$in:buckets}} },
                             { $sort: { createdDate: -1 } },
                             {
-                                $limit: 4
-                            },
-                            {
                                 $lookup:
                                 {
                                     from: 'Page',
@@ -467,6 +463,9 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                                     ],
                                     as: 'page'
                                 }
+                            },
+                            {
+                                $limit: provincePage.limit
                             },
                             {
                                 $unwind: {
@@ -632,7 +631,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
 
                         },
                         {
-                            '$limit': 3
+                            '$limit': provincePage.limit
                         }
 
                     ];
@@ -688,22 +687,22 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     resolve(result);
                 }else if(provincePage.type === 'post' && provincePage.field === 'emergencyEvent'){
                     const bucketF = [];
-                    const provincePage = await this.kaokaiTodayService.findOne({ position: 3, flag: true });
-                    if (provincePage.buckets.length >= 0) {
-                        if (provincePage.buckets[0] !== undefined && provincePage.buckets[0] !== null) {
-                            for (const provincesF of provincePage.buckets[0].values) {
+                    const postEmergen = await this.kaokaiTodayService.findOne({ position: 3, flag: true });
+                    if (postEmergen.buckets.length >= 0) {
+                        if (postEmergen.buckets[0] !== undefined && postEmergen.buckets[0] !== null) {
+                            for (const provincesF of postEmergen.buckets[0].values) {
                                 bucketF.push(new ObjectID(provincesF));
                             }
                         }
                         // bucket 2 
-                        if (provincePage.buckets[1] !== undefined && provincePage.buckets[1] !== null) {
-                            for (const provinceS of provincePage.buckets[1].values) {
+                        if (postEmergen.buckets[1] !== undefined && postEmergen.buckets[1] !== null) {
+                            for (const provinceS of postEmergen.buckets[1].values) {
                                 bucketF.push(new ObjectID(provinceS));
                             }
                         }
                         // bucket 3
-                        if (provincePage.buckets[2] !== undefined && provincePage.buckets[2] !== null) {
-                            for (const provinceT of provincePage.buckets[2].values) {
+                        if (postEmergen.buckets[2] !== undefined && postEmergen.buckets[2] !== null) {
+                            for (const provinceT of postEmergen.buckets[2].values) {
                                 bucketF.push(new ObjectID(provinceT));
                             }
                         }
@@ -769,7 +768,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
 
                         },
                         {
-                            '$limit': 3
+                            '$limit': provincePage.limit
                         }
 
                     ];
@@ -825,22 +824,22 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     resolve(result);
                 }else if(provincePage.type === 'post' && provincePage.field === 'objective'){
                     const bucketF = [];
-                    const provincePage = await this.kaokaiTodayService.findOne({ position: 3, flag: true });
-                    if (provincePage.buckets.length >= 0) {
-                        if (provincePage.buckets[0] !== undefined && provincePage.buckets[0] !== null) {
-                            for (const provincesF of provincePage.buckets[0].values) {
+                    const postObjective = await this.kaokaiTodayService.findOne({ position: 3, flag: true });
+                    if (postObjective.buckets.length >= 0) {
+                        if (postObjective.buckets[0] !== undefined && postObjective.buckets[0] !== null) {
+                            for (const provincesF of postObjective.buckets[0].values) {
                                 bucketF.push(new ObjectID(provincesF));
                             }
                         }
                         // bucket 2 
-                        if (provincePage.buckets[1] !== undefined && provincePage.buckets[1] !== null) {
-                            for (const provinceS of provincePage.buckets[1].values) {
+                        if (postObjective.buckets[1] !== undefined && postObjective.buckets[1] !== null) {
+                            for (const provinceS of postObjective.buckets[1].values) {
                                 bucketF.push(new ObjectID(provinceS));
                             }
                         }
                         // bucket 3
-                        if (provincePage.buckets[2] !== undefined && provincePage.buckets[2] !== null) {
-                            for (const provinceT of provincePage.buckets[2].values) {
+                        if (postObjective.buckets[2] !== undefined && postObjective.buckets[2] !== null) {
+                            for (const provinceT of postObjective.buckets[2].values) {
                                 bucketF.push(new ObjectID(provinceT));
                             }
                         }
@@ -906,7 +905,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
 
                         },
                         {
-                            '$limit': 3
+                            '$limit': provincePage.limit
                         }
 
                     ];
@@ -1021,7 +1020,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
 
                         },
                         {
-                            '$limit': 3
+                            '$limit': provincePage.limit
                         }
 
                     ];
@@ -1081,22 +1080,22 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     resolve(result);
                 }else if(provincePage.type === 'post' && provincePage.field === 'hashTag'){
                     const bucketF = [];
-                    const provincePage = await this.kaokaiTodayService.findOne({ position:3, flag: true });
-                    if (provincePage.buckets.length >= 0) {
-                        if (provincePage.buckets[0] !== undefined && provincePage.buckets[0] !== null) {
-                            for (const provincesF of provincePage.buckets[0].values) {
+                    const postsHashTags = await this.kaokaiTodayService.findOne({ position:3, flag: true });
+                    if (postsHashTags.buckets.length >= 0) {
+                        if (postsHashTags.buckets[0] !== undefined && postsHashTags.buckets[0] !== null) {
+                            for (const provincesF of postsHashTags.buckets[0].values) {
                                 bucketF.push(provincesF);
                             }
                         }
                         // bucket 2 
-                        if (provincePage.buckets[1] !== undefined && provincePage.buckets[1] !== null) {
-                            for (const provinceS of provincePage.buckets[1].values) {
+                        if (postsHashTags.buckets[1] !== undefined && postsHashTags.buckets[1] !== null) {
+                            for (const provinceS of postsHashTags.buckets[1].values) {
                                 bucketF.push(provinceS);
                             }
                         }
                         // bucket 3
-                        if (provincePage.buckets[2] !== undefined && provincePage.buckets[2] !== null) {
-                            for (const provinceT of provincePage.buckets[2].values) {
+                        if (postsHashTags.buckets[2] !== undefined && postsHashTags.buckets[2] !== null) {
+                            for (const provinceT of postsHashTags.buckets[2].values) {
                                 bucketF.push(provinceT);
                             }
                         }
@@ -1113,9 +1112,6 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                             { $match: { isDraft: false, deleted: false, hidden: false, postsHashTags: { $ne: null, $in: hashTagStack } } },
                             { $sort: { summationScore: -1 } },
                             {
-                                '$limit': limit
-                            },
-                            {
                                 $lookup:
                                 {
                                     from: 'Page',
@@ -1123,6 +1119,9 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                                     pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } }, { $limit: 1 }],
                                     as: 'page'
                                 }
+                            },
+                            {
+                                '$limit': provincePage.limit
                             },
                             {
                                 $unwind: {
