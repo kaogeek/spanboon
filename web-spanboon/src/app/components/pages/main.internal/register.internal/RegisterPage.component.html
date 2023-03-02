@@ -54,11 +54,11 @@
         </div>
         <div class="form-register">
             <div class="form-group">
-                <input type="text" name="firstName" placeholder="ชื่อ" class="input-text-group"
-                    [(ngModel)]="data.firstName">
+                <input type="text" id="firstName" name="firstName" placeholder="ชื่อ" class="input-text-group"
+                    [(ngModel)]="data.firstName" shake [shake]="activeFirstName" required>
 
-                <input type="text" name="lastName" placeholder="นามสกุล" class="input-text-group"
-                    [(ngModel)]="data.lastName">
+                <input type="text" id="lastName" name="lastName" placeholder="นามสกุล" class="input-text-group"
+                    [(ngModel)]="data.lastName" shake [shake]="activeLastName" required>
                 <ng-container *ngIf="mode === 'facebook' || mode === 'google' || mode === 'twitter'; else elseEmail">
                     <input #inputEmail type="email" id="email" name="email" placeholder="อีเมล" class="input-text" shake
                         [readonly]="data.email || objectMerge.email ? true : false"
@@ -79,6 +79,22 @@
                     placeholder="ใส่รหัสผ่าน อีกครั้ง" class="input-text" [(ngModel)]="repassword" required
                     [shake]="activeRePass">
             </ng-container>
+            <div for="province" class="title-label">จังหวัด</div>
+            <mat-form-field appearance="none">
+                <mat-select  [(ngModel)]="data.province" name="province" placeholder = 'จังหวัด'  required>
+                    <mat-option *ngFor="let province of provinces" [value]="province.value">
+                        {{province.viewValue}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <!-- 
+                <mat-form-field appearance="none">
+                    <mat-select  [ngModel]="province" (ngModelChane)="province" placeholder = 'จังหวัด' multiple required>
+                    <mat-option *ngFor="let province of provinces" [value]="province.value">
+                        {{province.viewValue}}
+                    </mat-option>
+                    </mat-select>
+                </mat-form-field> -->
             <div for="birthday" class="title-label">วันเกิด</div>
             <mat-form-field appearance="none">
                 <input #birthday matInput class="mat-birthday" [class.active]="!isCheckDate" [matDatepicker]="dp3"

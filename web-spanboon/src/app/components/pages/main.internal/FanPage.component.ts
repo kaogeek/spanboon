@@ -1098,7 +1098,6 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     } else {
       if (this.resPost.posts.length == 0) {
         this.resDataPost[index].isLike = true;
-        this.resDataPost[index].likeCount = 1;
         this.postFacade.like(data.postData._id, data.userAsPage.id).then((res: any) => {
           if (res.isLike) {
             if (data.postData._id === res.posts.id) {
@@ -1117,7 +1116,6 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
         });
       } else {
         this.resPost.posts[index].isLike = true;
-        this.resPost.posts[index].likeCount = 1;
         this.postFacade.like(data.postData._id, data.userAsPage.id).then((res: any) => {
           if (res.isLike) {
             if (data.postData._id === res.posts.id) {
@@ -1557,17 +1555,17 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   }
 
   public clickSystemDevelopment(): void {
-    let dialog = this.dialog.open(DialogAlert, {
-      disableClose: true,
-      data: {
-        text: MESSAGE.TEXT_DEVERLOP,
-        bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-        bottomColorText2: "black",
-        btDisplay1: "none"
-      }
-    });
-    dialog.afterClosed().subscribe((res) => {
-    });
+    // let dialog = this.dialog.open(DialogAlert, {
+    //   disableClose: true,
+    //   data: {
+    //     text: MESSAGE.TEXT_DEVERLOP,
+    //     bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+    //     bottomColorText2: "black",
+    //     btDisplay1: "none"
+    //   }
+    // });
+    // dialog.afterClosed().subscribe((res) => {
+    // });
   }
 
   public engagement(event) {

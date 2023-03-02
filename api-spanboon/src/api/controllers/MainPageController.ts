@@ -27,6 +27,9 @@ import { LastestLookingSectionProcessor } from '../processors/LastestLookingSect
 // import { StillLookingSectionProcessor } from '../processors/StillLookingSectionProcessor';
 import { EmergencyEventSectionProcessor } from '../processors/EmergencyEventSectionProcessor';
 import { PostSectionProcessor } from '../processors/PostSectionProcessor';
+import { PostSectionProcessor2 } from '../processors/PostSectionProcessor2';
+import { PageRoundRobinProcessor } from '../processors/PageRoundRobinProcessor';
+import { MajorTrendSectionModelProcessor } from '../processors/majorTrendSectionModelProcessor';
 import { ObjectiveProcessor } from '../processors/ObjectiveProcessor';
 import { NeedsService } from '../services/NeedsService';
 import { EmergencyEventService } from '../services/EmergencyEventService';
@@ -55,7 +58,10 @@ import { PostsCommentService } from '../services/PostsCommentService';
 import { PostsComment } from '../models/PostsComment';
 import { AssetService } from '../services/AssetService';
 import { ImageUtil } from '../../utils/ImageUtil';
-
+import { KaoKaiHashTagModelProcessor } from '../processors/KaoKaiHashTagModelProcessor';
+import { KaokaiAllProvinceModelProcessor } from '../processors/KaokaiAllProvinceModelProcessor';
+import { KaokaiTodayService } from '../services/KaokaiTodayService';
+import { KaokaiContentModelProcessor } from '../processors/KaokaiContentModelProcessor';
 @JsonController('/main')
 export class MainPageController {
     constructor(
@@ -71,9 +77,127 @@ export class MainPageController {
         private s3Service: S3Service,
         private userLikeService: UserLikeService,
         private postsCommentService: PostsCommentService,
-        private assetService: AssetService
+        private assetService: AssetService,
+        private kaokaiTodayService: KaokaiTodayService
     ) { }
+    // Home page content V2
+    @Get('/content/v3')
+    public async getContentListV2(@QueryParam('offset') offset: number, @QueryParam('section') section: string, @QueryParam('date') date: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const userId = req.headers.userid;
+        const mainPageSearchConfig = await this.pageService.searchPageOfficialConfig();
+        const searchOfficialOnly = mainPageSearchConfig.searchOfficialOnly;
 
+        // ordering
+        const emerProcessor: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service);
+        emerProcessor.setConfig({
+            showUserAction: true,
+            offset,
+            date,
+            searchOfficialOnly
+        });
+        const emerSectionModel = await emerProcessor.process2();
+        const monthRanges: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 365);
+        const dayRanges: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 1);
+        // summation
+        const postProcessor: PostSectionProcessor2 = new PostSectionProcessor2(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService,this.pageService);
+        postProcessor.setData({
+            userId,
+            startDateTime: monthRanges[0],
+            endDateTime: monthRanges[1]
+        });
+        postProcessor.setConfig({
+            searchOfficialOnly
+        });
+
+        const postSectionModel = await postProcessor.process();
+        // roundRobin
+        const pageProcessor: PageRoundRobinProcessor = new PageRoundRobinProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService,this.pageService);
+        pageProcessor.setData({
+            userId,
+            startDateTime: monthRanges[0],
+            endDateTime: monthRanges[1]
+        });
+
+        pageProcessor.setConfig({
+            searchOfficialOnly
+        });
+        // party executive committee
+        // deputy leader
+        // deputy secretary of the party
+        const pageRoundRobin = await pageProcessor.process();
+
+        // เกาะกระแส
+        const majorTrendProcessor: MajorTrendSectionModelProcessor = new MajorTrendSectionModelProcessor(this.postsService, this.s3Service, this.userLikeService);
+        majorTrendProcessor.setData({
+            userId,
+            startDateTime: dayRanges[0],
+            endDateTime: dayRanges[1]
+        });
+
+        majorTrendProcessor.setConfig({
+            searchOfficialOnly
+        });
+
+        const majorTrend = await majorTrendProcessor.process();
+
+        // ก้าวไกลสภา #hashTag
+
+        const kaokaiHashTagProcessor: KaoKaiHashTagModelProcessor = new KaoKaiHashTagModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService);
+        kaokaiHashTagProcessor.setData({
+            userId,
+            startDateTime: dayRanges[0],
+            endDateTime: dayRanges[1]
+        });
+
+        kaokaiHashTagProcessor.setConfig({
+            searchOfficialOnly
+        });
+
+        const kaokaiHashTag = await kaokaiHashTagProcessor.process();
+
+        // ก้าวไกลทุกจังหวัด
+        const kaokaiProvinceProcessor: KaokaiAllProvinceModelProcessor = new KaokaiAllProvinceModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService,this.pageService);
+        kaokaiProvinceProcessor.setData({
+            userId,
+            startDateTime: dayRanges[0],
+            endDateTime: dayRanges[1]
+        });
+
+        kaokaiProvinceProcessor.setConfig({
+            searchOfficialOnly
+        });
+        // pipeline: [{ $match: { $expr: { $in: ['$_id', bucketF] }, isOfficial: true } }],
+
+        const kaokaiProvince = await kaokaiProvinceProcessor.process();
+
+        // ก้าวไกลประเด็น
+
+        const kaokaiContentProcessor: KaokaiContentModelProcessor = new KaokaiContentModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.userFollowService);
+        kaokaiContentProcessor.setData({
+            userId,
+            startDateTime: dayRanges[0],
+            endDateTime: dayRanges[1]
+        });
+
+        kaokaiContentProcessor.setConfig({
+            searchOfficialOnly
+        });
+
+        const kaokaiContent = await kaokaiContentProcessor.process();
+        // hashTag
+        const hashTagSumma = await this.hashTagService.aggregate([{ $sort: { count: -1 } }, { $limit: 3 }]);
+        const result: any = {};
+        result.emergencyEvents = emerSectionModel;
+        result.postSectionModel = postSectionModel;
+        result.pageRoundRobin = pageRoundRobin;
+        result.majorTrend = majorTrend;
+        result.kaokaiHashTag = kaokaiHashTag;
+        result.kaokaiProvince = kaokaiProvince;
+        result.hashTagSumma = hashTagSumma;
+        result.kaokaiContent = kaokaiContent;
+        const successResponse = ResponseUtil.getSuccessResponse('Successfully Main Page Data', result);
+        return res.status(200).send(successResponse);
+    }
     // Find Page API
     /**
      * @api {get} /api/main/content Find Main Page Data API
@@ -95,6 +219,7 @@ export class MainPageController {
         const mainPageSearchConfig = await this.pageService.searchPageOfficialConfig();
         const searchOfficialOnly = mainPageSearchConfig.searchOfficialOnly;
         if (section !== undefined && section !== '') {
+            // ordering 
             if (section === 'EMERGENCYEVENT') {
                 const emerProcessorSec: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service);
                 emerProcessorSec.setConfig({
@@ -195,7 +320,6 @@ export class MainPageController {
         }
 
         let processorList: any[] = [];
-
         const weekRanges: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 7);
         const emerProcessor: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service);
         emerProcessor.setConfig({
@@ -205,7 +329,6 @@ export class MainPageController {
             searchOfficialOnly
         });
         const emerSectionModel = await emerProcessor.process();
-
         // setup search date range for lastest post
         const monthRanges: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 365);
         const postProcessor: PostSectionProcessor = new PostSectionProcessor(this.postsService, this.s3Service, this.userLikeService);
@@ -286,7 +409,7 @@ export class MainPageController {
             endDateTime: weekRanges[1]
         });
         userFollowProcessor.setConfig({
-            limit: 4,
+            limit: 6,
             showUserAction: true,
             searchOfficialOnly
         });
@@ -312,7 +435,7 @@ export class MainPageController {
             endDateTime: weekRanges[1]
         });
         followingRecommendProcessor.setConfig({
-            limit: 5,
+            limit: 6,
             searchOfficialOnly,
             showPage: true,
             showUserAction: true
@@ -327,7 +450,7 @@ export class MainPageController {
             endDateTime: weekRanges[1]
         });
         lastestObjProcessor.setConfig({
-            limit: 5,
+            limit: 6,
             showUserAction: true,
             searchOfficialOnly
         });
@@ -553,7 +676,7 @@ export class MainPageController {
             const histories = await this.searchHistoryService.aggregate(historyQuery);
             historyRows = histories.length;
             pageLimit = historyLimit - historyRows;
-            if(filter !== undefined){
+            if (filter !== undefined) {
                 if (historyRows !== null && historyRows !== undefined && historyRows > 0) {
                     for (const history of histories) {
                         searchResults.push({ historyId: history._id, value: history.resultId, label: history.keyword, type: history.resultType });
@@ -575,7 +698,7 @@ export class MainPageController {
                     const pages: any[] = await this.pageService.aggregate(pageQuery);
 
                     pageRows = pages.length;
-                    if(filter.typeUser !== undefined){
+                    if (filter.typeUser !== undefined) {
                         userLimit = pageLimit - pageRows;
                     }
                     if (pageRows !== null && pageRows !== undefined && pageRows > 0) {
@@ -627,7 +750,7 @@ export class MainPageController {
                         }
                     }
                 }
-            }else{
+            } else {
                 if (historyRows !== null && historyRows !== undefined && historyRows > 0) {
                     for (const history of histories) {
                         searchResults.push({ historyId: history._id, value: history.resultId, label: history.keyword, type: history.resultType });

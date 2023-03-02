@@ -10,4 +10,5 @@ import 'reflect-metadata';
 export class UserTagRequest {
     
     public name: string;
+    public subject:any;
 }

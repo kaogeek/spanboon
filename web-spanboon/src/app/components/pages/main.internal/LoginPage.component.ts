@@ -56,6 +56,9 @@ export class LoginPage extends AbstractPage implements OnInit {
   public modeSwitch: "login" | "mergeuser" | "otp" = "login";
   private accessToken: any;
   private googleToken: any;
+  public images: any;
+  public imagesAvatar: any;
+  public data: any;
   private observManager: ObservableManager;
   private _ngZone: NgZone;
   private cacheConfigInfo: CacheConfigInfo;
@@ -70,6 +73,8 @@ export class LoginPage extends AbstractPage implements OnInit {
   public hide = true;
   public redirection: string;
   public isEmailLogin: boolean;
+  public isFBLogin: boolean = false;
+  public isTWLogin: boolean = false;
   public isShowFacebook: boolean;
   public isPreloadTwitter: boolean;
   public googleUser = {};
@@ -105,7 +110,7 @@ export class LoginPage extends AbstractPage implements OnInit {
   public accountTwitter = 'https://api.twitter.com/1.1/account/verify_credentials.json';
   constructor(authenManager: AuthenManager, private socialAuthService: SocialAuthService, activatedRoute: ActivatedRoute, router: Router, _ngZone: NgZone,
     observManager: ObservableManager, cacheConfigInfo: CacheConfigInfo, dialog: MatDialog, twitterService: TwitterService,
-    checkMergeUserFacade: CheckMergeUserFacade, private notificationManager: NotificationManager,
+    checkMergeUserFacade: CheckMergeUserFacade, private notificationManager: NotificationManager, private authService: SocialAuthService,
   ) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.authenManager = authenManager;
@@ -158,7 +163,6 @@ export class LoginPage extends AbstractPage implements OnInit {
         const userId = spilt[2].split('=')[1];
         const name = spilt[3];
         this.loginTwitter(token, token_secret, userId);
-
       }).catch((err: any) => [
         console.log('err ', err)
       ])
@@ -248,9 +252,9 @@ export class LoginPage extends AbstractPage implements OnInit {
             }
           })
         } else if (res.data.status === 2) {
+          this.getTwitterUser(token, token_secret);
           this.mockDataMergeSocial.social = mode;
           this.pictureSocial = res.data.pic;
-          this.modeSwitch = "mergeuser";
           const queue = res.data.data.authUser;
           for (let i = 0; i < queue.length; i++) {
             const current = queue.shift()
@@ -278,8 +282,15 @@ export class LoginPage extends AbstractPage implements OnInit {
               this.emailOtp = res.data.data.data.email;
               this.dataUser = res.data.data;
               this.socialMode = 'TWITTER';
+            } else if (current === 'APPLE') {
+              this.social.socialLogin = current;
+              this.login = false;
+              this.emailOtp = res.data.data.data.email;
+              this.dataUser = res.data.data;
+              this.socialMode = 'TWITTER';
             }
           }
+          this.modeSwitch = "mergeuser";
         }
       }
     }).catch((err) => {
@@ -297,28 +308,29 @@ export class LoginPage extends AbstractPage implements OnInit {
             this.checkMergeUserFacade.loginWithTwitter(twitter, mode, res).then((data: any) => {
               if (data) {
                 if (data.data.status === 2) {
-                  this.modeSwitch = "mergeuser";
+                  this.getTwitterUser(token, token_secret);
                   this.login = false;
                   this.emailOtp = data.data.data.email;
                   this.dataUser = data.data;
                   this.mockDataMergeSocial.social = mode;
                   this.socialMode = 'TWITTER';
-                }
-              } else {
-                this.authenManager.loginWithTwitter(twitter, mode).then((data: any) => {
-                  if (data) {
-                    // login success redirect to main page
-                    this.observManager.publish('authen.check', null);
-                    if (this.redirection) {
-                      this.router.navigateByUrl(this.redirection);
-                    } else {
-                      this.router.navigate(['home']);
+                  this.modeSwitch = "mergeuser";
+                } else if (data.data.status === 1) {
+                  this.authenManager.loginWithTwitter(twitter, mode).then((data: any) => {
+                    if (data) {
+                      // login success redirect to main page
+                      this.observManager.publish('authen.check', null);
+                      if (this.redirection) {
+                        this.router.navigateByUrl(this.redirection);
+                      } else {
+                        this.router.navigate(['home']);
+                      }
                     }
-                  }
-                }).catch((err) => {
-                  if (err) {
-                  }
-                })
+                  }).catch((err) => {
+                    if (err) {
+                    }
+                  })
+                }
               }
             }).catch((error) => {
               if (error) {
@@ -342,21 +354,26 @@ export class LoginPage extends AbstractPage implements OnInit {
   }
 
   public clickLoginTwitter() {
-    let callback = environment.webBaseURL + "/login";
-    this.twitterService.requestToken(callback).then((result: any) => {
-      if (result) {
-        this.authorizeLink += '?' + result;
-        this.router.navigate([]).then(() => {
-          window.open(this.authorizeLink, '_blank');
-          this.notificationManager.checkLoginSuccess();
-        });
-      }
-    }).catch((error: any) => {
-      console.log(error);
-      if (error && error.message) {
-        return this.showAlertDialog('เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้ง');
-      }
-    });
+    if (!this.isTWLogin) {
+      this.isTWLogin = true;
+      let callback = environment.webBaseURL + "/login";
+      this.twitterService.requestToken(callback).then((result: any) => {
+        if (result) {
+          this.isTWLogin = false;
+          this.authorizeLink += '?' + result;
+          this.router.navigate([]).then(() => {
+            window.open(this.authorizeLink, '_blank');
+            this.notificationManager.checkLoginSuccess();
+          });
+        }
+      }).catch((error: any) => {
+        this.isTWLogin = false;
+        console.log(error);
+        if (error && error.message) {
+          return this.showAlertDialog('เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้ง');
+        }
+      });
+    }
   }
 
   public clickLoginGoogle(): void {
@@ -385,6 +402,7 @@ export class LoginPage extends AbstractPage implements OnInit {
     this.checkMergeUserFacade.loginWithGoogle(this.googleToken.idToken, this.googleToken.authToken, mode).then((data: any) => {
       // login success redirect to main page  
       if (data.data.status === 2) {
+        this.getGoogleUser();
         this.mockDataMergeSocial.social = mode;
         this.pictureSocial = data.pic;
         this.modeSwitch = "mergeuser";
@@ -415,6 +433,12 @@ export class LoginPage extends AbstractPage implements OnInit {
             this.emailOtp = data.data.data.email;
             this.dataUser = data.data;
             this.socialMode = 'GOOGLE';
+          } else if (current === 'APPLE') {
+            this.social.socialLogin = current;
+            this.login = false;
+            this.emailOtp = data.data.data.email;
+            this.dataUser = data.data;
+            this.socialMode = 'GOOGLE';
           }
         }
       } else if (data.data.status === 1) {
@@ -430,6 +454,15 @@ export class LoginPage extends AbstractPage implements OnInit {
         }).catch((err) => {
           const statusMsg = err.error.message;
           if (statusMsg === "User was not found.") {
+            let navigationExtras: NavigationExtras = {
+              state: {
+                accessToken: this.accessToken,
+                redirection: this.redirection
+              },
+              queryParams: { mode: 'google' }
+            }
+            this.router.navigate(['/register'], navigationExtras);
+          } else if (statusMsg === "This Email not exists") {
             let navigationExtras: NavigationExtras = {
               state: {
                 accessToken: this.accessToken,
@@ -462,6 +495,15 @@ export class LoginPage extends AbstractPage implements OnInit {
           queryParams: { mode: 'google' }
         }
 
+        this.router.navigate(['/register'], navigationExtras);
+      } else if (statusMsg === "This Email not exists") {
+        let navigationExtras: NavigationExtras = {
+          state: {
+            accessToken: this.googleToken,
+            redirection: this.redirection
+          },
+          queryParams: { mode: 'google' }
+        }
         this.router.navigate(['/register'], navigationExtras);
       } else if (statusMsg === 'Baned PageUser.') {
         this.dialog.open(DialogAlert, {
@@ -497,19 +539,24 @@ export class LoginPage extends AbstractPage implements OnInit {
   }
 
   public clickLoginFB() {
-    window['FB'].login((response) => {
-      if (response.authResponse) {
-        let accessToken = {
-          fbid: response.authResponse.userID,
-          fbtoken: response.authResponse.accessToken,
-          fbexptime: response.authResponse.data_access_expiration_time,
-          fbsignedRequest: response.authResponse.signedRequest
-        }
-        this.accessToken = accessToken;
+    if (!this.isFBLogin) {
+      this.isFBLogin = true;
+      window['FB'].login((response) => {
+        if (response.authResponse) {
+          this.isFBLogin = false;
+          let accessToken = {
+            fbid: response.authResponse.userID,
+            fbtoken: response.authResponse.accessToken,
+            fbexptime: response.authResponse.data_access_expiration_time,
+            fbsignedRequest: response.authResponse.signedRequest
+          }
+          this.accessToken = accessToken;
 
-        this._ngZone.run(() => this.loginFB());
-      }
-    }, { scope: 'public_profile, email' });
+          this._ngZone.run(() => this.loginFB());
+        }
+        this.isFBLogin = false;
+      }, { scope: 'public_profile, email' });
+    }
   }
 
   public emailLogin() {
@@ -518,153 +565,172 @@ export class LoginPage extends AbstractPage implements OnInit {
 
   private loginFB() {
     let mode = 'FACEBOOK'
-
-    this.checkMergeUserFacade.loginWithFacebook(this.accessToken.fbtoken, mode).then((data: any) => {
-      // login success redirect to main page
-      if (data.data.status === 2) {
-        this.mockDataMergeSocial.social = mode;
-        this.pictureSocial = data.pic;
-        this.modeSwitch = "mergeuser";
-        const queue = data.data.authUser;
-        for (let i = 0; i < queue.length; i++) {
-          const current = queue.shift()
-          if (current === 'EMAIL') {
-            this.social.socialLogin = current;
-            this.login = false;
-            this.emailOtp = data.data.data.email;
-            this.dataUser = data.data;
-            this.socialMode = 'FACEBOOK';
-          } else if (current === 'FACEBOOK') {
-            this.social.socialLogin = current;
-            this.login = false;
-            this.emailOtp = data.data.data.email;
-            this.dataUser = data;
-            this.socialMode = 'FACEBOOK';
-          } else if (current === 'TWITTER') {
-            this.social.socialLogin = current;
-            this.login = false;
-            this.emailOtp = data.data.data.email;
-            this.dataUser = data;
-            this.socialMode = 'FACEBOOK';
-          } else if (current === 'GOOGLE') {
-            this.social.socialLogin = current;
-            this.login = false;
-            this.emailOtp = data.data.data.email;
-            this.dataUser = data.data;
-            this.socialMode = 'FACEBOOK';
-          }
-        }
-      } else if (data.data.status === 1) {
-        this.authenManager.loginWithFacebook(this.accessToken.fbtoken, mode).then((data: any) => {
-          // login success redirect to main page
-          this.observManager.publish('authen.check', null);
-          this.notificationManager.checkLoginSuccess();
-          if (this.redirection) {
-            this.router.navigateByUrl(this.redirection);
-          } else {
-            this.router.navigate(['home']);
-          }
-        }).catch((err) => {
-          const statusMsg = err.error.message;
-          if (statusMsg === "User was not found.") {
-            let navigationExtras: NavigationExtras = {
-              state: {
-                accessToken: this.accessToken,
-                redirection: this.redirection
-              },
-              queryParams: { mode: 'facebook' }
+    this.getCurrentUserInfo();
+    if (!this.isFBLogin) {
+      this.isFBLogin = true;
+      this.checkMergeUserFacade.loginWithFacebook(this.accessToken.fbtoken, mode).then((data: any) => {
+        // login success redirect to main page
+        if (data.data.status === 2) {
+          this.mockDataMergeSocial.social = mode;
+          this.pictureSocial = data.pic;
+          this.modeSwitch = "mergeuser";
+          const queue = data.data.authUser;
+          for (let i = 0; i < queue.length; i++) {
+            const current = queue.shift()
+            if (current === 'EMAIL') {
+              this.social.socialLogin = current;
+              this.login = false;
+              this.emailOtp = data.data.data.email;
+              this.dataUser = data.data;
+              this.socialMode = 'FACEBOOK';
+            } else if (current === 'FACEBOOK') {
+              this.social.socialLogin = current;
+              this.login = false;
+              this.emailOtp = data.data.data.email;
+              this.dataUser = data;
+              this.socialMode = 'FACEBOOK';
+            } else if (current === 'TWITTER') {
+              this.social.socialLogin = current;
+              this.login = false;
+              this.emailOtp = data.data.data.email;
+              this.dataUser = data;
+              this.socialMode = 'FACEBOOK';
+            } else if (current === 'GOOGLE') {
+              this.social.socialLogin = current;
+              this.login = false;
+              this.emailOtp = data.data.data.email;
+              this.dataUser = data.data;
+              this.socialMode = 'FACEBOOK';
+            } else if (current === 'APPLE') {
+              this.social.socialLogin = current;
+              this.login = false;
+              this.emailOtp = data.data.data.email;
+              this.dataUser = data.data;
+              this.socialMode = 'FACEBOOK';
             }
-            this.router.navigate(['/register'], navigationExtras);
-          } else if (err.error.message === 'Baned PageUser.') {
-            this.dialog.open(DialogAlert, {
-              disableClose: true,
-              data: {
-                text: MESSAGE.TEXT_LOGIN_BANED,
-                bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-                bottomColorText2: "black",
-                btDisplay1: "none"
-              }
-            });
           }
-        });
-      }
-    }).catch((error) => {
-      const statusMsg = error.error.message;
-      if (error.error.status === 0) {
-        let dialog = this.dialog.open(DialogConfirmInput, {
-          disableClose: true,
-          data: {
-            title: "อีเมลของคุณ",
-            placeholder: "example@email.com"
-          },
-        });
-        dialog.afterClosed().subscribe((res) => {
-          if (res) {
-            this.checkMergeUserFacade.loginWithFacebook(this.accessToken.fbtoken, mode, res).then((data: any) => {
-              if (data) {
-                if (data.data.status === 2) {
-                  this.mockDataMergeSocial.social = mode;
-                  this.pictureSocial = data.pic;
-                  this.modeSwitch = "mergeuser";
-                  const queue = data.data.authUser;
-                  for (let i = 0; i < queue.length; i++) {
-                    const current = queue.shift()
-                    if (current === 'EMAIL') {
-                      this.social.socialLogin = current;
-                      this.login = false;
-                      this.emailOtp = data.data.data.email;
-                      this.dataUser = data.data;
-                      this.socialMode = 'FACEBOOK';
-                    } else if (current === 'FACEBOOK') {
-                      this.social.socialLogin = current;
-                      this.login = false;
-                      this.emailOtp = data.data.data.email;
-                      this.dataUser = data.data;
-                      this.socialMode = 'FACEBOOK';
-                    } else if (current === 'TWITTER') {
-                      this.social.socialLogin = current;
-                      this.login = false;
-                      this.emailOtp = data.data.data.email;
-                      this.dataUser = data.data;
-                      this.socialMode = 'FACEBOOK';
-                    } else if (current === 'GOOGLE') {
-                      this.social.socialLogin = current;
-                      this.login = false;
-                      this.emailOtp = data.data.data.email;
-                      this.dataUser = data.data;
-                      this.socialMode = 'FACEBOOK';
+        } else if (data.data.status === 1) {
+          this.authenManager.loginWithFacebook(this.accessToken.fbtoken, mode).then((data: any) => {
+            // login success redirect to main page
+            this.isFBLogin = false;
+            this.observManager.publish('authen.check', null);
+            this.notificationManager.checkLoginSuccess();
+            if (this.redirection) {
+              this.router.navigateByUrl(this.redirection);
+            } else {
+              this.router.navigate(['home']);
+            }
+          }).catch((err) => {
+            this.isFBLogin = false;
+            const statusMsg = err.error.message;
+            if (statusMsg === "User was not found.") {
+              let navigationExtras: NavigationExtras = {
+                state: {
+                  accessToken: this.accessToken,
+                  redirection: this.redirection
+                },
+                queryParams: { mode: 'facebook' }
+              }
+              this.router.navigate(['/register'], navigationExtras);
+            } else if (err.error.message === 'Baned PageUser.') {
+              this.dialog.open(DialogAlert, {
+                disableClose: true,
+                data: {
+                  text: MESSAGE.TEXT_LOGIN_BANED,
+                  bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+                  bottomColorText2: "black",
+                  btDisplay1: "none"
+                }
+              });
+            }
+          });
+        }
+      }).catch((error) => {
+        const statusMsg = error.error.message;
+        if (error.error.status === 0) {
+          let dialog = this.dialog.open(DialogConfirmInput, {
+            disableClose: true,
+            data: {
+              title: "อีเมลของคุณ",
+              placeholder: "example@email.com"
+            },
+          });
+          dialog.afterClosed().subscribe((res) => {
+            if (res) {
+              this.isFBLogin = false;
+              this.checkMergeUserFacade.loginWithFacebook(this.accessToken.fbtoken, mode, res).then((data: any) => {
+                if (data) {
+                  if (data.data.status === 2) {
+                    this.mockDataMergeSocial.social = mode;
+                    this.pictureSocial = data.pic;
+                    this.modeSwitch = "mergeuser";
+                    const queue = data.data.authUser;
+                    for (let i = 0; i < queue.length; i++) {
+                      const current = queue.shift()
+                      if (current === 'EMAIL') {
+                        this.social.socialLogin = current;
+                        this.login = false;
+                        this.emailOtp = data.data.data.email;
+                        this.dataUser = data.data;
+                        this.socialMode = 'FACEBOOK';
+                      } else if (current === 'FACEBOOK') {
+                        this.social.socialLogin = current;
+                        this.login = false;
+                        this.emailOtp = data.data.data.email;
+                        this.dataUser = data.data;
+                        this.socialMode = 'FACEBOOK';
+                      } else if (current === 'TWITTER') {
+                        this.social.socialLogin = current;
+                        this.login = false;
+                        this.emailOtp = data.data.data.email;
+                        this.dataUser = data.data;
+                        this.socialMode = 'FACEBOOK';
+                      } else if (current === 'GOOGLE') {
+                        this.social.socialLogin = current;
+                        this.login = false;
+                        this.emailOtp = data.data.data.email;
+                        this.dataUser = data.data;
+                        this.socialMode = 'FACEBOOK';
+                      } else if (current === 'APPLE') {
+                        this.social.socialLogin = current;
+                        this.login = false;
+                        this.emailOtp = data.data.data.email;
+                        this.dataUser = data.data;
+                        this.socialMode = 'FACEBOOK';
+                      }
                     }
                   }
                 }
-              }
-            }).catch((error) => {
-              if (error) {
-                if (error.error.status === 0) {
-                  let navigationExtras: NavigationExtras = {
-                    state: {
-                      email: res,
-                      token: this.accessToken
-                    },
-                    queryParams: { mode: mode.toLowerCase() }
+              }).catch((error) => {
+                if (error) {
+                  this.isFBLogin = false;
+                  if (error.error.status === 0) {
+                    let navigationExtras: NavigationExtras = {
+                      state: {
+                        email: res,
+                        token: this.accessToken
+                      },
+                      queryParams: { mode: mode.toLowerCase() }
+                    }
+                    this.router.navigate(['/register'], navigationExtras);
                   }
-                  this.router.navigate(['/register'], navigationExtras);
                 }
-              }
-            })
-          }
-        });
-      } else if (statusMsg === 'Baned PageUser.') {
-        this.dialog.open(DialogAlert, {
-          disableClose: true,
-          data: {
-            text: MESSAGE.TEXT_LOGIN_BANED,
-            bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-            bottomColorText2: "black",
-            btDisplay1: "none"
-          }
-        });
-      }
-    });
+              })
+            }
+          });
+        } else if (statusMsg === 'Baned PageUser.') {
+          this.dialog.open(DialogAlert, {
+            disableClose: true,
+            data: {
+              text: MESSAGE.TEXT_LOGIN_BANED,
+              bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+              bottomColorText2: "black",
+              btDisplay1: "none"
+            }
+          });
+        }
+      });
+    }
   }
 
   public onClickLogin() {
@@ -700,27 +766,34 @@ export class LoginPage extends AbstractPage implements OnInit {
               this.login = false;
               this.emailOtp = data.data.data.email;
               this.dataUser = data.data;
-              this.socialMode = 'GOOGLE';
+              this.socialMode = 'EMAIL';
             } else if (current === 'FACEBOOK') {
               this.social.socialLogin = current;
               this.login = false;
               this.emailOtp = data.data.data.email;
               this.dataUser = data.data;
-              this.socialMode = 'GOOGLE';
+              this.socialMode = 'EMAIL';
             } else if (current === 'TWITTER') {
               this.social.socialLogin = current;
               this.login = false;
               this.emailOtp = data.data.data.email;
               this.dataUser = data.data;
-              this.socialMode = 'GOOGLE';
+              this.socialMode = 'EMAIL';
             } else if (current === 'GOOGLE') {
               this.social.socialLogin = current;
               this.login = false;
               this.emailOtp = data.data.data.email;
               this.dataUser = data.data;
-              this.socialMode = 'GOOGLE';
+              this.socialMode = 'EMAIL';
+            } else if (current === 'APPLE') {
+              this.social.socialLogin = current;
+              this.login = false;
+              this.emailOtp = data.data.data.email;
+              this.dataUser = data.data;
+              this.socialMode = 'EMAIL';
             }
           }
+          this.login = true;
         } else {
           this.authenManager
             .login(body.email, body.password, mode)
@@ -775,6 +848,7 @@ export class LoginPage extends AbstractPage implements OnInit {
 
                   }
                 });
+                this.login = true;
               }
             });
         }
@@ -825,17 +899,17 @@ export class LoginPage extends AbstractPage implements OnInit {
   }
 
   public clickSystemDevelopment(): void {
-    let dialog = this.dialog.open(DialogAlert, {
-      disableClose: true,
-      data: {
-        text: MESSAGE.TEXT_DEVERLOP,
-        bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-        bottomColorText2: "black",
-        btDisplay1: "none"
-      }
-    });
-    dialog.afterClosed().subscribe((res) => {
-    });
+    // let dialog = this.dialog.open(DialogAlert, {
+    //   disableClose: true,
+    //   data: {
+    //     text: MESSAGE.TEXT_DEVERLOP,
+    //     bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+    //     bottomColorText2: "black",
+    //     btDisplay1: "none"
+    //   }
+    // });
+    // dialog.afterClosed().subscribe((res) => {
+    // });
   }
   public onOtpChange(event: any) {
     if (event && event.length === 6) {
@@ -1049,6 +1123,91 @@ export class LoginPage extends AbstractPage implements OnInit {
         }
       });
     }
+  }
+
+  public getCurrentUserInfo(): any {
+    window['FB'].api('/me', {
+      fields: 'name, first_name, last_name,birthday,picture.width(512).height(512),id,email,gender'
+    }, (userInfo) => {
+      this.data = userInfo;
+      this.data.displayName = userInfo.name;
+      this.data.firstName = userInfo.first_name;
+      this.data.lastName = userInfo.last_name;
+      this.images = userInfo.picture.data.url;
+      this.imagesAvatar = {};
+      this.getBase64ImageFromUrl(this.images).then((result: any) => {
+        if (result) {
+          this.imagesAvatar.image = result;
+        }
+      }).catch(err => {
+        console.log("เกิดข้อผิดพลาด");
+      });
+    });
+  }
+
+  public getTwitterUser(token: string, token_secret: string) {
+    let body = {
+      twitterOauthToken: token,
+      twitterOauthTokenSecret: token_secret
+    }
+    this.twitterService.accountVerify(body).then((account: any) => {
+      this.data = account;
+      this.data.displayName = account.name;
+      let str = account.profile_image_url_https;
+      let splitted = str.split("_normal", 2);
+      let splitImg = splitted[0] + splitted[1];
+      this.images = splitImg;
+      this.imagesAvatar = {};
+      this.getBase64ImageFromUrl(splitImg).then((result: any) => {
+        if (result) {
+          this.imagesAvatar.image = result;
+        }
+      }).catch((err) => {
+        console.log("เกิดข้อผิดพลาด");
+      });
+    }).catch((err: any) => {
+      console.log('err ', err)
+    })
+  }
+
+  public getGoogleUser(): any {
+    this.authService.authState.subscribe((user) => {
+      this.data = user;
+      this.data.email = user.email;
+      this.data.displayName = user.name;
+      this.data.firstName = user.firstName;
+      this.data.lastName = user.lastName;
+      let str = user.photoUrl;
+      let splitted = str.split("s96", 2);
+      let splitImg = splitted[0] + "s400" + splitted[1];
+      this.images = splitImg;
+      this.imagesAvatar = {};
+      this.getBase64ImageFromUrl(splitImg).then((result: any) => {
+        if (result) {
+          this.imagesAvatar.image = result;
+        }
+      }).catch((err) => {
+        console.log("เกิดข้อผิดพลาด");
+      });
+    });
+  }
+
+  public async getBase64ImageFromUrl(imageUrl) {
+    var res = await fetch(imageUrl);
+    var blob = await res.blob();
+
+    return new Promise((resolve, reject) => {
+      var reader = new FileReader();
+      reader.addEventListener("load", function () {
+        const imagesAvatar = reader.result;
+        resolve(imagesAvatar);
+      }, false);
+
+      reader.onerror = () => {
+        return reject(this);
+      };
+      reader.readAsDataURL(blob);
+    });
   }
 
   public checkAuthUser(data: any): string {

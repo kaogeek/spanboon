@@ -148,7 +148,19 @@
         @include font-size-9($font-head-500);
         margin: 10pt 0 8pt 0;
       }
+      > .mat-form-field-type-mat-select{
+        > .mat-form-field-wrapper{
+          > .mat-form-field-flex{
+            display: flex;
+            align-items: center;
+            padding: 10pt 10pt;
+            border-radius: 25px;
+            background-color: white;
 
+
+          }
+        }
+      }
       > .mat-form-field {
         width: calc(49% - 5pt);
         margin-bottom: 10pt;
@@ -174,6 +186,13 @@
               border-top: 0;
 
               > .mat-birthday {
+                border: unset;
+                &.active {
+                  border: 1px solid red;
+                }
+              }
+
+              > .mat-province {
                 border: unset;
                 &.active {
                   border: 1px solid red;

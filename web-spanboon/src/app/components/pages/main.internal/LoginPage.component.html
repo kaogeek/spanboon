@@ -15,9 +15,10 @@
                     </div>
                     <div class="form-group">
                         <input type="text" #email class="input-text" id="firstName" name="firstName" placeholder="อีเมล"
-                            required matInput>
+                            (keydown.space)="$event.preventDefault()" required matInput>
                         <input type="password" #password class="input-text" id="password" name="password"
-                            placeholder="รหัสผ่าน" (keyup.enter)="onClickLogin()" required matInput>
+                            placeholder="รหัสผ่าน" (keydown.space)="$event.preventDefault()"
+                            (keyup.enter)="onClickLogin()" required matInput>
                     </div>
                     <div class="wrapper-forget-password">
                         <div class="forget" [routerLink]="'/forgotpassword'">
@@ -72,22 +73,25 @@
                         <div class="profile-card">
                             <div class="profile-box">
                                 <div class="wrapper-img">
-                                    <ng-container>
-                                        <div class="icon-social"
-                                            [ngClass]="{'facebook': mockDataMergeSocial.social === 'FACEBOOK' , 'twitter': mockDataMergeSocial.social === 'TWITTER', 'google': mockDataMergeSocial.social === 'GOOGLE', 'email': mockDataMergeSocial.social === 'EMAIL'}">
-                                            <img class="icon-social-pic"
-                                                [src]="mockDataMergeSocial.social === 'FACEBOOK' ? '../../../../assets/img/facebook-logo.svg' : (mockDataMergeSocial.social === 'TWITTER' ? '../../../../assets/img/twitter.svg' : (mockDataMergeSocial.social === 'GOOGLE' ? '../../../../assets/img/google.svg' : '../../../../assets/img/logo/mfp.svg'))">
-                                        </div>
-                                    </ng-container>
-                                    <ng-container
-                                        *ngIf="!!dataUser!.data!.signURL || !!dataUser!.data!.imageURL; else elsePhotoSocial">
-                                        <img class="social-pic"
-                                            [src]="dataUser.data.signURL ? dataUser.data.signURL : apiBaseURL + dataUser.data.imageURL + '/image'" />
-                                    </ng-container>
-                                    <ng-template #elsePhotoSocial>
+                                    <div class="icon-social"
+                                        [ngClass]="{'facebook': mockDataMergeSocial.social === 'FACEBOOK' , 'twitter': mockDataMergeSocial.social === 'TWITTER', 'google': mockDataMergeSocial.social === 'GOOGLE', 'email': mockDataMergeSocial.social === 'EMAIL'}">
+                                        <img class="icon-social-pic"
+                                            [src]="mockDataMergeSocial.social === 'FACEBOOK' ? '../../../../assets/img/facebook-logo.svg' : (mockDataMergeSocial.social === 'TWITTER' ? '../../../../assets/img/twitter.svg' : (mockDataMergeSocial.social === 'GOOGLE' ? '../../../../assets/img/google.svg' : '../../../../assets/img/logo/mfp.svg'))">
+                                    </div>
+                                    <ng-container *ngIf="socialMode === 'EMAIL'; else elseEmailMode">
                                         <div class="not-image">
                                             {{dataUser.data.email | slice: 0:1 }}
                                         </div>
+                                    </ng-container>
+                                    <ng-template #elseEmailMode>
+                                        <ng-container *ngIf="!!imagesAvatar!.image; else elsePhotoSocial">
+                                            <img class="social-pic" [src]="imagesAvatar.image" />
+                                        </ng-container>
+                                        <ng-template #elsePhotoSocial>
+                                            <div class="not-image">
+                                                {{dataUser.data.email | slice: 0:1 }}
+                                            </div>
+                                        </ng-template>
                                     </ng-template>
                                     <!-- <img class="social-pic" src={{pictureSocial}} /> -->
                                 </div>
@@ -104,13 +108,11 @@
                         <div class="profile-card">
                             <div class="profile-box">
                                 <div class="wrapper-img">
-                                    <!-- <ng-container *ngIf="checkAuthUser(dataUser.authUser)"> -->
                                     <div class="icon-social"
                                         [ngClass]="{'facebook': social.socialLogin === 'FACEBOOK' , 'twitter': social.socialLogin === 'TWITTER', 'google': social.socialLogin === 'GOOGLE', 'email': social.socialLogin === 'EMAIL'}">
                                         <img class="icon-social-pic"
                                             [src]="social.socialLogin === 'FACEBOOK' ? '../../../../assets/img/facebook-logo.svg' : (social.socialLogin === 'TWITTER' ? '../../../../assets/img/twitter.svg' : (social.socialLogin === 'GOOGLE' ? '../../../../assets/img/google.svg' : '../../../../assets/img/logo/mfp.svg'))">
                                     </div>
-                                    <!-- </ng-container> -->
                                     <ng-container
                                         *ngIf="!!dataUser!.data!.signURL || !!dataUser!.data!.imageURL; else elsePhoto">
                                         <img class="social-pic"

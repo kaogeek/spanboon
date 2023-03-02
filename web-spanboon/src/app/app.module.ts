@@ -67,6 +67,7 @@ import {
   DragAndDrop,
   Preload,
   Shake,
+  HorizontalScrollDirective,
   Highlight
 } from './components/shares/directive/directives';
 
@@ -81,6 +82,7 @@ import {
 
   // page
   HomePage,
+  OfficialPage,
   LoginPage,
   ProfilePage,
   NotificationAllPage,
@@ -110,6 +112,7 @@ import {
   // shares
   DialogImage,
   DialogAlert,
+  DialogAboutUs,
   DialogConfirmInput,
   DialogShare,
   DialogPassword,
@@ -126,6 +129,7 @@ import {
   DialogFulfillAllocate,
   DialogAlertAllocate,
   DialogPreview,
+  DialogCheckBox,
   AlertComponent,
   TooltipProfile,
   PreloadCard,
@@ -254,6 +258,7 @@ import {
   RecommendFacade,
   UserEngagementFacade,
   CheckMergeUserFacade,
+  UserSubjectFacade,
 } from './services/services';
 
 import { registerLocaleData, DatePipe } from '@angular/common';
@@ -297,6 +302,7 @@ const COMPONENTS: any[] = [
   FooterMobile,
   // Pages
   HomePage,
+  OfficialPage,
   HomePageV3,
   NotificationAllPage,
   LoginPage,
@@ -328,6 +334,7 @@ const COMPONENTS: any[] = [
   DialogImage,
   AlertComponent,
   DialogAlert,
+  DialogAboutUs,
   DialogConfirmInput,
   DialogShare,
   DialogPassword,
@@ -350,6 +357,7 @@ const COMPONENTS: any[] = [
   DialogInput,
   DialogFulfillAllocate,
   DialogPreview,
+  DialogCheckBox,
   TagEvent,
   TooltipProfile,
   PreloadCard,
@@ -447,6 +455,7 @@ const DIRECTIVE_CLASSES: any[] = [
   DragAndDrop,
   Preload,
   Shake,
+  HorizontalScrollDirective,
   Highlight
 ];
 
@@ -490,6 +499,7 @@ const SERVICE_CLASSES: any[] = [
   AboutPageFacade,
   TwitterService,
   RecommendFacade,
+  UserSubjectFacade,
   UserEngagementFacade,
   {
     provide: SocialAuthService,

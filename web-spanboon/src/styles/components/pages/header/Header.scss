@@ -101,8 +101,22 @@
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    margin: 10pt 0 10pt 15pt;
+    padding: 10pt 0 10pt 10pt;
     border-left: $width-border solid $bg-fog-gray2;
+
+    >.about-us-icon {
+      width: 40px;
+      height: 40px;
+      justify-content: center;
+      align-items: center;
+      display: flex;
+
+      >svg {
+        width: 20px;
+        height: 20px;
+        display: block;
+      }
+    }
 
     >.icon-social {
       display: flex;
@@ -127,9 +141,7 @@
       }
     }
 
-    >.menu-search {
-      margin-left: 15pt;
-    }
+    >.menu-search {}
 
     >.menu-chat,
     >.menu-fulfill {
@@ -171,17 +183,13 @@
     }
 
     >.list-right-menu {
-      margin-left: 5pt;
+      margin-right: 5px;
       display: flex;
       justify-content: center;
       align-items: center;
 
       &.menu-nofitication {
         margin-right: 5pt;
-      }
-
-      &:nth-child(1) {
-        margin-left: 15pt;
       }
     }
 
@@ -277,11 +285,6 @@
       >.menu-chat,
       >.menu-fulfill {
         display: none;
-      }
-
-      >.list-right-menu {
-        margin-left: 3pt;
-        margin-right: 10px;
       }
     }
   }

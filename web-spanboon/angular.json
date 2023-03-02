@@ -76,7 +76,9 @@
                         "ssl": false,
                         "sslKey": "local.key",
                         "sslCert": "local.crt",
-                        "disableHostCheck": true
+                        "disableHostCheck": true,
+                        "host": "0.0.0.0",
+                        "port": 4200
                     },
                     "configurations": {
                         "production": {

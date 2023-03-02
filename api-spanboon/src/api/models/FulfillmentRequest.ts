@@ -24,7 +24,7 @@ export class FulfillmentRequest extends BaseModel {
 
     @Column({ name: 'standardItemId' })
     public standardItemId: ObjectID;
-    
+
     @Column({ name: 'customItemId' })
     public customItemId: ObjectID;
 
@@ -41,12 +41,13 @@ export class FulfillmentRequest extends BaseModel {
     public statementIds: ObjectID[];
 
     @BeforeInsert()
-    public async createDetails(): Promise<void> {
+    public createDetails(): any {
         this.createdDate = moment().toDate();
+        this.createdTime = moment().toDate();
     }
 
     @BeforeUpdate()
-    public async updateDetails(): Promise<void> {
+    public updateDetails(): any {
         this.updateDate = moment().toDate();
     }
 }

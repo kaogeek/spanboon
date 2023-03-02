@@ -5,7 +5,7 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
  */
 
-import { Component, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, SimpleChanges } from '@angular/core';
 import { PostCommentFacade, AuthenManager, ObservableManager, Engagement } from '../../../services/services';
 import { PostFacade } from '../../../services/facade/PostFacade.service';
 import { NeedsFacade } from '../../../services/facade/NeedsFacade.service';
@@ -512,17 +512,17 @@ export class PostData {
   }
 
   public showAlertDialog(): void {
-    let dialog = this.dialog.open(DialogAlert, {
-      disableClose: true,
-      data: {
-        text: MESSAGE.TEXT_TITLE_DEVERLOP,
-        bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-        bottomColorText2: "black",
-        btDisplay1: "none"
-      }
-    });
-    dialog.afterClosed().subscribe((res) => {
-    });
+    // let dialog = this.dialog.open(DialogAlert, {
+    //   disableClose: true,
+    //   data: {
+    //     text: MESSAGE.TEXT_TITLE_DEVERLOP,
+    //     bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+    //     bottomColorText2: "black",
+    //     btDisplay1: "none"
+    //   }
+    // });
+    // dialog.afterClosed().subscribe((res) => {
+    // });
   }
 
   public editPost(itemPost) {

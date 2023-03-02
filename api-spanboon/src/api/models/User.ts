@@ -123,6 +123,18 @@ export class User extends BaseModel {
     @Column({ name: 'isSyncPage' })
     public isSyncPage: boolean;
 
+    @Column({ name:'province'})
+    public province: string;
+
+    @Column({ name: 'acceptUA'})
+    public acceptUA: boolean;
+
+    @Column({ name:'uaVersion'})
+    public uaVersion:boolean;
+
+    @Column({ name: 'subjectAttention'})
+    public subjectAttention:any;
+
     // @Column(type => AuthenticationId)
     // public authenticationId: AuthenticationId;
 

@@ -76,6 +76,7 @@ import { USER_TYPE, NOTIFICATION_TYPE } from '../../constants/NotificationType';
 import { DeviceTokenService } from '../services/DeviceToken';
 import { PageNotificationService } from '../services/PageNotificationService';
 import { NotificationService } from '../services/NotificationService';
+import { DeletePageService } from '../services/DeletePageService';
 import axios from 'axios';
 @JsonController('/page')
 export class PageController {
@@ -105,7 +106,8 @@ export class PageController {
         private socialPostLogsService: SocialPostLogsService,
         private deviceTokenService: DeviceTokenService,
         private pageNotificationService: PageNotificationService,
-        private notificationService: NotificationService
+        private notificationService: NotificationService,
+        private deletePageService: DeletePageService
     ) { }
 
     // Find Page API
@@ -2506,6 +2508,7 @@ export class PageController {
             let pageInstagramURL = pages.instagramURL;
             let pageTwitterURL = pages.twitterURL;
             let pageEmail = pages.email;
+            const pageProvince = pages.province;
             const pageAccessLevel = pages.pageAccessLevel;
             // const assetQuery = { userId: ownerUsers };
             // const newFileName = ownerUsers + FileUtil.renameFile + ownerUsers;
@@ -2658,7 +2661,8 @@ export class PageController {
                     mobileNo: pageMobileNo,
                     address: pageAddress,
                     twitterURL: pageTwitterURL,
-                    email: pageEmail
+                    email: pageEmail,
+                    province:pageProvince
                 }
             };
             const pageSave = await this.pageService.update(updateQuery, newValue);
@@ -3070,6 +3074,11 @@ export class PageController {
                     type: configValue.type
                 }
             });
+            await this.socialPostLogsService.update(query, {
+                $set: {
+                    enable: configValue.value,
+                }
+            });
         } else {
             // create if not exists
             const config = new PageConfig();
@@ -3089,7 +3098,45 @@ export class PageController {
             return res.status(400).send(ResponseUtil.getErrorResponse('Unable to edit Page Config', undefined));
         }
     }
+    // 
+    // * @api {delete} /api/page/:pageId/delete Successfully delete Page
+    @Delete('/:pageId/delete')
+    @Authorized('user')
+    public async deletePageUser(@Param('pageId') pageId: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const userId = new ObjectID(req.user.id);
+        const pageObjId = new ObjectID(pageId);
+        const findPage = await this.pageService.findOne({ _id: pageObjId, ownerUser: userId });
+        if (findPage !== undefined && findPage !== null) {
+            const deletePage = await this.deletePageService.deletePage(findPage.id);
+            if (deletePage) {
+                return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully delete Page ', undefined));
+            } else {
+                return res.status(400).send(ResponseUtil.getErrorResponse('Cannot Delete Page.', undefined));
+            }
+        } else {
+            return res.status(400).send(ResponseUtil.getErrorResponse('You have no permission to delete this page', undefined));
+        }
+    }
 
+    @Delete('/:pageId/delete/:deleteUser')
+    @Authorized('user')
+    public async deletePageUserPermission(@Param('pageId') pageId: string, @Param('deleteUser') deleteUser: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const userId = new ObjectID(req.user.id);
+        const pageObjId = new ObjectID(pageId);
+        const pageAccess = await this.pageAccessLevelService.findOne({ page: pageObjId, user: userId });
+        if (pageAccess.level === 'OWNER' || pageAccess.level === 'ADMIN') {
+            const deletePermission = await this.pageAccessLevelService.findOne({ page: pageObjId, user: ObjectID(deleteUser) });
+            if (deletePermission.level !== 'OWNER') {
+                const query = { page: deletePermission.page, user: deletePermission.user };
+                await this.pageAccessLevelService.delete(query);
+                return res.status(200).send(ResponseUtil.getSuccessResponse('Delete Permission succesfully. ', undefined));
+            } else {
+                return res.status(400).send(ResponseUtil.getErrorResponse('You do not had a permission to delete this page', undefined));
+            }
+        } else {
+            return res.status(400).send(ResponseUtil.getErrorResponse('You do not had a permission to delete this page', undefined));
+        }
+    }
     /**
      * @api {delete} /api/page/:id/config/:name Delete Page Config API
      * @apiGroup Page

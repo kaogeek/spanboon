@@ -30,10 +30,8 @@ import { MESSAGE } from "../../../custom/variable";
 import { DialogAlert } from "./dialog/DialogAlert.component";
 import { environment } from "src/environments/environment";
 import { TwitterService } from "../../services/services";
-import { PageSocialTW } from "../../models/models";
-import { PageSoialFB } from "../../models/models";
-import { DialogListFacebook } from "./shares";
-import { DialogIsSyncPage } from "./shares";
+import { PageSocialTW, PageSoialFB } from "../../models/models";
+import { DialogListFacebook } from "./dialog/DialogListFacebook.component";
 const SEARCH_LIMIT: number = 10;
 const SEARCH_OFFSET: number = 0;
 declare const window: any;
@@ -108,6 +106,23 @@ export class ManagePage extends AbstractPage implements OnInit {
     this.observManager.subscribe("authen.check", (data: any) => {
       this.searchAllPage();
     });
+
+    this.observManager.subscribe("page.about", (data: any) => {
+      if (data) {
+        if (!!data!.data) {
+          const countIndexPage = this.resListPage.findIndex(res => (res.page.id === data.data.id));
+          if (countIndexPage >= 0) {
+            this.resListPage[countIndexPage].page.pageUsername = data.data.pageUsername;
+            this.resListPage[countIndexPage].page.name = data.data.name;
+          }
+        } else {
+          const countIndexPage = this.resListPage.findIndex(res => (res.page.id === data));
+          if (countIndexPage >= 0) {
+            this.resListPage.splice(countIndexPage, 1);
+          }
+        }
+      }
+    });
   }
   public isLogin(): boolean {
     let user = this.authenManager.getCurrentUser();
@@ -135,6 +150,7 @@ export class ManagePage extends AbstractPage implements OnInit {
 
   public ngOnDestroy(): void {
     super.ngOnDestroy();
+    this.observManager.complete('page.about');
   }
 
   isPageDirty(): boolean {
@@ -369,16 +385,16 @@ export class ManagePage extends AbstractPage implements OnInit {
   }
 
   public clickSystemDevelopment(): void {
-    let dialog = this.dialog.open(DialogAlert, {
-      disableClose: true,
-      data: {
-        text: MESSAGE.TEXT_DEVERLOP,
-        bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-        bottomColorText2: "black",
-        btDisplay1: "none",
-      },
-    });
-    dialog.afterClosed().subscribe((res) => { });
+    // let dialog = this.dialog.open(DialogAlert, {
+    //   disableClose: true,
+    //   data: {
+    //     text: MESSAGE.TEXT_DEVERLOP,
+    //     bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+    //     bottomColorText2: "black",
+    //     btDisplay1: "none",
+    //   },
+    // });
+    // dialog.afterClosed().subscribe((res) => { });
   }
 
   public clickMenu() {
@@ -442,12 +458,7 @@ export class ManagePage extends AbstractPage implements OnInit {
 
   public nextPage(item: any) {
     document.body.style.overflowY = "auto";
-    if (
-      item.page.pageUsername &&
-      item.page.pageUsername !== "" &&
-      item.page.pageUsername !== null &&
-      item.page.pageUsername !== undefined
-    ) {
+    if (!!item.page!.pageUsername) {
       this.router.navigate(["/page/", item.page.pageUsername]);
     } else {
       this.router.navigate(["/page/", item.page.id]);
@@ -456,12 +467,7 @@ export class ManagePage extends AbstractPage implements OnInit {
 
   public clickSetting(item: any) {
     document.body.style.overflowY = "auto";
-    if (
-      item.page.pageUsername &&
-      item.page.pageUsername !== "" &&
-      item.page.pageUsername !== null &&
-      item.page.pageUsername !== undefined
-    ) {
+    if (!!item.page!.pageUsername) {
       this.router.navigate(["/page/" + item.page.pageUsername + "/settings"]);
     } else {
       this.router.navigate(["/page/" + item.page.id + "/settings"]);

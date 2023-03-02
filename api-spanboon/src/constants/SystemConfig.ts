@@ -28,6 +28,7 @@ export const DEFAULT_USER_EXPIRED_TIME = 30; // as day
 export const JOB_BEFORE_TOKEN_EXPIRE_MINUTE = 'job.beforeTokenExpire.minute';
 export const DEFAULT_JOB_BEFORE_TOKEN_EXPIRE_MINUTE = 2880; // 2 days
 export const MAIN_PAGE_SEARCH_OFFICIAL_POST_ONLY = 'page.main.searchOfficialPostOnly';
+// DEFAULT_MAIN_PAGE_SEARCH_OFFICIAL_POST_ONLY
 export const DEFAULT_MAIN_PAGE_SEARCH_OFFICIAL_POST_ONLY = false;
 
 export const SEARCH_CONFIG_NAME = {

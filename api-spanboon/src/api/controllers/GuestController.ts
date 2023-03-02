@@ -141,6 +141,10 @@ export class GuestController {
                 user.banned = false;
                 user.customGender = users.customGender;
                 user.mergeEM = true;
+                user.subjectAttention = undefined;
+                user.province = users.province;
+                user.acceptUA = users.acceptUA;
+                user.uaVersion = users.uaVersion;
 
                 if (gender !== null || gender !== undefined) {
                     user.gender = gender;
@@ -293,6 +297,10 @@ export class GuestController {
                 user.isSubAdmin = false;
                 user.banned = false;
                 user.mergeFB = true;
+                user.subjectAttention = undefined;
+                user.province = users.province;
+                user.acceptUA = users.acceptUA;
+                user.uaVersion = users.uaVersion;
 
                 if (gender !== null || gender !== undefined) {
                     user.gender = gender;
@@ -420,9 +428,9 @@ export class GuestController {
                     registerPassword = await User.hashPassword(registerPassword);
                 }
                 const user: User = new User();
-                user.username = appleUserId.username;
+                user.username = registerEmail;
                 user.password = registerPassword;
-                user.email = appleUserId.email;
+                user.email = registerEmail;
                 user.isSyncPage = undefined;
                 user.uniqueId = uniqueId ? uniqueId : null;
                 user.firstName = appleUserId.firstName;
@@ -436,6 +444,10 @@ export class GuestController {
                 user.isSubAdmin = false;
                 user.banned = false;
                 user.mergeAP = true;
+                user.subjectAttention = undefined;
+                user.province = users.province;
+                user.acceptUA = users.acceptUA;
+                user.uaVersion = users.uaVersion;
 
                 if (gender !== null || gender !== undefined) {
                     user.gender = gender;
@@ -601,6 +613,11 @@ export class GuestController {
                 user.isSubAdmin = false;
                 user.banned = false;
                 user.mergeGG = true;
+                user.subjectAttention = undefined;
+                user.province = users.province;
+                user.acceptUA = users.acceptUA;
+                user.uaVersion = users.uaVersion;
+
                 if (gender !== null || gender !== undefined) {
                     user.gender = gender;
                 } else {
@@ -760,6 +777,11 @@ export class GuestController {
                 user.isSubAdmin = false;
                 user.banned = false;
                 user.mergeTW = true;
+                user.subjectAttention = undefined;
+                user.province = users.province;
+                user.acceptUA = users.acceptUA;
+                user.uaVersion = users.uaVersion;
+
                 if (gender !== null || gender !== undefined) {
                     user.gender = gender;
                 } else {
@@ -1166,9 +1188,22 @@ export class GuestController {
             const checkAuth = await this.authenticationIdService.findOne({ where: { user: ObjectID(String(data.id)), providerName: mode } });
 
             const AllAuthen = await this.authenticationIdService.find({ user: data.id });
+            // ONE-HOT ENCODING
+            // [1,0,0,0,0]
+            // [0,1,0,0,0]
             // authen.providerName === PROVIDER.EMAIL && authen.providerName === PROVIDER.FACEBOOK && authen.providerName === PROVIDER.GOOGLE && authen.providerName === PROVIDER.TWITTER && authen.providerName === PROVIDER.APPLE 
             for (authen of AllAuthen) {
-                modeAuthen.push(authen.providerName);
+                if (authen.providerName === 'EMAIL') {
+                    modeAuthen.push(authen.providerName);
+                } else if (authen.providerName === 'FACEBOOK') {
+                    modeAuthen.push(authen.providerName);
+                } else if (authen.providerName === 'TWIITER') {
+                    modeAuthen.push(authen.providerName);
+                } else if (authen.providerName === 'GOOGLE') {
+                    modeAuthen.push(authen.providerName);
+                } else if (authen.providerName === 'APPLE') {
+                    modeAuthen.push(authen.providerName);
+                }
             }
             if (data && checkAuth === undefined) {
                 const user: User = new User();
@@ -1235,10 +1270,24 @@ export class GuestController {
             if (fbUser.id !== undefined && fbUser.email !== undefined) {
                 const findUserFb = await this.userService.findOne({ email: fbUser.email });
                 const findAuthenFb = await this.authenticationIdService.findOne({ providerUserId: fbUser.id, providerName: PROVIDER.FACEBOOK });
+                if (findUserFb === undefined && findAuthenFb === undefined) {
+                    const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
+                    return res.status(400).send(errorResponse);
+                }
                 if (findUserFb !== undefined && findAuthenFb === undefined) {
                     const authenAll = await this.authenticationIdService.find({ where: { user: findUserFb.id } });
                     for (authenFB of authenAll) {
-                        stackAuth.push(authenFB.providerName);
+                        if (authenFB.providerName === 'EMAIL') {
+                            stackAuth.push(authenFB.providerName);
+                        } else if (authenFB.providerName === 'FACEBOOK') {
+                            stackAuth.push(authenFB.providerName);
+                        } else if (authenFB.providerName === 'TWIITER') {
+                            stackAuth.push(authenFB.providerName);
+                        } else if (authenFB.providerName === 'GOOGLE') {
+                            stackAuth.push(authenFB.providerName);
+                        } else if (authenFB.providerName === 'APPLE') {
+                            stackAuth.push(authenFB.providerName);
+                        }
                     }
                     const user: User = new User();
                     user.username = findUserFb.username;
@@ -1313,10 +1362,24 @@ export class GuestController {
                 } else if (findAuthenFb === undefined) {
                     findUserFb = await this.userService.findOne({ email: userEmail });
                 }
+                if (findUserFb === undefined && findAuthenFb === undefined) {
+                    const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
+                    return res.status(400).send(errorResponse);
+                }
                 if (findUserFb !== undefined && findAuthenFb === undefined) {
                     const authenAll = await this.authenticationIdService.find({ where: { user: findUserFb.id } });
                     for (authenFB of authenAll) {
-                        stackAuth.push(authenFB.providerName);
+                        if (authenFB.providerName === 'EMAIL') {
+                            stackAuth.push(authenFB.providerName);
+                        } else if (authenFB.providerName === 'FACEBOOK') {
+                            stackAuth.push(authenFB.providerName);
+                        } else if (authenFB.providerName === 'TWIITER') {
+                            stackAuth.push(authenFB.providerName);
+                        } else if (authenFB.providerName === 'GOOGLE') {
+                            stackAuth.push(authenFB.providerName);
+                        } else if (authenFB.providerName === 'APPLE') {
+                            stackAuth.push(authenFB.providerName);
+                        }
                     }
                     const user: User = new User();
                     user.username = findUserFb.username;
@@ -1380,47 +1443,72 @@ export class GuestController {
             }
 
         } else if (mode === PROVIDER.APPLE) {
-            const data: User = await this.userService.findOne({ where: { username: users.email } });
-            const AllAuthen = await this.authenticationIdService.find({ user: ObjectID(String(data.id)) });
-            const checkAuth = await this.authenticationIdService.findOne({ where: { user: ObjectID(String(data.id)), providerName: mode } });
-            const stackAuth = [];
-            const user: User = new User();
-            user.username = data.username;
-            user.email = data.email;
-            user.uniqueId = data.uniqueId;
-            user.firstName = data.firstName;
-            user.lastName = data.lastName;
-            user.imageURL = data.imageURL;
-            user.coverURL = data.coverURL;
-            user.coverPosition = 0;
-            user.displayName = data.displayName;
-            user.birthdate = new Date(data.birthdate);
-            user.isAdmin = data.isAdmin;
-            user.isSubAdmin = data.isSubAdmin;
-            user.banned = data.banned;
-            for (const authens of AllAuthen) {
-                stackAuth.push(authens.providerName);
+            let userApple = undefined;
+            let appleClient = undefined;
+            const appleId: any = req.body.apple.result.user;
+            if (users.email === undefined) {
+                appleClient = await this.authenticationIdService.findOne({ where: { providerUserId: appleId.userId, providerName: PROVIDER.APPLE } });
+                if (appleClient === undefined) {
+                    const errorResponse = ResponseUtil.getErrorResponseApple('Cannot find your user Please Provide the email to check again.', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+                userApple = await this.userService.findOne({ where: { _id: appleClient.user } });
+
+            } else {
+                userApple = await this.userService.findOne({ where: { username: users.email.toLowerCase() } });
+                if (userApple === undefined) {
+                    const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
+                    return res.status(400).send(errorUserNameResponse);
+                }
+                appleClient = await this.authenticationIdService.findOne({ where: { user: userApple.id, providerName: PROVIDER.APPLE } });
             }
             // authen.providerName === PROVIDER.EMAIL && authen.providerName === PROVIDER.FACEBOOK && authen.providerName === PROVIDER.GOOGLE && authen.providerName === PROVIDER.TWITTER && authen.providerName === PROVIDER.APPLE 
-            if (data && checkAuth === undefined) {
+            if (userApple !== undefined && appleClient === undefined) {
+                const AllAuthen = await this.authenticationIdService.find({ user: userApple.id });
+                const stackAuth = [];
+                const user: User = new User();
+                user.username = userApple.username;
+                user.email = userApple.email;
+                user.uniqueId = userApple.uniqueId;
+                user.firstName = userApple.firstName;
+                user.lastName = userApple.lastName;
+                user.imageURL = userApple.imageURL;
+                user.coverURL = userApple.coverURL;
+                user.coverPosition = 0;
+                user.displayName = userApple.displayName;
+                user.birthdate = new Date(userApple.birthdate);
+                user.isAdmin = userApple.isAdmin;
+                user.isSubAdmin = userApple.isSubAdmin;
+                user.banned = userApple.banned;
+                for (const authens of AllAuthen) {
+                    if (authens.providerName === 'EMAIL') {
+                        stackAuth.push(authens.providerName);
+                    } else if (authens.providerName === 'FACEBOOK') {
+                        stackAuth.push(authens.providerName);
+                    } else if (authens.providerName === 'TWIITER') {
+                        stackAuth.push(authens.providerName);
+                    } else if (authens.providerName === 'GOOGLE') {
+                        stackAuth.push(authens.providerName);
+                    } else if (authens.providerName === 'APPLE') {
+                        stackAuth.push(authens.providerName);
+                    }
+                }
                 const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', user, stackAuth);
                 return res.status(200).send(successResponse);
-            } else if (data && checkAuth !== undefined) {
-                const appleId: any = req.body.apple.result.user;
-                const tokenFCM_AP = req.body.tokenFCM_AP.tokenFCM;
-                const deviceAP = req.body.tokenFCM_AP.deviceName;
-                const appleClient = await this.authenticationIdService.findOne({ where: { providerUserId: appleId.userId } });
+            } else if (userApple !== undefined && appleClient !== undefined) {
                 if (appleClient === null || appleClient === undefined) {
                     const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
                     return res.status(400).send(errorUserNameResponse);
                 } else {
+                    const userExrTime = await this.getUserLoginExpireTime();
                     const currentDateTime = moment().toDate();
-                    const query = { id: appleId.userId, providerName: PROVIDER.APPLE };
-                    const newValue = { $set: { lastAuthenTime: currentDateTime, storedCredentials: appleId.idToken, expirationDate: appleId.metadata.creationTime, properties: { tokenSign: appleId.accessToken, signIn: appleId.metadata.lastSignInTime } } };
+                    const authTime = currentDateTime;
+                    const expirationDateAP = moment().add(userExrTime, 'days').toDate();
+                    const query = { providerUserId: appleId.userId, providerName: PROVIDER.APPLE };
+                    const newValue = { $set: { lastAuthenTime: authTime, storedCredentials: appleId.idToken, expirationDate: expirationDateAP, properties: { tokenSign: appleId.accessToken, signIn: currentDateTime } } };
                     const update_Apple = await this.authenticationIdService.update(query, newValue);
                     if (update_Apple) {
                         const updatedAuth = await this.authenticationIdService.findOne({ where: { providerUserId: appleId.userId } });
-                        await this.deviceToken.createDeviceToken({ deviceName: deviceAP, token: tokenFCM_AP, userId: update_Apple.user });
                         loginUser = await this.userService.findOne({ where: { _id: ObjectID(updatedAuth.user) } });
                         loginToken = jwt.sign({ token: updatedAuth.storedCredentials, userId: loginUser.id }, env.SECRET_KEY);
                     }
@@ -1454,53 +1542,43 @@ export class GuestController {
             const checkIdToken = await this.googleService.verifyIdToken(idToken, modHeaders);
             const userGG = await this.userService.findOne({ email: checkIdToken.email });
             const pic = [];
-            let authenAll = undefined;
             if (checkIdToken === undefined) {
                 const errorResponse: any = { status: 0, message: 'Invalid Token.' };
                 return res.status(400).send(errorResponse);
             }
-            if (userGG !== undefined) {
-                authenAll = await this.authenticationIdService.findOne({ user: userGG.id });
-            }
-            if (authenAll === undefined && userGG !== undefined) {
-                const userExrTime = await this.getUserLoginExpireTime();
-                const token = jwt.sign({ id: userGG.id }, env.SECRET_KEY);
-                const authenId = new AuthenticationId();
-                authenId.user = userGG.id;
-                authenId.lastAuthenTime = moment().toDate();
-                authenId.providerUserId = checkIdToken.userId;
-                authenId.providerName = PROVIDER.EMAIL;
-                authenId.storedCredentials = token;
-                authenId.expirationDate = moment().add(userExrTime, 'days').toDate();
-                await this.authenticationIdService.create(authenId);
-            }
-            if (userGG === undefined) {
-                const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
-                return res.status(400).send(errorUserNameResponse);
-            }
-            const authenGG = await this.authenticationIdService.findOne({ user: userGG.id, providerName: PROVIDER.GOOGLE });
 
-            const stackAuth = [];
-            pic.push(checkIdToken.imageURL);
-            const AllAuthen = await this.authenticationIdService.find({ user: ObjectID(String(userGG.id)) });
-            const user: User = new User();
-            user.username = userGG.username;
-            user.email = userGG.email;
-            user.uniqueId = userGG.uniqueId;
-            user.firstName = userGG.firstName;
-            user.lastName = userGG.lastName;
-            user.imageURL = userGG.imageURL;
-            user.coverURL = userGG.coverURL;
-            user.coverPosition = 0;
-            user.displayName = userGG.displayName;
-            user.birthdate = new Date(userGG.birthdate);
-            user.isAdmin = userGG.isAdmin;
-            user.isSubAdmin = userGG.isSubAdmin;
-            user.banned = userGG.banned;
-            for (const authens of AllAuthen) {
-                stackAuth.push(authens.providerName);
-            }
-            if (userGG && authenGG === undefined) {
+            const authenGG = await this.authenticationIdService.findOne({ providerUserId: checkIdToken.userId, providerName: PROVIDER.GOOGLE });
+            if (userGG !== undefined && authenGG === undefined) {
+                const stackAuth = [];
+                pic.push(checkIdToken.imageURL);
+                const AllAuthen = await this.authenticationIdService.find({ user: ObjectID(String(userGG.id)) });
+                const user: User = new User();
+                user.username = userGG.username;
+                user.email = userGG.email;
+                user.uniqueId = userGG.uniqueId;
+                user.firstName = userGG.firstName;
+                user.lastName = userGG.lastName;
+                user.imageURL = userGG.imageURL;
+                user.coverURL = userGG.coverURL;
+                user.coverPosition = 0;
+                user.displayName = userGG.displayName;
+                user.birthdate = new Date(userGG.birthdate);
+                user.isAdmin = userGG.isAdmin;
+                user.isSubAdmin = userGG.isSubAdmin;
+                user.banned = userGG.banned;
+                for (const authens of AllAuthen) {
+                    if (authens.providerName === 'EMAIL') {
+                        stackAuth.push(authens.providerName);
+                    } else if (authens.providerName === 'FACEBOOK') {
+                        stackAuth.push(authens.providerName);
+                    } else if (authens.providerName === 'TWIITER') {
+                        stackAuth.push(authens.providerName);
+                    } else if (authens.providerName === 'GOOGLE') {
+                        stackAuth.push(authens.providerName);
+                    } else if (authens.providerName === 'APPLE') {
+                        stackAuth.push(authens.providerName);
+                    }
+                }
                 const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', user, stackAuth, pic);
                 return res.status(200).send(successResponse);
             } else if (userGG !== undefined && authenGG !== undefined) {
@@ -1586,12 +1664,15 @@ export class GuestController {
                 return res.status(400).send(errorResponse);
             }
             let userTw = undefined;
-
             const authenTw = await this.authenticationIdService.findOne({ providerUserId: twitterUserId, providerName: PROVIDER.TWITTER });
             if (userEmail !== undefined && authenTw !== undefined) {
                 userTw = await this.userService.findOne({ _id: authenTw.user });
             } else {
                 userTw = await this.userService.findOne({ email: userEmail });
+            }
+            if (authenTw === undefined && userTw === undefined) {
+                const errorResponse = ResponseUtil.getErrorResponse('Not found user.', undefined);
+                return res.status(400).send(errorResponse);
             }
             if (authenTw === undefined && userTw !== undefined) {
                 let authenTws = undefined;
@@ -1601,7 +1682,17 @@ export class GuestController {
                 if (userTw !== undefined && findAuthenTw === undefined) {
                     const authenAll = await this.authenticationIdService.find({ where: { user: userTw.id } });
                     for (authenTws of authenAll) {
-                        stackAuth.push(authenTws.providerName);
+                        if (authenTws.providerName === 'EMAIL') {
+                            stackAuth.push(authenTws.providerName);
+                        } else if (authenTws.providerName === 'FACEBOOK') {
+                            stackAuth.push(authenTws.providerName);
+                        } else if (authenTws.providerName === 'TWIITER') {
+                            stackAuth.push(authenTws.providerName);
+                        } else if (authenTws.providerName === 'GOOGLE') {
+                            stackAuth.push(authenTws.providerName);
+                        } else if (authenTws.authenTws === 'APPLE') {
+                            stackAuth.push(authenTws.providerName);
+                        }
                     }
                     const user: User = new User();
                     user.username = userTw.username;
@@ -1673,10 +1764,13 @@ export class GuestController {
         const username = otpRequest.email;
         let saveOtp = undefined;
         const emailRes: string = username;
-        const expirationDate = moment().add(5, 'minutes').toDate().getTime();
+        const expirationDate = moment().add(1, 'minutes').toDate().getTime() / 1000;
+        const minute = Math.floor(expirationDate);
+        const expirationCompare = moment().add(5, 'minutes').toDate().getTime() / 1000;
+        const momentCompare = Math.floor(expirationCompare);
         const user: User = await this.userService.findOne({ username: emailRes });
         const checkOtp = await this.otpService.findOne({ userId: ObjectID(user.id), email: user.email });
-        if (checkOtp !== undefined && checkOtp.expiration > expirationDate) {
+        if (checkOtp !== undefined && checkOtp.expiration > momentCompare) {
             await this.otpService.delete({ userId: ObjectID(user.id), email: user.email });
         }
         const minm = 100000;
@@ -1688,7 +1782,7 @@ export class GuestController {
         if (limitCount === undefined) {
             const sendMailRes = await this.sendActivateOTP(user, emailRes, otpRandom, 'Send OTP');
             if (sendMailRes.status === 1) {
-                saveOtp = await this.otpService.createOtp({ userId: user.id, email: emailRes, otp: otpRandom, limit: count, expiration: expirationDate });
+                saveOtp = await this.otpService.createOtp({ userId: user.id, email: emailRes, otp: otpRandom, limit: count, expiration: momentCompare });
             }
         }
 
@@ -1706,10 +1800,13 @@ export class GuestController {
             // const sendMailRes = await this.sendActivateOTP(user, emailRes, otpRandom, 'Send OTP');
             const successResponse = ResponseUtil.getSuccessOTP('The Otp have been send.', saveOtp.limit);
             return res.status(200).send(successResponse);
-        } else if (limitCount !== undefined && limitCount.limit <= 2 && limitCount.expiration < expirationDate) {
+        } else if (limitCount !== undefined && limitCount.limit <= 2 && limitCount.expiration < momentCompare) {
             // const sendMailRes = await this.sendActivateOTP(user, emailRes, limitCount.otp, 'Send OTP');
             const successResponse = ResponseUtil.getSuccessOTP('The Otp have been send.', limitCount.limit);
             return res.status(200).send(successResponse);
+        } else if (limitCount !== undefined && limitCount.limit === 3 && minute > limitCount.expiration) {
+            await this.otpService.delete({ userId: ObjectID(user.id), email: user.email });
+            return res.status(400).send(ResponseUtil.getErrorResponse('The Otp have been send more than 3 times, Please try add your OTP again', undefined));
         } else {
             return res.status(400).send(ResponseUtil.getErrorResponse('The Otp have been send more than 3 times, Please try add your OTP again', undefined));
         }
@@ -1925,6 +2022,63 @@ export class GuestController {
                         loginUser.followers = userFollowers.length;
 
                         const successResponse = ResponseUtil.getSuccessResponseAuth('Loggedin successful', otpRequest.idToken, PROVIDER.TWITTER);
+                        const update = await this.userService.update(queryMerge, newValues);
+                        if (update) {
+                            return res.status(200).send(successResponse);
+                        } else {
+                            const errorResponse = ResponseUtil.getErrorResponse('Merge not successful.', undefined);
+                            return res.status(400).send(errorResponse);
+                        }
+                    }
+                } else {
+                    const errorResponse = ResponseUtil.getErrorResponse('The OTP is not correct.', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+            } else {
+                const errorResponse = ResponseUtil.getErrorResponse('The OTP is not correct.', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        } else if (user && mode === PROVIDER.APPLE) {
+            if (otp === otpFind.otp) {
+                let authIdCreate = undefined;
+                const appleId: any = otpRequest.apple.result.user;
+                const authenId = new AuthenticationId();
+                authenId.user = user.id;
+                authenId.lastAuthenTime = moment().toDate();
+                authenId.providerName = PROVIDER.APPLE;
+                authenId.providerUserId = appleId.userId;
+                authenId.storedCredentials = appleId.idToken;
+                authenId.expirationDate = moment().add(userExrTime, 'days').toDate();
+                authenId.properties = {
+                    properties: { tokenSign: appleId.accessToken }
+                };
+
+                if (otpFind.expiration < expirationDate) {
+                    authIdCreate = await this.authenticationIdService.create(authenId);
+                    const queryMerge = { _id: user.id };
+                    const newValues = { $set: { mergeAP: true } };
+                    if (authIdCreate) {
+                        loginUser = await this.userService.findOne({ where: { _id: authIdCreate.user } });
+                        const query = { email: emailRes };
+                        await this.otpService.delete(query);
+                        if (loginUser === undefined) {
+                            const errorResponse: any = { status: 0, message: 'Cannot login please try again.' };
+                            return res.status(400).send(errorResponse);
+                        }
+
+                        if (loginUser.banned === true) {
+                            const errorResponse = ResponseUtil.getErrorResponse('User Banned', undefined);
+                            return res.status(400).send(errorResponse);
+                        }
+
+                        const userFollowings = await this.userFollowService.find({ where: { userId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
+                        const userFollowers = await this.userFollowService.find({ where: { subjectId: loginUser.id, subjectType: SUBJECT_TYPE.USER } });
+
+                        loginUser = await this.userService.cleanUserField(loginUser);
+                        loginUser.followings = userFollowings.length;
+                        loginUser.followers = userFollowers.length;
+
+                        const successResponse = ResponseUtil.getSuccessResponseAuth('Loggedin successful', otpRequest.idToken, PROVIDER.APPLE);
                         const update = await this.userService.update(queryMerge, newValues);
                         if (update) {
                             return res.status(200).send(successResponse);

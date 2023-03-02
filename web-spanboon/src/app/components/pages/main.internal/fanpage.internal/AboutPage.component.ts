@@ -5,7 +5,7 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from "@angular/core";
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, SimpleChanges, ViewChild } from "@angular/core";
 import { MatDialog } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AboutPageFacade, AssetFacade, AuthenManager, ObservableManager, PageFacade, UserAccessFacade } from '../../../../services/services';
@@ -15,6 +15,7 @@ import { Subject } from "rxjs/internal/Subject";
 import { fromEvent } from "rxjs";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
 import { FormBuilder, FormGroup } from "@angular/forms";
+import { DialogAlert } from "src/app/components/shares/dialog/dialog";
 
 const PAGE_NAME: string = 'account';
 const SEARCH_LIMIT: number = 20;
@@ -47,7 +48,85 @@ export class AboutPage extends AbstractPage implements OnInit {
     private aboutPageFacade: AboutPageFacade;
 
     public groupAbout!: FormGroup;
-
+    public provinces: any = [
+        { value: 'นครราชสีมา', viewValue: 'นครราชสีมา' },
+        { value: 'สมุทรสงคราม', viewValue: 'สมุทรสงคราม' },
+        { value: 'กาญจนบุรี', viewValue: 'กาญจนบุรี' },
+        { value: 'ตาก', viewValue: 'ตาก' },
+        { value: 'อุบลราชธานี', viewValue: 'อุบลราชธานี' },
+        { value: 'สุราษฎร์ธานี', viewValue: 'สุราษฎร์ธานี' },
+        { value: 'ชัยภูมิ', viewValue: 'ชัยภูมิ' },
+        { value: 'แม่ฮ่องสอน', viewValue: 'แม่ฮ่องสอน' },
+        { value: 'เพชรบูรณ์', viewValue: 'เพชรบูรณ์' },
+        { value: 'ลำปาง', viewValue: 'ลำปาง' },
+        { value: 'อุดรธานี', viewValue: 'อุดรธานี' },
+        { value: 'เชียงราย', viewValue: 'เชียงราย' },
+        { value: 'น่าน', viewValue: 'น่าน' },
+        { value: 'เลย', viewValue: 'เลย' },
+        { value: 'ขอนแก่น', viewValue: 'ขอนแก่น' },
+        { value: 'พิษณุโลก', viewValue: 'พิษณุโลก' },
+        { value: 'บุรีรัมย์', viewValue: 'บุรีรัมย์' },
+        { value: 'นครศรีธรรมราช', viewValue: 'นครศรีธรรมราช' },
+        { value: 'สกลนคร', viewValue: 'สกลนคร' },
+        { value: 'นครสวรรค์', viewValue: 'นครสวรรค์' },
+        { value: 'ศรีสะเกษ', viewValue: 'ศรีสะเกษ' },
+        { value: 'กำแพงเพชร', viewValue: 'กำแพงเพชร' },
+        { value: 'ร้อยเอ็ด', viewValue: 'ร้อยเอ็ด' },
+        { value: 'สุรินทร์', viewValue: 'สุรินทร์' },
+        { value: 'อุตรดิตถ์', viewValue: 'อุตรดิตถ์' },
+        { value: 'สงขลา', viewValue: 'สงขลา' },
+        { value: 'สระแก้ว', viewValue: 'สระแก้ว' },
+        { value: 'กาฬสินธุ์', viewValue: 'กาฬสินธุ์' },
+        { value: 'อุทัยธานี', viewValue: 'อุทัยธานี' },
+        { value: 'สุโขทัย', viewValue: 'สุโขทัย' },
+        { value: 'แพร่', viewValue: 'แพร่' },
+        { value: 'ประจวบคีรีขันธ์', viewValue: 'ประจวบคีรีขันธ์' },
+        { value: 'จันทบุรี', viewValue: 'จันทบุรี' },
+        { value: 'พะเยา', viewValue: 'พะเยา' },
+        { value: 'เพชรบุรี', viewValue: 'เพชรบุรี' },
+        { value: 'ลพบุรี', viewValue: 'ลพบุรี' },
+        { value: 'ชุมพร', viewValue: 'ชุมพร' },
+        { value: 'นครพนม', viewValue: 'นครพนม' },
+        { value: 'สุพรรณบุรี', viewValue: 'สุพรรณบุรี' },
+        { value: 'ฉะเชิงเทรา', viewValue: 'ฉะเชิงเทรา' },
+        { value: 'มหาสารคาม', viewValue: 'มหาสารคาม' },
+        { value: 'ราชบุรี', viewValue: 'ราชบุรี' },
+        { value: 'ตรัง', viewValue: 'ตรัง' },
+        { value: 'ปราจีนบุรี', viewValue: 'ปราจีนบุรี' },
+        { value: 'กระบี่', viewValue: 'กระบี่' },
+        { value: 'พิจิตร', viewValue: 'พิจิตร' },
+        { value: 'ยะลา', viewValue: 'ยะลา' },
+        { value: 'ลำพูน', viewValue: 'ลำพูน' },
+        { value: 'นราธิวาส', viewValue: 'นราธิวาส' },
+        { value: 'ชลบุรี', viewValue: 'ชลบุรี' },
+        { value: 'มุกดาหาร', viewValue: 'มุกดาหาร' },
+        { value: 'บึงกาฬ', viewValue: 'บึงกาฬ' },
+        { value: 'พังงา', viewValue: 'พังงา' },
+        { value: 'ยโสธร', viewValue: 'ยโสธร' },
+        { value: 'หนองบัวลำภู', viewValue: 'หนองบัวลำภู' },
+        { value: 'สระบุรี', viewValue: 'สระบุรี' },
+        { value: 'ระยอง', viewValue: 'ระยอง' },
+        { value: 'พัทลุง', viewValue: 'พัทลุง' },
+        { value: 'ระนอง', viewValue: 'ระนอง' },
+        { value: 'อำนาจเจริญ', viewValue: 'อำนาจเจริญ' },
+        { value: 'หนองคาย', viewValue: 'หนองคาย' },
+        { value: 'ตราด', viewValue: 'ตราด' },
+        { value: 'พระนครศรีอยุธยา', viewValue: 'พระนครศรีอยุธยา' },
+        { value: 'สตูล', viewValue: 'สตูล' },
+        { value: 'ชัยนาท', viewValue: 'ชัยนาท' },
+        { value: 'นครปฐม', viewValue: 'นครปฐม' },
+        { value: 'นครนายก', viewValue: 'นครนายก' },
+        { value: 'ปัตตานี', viewValue: 'ปัตตานี' },
+        { value: 'กรุงเทพมหานคร', viewValue: 'กรุงเทพมหานคร' },
+        { value: 'ปทุมธานี', viewValue: 'ปทุมธานี' },
+        { value: 'สมุทรปราการ', viewValue: 'สมุทรปราการ' },
+        { value: 'อ่างทอง', viewValue: 'อ่างทอง' },
+        { value: 'สมุทรสาคร', viewValue: 'สมุทรสาคร' },
+        { value: 'สิงห์บุรี', viewValue: 'สิงห์บุรี' },
+        { value: 'นนทบุรี', viewValue: 'นนทบุรี' },
+        { value: 'ภูเก็ต', viewValue: 'ภูเก็ต' },
+        { value: 'สมุทรสงคราม', viewValue: 'สมุทรสงคราม' }
+    ];
     public isCard1: boolean = false;
     public isCard2: boolean = false;
     public isCard3: boolean = false;
@@ -59,6 +138,7 @@ export class AboutPage extends AbstractPage implements OnInit {
     public isCard9: boolean = false;
     public isCard10: boolean = false;
     public isCard11: boolean = false;
+    public isCard12: boolean = false;
     public isActiveButton1: boolean = false;
     public isActiveButton2: boolean = false;
     public isActiveButton3: boolean = false;
@@ -68,6 +148,7 @@ export class AboutPage extends AbstractPage implements OnInit {
     public isActiveButton9: boolean = false;
     public isActiveButton10: boolean = false;
     public isActiveButton11: boolean = false;
+    public isActiveButton12: boolean = false;
     public isActiveButtonEmail: boolean = false;
     public isActiveButtonWeb: boolean = false;
 
@@ -188,10 +269,14 @@ export class AboutPage extends AbstractPage implements OnInit {
             this.pageId = params['id'];
         });
 
+        this.observManager.createSubject('page.about');
     }
 
-    public async ngOnInit(): Promise<void> {
+    public ngOnInit(): void {
         this.crateValueAbout();
+    }
+
+    public async ngOnChanges(changes: SimpleChanges): Promise<void> {
         await this.getDataPage();
     }
 
@@ -249,11 +334,12 @@ export class AboutPage extends AbstractPage implements OnInit {
             this.isCard10 = true;
         } else if (items === '11') {
             this.isCard11 = true;
+        } else if (items === '12'){
+            this.isCard12 = true;
         }
     }
 
     public clickClose($event: Event, items: any, data: any) {
-        console.log(items);
         $event.stopPropagation();
         if (items === '1') {
             this.isCard1 = false;
@@ -278,7 +364,7 @@ export class AboutPage extends AbstractPage implements OnInit {
         } else if (items === '5') {
             this.isCard5 = false;
             this.isActiveButton5 = false;
-            document.getElementById('mobileNo')!.style.removeProperty("border");
+            document.getElementById('phone')!.style.removeProperty("border");
             this.resetValue(data, 5);
         } else if (items === '6') {
             this.isCard6 = false;
@@ -302,10 +388,14 @@ export class AboutPage extends AbstractPage implements OnInit {
             this.isCard10 = false;
             this.isActiveButton10 = false;
             this.resetValue(data, 10);
-        } else if (items === '11' || items === '12' || items === '13') {
+        } else if (items === '11' ) {
             this.isCard11 = false;
             this.isActiveButton11 = false;
             this.resetValue(data, 11);
+        } else if (items === '12'){
+            this.isCard12 = false;
+            this.isActiveButton12 = false;
+            this.resetValue(data,12);
         }
     }
 
@@ -318,13 +408,13 @@ export class AboutPage extends AbstractPage implements OnInit {
             this.isActiveButton2 = false;
         } else if (index === 3) {
             this.isCard3 = false;
-            this.isActiveButton4 = false;
+            this.isActiveButton3 = false;
         } else if (index === 4) {
             this.isCard4 = false;
-            this.isActiveButton5 = false;
+            this.isActiveButton4 = false;
         } else if (index === 5) {
             this.isCard5 = false;
-            this.isActiveButton3 = false;
+            this.isActiveButton5 = false;
         } else if (index === 6) {
             this.isCard6 = false;
             this.isActiveButtonWeb = false;
@@ -343,6 +433,9 @@ export class AboutPage extends AbstractPage implements OnInit {
         } else if (index === 11) {
             this.isCard11 = false;
             this.isActiveButton11 = false;
+        } else if (index === 12){
+            this.isCard12 = false;
+            this.isActiveButton12 = false;
         }
     }
 
@@ -389,7 +482,7 @@ export class AboutPage extends AbstractPage implements OnInit {
     private setValueAbout() {
         const groupAbout = this.groupAbout;
         groupAbout!.get('name')!.setValue(this.dataPage && this.dataPage!.name ? this.dataPage!.name : '');
-        groupAbout!.get('pageUsername')!.setValue(this.dataPage && this.dataPage!.name ? this.dataPage!.name : '');
+        groupAbout!.get('pageUsername')!.setValue(this.dataPage && this.dataPage!.pageUsername ? this.dataPage!.pageUsername : '');
         groupAbout!.get('value')!.setValue(this.dataAboutPage && this.dataAboutPage!.value ? this.dataAboutPage!.value : '');
         groupAbout!.get('backgroundStory')!.setValue(this.dataPage && this.dataPage!.backgroundStory ? this.dataPage!.backgroundStory : '');
         groupAbout!.get('mobileNo')!.setValue(this.dataPage && this.dataPage!.mobileNo ? this.dataPage!.mobileNo : '');
@@ -413,6 +506,7 @@ export class AboutPage extends AbstractPage implements OnInit {
                     for (let data of this.resAboutPage) {
                         if (data.label === 'หน่วยงาน') {
                             this.dataAboutPage = data;
+                            this.groupAbout!.get('value')!.setValue(this.dataAboutPage && this.dataAboutPage!.value ? this.dataAboutPage!.value : '');
                         }
                         if (data.label === 'ละติจูด') {
                             this.latitudeAboutPage = data;
@@ -420,9 +514,10 @@ export class AboutPage extends AbstractPage implements OnInit {
                         if (data.label === 'ลองจิจูด') {
                             this.longtitudeAboutPage = data;
                         }
-
                     }
                     this.cloneAboutPage = JSON.parse(JSON.stringify(this.resAboutPage));
+                } else {
+                    this.groupAbout!.get('value')!.setValue('');
                 }
             }
         }).catch((err) => {
@@ -436,16 +531,11 @@ export class AboutPage extends AbstractPage implements OnInit {
     }
 
     public checkUniquePageUsername(text: any) {
-        if (text === '') {
-            this.isActiveButton2 = true;
-            return;
-        }
         const pageUsername = this.dataPage && this.dataPage.pageUsername;
         if (text === pageUsername) {
             this.isActiveButton2 = false;
         } else {
             // if (text.length > 0) {
-            this.isActiveButton2 = true;
             let pattern = text.match('^[A-Za-z0-9_.]*$');
             if (!pattern) {
                 this.uuid = false;
@@ -459,15 +549,15 @@ export class AboutPage extends AbstractPage implements OnInit {
                 document.getElementById('pageUsername').style.border = '2px solid green';
                 this.pageFacade.checkUniqueId(this.pageId, body).then((res) => {
                     if (res && res.data) {
-                        this.uuid = res.data;
                         document.getElementById('pageUsername').style.border = '2px solid green';
                     } else {
-                        this.uuid = res.error;
                         document.getElementById('pageUsername').style.border = '2px solid red';
                     }
                     document.getElementById('pageUsername').focus();
                 }).catch((err) => {
+                    console.log("error", err)
                     this.uuid = false;
+                    this.isActiveButton2 = false;
                     document.getElementById('pageUsername').style.border = '2px solid red';
                     document.getElementById('pageUsername').focus();
                 });
@@ -478,6 +568,7 @@ export class AboutPage extends AbstractPage implements OnInit {
     }
 
     public changeActive(text: any, index: number) {
+        const groupAbout = this.groupAbout;
         if (index === 1) {
             const name = this.dataPage && this.dataPage.name;
             if (text === name || text === '') {
@@ -485,65 +576,75 @@ export class AboutPage extends AbstractPage implements OnInit {
             } else {
                 this.isActiveButton1 = true;
             }
+        } else if (index === 2) {
+            const value = this.dataPage && this.dataPage.pageUsername;
+            let pattern = text.match('^[A-Za-z0-9_]*$');
+            if (pattern) {
+                this.isActiveButton2 = true;
+            } else {
+                this.isActiveButton2 = false;
+            }
         } else if (index === 3) {
             const value = this.cloneAboutPage && this.cloneAboutPage[0].value;
             if (text === value || text === '') {
+                this.isActiveButton3 = false;
+            } else {
+                this.isActiveButton3 = true;
+            }
+        } else if (index === 4) {
+            const backgroundStory = this.dataPage && this.dataPage.backgroundStory;
+            if (text === backgroundStory) {
                 this.isActiveButton4 = false;
             } else {
                 this.isActiveButton4 = true;
             }
-        } else if (index === 4) {
-            const backgroundStory = this.dataPage && this.dataPage.backgroundStory;
-            if (text === backgroundStory || text === '') {
-                this.isActiveButton5 = false;
-            } else {
-                this.isActiveButton5 = true;
-            }
         } else if (index === 6) {
             const web = this.dataPage && this.dataPage.websiteURL;
-            if (text === web || text === '') {
+            if (text === web) {
                 this.isActiveButtonWeb = false;
             } else {
                 this.isActiveButtonWeb = true;
             }
         } else if (index === 8) {
             const lineId = this.dataPage && this.dataPage.lineId;
-            if (text === lineId || text === '') {
+            if (text === lineId) {
                 this.isActiveButton8 = false;
             } else {
                 this.isActiveButton8 = true;
             }
         } else if (index === 9) {
             const facebook = this.dataPage && this.dataPage.facebookURL;
-            if (text === facebook || text === '') {
+            if (text === facebook) {
                 this.isActiveButton9 = false;
             } else {
                 this.isActiveButton9 = true;
             }
         } else if (index === 10) {
             const twitter = this.dataPage && this.dataPage.twitterURL;
-            if (text === twitter || text === '') {
+            if (text === twitter) {
                 this.isActiveButton10 = false;
             } else {
                 this.isActiveButton10 = true;
             }
         } else if (index === 11) {
             const address = this.dataPage && this.dataPage.address;
-            if (text === address || text === '') {
+            if (text === address) {
                 this.isActiveButton11 = false;
             } else {
                 this.isActiveButton11 = true;
+            }
+        } else if (index === 12){
+            const province = this.dataPage && this.dataPage.province;
+            if (text === province) {
+                this.isActiveButton12 = false;
+            } else {
+                this.isActiveButton12 = true;
             }
         }
     }
 
     public checkFormatNumber(phone: any) {
         const clonePhone = this.dataPage && this.dataPage.phone;
-        if (phone === '') {
-            this.isActiveButton5 = false;
-            return;
-        }
-
         if (phone === clonePhone) {
             this.isActiveButton5 = false;
         } else {
@@ -562,11 +663,6 @@ export class AboutPage extends AbstractPage implements OnInit {
     }
 
     public checkPatternEmail(email: any) {
-        if (email === '') {
-            this.isActiveButtonEmail = false;
-            document.getElementById('email').style.border = 'unset';
-            return;
-        }
         if (email.length > 0) {
             this.isActiveButtonEmail = true;
             let pattern = email.match('[A-Za-z0-9._%-]+@[A-Za-z0-9._%-]+\\.[a-z]{2,3}');
@@ -620,6 +716,7 @@ export class AboutPage extends AbstractPage implements OnInit {
         }
         this.pageFacade.updateProfilePage(this.pageId, body).then((res) => {
             if (res.data) {
+                this.observManager.publish('page.about', res);
                 this.dataPage = res.data;
                 this.dataUpdatePage.emit(this.dataPage);
                 if (this.dataPage.pageUsername === "") {
@@ -692,7 +789,6 @@ export class AboutPage extends AbstractPage implements OnInit {
                 groupAbout!.get('email')!.setValue(this.dataPage.email);
             }
         } else if (index === 8) {
-            console.log(this.dataPage.lineId);
             if (this.dataPage && this.dataPage.lineId === undefined) {
                 groupAbout!.get('lineId')!.reset();
             } else {
@@ -788,19 +884,32 @@ export class AboutPage extends AbstractPage implements OnInit {
         const groupAbout = this.groupAbout;
         const aboutPage = new AboutPages();
         if (name === 'organzier') {
-            let arr: any = []
+            let arr: any = [];
+            aboutPage.id = this.dataAboutPage ? this.dataAboutPage.id : '';
             aboutPage.label = 'หน่วยงาน';
             aboutPage.value = data;
-            aboutPage.ordering = 1;
+            aboutPage.ordering = this.dataAboutPage ? this.dataAboutPage.ordering : 1;
             arr.push(aboutPage);
 
-            this.aboutPageFacade.create(this.pageId, arr).then((res: any) => {
-                let indexValue = Number(index);
-                this.closeCard(indexValue);
-            }).catch((err: any) => {
-                console.log('err ', err)
-            })
-
+            if (!!this.dataAboutPage) {
+                this.aboutPageFacade.edit(this.pageId, arr).then((res: any) => {
+                    if (res) {
+                        let indexValue = Number(index);
+                        this.closeCard(indexValue);
+                    }
+                }).catch((err: any) => {
+                    console.log('err ', err)
+                })
+            } else {
+                this.aboutPageFacade.create(this.pageId, arr).then((res: any) => {
+                    if (res) {
+                        let indexValue = Number(index);
+                        this.closeCard(indexValue);
+                    }
+                }).catch((err: any) => {
+                    console.log('err ', err)
+                })
+            }
         } else {
             let body;
             if (!!groupAbout.get('address')!.value) {
@@ -848,5 +957,28 @@ export class AboutPage extends AbstractPage implements OnInit {
 
     public getDirtyConfirmEvent(): EventEmitter<any> {
         return this.dirtyConfirmEvent;
+    }
+
+    public deletePage() {
+        let dialog = this.dialog.open(DialogAlert, {
+            disableClose: true,
+            data: {
+                text: 'ยืนยันการลบเพจ',
+                bottomColorText2: "black"
+            }
+        });
+        dialog.afterClosed().subscribe((res) => {
+            if (res) {
+                this.pageFacade.deletePage(this.pageId).then((res) => {
+                    if (res) {
+                        this.observManager.publish('page.about', this.pageId);
+                        this.router.navigateByUrl("/home");
+                    }
+                }).catch((err) => {
+                    if (err) {
+                    }
+                });
+            }
+        });
     }
 }

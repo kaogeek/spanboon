@@ -45,6 +45,7 @@ export class HashtagPage extends AbstractPage implements OnInit {
     private imageSrc: string = '';
     public imageName: string = '';
     public value: string = '';
+    public orderBy: any = {};
 
     constructor(hashTagFacade: HashTagFacade, router: Router, dialog: MatDialog, authenManager: AuthenManager) {
         super(PAGE_NAME, dialog);
@@ -54,21 +55,12 @@ export class HashtagPage extends AbstractPage implements OnInit {
         // if (!this.authenManager.isCurrentUserType()) {
         //     this.router.navigateByUrl("/main/home_content/pageslide")
         // }
+        this.orderBy = { createdDate: -1 };
         this.fieldTable = [
-            {
-                name: "img",
-                label: "รูป",
-                width: "80pt",
-                class: "", formatColor: false, formatImage: true,
-                link: [],
-                formatDate: false,
-                formatId: false,
-                align: "left"
-            },
             {
                 name: "name",
                 label: "ชื่อ",
-                width: "500pt",
+                width: "300pt",
                 class: "", formatColor: false, formatImage: false,
                 link: [],
                 formatDate: false,

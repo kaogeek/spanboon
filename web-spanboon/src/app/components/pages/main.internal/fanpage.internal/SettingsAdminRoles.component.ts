@@ -15,6 +15,8 @@ import { POST_TYPE, USER_LEVEL } from '../../../../TypePost';
 import { AccountFacade, AssetFacade, AuthenManager, ObservableManager, PageFacade, UserAccessFacade } from '../../../../services/services';
 import { AbstractPage } from '../../AbstractPage';
 import { Input } from '@angular/core';
+import { DialogAlert } from "src/app/components/shares/dialog/DialogAlert.component";
+import { MESSAGE } from "src/custom/variable";
 
 const PAGE_NAME: string = 'roles';
 
@@ -396,6 +398,7 @@ export class SettingsAdminRoles extends AbstractPage implements OnInit {
                     this.clearInputData();
                     this.getAccessPage();
                     if (res) {
+                        this.valueSt = '';
                         this.isConfirm = false;
                         this.accessPage = res;
                     }
@@ -403,6 +406,7 @@ export class SettingsAdminRoles extends AbstractPage implements OnInit {
             }).catch((err) => {
                 console.log(err)
                 if (err.error.message === 'Access Level was duplicated.') {
+                    this.valueSt = '';
                     this.isConfirm = false;
                     this.showAlertDialog('ไม่สามารถแอดสิทธิซ้ำได้');
                 }
@@ -484,5 +488,29 @@ export class SettingsAdminRoles extends AbstractPage implements OnInit {
 
     public clickcancel() {
         this.isCancel = true;
+    }
+
+    public deleteRole(item, index) {
+        let pageId = item.page.id;
+        let UserId = item.user.id;
+        let dialog = this.dialog.open(DialogAlert, {
+            disableClose: true,
+            data: {
+                text: 'ยืนยันการลบบทบาท',
+                bottomColorText2: "black"
+            }
+        });
+        dialog.afterClosed().subscribe((res) => {
+            if (res) {
+                this.pageFacade.deletePermission(pageId, UserId).then((res) => {
+                    if (res) {
+                        this.resListPage.splice(index, 1);
+                    }
+                }).catch((err) => {
+                    if (err) {
+                    }
+                });
+            }
+        });
     }
 }
