@@ -99,7 +99,7 @@ export class MainPageController {
         const monthRanges: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 365);
         const dayRanges: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 1);
         // summation
-        const postProcessor: PostSectionProcessor2 = new PostSectionProcessor2(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService,this.pageService);
+        const postProcessor: PostSectionProcessor2 = new PostSectionProcessor2(this.postsService, this.s3Service, this.userLikeService);
         postProcessor.setData({
             userId,
             startDateTime: monthRanges[0],
@@ -127,7 +127,7 @@ export class MainPageController {
         const pageRoundRobin = await pageProcessor.process();
 
         // เกาะกระแส
-        const majorTrendProcessor: MajorTrendSectionModelProcessor = new MajorTrendSectionModelProcessor(this.postsService, this.s3Service, this.userLikeService);
+        const majorTrendProcessor: MajorTrendSectionModelProcessor = new MajorTrendSectionModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService,this.pageService);
         majorTrendProcessor.setData({
             userId,
             startDateTime: dayRanges[0],
@@ -142,7 +142,7 @@ export class MainPageController {
 
         // ก้าวไกลสภา #hashTag
 
-        const kaokaiHashTagProcessor: KaoKaiHashTagModelProcessor = new KaoKaiHashTagModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService);
+        const kaokaiHashTagProcessor: KaoKaiHashTagModelProcessor = new KaoKaiHashTagModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService,this.pageService);
         kaokaiHashTagProcessor.setData({
             userId,
             startDateTime: dayRanges[0],
