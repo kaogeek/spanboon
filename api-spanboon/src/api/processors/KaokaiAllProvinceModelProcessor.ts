@@ -107,7 +107,10 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     postMatchStmt.startDateTime = { $lte: today };
                 }
 
-                const provincePage = await this.kaokaiTodayService.findOne({ position: 3, flag: true });
+                const provincePage = await this.kaokaiTodayService.findOne({ position: 3 });
+                if(provincePage === undefined){
+                    resolve(undefined);
+                }
                 if(provincePage.type === 'page' && provincePage.field === 'province'){
                     const bucketF = [];
                     if (provincePage.buckets.length >= 0) {
@@ -687,7 +690,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     resolve(result);
                 }else if(provincePage.type === 'post' && provincePage.field === 'emergencyEvent'){
                     const bucketF = [];
-                    const postEmergen = await this.kaokaiTodayService.findOne({ position: 3, flag: true });
+                    const postEmergen = await this.kaokaiTodayService.findOne({ position: 3});
                     if (postEmergen.buckets.length >= 0) {
                         if (postEmergen.buckets[0] !== undefined && postEmergen.buckets[0] !== null) {
                             for (const provincesF of postEmergen.buckets[0].values) {
@@ -824,7 +827,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     resolve(result);
                 }else if(provincePage.type === 'post' && provincePage.field === 'objective'){
                     const bucketF = [];
-                    const postObjective = await this.kaokaiTodayService.findOne({ position: 3, flag: true });
+                    const postObjective = await this.kaokaiTodayService.findOne({ position: 3 });
                     if (postObjective.buckets.length >= 0) {
                         if (postObjective.buckets[0] !== undefined && postObjective.buckets[0] !== null) {
                             for (const provincesF of postObjective.buckets[0].values) {
@@ -1080,7 +1083,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     resolve(result);
                 }else if(provincePage.type === 'post' && provincePage.field === 'hashTag'){
                     const bucketF = [];
-                    const postsHashTags = await this.kaokaiTodayService.findOne({ position:3, flag: true });
+                    const postsHashTags = await this.kaokaiTodayService.findOne({ position:3});
                     if (postsHashTags.buckets.length >= 0) {
                         if (postsHashTags.buckets[0] !== undefined && postsHashTags.buckets[0] !== null) {
                             for (const provincesF of postsHashTags.buckets[0].values) {

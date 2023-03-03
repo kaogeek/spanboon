@@ -96,7 +96,10 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     // default if startDateTime and endDateTime is not defined.
                     postMatchStmt.startDateTime = { $lte: today };
                 }
-                const hashTagProcessor = await this.kaokaiTodayService.findOne({ position: 4, flag: true });
+                const hashTagProcessor = await this.kaokaiTodayService.findOne({ position: 4});
+                if(hashTagProcessor === undefined ){
+                    resolve(undefined);
+                }
                 if (hashTagProcessor.type === 'post' && hashTagProcessor.field === 'hashTag') {
                     const bucketF = [];
                     if (hashTagProcessor.buckets.length >= 0) {
@@ -359,7 +362,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     resolve(result);
                 }else if(hashTagProcessor.type === 'post' && hashTagProcessor.field === 'objective'){
                     const bucketF = [];
-                    const provincePage = await this.kaokaiTodayService.findOne({ position: 4, flag: true });
+                    const provincePage = await this.kaokaiTodayService.findOne({ position: 4 });
                     if (provincePage.buckets.length >= 0) {
                         if (provincePage.buckets[0] !== undefined && provincePage.buckets[0] !== null) {
                             for (const provincesF of provincePage.buckets[0].values) {
@@ -496,7 +499,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     resolve(result);
                 }else if(hashTagProcessor.type === 'post' && hashTagProcessor.field === 'emergencyEvent'){
                     const bucketF = [];
-                    const provincePage = await this.kaokaiTodayService.findOne({ position: 4, flag: true });
+                    const provincePage = await this.kaokaiTodayService.findOne({ position: 4});
                     if (provincePage.buckets.length >= 0) {
                         if (provincePage.buckets[0] !== undefined && provincePage.buckets[0] !== null) {
                             for (const provincesF of provincePage.buckets[0].values) {

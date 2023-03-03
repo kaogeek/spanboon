@@ -115,7 +115,10 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                 ]; */
 
                 // overide start datetime
-                const majorTrend = await this.kaokaiTodayService.findOne({ position: 2, flag: true });
+                const majorTrend = await this.kaokaiTodayService.findOne({ position: 2});
+                if(majorTrend === undefined ){
+                    resolve(undefined);
+                }
                 if(majorTrend.type === 'post'&& majorTrend.field === 'score'){
                     const postStmt = [
                         { $match: postMatchStmt },
@@ -237,7 +240,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     resolve(result);
                 }else if(majorTrend.type === 'post' && majorTrend.field === 'objective'){
                     const bucketF = [];
-                    const provincePage = await this.kaokaiTodayService.findOne({ position: 2, flag: true });
+                    const provincePage = await this.kaokaiTodayService.findOne({ position: 2});
                     if (provincePage.buckets.length >= 0) {
                         if (provincePage.buckets[0] !== undefined && provincePage.buckets[0] !== null) {
                             for (const provincesF of provincePage.buckets[0].values) {
@@ -374,7 +377,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     resolve(result);
                 }else if(majorTrend.type === 'post' && majorTrend.field === 'emergencyEvent'){
                     const bucketF = [];
-                    const provincePage = await this.kaokaiTodayService.findOne({ position: 2, flag: true });
+                    const provincePage = await this.kaokaiTodayService.findOne({ position: 2});
                     if (provincePage.buckets.length >= 0) {
                         if (provincePage.buckets[0] !== undefined && provincePage.buckets[0] !== null) {
                             for (const provincesF of provincePage.buckets[0].values) {
@@ -511,7 +514,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     resolve(result);
                 }else if(majorTrend.type === 'post' && majorTrend.field === 'hashTag'){
                     const bucketF = [];
-                    const provincePage = await this.kaokaiTodayService.findOne({ position:2, flag: true });
+                    const provincePage = await this.kaokaiTodayService.findOne({ position:2});
                     if (provincePage.buckets.length >= 0) {
                         if (provincePage.buckets[0] !== undefined && provincePage.buckets[0] !== null) {
                             for (const provincesF of provincePage.buckets[0].values) {
@@ -774,7 +777,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     resolve(result);
                 }else if(majorTrend.type === 'page' && majorTrend.field === 'group'){
                     const bucketF = [];
-                    const provincePage = await this.kaokaiTodayService.findOne({ position: 2, flag: true });
+                    const provincePage = await this.kaokaiTodayService.findOne({ position: 2});
                     if (provincePage.buckets.length >= 0) {
                         if (provincePage.buckets[0] !== undefined && provincePage.buckets[0] !== null) {
                             for (const provincesF of provincePage.buckets[0].values) {

@@ -98,7 +98,10 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                 }
                 // const today = moment().add(month, 'month').toDate();
                 const buckets = [];
-                const roundRobin = await this.kaokaiTodayService.findOne({ position: 1, flag: true });
+                const roundRobin = await this.kaokaiTodayService.findOne({ position: 1});
+                if(roundRobin === undefined){
+                    resolve(undefined);
+                }
                 if (roundRobin.type === 'page' && roundRobin.field === 'id') {
                     if (roundRobin.buckets.length >= 0) {
                         if (roundRobin.buckets[0] !== undefined && roundRobin.buckets[0] !== null) {
@@ -520,7 +523,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     resolve(result);
                 }else if(roundRobin.type === 'post' && roundRobin.field === 'objective'){
                     const bucketF = [];
-                    const provincePage = await this.kaokaiTodayService.findOne({ position: 1, flag: true });
+                    const provincePage = await this.kaokaiTodayService.findOne({ position: 1});
                     if (provincePage.buckets.length >= 0) {
                         if (provincePage.buckets[0] !== undefined && provincePage.buckets[0] !== null) {
                             for (const provincesF of provincePage.buckets[0].values) {
@@ -657,7 +660,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     resolve(result);
                 }else if(roundRobin.type === 'post' && roundRobin.field === 'emergencyEvent'){
                     const bucketF = [];
-                    const provincePage = await this.kaokaiTodayService.findOne({ position: 1, flag: true });
+                    const provincePage = await this.kaokaiTodayService.findOne({ position: 1});
                     if (provincePage.buckets.length >= 0) {
                         if (provincePage.buckets[0] !== undefined && provincePage.buckets[0] !== null) {
                             for (const provincesF of provincePage.buckets[0].values) {
@@ -794,7 +797,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     resolve(result);
                 }else if(roundRobin.type === 'post' && roundRobin.field === 'hashTag'){
                     const bucketF = [];
-                    const provincePage = await this.kaokaiTodayService.findOne({ position:1, flag: true });
+                    const provincePage = await this.kaokaiTodayService.findOne({ position:1});
                     if (provincePage.buckets.length >= 0) {
                         if (provincePage.buckets[0] !== undefined && provincePage.buckets[0] !== null) {
                             for (const provincesF of provincePage.buckets[0].values) {
@@ -1057,7 +1060,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     resolve(result);
                 }else if(roundRobin.type === 'page' && roundRobin.field === 'group'){
                     const bucketF = [];
-                    const provincePage = await this.kaokaiTodayService.findOne({ position: 1, flag: true });
+                    const provincePage = await this.kaokaiTodayService.findOne({ position: 1});
                     if (provincePage.buckets.length >= 0) {
                         if (provincePage.buckets[0] !== undefined && provincePage.buckets[0] !== null) {
                             for (const provincesF of provincePage.buckets[0].values) {
