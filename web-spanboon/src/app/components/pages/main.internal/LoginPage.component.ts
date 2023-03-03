@@ -87,6 +87,7 @@ export class LoginPage extends AbstractPage implements OnInit {
   public TwAuthTokenSecret: string;
   public TwUserId: string;
   public otpInput: any;
+  public emailFB: string;
   public social: any = {
     socialLogin: undefined,
   };
@@ -359,8 +360,9 @@ export class LoginPage extends AbstractPage implements OnInit {
       let callback = environment.webBaseURL + "/login";
       this.twitterService.requestToken(callback).then((result: any) => {
         if (result) {
+          let token = result.split('&')[0];
           this.isTWLogin = false;
-          this.authorizeLink += '?' + result;
+          this.authorizeLink += '?' + token;
           this.router.navigate([]).then(() => {
             window.open(this.authorizeLink, '_blank');
             this.notificationManager.checkLoginSuccess();
@@ -462,6 +464,15 @@ export class LoginPage extends AbstractPage implements OnInit {
               queryParams: { mode: 'google' }
             }
             this.router.navigate(['/register'], navigationExtras);
+          } else if (statusMsg === "This Email not exists") {
+            let navigationExtras: NavigationExtras = {
+              state: {
+                accessToken: this.accessToken,
+                redirection: this.redirection
+              },
+              queryParams: { mode: 'google' }
+            }
+            this.router.navigate(['/register'], navigationExtras);
           } else if (err.error.message === 'Baned PageUser.') {
             this.dialog.open(DialogAlert, {
               disableClose: true,
@@ -486,6 +497,15 @@ export class LoginPage extends AbstractPage implements OnInit {
           queryParams: { mode: 'google' }
         }
 
+        this.router.navigate(['/register'], navigationExtras);
+      } else if (statusMsg === "This Email not exists") {
+        let navigationExtras: NavigationExtras = {
+          state: {
+            accessToken: this.googleToken,
+            redirection: this.redirection
+          },
+          queryParams: { mode: 'google' }
+        }
         this.router.navigate(['/register'], navigationExtras);
       } else if (statusMsg === 'Baned PageUser.') {
         this.dialog.open(DialogAlert, {
@@ -545,12 +565,12 @@ export class LoginPage extends AbstractPage implements OnInit {
     this.isEmailLogin = true;
   }
 
-  private loginFB() {
+  private async loginFB() {
     let mode = 'FACEBOOK'
     this.getCurrentUserInfo();
     if (!this.isFBLogin) {
       this.isFBLogin = true;
-      this.checkMergeUserFacade.loginWithFacebook(this.accessToken.fbtoken, mode).then((data: any) => {
+      await this.checkMergeUserFacade.loginWithFacebook(this.accessToken.fbtoken, mode).then((data: any) => {
         // login success redirect to main page
         if (data.data.status === 2) {
           this.mockDataMergeSocial.social = mode;
@@ -629,7 +649,7 @@ export class LoginPage extends AbstractPage implements OnInit {
         }
       }).catch((error) => {
         const statusMsg = error.error.message;
-        if (error.error.status === 0) {
+        if (error.error.status === 0 && this.emailFB === undefined) {
           let dialog = this.dialog.open(DialogConfirmInput, {
             disableClose: true,
             data: {
@@ -710,6 +730,18 @@ export class LoginPage extends AbstractPage implements OnInit {
               btDisplay1: "none"
             }
           });
+        } else if (error.error.status === 0 && this.emailFB) {
+          this.isFBLogin = false;
+          if (error.error.status === 0) {
+            let navigationExtras: NavigationExtras = {
+              state: {
+                email: this.emailFB,
+                token: this.accessToken
+              },
+              queryParams: { mode: mode.toLowerCase() }
+            }
+            this.router.navigate(['/register'], navigationExtras);
+          }
         }
       });
     }
@@ -881,17 +913,17 @@ export class LoginPage extends AbstractPage implements OnInit {
   }
 
   public clickSystemDevelopment(): void {
-    let dialog = this.dialog.open(DialogAlert, {
-      disableClose: true,
-      data: {
-        text: MESSAGE.TEXT_DEVERLOP,
-        bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-        bottomColorText2: "black",
-        btDisplay1: "none"
-      }
-    });
-    dialog.afterClosed().subscribe((res) => {
-    });
+    // let dialog = this.dialog.open(DialogAlert, {
+    //   disableClose: true,
+    //   data: {
+    //     text: MESSAGE.TEXT_DEVERLOP,
+    //     bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+    //     bottomColorText2: "black",
+    //     btDisplay1: "none"
+    //   }
+    // });
+    // dialog.afterClosed().subscribe((res) => {
+    // });
   }
   public onOtpChange(event: any) {
     if (event && event.length === 6) {
@@ -1111,6 +1143,7 @@ export class LoginPage extends AbstractPage implements OnInit {
     window['FB'].api('/me', {
       fields: 'name, first_name, last_name,birthday,picture.width(512).height(512),id,email,gender'
     }, (userInfo) => {
+      this.emailFB = userInfo.email;
       this.data = userInfo;
       this.data.displayName = userInfo.name;
       this.data.firstName = userInfo.first_name;

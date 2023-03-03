@@ -196,20 +196,10 @@ export class DialogPost extends AbstractPage {
   }
 
   public createPost(data) {
-    if (this.data.emergencyEvent) {
-      data.emergencyEvent = this.data.emergencyEvent ? this.data.emergencyEvent : this.data.emergencyEvent._id ? this.data.emergencyEvent._id : null;
-    } else {
-      data.emergencyEvent = '';
-    }
-    if (this.data.objective) {
-      data.objective = this.data.objective ? this.data.objective : this.data.objective._id ? this.data.objective._id : null;
-    } else {
-      data.objective = '';
-    }
     if (this.isEdit) {
       if (data.title) {
-        let pageId = this.data.pageId ? this.data.pageId : '';
-        this.isPostLoading = true;
+        let pageId = this.data.pageId ? this.data.pageId : null;
+        this.isPostLoading = false;
         this.pageFacade.editPost(pageId, this.data._id, data).then((res) => {
           let alertMessages: string;
           if (res.status === 1) {

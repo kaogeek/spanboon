@@ -2508,6 +2508,7 @@ export class PageController {
             let pageInstagramURL = pages.instagramURL;
             let pageTwitterURL = pages.twitterURL;
             let pageEmail = pages.email;
+            const pageProvince = pages.province;
             const pageAccessLevel = pages.pageAccessLevel;
             // const assetQuery = { userId: ownerUsers };
             // const newFileName = ownerUsers + FileUtil.renameFile + ownerUsers;
@@ -2660,7 +2661,8 @@ export class PageController {
                     mobileNo: pageMobileNo,
                     address: pageAddress,
                     twitterURL: pageTwitterURL,
-                    email: pageEmail
+                    email: pageEmail,
+                    province:pageProvince
                 }
             };
             const pageSave = await this.pageService.update(updateQuery, newValue);
@@ -3115,6 +3117,7 @@ export class PageController {
             return res.status(400).send(ResponseUtil.getErrorResponse('You have no permission to delete this page', undefined));
         }
     }
+
     @Delete('/:pageId/delete/:deleteUser')
     @Authorized('user')
     public async deletePageUserPermission(@Param('pageId') pageId: string, @Param('deleteUser') deleteUser: string, @Res() res: any, @Req() req: any): Promise<any> {

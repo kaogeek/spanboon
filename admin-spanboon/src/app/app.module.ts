@@ -58,7 +58,8 @@ import {
   StandardItemCustomPage,
   PageObjectiveCategoryPage,
   EmergencyEventPage,
-  DialogWarningComponent
+  DialogWarningComponent,
+  TodayPage
 } from './components/components';
 import {
   AuthenManager,
@@ -114,6 +115,7 @@ const COMPONENTS: any[] = [
   StandardItemCustomPage,
   PageObjectiveCategoryPage,
   EmergencyEventPage,
+  TodayPage,
   testPage,
   // component 
   FormComponent,

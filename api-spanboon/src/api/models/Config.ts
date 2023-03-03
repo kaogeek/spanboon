@@ -27,6 +27,12 @@ export class Config extends BaseModel {
     @Column({ name: 'type' })
     public type: string;
 
+    @Column({ name: 'province'})
+    public province: string;
+
+    @Column({ name: 'subject'})
+    public subject:any;
+
     @BeforeInsert()
     public createDetails(): any {
         this.createdDate = moment().toDate();

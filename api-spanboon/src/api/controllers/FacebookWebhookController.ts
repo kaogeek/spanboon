@@ -28,6 +28,7 @@ import { PageObjectiveService } from '../services/PageObjectiveService';
 import { EmergencyEventService } from '../services/EmergencyEventService';
 import { ResponseUtil } from '../../utils/ResponseUtil';
 import { FacebookWebhookLogsService } from '../services/FacebookWebhookLogsService';
+import { DateTimeUtil } from '../../utils/DateTimeUtil';
 @JsonController('/fb_webhook')
 export class FacebookWebhookController {
     constructor(
@@ -37,7 +38,7 @@ export class FacebookWebhookController {
         private hashTagService: HashTagService,
         private pageObjectiveService: PageObjectiveService,
         private emergencyEventService: EmergencyEventService,
-        private facebookWebhookLogsService:FacebookWebhookLogsService
+        private facebookWebhookLogsService: FacebookWebhookLogsService
     ) { }
 
     /**
@@ -138,9 +139,14 @@ export class FacebookWebhookController {
         console.log('PATTERN: ', checkPattern);
 
         if (checkPattern) {
+            
+            console.log('pass1');
+            // check last ] after find [
+            // try to find /n 
+            // to cut and trim the title 
             const regex2 = /[.\-_,*+?^$|\\]/;
-
             const result = msg.lastIndexOf(']');
+            console.log('result',result);
             const title1 = msg.slice(0, (result + 1));
             realText = title1.replace(regex, '').trim();
             console.log('TITLE: ', realText);
@@ -154,8 +160,43 @@ export class FacebookWebhookController {
             } else {
                 TrimText = detail1;
                 console.log('DETAIL: ', TrimText);
+            } 
+            /* 
+            if (blackSlash) {
+                const findIndexBlackSlash = msg.indexOf(']', -blackSlash);
+                const title1 = msg.slice(0, (findIndexBlackSlash + 1));
+                realText = title1.replace(regex, '').trim();
+                const detail1 = msg.replace(title1, '').trim();
+                const checkDetail = detail1.startsWith('.\n');
+
+                if (checkDetail) {
+                    TrimText = detail1.replace(regex2, '').trim();
+                    console.log('DETAIL: ', TrimText);
+                } else {
+                    TrimText = detail1;
+                    console.log('DETAIL: ', TrimText);
+                }
+            } else {
+                const result = msg.lastIndexOf(']');
+                console.log('result', result);
+                const title1 = msg.slice(0, (result + 1));
+                realText = title1.replace(regex, '').trim();
+                console.log('TITLE: ', realText);
+
+                const detail1 = msg.replace(title1, '').trim();
+                const checkDetail = detail1.startsWith('.\n');
+
+                if (checkDetail) {
+                    TrimText = detail1.replace(regex2, '').trim();
+                    console.log('DETAIL: ', TrimText);
+                } else {
+                    TrimText = detail1;
+                    console.log('DETAIL: ', TrimText);
+                }
             }
+             */
         } else {
+            console.log('pass2');
             const title1 = msg.split('\n')[0];
             const title2 = title1.replace(regex, '').trim();
 
@@ -696,10 +737,10 @@ export class FacebookWebhookController {
                 const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
                 return res.status(200).send(successResponse);
 
-            } else if(body.entry[0].changes[0].value.verb === 'edited' && body.entry[0].changes[0].value.item === 'status' && body.entry[0].changes[0].value.photos.length> 0){
+            } else if (body.entry[0].changes[0].value.verb === 'edited' && body.entry[0].changes[0].value.item === 'status' && body.entry[0].changes[0].value.photos.length > 0) {
                 const multiPics = [];
-                const checkPost = await this.socialPostService.findOne({ socialId: body.entry[0].changes[0].value.post_id ,socialType:'FACEBOOK'});
-                if(checkPost === undefined && checkPost === null){
+                const checkPost = await this.socialPostService.findOne({ socialId: body.entry[0].changes[0].value.post_id, socialType: 'FACEBOOK' });
+                if (checkPost === undefined && checkPost === null) {
                     const successResponseError = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
                     return res.status(200).send(successResponseError);
                 }
@@ -726,8 +767,8 @@ export class FacebookWebhookController {
                 return res.status(200).send(successResponse);
             } else if (body.entry[0].changes[0].value.verb === 'edited' && body.entry[0].changes[0].value.link !== undefined && body.entry[0].changes[0].value.item === 'photo') {
                 // update single photo
-                const findPost = await this.socialPostService.findOne({socialId:body.entry[0].changes[0].value.post_id,socialType:'FACEBOOK'});
-                if(findPost === undefined && findPost === null){
+                const findPost = await this.socialPostService.findOne({ socialId: body.entry[0].changes[0].value.post_id, socialType: 'FACEBOOK' });
+                if (findPost === undefined && findPost === null) {
                     const successResponseError = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
                     return res.status(200).send(successResponseError);
                 }
@@ -805,21 +846,53 @@ export class FacebookWebhookController {
             return res.status(200).send(successResponse);
         }
     }
-    
+
     @Post('/summation')
     public async summationScores(@Res() res: any): Promise<any> {
-        const queryScore = await this.facebookWebhookLogsService.searchScores();
-        for(const query of queryScore){
+        const dayRanges: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 1);
+        // startDateTime: dayRanges[0],
+        // endDateTime: dayRanges[1]
+        const startDateTime = dayRanges[0];
+        const endDateTime = dayRanges[1];
+        const queryScore = await this.facebookWebhookLogsService.searchScores(startDateTime,endDateTime);
+        for (const query of queryScore) {
             //  
             const summation = query.likeCount + query.commentCount + query.shareCount + query.likeCountFB + query.commentCountFB + query.shareCountFB;
-            const queryNew = {_id:query.id};
-            const newValues = {$set:{summationScore:summation}};
-            await this.postsService.update(queryNew,newValues);
-        } 
+            const queryNew = { _id: query.id };
+            const newValues = { $set: { summationScore: summation } };
+            await this.postsService.update(queryNew, newValues);
+        }
         const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', queryScore);
         return res.status(200).send(successResponse);
     }
+    @Post('/round/robin')
+    public async roundRobin(@Res() res: any): Promise<any> {
+        let roundRobin: any = [];
+        const currentDateTime = moment().toDate().getTime();
+        const political = await this.facebookWebhookLogsService.political();
+        const boss = await this.facebookWebhookLogsService.boss();
+        const secretary = await this.facebookWebhookLogsService.secretary();
+        // check limit time && newsFlag !== false ????
 
+        roundRobin = { 'political': political.shift(), 'boss': boss.shift(), 'secretary': secretary.shift() };
+        if (roundRobin.political.startDateTime.getTime() < currentDateTime) {
+            const queryPolitical = { _id: roundRobin.political.id };
+            const newValuequeryPolitical = { $set: { newsFlag: true } };
+            await this.postsService.update(queryPolitical, newValuequeryPolitical);
+        }
+        if (roundRobin.boss.startDateTime.getTime() < currentDateTime) {
+            const queryBoss = { _id: roundRobin.boss.id };
+            const newValuequeryBoss = { $set: { newsFlag: true } };
+            await this.postsService.update(queryBoss, newValuequeryBoss);
+        }
+        if (roundRobin.secretary.startDateTime.getTime() < currentDateTime) {
+            const querySecretary = { _id: roundRobin.secretary.id };
+            const newValueSecretary = { $set: { newsFlag: true } };
+            await this.postsService.update(querySecretary, newValueSecretary);
+        }
+        const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', currentDateTime);
+        return res.status(200).send(successResponse);
+    }
     private async findMasterHashTag(hashTagNameList: string[]): Promise<HashTag[]> {
         return await this.hashTagService.find({ name: { $in: hashTagNameList } });
     }

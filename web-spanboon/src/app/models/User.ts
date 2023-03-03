@@ -21,6 +21,7 @@ export class User extends BaseModel {
     public customGender: string;
     public imageURL: string;
     public uniqueId: string;
+    public province: string;
     //fb
     public fbUserId: string;
     public fbToken: string;

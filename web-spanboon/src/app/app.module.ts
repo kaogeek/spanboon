@@ -67,6 +67,7 @@ import {
   DragAndDrop,
   Preload,
   Shake,
+  HorizontalScrollDirective,
   Highlight
 } from './components/shares/directive/directives';
 
@@ -128,6 +129,7 @@ import {
   DialogFulfillAllocate,
   DialogAlertAllocate,
   DialogPreview,
+  DialogCheckBox,
   AlertComponent,
   TooltipProfile,
   PreloadCard,
@@ -256,6 +258,7 @@ import {
   RecommendFacade,
   UserEngagementFacade,
   CheckMergeUserFacade,
+  UserSubjectFacade,
 } from './services/services';
 
 import { registerLocaleData, DatePipe } from '@angular/common';
@@ -354,6 +357,7 @@ const COMPONENTS: any[] = [
   DialogInput,
   DialogFulfillAllocate,
   DialogPreview,
+  DialogCheckBox,
   TagEvent,
   TooltipProfile,
   PreloadCard,
@@ -451,6 +455,7 @@ const DIRECTIVE_CLASSES: any[] = [
   DragAndDrop,
   Preload,
   Shake,
+  HorizontalScrollDirective,
   Highlight
 ];
 
@@ -494,6 +499,7 @@ const SERVICE_CLASSES: any[] = [
   AboutPageFacade,
   TwitterService,
   RecommendFacade,
+  UserSubjectFacade,
   UserEngagementFacade,
   {
     provide: SocialAuthService,

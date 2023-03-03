@@ -1271,6 +1271,9 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   }
 
   public async searchPageCategory(isLoadMore?: boolean) {
+    this.isLoading = true;
+    this.isLoadMorePageCategory = true;
+
     let filter = new SearchFilter();
     filter.limit = 5;
     filter.offset = SEARCH_OFFSET + (this.resPageType && this.resPageType.length > 0 ? this.resPageType.length : 0);
@@ -1280,8 +1283,6 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     filter.orderBy = {
       createdDate: "DESC",
     }
-    this.isLoading = true;
-    this.isLoadMorePageCategory = true;
 
     let clonePageCategory: any[] = this.resPageType;
     await this.pageCategoryFacade.search(filter).then((res: any) => {
@@ -1303,6 +1304,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         }
       }
       this.isLoadMorePageCategory = false;
+      this.isLoading = false;
     }).catch((err: any) => {
       console.log(err)
       this.isLoading = false;

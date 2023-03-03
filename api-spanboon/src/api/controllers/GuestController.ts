@@ -141,6 +141,10 @@ export class GuestController {
                 user.banned = false;
                 user.customGender = users.customGender;
                 user.mergeEM = true;
+                user.subjectAttention = undefined;
+                user.province = users.province;
+                user.acceptUA = users.acceptUA;
+                user.uaVersion = users.uaVersion;
 
                 if (gender !== null || gender !== undefined) {
                     user.gender = gender;
@@ -293,6 +297,10 @@ export class GuestController {
                 user.isSubAdmin = false;
                 user.banned = false;
                 user.mergeFB = true;
+                user.subjectAttention = undefined;
+                user.province = users.province;
+                user.acceptUA = users.acceptUA;
+                user.uaVersion = users.uaVersion;
 
                 if (gender !== null || gender !== undefined) {
                     user.gender = gender;
@@ -436,6 +444,10 @@ export class GuestController {
                 user.isSubAdmin = false;
                 user.banned = false;
                 user.mergeAP = true;
+                user.subjectAttention = undefined;
+                user.province = users.province;
+                user.acceptUA = users.acceptUA;
+                user.uaVersion = users.uaVersion;
 
                 if (gender !== null || gender !== undefined) {
                     user.gender = gender;
@@ -601,6 +613,11 @@ export class GuestController {
                 user.isSubAdmin = false;
                 user.banned = false;
                 user.mergeGG = true;
+                user.subjectAttention = undefined;
+                user.province = users.province;
+                user.acceptUA = users.acceptUA;
+                user.uaVersion = users.uaVersion;
+
                 if (gender !== null || gender !== undefined) {
                     user.gender = gender;
                 } else {
@@ -760,6 +777,11 @@ export class GuestController {
                 user.isSubAdmin = false;
                 user.banned = false;
                 user.mergeTW = true;
+                user.subjectAttention = undefined;
+                user.province = users.province;
+                user.acceptUA = users.acceptUA;
+                user.uaVersion = users.uaVersion;
+
                 if (gender !== null || gender !== undefined) {
                     user.gender = gender;
                 } else {

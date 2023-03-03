@@ -30,4 +30,5 @@ export class UpdatePageRequest {
     public twitterURL: string;
     public address: string;
     public email: string;
+    public province:string;
 }

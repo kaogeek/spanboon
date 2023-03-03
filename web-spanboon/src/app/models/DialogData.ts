@@ -19,6 +19,7 @@ export class DialogData extends BaseModel {
   item: string;
   allo: boolean;
   placeholder: string;
+  subject: string;
 
   //bottom
   bottomText1: string;

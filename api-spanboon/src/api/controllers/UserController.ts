@@ -146,6 +146,66 @@ export class UserController {
         }
     }
 
+    @Get('/subject/search')
+    @Authorized('user')
+    public async subject(@QueryParam('mode') mode: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const uid = new ObjectID(req.user.id);
+        if (mode !== undefined) {
+            mode = mode.toLocaleLowerCase();
+        }
+        const userObjId = await this.userService.findOne({_id:ObjectID(uid)});
+        if(userObjId.subjectAttention !== undefined && userObjId.subjectAttention !== null){
+            const ErrorResponse: any = { status: 0, message: 'You already selected subjectAttention.' };
+            return res.status(400).send(ErrorResponse);
+        }
+        if(uid !== undefined){
+            // subject 
+            const contentPage = await this.pageService.aggregate([
+                {$match:{subject:{$ne:null}}},
+                {$group:{_id:{subject:'$subject'}}}
+            ]);
+            if(contentPage !== undefined && contentPage !== null){
+                const successResponse = ResponseUtil.getSuccessResponse('Search HashTag.', contentPage);
+                return res.status(200).send(successResponse);
+            }
+        }else{
+            const ErrorResponse: any = { status: 0, message: 'Error maybe login is not success.' };
+            return res.status(400).send(ErrorResponse);
+        }
+    }
+
+    @Post('/subject')
+    @Authorized('user')
+    public async subjectUser(@Body({ validate: true }) userHashtag: UserTagRequest, @QueryParam('mode') mode: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const uid = new ObjectID(req.user.id);
+        const userContent = await this.userService.findOne({_id:uid});
+        if (mode !== undefined) {
+            mode = mode.toLocaleLowerCase();
+        }
+        if(uid === undefined && uid === null){
+            const ErrorResponse: any = { status: 0, message: 'Error maybe login is not success.' };
+            return res.status(400).send(ErrorResponse);
+        }
+        if(userHashtag.subject.length > 5){
+            const ErrorResponse: any = { status: 0, message: 'Error Please select content at less than or equal 5.' };
+            return res.status(400).send(ErrorResponse);
+        }
+        if(userContent.subjectAttention !== undefined && userContent.subjectAttention !== null && userContent.subjectAttention.length >0){
+            const ErrorResponse: any = { status: 0, message: 'You have been selected content.' };
+            return res.status(400).send(ErrorResponse);
+        }
+        const query = {_id:uid};
+        const newValues = {$set:{subjectAttention:userHashtag.subject}};
+        const update = await this.userService.update(query,newValues);
+        if(update){
+            const successResponse = ResponseUtil.getSuccessResponse('Update HashTag is successfully.', newValues);
+            return res.status(200).send(successResponse);
+        }else{
+            const ErrorResponse: any = { status: 0, message: 'Cannot be update.' };
+            return res.status(400).send(ErrorResponse);
+        }
+    }
+
     // PagePost List API
     /**
      * @api {get} /api/user User List API

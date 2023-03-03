@@ -223,6 +223,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   public placeHolder: any;
   public accessPage: any;
   public dataClone: any;
+  public dataEmer: any;
   public pageId: any;
   public userClone: any;
   public accessPageImage: any;
@@ -233,7 +234,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   public isAutoPostTwitter: any;
   public isAutoPostFacebook: any;
   private twitterService: TwitterService;
-
+  public test: any;
   public isSelectOption: boolean;
 
   keyword = "hashTag";
@@ -469,7 +470,7 @@ export class BoxPost extends AbstractPage implements OnInit {
             this.dataAutoComp.hashtag = this.content.emergencyEventTag
           }
           if (this.content && this.content.emergencyEvent !== '' && this.content.emergencyEvent !== undefined && this.content.emergencyEvent !== null) {
-            this.dataAutoComp.id = this.content.emergencyEvent.hashTag
+            this.dataAutoComp.id = this.content.emergencyEvent._id
           }
           if (this.content && this.content.hashTags && this.content.hashTags.length > 0) {
             for (let tag of this.content.hashTags) {
@@ -1550,7 +1551,8 @@ export class BoxPost extends AbstractPage implements OnInit {
             asset.ordering = image.ordering;
             this.dataImage.push({
               fileId: image.fileId,
-              id: image._id,
+              id: image.id,
+              imageURL: image.imageURL,
               postId: image.post,
               asset
             });
@@ -1566,51 +1568,111 @@ export class BoxPost extends AbstractPage implements OnInit {
     if (this.isStory && (this.isStoryResultData || !this.isEmptyObject(this.dataStroy)) && isEdit) {
       this.showDialogCreateStory();
     } else {
-      let data = {
-        title: topic,
-        detail: storyPostShort,
-        needs: this.arrListItem,
-        emergencyEvent: this.isEmptyObject(this.dataAutoComp) ? this.dataAutoComp.id : "",
-        emergencyEventTag: this.isEmptyObject(this.dataAutoComp) ? this.dataAutoComp.hashtag : "",
-        story: this.isEmptyObject(this.dataStroy) ? this.dataStroy : undefined,
-        userTags: this.userTag,
-        postsHashTags: this.hashTag,
-        postGallery: this.dataImage,
-        isDraft: true,
-        pageId: this.selectedPage,
-        coverImage: this.coverImage,
-        postSocialTW: this.twitterConection && this.isAutoPostTwitter ? true : false,
-        postSocialFB: this.facebookConection && this.isAutoPostFacebook ? true : false
+      let dataPost: any; let dataObj: any;
+      if (this.dataPageId === null) {
+        let data = {
+          title: topic,
+          detail: storyPostShort,
+          needs: this.arrListItem,
+          emergencyEvent: this.dataAutoComp.id ? this.dataAutoComp.id : (this.content.emergencyEvent ? this.content.emergencyEvent._id : ''),
+          story: this.isEmptyObject(this.dataStroy) ? this.dataStroy : undefined,
+          userTags: this.userTag,
+          postsHashTags: this.hashTag,
+          postGallery: this.dataImage,
+          isDraft: true,
+          pageId: this.selectedPage,
+          coverImage: this.coverImage,
+          postSocialTW: this.twitterConection && this.isAutoPostTwitter ? true : false,
+          postSocialFB: this.facebookConection && this.isAutoPostFacebook ? true : false
+        }
+        dataPost = data;
+      } else if (Object.keys(this.dataPageId).length === 0) {
+        if (Object.keys(this.dataAutoComp).length === 0 && this.content === undefined) {
+          this.dataEmer = '';
+        } else {
+          this.dataEmer = this.dataAutoComp.id ? this.dataAutoComp.id : (this.content.emergencyEvent ? this.content.emergencyEvent._id : '');
+        }
+        let data = {
+          title: topic,
+          detail: storyPostShort,
+          needs: this.arrListItem,
+          emergencyEvent: this.dataEmer,
+          story: this.isEmptyObject(this.dataStroy) ? this.dataStroy : undefined,
+          userTags: this.userTag,
+          postsHashTags: this.hashTag,
+          postGallery: this.dataImage,
+          isDraft: true,
+          pageId: this.selectedPage,
+          coverImage: this.coverImage,
+          postSocialTW: this.twitterConection && this.isAutoPostTwitter ? true : false,
+          postSocialFB: this.facebookConection && this.isAutoPostFacebook ? true : false
+        }
+        dataPost = data;
+      } else {
+        if (this.selectedObjectiveId === undefined && this.content === undefined) {
+          dataObj = '';
+        } else {
+          dataObj = this.selectedObjectiveId ? this.selectedObjectiveId : (this.content.objective ? this.content.objective._id : '')
+        }
+        if (Object.keys(this.dataAutoComp).length === 0 && this.content === undefined) {
+          this.dataEmer = '';
+        } else {
+          this.dataEmer = this.dataAutoComp.id ? this.dataAutoComp.id : (this.content.emergencyEvent ? this.content.emergencyEvent._id : '');
+        }
+        let data = {
+          title: topic,
+          detail: storyPostShort,
+          needs: this.arrListItem,
+          objective: dataObj,
+          emergencyEvent: this.dataEmer,
+          story: this.isEmptyObject(this.dataStroy) ? this.dataStroy : undefined,
+          userTags: this.userTag,
+          postsHashTags: this.hashTag,
+          postGallery: this.dataImage,
+          isDraft: true,
+          pageId: this.selectedPage,
+          coverImage: this.coverImage,
+          postSocialTW: this.twitterConection && this.isAutoPostTwitter ? true : false,
+          postSocialFB: this.facebookConection && this.isAutoPostFacebook ? true : false
+        }
+        dataPost = data;
+      }
+      if (this.imagesTimeline.length === 0 && !!this.content) {
+        Object.assign(dataPost, { postGallery: this.content.gallery })
+      }
+      if (this.selectedObjectiveId === null) {
+        Object.assign(dataPost, { objective: this.selectedObjectiveId })
+      }
+      if (Object.keys(this.dataAutoComp).length === 0) {
+        Object.assign(dataPost, { emergencyEvent: null })
       }
       if (this.isEmptyObject(this.settingsPost)) {
         delete this.settingsPost.time;
-        Object.assign(data, { startDateTime: this.settingsPost.startDateTime })
+        Object.assign(dataPost, { startDateTime: this.settingsPost.startDateTime })
       }
       if (this.modeShowDoing) {
-        Object.assign(data, { objective: this.isEmptyObject(this.dataObjective) ? this.dataObjective.id : "" });
-        Object.assign(data, { objectiveTag: this.isEmptyObject(this.dataObjective) ? this.dataObjective.hashTag : "" });
       }
       if (this.isRepost) {
-        delete data.pageId
+        delete dataPost.pageId
       }
       if (!isDraft) {
-        delete data.isDraft
+        delete dataPost.isDraft
       }
       if (this.arrListItem.length === 0) {
-        delete data.needs
+        delete dataPost.needs
       }
       if (this.isListPage) {
         if (this.accessPageImage.name) {
-          Object.assign(data, { id: this.accessPageImage.id });
+          Object.assign(dataPost, { id: this.accessPageImage.id });
         } else {
-          Object.assign(data, { id: undefined });
+          Object.assign(dataPost, { id: undefined });
         }
       }
       if (this.isFulfill) {
-        Object.assign(data, { asPage: this.content.asPage, fulfillCaseId: this.content.fulfillCaseId });
-        return this.createFullfillPost.emit(data);
+        Object.assign(dataPost, { asPage: this.content.asPage, fulfillCaseId: this.content.fulfillCaseId });
+        return this.createFullfillPost.emit(dataPost);
       } else {
-        return this.createPost.emit(data);
+        return this.createPost.emit(dataPost);
       }
     }
   }
@@ -1694,7 +1756,7 @@ export class BoxPost extends AbstractPage implements OnInit {
         offset: SEARCH_OFFSET,
         relation: [],
         whereConditions: {
-          pageId: this.dataPageId.id ? this.dataPageId.id : this.dataPageId ? this.dataPageId : '',
+          pageId: this.dataPageId.id ? this.dataPageId.id : (this.dataPageId ? this.dataPageId : ''),
         },
         count: false,
         orderBy: {
@@ -2032,7 +2094,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   public clickCardObjective(index: number, item: any) {
     if (this.dataObjective && this.dataObjective.id === item.id) {
       this.dataObjective = {};
-      this.selectedObjectiveId = undefined;
+      this.selectedObjectiveId = null;
       // document.querySelector('.active-click-doing').classList.remove('active-click-doing');
     } else {
       this.selectedObjectiveId = item.id;
@@ -2102,13 +2164,12 @@ export class BoxPost extends AbstractPage implements OnInit {
     }
   }
 
-  selectEvent(item) {
+  public selectEvent(item) {
     // do something with selected item  
     this.closeSearchAutocomp();
     this.isSelect = false;
-
     if (this.dataAutoComp && this.dataAutoComp.id === item.id) {
-      this.dataAutoComp = {};
+      this.dataAutoComp = null;
       document.querySelector('.mat-selected').classList.remove('mat-selected');
     } else {
       this.dataAutoComp.id = item.id;
@@ -2273,20 +2334,28 @@ export class BoxPost extends AbstractPage implements OnInit {
       const category = this.objectCategory.value;
 
       if (category === undefined) {
+        this.isLock = false;
+        this.isLoading = false;
         return this.showAlertDialog("เลือกหมวดหมู่");
       }
 
       if (tagName === "") {
+        this.isLock = false;
+        this.isLoading = false;
         document.getElementById('objective-doing-name').focus();
         return this.showAlertDialog("กรุณาใส่แฮชแท็ก");
       }
 
       if (dataDoing === "") {
+        this.isLock = false;
+        this.isLoading = false;
         document.getElementById('objective-doing').focus();
         return this.showAlertDialog("กรุณากรอกสิ่งที่คุณกำลังทำ");
       }
 
       if (!this.isEmptyObject(this.imageIcon)) {
+        this.isLock = false;
+        this.isLoading = false;
         return this.showAlertDialog("กรุณาอัพโหลดรูปภาพ");
       }
 
@@ -2331,10 +2400,12 @@ export class BoxPost extends AbstractPage implements OnInit {
             }
             this.isMsgError = false;
             this.isLock = false;
+            this.isLoading = false;
           }
         }).catch((err: any) => {
           console.log(err);
           this.isLock = false;
+          this.isLoading = false;
           let alertMessages: string;
           if (err.error.message === 'PageObjective is Exists') {
             alertMessages = 'สิ่งที่คุณกำลังถูกสร้างแล้ว'

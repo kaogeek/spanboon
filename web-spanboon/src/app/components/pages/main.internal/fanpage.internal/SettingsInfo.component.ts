@@ -52,7 +52,6 @@ export class SettingsInfo extends AbstractPage implements OnInit {
     public cloneData: any;
     public uuid: boolean;
     public selected: any;
-
     public links = [
         {
             link: "",
