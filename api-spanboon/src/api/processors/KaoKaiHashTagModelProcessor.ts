@@ -385,7 +385,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
 
                     const postStmt = [
                         { $match: { isDraft: false, deleted: false, hidden: false, objective: { $ne: null, $in: bucketF } } },
-                        { $sort: { createdDate: -1 } },
+                        { $sort: { summationScore: -1 } },
 
                         {
                             $lookup: {
@@ -522,7 +522,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
 
                     const postStmt = [
                         { $match: { isDraft: false, deleted: false, hidden: false, emergencyEvent: { $ne: null, $in: bucketF } } },
-                        { $sort: { createdDate: -1 } },
+                        { $sort: { summationScore: -1 } },
 
                         {
                             $lookup: {
@@ -680,7 +680,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     const postAggregateSet1 = await this.postsService.aggregate(
                         [
                             { $match: { isDraft: false, deleted: false, hidden: false,pageId:{$in:pageStackprovince}} },
-                            { $sort: { createdDate: -1 } },
+                            { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
                                 {
@@ -834,7 +834,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     const postAggregateSet1 = await this.postsService.aggregate(
                         [
                             { $match: { isDraft: false, deleted: false, hidden: false,pageId:{$in:pageStackprovince}} },
-                            { $sort: { createdDate: -1 } },
+                            { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
                                 {
@@ -968,7 +968,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     const postAggregateSet1 = await this.postsService.aggregate(
                         [
                             { $match: { isDraft: false, deleted: false, hidden: false,pageId:{$in:buckets}} },
-                            { $sort: { createdDate: -1 } },
+                            { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
                                 {
