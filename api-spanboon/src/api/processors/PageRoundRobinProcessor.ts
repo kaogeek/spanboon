@@ -98,7 +98,10 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                 }
                 // const today = moment().add(month, 'month').toDate();
                 const buckets = [];
-                const roundRobin = await this.kaokaiTodayService.findOne({ position: 1, flag: true });
+                const roundRobin = await this.kaokaiTodayService.findOne({ position: 1});
+                if(roundRobin === undefined){
+                    resolve(undefined);
+                }
                 if (roundRobin.type === 'page' && roundRobin.field === 'id') {
                     if (roundRobin.buckets.length >= 0) {
                         if (roundRobin.buckets[0] !== undefined && roundRobin.buckets[0] !== null) {
@@ -126,9 +129,6 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                             { $match: { isDraft: false, deleted: false, hidden: false,pageId:{$in:buckets}} },
                             { $sort: { createdDate: -1 } },
                             {
-                                $limit: 4
-                            },
-                            {
                                 $lookup:
                                 {
                                     from: 'Page',
@@ -138,6 +138,9 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                                     ],
                                     as: 'page'
                                 }
+                            },
+                            {
+                                $limit: roundRobin.limit
                             },
                             {
                                 $unwind: {
@@ -237,35 +240,42 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     resolve(result);
                 }else if(roundRobin.type === 'page' && roundRobin.field === 'province'){
                     const bucketF = [];
-                    const provincePage = await this.kaokaiTodayService.findOne({ position: 3, flag: true });
-                    if (provincePage.buckets.length >= 0) {
-                        if (provincePage.buckets[0] !== undefined && provincePage.buckets[0] !== null) {
-                            for (const provincesF of provincePage.buckets[0].values) {
+                    if (roundRobin.buckets.length >= 0) {
+                        if (roundRobin.buckets[0] !== undefined && roundRobin.buckets[0] !== null) {
+                            for (const provincesF of roundRobin.buckets[0].values) {
                                 bucketF.push(String(provincesF));
                             }
                         }
                         // bucket 2 
-                        if (provincePage.buckets[1] !== undefined && provincePage.buckets[1] !== null) {
-                            for (const provinceS of provincePage.buckets[1].values) {
+                        if (roundRobin.buckets[1] !== undefined && roundRobin.buckets[1] !== null) {
+                            for (const provinceS of roundRobin.buckets[1].values) {
                                 bucketF.push(String(provinceS));
                             }
                         }
                         // bucket 3
-                        if (provincePage.buckets[2] !== undefined && provincePage.buckets[2] !== null) {
-                            for (const provinceT of provincePage.buckets[2].values) {
+                        if (roundRobin.buckets[2] !== undefined && roundRobin.buckets[2] !== null) {
+                            for (const provinceT of roundRobin.buckets[2].values) {
                                 bucketF.push(String(provinceT));
                             }
                         }
                     }
                     const pageStackId = [];
                     const pageStackprovince = [];
+                    /* 
+                    const pageProvince = await this.pageService.searchPageProvince(bucketF);
+                    console.log('pageProvince',pageProvince);
+                    for(const pageStack of pageProvince){
+                        if(pageStack !== undefined && pageStack !== null){
+                            pageStackId.push(pageStack.id);
+                        }
+                    } */
                     const pageProvince = await this.pageService.aggregate(
                         [
                             {
                                 $match:{isOfficial: true,banned:false,province:{$in:bucketF}}
                             },
                             {
-                                $limit:10
+                                $limit:roundRobin.limit
                             }
                         ]
                     );
@@ -279,23 +289,25 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                             pageStackprovince.push(Stackprovince._id);
                         }
                     } 
+
+                    // set 1
                     const postAggregateSet1 = await this.postsService.aggregate(
                         [
                             { $match: { isDraft: false, deleted: false, hidden: false,pageId:{$in:pageStackprovince}} },
                             { $sort: { createdDate: -1 } },
-                            {
-                                $limit: 4
-                            },
                             {
                                 $lookup:
                                 {
                                     from: 'Page',
                                     let: { 'pageId': '$pageId' },
                                     pipeline: [
-                                        { $match: { $expr: { $eq: ['$_id', '$$pageId'] }} },{$limit:1},
+                                        { $match: { $expr: { $eq: ['$_id', '$$pageId'] }} }
                                     ],
                                     as: 'page'
                                 }
+                            },
+                            {
+                                $limit: roundRobin.limit
                             },
                             {
                                 $unwind: {
@@ -345,7 +357,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     );
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
-                    result.title = (this.config === undefined || this.config.title === undefined) ? provincePage.title : provincePage.title;
+                    result.title = (this.config === undefined || this.config.title === undefined) ? roundRobin.title : roundRobin.title;
                     result.description = '';
                     result.iconUrl = '';
                     result.contents = [];
@@ -464,8 +476,8 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
 
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
-                    result.title = (this.config === undefined || this.config.title === undefined) ? 'โพสต์ใหม่ ๆ ที่เกิดขึ้นในเดือนนี้' : this.config.title;
-                    result.subtitle = (this.config === undefined || this.config.subtitle === undefined) ? 'โพสต์ที่เกิดขึ้นในเดือนนี้ ภายในแพลตฟอร์ม' : this.config.subtitle;
+                    result.title = (this.config === undefined || this.config.title === undefined) ? roundRobin.title : roundRobin.title;
+                    result.subtitle = '';
                     result.description = '';
                     result.iconUrl = '';
                     result.contents = [];
@@ -509,150 +521,9 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     }
                     result.dateTime = lastestDate;
                     resolve(result);
-                }else if(roundRobin.type === 'post' && roundRobin.field === 'score'){
-                    const bucketF = [];
-                    const provincePage = await this.kaokaiTodayService.findOne({ position: 2, flag: true });
-                    if (provincePage.buckets.length >= 0) {
-                        if (provincePage.buckets[0] !== undefined && provincePage.buckets[0] !== null) {
-                            for (const provincesF of provincePage.buckets[0].values) {
-                                bucketF.push(provincesF);
-                            }
-                        }
-                        // bucket 2 
-                        if (provincePage.buckets[1] !== undefined && provincePage.buckets[1] !== null) {
-                            for (const provinceS of provincePage.buckets[1].values) {
-                                bucketF.push(provinceS);
-                            }
-                        }
-                        // bucket 3
-                        if (provincePage.buckets[2] !== undefined && provincePage.buckets[2] !== null) {
-                            for (const provinceT of provincePage.buckets[2].values) {
-                                bucketF.push(provinceT);
-                            }
-                        }
-                    }
-                    const hashTagStack = [];
-                    const hashTagSearch = await this.hashTagService.searchHash(bucketF);
-                    if (hashTagSearch.length > 0) {
-                        for (const hashTag of hashTagSearch) {
-                            hashTagStack.push(new ObjectID(hashTag.id));
-                        }
-                    }
-                    const postAggregateSet1 = await this.postsService.aggregate(
-                        [
-                            { $match: { isDraft: false, deleted: false, hidden: false, objective: { $ne: null, $in: hashTagStack } } },
-                            { $sort: { createdDate: -1 } },
-                            {
-                                '$limit': limit
-                            },
-                            {
-                                $lookup:
-                                {
-                                    from: 'Page',
-                                    let: { 'pageId': '$pageId' },
-                                    pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } }, { $limit: 1 }],
-                                    as: 'page'
-                                }
-                            },
-                            {
-                                $unwind: {
-                                    path: '$page',
-                                    preserveNullAndEmptyArrays: true
-                                }
-                            },
-                            {
-                                $lookup: {
-                                    from: 'SocialPost',
-                                    localField: '_id',
-                                    foreignField: 'postId',
-                                    as: 'socialPosts'
-                                }
-                            },
-                            {
-                                $project: {
-                                    'socialPosts': {
-                                        '_id': 0,
-                                        'pageId': 0,
-                                        'postId': 0,
-                                        'postBy': 0,
-                                        'postByType': 0
-                                    }
-                                }
-                            },
-                            {
-                                $lookup: {
-                                    from: 'PostsGallery',
-                                    localField: '_id',
-                                    foreignField: 'post',
-                                    as: 'gallery'
-                                }
-                            },
-                            {
-                                $lookup: {
-                                    from: 'User',
-                                    localField: 'ownerUser',
-                                    foreignField: '_id',
-                                    as: 'user'
-                                }
-                            },
-                            {
-                                $project: { story: 0 }
-                            }
-                        ]
-                    );
-                    const lastestDate = null;
-                    const result: SectionModel = new SectionModel();
-                    result.title = (this.config === undefined || this.config.title === undefined) ? roundRobin.title : this.config.title;
-                    result.subtitle = (this.config === undefined || this.config.subtitle === undefined) ? 'โพสต์ที่เกิดขึ้นในเดือนนี้ ภายในแพลตฟอร์ม' : this.config.subtitle;
-                    result.description = '';
-                    result.iconUrl = '';
-                    result.contents = [];
-                    result.type = this.getType(); // set type by processor type
-
-                    for (const row of postAggregateSet1) {
-                        const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
-                        const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
-
-                        const contents: any = {};
-                        contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                        if (firstImage !== undefined && firstImage.s3FilePath !== undefined && firstImage.s3FilePath !== '') {
-                            try {
-                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3FilePath);
-                                contents.coverPageSignUrl = signUrl;
-                            } catch (error) {
-                                console.log('PostSectionProcessor: ' + error);
-                            }
-                        }
-
-                        // search isLike
-                        row.isLike = false;
-                        if (userId !== undefined && userId !== undefined && userId !== '') {
-                            const userLikes: UserLike[] = await this.userLikeService.find({ userId: new ObjectID(userId), subjectId: row._id, subjectType: LIKE_TYPE.POST });
-                            if (userLikes.length > 0) {
-                                row.isLike = true;
-                            }
-                        }
-
-                        contents.owner = {};
-                        if (row.page !== undefined) {
-                            contents.owner = this.parsePageField(row.page);
-                        } else {
-                            contents.owner = this.parseUserField(user);
-                        }
-                        // remove page agg
-                        // delete row.page;
-                        delete row.user;
-
-                        contents.post = row;
-                        result.contents.push(contents);
-                    }
-
-                    result.dateTime = lastestDate;
-
-                    resolve(result);
                 }else if(roundRobin.type === 'post' && roundRobin.field === 'objective'){
                     const bucketF = [];
-                    const provincePage = await this.kaokaiTodayService.findOne({ position: 2, flag: true });
+                    const provincePage = await this.kaokaiTodayService.findOne({ position: 1});
                     if (provincePage.buckets.length >= 0) {
                         if (provincePage.buckets[0] !== undefined && provincePage.buckets[0] !== null) {
                             for (const provincesF of provincePage.buckets[0].values) {
@@ -733,7 +604,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
 
                         },
                         {
-                            '$limit': 3
+                            '$limit': roundRobin.limit
                         }
 
                     ];
@@ -789,7 +660,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     resolve(result);
                 }else if(roundRobin.type === 'post' && roundRobin.field === 'emergencyEvent'){
                     const bucketF = [];
-                    const provincePage = await this.kaokaiTodayService.findOne({ position: 2, flag: true });
+                    const provincePage = await this.kaokaiTodayService.findOne({ position: 1});
                     if (provincePage.buckets.length >= 0) {
                         if (provincePage.buckets[0] !== undefined && provincePage.buckets[0] !== null) {
                             for (const provincesF of provincePage.buckets[0].values) {
@@ -870,7 +741,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
 
                         },
                         {
-                            '$limit': 3
+                            '$limit': roundRobin.limit
                         }
 
                     ];
@@ -923,6 +794,147 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                         result.contents.push(contents);
                     }
                     result.dateTime = lastestDate;
+                    resolve(result);
+                }else if(roundRobin.type === 'post' && roundRobin.field === 'hashTag'){
+                    const bucketF = [];
+                    const provincePage = await this.kaokaiTodayService.findOne({ position:1});
+                    if (provincePage.buckets.length >= 0) {
+                        if (provincePage.buckets[0] !== undefined && provincePage.buckets[0] !== null) {
+                            for (const provincesF of provincePage.buckets[0].values) {
+                                bucketF.push(provincesF);
+                            }
+                        }
+                        // bucket 2 
+                        if (provincePage.buckets[1] !== undefined && provincePage.buckets[1] !== null) {
+                            for (const provinceS of provincePage.buckets[1].values) {
+                                bucketF.push(provinceS);
+                            }
+                        }
+                        // bucket 3
+                        if (provincePage.buckets[2] !== undefined && provincePage.buckets[2] !== null) {
+                            for (const provinceT of provincePage.buckets[2].values) {
+                                bucketF.push(provinceT);
+                            }
+                        }
+                    }
+                    const hashTagStack = [];
+                    const hashTagSearch = await this.hashTagService.searchHash(bucketF);
+                    if (hashTagSearch.length > 0) {
+                        for (const hashTag of hashTagSearch) {
+                            hashTagStack.push(new ObjectID(hashTag.id));
+                        }
+                    }
+                    const postAggregateSet1 = await this.postsService.aggregate(
+                        [
+                            { $match: { isDraft: false, deleted: false, hidden: false, postsHashTags: { $ne: null, $in: hashTagStack } } },
+                            { $sort: { summationScore: -1 } },
+                            {
+                                $lookup:
+                                {
+                                    from: 'Page',
+                                    let: { 'pageId': '$pageId' },
+                                    pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } }, { $limit: 1 }],
+                                    as: 'page'
+                                }
+                            },
+                            {
+                                '$limit': roundRobin.limit
+                            },
+                            {
+                                $unwind: {
+                                    path: '$page',
+                                    preserveNullAndEmptyArrays: true
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'SocialPost',
+                                    localField: '_id',
+                                    foreignField: 'postId',
+                                    as: 'socialPosts'
+                                }
+                            },
+                            {
+                                $project: {
+                                    'socialPosts': {
+                                        '_id': 0,
+                                        'pageId': 0,
+                                        'postId': 0,
+                                        'postBy': 0,
+                                        'postByType': 0
+                                    }
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'PostsGallery',
+                                    localField: '_id',
+                                    foreignField: 'post',
+                                    as: 'gallery'
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'User',
+                                    localField: 'ownerUser',
+                                    foreignField: '_id',
+                                    as: 'user'
+                                }
+                            },
+                            {
+                                $project: { story: 0 }
+                            }
+                        ]
+                    );
+                    const lastestDate = null;
+                    const result: SectionModel = new SectionModel();
+                    result.title = (this.config === undefined || this.config.title === undefined) ? provincePage.title : this.config.title;
+                    result.subtitle = (this.config === undefined || this.config.subtitle === undefined) ? 'โพสต์ที่เกิดขึ้นในเดือนนี้ ภายในแพลตฟอร์ม' : this.config.subtitle;
+                    result.description = '';
+                    result.iconUrl = '';
+                    result.contents = [];
+                    result.type = this.getType(); // set type by processor type
+    
+                    for (const row of postAggregateSet1) {
+                        const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
+                        const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
+    
+                        const contents: any = {};
+                        contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
+                        if (firstImage !== undefined && firstImage.s3FilePath !== undefined && firstImage.s3FilePath !== '') {
+                            try {
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3FilePath);
+                                contents.coverPageSignUrl = signUrl;
+                            } catch (error) {
+                                console.log('PostSectionProcessor: ' + error);
+                            }
+                        }
+    
+                        // search isLike
+                        row.isLike = false;
+                        if (userId !== undefined && userId !== undefined && userId !== '') {
+                            const userLikes: UserLike[] = await this.userLikeService.find({ userId: new ObjectID(userId), subjectId: row._id, subjectType: LIKE_TYPE.POST });
+                            if (userLikes.length > 0) {
+                                row.isLike = true;
+                            }
+                        }
+    
+                        contents.owner = {};
+                        if (row.page !== undefined) {
+                            contents.owner = this.parsePageField(row.page);
+                        } else {
+                            contents.owner = this.parseUserField(user);
+                        }
+                        // remove page agg
+                        // delete row.page;
+                        delete row.user;
+    
+                        contents.post = row;
+                        result.contents.push(contents);
+                    }
+    
+                    result.dateTime = lastestDate;
+    
                     resolve(result);
                 }else if(roundRobin.type === 'hashtag' && roundRobin.field === 'count'){
                     const bucketF = [];
@@ -992,7 +1004,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
 
                         },
                         {
-                            '$limit': 3
+                            '$limit': roundRobin.limit
                         }
 
                     ];
@@ -1048,7 +1060,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     resolve(result);
                 }else if(roundRobin.type === 'page' && roundRobin.field === 'group'){
                     const bucketF = [];
-                    const provincePage = await this.kaokaiTodayService.findOne({ position: 2, flag: true });
+                    const provincePage = await this.kaokaiTodayService.findOne({ position: 1});
                     if (provincePage.buckets.length >= 0) {
                         if (provincePage.buckets[0] !== undefined && provincePage.buckets[0] !== null) {
                             for (const provincesF of provincePage.buckets[0].values) {
@@ -1076,7 +1088,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                                 $match:{isOfficial: true,banned:false,group:{$in:bucketF}}
                             },
                             {
-                                $limit:10
+                                $limit:roundRobin.limit
                             }
                         ]
                     );
@@ -1095,9 +1107,6 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                             { $match: { isDraft: false, deleted: false, hidden: false,pageId:{$in:pageStackprovince}} },
                             { $sort: { createdDate: -1 } },
                             {
-                                $limit: 4
-                            },
-                            {
                                 $lookup:
                                 {
                                     from: 'Page',
@@ -1107,6 +1116,9 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                                     ],
                                     as: 'page'
                                 }
+                            },
+                            {
+                                $limit: roundRobin.limit
                             },
                             {
                                 $unwind: {
