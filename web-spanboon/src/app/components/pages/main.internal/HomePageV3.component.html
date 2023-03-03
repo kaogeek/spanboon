@@ -182,6 +182,25 @@
                                     <p class="title md-none-min"
                                         [innerHTML]="model && model.postSectionModel.contents[1].post.title | highlight">
                                     </p>
+                                    <div class="owner-post md-none-min">
+                                        <p class="owner-name"
+                                            (click)="clickToPageUser(model && model.postSectionModel.contents[1].owner.id)"
+                                            [innerHTML]="model && model.postSectionModel.contents[1].owner.name ? model && model.postSectionModel.contents[1].owner.name : model && model.postSectionModel.contents[1].owner.displayName">
+                                        </p>
+                                    </div>
+                                    <p class="amount-social md-none-min">
+                                        <span>{{model && model.postSectionModel.contents[1].post.commentCount |
+                                            shortNumber}} ความคิดเห็น</span>
+                                        <span>•</span>
+                                        <span>{{model && model.postSectionModel.contents[1].post.repostCount |
+                                            shortNumber}} บอกต่อ</span>
+                                        <span>•</span>
+                                        <span>{{model && model.postSectionModel.contents[1].post.likeCount |
+                                            shortNumber}} ถูกใจ</span>
+                                        <span>•</span>
+                                        <span>{{model && model.postSectionModel.contents[1].post.shareCount |
+                                            shortNumber}} แชร์</span>
+                                    </p>
                                     <div class="wrapper-title-topic md-none-max">
                                         <p class="title-topic"
                                             (click)="openDilogPost(model && model.postSectionModel.contents[1])"
@@ -220,6 +239,25 @@
                                 <div class="detail">
                                     <p class="title md-none-min"
                                         [innerHTML]="model && model.postSectionModel.contents[2].post.title | highlight">
+                                    </p>
+                                    <div class="owner-post md-none-min">
+                                        <p class="owner-name"
+                                            (click)="clickToPageUser(model && model.postSectionModel.contents[2].owner.id)"
+                                            [innerHTML]="model && model.postSectionModel.contents[2].owner.name ? model && model.postSectionModel.contents[2].owner.name : model && model.postSectionModel.contents[2].owner.displayName">
+                                        </p>
+                                    </div>
+                                    <p class="amount-social md-none-min">
+                                        <span>{{model && model.postSectionModel.contents[2].post.commentCount |
+                                            shortNumber}} ความคิดเห็น</span>
+                                        <span>•</span>
+                                        <span>{{model && model.postSectionModel.contents[2].post.repostCount |
+                                            shortNumber}} บอกต่อ</span>
+                                        <span>•</span>
+                                        <span>{{model && model.postSectionModel.contents[2].post.likeCount |
+                                            shortNumber}} ถูกใจ</span>
+                                        <span>•</span>
+                                        <span>{{model && model.postSectionModel.contents[2].post.shareCount |
+                                            shortNumber}} แชร์</span>
                                     </p>
                                     <div class="wrapper-title-topic md-none-max">
                                         <p class="title-topic"
@@ -272,6 +310,25 @@
                                     <p class="title"
                                         [innerHTML]="model && model.postSectionModel.contents[0].coverPageUrl ? model && model.postSectionModel.contents[0].post.title : model && model.postSectionModel.contents[0].post.detail">
                                     </p>
+                                    <div class="owner-post md-none-min">
+                                        <p class="owner-name"
+                                            (click)="clickToPageUser(model && model.postSectionModel.contents[0].owner.id)"
+                                            [innerHTML]="model && model.postSectionModel.contents[0].owner.name ? model && model.postSectionModel.contents[0].owner.name : model && model.postSectionModel.contents[0].owner.displayName">
+                                        </p>
+                                    </div>
+                                    <p class="amount-social md-none-min">
+                                        <span>{{model && model.postSectionModel.contents[0].post.commentCount |
+                                            shortNumber}} ความคิดเห็น</span>
+                                        <span>•</span>
+                                        <span>{{model && model.postSectionModel.contents[0].post.repostCount |
+                                            shortNumber}} บอกต่อ</span>
+                                        <span>•</span>
+                                        <span>{{model && model.postSectionModel.contents[0].post.likeCount |
+                                            shortNumber}} ถูกใจ</span>
+                                        <span>•</span>
+                                        <span>{{model && model.postSectionModel.contents[0].post.shareCount |
+                                            shortNumber}} แชร์</span>
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -309,6 +366,25 @@
                                     <p class="title md-none-min"
                                         [innerHTML]="model && model.pageRoundRobin.contents[1].post.title | highlight">
                                     </p>
+                                    <div class="owner-post md-none-min">
+                                        <p class="owner-name"
+                                            (click)="clickToPageUser(model && model.pageRoundRobin.contents[1].owner.id)"
+                                            [innerHTML]="model && model.pageRoundRobin.contents[1].owner.name ? model && model.pageRoundRobin.contents[1].owner.name : model && model.pageRoundRobin.contents[1].owner.displayName">
+                                        </p>
+                                    </div>
+                                    <p class="amount-social md-none-min">
+                                        <span>{{model && model.pageRoundRobin.contents[1].post.commentCount |
+                                            shortNumber}} ความคิดเห็น</span>
+                                        <span>•</span>
+                                        <span>{{model && model.pageRoundRobin.contents[1].post.repostCount |
+                                            shortNumber}} บอกต่อ</span>
+                                        <span>•</span>
+                                        <span>{{model && model.pageRoundRobin.contents[1].post.likeCount |
+                                            shortNumber}} ถูกใจ</span>
+                                        <span>•</span>
+                                        <span>{{model && model.pageRoundRobin.contents[1].post.shareCount |
+                                            shortNumber}} แชร์</span>
+                                    </p>
                                     <div class="wrapper-title-topic md-none-max">
                                         <p class="title-topic"
                                             (click)="openDilogPost(model && model.pageRoundRobin.contents[1])"
@@ -345,6 +421,25 @@
                                 <div class="detail">
                                     <p class="title md-none-min"
                                         [innerHTML]="model && model.pageRoundRobin.contents[2].post.title | highlight">
+                                    </p>
+                                    <div class="owner-post md-none-min">
+                                        <p class="owner-name"
+                                            (click)="clickToPageUser(model && model.pageRoundRobin.contents[2].owner.id)"
+                                            [innerHTML]="model && model.pageRoundRobin.contents[2].owner.name ? model && model.pageRoundRobin.contents[2].owner.name : model && model.pageRoundRobin.contents[2].owner.displayName">
+                                        </p>
+                                    </div>
+                                    <p class="amount-social md-none-min">
+                                        <span>{{model && model.pageRoundRobin.contents[2].post.commentCount |
+                                            shortNumber}} ความคิดเห็น</span>
+                                        <span>•</span>
+                                        <span>{{model && model.pageRoundRobin.contents[2].post.repostCount |
+                                            shortNumber}} บอกต่อ</span>
+                                        <span>•</span>
+                                        <span>{{model && model.pageRoundRobin.contents[2].post.likeCount |
+                                            shortNumber}} ถูกใจ</span>
+                                        <span>•</span>
+                                        <span>{{model && model.pageRoundRobin.contents[2].post.shareCount |
+                                            shortNumber}} แชร์</span>
                                     </p>
                                     <div class="wrapper-title-topic md-none-max">
                                         <p class="title-topic"
@@ -395,6 +490,25 @@
                                 <div class="detail">
                                     <p class="title"
                                         [innerHTML]="model && model.pageRoundRobin.contents[0].coverPageUrl ? model && model.pageRoundRobin.contents[0].post.title : model && model.pageRoundRobin.contents[0].post.detail">
+                                    </p>
+                                    <div class="owner-post md-none-min">
+                                        <p class="owner-name"
+                                            (click)="clickToPageUser(model && model.pageRoundRobin.contents[0].owner.id)"
+                                            [innerHTML]="model && model.pageRoundRobin.contents[0].owner.name ? model && model.pageRoundRobin.contents[0].owner.name : model && model.pageRoundRobin.contents[0].owner.displayName">
+                                        </p>
+                                    </div>
+                                    <p class="amount-social md-none-min">
+                                        <span>{{model && model.pageRoundRobin.contents[0].post.commentCount |
+                                            shortNumber}} ความคิดเห็น</span>
+                                        <span>•</span>
+                                        <span>{{model && model.pageRoundRobin.contents[0].post.repostCount |
+                                            shortNumber}} บอกต่อ</span>
+                                        <span>•</span>
+                                        <span>{{model && model.pageRoundRobin.contents[0].post.likeCount |
+                                            shortNumber}} ถูกใจ</span>
+                                        <span>•</span>
+                                        <span>{{model && model.pageRoundRobin.contents[0].post.shareCount |
+                                            shortNumber}} แชร์</span>
                                     </p>
                                 </div>
                             </div>
