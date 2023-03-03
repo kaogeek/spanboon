@@ -320,14 +320,16 @@
         </div>
         <div class="card-right">
             <div class="card-detail">
-                
-                <mat-form-field appearance="none">
-                    <mat-select (keyup)="changeActive(groupAbout.getRawValue().province,12)" id ="province" name = "province" placeholder = 'จังหวัด' formControlName="province" disableOptionCentering >
-                      <mat-option *ngFor="let province of provinces" [value]="province.value">
-                        {{province.viewValue}}
-                      </mat-option>
-                    </mat-select>
-                </mat-form-field>
+                <div class="dropdown-province">
+                    <mat-form-field appearance="none">
+                        <mat-select (keyup)="changeActive(groupAbout.getRawValue().province,12)" id="province"
+                            name="province" placeholder='จังหวัด' formControlName="province" disableOptionCentering>
+                            <mat-option *ngFor="let province of provinces" [value]="province.value">
+                                {{province.viewValue}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
                 <div class="card-bottom" [class.active]="isCard12">
                     <div class="card-title">
                         <div>ช่วยให้ลูกค้าเป้าหมายเรียนรู้เพิ่มเติมเกี่ยวกับธุรกิจของคุณได้อย่างง่ายๆ</div>

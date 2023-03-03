@@ -199,7 +199,7 @@ export class DialogPost extends AbstractPage {
     if (this.isEdit) {
       if (data.title) {
         let pageId = this.data.pageId ? this.data.pageId : null;
-        this.isPostLoading = true;
+        this.isPostLoading = false;
         this.pageFacade.editPost(pageId, this.data._id, data).then((res) => {
           let alertMessages: string;
           if (res.status === 1) {

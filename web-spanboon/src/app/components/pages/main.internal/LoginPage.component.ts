@@ -360,8 +360,9 @@ export class LoginPage extends AbstractPage implements OnInit {
       let callback = environment.webBaseURL + "/login";
       this.twitterService.requestToken(callback).then((result: any) => {
         if (result) {
+          let token = result.split('&')[0];
           this.isTWLogin = false;
-          this.authorizeLink += '?' + result;
+          this.authorizeLink += '?' + token;
           this.router.navigate([]).then(() => {
             window.open(this.authorizeLink, '_blank');
             this.notificationManager.checkLoginSuccess();
