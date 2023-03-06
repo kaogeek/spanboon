@@ -65,6 +65,14 @@
                                     "maximumError": "10kb"
                                 }
                             ]
+                        },
+                        "development": {
+                            "buildOptimizer": false,
+                            "optimization": false,
+                            "vendorChunk": true,
+                            "extractLicenses": false,
+                            "sourceMap": true,
+                            "namedChunks": true
                         }
                     }
                 },
@@ -83,6 +91,9 @@
                     "configurations": {
                         "production": {
                             "browserTarget": "spanboon-web:build:production"
+                        },
+                        "development": {
+                            "browserTarget": "spanboon-web:build:development"
                         }
                     }
                 },
@@ -133,6 +144,9 @@
                     "configurations": {
                         "production": {
                             "devServerTarget": "spanboon-web:serve:production"
+                        },
+                        "development": {
+                            "devServerTarget": "spanboon-web:serve:development"
                         }
                     }
                 }
