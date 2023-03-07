@@ -74,6 +74,7 @@ import {
   StandardItemReqRequestFacade,
   PageObjectiveCategoryFacade,
   EmergencyEventFacade,
+  TodayPageFacade,
   PageUserFacade,
   PageUserAdminFacade
   ,
@@ -147,6 +148,7 @@ const SERVICE_CLASSES: any[] = [
   StandardItemReqRequestFacade,
   PageObjectiveCategoryFacade,
   EmergencyEventFacade,
+  TodayPageFacade,
   PageUserFacade,
   UserFacade,
   PageUserAdminFacade,
