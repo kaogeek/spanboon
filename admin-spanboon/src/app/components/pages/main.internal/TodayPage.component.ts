@@ -8,6 +8,7 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { SearchFilter } from '../../../models/SearchFilter';
 import { EmergencyEvent } from '../../../models/EmergencyEvent';
+import { Today } from '../../../models/Today';
 import { EmergencyEventFacade } from '../../../services/facade/EmergencyEventFacade.service';
 import { HashTagFacade } from '../../../services/facade/HashTagFacade.service';
 import { AbstractPage } from '../AbstractPage.component';
@@ -15,7 +16,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { DialogWarningComponent } from '../../shares/DialogWarningComponent.component';
 import { AuthenManager } from '../../../services/AuthenManager.service';
 import { Router } from '@angular/router';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { FormGroup, FormControl, Validators, FormBuilder, FormArray } from '@angular/forms';
+import { TodayPageFacade } from '../../../services/facade/TodayPageFacade.service';
 
 const PAGE_NAME: string = "today";
 
@@ -34,6 +36,7 @@ export class TodayPage extends AbstractPage implements OnInit {
     @ViewChild('inputOrder') public inputOrder: ElementRef;
 
     public emergencyEventFacade: EmergencyEventFacade;
+    public todayPageFacade: TodayPageFacade;
     public hashTagFacade: HashTagFacade;
     private authenManager: AuthenManager;
     private router: Router;
@@ -53,20 +56,31 @@ export class TodayPage extends AbstractPage implements OnInit {
     public imageName: any;
     public ordering: number;
     public isSave: boolean = false;
+    public position: any = [{ value: '1' }, { value: '2' }, { value: '3' }, { value: '4' }];
     public typeBucket: any = [{ value: 'page' }, { value: 'post' }, { value: 'hashtag' }];
     public titleBucket: any = [{ value: 'ก้าวไกลวันนี้' }, { value: 'ก้าวไกลทั่วไทย' }, { value: 'สภาก้าวไกล' }, { value: 'ก้าวไกลรอบด้าน' }];
-    public fieldBucket: any = [{ value: 'province' }, { value: 'emergency' }, { value: 'objective' }, { value: 'hashtag' }, { value: 'id' }, { value: 'pageCatagory' }];
+    public fieldBucket: any[] = [];
     public formType: FormGroup;
+    public todayForm: FormGroup;
     public selectedValueType: string;
     public selectedValueField: string;
     public selectedValueTitle: string;
+    public selectedPosition: number;
     public bucketList: any[] = [];
-    public valueList: any[] = [];
+    public valueList1: any[] = [];
+    public valueList2: any[] = [];
+    public valueList3: any[] = [];
     public isShowClose: boolean = true;
+    public num: number = 0;
+    public isBucket1: boolean = false;
+    public isBucket2: boolean = false;
+    public isBucket3: boolean = false;
+    public dataInput: Today;
 
-    constructor(emergencyEventFacade: EmergencyEventFacade, hashTagFacade: HashTagFacade, router: Router, dialog: MatDialog, authenManager: AuthenManager) {
+    constructor(emergencyEventFacade: EmergencyEventFacade, todayPageFacade: TodayPageFacade, hashTagFacade: HashTagFacade, router: Router, dialog: MatDialog, authenManager: AuthenManager, private fb: FormBuilder) {
         super(PAGE_NAME, dialog);
         this.emergencyEventFacade = emergencyEventFacade;
+        this.todayPageFacade = todayPageFacade;
         this.hashTagFacade = hashTagFacade;
         this.router = router;
         this.authenManager = authenManager;
@@ -76,8 +90,8 @@ export class TodayPage extends AbstractPage implements OnInit {
         this.imagesAvatar = {}
         this.fieldTable = [
             {
-                name: "kaokai",
-                label: "ก้าวไกลวันนี้",
+                name: "title",
+                label: "ก้าวไกลหน้าหนึ่ง",
                 width: "150pt",
                 class: "", formatColor: false, formatImage: false,
                 link: [],
@@ -96,7 +110,7 @@ export class TodayPage extends AbstractPage implements OnInit {
                 align: "left"
             },
             {
-                name: "bucket 2",
+                name: "bucket2",
                 label: "ถัง 2",
                 width: "180pt",
                 class: "", formatColor: false, formatImage: false,
@@ -105,7 +119,7 @@ export class TodayPage extends AbstractPage implements OnInit {
                 formatId: false,
                 align: "left"
             }, {
-                name: "bucket 3",
+                name: "bucket3",
                 label: "ถัง 3",
                 width: "180pt",
                 class: "", formatColor: false, formatImage: false,
@@ -132,14 +146,57 @@ export class TodayPage extends AbstractPage implements OnInit {
     }
 
     public ngOnInit() {
+        this.setForm();
         this.formType = new FormGroup({
             'id': new FormControl(null, { validators: [Validators.required] })
         });
-        this.table.isEmer = true;
-        this.getHashtag();
+        this.search();
     }
 
-    public getHashtag() {
+    setForm() {
+        this.todayForm = this.fb.group({
+            bucket: this.fb.array([]),
+        });
+    }
+
+    buckets(): FormArray {
+        return this.todayForm.get('bucket') as FormArray;
+    }
+
+    newEmployee(): FormGroup {
+        return this.fb.group({
+            name: ['', [Validators.required]],
+            values: this.fb.array([]),
+        });
+    }
+
+    clickAdd() {
+        this.buckets().push(this.newEmployee());
+    }
+
+    removeEmployee(empIndex: number) {
+        this.buckets().removeAt(empIndex);
+    }
+
+    employeeSkills(empIndex: number): FormArray {
+        return this.buckets().at(empIndex).get('values') as FormArray;
+    }
+
+    newSkill(): FormGroup {
+        return this.fb.group({
+            value: ['', [Validators.required]],
+        });
+    }
+
+    addEmployeeSkill(empIndex: number) {
+        this.employeeSkills(empIndex).push(this.newSkill());
+    }
+
+    removeEmployeeSkill(empIndex: number, skillIndex: number) {
+        this.employeeSkills(empIndex).removeAt(skillIndex);
+    }
+
+    public search() {
         let filter = new SearchFilter();
         filter.limit = SEARCH_LIMIT;
         filter.offset = SEARCH_OFFSET;
@@ -147,8 +204,9 @@ export class TodayPage extends AbstractPage implements OnInit {
             filter.whereConditions = {},
             filter.count = false;
         filter.orderBy = {}
-        this.hashTagFacade.search(filter).then((res: any) => {
-            this.hashtagList = res
+        this.todayPageFacade.search(filter).then((res: any) => {
+            if (res) {
+            }
         }).catch((err: any) => {
         })
     }
@@ -159,9 +217,11 @@ export class TodayPage extends AbstractPage implements OnInit {
         this.dataForm.detail = "";
         this.dataForm.coverPageURL = "";
         this.dataForm.hashTag = "";
-        this.imageName = false;
+        this.selectedValueField = "";
+        this.selectedValueTitle = "";
+        this.selectedValueType = "";
+        this.selectedPosition = undefined;
         this.dataForm.ordering = undefined;
-        this.fileToUpload = null
         this.orinalDataForm = JSON.parse(JSON.stringify(this.dataForm));
     }
     public clickCloseDrawer(): void {
@@ -196,11 +256,27 @@ export class TodayPage extends AbstractPage implements OnInit {
     }
 
     public clickEditForm(data: any): void {
+        this.selectedPosition = data.position;
         this.setFields();
         this.drawer.toggle();
-        this.myInputVariable.nativeElement.value = "";
-        this.dataForm = JSON.parse(JSON.stringify(data));
-        this.orinalDataForm = JSON.parse(JSON.stringify(data));
+        if (data.type === 'page') {
+            this.fieldBucket = [{ value: 'id' }, { value: 'group' }, { value: 'province' }];
+        } else if (data.type === 'post') {
+            this.fieldBucket = [{ value: 'emergencyEvent' }, { value: 'objective' }, { value: 'score' }, { value: 'hashtag' }];
+        } else {
+            this.fieldBucket = [{ value: 'count' }];
+        }
+
+        this.selectedPosition = data.position;
+        this.selectedValueTitle = data.title;
+        this.selectedValueType = data.type;
+        this.selectedValueField = data.field;
+        let bucket: any[] = [];
+        let buckets: any[] = [];
+        for (let item of data.buckets) {
+            bucket.push(item);
+            this.buckets().push(this.newEmployee())
+        }
     }
 
     public handleFileInput(files: FileList) {
@@ -225,15 +301,10 @@ export class TodayPage extends AbstractPage implements OnInit {
         this.imageSrc = reader.result.substr(reader.result.indexOf(',') + 1);
     }
 
-    public clickSave(): void {
+    public clickSaveTest(): void {
         if (!this.isSave) {
             this.isSave = true;
             this.submitted = true;
-            let emailPattern = "[0-9]";
-            if (!this.inputOrder!.nativeElement!.value.match(emailPattern)) {
-                this.isSave = false;
-                return;
-            }
             if (this.dataForm.title.trim() === "") {
                 this.isSave = false;
                 return;
@@ -311,23 +382,81 @@ export class TodayPage extends AbstractPage implements OnInit {
         });
     }
 
-    public addBucket() {
-        this.bucketList.push(this.bucketList.length);
-    }
-
-    public addValue(index, value: string) {
-        this.valueList.push(this.valueList.length);
-        // this.bucketList.splice(index, 0, [{ value: this.valueList.length }])
-        // this.valueList.splice(index, 0, this.valueList.length);
-        // this.valueList.splice(this.valueList.length);
-    }
-
-    public check55(index, value: string) {
-        if (value === 'value') {
-            // console.log("value", this.valueList)
-        } else {
-            // console.log("buck", this.bucketList)
+    public clickSave() {
+        const bucketList = this.buckets().value;
+        let bucket: any[] = [];
+        let buckets: any[] = [];
+        for (let index = 0; index < bucketList.length; index++) {
+            bucket.push(bucketList[index]);
         }
-        // console.log("index", index)
+
+        for (let index = 0; index < bucket.length; index++) {
+            let val: any = {
+                name: '',
+                values: []
+            };
+            val['name'] = bucket[index].name;
+            bucket[index].values.map((res: any) => {
+                val['values'].push(res.value);
+            });
+
+            buckets.push(val);
+        }
+
+        let data = {
+            title: this.selectedValueTitle,
+            type: this.selectedValueType,
+            field: this.selectedValueField,
+            position: this.selectedPosition,
+            buckets
+        }
+        if (this.todayForm.invalid) {
+            return;
+        }
+        if (this.selectedValueTitle === '') {
+            return;
+        }
+        this.todayPageFacade.create(data).then((res) => {
+            if (res) {
+                this.table.searchData();
+                this.drawer.toggle();
+            }
+        })
+    }
+
+    public selectData(data) {
+    }
+
+    public seleceType(event) {
+        if (event.value === 'page') {
+            this.fieldBucket = [
+                {
+                    value: 'id'
+                },
+                {
+                    value: 'group'
+                },
+                {
+                    value: 'province'
+                }
+            ];
+        } else if (event.value === 'post') {
+            this.fieldBucket = [
+                {
+                    value: 'emergencyEvent'
+                },
+                {
+                    value: 'objective'
+                },
+                {
+                    value: 'score'
+                },
+                {
+                    value: 'hashtag'
+                }
+            ];
+        } else {
+            this.fieldBucket = [{ value: 'count' }];
+        }
     }
 }

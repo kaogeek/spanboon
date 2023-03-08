@@ -100,7 +100,7 @@
                                 {{"-"}}
                             </ng-template>
                         </td>
-                    </ng-container>`
+                    </ng-container>
 
                     <ng-container matColumnDef="updateByUsername">
                         <th mat-header-cell *matHeaderCellDef mat-sort-header> แก้ไขโดย </th>
@@ -108,7 +108,6 @@
                             {{element.updateByUsername ? element.updateByUsername : "-"}}
                         </td>
                     </ng-container>
-
 
                     <ng-container matColumnDef="action" *ngIf="actions" stickyEnd>
                         <th mat-header-cell *matHeaderCellDef></th>
@@ -193,6 +192,7 @@
                         </td>
                     </ng-container>
                 </ng-template>
+
 
                 <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
                 <ng-container *ngIf="isEmer === true; else elseEmergency">

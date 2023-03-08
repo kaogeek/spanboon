@@ -1,7 +1,7 @@
 <!--
     @license Spanboon Platform v0.1
-    (c) 2020-2021 KaoGeek. http://kaogeek.dev
-    License: MIT. https://opensource.org/licenses/MIT
+    (c) 3020-2021 KaoGeek. http://kaogeek.dev
+    License MIT. https://opensource.org/licenses/MIT
     Author: Americaso <treerayuth.o@absolute.co.th>
 -->
 
@@ -14,13 +14,13 @@
         </ng-container>
         <ng-container *ngIf="fieldTable.formatImage">
             <a href="{{data[fieldTable.name]}}" target="_blank">
-                <img src="{{data[fieldTable.name]}}" class="col-image" alt=""> 
+                <img src="{{data[fieldTable.name]}}" class="col-image" alt="">
             </a>
         </ng-container>
     </ng-container>
     <ng-template #elseColorImageNone>
         -
-    </ng-template> 
+    </ng-template>
 </ng-container>
 <ng-template #elseColorImage>
     <ng-container *ngIf="fieldTable.link.length > 0; else elseTemplate">
@@ -51,7 +51,8 @@
                     <ng-template #elseIsSeeMore>
                         {{data[fieldTable.name] | slice:0:220}}...
                     </ng-template>
-                    <span class="see-more" *ngIf="isWordCountOver()" (click)="clickOpenDropDown()" [class.see-less]="isSeeMore">{{
+                    <span class="see-more" *ngIf="isWordCountOver()" (click)="clickOpenDropDown()"
+                        [class.see-less]="isSeeMore">{{
                         isSeeMore ? 'แสดงน้อยลง' : 'ดูเพิ่มเติม'}}</span>
                 </ng-container>
                 <ng-template #elseData>
@@ -87,11 +88,41 @@
                 <ng-template #elseIsSeeMore>
                     {{data[fieldTable.name] | slice:0:220}}...
                 </ng-template>
-                <span class="see-more" *ngIf="isWordCountOver(data[fieldTable.name])" (click)="clickOpenDropDown()" [class.see-less]="isSeeMore">{{
+                <span class="see-more" *ngIf="isWordCountOver(data[fieldTable.name])" (click)="clickOpenDropDown()"
+                    [class.see-less]="isSeeMore">{{
                     isSeeMore ? 'แสดงน้อยลง' : 'ดูเพิ่มเติม'}}</span>
             </ng-container>
             <ng-template #elseData>
-                -
+                <ng-container
+                    *ngIf="(fieldTable.name !== 'bucket1') && (fieldTable.name !== 'bucket2') && (fieldTable.name !== 'bucket3'); else elseBucket">
+                    -
+                </ng-container>
+                <ng-template #elseBucket>
+                    <div *ngIf="fieldTable.name === 'bucket1'">
+                        <div *ngIf="data.buckets[0]">
+                            {{data.buckets[0].name ? data.buckets[0].name : ''}}
+                            <div *ngFor="let item of data.buckets[0].values">
+                                {{item}}
+                            </div>
+                        </div>
+                    </div>
+                    <div *ngIf="fieldTable.name === 'bucket2'">
+                        <div *ngIf="data.buckets[1]">
+                            {{data.buckets[1].name ? data.buckets[1].name : ''}}
+                            <div *ngFor="let item of data.buckets[1].values">
+                                {{item}}
+                            </div>
+                        </div>
+                    </div>
+                    <div *ngIf="fieldTable.name === 'bucket3'">
+                        <div *ngIf="data.buckets[2]">
+                            {{data.buckets[2].name ? data.buckets[2].name : ''}}
+                            <div *ngFor="let item of data.buckets[2].values">
+                                {{item}}
+                            </div>
+                        </div>
+                    </div>
+                </ng-template>
             </ng-template>
         </ng-template>
     </ng-template>
