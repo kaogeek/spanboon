@@ -593,6 +593,13 @@ export class AuthenManager {
     return val;
   }
 
+  public getParams(param: string): any {
+    return new Promise(resolve => {
+      this.routeActivated.queryParams.subscribe(params => {
+        resolve(params[param]);
+      });
+    });
+  }
 
   public getHidebar(): boolean {
     let isCheck: boolean = false;
@@ -613,7 +620,7 @@ export class AuthenManager {
 
   public setHidebar() {
     let hidebar = localStorage.getItem('hidebar');
-    let mfpapp = localStorage.getItem('hidebar');
+    let mfpapp = localStorage.getItem('mfpapp');
     if (hidebar === "true" || mfpapp === "true") {
       return false;
     } else {
@@ -621,44 +628,46 @@ export class AuthenManager {
     }
   }
 
-  public getPolicy(): string {
-    if (!!localStorage.getItem('policy')) {
-      return localStorage.getItem('policy');
+  public getPolicy() {
+    const local = localStorage.getItem('policy');
+    if (!!local) {
+      return local;
     } else {
       return null;
     }
   }
 
-  public setPolicy() {
-    let policy: string;
-    this.routeActivated.queryParams.subscribe(params => {
-      policy = params['policy'];
-      if (!!policy) {
-        localStorage.setItem('policy', policy);
-      } else {
-        localStorage.setItem('policy', 'New Version');
-      }
-    });
+  public setPolicy(policy: string) {
+    localStorage.setItem('policy', policy);
+  }
+
+  public checkVersionPolicy(version: string): boolean {
+    if (this.getPolicy() === version) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   public getTos(): string {
-    if (!!localStorage.getItem('tos')) {
-      return localStorage.getItem('tos');
+    const local = localStorage.getItem('tos');
+    if (!!local) {
+      return local;
     } else {
       return null;
     }
   }
 
-  public setTos() {
-    let tos: string;
-    this.routeActivated.queryParams.subscribe(params => {
-      tos = params['tos'];
-      if (!!tos) {
-        localStorage.setItem('tos', tos);
-      } else {
-        localStorage.setItem('tos', 'New Version');
-      }
-    });
+  public setTos(tos: string) {
+    localStorage.setItem('tos', tos);
+  }
+
+  public checkVersionTos(version: string): boolean {
+    if (this.getTos() === version) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   // return current login user admin status

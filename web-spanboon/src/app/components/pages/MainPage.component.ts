@@ -80,7 +80,7 @@ export class MainPage extends AbstractPage implements OnInit {
       }
     });
 
-    this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe((event: NavigationEnd) => {
+    this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(async (event: NavigationEnd) => {
       if (event instanceof NavigationEnd) {
         const url: string = decodeURI(this.router.url);
         const path = url.split('/')[1];
@@ -89,6 +89,19 @@ export class MainPage extends AbstractPage implements OnInit {
         }
         if (url === '/login' || (path === "fulfill")) {
           this.isPost = false;
+        }
+
+        if (this.isLogin()) {
+          const policy = this.authenManager.checkVersionPolicy('v2');
+          const tos = this.authenManager.checkVersionTos('v2');
+
+          if (!policy || await this.authenManager.getParams('policy')) {
+            this._dialogPolicy();
+          }
+
+          if (!tos || await this.authenManager.getParams('tos')) {
+            this._dialogTerms();
+          }
         }
       }
     });
@@ -102,19 +115,6 @@ export class MainPage extends AbstractPage implements OnInit {
   public ngOnInit(): void {
     this.hidebar = this.authenManager.getHidebar();
     const isLogin: boolean = this.isLogin();
-
-    this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe((event: NavigationEnd) => {
-      if (event instanceof NavigationEnd) {
-        if (this.isLogin()) {
-          if (!this.authenManager.getPolicy()) {
-            this._dialogPolicy();
-          }
-          if (!this.authenManager.getTos()) {
-            this._dialogTerms();
-          }
-        }
-      }
-    });
 
     // if (isLogin) {
     //   this.searchAccessPage();
@@ -356,7 +356,9 @@ export class MainPage extends AbstractPage implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      this.authenManager.setPolicy();
+      if (result) {
+        this.authenManager.setPolicy('v2');
+      }
     });
   }
 
@@ -371,7 +373,9 @@ export class MainPage extends AbstractPage implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      this.authenManager.setTos();
+      if (result) {
+        this.authenManager.setTos('v2');
+      }
     });
   }
 }
