@@ -192,9 +192,9 @@ export class ObjectiveController {
 
         const result: any = await this.pageObjectiveService.create(objective);
         if (result) {
-            const query = {_id:assetCreate.id};
-            const newValues = {$set:{pageObjectiveId:ObjectID(result.id)}};
-            await this.assetService.update(query,newValues);
+            const query = { _id: assetCreate.id };
+            const newValues = { $set: { pageObjectiveId: ObjectID(result.id) } };
+            await this.assetService.update(query, newValues);
             const newObjectiveHashTag = new ObjectID(result.hashTag);
 
             const objectiveHashTag: HashTag = await this.hashTagService.findOne({ _id: newObjectiveHashTag });
@@ -542,10 +542,18 @@ export class ObjectiveController {
      * HTTP/1.1 500 Internal Server Error
      */
     @Get('/:id/timeline')
-    public async getPageObjectiveTimeline(@Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
+    public async getPageObjectiveTimeline(@QueryParam('limit') limit: number, @QueryParam('offset') offset: number, @Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
         const userId = req.headers.userid;
         let objective: PageObjective;
         const objId = new ObjectID(id);
+
+        if (offset === null || offset === undefined) {
+            offset = 0;
+        }
+
+        if (limit === null || limit === undefined || limit <= 0) {
+            limit = 10;
+        }
 
         try {
             objective = await this.pageObjectiveService.findOne({ where: { _id: objId } });
@@ -695,7 +703,8 @@ export class ObjectiveController {
             const lastestPostProcessor = new ObjectiveLastestProcessor(this.postsService, this.s3Service);
             lastestPostProcessor.setData({
                 objectiveId: objId,
-                limit: 10,
+                limit,
+                offset,
                 userId
             });
             const lastestProcsResult = await lastestPostProcessor.process();

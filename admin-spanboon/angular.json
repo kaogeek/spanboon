@@ -47,6 +47,14 @@
                   "with": "src/environments/environment.prod.ts"
                 }
               ]
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
           }
         },
@@ -58,6 +66,9 @@
           "configurations": {
             "production": {
               "browserTarget": "spanboon-admin:build:production"
+            },
+            "development": {
+              "browserTarget": "spanboon-admin:build:development"
             }
           }
         },

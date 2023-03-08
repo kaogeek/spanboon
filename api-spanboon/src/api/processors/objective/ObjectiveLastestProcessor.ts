@@ -26,10 +26,12 @@ export class ObjectiveLastestProcessor extends AbstractTypeSectionProcessor {
             try {
                 let objectiveId = undefined;
                 let limit = undefined;
+                let offset = undefined;
                 let userId = undefined;
                 if (this.data !== undefined && this.data !== null) {
                     objectiveId = this.data.objectiveId;
                     limit = this.data.limit;
+                    offset = this.data.offset;
                     userId = this.data.userId;
                 }
 
@@ -42,11 +44,16 @@ export class ObjectiveLastestProcessor extends AbstractTypeSectionProcessor {
                     limit = 1;
                 }
 
+                if (offset === undefined || offset === null || offset === '') {
+                    offset = 0;
+                }
+
                 // search first post of objective and join gallery
                 const postAgg = [
                     { $match: { objective: objectiveId, deleted: false } },
                     { $sort: { startDateTime: -1 } },
                     { $limit: limit },
+                    { $skip: offset },
                     {
                         $lookup: {
                             from: 'PostsGallery',
