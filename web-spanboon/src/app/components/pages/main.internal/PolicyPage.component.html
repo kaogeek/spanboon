@@ -1,0 +1,11 @@
+<ng-container [ngSwitch]="policyParam">
+    <!-- Version. -->
+    <!-- 1 -->
+    <privacy-policy-v1 *ngSwitchCase="'v1'"></privacy-policy-v1>
+    <!-- 2 -->
+    <privacy-policy-v2 *ngSwitchCase="'v2'"></privacy-policy-v2>
+
+    <!-- Defaul new version. -->
+    <!-- version 1.1.0 -->
+    <privacy-policy-v2 *ngSwitchDefault></privacy-policy-v2>
+</ng-container>

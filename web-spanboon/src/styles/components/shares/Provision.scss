@@ -1,0 +1,65 @@
+.provision {
+  position: relative;
+  padding: 30px;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #f5f5f5;
+    z-index: -1;
+  }
+
+  > .container {
+    margin: 0 auto;
+    max-width: 1280px;
+
+    @media (max-width: $xxlarge) {
+      max-width: 1024px;
+    }
+
+    @media (max-width: $large) {
+      max-width: 768px;
+    }
+
+    > p.header {
+      @include font-size-7($font-head-500);
+    }
+
+    > p.title {
+      @include font-size-9($font-head-500);
+      margin-bottom: 4px;
+    }
+
+    > ul {
+      list-style-type: none;
+      padding: 0;
+      @include font-size-9($font-head-100);
+      margin: 0 0 1em 0;
+
+      &:last-of-type {
+        margin: 0;
+      }
+
+      > li {
+        padding: 4px 0;
+
+        a {
+          text-decoration: underline !important;
+          color: $black;
+
+          &:hover {
+            color: $brandcolor2;
+          }
+        }
+
+        > b {
+          @include font-size-9($font-head-500);
+        }
+      }
+    }
+  }
+}

@@ -593,6 +593,13 @@ export class AuthenManager {
     return val;
   }
 
+  public getParams(param: string): any {
+    return new Promise(resolve => {
+      this.routeActivated.queryParams.subscribe(params => {
+        resolve(params[param]);
+      });
+    });
+  }
 
   public getHidebar(): boolean {
     let isCheck: boolean = false;
@@ -613,11 +620,53 @@ export class AuthenManager {
 
   public setHidebar() {
     let hidebar = localStorage.getItem('hidebar');
-    let mfpapp = localStorage.getItem('hidebar');
+    let mfpapp = localStorage.getItem('mfpapp');
     if (hidebar === "true" || mfpapp === "true") {
       return false;
     } else {
       return true;
+    }
+  }
+
+  public getPolicy() {
+    const local = localStorage.getItem('policy');
+    if (!!local) {
+      return local;
+    } else {
+      return null;
+    }
+  }
+
+  public setPolicy(policy: string) {
+    localStorage.setItem('policy', policy);
+  }
+
+  public checkVersionPolicy(version: string): boolean {
+    if (this.getPolicy() === version) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  public getTos(): string {
+    const local = localStorage.getItem('tos');
+    if (!!local) {
+      return local;
+    } else {
+      return null;
+    }
+  }
+
+  public setTos(tos: string) {
+    localStorage.setItem('tos', tos);
+  }
+
+  public checkVersionTos(version: string): boolean {
+    if (this.getTos() === version) {
+      return true;
+    } else {
+      return false;
     }
   }
 

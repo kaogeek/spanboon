@@ -14,28 +14,28 @@
   justify-content: flex-start;
   background: $bg-grey;
 
-  > .wrapper-body {
+  >.wrapper-body {
     width: 320pt;
     margin: 50pt 0 50pt 150pt;
     position: relative;
     z-index: 1;
 
-    > .header {
+    >.header {
       color: $brandcolor2;
       @include font-size-6($font-head-500);
     }
 
-    > .wrapper-upload {
+    >.wrapper-upload {
       display: flex;
       flex-direction: row;
       align-items: flex-start;
       flex-wrap: wrap;
 
-      > .user-profile {
+      >.user-profile {
         position: relative;
         flex: 0 0 auto;
 
-        > .image-user {
+        >.image-user {
           width: 100pt;
           height: 100pt;
           border-radius: 50%;
@@ -44,7 +44,7 @@
           box-shadow: 0px 5px 8px 0 #00000020;
         }
 
-        > .edit-profile {
+        >.edit-profile {
           width: 30pt;
           height: 30pt;
           position: absolute;
@@ -58,8 +58,7 @@
           justify-content: center;
           align-items: center;
 
-          > .icon-image {
-          }
+          >.icon-image {}
 
           &:hover {
             opacity: 1;
@@ -67,15 +66,23 @@
         }
       }
 
-      > .user {
+      >.user {
         flex: 1 1 0%;
         margin-left: 20pt;
 
-        > .user-grop {
+        >.user-grop {
           margin-top: 10pt;
           position: relative;
 
-          > label {
+          >span {
+            position: absolute;
+            right: 15px;
+            top: 10px;
+            color: red;
+            z-index: 1;
+          }
+
+          >label {
             position: absolute;
             top: 4.5pt;
             left: 9pt;
@@ -83,7 +90,7 @@
             user-select: none;
           }
 
-          > .input-text {
+          >.input-text {
             height: 25pt;
             padding: 2pt 13pt;
             width: calc(100% - 26pt - 4px);
@@ -96,7 +103,7 @@
             border: 2px solid transparent;
           }
 
-          > .display-name {
+          >.display-name {
             margin-top: 3px;
             @include font-size-9($font-head-500);
             word-break: break-all;
@@ -116,7 +123,7 @@
       }
     }
 
-    > .form-register {
+    >.form-register {
       margin-top: 15pt;
       width: 100%;
 
@@ -133,24 +140,26 @@
         @include font-size-10($font-head-400);
         margin-bottom: 10pt;
       }
-      > .form-group {
+
+      >.form-group {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
         flex-wrap: wrap;
 
-        > .input-text-group {
+        >.input-text-group {
           width: calc(49% - 26pt);
         }
       }
 
-      > .title-label {
+      >.title-label {
         @include font-size-9($font-head-500);
         margin: 10pt 0 8pt 0;
       }
-      > .mat-form-field-type-mat-select{
-        > .mat-form-field-wrapper{
-          > .mat-form-field-flex{
+
+      >.mat-form-field-type-mat-select {
+        >.mat-form-field-wrapper {
+          >.mat-form-field-flex {
             display: flex;
             align-items: center;
             padding: 10pt 10pt;
@@ -161,11 +170,12 @@
           }
         }
       }
-      > .mat-form-field {
+
+      >.mat-form-field {
         width: calc(49% - 5pt);
         margin-bottom: 10pt;
 
-        > .mat-form-field-wrapper {
+        >.mat-form-field-wrapper {
           padding-bottom: 0;
 
           svg {
@@ -176,30 +186,32 @@
             // right: 15pt;
           }
 
-          > .mat-form-field-flex {
+          >.mat-form-field-flex {
             display: flex;
             align-items: center;
 
-            > .mat-form-field-infix {
+            >.mat-form-field-infix {
               width: auto;
               padding: 0;
               border-top: 0;
 
-              > .mat-birthday {
+              >.mat-birthday {
                 border: unset;
+
                 &.active {
                   border: 1px solid red;
                 }
               }
 
-              > .mat-province {
+              >.mat-province {
                 border: unset;
+
                 &.active {
                   border: 1px solid red;
                 }
               }
 
-              > .mat-input-element {
+              >.mat-input-element {
                 display: flex;
                 border-radius: 25px;
                 background-color: $white;
@@ -208,28 +220,30 @@
                 padding: 2pt 20pt 2pt 13pt;
                 @include font-size-10($font-head-500);
                 box-shadow: 0px 1px 9px 0 #00000020;
-                > .mat-form-field-label-wrapper {
-                }
+
+                >.mat-form-field-label-wrapper {}
               }
             }
-            > .mat-form-field-suffix {
-              > .mat-datepicker-toggle {
-                > .mat-icon-button {
+
+            >.mat-form-field-suffix {
+              >.mat-datepicker-toggle {
+                >.mat-icon-button {
                   display: flex;
                   align-items: center;
                   justify-content: center;
 
-                  > .mat-button-wrapper {
-                    > .mat-datepicker-toggle {
-                    }
+                  >.mat-button-wrapper {
+                    >.mat-datepicker-toggle {}
                   }
                 }
               }
             }
           }
-          > .mat-form-field-underline {
+
+          >.mat-form-field-underline {
             height: 0px;
-            > .mat-form-field-ripple {
+
+            >.mat-form-field-ripple {
               background-color: unset;
               opacity: 0;
             }
@@ -237,7 +251,7 @@
         }
       }
 
-      > mat-radio-group {
+      >mat-radio-group {
         display: flex;
         flex-direction: row;
         justify-content: flex-start;
@@ -245,7 +259,7 @@
         flex-wrap: wrap;
         width: 100%;
 
-        > mat-radio-button {
+        >mat-radio-button {
           display: flex;
           align-items: center;
           border-radius: 25px;
@@ -253,46 +267,47 @@
           background: $white;
           margin-right: 7pt;
 
-          > .mat-radio-label {
+          >.mat-radio-label {
             padding: 2pt 18pt 2pt 13pt;
             height: 25pt;
 
-            > .mat-radio-container {
+            >.mat-radio-container {
               width: 16px;
               height: 16px;
 
-              > .mat-radio-outer-circle {
+              >.mat-radio-outer-circle {
                 border: 1px solid $brandcolor2;
                 width: 16px;
                 height: 16px;
               }
 
-              > .mat-radio-inner-circle {
+              >.mat-radio-inner-circle {
                 background: $brandcolor2;
                 width: 16px;
                 height: 16px;
               }
 
-              > .mat-radio-ripple {
-                > .mat-ripple-element {
+              >.mat-radio-ripple {
+                >.mat-ripple-element {
                   background: transparent;
                 }
               }
             }
 
-            > .mat-radio-label-content {
+            >.mat-radio-label-content {
               color: $color-black;
               @include font-size-10($font-head-500);
             }
           }
         }
       }
+
       .mat-checkbox-layout {
         .mat-checkbox-label {
           text-align: center;
           @include font-size-10($font-head-500);
           white-space: initial;
-          
+
           >.policy {
             @include pointer();
             color: $color-gray;
@@ -304,16 +319,17 @@
         }
       }
 
-      > .wrapper-policy {
+      >.wrapper-policy {
         color: $color-gray;
         text-align: center;
         margin: 15pt;
         @include font-size-10($font-head-300);
+
         span {
           font-family: "Kanit-500";
         }
 
-        > .btn-spanboon {
+        >.btn-spanboon {
           font-family: "Kanit-500";
           color: $brandcolor2;
           cursor: pointer;
@@ -329,7 +345,7 @@
           text-align: center;
           @include font-size-10($font-head-500);
           white-space: initial;
-          
+
           >.policy {
             @include pointer();
             color: $color-gray;
@@ -341,20 +357,21 @@
         }
       }
 
-      > .div-btn {
+      >.div-btn {
         margin-top: 18pt;
         display: flex;
         flex-direction: row;
         justify-content: space-between;
         flex-wrap: wrap;
 
-        > spanboon-button {
+        >spanboon-button {
           width: 48%;
 
           &.active {
-              opacity: 0.7;
-              pointer-events: none;
+            opacity: 0.7;
+            pointer-events: none;
           }
+
           &.deactive {
             color: $white;
             background: $brandcolor2;
@@ -366,7 +383,7 @@
     }
   }
 
-  > .background-register {
+  >.background-register {
     position: absolute;
     right: 25pt;
     height: 100%;
@@ -375,7 +392,7 @@
 
 @media (max-width: $xxlarge) {
   .register-page {
-    > .background-register {
+    >.background-register {
       opacity: 0.5;
       height: 80%;
     }
@@ -384,7 +401,7 @@
 
 @media (max-width: $xlarge) {
   .register-page {
-    > .wrapper-body {
+    >.wrapper-body {
       margin: 30pt 0 30pt 90pt;
       // margin: 50pt auto;
 
@@ -401,15 +418,15 @@
 
 @media (max-width: $large) {
   .register-page {
-    > .wrapper-body {
+    >.wrapper-body {
       margin: 20pt auto 50pt auto;
 
-      > .header {
+      >.header {
         text-align: center;
       }
     }
 
-    > .background-register {
+    >.background-register {
       display: none;
     }
   }
@@ -417,15 +434,15 @@
 
 @media (max-width: $medium) {
   .register-page {
-    > .wrapper-body {
-      > .wrapper-upload {
+    >.wrapper-body {
+      >.wrapper-upload {
         flex-direction: column;
 
-        > .user-profile {
+        >.user-profile {
           margin: 0 auto;
         }
 
-        > .user {
+        >.user {
           width: 100%;
           margin: 10pt 0 0 0;
         }
@@ -438,26 +455,26 @@
   .register-page {
     min-height: calc(100vh - 39pt);
 
-    > .wrapper-body {
+    >.wrapper-body {
       width: 80%;
 
-      > .wrapper-upload {
+      >.wrapper-upload {
         justify-content: center;
       }
 
-      > .form-register {
-        > .form-group {
-          > .input-text-group {
+      >.form-register {
+        >.form-group {
+          >.input-text-group {
             width: calc(100% - 26pt);
           }
         }
 
-        > .mat-form-field {
+        >.mat-form-field {
           width: calc(100% - 5pt);
         }
 
-        > mat-radio-group {
-          > mat-radio-button {
+        >mat-radio-group {
+          >mat-radio-button {
             width: 100% !important;
             margin-right: 0;
             margin-bottom: 10pt;
@@ -468,10 +485,10 @@
           }
         }
 
-        > .div-btn {
+        >.div-btn {
           flex-direction: column-reverse;
 
-          > spanboon-button {
+          >spanboon-button {
             width: 100%;
 
             &:first-child {

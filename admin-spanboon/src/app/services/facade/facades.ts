@@ -19,3 +19,4 @@ export * from './EmergencyEventFacade.service';
 export * from './PageFacade.service';
 export * from './PageUserFacade.service';
 export * from './PageUserAdminFacade.service';
+export * from './TodayPageFacade.service';

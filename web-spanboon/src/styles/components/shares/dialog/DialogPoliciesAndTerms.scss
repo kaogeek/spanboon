@@ -1,0 +1,37 @@
+.overlay-dialog-policies-and-terms {
+  > .mat-dialog-container {
+    padding: 0 24px 24px 24px !important;
+
+    .mat-dialog-content {
+      margin: 0 -24px !important;
+      padding: 0 24px !important;
+
+      > .wrapper-content {
+        padding: 0 30px;
+
+        > .container {
+          margin: 0 auto;
+          max-width: 1280px;
+
+          @media (max-width: $xxlarge) {
+            max-width: 1024px;
+          }
+
+          @media (max-width: $large) {
+            max-width: 768px;
+          }
+
+          > .wrapper-flex {
+            .mat-checkbox {
+              > .mat-checkbox-layout {
+                > .mat-checkbox-label {
+                  @include font-size-9($font-head-500);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

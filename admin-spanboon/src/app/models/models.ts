@@ -22,3 +22,4 @@ export * from './ValidateStandardItemCategoryRequest';
 export * from './BanRequest';
 export * from './Asset';
 export * from './Page';
+export * from './Today';

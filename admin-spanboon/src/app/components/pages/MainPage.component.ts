@@ -44,7 +44,7 @@ export const ROUTES: Routes[] = [
   },
   {
     icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="15" viewBox="0 0 24 19">  <g id="chat_bubble" data-name="chat bubble" transform="translate(169 -252)">    <path id="Path_9" data-name="Path 9" d="M-162.5,252.5h11a6,6,0,0,1,6,6v2a6,6,0,0,1-6,6h-11l-6,4v-12A6,6,0,0,1-162.5,252.5Z" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>    <line id="Line_1" data-name="Line 1" x2="12" transform="translate(-162.5 257.5)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>    <line id="Line_2" data-name="Line 2" x2="12" transform="translate(-162.5 261.5)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>  </g></svg>',
-    title: "ก้าวไกลวันนี้",
+    title: "ก้าวไกลหน้าหนึ่ง",
     subRoutes: [
     ],
     path: "/main/today"

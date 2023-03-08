@@ -516,6 +516,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     } else {
       data.offset = this.resPost && this.resPost.posts.length > 0 ? this.resPost.posts.length : 0;
     }
+
     data.limit = 5;
     let originalpost: any[] = this.resPost.posts;
     this.profileFacade.searchType(data, this.url).then(async (res: any) => {
@@ -524,9 +525,11 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
           this.isMaxLoadingPost = true;
           this.isLoadingPost = false;
         }
+
         for (let post of res.posts) {
           originalpost.push(post);
         }
+
         if (this.resPost && this.resPost.pageObjectives && this.resPost.pageObjectives.length > 0) {
           let index = 0;
           for (let result of this.resPost.pageObjectives) {
@@ -536,6 +539,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
             }
           }
         }
+
         this.resPost.posts = originalpost;
         for (let post of this.resPost.posts) {
           if (post.referencePost !== null && post.referencePost !== undefined && post.referencePost !== '') {
@@ -545,9 +549,9 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
             search.whereConditions = { _id: post.referencePost };
             this.postFacade.search(search).then((res: any) => {
               if (res.length !== 0) {
-                post.referencePostObject = res[0]
+                post.referencePostObject = res[0];
               } else {
-                post.referencePostObject = 'UNDEFINED PAGE'
+                post.referencePostObject = 'UNDEFINED PAGE';
               }
             }).catch((err: any) => {
               this.isMaxLoadingPost = true;
@@ -588,7 +592,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
       }
     }).catch((err: any) => {
       console.log(err)
-      this.isMaxLoadingPost = true
+      this.isMaxLoadingPost = true;
     });
   }
 

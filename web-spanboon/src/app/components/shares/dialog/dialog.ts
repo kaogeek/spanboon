@@ -35,3 +35,4 @@ export * from './DialogShare.component';
 export * from './DialogConfirmInput.component';
 export * from './DialogAboutUs.component';
 export * from './DialogCheckBox.component';
+export * from './DialogPoliciesAndTerms.component';

@@ -1,13 +1,41 @@
 .container-bucket {
-    >.wrapper-bucket {
+    .wrapper-bucket {
         margin-top: 10px;
 
-        .field-data {
-            padding: 15px;
+        >.field-data {
+            padding: 20px;
             border: 1px solid black;
             border-radius: 10px;
             margin-bottom: 10px;
 
+            >.text-value {
+                float: right;
+            }
+
+            .mat-raised-button {
+                margin-left: 5pt;
+                min-width: 0 !important;
+                padding: 0 5pt !important;
+                box-shadow: unset !important;
+
+                img {
+                    width: 25px;
+                    min-width: 25px;
+                    max-width: 25px;
+                }
+            }
+
+            >.field-value {
+                margin-top: 10px;
+            }
         }
     }
+}
+
+.valid {
+    border: 1px solid red;
+}
+
+.invalid {
+    border: 1px solid green;
 }

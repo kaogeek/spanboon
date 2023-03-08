@@ -5,13 +5,13 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-import { Component, OnInit, HostListener, ViewChild, ElementRef, EventEmitter } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, EventEmitter } from '@angular/core';
 import { ObservableManager } from '../../services/ObservableManager.service';
 import * as $ from 'jquery';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { AbstractPage } from './AbstractPage';
 import { MatDialog } from '@angular/material';
-import { DialogPost } from '../shares/shares';
+import { DialogPoliciesAndTerms, DialogPost } from '../shares/shares';
 import { AuthenManager } from '../../services/AuthenManager.service';
 import { UserAccessFacade } from '../../services/facade/UserAccessFacade.service';
 import { filter } from 'rxjs/internal/operators/filter';
@@ -80,7 +80,7 @@ export class MainPage extends AbstractPage implements OnInit {
       }
     });
 
-    this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe((event: NavigationEnd) => {
+    this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(async (event: NavigationEnd) => {
       if (event instanceof NavigationEnd) {
         const url: string = decodeURI(this.router.url);
         const path = url.split('/')[1];
@@ -89,6 +89,19 @@ export class MainPage extends AbstractPage implements OnInit {
         }
         if (url === '/login' || (path === "fulfill")) {
           this.isPost = false;
+        }
+
+        if (this.isLogin()) {
+          const policy = this.authenManager.checkVersionPolicy('v2');
+          const tos = this.authenManager.checkVersionTos('v2');
+
+          if (!policy || await this.authenManager.getParams('policy')) {
+            this._dialogPolicy();
+          }
+
+          if (!tos || await this.authenManager.getParams('tos')) {
+            this._dialogTerms();
+          }
         }
       }
     });
@@ -116,7 +129,7 @@ export class MainPage extends AbstractPage implements OnInit {
     // }
   }
 
-  ngAfterViewInit(): void {
+  public ngAfterViewInit(): void {
     var prev = 0;
     // var spanboonHome = $('#menubottom'); 
     $(window).scroll(() => {
@@ -326,14 +339,44 @@ export class MainPage extends AbstractPage implements OnInit {
     return await this.userAccessFacade.getPageAccess();
   }
 
-  private openLoading() {
-    this.isLoading = true;
-  }
-
   private stopLoading(): void {
     setTimeout(() => {
       this.isLoading = false;
     }, 1000);
+  }
+
+  private _dialogPolicy() {
+    const dialogRef = this.dialog.open(DialogPoliciesAndTerms, {
+      autoFocus: false,
+      restoreFocus: false,
+      disableClose: true,
+      data: {
+        mode: 'policy'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.authenManager.setPolicy('v2');
+      }
+    });
+  }
+
+  private _dialogTerms() {
+    const dialogRef = this.dialog.open(DialogPoliciesAndTerms, {
+      autoFocus: false,
+      restoreFocus: false,
+      disableClose: true,
+      data: {
+        mode: 'terms'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.authenManager.setTos('v2');
+      }
+    });
   }
 }
 
@@ -350,7 +393,6 @@ export * from './main.internal/StoryPage.component';
 export * from './main.internal/PostPage.component';
 export * from './main.internal/PageHashTag.component';
 export * from './main.internal/PageRecommended.component';
-export * from './main.internal/Policy.component';
 export * from './main.internal/register.internal/MenuRegister.component';
 export * from './main.internal/register.internal/RegisterPage.component';
 export * from './main.internal/profile.internal/profile';
@@ -358,4 +400,5 @@ export * from './main.internal/fanpage.internal/fanpage';
 export * from './main.internal/fulfill.internal/fulfill';
 export * from './main.internal/timeline.internal/timeline';
 export * from './main.internal/NotificationAllPage.component';
-export * from './main.internal/TOS.component';
+export * from './main.internal/PolicyPage.component';
+export * from './main.internal/TermsOfServicePage.component';
