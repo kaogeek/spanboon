@@ -9,7 +9,7 @@ import { EventEmitter } from '@angular/core';
 import { BaseModel } from './BaseModel';
 
 export class DialogData extends BaseModel {
-
+  mode?: string;
   width: string;
   height: string;
   title: string;

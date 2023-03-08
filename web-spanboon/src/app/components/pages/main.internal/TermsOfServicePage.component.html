@@ -1,0 +1,11 @@
+<ng-container [ngSwitch]="tosParam">
+    <!-- Version. -->
+    <!-- 1 -->
+    <terms-of-service-v1 *ngSwitchCase="'v1'"></terms-of-service-v1>
+    <!-- 2 -->
+    <terms-of-service-v2 *ngSwitchCase="'v2'"></terms-of-service-v2>
+
+    <!-- Defaul new version. -->
+    <!-- version 1.1.0 -->
+    <terms-of-service-v2 *ngSwitchDefault></terms-of-service-v2>
+</ng-container>

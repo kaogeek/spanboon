@@ -621,6 +621,46 @@ export class AuthenManager {
     }
   }
 
+  public getPolicy(): string {
+    if (!!localStorage.getItem('policy')) {
+      return localStorage.getItem('policy');
+    } else {
+      return null;
+    }
+  }
+
+  public setPolicy() {
+    let policy: string;
+    this.routeActivated.queryParams.subscribe(params => {
+      policy = params['policy'];
+      if (!!policy) {
+        localStorage.setItem('policy', policy);
+      } else {
+        localStorage.setItem('policy', 'New Version');
+      }
+    });
+  }
+
+  public getTos(): string {
+    if (!!localStorage.getItem('tos')) {
+      return localStorage.getItem('tos');
+    } else {
+      return null;
+    }
+  }
+
+  public setTos() {
+    let tos: string;
+    this.routeActivated.queryParams.subscribe(params => {
+      tos = params['tos'];
+      if (!!tos) {
+        localStorage.setItem('tos', tos);
+      } else {
+        localStorage.setItem('tos', 'New Version');
+      }
+    });
+  }
+
   // return current login user admin status
   public isAdminUser(): boolean {
     return false;

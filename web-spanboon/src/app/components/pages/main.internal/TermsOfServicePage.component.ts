@@ -5,31 +5,34 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-import { Component, OnInit, Input, ViewChild, ElementRef, EventEmitter } from '@angular/core';
-import { ObjectiveFacade, NeedsFacade, AssetFacade, AuthenManager, ObservableManager, PageFacade, HashTagFacade } from '../../../services/services';
+import { Component, OnInit, EventEmitter } from '@angular/core';
+import { AuthenManager, ObservableManager } from '../../../services/services';
 import { MatDialog } from '@angular/material';
-import { AbstractPage } from '../AbstractPage'; 
-import { Router } from '@angular/router'; 
+import { Router } from '@angular/router';
+import { AbstractPage } from '../../pages/AbstractPage';
 
-const PAGE_NAME: string = 'tos'; 
- 
+const PAGE_NAME: string = 'tos';
+
 @Component({
-    selector: 'terms-of-service',
-    templateUrl: './TOS.component.html',
+    selector: 'terms-of-service-page',
+    templateUrl: './TermsOfServicePage.component.html',
+    host: {
+        class: 'terms-of-service-page'
+    }
 })
-export class TOS extends AbstractPage implements OnInit {
-
+export class TermsOfServicePage extends AbstractPage implements OnInit {
     public static readonly PAGE_NAME: string = PAGE_NAME;
-
     protected observManager: ObservableManager;
- 
+    public tosParam: string;
+
     constructor(router: Router, dialog: MatDialog, authenManager: AuthenManager, observManager: ObservableManager) {
         super(PAGE_NAME, authenManager, dialog, router);
-        this.observManager = observManager; 
+        this.observManager = observManager;
 
     }
 
     public ngOnInit(): void {
+        this.tosParam = this.authenManager.getTos();
     }
 
     isPageDirty(): boolean {

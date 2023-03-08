@@ -20,7 +20,7 @@ import {
   PageHashTag,
   PageRecommended,
   SettingsFanPage, forgotPasswordPage, ObjectiveTimeline,
-  EmergencyEventTimeline, Redirect, SettingAccount, AboutPage, SettingsAdminRoles, SecurityInfo, Policy, TOS, HomePageV3,
+  EmergencyEventTimeline, Redirect, SettingAccount, AboutPage, SettingsAdminRoles, SecurityInfo, HomePageV3, PolicyPage, TermsOfServicePage,
 } from './components/components';
 
 import { TestComponent } from './components/TestComponent.component';
@@ -223,12 +223,12 @@ export const APP_ROUTES: Routes = [
         component: RegisterPage,
       },
       {
-        path: Policy.PAGE_NAME,
-        component: Policy,
+        path: PolicyPage.PAGE_NAME,
+        component: PolicyPage,
       },
       {
-        path: TOS.PAGE_NAME,
-        component: TOS,
+        path: TermsOfServicePage.PAGE_NAME,
+        component: TermsOfServicePage,
       },
       // {
       //   path: NotificationAllPage.PAGE_NAME,

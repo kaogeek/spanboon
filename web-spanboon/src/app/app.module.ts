@@ -6,7 +6,7 @@
  */
 
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule, ViewContainerRef } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -87,6 +87,8 @@ import {
   ProfilePage,
   NotificationAllPage,
   forgotPasswordPage,
+  PolicyPage,
+  TermsOfServicePage,
   // FanPage,
   MainPage,
   Redirect,
@@ -104,8 +106,10 @@ import {
   SettingsAdminRoles,
   SecurityInfo,
   AboutPage,
-  Policy,
-  TOS,
+  PolicyV1,
+  PolicyV2,
+  TermsOfServiceV1,
+  TermsOfServiceV2,
   // timeline 
   ObjectiveTimeline,
   EmergencyEventTimeline,
@@ -130,6 +134,7 @@ import {
   DialogAlertAllocate,
   DialogPreview,
   DialogCheckBox,
+  DialogPoliciesAndTerms,
   AlertComponent,
   TooltipProfile,
   PreloadCard,
@@ -314,8 +319,10 @@ const COMPONENTS: any[] = [
   PostPage,
   SettingsFanPage,
   AboutPage,
-  Policy,
-  TOS,
+  PolicyV1,
+  PolicyV2,
+  TermsOfServiceV1,
+  TermsOfServiceV2,
   SettingsInfo,
   SettingsAdminRoles,
   SecurityInfo,
@@ -325,6 +332,8 @@ const COMPONENTS: any[] = [
   PageHashTag,
   PageRecommended,
   Redirect,
+  PolicyPage,
+  TermsOfServicePage,
   // timeline 
   ObjectiveTimeline,
   EmergencyEventTimeline,
@@ -358,6 +367,7 @@ const COMPONENTS: any[] = [
   DialogFulfillAllocate,
   DialogPreview,
   DialogCheckBox,
+  DialogPoliciesAndTerms,
   TagEvent,
   TooltipProfile,
   PreloadCard,

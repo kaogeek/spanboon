@@ -5,31 +5,34 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-import { Component, OnInit, Input, ViewChild, ElementRef, EventEmitter } from '@angular/core';
-import { ObjectiveFacade, NeedsFacade, AssetFacade, AuthenManager, ObservableManager, PageFacade, HashTagFacade } from '../../../services/services';
+import { Component, OnInit, EventEmitter } from '@angular/core';
+import { AuthenManager, ObservableManager } from '../../../services/services';
 import { MatDialog } from '@angular/material';
-import { AbstractPage } from '../AbstractPage'; 
-import { Router } from '@angular/router'; 
+import { Router } from '@angular/router';
+import { AbstractPage } from '../../pages/AbstractPage';
 
-const PAGE_NAME: string = 'policy'; 
- 
+const PAGE_NAME: string = 'policy';
+
 @Component({
-    selector: 'privacy-policy',
-    templateUrl: './Policy.component.html',
+    selector: 'policy-page',
+    templateUrl: './PolicyPage.component.html',
+    host: {
+        class: 'policy-page'
+    }
 })
-export class Policy extends AbstractPage implements OnInit {
-
+export class PolicyPage extends AbstractPage implements OnInit {
     public static readonly PAGE_NAME: string = PAGE_NAME;
-
     protected observManager: ObservableManager;
- 
+    public policyParam: string;
+
     constructor(router: Router, dialog: MatDialog, authenManager: AuthenManager, observManager: ObservableManager) {
         super(PAGE_NAME, authenManager, dialog, router);
-        this.observManager = observManager; 
+        this.observManager = observManager;
 
     }
 
     public ngOnInit(): void {
+        this.policyParam = this.authenManager.getPolicy();
     }
 
     isPageDirty(): boolean {
