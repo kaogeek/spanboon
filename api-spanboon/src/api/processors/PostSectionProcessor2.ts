@@ -15,9 +15,6 @@ import { UserLike } from '../models/UserLike';
 import { LIKE_TYPE } from '../../constants/LikeType';
 import moment from 'moment';
 import { ObjectID } from 'mongodb';
-import { KaokaiTodayService } from '../services/KaokaiTodayService';
-import { HashTagService } from '../services/HashTagService';
-import { PageService } from '../services/PageService';
 export class PostSectionProcessor2 extends AbstractSeparateSectionProcessor {
 
     private DEFAULT_SEARCH_LIMIT = 4;
@@ -27,9 +24,6 @@ export class PostSectionProcessor2 extends AbstractSeparateSectionProcessor {
         private postsService: PostsService,
         private s3Service: S3Service,
         private userLikeService: UserLikeService,
-        private kaokaiTodayService: KaokaiTodayService,
-        private hashTagService: HashTagService,
-        private pageService:PageService
 
     ) {
         super();
@@ -100,7 +94,6 @@ export class PostSectionProcessor2 extends AbstractSeparateSectionProcessor {
                     { $group: { _id: '$keyword', result: { $first: '$$ROOT' } } },
                     { $replaceRoot: { newRoot: '$result' } }
                 ]; */
-                const postSection = await this.kaokaiTodayService.findOne({ position: 2, flag: true });
                 // overide start datetime
                 const dateTimeAndArray = [];
                 if (startDateTime !== undefined && startDateTime !== null) {

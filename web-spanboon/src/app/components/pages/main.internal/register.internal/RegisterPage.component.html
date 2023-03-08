@@ -38,6 +38,7 @@
             </div>
             <div class="user">
                 <div class="user-grop">
+                    <span>*</span>
                     <input type="text" #displayName="ngModel" name="displayName" id="displayName"
                         placeholder="ชื่อที่ต้องการแสดง" class="input-text" [(ngModel)]="data.displayName" required
                         shake [shake]="active">
@@ -81,7 +82,7 @@
             </ng-container>
             <div for="province" class="title-label">จังหวัด</div>
             <mat-form-field appearance="none">
-                <mat-select  [(ngModel)]="data.province" name="province" placeholder = 'จังหวัด'  required>
+                <mat-select [(ngModel)]="data.province" name="province" placeholder='จังหวัด' required>
                     <mat-option *ngFor="let province of provinces" [value]="province.value">
                         {{province.viewValue}}
                     </mat-option>

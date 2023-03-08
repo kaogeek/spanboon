@@ -22,14 +22,12 @@ import { KaokaiToday } from '../../models/KaokaiToday';
 import { KaokaiTodayService } from '../../services/KaokaiTodayService';
 import { CreateKaokaiTodayRequest } from '../requests/CreateKaokaiTodayRequest';
 import { PageObjectiveService } from '../../services/PageObjectiveService';
-import { ConfigService } from '../../services/ConfigService';
 @JsonController('/admin/page')
 export class AdminPageController {
     constructor(private pageService: PageService, private actionLogService: AdminUserActionLogsService, private deletePageService: DeletePageService,
         private kaokaiTodayService: KaokaiTodayService,
         private pageObjectiveService: PageObjectiveService,
         private postsService: PostsService,
-        private configService: ConfigService
         ) { }
 
     /**
@@ -210,6 +208,12 @@ export class AdminPageController {
     public async createKaokaiToday(@Body({ validate: true }) createKaokaiTodayRequest: CreateKaokaiTodayRequest, @Res() res: any, @Req() req: any): Promise<any> {
         const titleRequest = createKaokaiTodayRequest.title;
         const positionNumber = createKaokaiTodayRequest.position;
+
+        if(createKaokaiTodayRequest.position > 4){
+            const successResponse = ResponseUtil.getSuccessResponse('Position must less or equal than 4.', undefined);
+            return res.status(200).send(successResponse);
+        }
+
         const checkKaokai = await this.kaokaiTodayService.findOne({position:positionNumber});
         if(checkKaokai !== null && checkKaokai !== undefined){
             const query = {_id:checkKaokai.id};
@@ -221,6 +225,8 @@ export class AdminPageController {
                 createKaokaiToday.type = createKaokaiTodayRequest.type;
                 createKaokaiToday.field = createKaokaiTodayRequest.field;
                 createKaokaiToday.flag = createKaokaiTodayRequest.flag;
+                createKaokaiToday.limit = createKaokaiTodayRequest.limit;
+                createKaokaiToday.position = createKaokaiTodayRequest.position;
                 createKaokaiToday.buckets = createKaokaiTodayRequest.buckets;
     
                 const CKaokaiToday = await this.kaokaiTodayService.create(createKaokaiToday);
@@ -230,12 +236,14 @@ export class AdminPageController {
                 }
             }
         }
-        else if(checkKaokai === undefined && checkKaokai === null){
+        if(checkKaokai === undefined ){
             const createKaokaiToday = new KaokaiToday();
             createKaokaiToday.title = titleRequest;
             createKaokaiToday.type = createKaokaiTodayRequest.type;
             createKaokaiToday.field = createKaokaiTodayRequest.field;
             createKaokaiToday.flag = createKaokaiTodayRequest.flag;
+            createKaokaiToday.limit = createKaokaiTodayRequest.limit;
+            createKaokaiToday.position = createKaokaiTodayRequest.position;
             createKaokaiToday.buckets = createKaokaiTodayRequest.buckets;
 
             const CKaokaiToday = await this.kaokaiTodayService.create(createKaokaiToday);

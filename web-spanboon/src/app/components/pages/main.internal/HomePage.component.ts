@@ -20,7 +20,7 @@ import { PLATFORM_NAME_TH } from 'src/custom/variable';
 
 declare var $: any;
 
-const PAGE_NAME: string = 'home';
+const PAGE_NAME: string = 'homeV3';
 const PAGE_SIZE: number = 6;
 
 @Component({

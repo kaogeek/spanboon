@@ -43,11 +43,7 @@ export const APP_ROUTES: Routes = [
     children: [
       {
         path: '',
-        component: HomePage,
-      },
-      {
-        path: HomePage.PAGE_NAME,
-        component: HomePage,
+        component: HomePageV3,
       },
       {
         path: HomePageV3.PAGE_NAME,

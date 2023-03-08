@@ -191,6 +191,24 @@
           word-break: break-word;
         }
 
+        >.owner-post {
+
+          >.owner-name {
+            @include font-size-11($font-head-500);
+            color: slategray;
+            cursor: pointer;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            word-break: break-word;
+            display: -webkit-box;
+
+            &:hover {
+              color: rgba($brandcolor2, 0.95);
+            }
+          }
+        }
+
         >.wrapper-title-topic {
           align-self: stretch;
           display: flex;

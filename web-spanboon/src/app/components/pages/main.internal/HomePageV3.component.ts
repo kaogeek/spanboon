@@ -20,7 +20,7 @@ import { DialogAlert, DialogCheckBox, DialogPostCrad } from '../../components';
 
 declare var $: any;
 
-const PAGE_NAME: string = 'homeV3';
+const PAGE_NAME: string = 'home';
 
 @Component({
   selector: 'home-page-v3',
