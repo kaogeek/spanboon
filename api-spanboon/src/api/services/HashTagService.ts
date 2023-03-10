@@ -32,8 +32,8 @@ export class HashTagService {
         return await this.hashTagRepository.updateOne(query, newValue);
     }
 
-    public async updateMany(query:any,newValue:any): Promise<any>{
-        return await this.hashTagRepository.updateMany(query,newValue);
+    public async updateMany(query: any, newValue: any): Promise<any> {
+        return await this.hashTagRepository.updateMany(query, newValue);
     }
 
     // delete hashTag
@@ -62,13 +62,13 @@ export class HashTagService {
         }
     }
 
-    public searchHash(data:any): Promise<any> {
-        const limit = 4;
+    public searchHash(data: any, range: number): Promise<any> {
+        const limit = range;
         const offset = 0;
         const select = undefined;
-        const whereConditions = {name:data};
+        const whereConditions = { name: data };
         const count = {};
-        const orderingSort = { 'count': -1};
+        const orderingSort = { 'count': -1 };
         const condition: any = SearchUtil.createFindCondition(limit, offset, select, whereConditions, count, orderingSort);
         return this.hashTagRepository.find(condition);
 
@@ -80,7 +80,7 @@ export class HashTagService {
         const select = undefined;
         const whereConditions = undefined;
         const count = {};
-        const orderingSort = { 'count': -1};
+        const orderingSort = { 'count': -1 };
         const condition: any = SearchUtil.createFindCondition(limit, offset, select, whereConditions, count, orderingSort);
         return this.hashTagRepository.find(condition);
 

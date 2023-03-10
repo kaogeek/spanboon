@@ -29,6 +29,8 @@ import { EmergencyEventService } from '../services/EmergencyEventService';
 import { ResponseUtil } from '../../utils/ResponseUtil';
 import { FacebookWebhookLogsService } from '../services/FacebookWebhookLogsService';
 import { DateTimeUtil } from '../../utils/DateTimeUtil';
+import { POST_WEIGHT_SCORE, DEFAULT_POST_WEIGHT_SCORE } from '../../constants/SystemConfig';
+import { ConfigService } from '../services/ConfigService';
 @JsonController('/fb_webhook')
 export class FacebookWebhookController {
     constructor(
@@ -38,7 +40,8 @@ export class FacebookWebhookController {
         private hashTagService: HashTagService,
         private pageObjectiveService: PageObjectiveService,
         private emergencyEventService: EmergencyEventService,
-        private facebookWebhookLogsService: FacebookWebhookLogsService
+        private facebookWebhookLogsService: FacebookWebhookLogsService,
+        private configService: ConfigService,
     ) { }
 
     /**
@@ -84,6 +87,58 @@ export class FacebookWebhookController {
         const postMasterHashTagList = [];
         const masterHashTagMap = {};
         const today = moment().toDate();
+        const yFacebook = DEFAULT_POST_WEIGHT_SCORE.Y;
+        const xToday = DEFAULT_POST_WEIGHT_SCORE.X;
+        const likeFacebook = DEFAULT_POST_WEIGHT_SCORE.Lof;
+        const commnetFacebook = DEFAULT_POST_WEIGHT_SCORE.Cof;
+        const shareFacebook = DEFAULT_POST_WEIGHT_SCORE.Sof;
+        const likeToday = DEFAULT_POST_WEIGHT_SCORE.Lot;
+        const commentToday = DEFAULT_POST_WEIGHT_SCORE.Cot;
+        const shareToday = DEFAULT_POST_WEIGHT_SCORE.Sot;
+
+        const xTodayScore = await this.configService.getConfig(POST_WEIGHT_SCORE.X);
+        const yFacebookScore = await this.configService.getConfig(POST_WEIGHT_SCORE.Y);
+        const scorelikeToday = await this.configService.getConfig(POST_WEIGHT_SCORE.Lot);
+        const scorecommentToday = await this.configService.getConfig(POST_WEIGHT_SCORE.Cot);
+        const scoreShareToday = await this.configService.getConfig(POST_WEIGHT_SCORE.Sot);
+        const scorelikeFacebook = await this.configService.getConfig(POST_WEIGHT_SCORE.Lof);
+        const scoreCommentFacebook = await this.configService.getConfig(POST_WEIGHT_SCORE.Cof);
+        const scoreShareFacebook = await this.configService.getConfig(POST_WEIGHT_SCORE.Sof);
+        let xTodayxScore = xToday;
+        let yFacebookyScore = yFacebook;
+        let sTodayLike = likeToday;
+        let sTodayComment = commentToday;
+        let sTodayShare = shareToday;
+        let sFacebookLike = likeFacebook;
+        let sFacebookComment = commnetFacebook;
+        let sShareFacebook = shareFacebook;
+
+        if (xTodayScore) {
+            xTodayxScore = parseFloat(xTodayScore.value);
+        }
+        if (scorelikeToday) {
+            sTodayLike = parseFloat(scorelikeToday.value);
+        }
+        if (scorecommentToday) {
+            sTodayComment = parseFloat(scorecommentToday.value);
+        }
+        if (scoreShareToday) {
+            sTodayShare = parseFloat(scoreShareToday.value);
+        }
+
+        if (yFacebookScore) {
+            yFacebookyScore = parseFloat(yFacebookScore.value);
+        }
+        if (scorelikeFacebook) {
+            sFacebookLike = parseFloat(scorelikeFacebook.value);
+        }
+        if (scoreCommentFacebook) {
+            sFacebookComment = parseFloat(scoreCommentFacebook.value);
+        }
+        if (scoreShareFacebook) {
+            sShareFacebook = parseFloat(scoreShareFacebook.value);
+        }
+
         if (mode && token) {
             // Checks the mode and token sent is correct
             if (mode === 'subscribe' && token === VERIFY_TOKEN) {
@@ -139,14 +194,14 @@ export class FacebookWebhookController {
         console.log('PATTERN: ', checkPattern);
 
         if (checkPattern) {
-            
+
             console.log('pass1');
             // check last ] after find [
             // try to find /n 
             // to cut and trim the title 
             const regex2 = /[.\-_,*+?^$|\\]/;
             const result = msg.lastIndexOf(']');
-            console.log('result',result);
+            console.log('result', result);
             const title1 = msg.slice(0, (result + 1));
             realText = title1.replace(regex, '').trim();
             console.log('TITLE: ', realText);
@@ -160,7 +215,7 @@ export class FacebookWebhookController {
             } else {
                 TrimText = detail1;
                 console.log('DETAIL: ', TrimText);
-            } 
+            }
             /* 
             if (blackSlash) {
                 const findIndexBlackSlash = msg.indexOf(']', -blackSlash);
@@ -710,29 +765,6 @@ export class FacebookWebhookController {
                     const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
                     return res.status(200).send(successResponse);
                 }
-            } else if (body.entry[0].changes[0].value.verb === 'add' && body.entry[0].changes[0].value.item === 'share' && body.entry[0].changes[0].value.link !== undefined) {
-                const share = 3;
-                const findSocialPost = await this.socialPostService.findOne({ socialId: body.entry[0].changes[0].value.post_id });
-                if (findSocialPost === undefined) {
-                    const ErrorFindPostsuccessResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
-                    return res.status(200).send(ErrorFindPostsuccessResponse);
-                }
-                const findActualPost = await this.postsService.findOne({ _id: findSocialPost.postId, pageId: findSocialPost.pageId });
-                if (findActualPost === undefined) {
-                    const ErrorActualPostsuccessResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
-                    return res.status(200).send(ErrorActualPostsuccessResponse);
-                }
-                const query = { _id: findActualPost.id };
-                const newValuesLike = { $set: { shareCountFB: findActualPost.shareCountFB + share } };
-                const update = await this.postsService.update(query, newValuesLike);
-                if (update) {
-                    const UpdatesuccessResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
-                    return res.status(200).send(UpdatesuccessResponse);
-                } else {
-                    const ErrorsuccessResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
-                    return res.status(200).send(ErrorsuccessResponse);
-                }
-
             } else if (body.entry[0].changes[0].value.verb === 'edited' && body.entry[0].changes[0].value.item === 'status' && body.entry[0].changes[0].value.link === undefined) {
                 const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
                 return res.status(200).send(successResponse);
@@ -793,7 +825,7 @@ export class FacebookWebhookController {
                 const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
                 return res.status(200).send(successResponse);
             } else if (body.entry[0].changes[0].value.verb === 'add' && body.entry[0].changes[0].value.reaction_type === 'like' || body.entry[0].changes[0].value.reaction_type === 'love' && body.entry[0].changes[0].value.item === 'reaction') {
-                const like = 1;
+                const likeConstance = 1;
                 const findSocialPost = await this.socialPostService.findOne({ socialId: body.entry[0].changes[0].value.post_id });
                 if (findSocialPost === undefined) {
                     const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
@@ -804,8 +836,10 @@ export class FacebookWebhookController {
                     const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
                     return res.status(200).send(successResponse);
                 }
+                // 4*(3*(newLike+oldLike)) + summationScore. Assumtion = 4*(3*(1+3))+23 = 48+23 = 71
+                const like = (xTodayxScore * (sTodayLike * (likeConstance + findActualPost.likeCount))) + (yFacebookyScore * (sFacebookLike * (likeConstance + findActualPost.likeCountFB)));
                 const query = { _id: findActualPost.id };
-                const newValuesLike = { $set: { likeCountFB: findActualPost.likeCountFB + like } };
+                const newValuesLike = { $set: { likeCountFB: findActualPost.likeCountFB + likeConstance, summationScores: like } };
                 const update = await this.postsService.update(query, newValuesLike);
                 if (update) {
                     const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
@@ -815,7 +849,7 @@ export class FacebookWebhookController {
                     return res.status(200).send(successResponse);
                 }
             } else if (body.entry[0].changes[0].value.verb === 'add' && body.entry[0].changes[0].value.item === 'comment') {
-                const commnet = 2;
+                const commentConstance = 1;
                 const findSocialPost = await this.socialPostService.findOne({ socialId: body.entry[0].changes[0].value.post_id });
                 if (findSocialPost === undefined) {
                     const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
@@ -826,12 +860,39 @@ export class FacebookWebhookController {
                     const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
                     return res.status(200).send(successResponse);
                 }
+                // 4*(3*(newComment+oldComment)) + summationScore. Assumtion = 4*(3*(1+10))+15 = 132+15 = 147
+                const commnet = (xTodayxScore * (sTodayComment * (commentConstance + findActualPost.commentCount))) + (yFacebookyScore * (sFacebookComment * (commentConstance + findActualPost.commentCountFB)));
                 const query = { _id: findActualPost.id };
-                const newValuesLike = { $set: { commentCountFB: findActualPost.commentCountFB + commnet } };
+                const newValuesLike = { $set: { commentCountFB: findActualPost.commentCountFB + commentConstance, summationScores: commnet } };
                 const update = await this.postsService.update(query, newValuesLike);
                 if (update) {
                     const upDatesuccessResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
                     return res.status(200).send(upDatesuccessResponse);
+                } else {
+                    const ErrorsuccessResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                    return res.status(200).send(ErrorsuccessResponse);
+                }
+
+            } else if (body.entry[0].changes[0].value.verb === 'add' && body.entry[0].changes[0].value.item === 'share' && body.entry[0].changes[0].value.link !== undefined) {
+                const shareConstance = 1;
+                const findSocialPost = await this.socialPostService.findOne({ socialId: body.entry[0].changes[0].value.post_id });
+                if (findSocialPost === undefined) {
+                    const ErrorFindPostsuccessResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                    return res.status(200).send(ErrorFindPostsuccessResponse);
+                }
+                const findActualPost = await this.postsService.findOne({ _id: findSocialPost.postId, pageId: findSocialPost.pageId });
+                if (findActualPost === undefined) {
+                    const ErrorActualPostsuccessResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                    return res.status(200).send(ErrorActualPostsuccessResponse);
+                }
+                // 4*(3*(newShare+oldShare)) + summationScore. Assumption = 4*(3*(1+6))+23 = 107, 4*(3*(1+7)) + 107 = 203
+                const share = (xTodayxScore * (sTodayShare * (shareConstance + findActualPost.shareCount))) + (yFacebookyScore * (sShareFacebook * (shareConstance + findActualPost.shareCountFB)));
+                const query = { _id: findActualPost.id };
+                const newValuesLike = { $set: { shareCountFB: findActualPost.shareCountFB + shareConstance, summationScores: share } };
+                const update = await this.postsService.update(query, newValuesLike);
+                if (update) {
+                    const UpdatesuccessResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                    return res.status(200).send(UpdatesuccessResponse);
                 } else {
                     const ErrorsuccessResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
                     return res.status(200).send(ErrorsuccessResponse);
@@ -854,7 +915,7 @@ export class FacebookWebhookController {
         // endDateTime: dayRanges[1]
         const startDateTime = dayRanges[0];
         const endDateTime = dayRanges[1];
-        const queryScore = await this.facebookWebhookLogsService.searchScores(startDateTime,endDateTime);
+        const queryScore = await this.facebookWebhookLogsService.searchScores(startDateTime, endDateTime);
         for (const query of queryScore) {
             //  
             const summation = query.likeCount + query.commentCount + query.shareCount + query.likeCountFB + query.commentCountFB + query.shareCountFB;

@@ -17,7 +17,7 @@ import moment from 'moment';
 import { ObjectID } from 'mongodb';
 export class PostSectionProcessor2 extends AbstractSeparateSectionProcessor {
 
-    private DEFAULT_SEARCH_LIMIT = 4;
+    private DEFAULT_SEARCH_LIMIT = 10;
     private DEFAULT_SEARCH_OFFSET = 0;
 
     constructor(
@@ -114,10 +114,11 @@ export class PostSectionProcessor2 extends AbstractSeparateSectionProcessor {
                     { $sort: { summationScore: -1 } },
 
                     {
-                        $lookup: {
+                        $lookup:
+                        {
                             from: 'Page',
-                            localField: 'pageId',
-                            foreignField: '_id',
+                            let: { 'pageId': '$pageId' },
+                            pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] } } }],
                             as: 'page'
                         }
                     },
@@ -169,7 +170,7 @@ export class PostSectionProcessor2 extends AbstractSeparateSectionProcessor {
 
                     },
                     {
-                        '$limit': 3
+                        '$limit': limit
                     }
 
                 ];

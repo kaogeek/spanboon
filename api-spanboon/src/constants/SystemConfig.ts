@@ -41,3 +41,25 @@ export const DEFAULT_SEARCH_CONFIG_VALUE = {
 };
 export const LIMIT_USER_REPORT_CONTENT_CONFIG_NAME = 'limit.user.report.content';
 export const DEFAULT_LIMIT_USER_REPORT_CONTENT_CONFIG_VALUE = 1;
+export const POST_WEIGHT_SCORE = {
+    X: 'score.weight.today',
+    Lot: 'score.like.today',
+    Cot: 'score.commnet.today',
+    Sot: 'score.share.today',
+    Y: 'score.weight.facebook',
+    Lof: 'score.like.facebook',
+    Cof: 'score.comment.facebook',
+    Sof: 'score.shape.facebook'
+};
+export const DEFAULT_POST_WEIGHT_SCORE = {
+    X: 2,
+    Lot: 1,
+    Cot: 2,
+    Sot: 3,
+    Y: 4,
+    Lof: 1,
+    Cof: 2,
+    Sof: 3
+};
+export const TODAY_DATETIME_GAP = 'today.datetime.gap';
+export const DEFAULT_TODAY_DATETIME_GAP = 30;

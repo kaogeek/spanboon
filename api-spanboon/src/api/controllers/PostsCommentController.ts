@@ -37,6 +37,8 @@ import { PageNotificationService } from '../services/PageNotificationService';
 import { DeviceTokenService } from '../services/DeviceToken';
 import { PageService } from '../services/PageService';
 import { UserService } from '../services/UserService';
+import { POST_WEIGHT_SCORE, DEFAULT_POST_WEIGHT_SCORE } from '../../constants/SystemConfig';
+import { ConfigService } from '../services/ConfigService';
 @JsonController('/post')
 export class PostsCommentController {
     constructor(
@@ -51,7 +53,8 @@ export class PostsCommentController {
         private pageNotificationService: PageNotificationService,
         private deviceTokenService: DeviceTokenService,
         private pageService: PageService,
-        private userService: UserService
+        private userService: UserService,
+        private configService: ConfigService,
     ) { }
 
     // PostsComment List API
@@ -123,7 +126,21 @@ export class PostsCommentController {
         let assetCreate: Asset;
         const space = ' ';
         const posts: Posts = await this.postsService.findOne({ where: { _id: postObjId } });
+        const xToday = DEFAULT_POST_WEIGHT_SCORE.X;
+        const commentToday = DEFAULT_POST_WEIGHT_SCORE.Cot;
 
+        const xTodayScore = await this.configService.getConfig(POST_WEIGHT_SCORE.X);
+        const scoreCommentFacebook = await this.configService.getConfig(POST_WEIGHT_SCORE.Cot);
+        let xTodayxScore = xToday;
+        let sTodaycomment = commentToday;
+
+        if (xTodayScore) {
+            xTodayxScore = xTodayScore.value;
+        }
+
+        if (scoreCommentFacebook) {
+            sTodaycomment = scoreCommentFacebook.value;
+        }
         if (posts !== null && posts !== undefined) {
             if (assets !== null && assets !== undefined) {
                 const newFileName = userId + FileUtil.renameFile() + postId;
@@ -151,7 +168,9 @@ export class PostsCommentController {
             const comment: PostsComment = await this.postsCommentService.create(postsComment);
             if (comment) {
                 const commentCount = posts.commentCount + 1;
-                await this.postsService.update({ _id: postObjId }, { $set: { commentCount } });
+                // (xTodayxScore*(sTodayLike*(likeCount+postObj.likeCount))) + postObj.summationScore
+                const scoreLikeToday = (xTodayxScore * (sTodaycomment * (commentCount + posts.commentCount)));
+                await this.postsService.update({ _id: postObjId }, { $set: { commentCount, summationScore: scoreLikeToday } });
                 const successResponse = ResponseUtil.getSuccessResponse('Create PostsComment Successful', comment);
                 const postWho = await this.postsService.findOne({ _id: comment.post });
                 const getPost = await this.postsService.findOne({ _id: comment.post });

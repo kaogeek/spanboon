@@ -62,6 +62,8 @@ import { KaoKaiHashTagModelProcessor } from '../processors/KaoKaiHashTagModelPro
 import { KaokaiAllProvinceModelProcessor } from '../processors/KaokaiAllProvinceModelProcessor';
 import { KaokaiTodayService } from '../services/KaokaiTodayService';
 import { KaokaiContentModelProcessor } from '../processors/KaokaiContentModelProcessor';
+import { TODAY_DATETIME_GAP, DEFAULT_TODAY_DATETIME_GAP } from '../../constants/SystemConfig';
+import { ConfigService } from '../services/ConfigService';
 @JsonController('/main')
 export class MainPageController {
     constructor(
@@ -78,7 +80,8 @@ export class MainPageController {
         private userLikeService: UserLikeService,
         private postsCommentService: PostsCommentService,
         private assetService: AssetService,
-        private kaokaiTodayService: KaokaiTodayService
+        private kaokaiTodayService: KaokaiTodayService,
+        private configService: ConfigService
     ) { }
     // Home page content V2
     @Get('/content/v3')
@@ -86,7 +89,12 @@ export class MainPageController {
         const userId = req.headers.userid;
         const mainPageSearchConfig = await this.pageService.searchPageOfficialConfig();
         const searchOfficialOnly = mainPageSearchConfig.searchOfficialOnly;
+        const assetassetTodayDateGap = await this.configService.getConfig(TODAY_DATETIME_GAP);
+        let assetTodayDate = DEFAULT_TODAY_DATETIME_GAP;
 
+        if (assetassetTodayDateGap) {
+            assetTodayDate = assetassetTodayDateGap.value;
+        }
         // ordering
         const emerProcessor: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service);
         emerProcessor.setConfig({
@@ -96,26 +104,26 @@ export class MainPageController {
             searchOfficialOnly
         });
         const emerSectionModel = await emerProcessor.process2();
-        const monthRanges: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 365);
-        const dayRanges: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 1);
+        const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), assetTodayDate);
         // summation
         const postProcessor: PostSectionProcessor2 = new PostSectionProcessor2(this.postsService, this.s3Service, this.userLikeService);
         postProcessor.setData({
             userId,
-            startDateTime: monthRanges[0],
-            endDateTime: monthRanges[1]
+            startDateTime: monthRange[0],
+            endDateTime: monthRange[1]
         });
         postProcessor.setConfig({
             searchOfficialOnly
         });
 
         const postSectionModel = await postProcessor.process();
+
         // roundRobin
-        const pageProcessor: PageRoundRobinProcessor = new PageRoundRobinProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService,this.pageService);
+        const pageProcessor: PageRoundRobinProcessor = new PageRoundRobinProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService, this.pageService);
         pageProcessor.setData({
             userId,
-            startDateTime: monthRanges[0],
-            endDateTime: monthRanges[1]
+            startDateTime: monthRange[0],
+            endDateTime: monthRange[1]
         });
 
         pageProcessor.setConfig({
@@ -125,28 +133,43 @@ export class MainPageController {
         // deputy leader
         // deputy secretary of the party
         const pageRoundRobin = await pageProcessor.process();
-
+        const checkPosition1 = pageRoundRobin.position;
         // เกาะกระแส
-        const majorTrendProcessor: MajorTrendSectionModelProcessor = new MajorTrendSectionModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService,this.pageService);
+        const majorTrendProcessor: MajorTrendSectionModelProcessor = new MajorTrendSectionModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService, this.pageService);
         majorTrendProcessor.setData({
             userId,
-            startDateTime: dayRanges[0],
-            endDateTime: dayRanges[1]
+            startDateTime: monthRange[0],
+            endDateTime: monthRange[1],
+            checkPosition1
         });
 
         majorTrendProcessor.setConfig({
             searchOfficialOnly
         });
-
         const majorTrend = await majorTrendProcessor.process();
-
+        const checkPosition2 = majorTrend.position;
         // ก้าวไกลสภา #hashTag
+        // ก้าวไกลทุกจังหวัด
+        const kaokaiProvinceProcessor: KaokaiAllProvinceModelProcessor = new KaokaiAllProvinceModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService, this.pageService);
+        kaokaiProvinceProcessor.setData({
+            userId,
+            startDateTime: monthRange[0],
+            endDateTime: monthRange[1],
+            checkPosition2
 
-        const kaokaiHashTagProcessor: KaoKaiHashTagModelProcessor = new KaoKaiHashTagModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService,this.pageService);
+        });
+
+        kaokaiProvinceProcessor.setConfig({
+            searchOfficialOnly
+        });
+        const kaokaiProvince = await kaokaiProvinceProcessor.process();
+
+        const kaokaiHashTagProcessor: KaoKaiHashTagModelProcessor = new KaoKaiHashTagModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService, this.pageService);
         kaokaiHashTagProcessor.setData({
             userId,
-            startDateTime: dayRanges[0],
-            endDateTime: dayRanges[1]
+            startDateTime: monthRange[0],
+            endDateTime: monthRange[1],
+
         });
 
         kaokaiHashTagProcessor.setConfig({
@@ -155,28 +178,14 @@ export class MainPageController {
 
         const kaokaiHashTag = await kaokaiHashTagProcessor.process();
 
-        // ก้าวไกลทุกจังหวัด
-        const kaokaiProvinceProcessor: KaokaiAllProvinceModelProcessor = new KaokaiAllProvinceModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService,this.pageService);
-        kaokaiProvinceProcessor.setData({
-            userId,
-            startDateTime: dayRanges[0],
-            endDateTime: dayRanges[1]
-        });
-
-        kaokaiProvinceProcessor.setConfig({
-            searchOfficialOnly
-        });
         // pipeline: [{ $match: { $expr: { $in: ['$_id', bucketF] }, isOfficial: true } }],
-
-        const kaokaiProvince = await kaokaiProvinceProcessor.process();
-
         // ก้าวไกลประเด็น
 
         const kaokaiContentProcessor: KaokaiContentModelProcessor = new KaokaiContentModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.userFollowService);
         kaokaiContentProcessor.setData({
             userId,
-            startDateTime: dayRanges[0],
-            endDateTime: dayRanges[1]
+            startDateTime: monthRange[0],
+            endDateTime: monthRange[1]
         });
 
         kaokaiContentProcessor.setConfig({
@@ -188,12 +197,12 @@ export class MainPageController {
         const hashTagSumma = await this.hashTagService.aggregate([{ $sort: { count: -1 } }, { $limit: 3 }]);
         const result: any = {};
         result.emergencyEvents = emerSectionModel;
+        result.hashTagSumma = hashTagSumma;
         result.postSectionModel = postSectionModel;
         result.pageRoundRobin = pageRoundRobin;
         result.majorTrend = majorTrend;
-        result.kaokaiHashTag = kaokaiHashTag;
         result.kaokaiProvince = kaokaiProvince;
-        result.hashTagSumma = hashTagSumma;
+        result.kaokaiHashTag = kaokaiHashTag;
         result.kaokaiContent = kaokaiContent;
         const successResponse = ResponseUtil.getSuccessResponse('Successfully Main Page Data', result);
         return res.status(200).send(successResponse);

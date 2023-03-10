@@ -21,4 +21,5 @@ export class SectionModel extends BaseModel {
     public data: any;
     public isList = false;
     public isHighlight = false;
+    public position: number;
 }
