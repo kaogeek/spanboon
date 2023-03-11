@@ -48,6 +48,7 @@ import { PostUtil } from '../../utils/PostUtil';
 import { POST_TYPE } from '../../constants/PostType';
 import { UserService } from '../services/UserService';
 import { DeviceTokenService } from '../services/DeviceToken';
+import { POST_WEIGHT_SCORE, DEFAULT_POST_WEIGHT_SCORE } from '../../constants/SystemConfig';
 @JsonController('/post')
 export class PostsController {
     constructor(
@@ -838,6 +839,22 @@ export class PostsController {
         let likeAsPageObjId;
         let likeStmt;
         const space = ' ';
+        const xToday = DEFAULT_POST_WEIGHT_SCORE.X;
+        const likeToday = DEFAULT_POST_WEIGHT_SCORE.Lot;
+
+        const xTodayScore = await this.configService.getConfig(POST_WEIGHT_SCORE.X);
+        const scorelikeFacebook = await this.configService.getConfig(POST_WEIGHT_SCORE.Lof);
+        let xTodayxScore = xToday;
+        let sTodayLike = likeToday;
+
+        if (xTodayScore) {
+            xTodayxScore = xTodayScore.value;
+        }
+
+        if (scorelikeFacebook) {
+            sTodayLike = scorelikeFacebook.value;
+        }
+
         if (likeAsPage !== null && likeAsPage !== undefined && likeAsPage !== '') {
             likeAsPageObjId = new ObjectID(likeAsPage);
             likeStmt = { where: { userId: userObjId, subjectId: postObjId, subjectType: LIKE_TYPE.POST, likeAsPage: likeAsPageObjId } };
@@ -1152,12 +1169,12 @@ export class PostsController {
                 } else {
                     likeCount = 0;
                 }
-
+                const scoreLikeToday = (xTodayxScore * (sTodayLike * (likeCount + postObj.likeCount)));
                 result['isLike'] = true;
                 result['likeCount'] = likeCount;
 
                 if (userEngagementAction) {
-                    await this.postsService.update({ _id: postObjId }, { $set: { likeCount } });
+                    await this.postsService.update({ _id: postObjId }, { $set: { likeCount, summationScore: scoreLikeToday } });
                     const likedPost = await this.postsService.findOne({ where: { _id: postObjId } });
                     result['posts'] = likedPost;
                     const successResponse = ResponseUtil.getSuccessResponse('Like Post Success', result);

@@ -107,7 +107,7 @@ export class PageController {
         private deviceTokenService: DeviceTokenService,
         private pageNotificationService: PageNotificationService,
         private notificationService: NotificationService,
-        private deletePageService: DeletePageService
+        private deletePageService: DeletePageService,
     ) { }
 
     // Find Page API
@@ -2662,7 +2662,7 @@ export class PageController {
                     address: pageAddress,
                     twitterURL: pageTwitterURL,
                     email: pageEmail,
-                    province:pageProvince
+                    province: pageProvince
                 }
             };
             const pageSave = await this.pageService.update(updateQuery, newValue);

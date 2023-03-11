@@ -105,7 +105,7 @@ export class User extends BaseModel {
     @Column({ name: 'banned' })
     public banned: boolean;
 
-    @Column({ name: 'mergeEM'})
+    @Column({ name: 'mergeEM' })
     public mergeEM: boolean;
 
     @Column({ name: 'mergeFB' })
@@ -123,17 +123,23 @@ export class User extends BaseModel {
     @Column({ name: 'isSyncPage' })
     public isSyncPage: boolean;
 
-    @Column({ name:'province'})
+    @Column({ name: 'province' })
     public province: string;
 
-    @Column({ name: 'acceptUA'})
-    public acceptUA: boolean;
+    @Column({ name: 'uaAcceptDate' })
+    public uaAcceptDate: Date;
 
-    @Column({ name:'uaVersion'})
-    public uaVersion:boolean;
+    @Column({ name: 'uaVersion' })
+    public uaVersion: number;
 
-    @Column({ name: 'subjectAttention'})
-    public subjectAttention:any;
+    @Column({ name: 'tos' })
+    public tos: Date;
+
+    @Column({ name: 'tosVersion' })
+    public tosVersion: number;
+
+    @Column({ name: 'subjectAttention' })
+    public subjectAttention: any;
 
     // @Column(type => AuthenticationId)
     // public authenticationId: AuthenticationId;

@@ -12,16 +12,15 @@ import { KaokaiTodayService } from '../services/KaokaiTodayService';
 import { HashTagService } from '../services/HashTagService';
 import { PageService } from '../services/PageService';
 export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcessor {
-    private DEFAULT_SEARCH_LIMIT = 4;
+    private DEFAULT_SEARCH_LIMIT = 10;
     private DEFAULT_SEARCH_OFFSET = 0;
-
     constructor(
         private postsService: PostsService,
         private s3Service: S3Service,
         private userLikeService: UserLikeService,
         private kaokaiTodayService: KaokaiTodayService,
         private hashTagService: HashTagService,
-        private pageService:PageService
+        private pageService: PageService
     ) {
         super();
     }
@@ -30,6 +29,14 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
         return new Promise(async (resolve, reject) => {
             try {
                 // get config
+                const position = [];
+                const positionSequences = await this.kaokaiTodayService.find();
+                for (const sequence of positionSequences) {
+                    position.push(sequence.position);
+                }
+                const sorts = position.sort((a, b) => Math.abs(a) - Math.abs(b) || a - b);
+                let hashTagProcessor = undefined;
+
                 let limit: number = undefined;
                 let offset: number = undefined;
                 let searchOfficialOnly: number = undefined;
@@ -47,10 +54,8 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     }
                 }
 
-                limit = (limit === undefined || limit === null) ? this.DEFAULT_SEARCH_LIMIT : limit;
-                offset = (offset === undefined || offset === null) ? this.DEFAULT_SEARCH_OFFSET : offset;
-
                 let userId = undefined;
+                let checkPosition = undefined;
                 // get startDateTime, endDateTime
                 let startDateTime: Date = undefined;
                 let endDateTime: Date = undefined;
@@ -58,8 +63,22 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     startDateTime = this.data.startDateTime;
                     endDateTime = this.data.endDateTime;
                     userId = this.data.userId;
+                    checkPosition = this.data.checkPosition3;
                 }
-
+                const stackRobin = [];
+                for (const sort of sorts) {
+                    if (sort === 4) {
+                        hashTagProcessor = await this.kaokaiTodayService.findOne({ position: sort });
+                        stackRobin.push(hashTagProcessor);
+                    } else if (sort < 0 && checkPosition > sort) {
+                        hashTagProcessor = await this.kaokaiTodayService.findOne({ position: sort });
+                        stackRobin.push(hashTagProcessor);
+                    } else {
+                        continue;
+                    }
+                }
+                limit = (limit === undefined || limit === null) ? hashTagProcessor.limit : this.DEFAULT_SEARCH_LIMIT;
+                offset = (offset === undefined || offset === null) ? this.DEFAULT_SEARCH_OFFSET : offset;
                 const searchFilter: SearchFilter = new SearchFilter();
                 searchFilter.limit = limit;
                 searchFilter.offset = offset;
@@ -96,12 +115,15 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     // default if startDateTime and endDateTime is not defined.
                     postMatchStmt.startDateTime = { $lte: today };
                 }
-                const hashTagProcessor = await this.kaokaiTodayService.findOne({ position: 4});
-                if(hashTagProcessor === undefined ){
+
+                if (hashTagProcessor === undefined) {
                     resolve(undefined);
                 }
-                if (hashTagProcessor.type === 'post' && hashTagProcessor.field === 'hashTag') {
+                if (stackRobin[0].type === 'post' && stackRobin[0].field === 'hashTag') {
                     const bucketF = [];
+                    const bucketS = [];
+                    const bucketT = [];
+                    const postAggregateAll = [];
                     if (hashTagProcessor.buckets.length >= 0) {
                         if (hashTagProcessor.buckets[0] !== undefined && hashTagProcessor.buckets[0] !== null) {
                             for (const provincesF of hashTagProcessor.buckets[0].values) {
@@ -111,39 +133,72 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                         // bucket 2 
                         if (hashTagProcessor.buckets[1] !== undefined && hashTagProcessor.buckets[1] !== null) {
                             for (const provinceS of hashTagProcessor.buckets[1].values) {
-                                bucketF.push(provinceS);
+                                bucketS.push(provinceS);
                             }
                         }
                         // bucket 3
                         if (hashTagProcessor.buckets[2] !== undefined && hashTagProcessor.buckets[2] !== null) {
                             for (const provinceT of hashTagProcessor.buckets[2].values) {
-                                bucketF.push(provinceT);
+                                bucketT.push(provinceT);
                             }
                         }
                     }
-                    const hashTagStack = [];
-                    const hashTagSearch = await this.hashTagService.searchHash(bucketF);
-                    if (hashTagSearch.length > 0) {
-                        for (const hashTag of hashTagSearch) {
-                            hashTagStack.push(new ObjectID(hashTag.id));
+                    const hashTagStack1 = [];
+                    const hashTagStack2 = [];
+                    const hashTagStack3 = [];
+                    const hashTagAll = [];
+                    const hashTagSearch1 = await this.hashTagService.aggregate(
+                        [
+                            {
+                                $match: { name: { $in: bucketF } },
+                            }
+                        ]);
+                    const hashTagSearch2 = await this.hashTagService.aggregate(
+                        [
+                            {
+                                $match: { name: { $in: bucketS } },
+                            }
+                        ]);
+                    const hashTagSearch3 = await this.hashTagService.aggregate(
+                        [
+                            {
+                                $match: { name: { $in: bucketT } },
+                            }
+                        ]);
+                    if (hashTagSearch1.length > 0) {
+                        for (const hashTag of hashTagSearch1) {
+                            hashTagStack1.push(new ObjectID(hashTag._id));
+                            hashTagAll.push(new ObjectID(hashTag._id));
+                        }
+                    }
+                    if (hashTagSearch2.length > 0) {
+                        for (const hashTag of hashTagSearch2) {
+                            hashTagStack2.push(new ObjectID(hashTag._id));
+                            hashTagAll.push(new ObjectID(hashTag._id));
+                        }
+                    }
+                    if (hashTagSearch3.length > 0) {
+                        for (const hashTag of hashTagSearch3) {
+                            hashTagStack3.push(new ObjectID(hashTag._id));
+                            hashTagAll.push(new ObjectID(hashTag._id));
                         }
                     }
 
                     const postAggregateSet1 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, postsHashTags: { $ne: null, $in: hashTagStack } } },
+                            { $match: { isDraft: false, deleted: false, hidden: false, postsHashTags: { $in: hashTagStack1 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
                             { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
                                 {
                                     from: 'Page',
                                     let: { 'pageId': '$pageId' },
-                                    pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } }, { $limit: 1 }],
+                                    pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } }],
                                     as: 'page'
                                 }
                             },
                             {
-                                '$limit': hashTagProcessor.limit
+                                $limit: limit
                             },
                             {
                                 $unwind: {
@@ -191,6 +246,144 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                             }
                         ]
                     );
+                    postAggregateAll.push(postAggregateSet1);
+                    const postAggregateSet2 = await this.postsService.aggregate(
+                        [
+                            { $match: { isDraft: false, deleted: false, hidden: false, postsHashTags: { $in: hashTagStack2 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $sort: { summationScore: -1 } },
+                            {
+                                $lookup:
+                                {
+                                    from: 'Page',
+                                    let: { 'pageId': '$pageId' },
+                                    pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } }],
+                                    as: 'page'
+                                }
+                            },
+                            {
+                                $limit: limit
+                            },
+                            {
+                                $unwind: {
+                                    path: '$page',
+                                    preserveNullAndEmptyArrays: true
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'SocialPost',
+                                    localField: '_id',
+                                    foreignField: 'postId',
+                                    as: 'socialPosts'
+                                }
+                            },
+                            {
+                                $project: {
+                                    'socialPosts': {
+                                        '_id': 0,
+                                        'pageId': 0,
+                                        'postId': 0,
+                                        'postBy': 0,
+                                        'postByType': 0
+                                    }
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'PostsGallery',
+                                    localField: '_id',
+                                    foreignField: 'post',
+                                    as: 'gallery'
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'User',
+                                    localField: 'ownerUser',
+                                    foreignField: '_id',
+                                    as: 'user'
+                                }
+                            },
+                            {
+                                $project: { story: 0 }
+                            }
+                        ]
+                    );
+                    postAggregateAll.push(postAggregateSet2);
+                    const postAggregateSet3 = await this.postsService.aggregate(
+                        [
+                            { $match: { isDraft: false, deleted: false, hidden: false, postsHashTags: { $in: hashTagStack3 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $sort: { summationScore: -1 } },
+                            {
+                                $lookup:
+                                {
+                                    from: 'Page',
+                                    let: { 'pageId': '$pageId' },
+                                    pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } }],
+                                    as: 'page'
+                                }
+                            },
+                            {
+                                $limit: limit
+                            },
+                            {
+                                $unwind: {
+                                    path: '$page',
+                                    preserveNullAndEmptyArrays: true
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'SocialPost',
+                                    localField: '_id',
+                                    foreignField: 'postId',
+                                    as: 'socialPosts'
+                                }
+                            },
+                            {
+                                $project: {
+                                    'socialPosts': {
+                                        '_id': 0,
+                                        'pageId': 0,
+                                        'postId': 0,
+                                        'postBy': 0,
+                                        'postByType': 0
+                                    }
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'PostsGallery',
+                                    localField: '_id',
+                                    foreignField: 'post',
+                                    as: 'gallery'
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'User',
+                                    localField: 'ownerUser',
+                                    foreignField: '_id',
+                                    as: 'user'
+                                }
+                            },
+                            {
+                                $project: { story: 0 }
+                            }
+                        ]
+                    );
+                    postAggregateAll.push(postAggregateSet3);
+                    const stackPage = [];
+                    for (let i = 0; i < postAggregateAll[0].length; i++) {
+                        for (let j = 0; j < postAggregateAll.length; j++) {
+                            if (postAggregateAll[j][i] !== undefined && postAggregateAll[j][i] !== null) {
+                                stackPage.push(postAggregateAll[j][i]);
+                            } else {
+                                continue;
+                            }
+                        }
+                    }
+
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
                     result.title = (this.config === undefined || this.config.title === undefined) ? hashTagProcessor.title : hashTagProcessor.title;
@@ -199,8 +392,8 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     result.iconUrl = '';
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
-
-                    for (const row of postAggregateSet1) {
+                    result.position = stackRobin[0].position;
+                    for (const row of stackPage) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
 
@@ -241,7 +434,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     result.dateTime = lastestDate;
 
                     resolve(result);
-                }else if(hashTagProcessor.type === 'post' && hashTagProcessor.field === 'score'){
+                } else if (stackRobin[0].type === 'post' && stackRobin[0].field === 'score') {
                     const postStmt = [
                         { $match: postMatchStmt },
                         { $sort: { summationScore: -1 } },
@@ -302,7 +495,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
 
                         },
                         {
-                            '$limit': hashTagProcessor.limit
+                            '$limit': limit
                         }
 
                     ];
@@ -321,7 +514,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     result.iconUrl = '';
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
-
+                    result.position = stackRobin[0].position;
                     for (const row of postAggregate) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
@@ -360,25 +553,27 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     }
                     result.dateTime = lastestDate;
                     resolve(result);
-                }else if(hashTagProcessor.type === 'post' && hashTagProcessor.field === 'objective'){
+                } else if (stackRobin[0].type === 'post' && stackRobin[0].field === 'objective') {
                     const bucketF = [];
-                    const provincePage = await this.kaokaiTodayService.findOne({ position: 4 });
-                    if (provincePage.buckets.length >= 0) {
-                        if (provincePage.buckets[0] !== undefined && provincePage.buckets[0] !== null) {
-                            for (const provincesF of provincePage.buckets[0].values) {
+                    const bucketS = [];
+                    const bucketT = [];
+                    const bucketAll = [];
+                    if (hashTagProcessor.buckets.length >= 0) {
+                        if (hashTagProcessor.buckets[0] !== undefined && hashTagProcessor.buckets[0] !== null) {
+                            for (const provincesF of hashTagProcessor.buckets[0].values) {
                                 bucketF.push(new ObjectID(provincesF));
                             }
                         }
                         // bucket 2 
-                        if (provincePage.buckets[1] !== undefined && provincePage.buckets[1] !== null) {
-                            for (const provinceS of provincePage.buckets[1].values) {
-                                bucketF.push(new ObjectID(provinceS));
+                        if (hashTagProcessor.buckets[1] !== undefined && hashTagProcessor.buckets[1] !== null) {
+                            for (const provinceS of hashTagProcessor.buckets[1].values) {
+                                bucketS.push(new ObjectID(provinceS));
                             }
                         }
                         // bucket 3
-                        if (provincePage.buckets[2] !== undefined && provincePage.buckets[2] !== null) {
-                            for (const provinceT of provincePage.buckets[2].values) {
-                                bucketF.push(new ObjectID(provinceT));
+                        if (hashTagProcessor.buckets[2] !== undefined && hashTagProcessor.buckets[2] !== null) {
+                            for (const provinceT of hashTagProcessor.buckets[2].values) {
+                                bucketT.push(new ObjectID(provinceT));
                             }
                         }
                     }
@@ -443,85 +638,14 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
 
                         },
                         {
-                            '$limit': hashTagProcessor.limit
+                            '$limit': limit
                         }
 
                     ];
-
                     const postAggregate = await this.postsService.aggregate(postStmt);
-
-                    const lastestDate = null;
-                    const result: SectionModel = new SectionModel();
-                    result.title = (this.config === undefined || this.config.title === undefined) ? hashTagProcessor.title : hashTagProcessor.title;
-                    result.subtitle = '';
-                    result.description = '';
-                    result.iconUrl = '';
-                    result.contents = [];
-                    result.type = this.getType(); // set type by processor type
-
-                    for (const row of postAggregate) {
-                        const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
-                        const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
-
-                        const contents: any = {};
-                        contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                        if (firstImage !== undefined && firstImage.s3FilePath !== undefined && firstImage.s3FilePath !== '') {
-                            try {
-                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3FilePath);
-                                contents.coverPageSignUrl = signUrl;
-                            } catch (error) {
-                                console.log('PostSectionProcessor: ' + error);
-                            }
-                        }
-
-                        // search isLike
-                        row.isLike = false;
-                        if (userId !== undefined && userId !== undefined && userId !== '') {
-                            const userLikes: UserLike[] = await this.userLikeService.find({ userId: new ObjectID(userId), subjectId: row._id, subjectType: LIKE_TYPE.POST });
-                            if (userLikes.length > 0) {
-                                row.isLike = true;
-                            }
-                        }
-
-                        contents.owner = {};
-                        if (row.page !== undefined) {
-                            contents.owner = this.parsePageField(row.page);
-                        } else {
-                            contents.owner = this.parseUserField(user);
-                        }
-                        // remove page agg
-                        // delete row.page;
-                        delete row.user;
-                        contents.post = row;
-                        result.contents.push(contents);
-                    }
-                    result.dateTime = lastestDate;
-                    resolve(result);
-                }else if(hashTagProcessor.type === 'post' && hashTagProcessor.field === 'emergencyEvent'){
-                    const bucketF = [];
-                    const provincePage = await this.kaokaiTodayService.findOne({ position: 4});
-                    if (provincePage.buckets.length >= 0) {
-                        if (provincePage.buckets[0] !== undefined && provincePage.buckets[0] !== null) {
-                            for (const provincesF of provincePage.buckets[0].values) {
-                                bucketF.push(new ObjectID(provincesF));
-                            }
-                        }
-                        // bucket 2 
-                        if (provincePage.buckets[1] !== undefined && provincePage.buckets[1] !== null) {
-                            for (const provinceS of provincePage.buckets[1].values) {
-                                bucketF.push(new ObjectID(provinceS));
-                            }
-                        }
-                        // bucket 3
-                        if (provincePage.buckets[2] !== undefined && provincePage.buckets[2] !== null) {
-                            for (const provinceT of provincePage.buckets[2].values) {
-                                bucketF.push(new ObjectID(provinceT));
-                            }
-                        }
-                    }
-
-                    const postStmt = [
-                        { $match: { isDraft: false, deleted: false, hidden: false, emergencyEvent: { $ne: null, $in: bucketF } } },
+                    bucketAll.push(postAggregate);
+                    const postStmt2 = [
+                        { $match: { isDraft: false, deleted: false, hidden: false, objective: { $ne: null, $in: bucketS } } },
                         { $sort: { summationScore: -1 } },
 
                         {
@@ -580,13 +704,91 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
 
                         },
                         {
-                            '$limit': hashTagProcessor.limit
+                            '$limit': limit
+                        }
+
+                    ];
+                    const postAggregate2 = await this.postsService.aggregate(postStmt2);
+                    bucketAll.push(postAggregate2);
+
+                    const postStmt3 = [
+                        { $match: { isDraft: false, deleted: false, hidden: false, objective: { $ne: null, $in: bucketS } } },
+                        { $sort: { summationScore: -1 } },
+
+                        {
+                            $lookup: {
+                                from: 'Page',
+                                localField: 'pageId',
+                                foreignField: '_id',
+                                as: 'page'
+                            }
+                        },
+                        {
+                            $unwind: {
+                                path: '$page',
+                                preserveNullAndEmptyArrays: true
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'SocialPost',
+                                localField: '_id',
+                                foreignField: 'postId',
+                                as: 'socialPosts'
+                            }
+                        },
+                        {
+                            $project: {
+                                'socialPosts': {
+                                    '_id': 0,
+                                    'pageId': 0,
+                                    'postId': 0,
+                                    'postBy': 0,
+                                    'postByType': 0
+                                }
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'PostsGallery',
+                                localField: '_id',
+                                foreignField: 'post',
+                                as: 'gallery'
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'User',
+                                localField: 'ownerUser',
+                                foreignField: '_id',
+                                as: 'user'
+                            }
+                        },
+                        {
+                            $project: {
+                                story: 0
+                            }
+
+                        },
+                        {
+                            '$limit': limit
                         }
 
                     ];
 
-                    const postAggregate = await this.postsService.aggregate(postStmt);
+                    const postAggregate3 = await this.postsService.aggregate(postStmt3);
+                    bucketAll.push(postAggregate3);
 
+                    const stackPage = [];
+                    for (let i = 0; i < bucketAll[0].length; i++) {
+                        for (let j = 0; j < bucketAll.length; j++) {
+                            if (bucketAll[j][i] !== undefined && bucketAll[j][i] !== null) {
+                                stackPage.push(bucketAll[j][i]);
+                            } else {
+                                continue;
+                            }
+                        }
+                    }
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
                     result.title = (this.config === undefined || this.config.title === undefined) ? hashTagProcessor.title : hashTagProcessor.title;
@@ -595,8 +797,8 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     result.iconUrl = '';
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
-
-                    for (const row of postAggregate) {
+                    result.position = stackRobin[0].position;
+                    for (const row of stackPage) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
 
@@ -634,52 +836,370 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     }
                     result.dateTime = lastestDate;
                     resolve(result);
-                }else if(hashTagProcessor.type === 'page' && hashTagProcessor.field === 'group'){
+                } else if (stackRobin[0].type === 'post' && stackRobin[0].field === 'emergencyEvent') {
                     const bucketF = [];
+                    const bucketS = [];
+                    const bucketT = [];
+                    const postObject = [];
                     if (hashTagProcessor.buckets.length >= 0) {
                         if (hashTagProcessor.buckets[0] !== undefined && hashTagProcessor.buckets[0] !== null) {
                             for (const provincesF of hashTagProcessor.buckets[0].values) {
-                                bucketF.push(String(provincesF));
+                                bucketF.push(new ObjectID(provincesF));
                             }
                         }
                         // bucket 2 
                         if (hashTagProcessor.buckets[1] !== undefined && hashTagProcessor.buckets[1] !== null) {
                             for (const provinceS of hashTagProcessor.buckets[1].values) {
-                                bucketF.push(String(provinceS));
+                                bucketS.push(new ObjectID(provinceS));
                             }
                         }
                         // bucket 3
                         if (hashTagProcessor.buckets[2] !== undefined && hashTagProcessor.buckets[2] !== null) {
                             for (const provinceT of hashTagProcessor.buckets[2].values) {
-                                bucketF.push(String(provinceT));
+                                bucketT.push(new ObjectID(provinceT));
                             }
                         }
                     }
-                    const pageStackId = [];
-                    const pageStackprovince = [];
-                    const pageProvince = await this.pageService.aggregate(
+
+                    const postStmt1 = [
+                        { $match: { isDraft: false, deleted: false, hidden: false, emergencyEvent: { $ne: null, $in: bucketF }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                        { $sort: { summationScore: -1 } },
+
+                        {
+                            $lookup: {
+                                from: 'Page',
+                                localField: 'pageId',
+                                foreignField: '_id',
+                                as: 'page'
+                            }
+                        },
+                        {
+                            $unwind: {
+                                path: '$page',
+                                preserveNullAndEmptyArrays: true
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'SocialPost',
+                                localField: '_id',
+                                foreignField: 'postId',
+                                as: 'socialPosts'
+                            }
+                        },
+                        {
+                            $project: {
+                                'socialPosts': {
+                                    '_id': 0,
+                                    'pageId': 0,
+                                    'postId': 0,
+                                    'postBy': 0,
+                                    'postByType': 0
+                                }
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'PostsGallery',
+                                localField: '_id',
+                                foreignField: 'post',
+                                as: 'gallery'
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'User',
+                                localField: 'ownerUser',
+                                foreignField: '_id',
+                                as: 'user'
+                            }
+                        },
+                        {
+                            $project: {
+                                story: 0
+                            }
+
+                        },
+                        {
+                            '$limit': limit
+                        }
+                    ];
+
+                    const postAggregate1 = await this.postsService.aggregate(postStmt1);
+                    postObject.push(postAggregate1);
+
+                    const postStmt2 = [
+                        { $match: { isDraft: false, deleted: false, hidden: false, emergencyEvent: { $ne: null, $in: bucketS } } },
+                        { $sort: { summationScore: -1 } },
+
+                        {
+                            $lookup: {
+                                from: 'Page',
+                                localField: 'pageId',
+                                foreignField: '_id',
+                                as: 'page'
+                            }
+                        },
+                        {
+                            $unwind: {
+                                path: '$page',
+                                preserveNullAndEmptyArrays: true
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'SocialPost',
+                                localField: '_id',
+                                foreignField: 'postId',
+                                as: 'socialPosts'
+                            }
+                        },
+                        {
+                            $project: {
+                                'socialPosts': {
+                                    '_id': 0,
+                                    'pageId': 0,
+                                    'postId': 0,
+                                    'postBy': 0,
+                                    'postByType': 0
+                                }
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'PostsGallery',
+                                localField: '_id',
+                                foreignField: 'post',
+                                as: 'gallery'
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'User',
+                                localField: 'ownerUser',
+                                foreignField: '_id',
+                                as: 'user'
+                            }
+                        },
+                        {
+                            $project: {
+                                story: 0
+                            }
+
+                        },
+                        {
+                            '$limit': limit
+                        }
+                    ];
+
+                    const postAggregate2 = await this.postsService.aggregate(postStmt2);
+                    postObject.push(postAggregate2);
+
+                    const postStmt3 = [
+                        { $match: { isDraft: false, deleted: false, hidden: false, emergencyEvent: { $ne: null, $in: bucketT } } },
+                        { $sort: { summationScore: -1 } },
+
+                        {
+                            $lookup: {
+                                from: 'Page',
+                                localField: 'pageId',
+                                foreignField: '_id',
+                                as: 'page'
+                            }
+                        },
+                        {
+                            $unwind: {
+                                path: '$page',
+                                preserveNullAndEmptyArrays: true
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'SocialPost',
+                                localField: '_id',
+                                foreignField: 'postId',
+                                as: 'socialPosts'
+                            }
+                        },
+                        {
+                            $project: {
+                                'socialPosts': {
+                                    '_id': 0,
+                                    'pageId': 0,
+                                    'postId': 0,
+                                    'postBy': 0,
+                                    'postByType': 0
+                                }
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'PostsGallery',
+                                localField: '_id',
+                                foreignField: 'post',
+                                as: 'gallery'
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'User',
+                                localField: 'ownerUser',
+                                foreignField: '_id',
+                                as: 'user'
+                            }
+                        },
+                        {
+                            $project: {
+                                story: 0
+                            }
+
+                        },
+                        {
+                            '$limit': limit
+                        }
+                    ];
+                    const postAggregate3 = await this.postsService.aggregate(postStmt3);
+                    postObject.push(postAggregate3);
+
+                    const stackPage = [];
+                    for (let i = 0; i < postObject[0].length; i++) {
+                        for (let j = 0; j < postObject.length; j++) {
+                            if (postObject[j][i] !== undefined && postObject[j][i] !== null) {
+                                stackPage.push(postObject[j][i]);
+                            } else {
+                                continue;
+                            }
+                        }
+                    }
+
+                    const lastestDate = null;
+                    const result: SectionModel = new SectionModel();
+                    result.title = (this.config === undefined || this.config.title === undefined) ? hashTagProcessor.title : this.config.title;
+                    result.subtitle = (this.config === undefined || this.config.subtitle === undefined) ? 'โพสต์ที่เกิดขึ้นในเดือนนี้ ภายในแพลตฟอร์ม' : this.config.subtitle;
+                    result.description = '';
+                    result.iconUrl = '';
+                    result.contents = [];
+                    result.type = this.getType(); // set type by processor type
+                    result.position = stackRobin[0].position;
+                    for (const row of stackPage) {
+                        const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
+                        const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
+
+                        const contents: any = {};
+                        contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
+                        if (firstImage !== undefined && firstImage.s3FilePath !== undefined && firstImage.s3FilePath !== '') {
+                            try {
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3FilePath);
+                                contents.coverPageSignUrl = signUrl;
+                            } catch (error) {
+                                console.log('PostSectionProcessor: ' + error);
+                            }
+                        }
+
+                        // search isLike
+                        row.isLike = false;
+                        if (userId !== undefined && userId !== undefined && userId !== '') {
+                            const userLikes: UserLike[] = await this.userLikeService.find({ userId: new ObjectID(userId), subjectId: row._id, subjectType: LIKE_TYPE.POST });
+                            if (userLikes.length > 0) {
+                                row.isLike = true;
+                            }
+                        }
+
+                        contents.owner = {};
+                        if (row.page !== undefined) {
+                            contents.owner = this.parsePageField(row.page);
+                        } else {
+                            contents.owner = this.parseUserField(user);
+                        }
+                        // remove page agg
+                        // delete row.page;
+                        delete row.user;
+                        contents.post = row;
+                        result.contents.push(contents);
+                    }
+                    result.dateTime = lastestDate;
+                    resolve(result);
+                } else if (stackRobin[0].type === 'page' && stackRobin[0].field === 'group') {
+                    const bucketF = [];
+                    const bucketS = [];
+                    const bucketT = [];
+                    if (hashTagProcessor.buckets.length >= 0) {
+                        if (hashTagProcessor.buckets[0] !== undefined && hashTagProcessor.buckets[0] !== null) {
+                            for (const provincesF of hashTagProcessor.buckets[0].values) {
+                                bucketF.push(provincesF);
+                            }
+                        }
+                        // bucket 2 
+                        if (hashTagProcessor.buckets[1] !== undefined && hashTagProcessor.buckets[1] !== null) {
+                            for (const provinceS of hashTagProcessor.buckets[1].values) {
+                                bucketS.push(provinceS);
+                            }
+                        }
+                        // bucket 3
+                        if (hashTagProcessor.buckets[2] !== undefined && hashTagProcessor.buckets[2] !== null) {
+                            for (const provinceT of hashTagProcessor.buckets[2].values) {
+                                bucketT.push(provinceT);
+                            }
+                        }
+                    }
+                    const pageStackprovince1 = [];
+                    const pageStackprovince2 = [];
+                    const pageStackprovince3 = [];
+
+                    const pageStacks = [];
+
+                    /* 
+                    const pageProvince = await this.pageService.searchPageProvince(bucketF);
+                    console.log('pageProvince',pageProvince);
+                    for(const pageStack of pageProvince){
+                        if(pageStack !== undefined && pageStack !== null){
+                            pageStackId.push(pageStack.id);
+                        }
+                    } */
+                    const pageProvince1 = await this.pageService.aggregateP(
                         [
                             {
-                                $match:{isOfficial: true,banned:false,group:{$in:bucketF}}
+                                $match: { isOfficial: true, banned: false, group: { $in: bucketF } }
                             },
                             {
-                                $limit:10
+                                $limit: hashTagProcessor.limit
                             }
                         ]
                     );
-                    for(const pageStack of pageProvince){
-                        if(pageStack !== undefined && pageStack !== null){
-                            pageStackId.push(pageStack);
-                        }
+                    for (const provinces1 of pageProvince1) {
+                        pageStackprovince1.push(new ObjectID(provinces1._id));
                     }
-                    for(const Stackprovince of pageStackId){
-                        if(Stackprovince._id !== null && Stackprovince._id !== undefined){
-                            pageStackprovince.push(Stackprovince._id);
-                        }
-                    } 
+                    const pageProvince2 = await this.pageService.aggregateP(
+                        [
+                            {
+                                $match: { isOfficial: true, banned: false, group: { $in: bucketS } }
+                            },
+                            {
+                                $limit: hashTagProcessor.limit
+                            }
+                        ]
+                    );
+                    for (const provinces2 of pageProvince2) {
+                        pageStackprovince2.push(new ObjectID(provinces2._id));
+                    }
+
+                    const pageProvince3 = await this.pageService.aggregateP(
+                        [
+                            {
+                                $match: { isOfficial: true, banned: false, group: { $in: bucketT } }
+                            },
+                            {
+                                $limit: hashTagProcessor.limit
+                            }
+                        ]
+                    );
+                    for (const provinces3 of pageProvince3) {
+                        pageStackprovince3.push(new ObjectID(provinces3._id));
+                    }
+
                     const postAggregateSet1 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false,pageId:{$in:pageStackprovince}} },
+                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince1 } } },
                             { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
@@ -687,13 +1207,13 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                                     from: 'Page',
                                     let: { 'pageId': '$pageId' },
                                     pipeline: [
-                                        { $match: { $expr: { $eq: ['$_id', '$$pageId'] }} },{$limit:1},
+                                        { $match: { $expr: { $eq: ['$_id', '$$pageId'] } } },
                                     ],
                                     as: 'page'
                                 }
                             },
                             {
-                                $limit: hashTagProcessor.limit
+                                $limit: limit
                             },
                             {
                                 $unwind: {
@@ -741,99 +1261,10 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                             },
                         ]
                     );
-                    const lastestDate = null;
-                    const result: SectionModel = new SectionModel();
-                    result.title = (this.config === undefined || this.config.title === undefined) ? hashTagProcessor.title : hashTagProcessor.title;
-                    result.description = '';
-                    result.iconUrl = '';
-                    result.contents = [];
-                    result.type = this.getType(); // set type by processor type
-                    for (const row of postAggregateSet1) {
-                        const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
-                        const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
-
-                        const contents: any = {};
-                        contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                        if (firstImage !== undefined && firstImage.s3FilePath !== undefined && firstImage.s3FilePath !== '') {
-                            try {
-                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3FilePath);
-                                contents.coverPageSignUrl = signUrl;
-                            } catch (error) {
-                                console.log('PostSectionProcessor: ' + error);
-                            }
-                        }
-
-                        // search isLike
-                        row.isLike = false;
-                        if (userId !== undefined && userId !== undefined && userId !== '') {
-                            const userLikes: UserLike[] = await this.userLikeService.find({ userId: new ObjectID(userId), subjectId: row._id, subjectType: LIKE_TYPE.POST });
-                            if (userLikes.length > 0) {
-                                row.isLike = true;
-                            }
-                        }
-
-                        contents.owner = {};
-                        if (row.page !== undefined) {
-                            contents.owner = this.parsePageField(row.page);
-                        } else {
-                            contents.owner = this.parseUserField(user);
-                        }
-                        // remove page agg
-                        // delete row.page;
-                        delete row.user;
-
-                        contents.post = row;
-                        result.contents.push(contents);
-                    }
-                    result.dateTime = lastestDate;
-
-                    resolve(result);
-                }else if(hashTagProcessor.type === 'page' && hashTagProcessor.field === 'province'){
-                    const bucketF = [];
-                    if (hashTagProcessor.buckets.length >= 0) {
-                        if (hashTagProcessor.buckets[0] !== undefined && hashTagProcessor.buckets[0] !== null) {
-                            for (const provincesF of hashTagProcessor.buckets[0].values) {
-                                bucketF.push(String(provincesF));
-                            }
-                        }
-                        // bucket 2 
-                        if (hashTagProcessor.buckets[1] !== undefined && hashTagProcessor.buckets[1] !== null) {
-                            for (const provinceS of hashTagProcessor.buckets[1].values) {
-                                bucketF.push(String(provinceS));
-                            }
-                        }
-                        // bucket 3
-                        if (hashTagProcessor.buckets[2] !== undefined && hashTagProcessor.buckets[2] !== null) {
-                            for (const provinceT of hashTagProcessor.buckets[2].values) {
-                                bucketF.push(String(provinceT));
-                            }
-                        }
-                    }
-                    const pageStackId = [];
-                    const pageStackprovince = [];
-                    const pageProvince = await this.pageService.aggregate(
+                    pageStacks.push(postAggregateSet1);
+                    const postAggregateSet2 = await this.postsService.aggregate(
                         [
-                            {
-                                $match:{isOfficial: true,banned:false,province:{$in:bucketF}}
-                            },
-                            {
-                                $limit:hashTagProcessor.limit
-                            }
-                        ]
-                    );
-                    for(const pageStack of pageProvince){
-                        if(pageStack !== undefined && pageStack !== null){
-                            pageStackId.push(pageStack);
-                        }
-                    }
-                    for(const Stackprovince of pageStackId){
-                        if(Stackprovince._id !== null && Stackprovince._id !== undefined){
-                            pageStackprovince.push(Stackprovince._id);
-                        }
-                    } 
-                    const postAggregateSet1 = await this.postsService.aggregate(
-                        [
-                            { $match: { isDraft: false, deleted: false, hidden: false,pageId:{$in:pageStackprovince}} },
+                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince2 } } },
                             { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
@@ -841,13 +1272,13 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                                     from: 'Page',
                                     let: { 'pageId': '$pageId' },
                                     pipeline: [
-                                        { $match: { $expr: { $eq: ['$_id', '$$pageId'] }} },{$limit:1},
+                                        { $match: { $expr: { $eq: ['$_id', '$$pageId'] } } },
                                     ],
                                     as: 'page'
                                 }
                             },
                             {
-                                $limit: hashTagProcessor.limit
+                                $limit: limit
                             },
                             {
                                 $unwind: {
@@ -895,6 +1326,83 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                             },
                         ]
                     );
+                    pageStacks.push(postAggregateSet2);
+                    const postAggregateSet3 = await this.postsService.aggregate(
+                        [
+                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince3 } } },
+                            { $sort: { summationScore: -1 } },
+                            {
+                                $lookup:
+                                {
+                                    from: 'Page',
+                                    let: { 'pageId': '$pageId' },
+                                    pipeline: [
+                                        { $match: { $expr: { $eq: ['$_id', '$$pageId'] } } },
+                                    ],
+                                    as: 'page'
+                                }
+                            },
+                            {
+                                $limit: limit
+                            },
+                            {
+                                $unwind: {
+                                    path: '$page',
+                                    preserveNullAndEmptyArrays: true
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'SocialPost',
+                                    localField: '_id',
+                                    foreignField: 'postId',
+                                    as: 'socialPosts'
+                                }
+                            },
+                            {
+                                $project: {
+                                    'socialPosts': {
+                                        '_id': 0,
+                                        'pageId': 0,
+                                        'postId': 0,
+                                        'postBy': 0,
+                                        'postByType': 0
+                                    }
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'PostsGallery',
+                                    localField: '_id',
+                                    foreignField: 'post',
+                                    as: 'gallery'
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'User',
+                                    localField: 'ownerUser',
+                                    foreignField: '_id',
+                                    as: 'user'
+                                }
+                            },
+                            {
+                                $project: { story: 0 }
+                            },
+                        ]
+                    );
+                    pageStacks.push(postAggregateSet3);
+                    // set 1
+                    const stackPage = [];
+                    for (let i = 0; i < pageStacks[0].length; i++) {
+                        for (let j = 0; j < pageStacks.length; j++) {
+                            if (pageStacks[j][i] !== undefined && pageStacks[j][i] !== null) {
+                                stackPage.push(pageStacks[j][i]);
+                            } else {
+                                continue;
+                            }
+                        }
+                    }
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
                     result.title = (this.config === undefined || this.config.title === undefined) ? hashTagProcessor.title : hashTagProcessor.title;
@@ -902,7 +1410,8 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     result.iconUrl = '';
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
-                    for (const row of postAggregateSet1) {
+                    result.position = stackRobin[0].position;
+                    for (const row of stackPage) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
 
@@ -942,32 +1451,368 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     result.dateTime = lastestDate;
 
                     resolve(result);
-                }else if(hashTagProcessor.type === 'page' && hashTagProcessor.field === 'id'){
-                    const buckets = [];
+                } else if (stackRobin[0].type === 'page' && stackRobin[0].field === 'province') {
+                    const bucketF = [];
+                    const bucketS = [];
+                    const bucketT = [];
                     if (hashTagProcessor.buckets.length >= 0) {
                         if (hashTagProcessor.buckets[0] !== undefined && hashTagProcessor.buckets[0] !== null) {
                             for (const provincesF of hashTagProcessor.buckets[0].values) {
-                                buckets.push(new ObjectID(provincesF));
+                                bucketF.push(provincesF);
                             }
                         }
                         // bucket 2 
                         if (hashTagProcessor.buckets[1] !== undefined && hashTagProcessor.buckets[1] !== null) {
                             for (const provinceS of hashTagProcessor.buckets[1].values) {
-                                buckets.push(new ObjectID(provinceS));
+                                bucketS.push(provinceS);
                             }
                         }
                         // bucket 3
                         if (hashTagProcessor.buckets[2] !== undefined && hashTagProcessor.buckets[2] !== null) {
                             for (const provinceT of hashTagProcessor.buckets[2].values) {
-                                buckets.push(new ObjectID(provinceT));
+                                bucketT.push(provinceT);
                             }
                         }
                     }
+                    const pageStackprovince1 = [];
+                    const pageStackprovince2 = [];
+                    const pageStackprovince3 = [];
 
+                    const pageStacks = [];
+
+                    /* 
+                    const pageProvince = await this.pageService.searchPageProvince(bucketF);
+                    console.log('pageProvince',pageProvince);
+                    for(const pageStack of pageProvince){
+                        if(pageStack !== undefined && pageStack !== null){
+                            pageStackId.push(pageStack.id);
+                        }
+                    } */
+                    const pageProvince1 = await this.pageService.aggregateP(
+                        [
+                            {
+                                $match: { isOfficial: true, banned: false, province: { $in: bucketF } }
+                            },
+                            {
+                                $limit: hashTagProcessor.limit
+                            }
+                        ]
+                    );
+                    for (const provinces1 of pageProvince1) {
+                        pageStackprovince1.push(new ObjectID(provinces1._id));
+                    }
+                    const pageProvince2 = await this.pageService.aggregateP(
+                        [
+                            {
+                                $match: { isOfficial: true, banned: false, province: { $in: bucketS } }
+                            },
+                            {
+                                $limit: hashTagProcessor.limit
+                            }
+                        ]
+                    );
+                    for (const provinces2 of pageProvince2) {
+                        pageStackprovince2.push(new ObjectID(provinces2._id));
+                    }
+
+                    const pageProvince3 = await this.pageService.aggregateP(
+                        [
+                            {
+                                $match: { isOfficial: true, banned: false, province: { $in: bucketT } }
+                            },
+                            {
+                                $limit: hashTagProcessor.limit
+                            }
+                        ]
+                    );
+                    for (const provinces3 of pageProvince3) {
+                        pageStackprovince3.push(new ObjectID(provinces3._id));
+                    }
+
+                    const postAggregateSet1 = await this.postsService.aggregate(
+                        [
+                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince1 } } },
+                            { $sort: { summationScore: -1 } },
+                            {
+                                $lookup:
+                                {
+                                    from: 'Page',
+                                    let: { 'pageId': '$pageId' },
+                                    pipeline: [
+                                        { $match: { $expr: { $eq: ['$_id', '$$pageId'] } } },
+                                    ],
+                                    as: 'page'
+                                }
+                            },
+                            {
+                                $limit: limit
+                            },
+                            {
+                                $unwind: {
+                                    path: '$page',
+                                    preserveNullAndEmptyArrays: true
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'SocialPost',
+                                    localField: '_id',
+                                    foreignField: 'postId',
+                                    as: 'socialPosts'
+                                }
+                            },
+                            {
+                                $project: {
+                                    'socialPosts': {
+                                        '_id': 0,
+                                        'pageId': 0,
+                                        'postId': 0,
+                                        'postBy': 0,
+                                        'postByType': 0
+                                    }
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'PostsGallery',
+                                    localField: '_id',
+                                    foreignField: 'post',
+                                    as: 'gallery'
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'User',
+                                    localField: 'ownerUser',
+                                    foreignField: '_id',
+                                    as: 'user'
+                                }
+                            },
+                            {
+                                $project: { story: 0 }
+                            },
+                        ]
+                    );
+                    pageStacks.push(postAggregateSet1);
+                    const postAggregateSet2 = await this.postsService.aggregate(
+                        [
+                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince2 } } },
+                            { $sort: { summationScore: -1 } },
+                            {
+                                $lookup:
+                                {
+                                    from: 'Page',
+                                    let: { 'pageId': '$pageId' },
+                                    pipeline: [
+                                        { $match: { $expr: { $eq: ['$_id', '$$pageId'] } } },
+                                    ],
+                                    as: 'page'
+                                }
+                            },
+                            {
+                                $limit: limit
+                            },
+                            {
+                                $unwind: {
+                                    path: '$page',
+                                    preserveNullAndEmptyArrays: true
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'SocialPost',
+                                    localField: '_id',
+                                    foreignField: 'postId',
+                                    as: 'socialPosts'
+                                }
+                            },
+                            {
+                                $project: {
+                                    'socialPosts': {
+                                        '_id': 0,
+                                        'pageId': 0,
+                                        'postId': 0,
+                                        'postBy': 0,
+                                        'postByType': 0
+                                    }
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'PostsGallery',
+                                    localField: '_id',
+                                    foreignField: 'post',
+                                    as: 'gallery'
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'User',
+                                    localField: 'ownerUser',
+                                    foreignField: '_id',
+                                    as: 'user'
+                                }
+                            },
+                            {
+                                $project: { story: 0 }
+                            },
+                        ]
+                    );
+                    pageStacks.push(postAggregateSet2);
+                    const postAggregateSet3 = await this.postsService.aggregate(
+                        [
+                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince3 } } },
+                            { $sort: { summationScore: -1 } },
+                            {
+                                $lookup:
+                                {
+                                    from: 'Page',
+                                    let: { 'pageId': '$pageId' },
+                                    pipeline: [
+                                        { $match: { $expr: { $eq: ['$_id', '$$pageId'] } } },
+                                    ],
+                                    as: 'page'
+                                }
+                            },
+                            {
+                                $limit: limit
+                            },
+                            {
+                                $unwind: {
+                                    path: '$page',
+                                    preserveNullAndEmptyArrays: true
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'SocialPost',
+                                    localField: '_id',
+                                    foreignField: 'postId',
+                                    as: 'socialPosts'
+                                }
+                            },
+                            {
+                                $project: {
+                                    'socialPosts': {
+                                        '_id': 0,
+                                        'pageId': 0,
+                                        'postId': 0,
+                                        'postBy': 0,
+                                        'postByType': 0
+                                    }
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'PostsGallery',
+                                    localField: '_id',
+                                    foreignField: 'post',
+                                    as: 'gallery'
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'User',
+                                    localField: 'ownerUser',
+                                    foreignField: '_id',
+                                    as: 'user'
+                                }
+                            },
+                            {
+                                $project: { story: 0 }
+                            },
+                        ]
+                    );
+                    pageStacks.push(postAggregateSet3);
+                    // set 1
+                    const stackPage = [];
+                    for (let i = 0; i < pageStacks[0].length; i++) {
+                        for (let j = 0; j < pageStacks.length; j++) {
+                            if (pageStacks[j][i] !== undefined && pageStacks[j][i] !== null) {
+                                stackPage.push(pageStacks[j][i]);
+                            } else {
+                                continue;
+                            }
+                        }
+                    }
+                    const lastestDate = null;
+                    const result: SectionModel = new SectionModel();
+                    result.title = (this.config === undefined || this.config.title === undefined) ? hashTagProcessor.title : hashTagProcessor.title;
+                    result.description = '';
+                    result.iconUrl = '';
+                    result.contents = [];
+                    result.type = this.getType(); // set type by processor type
+                    result.position = stackRobin[0].position;
+                    for (const row of stackPage) {
+                        const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
+                        const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
+
+                        const contents: any = {};
+                        contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
+                        if (firstImage !== undefined && firstImage.s3FilePath !== undefined && firstImage.s3FilePath !== '') {
+                            try {
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3FilePath);
+                                contents.coverPageSignUrl = signUrl;
+                            } catch (error) {
+                                console.log('PostSectionProcessor: ' + error);
+                            }
+                        }
+
+                        // search isLike
+                        row.isLike = false;
+                        if (userId !== undefined && userId !== undefined && userId !== '') {
+                            const userLikes: UserLike[] = await this.userLikeService.find({ userId: new ObjectID(userId), subjectId: row._id, subjectType: LIKE_TYPE.POST });
+                            if (userLikes.length > 0) {
+                                row.isLike = true;
+                            }
+                        }
+
+                        contents.owner = {};
+                        if (row.page !== undefined) {
+                            contents.owner = this.parsePageField(row.page);
+                        } else {
+                            contents.owner = this.parseUserField(user);
+                        }
+                        // remove page agg
+                        // delete row.page;
+                        delete row.user;
+
+                        contents.post = row;
+                        result.contents.push(contents);
+                    }
+                    result.dateTime = lastestDate;
+
+                    resolve(result);
+                } else if (stackRobin[0].type === 'page' && stackRobin[0].field === 'id') {
+                    const bucketAll = [];
+                    const bucketF = [];
+                    const bucketS = [];
+                    const bucketT = [];
+
+                    if (hashTagProcessor.buckets.length >= 0) {
+                        if (hashTagProcessor.buckets[0] !== undefined && hashTagProcessor.buckets[0] !== null) {
+                            for (const bucketFs of hashTagProcessor.buckets[0].values) {
+                                bucketF.push(new ObjectID(bucketFs));
+                            }
+                        }
+                        // bucket 2 
+                        if (hashTagProcessor.buckets[1] !== undefined && hashTagProcessor.buckets[1] !== null) {
+                            for (const bucketSs of hashTagProcessor.buckets[1].values) {
+                                bucketS.push(new ObjectID(bucketSs));
+
+                            }
+                        }
+                        // bucket 3
+                        if (hashTagProcessor.buckets[2] !== undefined && hashTagProcessor.buckets[2] !== null) {
+                            for (const bucketTs of hashTagProcessor.buckets[2].values) {
+                                bucketT.push(new ObjectID(bucketTs));
+                            }
+                        }
+                    }
                     // set 1
                     const postAggregateSet1 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false,pageId:{$in:buckets}} },
+                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: bucketF }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
                             { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
@@ -975,13 +1820,13 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                                     from: 'Page',
                                     let: { 'pageId': '$pageId' },
                                     pipeline: [
-                                        { $match: { $expr: { $eq: ['$_id', '$$pageId'] }} }, { $limit: 4 }
+                                        { $match: { $expr: { $eq: ['$_id', '$$pageId'] } } }
                                     ],
                                     as: 'page'
                                 }
                             },
                             {
-                                $limit: hashTagProcessor.limit
+                                $limit: limit
                             },
                             {
                                 $unwind: {
@@ -1029,16 +1874,157 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                             },
                         ]
                     );
+                    bucketAll.push(postAggregateSet1);
+                    const postAggregateSet2 = await this.postsService.aggregate(
+                        [
+                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: bucketS }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $sort: { summationScore: -1 } },
+                            {
+                                $lookup:
+                                {
+                                    from: 'Page',
+                                    let: { 'pageId': '$pageId' },
+                                    pipeline: [
+                                        { $match: { $expr: { $eq: ['$_id', '$$pageId'] } } }
+                                    ],
+                                    as: 'page'
+                                }
+                            },
+                            {
+                                $limit: limit
+                            },
+                            {
+                                $unwind: {
+                                    path: '$page',
+                                    preserveNullAndEmptyArrays: true
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'SocialPost',
+                                    localField: '_id',
+                                    foreignField: 'postId',
+                                    as: 'socialPosts'
+                                }
+                            },
+                            {
+                                $project: {
+                                    'socialPosts': {
+                                        '_id': 0,
+                                        'pageId': 0,
+                                        'postId': 0,
+                                        'postBy': 0,
+                                        'postByType': 0
+                                    }
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'PostsGallery',
+                                    localField: '_id',
+                                    foreignField: 'post',
+                                    as: 'gallery'
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'User',
+                                    localField: 'ownerUser',
+                                    foreignField: '_id',
+                                    as: 'user'
+                                }
+                            },
+                            {
+                                $project: { story: 0 }
+                            },
+                        ]
+                    );
+                    bucketAll.push(postAggregateSet2);
+                    const postAggregateSet3 = await this.postsService.aggregate(
+                        [
+                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: bucketT }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $sort: { summationScore: -1 } },
+                            {
+                                $lookup:
+                                {
+                                    from: 'Page',
+                                    let: { 'pageId': '$pageId' },
+                                    pipeline: [
+                                        { $match: { $expr: { $eq: ['$_id', '$$pageId'] } } }
+                                    ],
+                                    as: 'page'
+                                }
+                            },
+                            {
+                                $limit: limit
+                            },
+                            {
+                                $unwind: {
+                                    path: '$page',
+                                    preserveNullAndEmptyArrays: true
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'SocialPost',
+                                    localField: '_id',
+                                    foreignField: 'postId',
+                                    as: 'socialPosts'
+                                }
+                            },
+                            {
+                                $project: {
+                                    'socialPosts': {
+                                        '_id': 0,
+                                        'pageId': 0,
+                                        'postId': 0,
+                                        'postBy': 0,
+                                        'postByType': 0
+                                    }
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'PostsGallery',
+                                    localField: '_id',
+                                    foreignField: 'post',
+                                    as: 'gallery'
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'User',
+                                    localField: 'ownerUser',
+                                    foreignField: '_id',
+                                    as: 'user'
+                                }
+                            },
+                            {
+                                $project: { story: 0 }
+                            },
+                        ]
+                    );
+                    bucketAll.push(postAggregateSet3);
+                    const stackPage = [];
+                    for (let i = 0; i < bucketAll[0].length; i++) {
+                        for (let j = 0; j < bucketAll.length; j++) {
+                            if (bucketAll[j][i] !== undefined && bucketAll[j][i] !== null) {
+                                stackPage.push(bucketAll[j][i]);
+                            } else {
+                                continue;
+                            }
+                        }
+                    }
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
                     result.title = (this.config === undefined || this.config.title === undefined) ? hashTagProcessor.title : hashTagProcessor.title;
-                    result.subtitle = '';
+                    result.subtitle = (this.config === undefined || this.config.subtitle === undefined) ? 'โพสต์ที่เกิดขึ้นในเดือนนี้ ภายในแพลตฟอร์ม' : this.config.subtitle;
                     result.description = '';
                     result.iconUrl = '';
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
-
-                    for (const row of postAggregateSet1) {
+                    result.position = stackRobin[0].position;
+                    for (const row of stackPage) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
 
@@ -1079,7 +2065,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     result.dateTime = lastestDate;
 
                     resolve(result);
-                }else if(hashTagProcessor.type === 'hashtag' && hashTagProcessor.field === 'count'){
+                } else if (stackRobin[0].type === 'hashtag' && stackRobin[0].field === 'count') {
                     const bucketF = [];
                     const hashTagMost = await this.hashTagService.searchHashSec();
                     if (hashTagMost.length >= 0) {
@@ -1156,13 +2142,13 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
 
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
-                    result.title = (this.config === undefined || this.config.title === undefined) ? hashTagProcessor.title :hashTagProcessor.title;
+                    result.title = (this.config === undefined || this.config.title === undefined) ? hashTagProcessor.title : hashTagProcessor.title;
                     result.subtitle = '';
                     result.description = '';
                     result.iconUrl = '';
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
-
+                    result.position = stackRobin[0].position;
                     for (const row of postAggregate) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;

@@ -98,6 +98,10 @@ export class PageService {
         return this.pageRepository.aggregate(query, options).toArray();
     }
 
+    public aggregateP(query: any, options?: any): Promise<any> {
+        return this.pageRepository.aggregate(query, options).toArray();
+    }
+
     // create page
     public async create(page: Page): Promise<Page> {
         return await this.pageRepository.save(page);
@@ -145,7 +149,7 @@ export class PageService {
         return result;
     }
 
-    public async searchPageCategory(): Promise<any>{
+    public async searchPageCategory(): Promise<any> {
         const result: any = {
             searchOfficialOnly: DEFAULT_MAIN_PAGE_SEARCH_OFFICIAL_POST_ONLY
         };
