@@ -5,7 +5,7 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-import { Component, OnInit, ViewChild, EventEmitter, HostListener } from '@angular/core';
+import { Component, OnInit, EventEmitter, HostListener } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Gallery } from '@ngx-gallery/core';
 import { AuthenManager, MainPageSlideFacade, HashTagFacade, AssetFacade, PageFacade, SeoService, UserSubjectFacade } from '../../../services/services';
@@ -250,8 +250,10 @@ export class HomePageV3 extends AbstractPage implements OnInit {
 
     if (this.windowWidth <= 479) {
       this.isPostNewTab = true;
+      console.log("newTab true", this.isPostNewTab)
     } else {
       this.isPostNewTab = false;
+      console.log("newTab false", this.isPostNewTab)
     }
   }
   public stopIsloading() {
