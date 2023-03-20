@@ -6,20 +6,22 @@
  */
 
 import { Injectable } from "@angular/core";
+import { MatDialog } from '@angular/material';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthenManager } from '../AuthenManager.service';
 import { AbstractFacade } from "./AbstractFacade";
 import { MainPageModel } from '../../models/models';
-
 @Injectable()
 export class MainPageSlideFacade extends AbstractFacade {
 
   public cacheImageAutoScaleMainPage: number;
-
-  constructor(http: HttpClient, authMgr: AuthenManager) {
+  protected dialog: MatDialog;
+  constructor(http: HttpClient, authMgr: AuthenManager
+    ) {
     super(http, authMgr);
+
   }
-  public getMainPageModelV3(userId?: string, date?: any, offset?: string, section?: string): Promise<any[]> {
+  public getMainPageModelV3(userId?: string, date?: any, offset?: string, section?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/main/content/v3';
   
@@ -41,11 +43,10 @@ export class MainPageSlideFacade extends AbstractFacade {
           'userid': userId
         });
       }
-      this.http.get(url, httpOptions).toPromise()
-        .then((response: any) => {
-          resolve(response.data as MainPageModel[]);
-        })
-        .catch((error: any) => {
+      this.http.get(url, httpOptions).toPromise().then((response: any) => {
+        console.log('response',response);
+          resolve(response.data);
+        }).catch((error: any) => {
           reject(error);
         });
     });

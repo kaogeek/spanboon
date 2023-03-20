@@ -16,7 +16,7 @@ import { CacheConfigInfo } from '../../../services/CacheConfigInfo.service';
 import { PLATFORM_NAME_TH } from 'src/custom/variable';
 import { SearchFilter } from '../../../models/SearchFilter';
 import { environment } from 'src/environments/environment';
-import { DialogAlert, DialogCheckBox, DialogPostCrad } from '../../components';
+import { DialogCheckBox, DialogPostCrad ,DialogAlert} from '../../components';
 
 
 declare var $: any;
@@ -28,6 +28,7 @@ const PAGE_NAME: string = 'home';
   templateUrl: './HomePageV3.component.html',
 })
 export class HomePageV3 extends AbstractPage implements OnInit {
+  startDate: Date;
   public static readonly PAGE_NAME: string = PAGE_NAME;
   public userCloneDatas: any;
   public isLoading: boolean;
@@ -43,10 +44,11 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   private userSubject: UserSubjectFacade;
   public hashTag: any = [];
   public pageUser: any;
-  public startDate: any;
   public startDateLong: number;
-  public user:any;
+  public user: any;
+  public testValues: any = undefined;
   public apiBaseURL = environment.apiBaseURL;
+
   maxDate = new Date();
 
   constructor(
@@ -64,6 +66,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     userSubject: UserSubjectFacade
   ) {
     super(null, authenManager, dialog, router);
+    this.startDate = new Date();
     this.pageFacade = pageFacade;
     this.mainPageModelFacade = mainPageModelFacade;
     this.assetFacade = assetFacade;
@@ -91,23 +94,48 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     this.isLoading = true;
     this.user;
     this.startDateLong = new Date(event.value).getTime();
-    this.model = await this.mainPageModelFacade.getMainPageModelV3(this.user,this.startDateLong);
-    if(event){
+    this.mainPageModelFacade.getMainPageModelV3(this.user, this.startDateLong).then((res)=>{
+      this.model = res;
+      this.testValues = new Date(this.startDateLong).toISOString(); // convert to ISO string
+      localStorage.setItem('datetime', JSON.stringify(this.testValues));
       this.isLoading = false;
-    }
+    }).catch((err) =>{
+      this.isLoading = false;
+      this.testValues = this.startDate;
+      this.dialog.open(DialogAlert, {
+        disableClose: true,
+        data: {
+          text: 'ไม่เจอหนังสือพิมพ์ฉบับนี้',
+          bottomText1: 'ตกลง',
+          btDisplay1: "none"
+        }
+      });
+
+    });
     this.router.navigate(['/home'], { queryParams: { date: this.startDateLong } });
   }
   public async getMainPageModelV3(userId?) {
+    let ok = undefined
+    let testDate = JSON.parse(localStorage.getItem('datetime'));
+    if(testDate !== null){
+      this.testValues = testDate;
+    }
     this.user = userId;
     this.isLoading = true;
-    this.model = await this.mainPageModelFacade.getMainPageModelV3(userId,this.startDateLong);
-    for (let index = 0; index < this.model.postSectionModel.contents.length; index++) {
-      if (this.model.postSectionModel.contents[index].post.type === "FULFILLMENT") {
-        this.model.postSectionModel.contents.splice(index, 1);
-      } else if (this.model.postSectionModel.contents[index].coverPageUrl === undefined) {
-        this.model.postSectionModel.contents.splice(index, 1);
+    this.mainPageModelFacade.getMainPageModelV3(userId, this.startDateLong).then((res)=>{
+      this.model = res;
+      for (let index = 0; index < this.model.postSectionModel.contents.length; index++) {
+        if (this.model.postSectionModel.contents[index].post.type === "FULFILLMENT") {
+          this.model.postSectionModel.contents.splice(index, 1);
+        } else if (this.model.postSectionModel.contents[index].coverPageUrl === undefined) {
+          this.model.postSectionModel.contents.splice(index, 1);
+        }
       }
-    }
+    }).catch((err)=>{
+
+      console.log('err',err);
+    })
+
     // if (this.isLogin) {
     //   this.getSubject();
     // }

@@ -221,14 +221,11 @@ export class MainPageController {
         if(date !== undefined && date !== null ){
             content = await this.kaokaiTodaySnapShotService.findOne({endDateTime: toDate });
             if(content){
-                console.log('pass1');
                 const successResponseF = ResponseUtil.getSuccessResponse('Successfully Main Page Data', content.data);
                 return res.status(200).send(successResponseF);
-
             }else{
-                console.log('pass2');
-                const successResponseS = ResponseUtil.getSuccessResponse('Successfully Main Page Data', content.data);
-                return res.status(200).send(successResponseS);
+                const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
+                return res.status(400).send(errorResponse);
             }
         }
         const successResponse = ResponseUtil.getSuccessResponse('Successfully Main Page Data', content);
