@@ -36,7 +36,6 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     position.push(sequence.position);
                 }
                 const sorts = position.sort((a, b) => Math.abs(a) - Math.abs(b) || a - b);
-                let provincePage = undefined;
 
                 let limit: number = undefined;
                 let offset: number = undefined;
@@ -56,7 +55,8 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                 }
 
                 let userId = undefined;
-                let checkPosition = undefined;
+                let checkPosition1 = undefined;
+                let checkPosition2 = undefined;
                 // get startDateTime, endDateTime
                 let startDateTime: Date = undefined;
                 let endDateTime: Date = undefined;
@@ -64,21 +64,18 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     startDateTime = this.data.startDateTime;
                     endDateTime = this.data.endDateTime;
                     userId = this.data.userId;
-                    checkPosition = this.data.checkPosition2;
+                    checkPosition1 = this.data.checkPosition1;
+                    checkPosition2 = this.data.checkPosition2;
                 }
-                const stackRobin = [];
+                const sortV = [];
                 for (const sort of sorts) {
-                    if (sort === 3) {
-                        provincePage = await this.kaokaiTodayService.findOne({ position: sort });
-                        stackRobin.push(provincePage);
-                    } else if (sort < 0 && checkPosition > sort) {
-                        provincePage = await this.kaokaiTodayService.findOne({ position: sort });
-                        stackRobin.push(provincePage);
+                    if (sort !== undefined && sort !== null && sort !== checkPosition1 && sort !== checkPosition2) {
+                        sortV.push(sort);
                     } else {
                         continue;
                     }
                 }
-
+                const provincePage = await this.kaokaiTodayService.findOne({ position: sortV[0] });
                 limit = (limit === undefined || limit === null) ? provincePage.limit : this.DEFAULT_SEARCH_LIMIT;
                 offset = (offset === undefined || offset === null) ? this.DEFAULT_SEARCH_OFFSET : offset;
                 const searchFilter: SearchFilter = new SearchFilter();
@@ -141,7 +138,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                 if (provincePage === undefined) {
                     resolve(undefined);
                 }
-                if (stackRobin[0].type === 'page' && stackRobin[0].field === 'province') {
+                if (provincePage.type === 'page' && provincePage.field === 'province') {
                     const bucketF = [];
                     const bucketS = [];
                     const bucketT = [];
@@ -432,7 +429,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     result.iconUrl = '';
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
-                    result.position = stackRobin[0].position;
+                    result.position = provincePage.position;
                     for (const row of stackPage) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
@@ -473,7 +470,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     result.dateTime = lastestDate;
 
                     resolve(result);
-                } else if (stackRobin[0].type === 'page' && stackRobin[0].field === 'group') {
+                } else if (provincePage.type === 'page' && provincePage.field === 'group') {
                     const bucketF = [];
                     const bucketS = [];
                     const bucketT = [];
@@ -764,7 +761,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     result.iconUrl = '';
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
-                    result.position = stackRobin[0].position;
+                    result.position = provincePage.position;
                     for (const row of stackPage) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
@@ -805,7 +802,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     result.dateTime = lastestDate;
 
                     resolve(result);
-                } else if (stackRobin[0].type === 'page' && stackRobin[0].field === 'id') {
+                } else if (provincePage.type === 'page' && provincePage.field === 'id') {
                     const bucketAll = [];
                     const bucketF = [];
                     const bucketS = [];
@@ -1045,7 +1042,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     result.iconUrl = '';
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
-                    result.position = stackRobin[0].position;
+                    result.position = provincePage.position;
                     for (const row of stackPage) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
@@ -1087,9 +1084,9 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     result.dateTime = lastestDate;
 
                     resolve(result);
-                } else if (stackRobin[0].type === 'hashtag' && stackRobin[0].field === 'count') {
+                } else if (provincePage.type === 'hashtag' && provincePage.field === 'count') {
                     const bucketF = [];
-                    const hashTagMost = await this.hashTagService.searchHashSec();
+                    const hashTagMost = await this.hashTagService.searchHashSec(limit);
                     if (hashTagMost.length >= 0) {
                         for (const hashTagMostS of hashTagMost) {
                             bucketF.push(new ObjectID(hashTagMostS.id));
@@ -1170,7 +1167,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     result.iconUrl = '';
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
-                    result.position = stackRobin[0].position;
+                    result.position = provincePage.position;
                     for (const row of postAggregate) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
@@ -1209,7 +1206,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     }
                     result.dateTime = lastestDate;
                     resolve(result);
-                } else if (stackRobin[0].type === 'post' && stackRobin[0].field === 'emergencyEvent') {
+                } else if (provincePage.type === 'post' && provincePage.field === 'emergencyEvent') {
                     const bucketF = [];
                     const bucketS = [];
                     const bucketT = [];
@@ -1453,7 +1450,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     result.iconUrl = '';
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
-                    result.position = stackRobin[0].position;
+                    result.position = provincePage.position;
                     for (const row of stackPage) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
@@ -1492,7 +1489,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     }
                     result.dateTime = lastestDate;
                     resolve(result);
-                } else if (stackRobin[0].type === 'post' && stackRobin[0].field === 'objective') {
+                } else if (provincePage.type === 'post' && provincePage.field === 'objective') {
                     const bucketF = [];
                     const bucketS = [];
                     const bucketT = [];
@@ -1651,7 +1648,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     bucketAll.push(postAggregate2);
 
                     const postStmt3 = [
-                        { $match: { isDraft: false, deleted: false, hidden: false, objective: { $ne: null, $in: bucketS } } },
+                        { $match: { isDraft: false, deleted: false, hidden: false, objective: { $ne: null, $in: bucketT } } },
                         { $sort: { summationScore: -1 } },
 
                         {
@@ -1736,7 +1733,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     result.iconUrl = '';
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
-                    result.position = stackRobin[0].position;
+                    result.position = provincePage.position;
                     for (const row of stackPage) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
@@ -1775,7 +1772,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     }
                     result.dateTime = lastestDate;
                     resolve(result);
-                } else if (stackRobin[0].type === 'post' && stackRobin[0].field === 'score') {
+                } else if (provincePage.type === 'post' && provincePage.field === 'score') {
                     const postStmt = [
                         { $match: postMatchStmt },
                         { $sort: { summationScore: -1 } },
@@ -1855,7 +1852,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     result.iconUrl = '';
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
-                    result.position = stackRobin[0].position;
+                    result.position = provincePage.position;
                     for (const row of postAggregate) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
@@ -1894,7 +1891,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     }
                     result.dateTime = lastestDate;
                     resolve(result);
-                } else if (stackRobin[0].type === 'post' && stackRobin[0].field === 'hashTag') {
+                } else if (provincePage.type === 'post' && provincePage.field === 'hashTag') {
                     const bucketF = [];
                     const bucketS = [];
                     const bucketT = [];
@@ -2167,7 +2164,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     result.iconUrl = '';
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
-                    result.position = stackRobin[0].position;
+                    result.position = provincePage.position;
                     for (const row of stackPage) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;

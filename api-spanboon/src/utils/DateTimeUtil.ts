@@ -32,7 +32,7 @@ export class DateTimeUtil {
         const subtractDay = (days !== undefined && days > 0) ? days - 1 : 0;
 
         const startDateRange = moment(endDate).clone().utcOffset(0).set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(subtractDay, 'days').toDate();
-        const endDateRange = moment(endDate).clone().utcOffset(0).set({ hour: 23, minute: 59, second: 59, millisecond: 0 }).toDate();
+        const endDateRange = moment(endDate).clone().utcOffset(0).set({ hour: 24, minute: 0, second: 0, millisecond: 0 }).toDate();
 
         result.push(DateTimeUtil.parseISOStringToDate(startDateRange.toISOString()));
         result.push(DateTimeUtil.parseISOStringToDate(endDateRange.toISOString()));

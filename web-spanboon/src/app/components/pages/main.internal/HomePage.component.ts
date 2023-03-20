@@ -29,8 +29,6 @@ const PAGE_SIZE: number = 6;
 })
 export class HomePage extends AbstractPage implements OnInit {
 
-  private cacheConfigInfo: CacheConfigInfo;
-  private postFacade: PostFacade;
   private hashTagFacade: HashTagFacade;
   private pageFacade: PageFacade;
   private mainPageModelFacade: MainPageSlideFacade;
@@ -101,7 +99,7 @@ export class HomePage extends AbstractPage implements OnInit {
 
   private async getMainPageModel(userId?) {
     this.isLoading = true;
-    this.model = await this.mainPageModelFacade.getMainPageModel(userId);
+    this.model = await this.mainPageModelFacade.getMainPageModelV3(userId);
     for (let index = 0; index < this.model.postSectionModel.contents.length; index++) {
       if (this.model.postSectionModel.contents[index].post.type === "FULFILLMENT") {
         this.model.postSectionModel.contents.splice(index, 1);

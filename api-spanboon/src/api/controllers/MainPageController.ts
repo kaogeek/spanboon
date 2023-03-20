@@ -6,7 +6,7 @@
  */
 
 import 'reflect-metadata';
-import { JsonController, Res, Get, Body, Post, Req, QueryParam } from 'routing-controllers';
+import {  JsonController, Res, Get, Post, Body, Req,QueryParam } from 'routing-controllers';
 import { ResponseUtil } from '../../utils/ResponseUtil';
 import { ProcessorUtil } from '../../utils/ProcessorUtil';
 import { ObjectID } from 'mongodb';
@@ -61,9 +61,11 @@ import { ImageUtil } from '../../utils/ImageUtil';
 import { KaoKaiHashTagModelProcessor } from '../processors/KaoKaiHashTagModelProcessor';
 import { KaokaiAllProvinceModelProcessor } from '../processors/KaokaiAllProvinceModelProcessor';
 import { KaokaiTodayService } from '../services/KaokaiTodayService';
-import { KaokaiContentModelProcessor } from '../processors/KaokaiContentModelProcessor';
 import { TODAY_DATETIME_GAP, DEFAULT_TODAY_DATETIME_GAP } from '../../constants/SystemConfig';
 import { ConfigService } from '../services/ConfigService';
+import { KaokaiTodaySnapShotService } from '../services/KaokaiTodaySnapShot';
+import { KaokaiContentModelProcessor } from '../processors/KaokaiContentModelProcessor';
+import { MAILService } from '../../auth/mail.services';
 @JsonController('/main')
 export class MainPageController {
     constructor(
@@ -81,17 +83,21 @@ export class MainPageController {
         private postsCommentService: PostsCommentService,
         private assetService: AssetService,
         private kaokaiTodayService: KaokaiTodayService,
-        private configService: ConfigService
+        private configService: ConfigService,
+        private kaokaiTodaySnapShotService: KaokaiTodaySnapShotService
     ) { }
     // Home page content V2
     @Get('/content/v3')
-    public async getContentListV2(@QueryParam('offset') offset: number, @QueryParam('section') section: string, @QueryParam('date') date: string, @Res() res: any, @Req() req: any): Promise<any> {
+    public async getContentListV2(@QueryParam('offset') offset: number, @QueryParam('section') section: string,  @QueryParam('date') date: any, @Res() res: any, @Req() req: any): Promise<any> {
+        const dateFormat = new Date(date);
+        const dateReal = dateFormat.setDate(dateFormat.getDate() +1);
+        const toDate = new Date(dateReal);
+        let content = undefined;
         const userId = req.headers.userid;
         const mainPageSearchConfig = await this.pageService.searchPageOfficialConfig();
         const searchOfficialOnly = mainPageSearchConfig.searchOfficialOnly;
         const assetassetTodayDateGap = await this.configService.getConfig(TODAY_DATETIME_GAP);
         let assetTodayDate = DEFAULT_TODAY_DATETIME_GAP;
-
         if (assetassetTodayDateGap) {
             assetTodayDate = assetassetTodayDateGap.value;
         }
@@ -155,6 +161,7 @@ export class MainPageController {
             userId,
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
+            checkPosition1,
             checkPosition2
 
         });
@@ -163,13 +170,15 @@ export class MainPageController {
             searchOfficialOnly
         });
         const kaokaiProvince = await kaokaiProvinceProcessor.process();
-
+        const checkPosition3 = kaokaiProvince.position;
         const kaokaiHashTagProcessor: KaoKaiHashTagModelProcessor = new KaoKaiHashTagModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService, this.pageService);
         kaokaiHashTagProcessor.setData({
             userId,
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
-
+            checkPosition1,
+            checkPosition2,
+            checkPosition3
         });
 
         kaokaiHashTagProcessor.setConfig({
@@ -177,15 +186,17 @@ export class MainPageController {
         });
 
         const kaokaiHashTag = await kaokaiHashTagProcessor.process();
+        const checkPosition4 = kaokaiHashTag.position;
 
-        // pipeline: [{ $match: { $expr: { $in: ['$_id', bucketF] }, isOfficial: true } }],
-        // ก้าวไกลประเด็น
-
-        const kaokaiContentProcessor: KaokaiContentModelProcessor = new KaokaiContentModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.userFollowService);
+        const kaokaiContentProcessor: KaokaiContentModelProcessor = new KaokaiContentModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService, this.pageService);
         kaokaiContentProcessor.setData({
             userId,
             startDateTime: monthRange[0],
-            endDateTime: monthRange[1]
+            endDateTime: monthRange[1],
+            checkPosition1,
+            checkPosition2,
+            checkPosition3,
+            checkPosition4
         });
 
         kaokaiContentProcessor.setConfig({
@@ -193,6 +204,8 @@ export class MainPageController {
         });
 
         const kaokaiContent = await kaokaiContentProcessor.process();
+        // pipeline: [{ $match: { $expr: { $in: ['$_id', bucketF] }, isOfficial: true } }],
+
         // hashTag
         const hashTagSumma = await this.hashTagService.aggregate([{ $sort: { count: -1 } }, { $limit: 3 }]);
         const result: any = {};
@@ -204,7 +217,18 @@ export class MainPageController {
         result.kaokaiProvince = kaokaiProvince;
         result.kaokaiHashTag = kaokaiHashTag;
         result.kaokaiContent = kaokaiContent;
-        const successResponse = ResponseUtil.getSuccessResponse('Successfully Main Page Data', result);
+        content = await this.snapShotToday(result, monthRange[0], monthRange[1], assetTodayDate,userId);
+        if(date !== undefined && date !== null ){
+            content = await this.kaokaiTodaySnapShotService.findOne({endDateTime: toDate });
+            if(content){
+                const successResponseF = ResponseUtil.getSuccessResponse('Successfully Main Page Data', content.data);
+                return res.status(200).send(successResponseF);
+            }else{
+                const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        }
+        const successResponse = ResponseUtil.getSuccessResponse('Successfully Main Page Data', content);
         return res.status(200).send(successResponse);
     }
     // Find Page API
@@ -1610,6 +1634,153 @@ export class MainPageController {
         }
     }
 
+    private async snapShotToday(data: any, startDateRange: Date, endDateTimeRange: Date, assetTodayDate: number,userId?:any): Promise<any> {
+        /* 
+        const objId = new ObjectID(userId);
+        if(objId !== undefined && objId !== null){
+            const checkUserId = await this.kaokaiTodaySnapShotService.findOne({userId:objId});
+            if(checkUserId !== undefined && checkUserId !== null){
+                return checkUserId.data;
+            }
+            let contentuserId = undefined;
+            const contentsUserId = data;
+            const startDateUserId = startDateRange;
+            const endDateUserId = endDateTimeRange;
+            const resultUserId: any = {};
+            resultUserId.data = contentsUserId;
+            resultUserId.startDateTime = startDateUserId;
+            resultUserId.endDateTime = endDateUserId;
+            resultUserId.userId = new ObjectID(userId);
+            const snapShotUserId = await this.kaokaiTodaySnapShotService.create(resultUserId);
+            if (snapShotUserId) {
+                contentuserId = await this.kaokaiTodaySnapShotService.findOne({ startDateTime: startDateRange, endDateTime: endDateTimeRange,userId:objId });
+            }
+            // 
+            return contentuserId.data;
+        } */
+        // check before create
+        const checkCreate = await this.kaokaiTodaySnapShotService.findOne({ startDateTime: startDateRange, endDateTime: endDateTimeRange });
+        if (checkCreate !== undefined && checkCreate !== null) {
+            return checkCreate.data;
+        }
+        let content = undefined;
+        const contents = data;
+        const startDate = startDateRange;
+        const endDate = endDateTimeRange;
+        const result: any = {};
+        result.data = contents;
+        result.startDateTime = startDate;
+        result.endDateTime = endDate;
+        const snapShot = await this.kaokaiTodaySnapShotService.create(result);
+        const user = await this.userService.findOne({ email: 'tarawut.c@absolute.co.th' });
+        if (snapShot) {
+            content = await this.kaokaiTodaySnapShotService.findOne({ startDateTime: startDateRange, endDateTime: endDateTimeRange });
+            if (content) {
+                this.pushNotification(user, user.email, content.data, 'ก้าวไกลวันนี้');
+            }
+        }
+        // 
+        return content.data;
+    }
+    private async pushNotification(user: User, email: string, content: any, subject: string): Promise<any> {
+        // chaluck.s@absolute.co.th
+        // junsuda.s@absolute.co.th
+        const profile = user.imageURL ? process.env.APP_TEST_API + '/' + user.imageURL + '/image' : 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png';
+        const profileRoundRobin = content.pageRoundRobin.contents[0].owner.imageURL ? process.env.APP_TEST_API + content.pageRoundRobin.contents[0].owner.imageURL + '/image' : 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png';
+        const profileMajorTrend = content.majorTrend.contents[0].owner.imageURL ? process.env.APP_TEST_API + content.majorTrend.contents[0].owner.imageURL + '/image' : 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png';
+        const profileKaokaiProvince = content.kaokaiProvince.contents[0].owner.imageURL ? process.env.APP_TEST_API + content.kaokaiProvince.contents[0].owner.imageURL + '/image' : 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png';
+        const profileKaokaiHashTag = content.kaokaiHashTag.contents[0].owner.imageURL ? process.env.APP_TEST_API + content.kaokaiHashTag.contents[0].owner.imageURL + '/image' : 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png';
+        const picPageRoundRobinPics = content.pageRoundRobin.contents[0].coverPageUrl ? process.env.APP_TEST_API + content.pageRoundRobin.contents[0].coverPageUrl + '/image' : '';
+        const picMajorTrendsPics = content.majorTrend.contents[0].coverPageUrl ? process.env.APP_TEST_API + content.majorTrend.contents[0].coverPageUrl + '/image' : '';
+        const pickaokaiProvincePics = content.kaokaiProvince.contents[0].coverPageUrl ? process.env.APP_TEST_API + content.kaokaiProvince.contents[0].coverPageUrl + '/image' : '';
+        const pickaokaiHashTagPics = content.kaokaiHashTag.contents[0].coverPageUrl ? process.env.APP_TEST_API + content.kaokaiHashTag.contents[0].coverPageUrl + '/image' : '';
+        const loveIcons = 'https://ea.twimg.com/email/self_serve/media/icon_like-1497559206788.png';
+        const commentIcons = 'https://ea.twimg.com/email/self_serve/media/icon_reply-1497559206779.png';
+        const shareIcons = 'https://ea.twimg.com/email/self_serve/media/icon_retweet-1497559206722.png';
+        const linkPlayStore = 'https://play.google.com/store/apps/details?id=org.moveforwardparty.today&hl=en_US';
+        const linkAppStore = 'https://apps.apple.com/th/app/mfp-today/id6444463783?l=th';
+        const linkPicPlaySyore = 'https://w7.pngwing.com/pngs/91/37/png-transparent-google-play-android-app-store-android-text-logo-microsoft-store.png';
+        const linkPicAppStore = 'https://e7.pngegg.com/pngimages/506/939/png-clipart-app-store-logo-iphone-app-store-get-started-now-button-electronics-text.png';
+        const uniqueRoundRobin = content.pageRoundRobin.contents[0].owner.uniqueId ? '@' + content.pageRoundRobin.contents[0].owner.uniqueId : '';
+        const uniqueMajorTrend = content.majorTrend.contents[0].owner.uniqueId ? '@' + content.majorTrend.contents[0].owner.uniqueId : '';
+        const uniqueProvince = content.kaokaiProvince.contents[0].owner.uniqueId ? '@' + content.kaokaiProvince.contents[0].owner.uniqueId : '';
+        const uniqueHashtag = content.kaokaiHashTag.contents[0].owner.uniqueId ? '@' + content.kaokaiHashTag.contents[0].owner.uniqueId : '';
+
+        let sendMail = undefined;
+        if (content.pageRoundRobin.contents[0] !== undefined && content.pageRoundRobin.contents[0] !== null && content.majorTrend.contents[0] !== undefined && content.majorTrend.contents[0] !== null && content.kaokaiProvince.contents[0] !== undefined && content.kaokaiProvince.contents[0] !== null && content.kaokaiHashTag.contents[0] !== undefined && content.kaokaiHashTag.contents[0] !== null) {
+            let message = `<div style='display:flex;'><img src=${profile} alt='profile' style='width:80px;height:80px;margin-bottom:10px;margin-right:15px;border-radius: 50%'><div style='width:730px;margin-bottom:10px;margin-top:25px;font-weight:300'>${user.firstName} ${user.lastName}</div><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png' alt='Today' style='width:30px;height:30px;margin-bottom:10px;margin-top:20px'></div>`;
+            // padding:0px;border:1px solid #AAB8C2;background-color:#FFFFFF;border-radius:4px
+            if (content.pageRoundRobin.contents[0] !== undefined && content.pageRoundRobin.contents[0] !== null) {
+                message += `<a href=${process.env.APP_WEBSITE} style='text-decoration: none;outline: none;color:black'>
+                <div style='background-color:#FFFFFF;height:auto;padding:30px;border: 1px solid #AAB8C2;border-radius: 5px;width:800px'><span style='font-size:25px;font-weight: 100;color:orange;margin-bottom:35px;background-color:#FFFFFF'>${content.pageRoundRobin.title}</span>
+                <div style='display:flex;background-color:#FFFFFF'><img src=${profileRoundRobin} alt='profile' style='width:80px;height:75px;margin-bottom:10px;margin-right:15px;border-radius: 50%;margin-top:25px'><div style='display:block;background-color:#FFFFFF'><div style='background-color:#FFFFFF;margin-bottom:10px;margin-top:35px;font-weight:300'>${content.pageRoundRobin.contents[0].owner.name}</div><div style='background-color:#FFFFFF;margin-bottom:10px;font-weight:100; color:#657786'>${uniqueRoundRobin}</div></div></div>
+                <img src=${picPageRoundRobinPics} style='padding:30px;width:750px;height:490px;background-color:#FFFFFF'>
+                <p style='background-color:#FFFFFF;font-size:20px;margin-top:25px;margin-bottom:25px;font-weight: 200'>${content.pageRoundRobin.contents[0].post.title}</p> <div style='margin-bottom:30px;background-color:#FFFFFF'>${content.pageRoundRobin.contents[0].post.detail}</div> 
+                <div style='display:flex; background-color:#FFFFFF'>
+                <span style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                <img src=${commentIcons} style='width:20px;height:20px;background-color: #FFFFFF;'> ${content.pageRoundRobin.contents[0].post.commentCount}</span>
+                <span style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'> ${content.pageRoundRobin.contents[0].post.shareCount}</span>
+                <span style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'> ${content.pageRoundRobin.contents[0].post.likeCount}</span>
+                </div></div></a>`;
+            } if (content.majorTrend.contents[0] !== undefined && content.majorTrend.contents[0] !== null) {
+                message += `<a href=${process.env.APP_WEBSITE} style='text-decoration: none;outline: none;color:black;'>
+                <div style='background-color:#FFFFFF;height:auto;padding:30px;border: 1px solid #AAB8C2;border-radius: 5px;width:800px;margin-top:15px'>
+                <span style='font-size:25px;font-weight: 100;color:orange;margin-bottom:35px;background-color:#FFFFFF'>${content.majorTrend.title}</span>
+                <div style='display:flex;background-color:#FFFFFF'><img src=${profileMajorTrend} alt='profile' style='width:80px;height:75px;margin-bottom:10px;margin-right:15px;border-radius: 50%;margin-top:25px'><div style='display:block;background-color:#FFFFFF'><div style='background-color:#FFFFFF;margin-bottom:10px;margin-top:35px;font-weight:300'>${content.majorTrend.contents[0].owner.name}</div><div style='background-color:#FFFFFF;margin-bottom:10px;font-weight:100; color:#657786'>${uniqueMajorTrend}</div></div></div>
+                <img src=${picMajorTrendsPics} style='padding:30px;width:750px;height:490px;background-color:#FFFFFF'>
+                <p style='background-color:#FFFFFF;font-size:20px;margin-top:25px;margin-bottom:25px;font-weight: 200'>${content.majorTrend.contents[0].post.title}</p> 
+                <div style='margin-bottom:30px;background-color:#FFFFFF'>${content.majorTrend.contents[0].post.detail}</div> <div style='display:flex; background-color:#FFFFFF'>
+                <span style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                <img src=${commentIcons} style='width:20px;height:20px;background-color: #FFFFFF;'> ${content.majorTrend.contents[0].post.commentCount}</span>
+                <span style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'> ${content.majorTrend.contents[0].post.shareCount}</span>
+                <span style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'> ${content.majorTrend.contents[0].post.likeCount}</span>
+                </div></div></a>`;
+            } if (content.kaokaiProvince.contents[0] !== undefined && content.kaokaiProvince.contents[0] !== null) {
+                message += `<a href=${process.env.APP_WEBSITE} style='text-decoration: none;outline: none;color:black;'>
+                <div style='background-color:#FFFFFF;height:auto;padding:30px;border: 1px solid #AAB8C2;border-radius: 5px;width:800px;margin-top:15px'>
+                <span style='font-size:25px;font-weight: 100;color:orange;margin-bottom:35px;background-color:#FFFFFF'>${content.kaokaiProvince.title}</span>
+                <div style='display:flex;background-color:#FFFFFF'><img src=${profileKaokaiProvince} alt='profile' style='width:80px;height:75px;margin-bottom:10px;margin-right:15px;border-radius: 50%;margin-top:25px'><div style='display:block;background-color:#FFFFFF'><div style='background-color:#FFFFFF;margin-bottom:10px;margin-top:35px;font-weight:300'>${content.kaokaiProvince.contents[0].owner.name}</div><div style='background-color:#FFFFFF;margin-bottom:10px;font-weight:100; color:#657786'>${uniqueProvince}</div></div></div>
+                <img src=${pickaokaiProvincePics} style='padding:30px;width:750px;height:490px;background-color:#FFFFFF'><p style='background-color:#FFFFFF;font-size:20px;margin-top:25px;margin-bottom:25px;font-weight: 200'>${content.kaokaiProvince.contents[0].post.title}</p> 
+                <div style='margin-bottom:30px;background-color:#FFFFFF'>${content.kaokaiProvince.contents[0].post.detail}</div> <div style='display:flex; background-color:#FFFFFF'>
+                <span style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                <img src=${commentIcons} style='width:20px;height:20px;background-color: #FFFFFF;'> ${content.kaokaiProvince.contents[0].post.commentCount}</span>
+                <span style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'> ${content.kaokaiProvince.contents[0].post.shareCount}</span>
+                <span style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'> ${content.kaokaiProvince.contents[0].post.likeCount}</span>
+                </div></div></a>`;
+            } if (content.kaokaiHashTag.contents[0] !== undefined && content.kaokaiHashTag.contents[0] !== null) {
+                message += `<a href=${process.env.APP_WEBSITE} style='text-decoration: none;outline: none;color:black;'>
+                <div style='background-color:#FFFFFF;height:auto;padding:30px;border: 1px solid #AAB8C2;border-radius: 5px;width:800px;margin-top:15px'>
+                <span style='font-size:25px;font-weight: 100;color:orange;margin-bottom:35px;background-color:#FFFFFF'>${content.kaokaiHashTag.title}</span>
+                <div style='display:flex;background-color:#FFFFFF'><img src=${profileKaokaiHashTag} alt='profile' style='width:80px;height:75px;margin-bottom:10px;margin-right:15px;border-radius: 50%;margin-top:25px'><div style='display:block;background-color:#FFFFFF'><div style='background-color:#FFFFFF;margin-bottom:10px;margin-top:35px;font-weight:300'>${content.kaokaiHashTag.contents[0].owner.name}</div><div style='background-color:#FFFFFF;margin-bottom:10px;font-weight:100; color:#657786'>${uniqueHashtag}</div></div></div>
+                <img src=${pickaokaiHashTagPics} style='padding:30px;width:750px;height:490px;background-color:#FFFFFF'><p style='background-color:#FFFFFF;font-size:20px;margin-top:25px;margin-bottom:25px;font-weight: 200'>${content.kaokaiHashTag.contents[0].post.title}</p> 
+                <div style='margin-bottom:30px;background-color:#FFFFFF'>${content.kaokaiHashTag.contents[0].post.detail}</div> <div style='display:flex; background-color:#FFFFFF'>
+                <span style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                <img src=${commentIcons} style='width:20px;height:20px;background-color: #FFFFFF;'> ${content.kaokaiHashTag.contents[0].post.commentCount}</span>
+                <span style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'> ${content.kaokaiHashTag.contents[0].post.shareCount}</span>
+                <span style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'> ${content.kaokaiHashTag.contents[0].post.likeCount}</span>
+                </div></div></a>`;
+            }
+            message += `<div style='display:flex;'><a href=${linkPlayStore}><img src=${linkPicPlaySyore} style='width:150px;margin-top:15px;margin-right:20px'></a><a href=${linkAppStore}><img src=${linkPicAppStore} style='width:150px;margin-top:15px'></a></div>`;
+
+            sendMail = MAILService.pushNotification(message, email, subject);
+        } else {
+            return ResponseUtil.getErrorResponse('error in sending email', '');
+
+        }
+        if (sendMail) {
+            return ResponseUtil.getSuccessResponse('Your Activation Code has been sent to your email inbox.', '');
+        } else {
+            return ResponseUtil.getErrorResponse('error in sending email', '');
+        }
+    }
     private parseUserField(user: any): any {
         const userResult: any = {};
 

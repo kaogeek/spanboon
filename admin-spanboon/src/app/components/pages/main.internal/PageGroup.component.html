@@ -30,14 +30,9 @@
                                             *ngIf="submitted && dataForm.name.trim() === ''">
                                             กรุณาใส่ ชื่อ
                                         </div>
-                                        <label style='margin-top:15px'>กลุ่ม *</label>
-                                        <mat-form-field appearance="none">
-                                            <mat-select [(ngModel)]="dataForm.group" name="group" placeholder='dataForm.group'required>
-                                                <mat-option *ngFor="let stackGroup of stackGroups" [value]="stackGroup.detail">
-                                                    {{stackGroup.detail}}
-                                                </mat-option>
-                                            </mat-select>
-                                        </mat-form-field>
+                                        <label style="margin-top: 5pt;">กลุ่ม *</label>
+                                        <input type="text" class="form-control" [(ngModel)]="dataForm.detail"
+                                            [ngModelOptions]="{standalone: true}">
                                     </div>
                                 </div>
                             </div>
@@ -52,10 +47,12 @@
         </mat-drawer>
         <mat-drawer-content>
             <div class="main-content">
-                <admin-table-component #table [orderBy]="orderBy" [facade]="pageFacade" [isApprovePage]="'true'"
-                    [title]="'ตรวจสอบเพจ'" (official)="clickOfficial($event)" (ban)="clickBan($event)"
+                <admin-table-component #table [orderBy]="orderBy" [facade]="pageGroupFacade" [isApprovePage]="'true'"
+                    [title]="'เพจกลุ่ม'" (official)="clickOfficial($event)" (ban)="clickBan($event)"
                     [fieldTable]="fieldTable" [actions]="actions" [isOfficialPage]="isOfficialPage"
-                    (edit)="clickEditForm($event)" (delete)="clickDelete($event)"></admin-table-component>
+                    (edit)="clickEditForm($event)"
+                    (create)="clickCreateForm()"
+                    (delete)="clickDelete($event)"></admin-table-component> 
             </div>
         </mat-drawer-content>
     </mat-drawer-container>

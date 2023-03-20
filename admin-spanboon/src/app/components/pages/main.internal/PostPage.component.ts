@@ -16,6 +16,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { DialogWarningComponent } from '../../shares/DialogWarningComponent.component';
 import { AuthenManager } from '../../../services/AuthenManager.service';
 import { Router } from '@angular/router';
+import { PageGroupFacade } from '../../../services/facade/PageGroupFacade.service';
 
 const PAGE_NAME: string = "page";
 
@@ -34,7 +35,9 @@ export class PostPage extends AbstractPage implements OnInit {
     private authenManager: AuthenManager;
     private router: Router;
     public isSave: boolean = false;
-
+    public pageGroupFacade:PageGroupFacade;
+    public pageGroups: any = [];
+    public stackGroups:any = [];
     public dataForm: Page;
     public valueBool: boolean;
     public valuetring: string;
@@ -44,9 +47,10 @@ export class PostPage extends AbstractPage implements OnInit {
     public isOfficialPage: {};
     public orderBy: any = {};
 
-    constructor(pageFacade: PageFacade, router: Router, dialog: MatDialog, authenManager: AuthenManager) {
+    constructor(pageFacade: PageFacade,pageGroupFacade:PageGroupFacade, router: Router, dialog: MatDialog, authenManager: AuthenManager) {
         super(PAGE_NAME, dialog);
         this.pageFacade = pageFacade;
+        this.pageGroupFacade = pageGroupFacade;
         this.router = router;
         this.authenManager = authenManager;
         // if (!this.authenManager.isCurrentUserType()) {
@@ -65,9 +69,9 @@ export class PostPage extends AbstractPage implements OnInit {
                 align: "left"
             },
             {
-                name: "roundRobin",
-                label: "RoundRobin",
-                width: "40pt",
+                name: "group",
+                label: "กลุ่ม",
+                width: "150pt",
                 class: "", formatColor: false, formatImage: false,
                 link: [],
                 formatDate: false,
@@ -97,7 +101,7 @@ export class PostPage extends AbstractPage implements OnInit {
     private setFields(): void {
         this.dataForm = new Page();
         this.dataForm.name = "";
-        this.dataForm.roundRobin = undefined;
+        this.dataForm.group = "";
         this.valueBool = true;
         this.valuetring = "";
         this.valueNum = 0;
@@ -139,8 +143,8 @@ export class PostPage extends AbstractPage implements OnInit {
         filter.limit = SEARCH_LIMIT;
         filter.offset = SEARCH_OFFSET;
         filter.relation = [],
-            filter.whereConditions = {},
-            filter.count = false;
+        filter.whereConditions = {},
+        filter.count = false;
         filter.orderBy = {}
         this.pageFacade.search(filter).then((res: any) => {
         }).catch((err: any) => {
@@ -148,6 +152,10 @@ export class PostPage extends AbstractPage implements OnInit {
     }
 
     public clickEditForm(data: any): void {
+        const stackPageGroup = this.pageGroupFacade.finds().then((datas)=>{
+            this.stackGroups =datas;
+        });
+    
         this.drawer.toggle();
         this.valueBool = true;
         this.valuetring = "";
@@ -274,13 +282,16 @@ export class PostPage extends AbstractPage implements OnInit {
         let data = this.dataForm;
         this.isSave = true;
         this.submitted = true;
-        this.pageFacade.edit(data.id,data).then((res) =>{
+        this.pageFacade.edit(data.id, data).then((res) => {
             this.submitted = false;
             this.isSave = false;
             this.drawer.toggle();
-        }).catch((err:any) =>{
+        }).catch((err: any) => {
             this.isSave = false;
             this.dialogWarning(err.error.message);
         })
+    }
+    public seleceType(event) {
+        console.log('event',event);
     }
 }

@@ -74,8 +74,8 @@ export class HashTagService {
 
     }
 
-    public searchHashSec(): Promise<any> {
-        const limit = 4;
+    public searchHashSec(range:number): Promise<any> {
+        const limit = range;
         const offset = 0;
         const select = undefined;
         const whereConditions = undefined;

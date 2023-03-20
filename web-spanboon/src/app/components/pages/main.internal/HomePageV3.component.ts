@@ -5,18 +5,19 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-import { Component, OnInit, ViewChild, EventEmitter, HostListener } from '@angular/core';
+import { Component, OnInit, EventEmitter, HostListener } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Gallery } from '@ngx-gallery/core';
 import { AuthenManager, MainPageSlideFacade, HashTagFacade, AssetFacade, PageFacade, SeoService, UserSubjectFacade } from '../../../services/services';
 import { AbstractPage } from '../AbstractPage';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { PostFacade } from '../../../services/facade/PostFacade.service';
 import { CacheConfigInfo } from '../../../services/CacheConfigInfo.service';
 import { PLATFORM_NAME_TH } from 'src/custom/variable';
 import { SearchFilter } from '../../../models/SearchFilter';
 import { environment } from 'src/environments/environment';
-import { DialogAlert, DialogCheckBox, DialogPostCrad } from '../../components';
+import { DialogCheckBox, DialogPostCrad, DialogAlert } from '../../components';
+
 
 declare var $: any;
 
@@ -27,6 +28,7 @@ const PAGE_NAME: string = 'home';
   templateUrl: './HomePageV3.component.html',
 })
 export class HomePageV3 extends AbstractPage implements OnInit {
+  startDate: Date;
   public static readonly PAGE_NAME: string = PAGE_NAME;
   public userCloneDatas: any;
   public isLoading: boolean;
@@ -35,8 +37,6 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   public windowWidth: any;
   public mainPageModelFacade: MainPageSlideFacade;
   public model: any = undefined;
-  private cacheConfigInfo: CacheConfigInfo;
-  private postFacade: PostFacade;
   private hashTagFacade: HashTagFacade;
   private pageFacade: PageFacade;
   private assetFacade: AssetFacade;
@@ -44,7 +44,13 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   private userSubject: UserSubjectFacade;
   public hashTag: any = [];
   public pageUser: any;
+  public startDateLong: number;
+  public user: any;
+  public testValues: any = undefined;
   public apiBaseURL = environment.apiBaseURL;
+  public queryParamsUrl: any;
+
+  maxDate = new Date();
 
   constructor(
     private gallery: Gallery,
@@ -58,9 +64,20 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     hashTagFacade: HashTagFacade,
     assetFacade: AssetFacade,
     seoService: SeoService,
-    userSubject: UserSubjectFacade
+    userSubject: UserSubjectFacade,
+    private route: ActivatedRoute
   ) {
+
     super(null, authenManager, dialog, router);
+    this.route.queryParams.subscribe(params => {
+      const rawDate = params['date'];
+      if (rawDate) {
+        const dateParts = rawDate.split('-');
+        this.queryParamsUrl = new Date(`${dateParts[1]}-${dateParts[0]}-${dateParts[2]}`).getTime();
+      }
+      // You can use the value of the 'date' parameter here
+    });
+    this.startDate = new Date();
     this.pageFacade = pageFacade;
     this.mainPageModelFacade = mainPageModelFacade;
     this.assetFacade = assetFacade;
@@ -84,17 +101,83 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     this.getScreenSize();
     super.ngOnInit();
   }
-  public async getMainPageModelV3(userId?) {
+  public async saveDate(event: any) {
     this.isLoading = true;
-    this.model = await this.mainPageModelFacade.getMainPageModelV3(userId);
-    console.log("model", this.model)
-    for (let index = 0; index < this.model.postSectionModel.contents.length; index++) {
-      if (this.model.postSectionModel.contents[index].post.type === "FULFILLMENT") {
-        this.model.postSectionModel.contents.splice(index, 1);
-      } else if (this.model.postSectionModel.contents[index].coverPageUrl === undefined) {
-        this.model.postSectionModel.contents.splice(index, 1);
-      }
+    this.user;
+    this.startDateLong = new Date(event.value).getTime();
+    const date = new Date(event.value);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    const formattedDate = `${day}-${month}-${year}`;
+    this.mainPageModelFacade.getMainPageModelV3(this.user, this.startDateLong).then((res) => {
+      this.model = res;
+      this.testValues = new Date(this.startDateLong).toISOString(); // convert to ISO string
+      localStorage.setItem('datetime', JSON.stringify(this.testValues));
+      this.isLoading = false;
+    }).catch((err) => {
+      this.isLoading = false;
+      this.testValues = new Date();
+      this.dialog.open(DialogAlert, {
+        disableClose: true,
+        data: {
+          text: 'ไม่เจอหนังสือพิมพ์ฉบับนี้',
+          bottomText1: 'ตกลง',
+          btDisplay1: "none"
+        }
+      });
+      localStorage.removeItem('datetime')
+    });
+    this.router.navigate(['/home'], { queryParams: { date: formattedDate } });
+  }
+  public async getMainPageModelV3(userId?) {
+    // 1678726800000
+    let testDate = JSON.parse(localStorage.getItem('datetime'));
+    if (testDate !== null) {
+      this.testValues = testDate;
     }
+    if(this.queryParamsUrl!== undefined){
+      this.mainPageModelFacade.getMainPageModelV3(userId, this.queryParamsUrl).then((res) => {
+        this.testValues = new Date(this.queryParamsUrl).toISOString();
+        this.model = res;
+        for (let index = 0; index < this.model.postSectionModel.contents.length; index++) {
+          if (this.model.postSectionModel.contents[index].post.type === "FULFILLMENT") {
+            this.model.postSectionModel.contents.splice(index, 1);
+          } else if (this.model.postSectionModel.contents[index].coverPageUrl === undefined) {
+            this.model.postSectionModel.contents.splice(index, 1);
+          }
+        }
+      }).catch((err) => {
+        this.isLoading = false;
+        this.testValues = new Date();
+        this.dialog.open(DialogAlert, {
+          disableClose: true,
+          data: {
+            text: 'ไม่เจอหนังสือพิมพ์ฉบับนี้',
+            bottomText1: 'ตกลง',
+            btDisplay1: "none"
+          }
+        });
+        localStorage.removeItem('datetime')
+        this.router.navigate(['/home']);
+      })
+    }
+    this.user = userId;
+    this.isLoading = true;
+    this.mainPageModelFacade.getMainPageModelV3(userId, this.startDateLong).then((res) => {
+      this.model = res;
+      for (let index = 0; index < this.model.postSectionModel.contents.length; index++) {
+        if (this.model.postSectionModel.contents[index].post.type === "FULFILLMENT") {
+          this.model.postSectionModel.contents.splice(index, 1);
+        } else if (this.model.postSectionModel.contents[index].coverPageUrl === undefined) {
+          this.model.postSectionModel.contents.splice(index, 1);
+        }
+      }
+    }).catch((err) => {
+      console.log('err', err);
+    })
+
+
     // if (this.isLogin) {
     //   this.getSubject();
     // }
@@ -250,8 +333,10 @@ export class HomePageV3 extends AbstractPage implements OnInit {
 
     if (this.windowWidth <= 479) {
       this.isPostNewTab = true;
+      console.log("newTab true", this.isPostNewTab)
     } else {
       this.isPostNewTab = false;
+      console.log("newTab false", this.isPostNewTab)
     }
   }
   public stopIsloading() {

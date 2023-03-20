@@ -27,8 +27,6 @@ import { HashTagService } from '../services/HashTagService';
 import { PageObjectiveService } from '../services/PageObjectiveService';
 import { EmergencyEventService } from '../services/EmergencyEventService';
 import { ResponseUtil } from '../../utils/ResponseUtil';
-import { FacebookWebhookLogsService } from '../services/FacebookWebhookLogsService';
-import { DateTimeUtil } from '../../utils/DateTimeUtil';
 import { POST_WEIGHT_SCORE, DEFAULT_POST_WEIGHT_SCORE } from '../../constants/SystemConfig';
 import { ConfigService } from '../services/ConfigService';
 @JsonController('/fb_webhook')
@@ -40,7 +38,6 @@ export class FacebookWebhookController {
         private hashTagService: HashTagService,
         private pageObjectiveService: PageObjectiveService,
         private emergencyEventService: EmergencyEventService,
-        private facebookWebhookLogsService: FacebookWebhookLogsService,
         private configService: ConfigService,
     ) { }
 
@@ -836,7 +833,7 @@ export class FacebookWebhookController {
                     const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
                     return res.status(200).send(successResponse);
                 }
-                // 4*(3*(newLike+oldLike)) + summationScore. Assumtion = 4*(3*(1+3))+23 = 48+23 = 71
+                // 4*(3*(newLike+oldLike)) + summationScore. Example = 4*(3*(1+3))+23 = 48+23 = 71 ??
                 const like = (xTodayxScore * (sTodayLike * (likeConstance + findActualPost.likeCount))) + (yFacebookyScore * (sFacebookLike * (likeConstance + findActualPost.likeCountFB)));
                 const query = { _id: findActualPost.id };
                 const newValuesLike = { $set: { likeCountFB: findActualPost.likeCountFB + likeConstance, summationScores: like } };
@@ -860,7 +857,7 @@ export class FacebookWebhookController {
                     const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
                     return res.status(200).send(successResponse);
                 }
-                // 4*(3*(newComment+oldComment)) + summationScore. Assumtion = 4*(3*(1+10))+15 = 132+15 = 147
+                // 4*(3*(newComment+oldComment)) + summationScore. Example = 4*(3*(1+10))+15 = 132+15 = 147
                 const commnet = (xTodayxScore * (sTodayComment * (commentConstance + findActualPost.commentCount))) + (yFacebookyScore * (sFacebookComment * (commentConstance + findActualPost.commentCountFB)));
                 const query = { _id: findActualPost.id };
                 const newValuesLike = { $set: { commentCountFB: findActualPost.commentCountFB + commentConstance, summationScores: commnet } };
@@ -885,7 +882,7 @@ export class FacebookWebhookController {
                     const ErrorActualPostsuccessResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
                     return res.status(200).send(ErrorActualPostsuccessResponse);
                 }
-                // 4*(3*(newShare+oldShare)) + summationScore. Assumption = 4*(3*(1+6))+23 = 107, 4*(3*(1+7)) + 107 = 203
+                // 4*(3*(newShare+oldShare)) + summationScore. Example = 4*(3*(1+6))+23 = 107, 4*(3*(1+7)) + 107 = 203
                 const share = (xTodayxScore * (sTodayShare * (shareConstance + findActualPost.shareCount))) + (yFacebookyScore * (sShareFacebook * (shareConstance + findActualPost.shareCountFB)));
                 const query = { _id: findActualPost.id };
                 const newValuesLike = { $set: { shareCountFB: findActualPost.shareCountFB + shareConstance, summationScores: share } };
@@ -908,52 +905,6 @@ export class FacebookWebhookController {
         }
     }
 
-    @Post('/summation')
-    public async summationScores(@Res() res: any): Promise<any> {
-        const dayRanges: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 1);
-        // startDateTime: dayRanges[0],
-        // endDateTime: dayRanges[1]
-        const startDateTime = dayRanges[0];
-        const endDateTime = dayRanges[1];
-        const queryScore = await this.facebookWebhookLogsService.searchScores(startDateTime, endDateTime);
-        for (const query of queryScore) {
-            //  
-            const summation = query.likeCount + query.commentCount + query.shareCount + query.likeCountFB + query.commentCountFB + query.shareCountFB;
-            const queryNew = { _id: query.id };
-            const newValues = { $set: { summationScore: summation } };
-            await this.postsService.update(queryNew, newValues);
-        }
-        const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', queryScore);
-        return res.status(200).send(successResponse);
-    }
-    @Post('/round/robin')
-    public async roundRobin(@Res() res: any): Promise<any> {
-        let roundRobin: any = [];
-        const currentDateTime = moment().toDate().getTime();
-        const political = await this.facebookWebhookLogsService.political();
-        const boss = await this.facebookWebhookLogsService.boss();
-        const secretary = await this.facebookWebhookLogsService.secretary();
-        // check limit time && newsFlag !== false ????
-
-        roundRobin = { 'political': political.shift(), 'boss': boss.shift(), 'secretary': secretary.shift() };
-        if (roundRobin.political.startDateTime.getTime() < currentDateTime) {
-            const queryPolitical = { _id: roundRobin.political.id };
-            const newValuequeryPolitical = { $set: { newsFlag: true } };
-            await this.postsService.update(queryPolitical, newValuequeryPolitical);
-        }
-        if (roundRobin.boss.startDateTime.getTime() < currentDateTime) {
-            const queryBoss = { _id: roundRobin.boss.id };
-            const newValuequeryBoss = { $set: { newsFlag: true } };
-            await this.postsService.update(queryBoss, newValuequeryBoss);
-        }
-        if (roundRobin.secretary.startDateTime.getTime() < currentDateTime) {
-            const querySecretary = { _id: roundRobin.secretary.id };
-            const newValueSecretary = { $set: { newsFlag: true } };
-            await this.postsService.update(querySecretary, newValueSecretary);
-        }
-        const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', currentDateTime);
-        return res.status(200).send(successResponse);
-    }
     private async findMasterHashTag(hashTagNameList: string[]): Promise<HashTag[]> {
         return await this.hashTagService.find({ name: { $in: hashTagNameList } });
     }

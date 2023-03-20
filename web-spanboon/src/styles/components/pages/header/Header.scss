@@ -104,6 +104,15 @@
     padding: 10pt 0 10pt 10pt;
     border-left: $width-border solid $bg-fog-gray2;
 
+    >.label-date {
+      display: flex;
+      padding: 0 10pt;
+      align-items: center;
+      cursor: pointer;
+      flex: 0 0 auto;
+      width: 20px;
+    }
+
     >.about-us-icon {
       width: 40px;
       height: 40px;

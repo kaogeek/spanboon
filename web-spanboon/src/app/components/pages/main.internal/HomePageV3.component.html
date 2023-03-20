@@ -16,8 +16,21 @@
 <div class="home-page">
     <section class="section-1" *ngIf="!showLoading">
         <div class="container">
+            <div class="label-date">
+                <h2 class="newspaper_title">หนังสือพิมพ์ฉบับวันที่ </h2>
+                <span class="Newspaper_SelectDate">
+                    <loading *ngIf="isLoading"></loading>
+                    <mat-form-field class="custom-class">
+                        <input matInput [matDatepicker]="picker" [(ngModel)]="testValues?testValues:startDate"
+                            [max]="startDate" (dateChange)="saveDate($event)">
+                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker #picker panelClass="datepickerOne"></mat-datepicker>
+                    </mat-form-field>
+                </span>
+            </div>
             <div class="wrapper-1">
-                <div class="wrapper-1-left">
+                <div class="wrapper-1-left"
+                    *ngIf="model && model.emergencyEvents.contents.length > 0 && (model.postSectionModel.contents.length > 0) && (model.pageRoundRobin.contents.length > 0)">
                     <div>
                         <div class="wrapper-hastags">
                             <span class="header-hastags">ก่อนหน้า : </span>
@@ -117,8 +130,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="wrapper-1-right">
-                    <div class="wrapper-hastags">
+                <div class="wrapper-1-right"
+                    [ngClass]="{'home-wrapper-right': model && model.emergencyEvents.contents.length <= 0}">
+                    <div class="wrapper-hastags" *ngIf="model && model.emergencyEvents.contents.length > 0">
                         <span class="header-hastags">มาใหม่ : </span>
                         <a class="tag-link"
                             (click)="clickToPage(model && model.hashTagSumma[0].name,'hashTagSumma')">#{{model &&
@@ -132,384 +146,402 @@
                             (click)="clickToPage(model && model.hashTagSumma[2].name,'hashTagSumma')">#{{model &&
                             model.hashTagSumma[2].name}}</a>
                     </div>
-                    <div class="wrapper-banner-header banner-header-bg-gray">
-                        <svg class="img-objective" xmlns="http://www.w3.org/2000/svg" width="22.899" height="22.899"
-                            viewBox="0 0 22.899 22.899">
-                            <g id="mission" transform="translate(0)">
-                                <path id="Path_3205" data-name="Path 3205"
-                                    d="M4.864,322.8a1.782,1.782,0,0,1,.267-1.475l3.26-4.646L6.552,314.13a.447.447,0,0,0-.726,0L.085,322.093a.447.447,0,0,0,.363.709Z"
-                                    transform="translate(0 -299.903)" fill="#747474" />
-                                <path id="Path_3206" data-name="Path 3206"
-                                    d="M311.071,9.5V7.156h5.59a.671.671,0,0,0,.57-1.025L316.06,4.249l1.171-1.882a.671.671,0,0,0-.57-1.025h-5.59V.671a.671.671,0,1,0-1.342,0V9.5A.865.865,0,0,1,311.071,9.5Z"
-                                    transform="translate(-295.877)" fill="#747474" />
-                                <path id="Path_3207" data-name="Path 3207"
-                                    d="M149.512,349.174l-1.6,1.492a.671.671,0,0,1-.915,0l-1.162-1.082-1.161,1.082a.671.671,0,0,1-.915,0l-1.6-1.492-4.616,6.578a.447.447,0,0,0,.366.7h15.855a.447.447,0,0,0,.366-.7Z"
-                                    transform="translate(-131.312 -333.558)" fill="#747474" />
-                                <path id="Path_3208" data-name="Path 3208"
-                                    d="M260.934,244.4l1.161-1.082a.671.671,0,0,1,.915,0l1.162,1.082,1.292-1.177-2.545-3.626a.447.447,0,0,0-.732,0l-2.545,3.626Z"
-                                    transform="translate(-248.03 -228.703)" fill="#747474" />
-                            </g>
-                        </svg>
-                        <span class="banner-text-header"
-                            (click)="clickToPageUser(model && model.postSectionModel.contents[0].post.objective,'objective')"
-                            [innerHTML]="'#' + (model && model.postSectionModel.contents[0].post.objectiveTag)"></span>
-                    </div>
-                    <div class="wrapper-news">
-                        <div class="wrapper-news-left">
-                            <div class="wrapper-bar md-none-min">
-                                <span class="news-post-bar-left">
-                                    <span class="post-point">●</span>
-                                    <span>ทั่วไป</span>
-                                </span>
-                                <span class="news-post-bar-right">
-                                    <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-                                        <path
-                                            d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0" />
-                                        <path
-                                            d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 " />
-                                    </svg>
-                                    <a class="tag-link gray time"
-                                        (click)="clickToPost(model && model.postSectionModel.contents[0].post._id)"
-                                        [innerHTML]="model && model.postSectionModel.contents[0].post.createdDate | thformatdatetime"></a>
-                                </span>
-                            </div>
-                            <div class="wrapper-news-post flex-content">
-                                <div class="wrapper-news-post-img md-none-min">
-                                    <img src="{{apiBaseURL + (model && model.postSectionModel.contents[1].coverPageUrl) + '/image'}}"
-                                        alt="">
+                    <div class="wrapper-section-model">
+                        <div class="wrapper-banner-header banner-header-bg-gray">
+                            <svg class="img-objective" xmlns="http://www.w3.org/2000/svg" width="22.899" height="22.899"
+                                viewBox="0 0 22.899 22.899">
+                                <g id="mission" transform="translate(0)">
+                                    <path id="Path_3205" data-name="Path 3205"
+                                        d="M4.864,322.8a1.782,1.782,0,0,1,.267-1.475l3.26-4.646L6.552,314.13a.447.447,0,0,0-.726,0L.085,322.093a.447.447,0,0,0,.363.709Z"
+                                        transform="translate(0 -299.903)" fill="#747474" />
+                                    <path id="Path_3206" data-name="Path 3206"
+                                        d="M311.071,9.5V7.156h5.59a.671.671,0,0,0,.57-1.025L316.06,4.249l1.171-1.882a.671.671,0,0,0-.57-1.025h-5.59V.671a.671.671,0,1,0-1.342,0V9.5A.865.865,0,0,1,311.071,9.5Z"
+                                        transform="translate(-295.877)" fill="#747474" />
+                                    <path id="Path_3207" data-name="Path 3207"
+                                        d="M149.512,349.174l-1.6,1.492a.671.671,0,0,1-.915,0l-1.162-1.082-1.161,1.082a.671.671,0,0,1-.915,0l-1.6-1.492-4.616,6.578a.447.447,0,0,0,.366.7h15.855a.447.447,0,0,0,.366-.7Z"
+                                        transform="translate(-131.312 -333.558)" fill="#747474" />
+                                    <path id="Path_3208" data-name="Path 3208"
+                                        d="M260.934,244.4l1.161-1.082a.671.671,0,0,1,.915,0l1.162,1.082,1.292-1.177-2.545-3.626a.447.447,0,0,0-.732,0l-2.545,3.626Z"
+                                        transform="translate(-248.03 -228.703)" fill="#747474" />
+                                </g>
+                            </svg>
+                            <span class="banner-text-header"
+                                (click)="clickToPageUser(model && model.postSectionModel.contents[0].post.objective,'objective')"
+                                [innerHTML]="'#' + (model && model.postSectionModel.contents[0].post.objectiveTag)"></span>
+                        </div>
+                        <div class="wrapper-news">
+                            <div class="wrapper-news-left">
+                                <div class="wrapper-bar md-none-min">
+                                    <span class="news-post-bar-left">
+                                        <span class="post-point">●</span>
+                                        <span>ทั่วไป</span>
+                                    </span>
+                                    <span class="news-post-bar-right">
+                                        <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0" />
+                                            <path
+                                                d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 " />
+                                        </svg>
+                                        <a class="tag-link gray time"
+                                            (click)="clickToPost(model && model.postSectionModel.contents[0].post._id)"
+                                            [innerHTML]="model && model.postSectionModel.contents[0].post.createdDate | thformatdatetime"></a>
+                                    </span>
                                 </div>
-                                <div class="detail">
-                                    <p class="title md-none-min"
-                                        [innerHTML]="model && model.postSectionModel.contents[1].post.title | highlight">
-                                    </p>
-                                    <div class="owner-post md-none-min">
-                                        <p class="owner-name"
-                                            (click)="clickToPageUser(model && model.postSectionModel.contents[1].owner.id)"
-                                            [innerHTML]="model && model.postSectionModel.contents[1].owner.name ? model && model.postSectionModel.contents[1].owner.name : model && model.postSectionModel.contents[1].owner.displayName">
-                                        </p>
+                                <div class="wrapper-news-post flex-content"
+                                    (click)="isPostNewTab ? openDilogPost(model && model.postSectionModel.contents[1]) : clickToPost(model && model.postSectionModel.contents[1].post._id)">
+                                    <div class="wrapper-news-post-img md-none-min">
+                                        <img src="{{apiBaseURL + (model && model.postSectionModel.contents[1].coverPageUrl) + '/image'}}"
+                                            alt="">
                                     </div>
-                                    <p class="amount-social md-none-min">
-                                        <span>{{model && model.postSectionModel.contents[1].post.commentCount |
-                                            shortNumber}} ความคิดเห็น</span>
-                                        <span>•</span>
-                                        <span>{{model && model.postSectionModel.contents[1].post.repostCount |
-                                            shortNumber}} บอกต่อ</span>
-                                        <span>•</span>
-                                        <span>{{model && model.postSectionModel.contents[1].post.likeCount |
-                                            shortNumber}} ถูกใจ</span>
-                                        <span>•</span>
-                                        <span>{{model && model.postSectionModel.contents[1].post.shareCount |
-                                            shortNumber}} แชร์</span>
-                                    </p>
-                                    <div class="wrapper-title-topic md-none-max">
-                                        <p class="title-topic"
-                                            (click)="openDilogPost(model && model.postSectionModel.contents[1])"
+                                    <div class="detail">
+                                        <p class="title md-none-min"
+                                            (click)="isPostNewTab ? openDilogPost(model && model.postSectionModel.contents[1]) : clickToPost(model && model.postSectionModel.contents[1].post._id)"
                                             [innerHTML]="model && model.postSectionModel.contents[1].post.title | highlight">
                                         </p>
-                                        <a class="tag-link gray time"
-                                            (click)="clickToPost(model && model.postSectionModel.contents[1].post._id)"
-                                            [innerHTML]="model &&
-                                        model.postSectionModel.contents[1].post.createdDate |
-                                        thformatdatetime"></a>
+                                        <div class="owner-post md-none-min">
+                                            <p class="owner-name"
+                                                (click)="clickToPageUser(model && model.postSectionModel.contents[1].owner.id)"
+                                                [innerHTML]="model && model.postSectionModel.contents[1].owner.name ? model && model.postSectionModel.contents[1].owner.name : model && model.postSectionModel.contents[1].owner.displayName">
+                                            </p>
+                                        </div>
+                                        <p class="amount-social md-none-min">
+                                            <span>{{model && model.postSectionModel.contents[1].post.commentCount |
+                                                shortNumber}} ความคิดเห็น</span>
+                                            <span>•</span>
+                                            <span>{{model && model.postSectionModel.contents[1].post.repostCount |
+                                                shortNumber}} บอกต่อ</span>
+                                            <span>•</span>
+                                            <span>{{model && model.postSectionModel.contents[1].post.likeCount |
+                                                shortNumber}} ถูกใจ</span>
+                                            <span>•</span>
+                                            <span>{{model && model.postSectionModel.contents[1].post.shareCount |
+                                                shortNumber}} แชร์</span>
+                                        </p>
+                                        <div class="wrapper-title-topic md-none-max">
+                                            <p class="title-topic"
+                                                (click)="isPostNewTab ? openDilogPost(model && model.postSectionModel.contents[1]) : clickToPost(model && model.postSectionModel.contents[1].post._id)"
+                                                [innerHTML]="model && model.postSectionModel.contents[1].post.title | highlight">
+                                            </p>
+                                            <a class="tag-link gray time"
+                                                (click)="clickToPost(model && model.postSectionModel.contents[1].post._id)"
+                                                [innerHTML]="model &&
+                                            model.postSectionModel.contents[1].post.createdDate |
+                                            thformatdatetime"></a>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="wrapper-bar md-none-min">
-                                <span class="news-post-bar-left">
-                                    <span class="post-point">●</span>
-                                    <span>ทั่วไป</span>
-                                </span>
-                                <span class="news-post-bar-right">
-                                    <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-                                        <path
-                                            d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0" />
-                                        <path
-                                            d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 " />
-                                    </svg>
-                                    <a class="tag-link gray time"
-                                        (click)="clickToPost(model && model.postSectionModel.contents[2].post._id)"
-                                        [innerHTML]="model && model.postSectionModel.contents[2].post.createdDate | thformatdatetime"></a>
-                                </span>
-                            </div>
-                            <div class="wrapper-news-post flex-content">
-                                <div class="wrapper-news-post-img md-none-min">
-                                    <img src="{{apiBaseURL + (model && model.postSectionModel.contents[2].coverPageUrl) + '/image'}}"
-                                        alt="">
-                                </div>
-                                <div class="detail">
-                                    <p class="title md-none-min"
-                                        [innerHTML]="model && model.postSectionModel.contents[2].post.title | highlight">
-                                    </p>
-                                    <div class="owner-post md-none-min">
-                                        <p class="owner-name"
-                                            (click)="clickToPageUser(model && model.postSectionModel.contents[2].owner.id)"
-                                            [innerHTML]="model && model.postSectionModel.contents[2].owner.name ? model && model.postSectionModel.contents[2].owner.name : model && model.postSectionModel.contents[2].owner.displayName">
-                                        </p>
-                                    </div>
-                                    <p class="amount-social md-none-min">
-                                        <span>{{model && model.postSectionModel.contents[2].post.commentCount |
-                                            shortNumber}} ความคิดเห็น</span>
-                                        <span>•</span>
-                                        <span>{{model && model.postSectionModel.contents[2].post.repostCount |
-                                            shortNumber}} บอกต่อ</span>
-                                        <span>•</span>
-                                        <span>{{model && model.postSectionModel.contents[2].post.likeCount |
-                                            shortNumber}} ถูกใจ</span>
-                                        <span>•</span>
-                                        <span>{{model && model.postSectionModel.contents[2].post.shareCount |
-                                            shortNumber}} แชร์</span>
-                                    </p>
-                                    <div class="wrapper-title-topic md-none-max">
-                                        <p class="title-topic"
-                                            (click)="openDilogPost(model && model.postSectionModel.contents[2])"
-                                            [innerHTML]="model && model.postSectionModel.contents[2].post.title | highlight">
-                                        </p>
+                                <div class="wrapper-bar md-none-min">
+                                    <span class="news-post-bar-left">
+                                        <span class="post-point">●</span>
+                                        <span>ทั่วไป</span>
+                                    </span>
+                                    <span class="news-post-bar-right">
+                                        <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0" />
+                                            <path
+                                                d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 " />
+                                        </svg>
                                         <a class="tag-link gray time"
                                             (click)="clickToPost(model && model.postSectionModel.contents[2].post._id)"
-                                            [innerHTML]="model &&
-                                        model.postSectionModel.contents[2].post.createdDate |
-                                        thformatdatetime"></a>
-                                    </div>
+                                            [innerHTML]="model && model.postSectionModel.contents[2].post.createdDate | thformatdatetime"></a>
+                                    </span>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="wrapper-news-right">
-                            <div class="wrapper-bar">
-                                <span class="news-post-bar-left">
-                                    <span class="post-point">●</span>
-                                    <span>ทั่วไป</span>
-                                </span>
-                                <span class="news-post-bar-right">
-                                    <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-                                        <path
-                                            d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0" />
-                                        <path
-                                            d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 " />
-                                    </svg>
-                                    <a class="tag-link gray time"
-                                        (click)="clickToPost(model && model.postSectionModel.contents[0].post._id)"
-                                        [innerHTML]="model &&
-                                    model.postSectionModel.contents[0].post.createdDate |
-                                    thformatdatetime"></a>
-                                </span>
-                            </div>
-                            <div class="wrapper-news-post"
-                                (click)="openDilogPost(model && model.postSectionModel.contents[0])">
-                                <div class="wrapper-news-post-img">
-                                    <ng-container
-                                        *ngIf="model && model.postSectionModel.contents[0].coverPageUrl; else elseImageSection">
-                                        <img src="{{apiBaseURL + (model && model.postSectionModel.contents[0].coverPageUrl) + '/image'}}"
+                                <div class="wrapper-news-post flex-content"
+                                    (click)="isPostNewTab ? openDilogPost(model && model.postSectionModel.contents[2]) : clickToPost(model && model.postSectionModel.contents[2].post._id)">
+                                    <div class="wrapper-news-post-img md-none-min">
+                                        <img src="{{apiBaseURL + (model && model.postSectionModel.contents[2].coverPageUrl) + '/image'}}"
                                             alt="">
-                                    </ng-container>
-                                    <ng-template #elseImageSection>
-                                        <span
-                                            [innerHTML]="model && model.postSectionModel.contents[0].coverPageUrl.post.title"></span>
-                                    </ng-template>
+                                    </div>
+                                    <div class="detail">
+                                        <p class="title md-none-min"
+                                            (click)="isPostNewTab ? openDilogPost(model && model.postSectionModel.contents[2]) : clickToPost(model && model.postSectionModel.contents[2].post._id)"
+                                            [innerHTML]="model && model.postSectionModel.contents[2].post.title | highlight">
+                                        </p>
+                                        <div class="owner-post md-none-min">
+                                            <p class="owner-name"
+                                                (click)="clickToPageUser(model && model.postSectionModel.contents[2].owner.id)"
+                                                [innerHTML]="model && model.postSectionModel.contents[2].owner.name ? model && model.postSectionModel.contents[2].owner.name : model && model.postSectionModel.contents[2].owner.displayName">
+                                            </p>
+                                        </div>
+                                        <p class="amount-social md-none-min">
+                                            <span>{{model && model.postSectionModel.contents[2].post.commentCount |
+                                                shortNumber}} ความคิดเห็น</span>
+                                            <span>•</span>
+                                            <span>{{model && model.postSectionModel.contents[2].post.repostCount |
+                                                shortNumber}} บอกต่อ</span>
+                                            <span>•</span>
+                                            <span>{{model && model.postSectionModel.contents[2].post.likeCount |
+                                                shortNumber}} ถูกใจ</span>
+                                            <span>•</span>
+                                            <span>{{model && model.postSectionModel.contents[2].post.shareCount |
+                                                shortNumber}} แชร์</span>
+                                        </p>
+                                        <div class="wrapper-title-topic md-none-max">
+                                            <p class="title-topic"
+                                                (click)="isPostNewTab ? openDilogPost(model && model.postSectionModel.contents[2]) : clickToPost(model && model.postSectionModel.contents[2].post._id)"
+                                                [innerHTML]="model && model.postSectionModel.contents[2].post.title | highlight">
+                                            </p>
+                                            <a class="tag-link gray time"
+                                                (click)="clickToPost(model && model.postSectionModel.contents[2].post._id)"
+                                                [innerHTML]="model &&
+                                            model.postSectionModel.contents[2].post.createdDate |
+                                            thformatdatetime"></a>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="detail">
-                                    <p class="title"
-                                        [innerHTML]="model && model.postSectionModel.contents[0].coverPageUrl ? model && model.postSectionModel.contents[0].post.title : model && model.postSectionModel.contents[0].post.detail">
-                                    </p>
-                                    <div class="owner-post md-none-min">
-                                        <p class="owner-name"
-                                            (click)="clickToPageUser(model && model.postSectionModel.contents[0].owner.id)"
-                                            [innerHTML]="model && model.postSectionModel.contents[0].owner.name ? model && model.postSectionModel.contents[0].owner.name : model && model.postSectionModel.contents[0].owner.displayName">
+                            </div>
+                            <div class="wrapper-news-right">
+                                <div class="wrapper-bar">
+                                    <span class="news-post-bar-left">
+                                        <span class="post-point">●</span>
+                                        <span>ทั่วไป</span>
+                                    </span>
+                                    <span class="news-post-bar-right">
+                                        <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0" />
+                                            <path
+                                                d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 " />
+                                        </svg>
+                                        <a class="tag-link gray time"
+                                            (click)="clickToPost(model && model.postSectionModel.contents[0].post._id)"
+                                            [innerHTML]="model &&
+                                        model.postSectionModel.contents[0].post.createdDate |
+                                        thformatdatetime"></a>
+                                    </span>
+                                </div>
+                                <div class="wrapper-news-post"
+                                    (click)="isPostNewTab ? openDilogPost(model && model.postSectionModel.contents[0]) : clickToPost(model && model.postSectionModel.contents[0].post._id)">
+                                    <div class="wrapper-news-post-img">
+                                        <ng-container
+                                            *ngIf="model && model.postSectionModel.contents[0].coverPageUrl; else elseImageSection">
+                                            <img src="{{apiBaseURL + (model && model.postSectionModel.contents[0].coverPageUrl) + '/image'}}"
+                                                alt="">
+                                        </ng-container>
+                                        <ng-template #elseImageSection>
+                                            <span
+                                                [innerHTML]="model && model.postSectionModel.contents[0].coverPageUrl.post.title"></span>
+                                        </ng-template>
+                                    </div>
+                                    <div class="detail">
+                                        <p class="title"
+                                            [innerHTML]="model && model.postSectionModel.contents[0].coverPageUrl ? model && model.postSectionModel.contents[0].post.title : model && model.postSectionModel.contents[0].post.detail">
+                                        </p>
+                                        <div class="owner-post md-none-min">
+                                            <p class="owner-name"
+                                                (click)="clickToPageUser(model && model.postSectionModel.contents[0].owner.id)"
+                                                [innerHTML]="model && model.postSectionModel.contents[0].owner.name ? model && model.postSectionModel.contents[0].owner.name : model && model.postSectionModel.contents[0].owner.displayName">
+                                            </p>
+                                        </div>
+                                        <p class="amount-social md-none-min">
+                                            <span>{{model && model.postSectionModel.contents[0].post.commentCount |
+                                                shortNumber}} ความคิดเห็น</span>
+                                            <span>•</span>
+                                            <span>{{model && model.postSectionModel.contents[0].post.repostCount |
+                                                shortNumber}} บอกต่อ</span>
+                                            <span>•</span>
+                                            <span>{{model && model.postSectionModel.contents[0].post.likeCount |
+                                                shortNumber}} ถูกใจ</span>
+                                            <span>•</span>
+                                            <span>{{model && model.postSectionModel.contents[0].post.shareCount |
+                                                shortNumber}} แชร์</span>
                                         </p>
                                     </div>
-                                    <p class="amount-social md-none-min">
-                                        <span>{{model && model.postSectionModel.contents[0].post.commentCount |
-                                            shortNumber}} ความคิดเห็น</span>
-                                        <span>•</span>
-                                        <span>{{model && model.postSectionModel.contents[0].post.repostCount |
-                                            shortNumber}} บอกต่อ</span>
-                                        <span>•</span>
-                                        <span>{{model && model.postSectionModel.contents[0].post.likeCount |
-                                            shortNumber}} ถูกใจ</span>
-                                        <span>•</span>
-                                        <span>{{model && model.postSectionModel.contents[0].post.shareCount |
-                                            shortNumber}} แชร์</span>
-                                    </p>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="wrapper-banner-header banner-header-bg-gray">
-                        <span class="banner-text-header">
-                            ก้าวไกลวันนี้
-                        </span>
-                    </div>
-                    <div class="wrapper-news">
-                        <div class="wrapper-news-left">
-                            <div class="wrapper-bar md-none-min">
-                                <span class="news-post-bar-left">
-                                    <span class="post-point">●</span>
-                                    <span>ทั่วไป</span>
-                                </span>
-                                <span class="news-post-bar-right">
-                                    <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-                                        <path
-                                            d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0" />
-                                        <path
-                                            d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 " />
-                                    </svg>
-                                    <a class="tag-link gray time"
-                                        (click)="clickToPost(model && model.pageRoundRobin.contents[1].post._id)"
-                                        [innerHTML]="model && model.pageRoundRobin.contents[1].post.createdDate | thformatdatetime"></a>
-                                </span>
-                            </div>
-                            <div class="wrapper-news-post flex-content">
-                                <div class="wrapper-news-post-img md-none-min">
-                                    <img src="{{apiBaseURL + (model && model.pageRoundRobin.contents[1].coverPageUrl) + '/image'}}"
-                                        alt="">
-                                </div>
-                                <div class="detail">
-                                    <p class="title md-none-min"
-                                        [innerHTML]="model && model.pageRoundRobin.contents[1].post.title | highlight">
-                                    </p>
-                                    <div class="owner-post md-none-min">
-                                        <p class="owner-name"
-                                            (click)="clickToPageUser(model && model.pageRoundRobin.contents[1].owner.id)"
-                                            [innerHTML]="model && model.pageRoundRobin.contents[1].owner.name ? model && model.pageRoundRobin.contents[1].owner.name : model && model.pageRoundRobin.contents[1].owner.displayName">
-                                        </p>
-                                    </div>
-                                    <p class="amount-social md-none-min">
-                                        <span>{{model && model.pageRoundRobin.contents[1].post.commentCount |
-                                            shortNumber}} ความคิดเห็น</span>
-                                        <span>•</span>
-                                        <span>{{model && model.pageRoundRobin.contents[1].post.repostCount |
-                                            shortNumber}} บอกต่อ</span>
-                                        <span>•</span>
-                                        <span>{{model && model.pageRoundRobin.contents[1].post.likeCount |
-                                            shortNumber}} ถูกใจ</span>
-                                        <span>•</span>
-                                        <span>{{model && model.pageRoundRobin.contents[1].post.shareCount |
-                                            shortNumber}} แชร์</span>
-                                    </p>
-                                    <div class="wrapper-title-topic md-none-max">
-                                        <p class="title-topic"
-                                            (click)="openDilogPost(model && model.pageRoundRobin.contents[1])"
-                                            [innerHTML]="model && model.pageRoundRobin.contents[1].post.title | highlight">
-                                        </p>
+                    <div class="wrapper-section-model">
+                        <div class="wrapper-banner-header banner-header-bg-gray">
+                            <span class="banner-text-header">
+                                ก้าวไกลวันนี้
+                            </span>
+                        </div>
+                        <div class="wrapper-news">
+                            <div class="wrapper-news-left"
+                                [ngStyle]="{'display': model && model.pageRoundRobin.contents.length < 3 ? 'flex' : 'grid','gap': model && model.pageRoundRobin.contents.length < 3 ? '15px' : 'unset'}">
+                                <div class="wrapper-bar md-none-min">
+                                    <span class="news-post-bar-left">
+                                        <span class="post-point">●</span>
+                                        <span>ทั่วไป</span>
+                                    </span>
+                                    <span class="news-post-bar-right">
+                                        <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0" />
+                                            <path
+                                                d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 " />
+                                        </svg>
                                         <a class="tag-link gray time"
                                             (click)="clickToPost(model && model.pageRoundRobin.contents[1].post._id)"
-                                            [innerHTML]="model &&
-                                        model.pageRoundRobin.contents[1].post.createdDate |
-                                        thformatdatetime"></a>
+                                            [innerHTML]="model && model.pageRoundRobin.contents[1].post.createdDate | thformatdatetime"></a>
+                                    </span>
+                                </div>
+                                <div class="wrapper-news-post"
+                                    [ngClass]="model && model.pageRoundRobin.contents.length < 3 ? 'flex-content' : 'news-post-flex'"
+                                    (click)="isPostNewTab ? openDilogPost(model && model.pageRoundRobin.contents[1]) : clickToPost(model && model.pageRoundRobin.contents[1].post._id)">
+                                    <div class="wrapper-news-post-img"
+                                        [ngClass]="model && model.pageRoundRobin.contents.length < 3 ? 'md-none-min' : 'news-post-flex'">
+                                        <img src="{{apiBaseURL + (model && model.pageRoundRobin.contents[1].coverPageUrl) + '/image'}}"
+                                            alt="">
+                                    </div>
+                                    <div class="detail">
+                                        <p class="title md-none-min"
+                                            [innerHTML]="model && model.pageRoundRobin.contents[1].post.title | highlight">
+                                        </p>
+                                        <div class="owner-post md-none-min">
+                                            <p class="owner-name"
+                                                (click)="clickToPageUser(model && model.pageRoundRobin.contents[1].owner.id)"
+                                                [innerHTML]="model && model.pageRoundRobin.contents[1].owner.name ? model && model.pageRoundRobin.contents[1].owner.name : model && model.pageRoundRobin.contents[1].owner.displayName">
+                                            </p>
+                                        </div>
+                                        <p class="amount-social md-none-min">
+                                            <span>{{model && model.pageRoundRobin.contents[1].post.commentCount |
+                                                shortNumber}} ความคิดเห็น</span>
+                                            <span>•</span>
+                                            <span>{{model && model.pageRoundRobin.contents[1].post.repostCount |
+                                                shortNumber}} บอกต่อ</span>
+                                            <span>•</span>
+                                            <span>{{model && model.pageRoundRobin.contents[1].post.likeCount |
+                                                shortNumber}} ถูกใจ</span>
+                                            <span>•</span>
+                                            <span>{{model && model.pageRoundRobin.contents[1].post.shareCount |
+                                                shortNumber}} แชร์</span>
+                                        </p>
+                                        <div class="wrapper-title-topic md-none-max">
+                                            <p class="title-topic"
+                                                (click)="isPostNewTab ? openDilogPost(model && model.pageRoundRobin.contents[1]) : clickToPost(model && model.pageRoundRobin.contents[1].post._id)"
+                                                [innerHTML]="model && model.pageRoundRobin.contents[1].post.title | highlight">
+                                            </p>
+                                            <a class="tag-link gray time"
+                                                (click)="clickToPost(model && model.pageRoundRobin.contents[1].post._id)"
+                                                [innerHTML]="model &&
+                                            model.pageRoundRobin.contents[1].post.createdDate |
+                                            thformatdatetime"></a>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="wrapper-bar md-none-min">
-                                <span class="news-post-bar-left">
-                                    <span class="post-point">●</span>
-                                    <span>ทั่วไป</span>
-                                </span>
-                                <span class="news-post-bar-right">
-                                    <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-                                        <path
-                                            d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0" />
-                                        <path
-                                            d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 " />
-                                    </svg>
-                                    <a class="tag-link gray time" href="">31 มกราคม เวลา 14:05 น.</a>
-                                </span>
-                            </div>
-                            <div class="wrapper-news-post flex-content">
-                                <div class="wrapper-news-post-img md-none-min">
-                                    <img src="{{apiBaseURL + (model && model.pageRoundRobin.contents[2].coverPageUrl) + '/image'}}"
-                                        alt="">
-                                </div>
-                                <div class="detail">
-                                    <p class="title md-none-min"
-                                        [innerHTML]="model && model.pageRoundRobin.contents[2].post.title | highlight">
-                                    </p>
-                                    <div class="owner-post md-none-min">
-                                        <p class="owner-name"
-                                            (click)="clickToPageUser(model && model.pageRoundRobin.contents[2].owner.id)"
-                                            [innerHTML]="model && model.pageRoundRobin.contents[2].owner.name ? model && model.pageRoundRobin.contents[2].owner.name : model && model.pageRoundRobin.contents[2].owner.displayName">
-                                        </p>
-                                    </div>
-                                    <p class="amount-social md-none-min">
-                                        <span>{{model && model.pageRoundRobin.contents[2].post.commentCount |
-                                            shortNumber}} ความคิดเห็น</span>
-                                        <span>•</span>
-                                        <span>{{model && model.pageRoundRobin.contents[2].post.repostCount |
-                                            shortNumber}} บอกต่อ</span>
-                                        <span>•</span>
-                                        <span>{{model && model.pageRoundRobin.contents[2].post.likeCount |
-                                            shortNumber}} ถูกใจ</span>
-                                        <span>•</span>
-                                        <span>{{model && model.pageRoundRobin.contents[2].post.shareCount |
-                                            shortNumber}} แชร์</span>
-                                    </p>
-                                    <div class="wrapper-title-topic md-none-max">
-                                        <p class="title-topic"
-                                            (click)="openDilogPost(model && model.pageRoundRobin.contents[2])"
-                                            [innerHTML]="model && model.pageRoundRobin.contents[2].post.title | highlight">
-                                        </p>
+                                <div class="wrapper-bar md-none-min">
+                                    <span class="news-post-bar-left">
+                                        <span class="post-point">●</span>
+                                        <span>ทั่วไป</span>
+                                    </span>
+                                    <span class="news-post-bar-right">
+                                        <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0" />
+                                            <path
+                                                d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 " />
+                                        </svg>
                                         <a class="tag-link gray time"
                                             (click)="clickToPost(model && model.pageRoundRobin.contents[2].post._id)"
-                                            [innerHTML]="model &&
-                                        model.pageRoundRobin.contents[2].post.createdDate |
-                                        thformatdatetime"></a>
+                                            [innerHTML]="model && model.pageRoundRobin.contents[2].post.createdDate | thformatdatetime"></a>
+                                    </span>
+                                </div>
+                                <div class="wrapper-news-post"
+                                    [ngClass]="model && model.pageRoundRobin.contents.length < 3 ? 'flex-content' : 'news-post-flex'"
+                                    (click)="isPostNewTab ? openDilogPost(model && model.pageRoundRobin.contents[2]) : clickToPost(model && model.pageRoundRobin.contents[2].post._id)">
+                                    <div class="wrapper-news-post-img"
+                                        [ngClass]="model && model.pageRoundRobin.contents.length < 3 ? 'md-none-min' : 'news-post-flex'">
+                                        <img src="{{apiBaseURL + (model && model.pageRoundRobin.contents[2].coverPageUrl) + '/image'}}"
+                                            alt="">
+                                    </div>
+                                    <div class="detail">
+                                        <p class="title md-none-min"
+                                            [innerHTML]="model && model.pageRoundRobin.contents[2].post.title | highlight">
+                                        </p>
+                                        <div class="owner-post md-none-min">
+                                            <p class="owner-name"
+                                                (click)="clickToPageUser(model && model.pageRoundRobin.contents[2].owner.id)"
+                                                [innerHTML]="model && model.pageRoundRobin.contents[2].owner.name ? model && model.pageRoundRobin.contents[2].owner.name : model && model.pageRoundRobin.contents[2].owner.displayName">
+                                            </p>
+                                        </div>
+                                        <p class="amount-social md-none-min">
+                                            <span>{{model && model.pageRoundRobin.contents[2].post.commentCount |
+                                                shortNumber}} ความคิดเห็น</span>
+                                            <span>•</span>
+                                            <span>{{model && model.pageRoundRobin.contents[2].post.repostCount |
+                                                shortNumber}} บอกต่อ</span>
+                                            <span>•</span>
+                                            <span>{{model && model.pageRoundRobin.contents[2].post.likeCount |
+                                                shortNumber}} ถูกใจ</span>
+                                            <span>•</span>
+                                            <span>{{model && model.pageRoundRobin.contents[2].post.shareCount |
+                                                shortNumber}} แชร์</span>
+                                        </p>
+                                        <div class="wrapper-title-topic md-none-max">
+                                            <p class="title-topic"
+                                                (click)="isPostNewTab ? openDilogPost(model && model.pageRoundRobin.contents[2]) : clickToPost(model && model.pageRoundRobin.contents[2].post._id)"
+                                                [innerHTML]="model && model.pageRoundRobin.contents[2].post.title | highlight">
+                                            </p>
+                                            <a class="tag-link gray time"
+                                                (click)="clickToPost(model && model.pageRoundRobin.contents[2].post._id)"
+                                                [innerHTML]="model &&
+                                            model.pageRoundRobin.contents[2].post.createdDate |
+                                            thformatdatetime"></a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="wrapper-news-right">
-                            <div class="wrapper-bar">
-                                <span class="news-post-bar-left">
-                                    <span class="post-point">●</span>
-                                    <span>ทั่วไป</span>
-                                </span>
-                                <span class="news-post-bar-right">
-                                    <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-                                        <path
-                                            d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0" />
-                                        <path
-                                            d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 " />
-                                    </svg>
-                                    <a class="tag-link gray time"
-                                        (click)="clickToPost(model && model.pageRoundRobin.contents[0].post._id)"
-                                        [innerHTML]="model &&
-                                    model.pageRoundRobin.contents[0].post.createdDate |
-                                    thformatdatetime"></a>
-                                </span>
-                            </div>
-                            <div class="wrapper-news-post"
-                                (click)="openDilogPost(model && model.pageRoundRobin.contents[0])">
-                                <div class="wrapper-news-post-img">
-                                    <ng-container
-                                        *ngIf="model && model.pageRoundRobin.contents[0].coverPageUrl; else elseImageRoundRobin">
-                                        <img src="{{apiBaseURL + (model && model.pageRoundRobin.contents[0].coverPageUrl) + '/image'}}"
-                                            alt="">
-                                    </ng-container>
-                                    <ng-template #elseImageRoundRobin>
-                                        <span [innerHTML]="model && model.pageRoundRobin.contents[0].post.title"></span>
-                                    </ng-template>
+                            <div class="wrapper-news-right">
+                                <div class="wrapper-bar">
+                                    <span class="news-post-bar-left">
+                                        <span class="post-point">●</span>
+                                        <span>ทั่วไป</span>
+                                    </span>
+                                    <span class="news-post-bar-right">
+                                        <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0" />
+                                            <path
+                                                d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 " />
+                                        </svg>
+                                        <a class="tag-link gray time"
+                                            (click)="clickToPost(model && model.pageRoundRobin.contents[0].post._id)"
+                                            [innerHTML]="model &&
+                                        model.pageRoundRobin.contents[0].post.createdDate |
+                                        thformatdatetime"></a>
+                                    </span>
                                 </div>
-                                <div class="detail">
-                                    <p class="title"
-                                        [innerHTML]="model && model.pageRoundRobin.contents[0].coverPageUrl ? model && model.pageRoundRobin.contents[0].post.title : model && model.pageRoundRobin.contents[0].post.detail">
-                                    </p>
-                                    <div class="owner-post md-none-min">
-                                        <p class="owner-name"
-                                            (click)="clickToPageUser(model && model.pageRoundRobin.contents[0].owner.id)"
-                                            [innerHTML]="model && model.pageRoundRobin.contents[0].owner.name ? model && model.pageRoundRobin.contents[0].owner.name : model && model.pageRoundRobin.contents[0].owner.displayName">
+                                <div class="wrapper-news-post"
+                                    (click)="isPostNewTab ? openDilogPost(model && model.pageRoundRobin.contents[0]) : clickToPost(model && model.pageRoundRobin.contents[0].post._id)">
+                                    <div class="wrapper-news-post-img">
+                                        <ng-container
+                                            *ngIf="model && model.pageRoundRobin.contents[0].coverPageUrl; else elseImageRoundRobin">
+                                            <img src="{{apiBaseURL + (model && model.pageRoundRobin.contents[0].coverPageUrl) + '/image'}}"
+                                                alt="">
+                                        </ng-container>
+                                        <ng-template #elseImageRoundRobin>
+                                            <span
+                                                [innerHTML]="model && model.pageRoundRobin.contents[0].post.title"></span>
+                                        </ng-template>
+                                    </div>
+                                    <div class="detail">
+                                        <p class="title"
+                                            [innerHTML]="model && model.pageRoundRobin.contents[0].coverPageUrl ? model && model.pageRoundRobin.contents[0].post.title : model && model.pageRoundRobin.contents[0].post.detail">
+                                        </p>
+                                        <div class="owner-post md-none-min">
+                                            <p class="owner-name"
+                                                (click)="clickToPageUser(model && model.pageRoundRobin.contents[0].owner.id)"
+                                                [innerHTML]="model && model.pageRoundRobin.contents[0].owner.name ? model && model.pageRoundRobin.contents[0].owner.name : model && model.pageRoundRobin.contents[0].owner.displayName">
+                                            </p>
+                                        </div>
+                                        <p class="amount-social md-none-min">
+                                            <span>{{model && model.pageRoundRobin.contents[0].post.commentCount |
+                                                shortNumber}} ความคิดเห็น</span>
+                                            <span>•</span>
+                                            <span>{{model && model.pageRoundRobin.contents[0].post.repostCount |
+                                                shortNumber}} บอกต่อ</span>
+                                            <span>•</span>
+                                            <span>{{model && model.pageRoundRobin.contents[0].post.likeCount |
+                                                shortNumber}} ถูกใจ</span>
+                                            <span>•</span>
+                                            <span>{{model && model.pageRoundRobin.contents[0].post.shareCount |
+                                                shortNumber}} แชร์</span>
                                         </p>
                                     </div>
-                                    <p class="amount-social md-none-min">
-                                        <span>{{model && model.pageRoundRobin.contents[0].post.commentCount |
-                                            shortNumber}} ความคิดเห็น</span>
-                                        <span>•</span>
-                                        <span>{{model && model.pageRoundRobin.contents[0].post.repostCount |
-                                            shortNumber}} บอกต่อ</span>
-                                        <span>•</span>
-                                        <span>{{model && model.pageRoundRobin.contents[0].post.likeCount |
-                                            shortNumber}} ถูกใจ</span>
-                                        <span>•</span>
-                                        <span>{{model && model.pageRoundRobin.contents[0].post.shareCount |
-                                            shortNumber}} แชร์</span>
-                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -547,7 +579,8 @@
                                     [innerHTML]="item.post.createdDate | thformatdatetime"></a>
                             </span>
                         </div>
-                        <div class="container-content" (click)="openDilogPost(item)">
+                        <div class="container-content"
+                            (click)="isPostNewTab ? openDilogPost(item) : clickToPost(item.post._id)">
                             <ng-container *ngIf="item.coverPageUrl; else elseImage">
                                 <img class="image-content" [src]="apiBaseURL + (item.coverPageUrl) + '/image'">
                             </ng-container>
@@ -606,7 +639,8 @@
                                     [innerHTML]="item.post.createdDate | thformatdatetime"></a>
                             </span>
                         </div>
-                        <div class="container-content" (click)="openDilogPost(item)">
+                        <div class="container-content"
+                            (click)="isPostNewTab ? openDilogPost(item) : clickToPost(item.post._id)">
                             <ng-container *ngIf="item.coverPageUrl; else elseImage">
                                 <img class="image-content" [src]="apiBaseURL + (item.coverPageUrl) + '/image'">
                             </ng-container>
@@ -665,7 +699,69 @@
                                     [innerHTML]="item.post.createdDate | thformatdatetime"></a>
                             </span>
                         </div>
-                        <div class="container-content" (click)="openDilogPost(item)">
+                        <div class="container-content"
+                            (click)="isPostNewTab ? openDilogPost(item) : clickToPost(item.post._id)">
+                            <ng-container *ngIf="item.coverPageUrl; else elseImage">
+                                <img class="image-content" [src]="apiBaseURL + (item.coverPageUrl) + '/image'">
+                            </ng-container>
+                            <ng-template #elseImage>
+                                <div class="image-content image-null">
+                                    <span [innerHTML]="item.post.title"></span>
+                                </div>
+                            </ng-template>
+                            <p class="title-post" [innerHTML]="item.coverPageUrl ? item.post.title : item.post.detail">
+                            </p>
+                        </div>
+                        <div class="owner-post">
+                            <p class="owner-name" (click)="clickToPageUser(item.owner.id)"
+                                [innerHTML]="item.owner.name ? item.owner.name : item.owner.displayName"></p>
+                        </div>
+                        <p class="amount-social">
+                            <span>{{item.post.commentCount | shortNumber}} ความคิดเห็น</span>
+                            <span>•</span>
+                            <span>{{item.post.repostCount | shortNumber}} บอกต่อ</span>
+                            <span>•</span>
+                            <span>{{item.post.likeCount | shortNumber}} ถูกใจ</span>
+                            <span>•</span>
+                            <span>{{item.post.shareCount | shortNumber}} แชร์</span>
+                        </p>
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+    </section>
+    <section class="section-4"
+        *ngIf="!showLoading && (model && model.kaokaiContent !== undefined && model.kaokaiContent.contents.length !== 0)">
+        <div class="container">
+            <div class="header-title">
+                <div class="wrapper-title">
+                    <span [innerHTML]="model && model.kaokaiContent.title"></span>
+                </div>
+                <div class="wrapper-title">
+                    <hr>
+                </div>
+            </div>
+            <div class="wrapper-content">
+                <ng-container *ngFor="let item of model && model.kaokaiContent.contents | slice:0:4; let i=index">
+                    <div class="card-content">
+                        <div class="wrapper-bar">
+                            <span class="news-post-bar-left">
+                                <span class="post-point">●</span>
+                                <span>ทั่วไป</span>
+                            </span>
+                            <span class="news-post-bar-right">
+                                <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0" />
+                                    <path
+                                        d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 " />
+                                </svg>
+                                <a class="tag-link gray time" (click)="clickToPost(item.post._id)"
+                                    [innerHTML]="item.post.createdDate | thformatdatetime"></a>
+                            </span>
+                        </div>
+                        <div class="container-content"
+                            (click)="isPostNewTab ? openDilogPost(item) : clickToPost(item.post._id)">
                             <ng-container *ngIf="item.coverPageUrl; else elseImage">
                                 <img class="image-content" [src]="apiBaseURL + (item.coverPageUrl) + '/image'">
                             </ng-container>

@@ -36,22 +36,17 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                 for (const sequence of positionSequences) {
                     position.push(sequence.position);
                 }
+                const sortV = [];
                 const sorts = position.sort((a, b) => Math.abs(a) - Math.abs(b) || a - b);
                 // const today = moment().add(month, 'month').toDate();
-                let roundRobin = undefined;
-                const stackRobin = [];
                 for (const sort of sorts) {
-                    if (sort === 1) {
-                        roundRobin = await this.kaokaiTodayService.findOne({ position: sort });
-                        stackRobin.push(roundRobin);
-                    } else if (sort < 0) {
-                        roundRobin = await this.kaokaiTodayService.findOne({ position: sort });
-                        stackRobin.push(roundRobin);
-
+                    if (sort !== undefined && sort !== null) {
+                        sortV.push(sort);
                     } else {
                         continue;
                     }
                 }
+                const roundRobin = await this.kaokaiTodayService.findOne({ position: sortV[0] });
                 if (roundRobin === undefined) {
                     resolve(undefined);
                 }
@@ -120,28 +115,28 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     postMatchStmt.startDateTime = { $lte: today };
                 }
 
-                if (stackRobin[0].type === 'page' && stackRobin[0].field === 'id') {
+                if (roundRobin.type === 'page' && roundRobin.field === 'id') {
                     const bucketAll = [];
                     const bucketF = [];
                     const bucketS = [];
                     const bucketT = [];
 
-                    if (stackRobin[0].buckets.length >= 0) {
-                        if (stackRobin[0].buckets[0] !== undefined && stackRobin[0].buckets[0] !== null) {
-                            for (const bucketFs of stackRobin[0].buckets[0].values) {
+                    if (roundRobin.buckets.length >= 0) {
+                        if (roundRobin.buckets[0] !== undefined && roundRobin.buckets[0] !== null) {
+                            for (const bucketFs of roundRobin.buckets[0].values) {
                                 bucketF.push(new ObjectID(bucketFs));
                             }
                         }
                         // bucket 2 
-                        if (stackRobin[0].buckets[1] !== undefined && stackRobin[0].buckets[1] !== null) {
-                            for (const bucketSs of stackRobin[0].buckets[1].values) {
+                        if (roundRobin.buckets[1] !== undefined && roundRobin.buckets[1] !== null) {
+                            for (const bucketSs of roundRobin.buckets[1].values) {
                                 bucketS.push(new ObjectID(bucketSs));
 
                             }
                         }
                         // bucket 3
-                        if (stackRobin[0].buckets[2] !== undefined && stackRobin[0].buckets[2] !== null) {
-                            for (const bucketTs of stackRobin[0].buckets[2].values) {
+                        if (roundRobin.buckets[2] !== undefined && roundRobin.buckets[2] !== null) {
+                            for (const bucketTs of roundRobin.buckets[2].values) {
                                 bucketT.push(new ObjectID(bucketTs));
                             }
                         }
@@ -360,7 +355,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     result.iconUrl = '';
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
-                    result.position = stackRobin[0].position;
+                    result.position = roundRobin.position;
                     for (const row of stackPage) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
@@ -402,7 +397,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     result.dateTime = lastestDate;
 
                     resolve(result);
-                } else if (stackRobin[0].type === 'page' && stackRobin[0].field === 'province') {
+                } else if (roundRobin.type === 'page' && roundRobin.field === 'province') {
                     const bucketF = [];
                     const bucketS = [];
                     const bucketT = [];
@@ -693,7 +688,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     result.iconUrl = '';
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
-                    result.position = stackRobin[0].position;
+                    result.position = roundRobin.position;
                     for (const row of stackPage) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
@@ -734,7 +729,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     result.dateTime = lastestDate;
 
                     resolve(result);
-                } else if (stackRobin[0].type === 'post' && stackRobin[0].field === 'score') {
+                } else if (roundRobin.type === 'post' && roundRobin.field === 'score') {
                     const postStmt = [
                         { $match: postMatchStmt },
                         { $sort: { summationScore: -1 } },
@@ -814,7 +809,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     result.iconUrl = '';
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
-                    result.position = stackRobin[0].position;
+                    result.position = roundRobin.position;
                     for (const row of postAggregate) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
@@ -853,7 +848,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     }
                     result.dateTime = lastestDate;
                     resolve(result);
-                } else if (stackRobin[0].type === 'post' && stackRobin[0].field === 'objective') {
+                } else if (roundRobin.type === 'post' && roundRobin.field === 'objective') {
                     const bucketF = [];
                     const bucketS = [];
                     const bucketT = [];
@@ -1097,7 +1092,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     result.iconUrl = '';
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
-                    result.position = stackRobin[0].position;
+                    result.position = roundRobin.position;
                     for (const row of stackPage) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
@@ -1136,7 +1131,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     }
                     result.dateTime = lastestDate;
                     resolve(result);
-                } else if (stackRobin[0].type === 'post' && stackRobin[0].field === 'emergencyEvent') {
+                } else if (roundRobin.type === 'post' && roundRobin.field === 'emergencyEvent') {
                     const bucketF = [];
                     const bucketS = [];
                     const bucketT = [];
@@ -1380,7 +1375,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     result.iconUrl = '';
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
-                    result.position = stackRobin[0].position;
+                    result.position = roundRobin.position;
                     for (const row of stackPage) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
@@ -1419,7 +1414,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     }
                     result.dateTime = lastestDate;
                     resolve(result);
-                } else if (stackRobin[0].type === 'post' && stackRobin[0].field === 'hashTag') {
+                } else if (roundRobin.type === 'post' && roundRobin.field === 'hashTag') {
                     const bucketF = [];
                     const bucketS = [];
                     const bucketT = [];
@@ -1692,7 +1687,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     result.iconUrl = '';
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
-                    result.position = stackRobin[0].position;
+                    result.position = roundRobin.position;
                     for (const row of stackPage) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
@@ -1734,16 +1729,16 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     result.dateTime = lastestDate;
 
                     resolve(result);
-                } else if (stackRobin[0].type === 'hashtag' && stackRobin[0].field === 'count') {
+                } else if (roundRobin.type === 'hashtag' && roundRobin.field === 'count') {
                     const bucketF = [];
-                    const hashTagMost = await this.hashTagService.searchHashSec();
+                    const hashTagMost = await this.hashTagService.searchHashSec(limit);
                     if (hashTagMost.length >= 0) {
                         for (const hashTagMostS of hashTagMost) {
                             bucketF.push(new ObjectID(hashTagMostS.id));
                         }
                     }
                     const postStmt = [
-                        { $match: { isDraft: false, deleted: false, hidden: false, postsHashTags: { $ne: null, $in: bucketF } } },
+                        { $match: { isDraft: false, deleted: false, hidden: false, postsHashTags: { $in: bucketF } } },
                         { $sort: { summationScore: -1 } },
 
                         {
@@ -1817,7 +1812,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     result.iconUrl = '';
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
-                    result.position = stackRobin[0].position;
+                    result.position = roundRobin.position;
                     for (const row of postAggregate) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
@@ -1856,7 +1851,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     }
                     result.dateTime = lastestDate;
                     resolve(result);
-                } else if (stackRobin[0].type === 'page' && stackRobin[0].field === 'group') {
+                } else if (roundRobin.type === 'page' && roundRobin.field === 'group') {
                     const bucketF = [];
                     const bucketS = [];
                     const bucketT = [];
@@ -1879,12 +1874,12 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                             }
                         }
                     }
+
                     const pageStackprovince1 = [];
                     const pageStackprovince2 = [];
                     const pageStackprovince3 = [];
 
                     const pageStacks = [];
-
                     /* 
                     const pageProvince = await this.pageService.searchPageProvince(bucketF);
                     console.log('pageProvince',pageProvince);
@@ -2148,7 +2143,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     result.iconUrl = '';
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
-                    result.position = stackRobin[0].position;
+                    result.position = roundRobin.position;
                     for (const row of stackPage) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;

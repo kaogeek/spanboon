@@ -35,7 +35,6 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     position.push(sequence.position);
                 }
                 const sorts = position.sort((a, b) => Math.abs(a) - Math.abs(b) || a - b);
-                let hashTagProcessor = undefined;
 
                 let limit: number = undefined;
                 let offset: number = undefined;
@@ -55,7 +54,9 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                 }
 
                 let userId = undefined;
-                let checkPosition = undefined;
+                let checkPosition1 = undefined;
+                let checkPosition2 = undefined;
+                let checkPosition3 = undefined;
                 // get startDateTime, endDateTime
                 let startDateTime: Date = undefined;
                 let endDateTime: Date = undefined;
@@ -63,20 +64,19 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     startDateTime = this.data.startDateTime;
                     endDateTime = this.data.endDateTime;
                     userId = this.data.userId;
-                    checkPosition = this.data.checkPosition3;
+                    checkPosition1 = this.data.checkPosition1;
+                    checkPosition2 = this.data.checkPosition2;
+                    checkPosition3 = this.data.checkPosition3;
                 }
-                const stackRobin = [];
+                const sortV = [];
                 for (const sort of sorts) {
-                    if (sort === 4) {
-                        hashTagProcessor = await this.kaokaiTodayService.findOne({ position: sort });
-                        stackRobin.push(hashTagProcessor);
-                    } else if (sort < 0 && checkPosition > sort) {
-                        hashTagProcessor = await this.kaokaiTodayService.findOne({ position: sort });
-                        stackRobin.push(hashTagProcessor);
+                    if (sort !== undefined && sort !== null && sort !== checkPosition1 && sort !== checkPosition2 && sort !== checkPosition3) {
+                        sortV.push(sort);
                     } else {
                         continue;
                     }
                 }
+                const hashTagProcessor = await this.kaokaiTodayService.findOne({ position: sortV[0] });
                 limit = (limit === undefined || limit === null) ? hashTagProcessor.limit : this.DEFAULT_SEARCH_LIMIT;
                 offset = (offset === undefined || offset === null) ? this.DEFAULT_SEARCH_OFFSET : offset;
                 const searchFilter: SearchFilter = new SearchFilter();
@@ -119,7 +119,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                 if (hashTagProcessor === undefined) {
                     resolve(undefined);
                 }
-                if (stackRobin[0].type === 'post' && stackRobin[0].field === 'hashTag') {
+                if (hashTagProcessor.type === 'post' && hashTagProcessor.field === 'hashTag') {
                     const bucketF = [];
                     const bucketS = [];
                     const bucketT = [];
@@ -392,7 +392,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     result.iconUrl = '';
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
-                    result.position = stackRobin[0].position;
+                    result.position = hashTagProcessor.position;
                     for (const row of stackPage) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
@@ -434,7 +434,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     result.dateTime = lastestDate;
 
                     resolve(result);
-                } else if (stackRobin[0].type === 'post' && stackRobin[0].field === 'score') {
+                } else if (hashTagProcessor.type === 'post' && hashTagProcessor.field === 'score') {
                     const postStmt = [
                         { $match: postMatchStmt },
                         { $sort: { summationScore: -1 } },
@@ -514,7 +514,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     result.iconUrl = '';
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
-                    result.position = stackRobin[0].position;
+                    result.position = hashTagProcessor.position;
                     for (const row of postAggregate) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
@@ -553,7 +553,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     }
                     result.dateTime = lastestDate;
                     resolve(result);
-                } else if (stackRobin[0].type === 'post' && stackRobin[0].field === 'objective') {
+                } else if (hashTagProcessor.type === 'post' && hashTagProcessor.field === 'objective') {
                     const bucketF = [];
                     const bucketS = [];
                     const bucketT = [];
@@ -797,7 +797,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     result.iconUrl = '';
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
-                    result.position = stackRobin[0].position;
+                    result.position = hashTagProcessor.position;
                     for (const row of stackPage) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
@@ -836,7 +836,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     }
                     result.dateTime = lastestDate;
                     resolve(result);
-                } else if (stackRobin[0].type === 'post' && stackRobin[0].field === 'emergencyEvent') {
+                } else if (hashTagProcessor.type === 'post' && hashTagProcessor.field === 'emergencyEvent') {
                     const bucketF = [];
                     const bucketS = [];
                     const bucketT = [];
@@ -1080,7 +1080,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     result.iconUrl = '';
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
-                    result.position = stackRobin[0].position;
+                    result.position = hashTagProcessor.position;
                     for (const row of stackPage) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
@@ -1119,7 +1119,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     }
                     result.dateTime = lastestDate;
                     resolve(result);
-                } else if (stackRobin[0].type === 'page' && stackRobin[0].field === 'group') {
+                } else if (hashTagProcessor.type === 'page' && hashTagProcessor.field === 'group') {
                     const bucketF = [];
                     const bucketS = [];
                     const bucketT = [];
@@ -1410,7 +1410,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     result.iconUrl = '';
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
-                    result.position = stackRobin[0].position;
+                    result.position = hashTagProcessor.position;
                     for (const row of stackPage) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
@@ -1451,7 +1451,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     result.dateTime = lastestDate;
 
                     resolve(result);
-                } else if (stackRobin[0].type === 'page' && stackRobin[0].field === 'province') {
+                } else if (hashTagProcessor.type === 'page' && hashTagProcessor.field === 'province') {
                     const bucketF = [];
                     const bucketS = [];
                     const bucketT = [];
@@ -1742,7 +1742,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     result.iconUrl = '';
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
-                    result.position = stackRobin[0].position;
+                    result.position = hashTagProcessor.position;
                     for (const row of stackPage) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
@@ -1783,7 +1783,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     result.dateTime = lastestDate;
 
                     resolve(result);
-                } else if (stackRobin[0].type === 'page' && stackRobin[0].field === 'id') {
+                } else if (hashTagProcessor.type === 'page' && hashTagProcessor.field === 'id') {
                     const bucketAll = [];
                     const bucketF = [];
                     const bucketS = [];
@@ -2023,7 +2023,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     result.iconUrl = '';
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
-                    result.position = stackRobin[0].position;
+                    result.position = hashTagProcessor.position;
                     for (const row of stackPage) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
@@ -2065,9 +2065,9 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     result.dateTime = lastestDate;
 
                     resolve(result);
-                } else if (stackRobin[0].type === 'hashtag' && stackRobin[0].field === 'count') {
+                } else if (hashTagProcessor.type === 'hashtag' && hashTagProcessor.field === 'count') {
                     const bucketF = [];
-                    const hashTagMost = await this.hashTagService.searchHashSec();
+                    const hashTagMost = await this.hashTagService.searchHashSec(limit);
                     if (hashTagMost.length >= 0) {
                         for (const hashTagMostS of hashTagMost) {
                             bucketF.push(new ObjectID(hashTagMostS.id));
@@ -2148,7 +2148,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     result.iconUrl = '';
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
-                    result.position = stackRobin[0].position;
+                    result.position = hashTagProcessor.position;
                     for (const row of postAggregate) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;

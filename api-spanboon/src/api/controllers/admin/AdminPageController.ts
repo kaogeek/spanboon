@@ -22,13 +22,17 @@ import { KaokaiToday } from '../../models/KaokaiToday';
 import { KaokaiTodayService } from '../../services/KaokaiTodayService';
 import { CreateKaokaiTodayRequest } from '../requests/CreateKaokaiTodayRequest';
 import { PageObjectiveService } from '../../services/PageObjectiveService';
+import { PageGroupRequest } from '../requests/PageGroupRequest';
+import { PageGroup } from '../../models/PageGroup';
+import { PageGroupService } from '../../services/PageGroupService';
 @JsonController('/admin/page')
 export class AdminPageController {
     constructor(private pageService: PageService, private actionLogService: AdminUserActionLogsService, private deletePageService: DeletePageService,
         private kaokaiTodayService: KaokaiTodayService,
         private pageObjectiveService: PageObjectiveService,
         private postsService: PostsService,
-        ) { }
+        private pageGroupService: PageGroupService
+    ) { }
 
     /**
      * @api {post} /api/admin/page/:id/approve Approve Page API
@@ -93,25 +97,25 @@ export class AdminPageController {
             // one-hot encoding 
             const requestTitle = title;
             if (requestTitle === 'ก้าวไกลวันนี้') {
-                for(const roundRobin of req.body.buckets){
-                    if(roundRobin.name === 'คณะกรรมการบริหารพรรค'){
-                        const page_1 = await this.pageService.find({isOfficial:true,roundRobin:'คณะกรรมการบริหารพรรค'});
+                for (const roundRobin of req.body.buckets) {
+                    if (roundRobin.name === 'คณะกรรมการบริหารพรรค') {
+                        const page_1 = await this.pageService.find({ isOfficial: true, roundRobin: 'คณะกรรมการบริหารพรรค' });
                         const successResponse = ResponseUtil.getSuccessResponse('Successfully Bucket KaokaiToday', page_1);
                         return res.status(200).send(successResponse);
-                    }else if(roundRobin.name === 'รองหัวหน้าพรรคก้าวไกล'){
-                        const page_2 = await this.pageService.find({isOfficial:true,roundRobin:'รองหัวหน้าพรรคก้าวไกล'});
+                    } else if (roundRobin.name === 'รองหัวหน้าพรรคก้าวไกล') {
+                        const page_2 = await this.pageService.find({ isOfficial: true, roundRobin: 'รองหัวหน้าพรรคก้าวไกล' });
                         const successResponse = ResponseUtil.getSuccessResponse('Successfully Bucket KaokaiToday', page_2);
                         return res.status(200).send(successResponse);
-                    }else if(roundRobin.name === 'รองเลขาธิการพรรคก้าวไกล'){
-                        const page_3 = await this.pageService.find({isOfficial:true,roundRobin:'รองเลขาธิการพรรคก้าวไกล'});
+                    } else if (roundRobin.name === 'รองเลขาธิการพรรคก้าวไกล') {
+                        const page_3 = await this.pageService.find({ isOfficial: true, roundRobin: 'รองเลขาธิการพรรคก้าวไกล' });
                         const successResponse = ResponseUtil.getSuccessResponse('Successfully Bucket KaokaiToday', page_3);
                         return res.status(200).send(successResponse);
-                    }else if(roundRobin.name === 'กองโฆษกพรรคก้าวไกล'){
-                        const page_4 = await this.pageService.find({isOfficial:true,roundRobin:'กองโฆษกพรรคก้าวไกล'});
+                    } else if (roundRobin.name === 'กองโฆษกพรรคก้าวไกล') {
+                        const page_4 = await this.pageService.find({ isOfficial: true, roundRobin: 'กองโฆษกพรรคก้าวไกล' });
                         const successResponse = ResponseUtil.getSuccessResponse('Successfully Bucket KaokaiToday', page_4);
                         return res.status(200).send(successResponse);
-                    }else if(roundRobin.name === 'ผู้สมัครของพรรคก้าวไกล'){
-                        const page_5 = await this.pageService.find({isOfficial:true,roundRobin:'ผู้สมัครของพรรคก้าวไกล'});
+                    } else if (roundRobin.name === 'ผู้สมัครของพรรคก้าวไกล') {
+                        const page_5 = await this.pageService.find({ isOfficial: true, roundRobin: 'ผู้สมัครของพรรคก้าวไกล' });
                         const successResponse = ResponseUtil.getSuccessResponse('Successfully Bucket KaokaiToday', page_5);
                         return res.status(200).send(successResponse);
                     }
@@ -191,6 +195,69 @@ export class AdminPageController {
         }
     }
 
+    @Post('/group')
+    @Authorized()
+    public async createPageGroups(@Body({ validate: true }) PageGroupRequests: PageGroupRequest, @Res() res: any, @Req() req: any): Promise<any> {
+        const createPageGroup = new PageGroup();
+        createPageGroup.name = PageGroupRequests.name;
+        createPageGroup.detail = PageGroupRequests.detail;
+        const createPageGroups = await this.pageGroupService.create(createPageGroup);
+        if (createPageGroups) {
+            const successResponse = ResponseUtil.getSuccessResponse('Create KaokaiToday is successfully.', createPageGroups);
+            return res.status(200).send(successResponse);
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot Create Page Group Request Name.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+
+    @Put('/:id/group')
+    @Authorized()
+    public async editPageGroup(@Body({ validate: true }) EditPageGroupRequest: PageGroupRequest, @Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const objId = new ObjectID(id);
+        const pageGroup = await this.pageGroupService.findOne({ _id: objId });
+        if (pageGroup) {
+            const query = {_id:pageGroup.id};
+            const newValues = { $set: { name: EditPageGroupRequest.name, detail: EditPageGroupRequest.detail } };
+            const update = await this.pageGroupService.update(query, newValues);
+            if (update) {
+                const successResponse = ResponseUtil.getSuccessResponse('Update Page Group is successfully.', undefined);
+                return res.status(200).send(successResponse);
+            }
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot find object ID.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+
+    @Delete('/:id/group')
+    @Authorized()
+    public async deletePageGroup(@Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const objId = new ObjectID(id);
+        if (objId) {
+            const deletePageGroup = await this.pageGroupService.delete({ _id: objId });
+            if (deletePageGroup) {
+                const successResponse = ResponseUtil.getSuccessResponse('Update KaokaiToday is successfully.', undefined);
+                return res.status(200).send(successResponse);
+            }
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot find object ID.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+
+    @Get('/group')
+    public async getPageGroup(@Res() res: any, @Req() req: any): Promise<any> {
+        const findPageGroup = await this.pageGroupService.find({});
+        if (findPageGroup.length > 0) {
+            const successResponse = ResponseUtil.getSuccessResponse('Page Group.', findPageGroup);
+            return res.status(200).send(successResponse);
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot find Page Group', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+
     @Get('/receive/bucket')
     public async receiveBucket(@Res() res: any, @Req() req: any): Promise<any> {
         const bucketAll = await this.kaokaiTodayService.find({});
@@ -209,17 +276,17 @@ export class AdminPageController {
         const titleRequest = createKaokaiTodayRequest.title;
         const positionNumber = createKaokaiTodayRequest.position;
 
-        if(createKaokaiTodayRequest.position > 4){
+        if (createKaokaiTodayRequest.position > 4) {
             const successResponse = ResponseUtil.getSuccessResponse('Position must less or equal than 4.', undefined);
             return res.status(200).send(successResponse);
         }
 
-        const checkKaokai = await this.kaokaiTodayService.findOne({position:positionNumber});
-        if(checkKaokai !== null && checkKaokai !== undefined){
-            const query = {_id:checkKaokai.id};
-            const newValues = {$set:{position:null}};
-            const update = await this.kaokaiTodayService.update(query,newValues);
-            if(update){
+        const checkKaokai = await this.kaokaiTodayService.findOne({ position: positionNumber });
+        if (checkKaokai !== null && checkKaokai !== undefined) {
+            const query = { _id: checkKaokai.id };
+            const newValues = { $set: { position: null } };
+            const update = await this.kaokaiTodayService.update(query, newValues);
+            if (update) {
                 const createKaokaiToday = new KaokaiToday();
                 createKaokaiToday.title = titleRequest;
                 createKaokaiToday.type = createKaokaiTodayRequest.type;
@@ -228,7 +295,7 @@ export class AdminPageController {
                 createKaokaiToday.limit = createKaokaiTodayRequest.limit;
                 createKaokaiToday.position = createKaokaiTodayRequest.position;
                 createKaokaiToday.buckets = createKaokaiTodayRequest.buckets;
-    
+
                 const CKaokaiToday = await this.kaokaiTodayService.create(createKaokaiToday);
                 if (CKaokaiToday) {
                     const successResponse = ResponseUtil.getSuccessResponse('Create KaokaiToday is successfully.', createKaokaiToday);
@@ -236,7 +303,7 @@ export class AdminPageController {
                 }
             }
         }
-        if(checkKaokai === undefined ){
+        if (checkKaokai === undefined) {
             const createKaokaiToday = new KaokaiToday();
             createKaokaiToday.title = titleRequest;
             createKaokaiToday.type = createKaokaiTodayRequest.type;
@@ -326,7 +393,6 @@ export class AdminPageController {
     public async editPageRoundRobin(@Param('id') pageId: string, @Res() res: any, @Req() req: any): Promise<any> {
         const pageObjId = new ObjectID(pageId);
         const body = req.body;
-
         if (body.roundRobin < 0) {
             const errorResponse: any = { status: 0, message: 'RoundRobin must greater than 0 ' };
             return res.status(400).send(errorResponse);
@@ -341,7 +407,7 @@ export class AdminPageController {
         }
         if (body !== undefined) {
             const query = { _id: pageObjId };
-            const newValues = { $set: { roundRobin: body.roundRobin } };
+            const newValues = { $set: { group: body.group } };
             const update = await this.pageService.update(query, newValues);
             if (update) {
                 return res.status(200).send(ResponseUtil.getSuccessResponse('Delete page is successfully.', true));

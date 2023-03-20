@@ -26,7 +26,8 @@ import {
   UserPage, 
   AdminPage, 
   PageCategoryPage,
-  TodayPage
+  TodayPage,
+  PageGroup
 } from './components/components';
 const routes: Routes = [
   {
@@ -72,6 +73,10 @@ const routes: Routes = [
       {
         path: PageCategoryPage.PAGE_NAME,
         component: PageCategoryPage
+      },
+      {
+        path: PageGroup.PAGE_NAME,
+        component: PageGroup
       },
       {
         path: ConfigPage.PAGE_NAME,
