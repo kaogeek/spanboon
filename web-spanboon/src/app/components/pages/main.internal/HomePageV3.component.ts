@@ -10,13 +10,13 @@ import { MatDialog } from '@angular/material';
 import { Gallery } from '@ngx-gallery/core';
 import { AuthenManager, MainPageSlideFacade, HashTagFacade, AssetFacade, PageFacade, SeoService, UserSubjectFacade } from '../../../services/services';
 import { AbstractPage } from '../AbstractPage';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { PostFacade } from '../../../services/facade/PostFacade.service';
 import { CacheConfigInfo } from '../../../services/CacheConfigInfo.service';
 import { PLATFORM_NAME_TH } from 'src/custom/variable';
 import { SearchFilter } from '../../../models/SearchFilter';
 import { environment } from 'src/environments/environment';
-import { DialogCheckBox, DialogPostCrad ,DialogAlert} from '../../components';
+import { DialogCheckBox, DialogPostCrad, DialogAlert } from '../../components';
 
 
 declare var $: any;
@@ -48,6 +48,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   public user: any;
   public testValues: any = undefined;
   public apiBaseURL = environment.apiBaseURL;
+  public queryParamsUrl: any;
 
   maxDate = new Date();
 
@@ -63,9 +64,19 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     hashTagFacade: HashTagFacade,
     assetFacade: AssetFacade,
     seoService: SeoService,
-    userSubject: UserSubjectFacade
+    userSubject: UserSubjectFacade,
+    private route: ActivatedRoute
   ) {
+
     super(null, authenManager, dialog, router);
+    this.route.queryParams.subscribe(params => {
+      const rawDate = params['date'];
+      if (rawDate) {
+        const dateParts = rawDate.split('-');
+        this.queryParamsUrl = new Date(`${dateParts[1]}-${dateParts[0]}-${dateParts[2]}`).getTime();
+      }
+      // You can use the value of the 'date' parameter here
+    });
     this.startDate = new Date();
     this.pageFacade = pageFacade;
     this.mainPageModelFacade = mainPageModelFacade;
@@ -94,14 +105,19 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     this.isLoading = true;
     this.user;
     this.startDateLong = new Date(event.value).getTime();
-    this.mainPageModelFacade.getMainPageModelV3(this.user, this.startDateLong).then((res)=>{
+    const date = new Date(event.value);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    const formattedDate = `${day}-${month}-${year}`;
+    this.mainPageModelFacade.getMainPageModelV3(this.user, this.startDateLong).then((res) => {
       this.model = res;
       this.testValues = new Date(this.startDateLong).toISOString(); // convert to ISO string
       localStorage.setItem('datetime', JSON.stringify(this.testValues));
       this.isLoading = false;
-    }).catch((err) =>{
+    }).catch((err) => {
       this.isLoading = false;
-      this.testValues = this.startDate;
+      this.testValues = new Date();
       this.dialog.open(DialogAlert, {
         disableClose: true,
         data: {
@@ -110,19 +126,45 @@ export class HomePageV3 extends AbstractPage implements OnInit {
           btDisplay1: "none"
         }
       });
-
+      localStorage.removeItem('datetime')
     });
-    this.router.navigate(['/home'], { queryParams: { date: this.startDateLong } });
+    this.router.navigate(['/home'], { queryParams: { date: formattedDate } });
   }
   public async getMainPageModelV3(userId?) {
-    let ok = undefined
+    // 1678726800000
     let testDate = JSON.parse(localStorage.getItem('datetime'));
-    if(testDate !== null){
+    if (testDate !== null) {
       this.testValues = testDate;
+    }
+    if(this.queryParamsUrl!== undefined){
+      this.mainPageModelFacade.getMainPageModelV3(userId, this.queryParamsUrl).then((res) => {
+        this.testValues = new Date(this.queryParamsUrl).toISOString();
+        this.model = res;
+        for (let index = 0; index < this.model.postSectionModel.contents.length; index++) {
+          if (this.model.postSectionModel.contents[index].post.type === "FULFILLMENT") {
+            this.model.postSectionModel.contents.splice(index, 1);
+          } else if (this.model.postSectionModel.contents[index].coverPageUrl === undefined) {
+            this.model.postSectionModel.contents.splice(index, 1);
+          }
+        }
+      }).catch((err) => {
+        this.isLoading = false;
+        this.testValues = new Date();
+        this.dialog.open(DialogAlert, {
+          disableClose: true,
+          data: {
+            text: 'ไม่เจอหนังสือพิมพ์ฉบับนี้',
+            bottomText1: 'ตกลง',
+            btDisplay1: "none"
+          }
+        });
+        localStorage.removeItem('datetime')
+        this.router.navigate(['/home']);
+      })
     }
     this.user = userId;
     this.isLoading = true;
-    this.mainPageModelFacade.getMainPageModelV3(userId, this.startDateLong).then((res)=>{
+    this.mainPageModelFacade.getMainPageModelV3(userId, this.startDateLong).then((res) => {
       this.model = res;
       for (let index = 0; index < this.model.postSectionModel.contents.length; index++) {
         if (this.model.postSectionModel.contents[index].post.type === "FULFILLMENT") {
@@ -131,10 +173,10 @@ export class HomePageV3 extends AbstractPage implements OnInit {
           this.model.postSectionModel.contents.splice(index, 1);
         }
       }
-    }).catch((err)=>{
-
-      console.log('err',err);
+    }).catch((err) => {
+      console.log('err', err);
     })
+
 
     // if (this.isLogin) {
     //   this.getSubject();
