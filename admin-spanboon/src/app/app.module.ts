@@ -59,7 +59,8 @@ import {
   PageObjectiveCategoryPage,
   EmergencyEventPage,
   DialogWarningComponent,
-  TodayPage
+  TodayPage,
+  PageGroup
 } from './components/components';
 import {
   AuthenManager,
@@ -75,6 +76,7 @@ import {
   PageObjectiveCategoryFacade,
   EmergencyEventFacade,
   TodayPageFacade,
+  PageGroupFacade,
   PageUserFacade,
   PageUserAdminFacade
   ,
@@ -117,13 +119,15 @@ const COMPONENTS: any[] = [
   PageObjectiveCategoryPage,
   EmergencyEventPage,
   TodayPage,
+  PageGroup,
   testPage,
   // component 
   FormComponent,
   DialogDeleteComponent,
   ColumnTable,
   DialogWarningComponent,
-  TableComponent
+  TableComponent,
+  PageGroup
 ];
 
 const PIPE_CLASSES: any[] = [
@@ -149,6 +153,7 @@ const SERVICE_CLASSES: any[] = [
   PageObjectiveCategoryFacade,
   EmergencyEventFacade,
   TodayPageFacade,
+  PageGroupFacade,
   PageUserFacade,
   UserFacade,
   PageUserAdminFacade,

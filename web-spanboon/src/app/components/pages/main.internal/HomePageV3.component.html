@@ -14,8 +14,21 @@
 </div>
 
 <div class="home-page">
+
     <section class="section-1" *ngIf="!showLoading">
         <div class="container">
+            <div class="label-date">
+                <h2 class="newspaper_title">หนังสือพิมพ์ฉบับวันที่ </h2>
+                <span class="Newspaper_SelectDate" >
+                    <loading *ngIf="isLoading"></loading>
+                    <mat-form-field class="custom-class">
+                        <input  matInput [matDatepicker]="picker" [(ngModel)]="startDate" 
+                            [max]="maxDate" (dateChange)="saveDate($event)">
+                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker #picker panelClass="datepickerOne"></mat-datepicker>
+                    </mat-form-field>
+                </span>
+            </div>
             <div class="wrapper-1">
                 <div class="wrapper-1-left"
                     *ngIf="model && model.emergencyEvents.contents.length > 0 && (model.postSectionModel.contents.length > 0) && (model.pageRoundRobin.contents.length > 0)">
@@ -119,8 +132,8 @@
                     </div>
                 </div>
                 <div class="wrapper-1-right"
-                    [ngClass]="{'home-wrapper-right': model.emergencyEvents.contents.length <= 0}">
-                    <div class="wrapper-hastags" *ngIf="model.emergencyEvents.contents.length > 0">
+                    [ngClass]="{'home-wrapper-right': model && model.emergencyEvents.contents.length <= 0}">
+                    <div class="wrapper-hastags" *ngIf="model && model.emergencyEvents.contents.length > 0">
                         <span class="header-hastags">มาใหม่ : </span>
                         <a class="tag-link"
                             (click)="clickToPage(model && model.hashTagSumma[0].name,'hashTagSumma')">#{{model &&
@@ -349,7 +362,7 @@
                         </div>
                         <div class="wrapper-news">
                             <div class="wrapper-news-left"
-                                [ngStyle]="{'display': model.pageRoundRobin.contents.length < 3 ? 'flex' : 'grid','gap': model.pageRoundRobin.contents.length < 3 ? '15px' : 'unset'}">
+                                [ngStyle]="{'display': model && model.pageRoundRobin.contents.length < 3 ? 'flex' : 'grid','gap': model && model.pageRoundRobin.contents.length < 3 ? '15px' : 'unset'}">
                                 <div class="wrapper-bar md-none-min">
                                     <span class="news-post-bar-left">
                                         <span class="post-point">●</span>
@@ -670,6 +683,66 @@
             </div>
             <div class="wrapper-content">
                 <ng-container *ngFor="let item of model && model.kaokaiHashTag.contents | slice:0:4; let i=index">
+                    <div class="card-content">
+                        <div class="wrapper-bar">
+                            <span class="news-post-bar-left">
+                                <span class="post-point">●</span>
+                                <span>ทั่วไป</span>
+                            </span>
+                            <span class="news-post-bar-right">
+                                <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0" />
+                                    <path
+                                        d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 " />
+                                </svg>
+                                <a class="tag-link gray time" (click)="clickToPost(item.post._id)"
+                                    [innerHTML]="item.post.createdDate | thformatdatetime"></a>
+                            </span>
+                        </div>
+                        <div class="container-content"
+                            (click)="isPostNewTab ? openDilogPost(item) : clickToPost(item.post._id)">
+                            <ng-container *ngIf="item.coverPageUrl; else elseImage">
+                                <img class="image-content" [src]="apiBaseURL + (item.coverPageUrl) + '/image'">
+                            </ng-container>
+                            <ng-template #elseImage>
+                                <div class="image-content image-null">
+                                    <span [innerHTML]="item.post.title"></span>
+                                </div>
+                            </ng-template>
+                            <p class="title-post" [innerHTML]="item.coverPageUrl ? item.post.title : item.post.detail">
+                            </p>
+                        </div>
+                        <div class="owner-post">
+                            <p class="owner-name" (click)="clickToPageUser(item.owner.id)"
+                                [innerHTML]="item.owner.name ? item.owner.name : item.owner.displayName"></p>
+                        </div>
+                        <p class="amount-social">
+                            <span>{{item.post.commentCount | shortNumber}} ความคิดเห็น</span>
+                            <span>•</span>
+                            <span>{{item.post.repostCount | shortNumber}} บอกต่อ</span>
+                            <span>•</span>
+                            <span>{{item.post.likeCount | shortNumber}} ถูกใจ</span>
+                            <span>•</span>
+                            <span>{{item.post.shareCount | shortNumber}} แชร์</span>
+                        </p>
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+    </section>
+    <section class="section-4" *ngIf="!showLoading && (model && model.kaokaiContent !== undefined && model.kaokaiContent.contents.length !== 0)">
+        <div class="container">
+            <div class="header-title">
+                <div class="wrapper-title">
+                    <span [innerHTML]="model && model.kaokaiContent.title"></span>
+                </div>
+                <div class="wrapper-title">
+                    <hr>
+                </div>
+            </div>
+            <div class="wrapper-content">
+                <ng-container *ngFor="let item of model && model.kaokaiContent.contents | slice:0:4; let i=index">
                     <div class="card-content">
                         <div class="wrapper-bar">
                             <span class="news-post-bar-left">

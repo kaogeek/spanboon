@@ -45,7 +45,6 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     position.push(sequence.position);
                 }
                 const sorts = position.sort((a, b) => Math.abs(a) - Math.abs(b) || a - b);
-                let majorTrend = undefined;
                 let checkPosition = undefined;
 
                 let userId = undefined;
@@ -58,19 +57,15 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     userId = this.data.userId;
                     checkPosition = this.data.checkPosition1;
                 }
-                const stackRobin = [];
+                const sortV = [];
                 for (const sort of sorts) {
-                    if (sort === 2) {
-                        majorTrend = await this.kaokaiTodayService.findOne({ position: sort });
-                        stackRobin.push(majorTrend);
-
-                    } else if (sort < 0 && checkPosition > sort) {
-                        majorTrend = await this.kaokaiTodayService.findOne({ position: sort });
-                        stackRobin.push(majorTrend);
+                    if (sort !== undefined && sort !== null && sort !== checkPosition) {
+                        sortV.push(sort);
                     } else {
                         continue;
                     }
                 }
+                const majorTrend = await this.kaokaiTodayService.findOne({ position: sortV[0] });
                 let limit: number = undefined;
                 let offset: number = undefined;
                 if (this.config !== undefined && this.config !== null) {
@@ -134,7 +129,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                 if (majorTrend === undefined) {
                     resolve(undefined);
                 }
-                if (stackRobin[0].type === 'post' && stackRobin[0].field === 'score') {
+                if (majorTrend.type === 'post' && majorTrend.field === 'score') {
                     const postStmt = [
                         { $match: { isDraft: false, deleted: false, hidden: false, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
                         { $sort: { summationScore: -1 } },
@@ -208,7 +203,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     result.iconUrl = '';
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
-                    result.position = stackRobin[0].position;
+                    result.position = majorTrend.position;
                     for (const row of postAggregate) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
@@ -249,7 +244,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     result.dateTime = lastestDate;
 
                     resolve(result);
-                } else if (stackRobin[0].type === 'post' && stackRobin[0].field === 'objective') {
+                } else if (majorTrend.type === 'post' && majorTrend.field === 'objective') {
                     const bucketF = [];
                     const bucketS = [];
                     const bucketT = [];
@@ -493,7 +488,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     result.iconUrl = '';
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
-                    result.position = stackRobin[0].position;
+                    result.position = majorTrend.position;
                     for (const row of stackPage) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
@@ -532,7 +527,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     }
                     result.dateTime = lastestDate;
                     resolve(result);
-                } else if (stackRobin[0].type === 'post' && stackRobin[0].field === 'emergencyEvent') {
+                } else if (majorTrend.type === 'post' && majorTrend.field === 'emergencyEvent') {
                     const bucketF = [];
                     const bucketS = [];
                     const bucketT = [];
@@ -776,7 +771,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     result.iconUrl = '';
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
-                    result.position = stackRobin[0].position;
+                    result.position = majorTrend.position;
                     for (const row of stackPage) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
@@ -815,7 +810,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     }
                     result.dateTime = lastestDate;
                     resolve(result);
-                } else if (stackRobin[0].type === 'post' && stackRobin[0].field === 'hashTag') {
+                } else if (majorTrend.type === 'post' && majorTrend.field === 'hashTag') {
                     const bucketF = [];
                     const bucketS = [];
                     const bucketT = [];
@@ -1088,7 +1083,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     result.iconUrl = '';
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
-                    result.position = stackRobin[0].position;
+                    result.position = majorTrend.position;
                     for (const row of stackPage) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
@@ -1130,16 +1125,16 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     result.dateTime = lastestDate;
 
                     resolve(result);
-                } else if (stackRobin[0].type === 'hashtag' && stackRobin[0].field === 'count') {
+                } else if (majorTrend.type === 'hashtag' && majorTrend.field === 'count') {
                     const bucketF = [];
-                    const hashTagMost = await this.hashTagService.searchHashSec();
+                    const hashTagMost = await this.hashTagService.searchHashSec(limit);
                     if (hashTagMost.length >= 0) {
                         for (const hashTagMostS of hashTagMost) {
                             bucketF.push(new ObjectID(hashTagMostS.id));
                         }
                     }
                     const postStmt = [
-                        { $match: { isDraft: false, deleted: false, hidden: false, postsHashTags: { $ne: null, $in: bucketF } } },
+                        { $match: { isDraft: false, deleted: false, hidden: false, postsHashTags: { $in: bucketF } } },
                         { $sort: { summationScore: -1 } },
 
                         {
@@ -1204,7 +1199,6 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     ];
 
                     const postAggregate = await this.postsService.aggregate(postStmt);
-
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
                     result.title = (this.config === undefined || this.config.title === undefined) ? majorTrend.title : this.config.title;
@@ -1213,7 +1207,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     result.iconUrl = '';
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
-                    result.position = stackRobin[0].position;
+                    result.position = majorTrend.position;
                     for (const row of postAggregate) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
@@ -1252,7 +1246,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     }
                     result.dateTime = lastestDate;
                     resolve(result);
-                } else if (stackRobin[0].type === 'page' && stackRobin[0].field === 'group') {
+                } else if (majorTrend.type === 'page' && majorTrend.field === 'group') {
                     const bucketF = [];
                     const bucketS = [];
                     const bucketT = [];
@@ -1544,7 +1538,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     result.iconUrl = '';
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
-                    result.position = stackRobin[0].position;
+                    result.position = majorTrend.position;
                     for (const row of stackPage) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
@@ -1585,7 +1579,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     result.dateTime = lastestDate;
 
                     resolve(result);
-                } else if (stackRobin[0].type === 'page' && stackRobin[0].field === 'province') {
+                } else if (majorTrend.type === 'page' && majorTrend.field === 'province') {
                     const bucketF = [];
                     const bucketS = [];
                     const bucketT = [];
@@ -1876,7 +1870,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     result.iconUrl = '';
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
-                    result.position = stackRobin[0].position;
+                    result.position = majorTrend.position;
                     for (const row of stackPage) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
@@ -1917,7 +1911,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     result.dateTime = lastestDate;
 
                     resolve(result);
-                } else if (stackRobin[0].type === 'page' && stackRobin[0].field === 'id') {
+                } else if (majorTrend.type === 'page' && majorTrend.field === 'id') {
                     const bucketAll = [];
                     const bucketF = [];
                     const bucketS = [];
@@ -2158,7 +2152,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     result.iconUrl = '';
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
-                    result.position = stackRobin[0].position;
+                    result.position = majorTrend.position;
                     for (const row of stackPage) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;

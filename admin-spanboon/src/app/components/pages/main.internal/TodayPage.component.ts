@@ -459,4 +459,5 @@ export class TodayPage extends AbstractPage implements OnInit {
             this.fieldBucket = [{ value: 'count' }];
         }
     }
+    
 }

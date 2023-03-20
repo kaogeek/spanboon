@@ -19,3 +19,4 @@ export * from './main.internal/EmergencyEventPage.component';
 export * from './main.internal/PostPage.component';
 export * from './main.internal/item.internal/item';
 export * from './main.internal/TodayPage.component';
+export * from './main.internal/PageGroup.component';

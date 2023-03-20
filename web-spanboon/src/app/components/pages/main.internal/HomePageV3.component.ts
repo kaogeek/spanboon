@@ -10,13 +10,14 @@ import { MatDialog } from '@angular/material';
 import { Gallery } from '@ngx-gallery/core';
 import { AuthenManager, MainPageSlideFacade, HashTagFacade, AssetFacade, PageFacade, SeoService, UserSubjectFacade } from '../../../services/services';
 import { AbstractPage } from '../AbstractPage';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { PostFacade } from '../../../services/facade/PostFacade.service';
 import { CacheConfigInfo } from '../../../services/CacheConfigInfo.service';
 import { PLATFORM_NAME_TH } from 'src/custom/variable';
 import { SearchFilter } from '../../../models/SearchFilter';
 import { environment } from 'src/environments/environment';
 import { DialogAlert, DialogCheckBox, DialogPostCrad } from '../../components';
+
 
 declare var $: any;
 
@@ -35,8 +36,6 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   public windowWidth: any;
   public mainPageModelFacade: MainPageSlideFacade;
   public model: any = undefined;
-  private cacheConfigInfo: CacheConfigInfo;
-  private postFacade: PostFacade;
   private hashTagFacade: HashTagFacade;
   private pageFacade: PageFacade;
   private assetFacade: AssetFacade;
@@ -44,7 +43,11 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   private userSubject: UserSubjectFacade;
   public hashTag: any = [];
   public pageUser: any;
+  public startDate: any;
+  public startDateLong: number;
+  public user:any;
   public apiBaseURL = environment.apiBaseURL;
+  maxDate = new Date();
 
   constructor(
     private gallery: Gallery,
@@ -84,10 +87,20 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     this.getScreenSize();
     super.ngOnInit();
   }
-  public async getMainPageModelV3(userId?) {
+  public async saveDate(event: any) {
     this.isLoading = true;
-    this.model = await this.mainPageModelFacade.getMainPageModelV3(userId);
-    console.log("model", this.model)
+    this.user;
+    this.startDateLong = new Date(event.value).getTime();
+    this.model = await this.mainPageModelFacade.getMainPageModelV3(this.user,this.startDateLong);
+    if(event){
+      this.isLoading = false;
+    }
+    this.router.navigate(['/home'], { queryParams: { date: this.startDateLong } });
+  }
+  public async getMainPageModelV3(userId?) {
+    this.user = userId;
+    this.isLoading = true;
+    this.model = await this.mainPageModelFacade.getMainPageModelV3(userId,this.startDateLong);
     for (let index = 0; index < this.model.postSectionModel.contents.length; index++) {
       if (this.model.postSectionModel.contents[index].post.type === "FULFILLMENT") {
         this.model.postSectionModel.contents.splice(index, 1);
