@@ -78,6 +78,7 @@ import { PageNotificationService } from '../services/PageNotificationService';
 import { NotificationService } from '../services/NotificationService';
 import { DeletePageService } from '../services/DeletePageService';
 import axios from 'axios';
+import { PageGroupService } from '../services/PageGroupService';
 @JsonController('/page')
 export class PageController {
     private PAGE_ACCESS_LEVEL_GUEST = 'GUEST';
@@ -108,6 +109,7 @@ export class PageController {
         private pageNotificationService: PageNotificationService,
         private notificationService: NotificationService,
         private deletePageService: DeletePageService,
+        private pageGroupService:PageGroupService
     ) { }
 
     // Find Page API
@@ -2447,6 +2449,18 @@ export class PageController {
         }
     }
 
+    @Get('/group/receive')
+    @Authorized('user')
+    public async getPageGroup(@Res() res: any, @Req() req: any): Promise<any>{
+        const pageGroup = await this.pageGroupService.find();
+        if(pageGroup.length > 0){
+            const successResponse = ResponseUtil.getSuccessResponse('Get Page Group is Success', pageGroup);
+            return res.status(200).send(successResponse);        
+        }else{
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot Get Page Group.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
     // Update Page API
     /**
      * @api {put} /api/page/:id Update Page API

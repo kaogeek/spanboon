@@ -63,3 +63,6 @@ export const DEFAULT_POST_WEIGHT_SCORE = {
 };
 export const TODAY_DATETIME_GAP = 'today.datetime.gap';
 export const DEFAULT_TODAY_DATETIME_GAP = 30;
+
+export const TIMER_CHECK_DAY = 'timer.six.morning';
+export const DEFALUT_TIMER_CHECK_DAY = '06:00';

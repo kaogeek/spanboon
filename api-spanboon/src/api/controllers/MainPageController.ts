@@ -6,7 +6,7 @@
  */
 
 import 'reflect-metadata';
-import {  JsonController, Res, Get, Post, Body, Req,QueryParam } from 'routing-controllers';
+import { JsonController, Res, Get, Post, Body, Req, QueryParam } from 'routing-controllers';
 import { ResponseUtil } from '../../utils/ResponseUtil';
 import { ProcessorUtil } from '../../utils/ProcessorUtil';
 import { ObjectID } from 'mongodb';
@@ -23,6 +23,7 @@ import { PageObjectiveService } from '../services/PageObjectiveService';
 import { SUBJECT_TYPE } from '../../constants/FollowType';
 import { SEARCH_TYPE, SORT_SEARCH_TYPE } from '../../constants/SearchType';
 import { SearchFilter } from './requests/SearchFilterRequest';
+import { CheckDateRange } from './requests/CheckDateRage';
 import { LastestLookingSectionProcessor } from '../processors/LastestLookingSectionProcessor';
 // import { StillLookingSectionProcessor } from '../processors/StillLookingSectionProcessor';
 import { EmergencyEventSectionProcessor } from '../processors/EmergencyEventSectionProcessor';
@@ -61,7 +62,7 @@ import { ImageUtil } from '../../utils/ImageUtil';
 import { KaoKaiHashTagModelProcessor } from '../processors/KaoKaiHashTagModelProcessor';
 import { KaokaiAllProvinceModelProcessor } from '../processors/KaokaiAllProvinceModelProcessor';
 import { KaokaiTodayService } from '../services/KaokaiTodayService';
-import { TODAY_DATETIME_GAP, DEFAULT_TODAY_DATETIME_GAP } from '../../constants/SystemConfig';
+import { TODAY_DATETIME_GAP, DEFAULT_TODAY_DATETIME_GAP,TIMER_CHECK_DAY,DEFALUT_TIMER_CHECK_DAY } from '../../constants/SystemConfig';
 import { ConfigService } from '../services/ConfigService';
 import { KaokaiTodaySnapShotService } from '../services/KaokaiTodaySnapShot';
 import { KaokaiContentModelProcessor } from '../processors/KaokaiContentModelProcessor';
@@ -88,19 +89,22 @@ export class MainPageController {
     ) { }
     // Home page content V2
     @Get('/content/v3')
-    public async getContentListV2(@QueryParam('offset') offset: number, @QueryParam('section') section: string,  @QueryParam('date') date: any, @Res() res: any, @Req() req: any): Promise<any> {
+    public async getContentListV2(@QueryParam('offset') offset: number, @QueryParam('section') section: string, @QueryParam('date') date: any, @Res() res: any, @Req() req: any): Promise<any> {
         const dateFormat = new Date(date);
-        const dateReal = dateFormat.setDate(dateFormat.getDate() +1);
+        const dateReal = dateFormat.setDate(dateFormat.getDate() + 1);
         const toDate = new Date(dateReal);
         let content = undefined;
         const userId = req.headers.userid;
         const mainPageSearchConfig = await this.pageService.searchPageOfficialConfig();
         const searchOfficialOnly = mainPageSearchConfig.searchOfficialOnly;
         const assetassetTodayDateGap = await this.configService.getConfig(TODAY_DATETIME_GAP);
+
         let assetTodayDate = DEFAULT_TODAY_DATETIME_GAP;
         if (assetassetTodayDateGap) {
             assetTodayDate = assetassetTodayDateGap.value;
         }
+        const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), assetTodayDate);
+
         // ordering
         const emerProcessor: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service);
         emerProcessor.setConfig({
@@ -110,7 +114,6 @@ export class MainPageController {
             searchOfficialOnly
         });
         const emerSectionModel = await emerProcessor.process2();
-        const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), assetTodayDate);
         // summation
         const postProcessor: PostSectionProcessor2 = new PostSectionProcessor2(this.postsService, this.s3Service, this.userLikeService);
         postProcessor.setData({
@@ -217,13 +220,13 @@ export class MainPageController {
         result.kaokaiProvince = kaokaiProvince;
         result.kaokaiHashTag = kaokaiHashTag;
         result.kaokaiContent = kaokaiContent;
-        content = await this.snapShotToday(result, monthRange[0], monthRange[1], assetTodayDate,userId);
-        if(date !== undefined && date !== null ){
-            content = await this.kaokaiTodaySnapShotService.findOne({endDateTime: toDate });
-            if(content){
+        content = await this.snapShotToday(result, monthRange[0], monthRange[1], assetTodayDate, userId);
+        if (date !== undefined && date !== null) {
+            content = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: toDate });
+            if (content) {
                 const successResponseF = ResponseUtil.getSuccessResponse('Successfully Main Page Data', content.data);
                 return res.status(200).send(successResponseF);
-            }else{
+            } else {
                 const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
                 return res.status(400).send(errorResponse);
             }
@@ -232,9 +235,54 @@ export class MainPageController {
         return res.status(200).send(successResponse);
     }
 
+    @Get('/date/check')
+    public async dateCheck(@Body({ validate: true }) data: CheckDateRange, @Res() res: any, @Req() req: any): Promise<any> {
+        const startDate = new Date(data.startDateTime);
+        const endDate = new Date(data.endDateTime);
+        if (startDate === undefined && endDate === undefined) {
+            const errorResponse = ResponseUtil.getErrorResponse('StartDate and EndDate Must not undefined.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+        const dateTime = await this.kaokaiTodaySnapShotService.aggregate(
+            [
+                {
+                    $match: { endDateTime: { $lte: endDate, $gte: startDate } }
+                }
+            ]
+        );
+        if (dateTime.length > 0) {
+            const successResponseF = ResponseUtil.getSuccessResponse('Successfully Filter Range Date.', dateTime);
+            return res.status(200).send(successResponseF);
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Error Filter Range Date.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
     @Get('/content/v4')
-    public async testCheckTimer(@QueryParam('offset') offset: number, @QueryParam('section') section: string,  @QueryParam('date') date: any, @Res() res: any, @Req() req: any): Promise<any> {
-        console.log('return undefined');
+    public async testCheckTimer(@QueryParam('offset') offset: number, @QueryParam('section') section: string, @QueryParam('date') date: any, @Res() res: any, @Req() req: any): Promise<any> {
+        const now = new Date(); // Get the current time
+        const hours = now.getHours(); // Get the hours of the current time
+        const minutes = now.getMinutes(); // Get the minutes of the current time
+        const assetTimerCheck = await this.configService.getConfig(TIMER_CHECK_DAY);
+        let assetTimer = DEFALUT_TIMER_CHECK_DAY;
+        if(assetTimerCheck){
+            assetTimer = assetTimerCheck.value;
+        }
+        const split = assetTimer.split(':');
+        const hourSplit =split[0];
+        const minuteSpit = split[1];
+        if (hours ===  parseInt(hourSplit,10) && minutes === parseInt(minuteSpit,10)) {
+            // The current time is 06:00 am, so process your code here
+            console.log('Processing code at 06:00 am');
+            const successResponseF = ResponseUtil.getSuccessResponse('Successfully Main Page Data', undefined);
+            return res.status(200).send(successResponseF);
+            // ...
+        } else {
+            // The current time is not 06:00 am, so do nothing
+            console.log('Current time is not 06:00 am');
+            const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
+            return res.status(400).send(errorResponse);
+        }
     }    // Find Page API
     /**
      * @api {get} /api/main/content Find Main Page Data API
@@ -676,8 +724,6 @@ export class MainPageController {
             const search: any = {};
             const userId = data.userId;
             const keyword = data.keyword;
-            console.log('userId',userId);
-            console.log('keyword',keyword);
             const filter: SearchFilter = data.filter;
             const exp = { $regex: '.*' + keyword + '.*', $options: 'si' };
             const pageResultStmt = [];
@@ -713,7 +759,6 @@ export class MainPageController {
                 ];
             }
             const histories = await this.searchHistoryService.aggregate(historyQuery);
-            console.log('histories',histories);
             historyRows = histories.length;
             pageLimit = historyLimit - historyRows;
             if (filter !== undefined) {
@@ -1641,35 +1686,13 @@ export class MainPageController {
         }
     }
 
-    private async snapShotToday(data: any, startDateRange: Date, endDateTimeRange: Date, assetTodayDate: number,userId?:any): Promise<any> {
-        /* 
-        const objId = new ObjectID(userId);
-        if(objId !== undefined && objId !== null){
-            const checkUserId = await this.kaokaiTodaySnapShotService.findOne({userId:objId});
-            if(checkUserId !== undefined && checkUserId !== null){
-                return checkUserId.data;
-            }
-            let contentuserId = undefined;
-            const contentsUserId = data;
-            const startDateUserId = startDateRange;
-            const endDateUserId = endDateTimeRange;
-            const resultUserId: any = {};
-            resultUserId.data = contentsUserId;
-            resultUserId.startDateTime = startDateUserId;
-            resultUserId.endDateTime = endDateUserId;
-            resultUserId.userId = new ObjectID(userId);
-            const snapShotUserId = await this.kaokaiTodaySnapShotService.create(resultUserId);
-            if (snapShotUserId) {
-                contentuserId = await this.kaokaiTodaySnapShotService.findOne({ startDateTime: startDateRange, endDateTime: endDateTimeRange,userId:objId });
-            }
-            // 
-            return contentuserId.data;
-        } */
+    private async snapShotToday(data: any, startDateRange: Date, endDateTimeRange: Date, assetTodayDate: number, userId?: any): Promise<any> {
         // check before create
         const checkCreate = await this.kaokaiTodaySnapShotService.findOne({ startDateTime: startDateRange, endDateTime: endDateTimeRange });
         if (checkCreate !== undefined && checkCreate !== null) {
             return checkCreate.data;
         }
+        // Check Date time === 06:00 morning
         let content = undefined;
         const contents = data;
         const startDate = startDateRange;

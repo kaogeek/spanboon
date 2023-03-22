@@ -41,4 +41,8 @@ export class KaokaiTodaySnapShotService {
 
         return await this.kaokaiTodaySnapShotRepository.updateOne(query, newValue);
     }
+
+    public aggregate(query: any, options?: any): Promise<any[]> {
+        return this.kaokaiTodaySnapShotRepository.aggregate(query, options).toArray();
+    }
 }
