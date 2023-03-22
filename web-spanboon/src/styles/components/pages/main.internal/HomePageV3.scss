@@ -23,22 +23,28 @@
 
       >.Newspaper_SelectDate {
         margin-left: 16px;
+
         >.mat-form-field-hide-placeholder {
-          >.mat-form-field-wrapper{
-            >.mat-form-field-flex{
-              >.mat-form-field-infix{
+          >.mat-form-field-wrapper {
+            >.mat-form-field-flex {
+              >.mat-form-field-infix {
                 margin-top: 7px;
                 font-size: 20px;
                 color: orange;
                 font-family: "Anakotmai-Medium";
                 width: 110px;
+
+                >input {
+                  cursor: pointer;
+                }
               }
-              >.mat-form-field-suffix{
-                >.mat-datepicker-toggle{
-                  >.mat-icon-button{
-                    >.mat-button-wrapper{
-                      svg{
-                        width: 50px;
+
+              >.mat-form-field-suffix {
+                >.mat-datepicker-toggle {
+                  >.mat-icon-button {
+                    >.mat-button-wrapper {
+                      svg {
+                        width: 100%;
                         margin-bottom: 4px;
                       }
                     }
@@ -52,17 +58,18 @@
             }
           }
         }
+
         .datepickerOne {
           background: lightgreen;
         }
-         
-        .datepickerOne .mat-calendar-body-today:not(.mat-calendar-body-selected){
+
+        .datepickerOne .mat-calendar-body-today:not(.mat-calendar-body-selected) {
           border-color: darkgreen;
         }
-        
+
         .mat-datepicker-content .datepickerOne.mat-calendar {
-            width: 500px;
-            height: auto;
+          width: 500px;
+          height: auto;
         }
       }
     }
@@ -273,10 +280,9 @@
           display: flex;
           flex-direction: column;
           align-items: flex-start;
-          justify-content: center;
 
           >.title-topic {
-            @include font-size-10($font-head-500);
+            @include font-size-9($font-head-500);
             display: -webkit-box;
             -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
@@ -306,6 +312,7 @@
 
         @media (max-width: $large) {
           width: 100%;
+          flex-direction: column !important;
         }
 
         .wrapper-hastags {
@@ -394,6 +401,18 @@
             @media (max-width: $medium) {
               flex-direction: column;
               gap: 0px;
+            }
+
+            &.wrapper-news-2 {
+              flex-direction: column;
+
+              @media (max-width: $large) {
+                flex-direction: row;
+              }
+
+              @media (max-width: $medium) {
+                flex-direction: column;
+              }
             }
 
             >.wrapper-news-left,
@@ -546,4 +565,11 @@
 
 .news-post-flex {
   width: 100%;
+  flex-direction: row;
+  display: flex;
+}
+
+.post-wid {
+  width: 50%;
+  display: flex;
 }

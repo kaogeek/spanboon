@@ -17,14 +17,14 @@ export class MainPageSlideFacade extends AbstractFacade {
   public cacheImageAutoScaleMainPage: number;
   protected dialog: MatDialog;
   constructor(http: HttpClient, authMgr: AuthenManager
-    ) {
+  ) {
     super(http, authMgr);
 
   }
   public getMainPageModelV3(userId?: string, date?: any, offset?: string, section?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/main/content/v3';
-  
+
       if (offset !== undefined) {
         url += `?offset=${offset}`;
       }
@@ -34,7 +34,7 @@ export class MainPageSlideFacade extends AbstractFacade {
       if (date !== undefined) {
         url += `?date=${date}`;
       }
-  
+
       let httpOptions: any = {
         headers: this.authMgr.getDefaultOptions()
       };
@@ -44,11 +44,10 @@ export class MainPageSlideFacade extends AbstractFacade {
         });
       }
       this.http.get(url, httpOptions).toPromise().then((response: any) => {
-        console.log('response',response);
-          resolve(response.data);
-        }).catch((error: any) => {
-          reject(error);
-        });
+        resolve(response.data);
+      }).catch((error: any) => {
+        reject(error);
+      });
     });
   }
 

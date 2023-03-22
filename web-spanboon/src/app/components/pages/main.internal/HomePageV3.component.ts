@@ -34,6 +34,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   public isLoading: boolean;
   public showLoading: boolean;
   public isPostNewTab: boolean = false;
+  public isRes: boolean = false;
   public windowWidth: any;
   public mainPageModelFacade: MainPageSlideFacade;
   public model: any = undefined;
@@ -121,7 +122,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
       this.dialog.open(DialogAlert, {
         disableClose: true,
         data: {
-          text: 'ไม่เจอหนังสือพิมพ์ฉบับนี้',
+          text: 'ไม่พบหน้าหนึ่งฉบับวันที่',
           bottomText1: 'ตกลง',
           btDisplay1: "none"
         }
@@ -136,7 +137,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     if (testDate !== null) {
       this.testValues = testDate;
     }
-    if(this.queryParamsUrl!== undefined){
+    if (this.queryParamsUrl !== undefined) {
       this.mainPageModelFacade.getMainPageModelV3(userId, this.queryParamsUrl).then((res) => {
         this.testValues = new Date(this.queryParamsUrl).toISOString();
         this.model = res;
@@ -153,7 +154,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
         this.dialog.open(DialogAlert, {
           disableClose: true,
           data: {
-            text: 'ไม่เจอหนังสือพิมพ์ฉบับนี้',
+            text: 'ไม่พบหน้าหนึ่งฉบับวันที่',
             bottomText1: 'ตกลง',
             btDisplay1: "none"
           }
@@ -333,10 +334,14 @@ export class HomePageV3 extends AbstractPage implements OnInit {
 
     if (this.windowWidth <= 479) {
       this.isPostNewTab = true;
-      console.log("newTab true", this.isPostNewTab)
     } else {
       this.isPostNewTab = false;
-      console.log("newTab false", this.isPostNewTab)
+    }
+
+    if (this.windowWidth <= 1024) {
+      this.isRes = true;
+    } else {
+      this.isRes = false;
     }
   }
   public stopIsloading() {
