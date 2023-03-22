@@ -2508,6 +2508,7 @@ export class PageController {
             let pageInstagramURL = pages.instagramURL;
             let pageTwitterURL = pages.twitterURL;
             let pageEmail = pages.email;
+            let pageGroup = pages.group;
             const pageProvince = pages.province;
             const pageAccessLevel = pages.pageAccessLevel;
             // const assetQuery = { userId: ownerUsers };
@@ -2662,7 +2663,8 @@ export class PageController {
                     address: pageAddress,
                     twitterURL: pageTwitterURL,
                     email: pageEmail,
-                    province: pageProvince
+                    province: pageProvince,
+                    group:pageGroup,
                 }
             };
             const pageSave = await this.pageService.update(updateQuery, newValue);

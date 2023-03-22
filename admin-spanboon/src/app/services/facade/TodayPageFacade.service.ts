@@ -111,6 +111,15 @@ export class TodayPageFacade extends AbstractFacade {
         });
     }
 
+    public searchObject(type:any,field:any): Promise<Today[]> {
+        return new Promise((resolve, reject) => {
+            let url: string = this.baseURL + '/admin/page/request/search';
+            let body: any ={
+                'type':type,
+                'field':field
+            }
+        });
+    }
     public delete(id: any): Promise<Today[]> {
         if (id === undefined || id === null) {
             new Error("Id is required.");

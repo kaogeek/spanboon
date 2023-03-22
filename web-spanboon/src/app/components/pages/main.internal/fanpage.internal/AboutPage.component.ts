@@ -127,6 +127,7 @@ export class AboutPage extends AbstractPage implements OnInit {
         { value: 'ภูเก็ต', viewValue: 'ภูเก็ต' },
         { value: 'สมุทรสงคราม', viewValue: 'สมุทรสงคราม' }
     ];
+    public groups:any =[];
     public isCard1: boolean = false;
     public isCard2: boolean = false;
     public isCard3: boolean = false;
@@ -139,6 +140,7 @@ export class AboutPage extends AbstractPage implements OnInit {
     public isCard10: boolean = false;
     public isCard11: boolean = false;
     public isCard12: boolean = false;
+    public isCard13: boolean = false;
     public isActiveButton1: boolean = false;
     public isActiveButton2: boolean = false;
     public isActiveButton3: boolean = false;
@@ -336,6 +338,8 @@ export class AboutPage extends AbstractPage implements OnInit {
             this.isCard11 = true;
         } else if (items === '12'){
             this.isCard12 = true;
+        } else if(items === '13'){
+            this.isCard13 = true;
         }
     }
 

@@ -31,4 +31,5 @@ export class UpdatePageRequest {
     public address: string;
     public email: string;
     public province:string;
+    public group:string
 }

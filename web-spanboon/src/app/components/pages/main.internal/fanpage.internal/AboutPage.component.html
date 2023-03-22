@@ -345,6 +345,41 @@
             </div>
         </div>
     </div>
+
+    <div class="card-info" (click)="clickCard('13')" [class.active]="isCard13">
+        <div class="card-left">
+            <div class="header">
+                กลุ่ม
+            </div>
+        </div>
+        <div class="card-right">
+            <div class="card-detail">
+                <div class="dropdown-province">
+                    <mat-form-field appearance="none">
+                        <mat-select (keyup)="changeActive(groupAbout.getRawValue().province,12)" id="province"
+                            name="province" placeholder='กลุ่ม' formControlName="province" disableOptionCentering>
+                            <mat-option *ngFor="let province of provinces" [value]="province.value">
+                                {{province.viewValue}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="card-bottom" [class.active]="isCard12">
+                    <div class="card-title">
+                        <div>ช่วยให้ลูกค้าเป้าหมายเรียนรู้เพิ่มเติมเกี่ยวกับธุรกิจของคุณได้อย่างง่ายๆ</div>
+                    </div>
+                    <div class="card-confirm">
+                        <button mat-flat-button [disableRipple]="true" class="save-card"
+                            [class.active]="isActiveButton12"
+                            (click)="isActiveButton12 ? editInfoPage(12) : null">บันทึกการเปลี่ยนแปลง</button>
+                        <button mat-flat-button [disableRipple]="true" class="cancel-card"
+                            (click)="clickClose($event , '12' , groupAbout.getRawValue().twitterURL)">ยกเลิก</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="info-title">ตำแหน่งที่ตั้ง</div>
 
     <div class="card-info" (click)="clickCard('11')" [class.active]="isCard11">

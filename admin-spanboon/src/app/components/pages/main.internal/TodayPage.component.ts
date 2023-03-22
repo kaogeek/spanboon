@@ -56,10 +56,10 @@ export class TodayPage extends AbstractPage implements OnInit {
     public imageName: any;
     public ordering: number;
     public isSave: boolean = false;
-    public position: any = [{ value: '1' }, { value: '2' }, { value: '3' }, { value: '4' }];
+    public position: any = [{ value: '1' }, { value: '2' }, { value: '3' }, { value: '4' }, { value: '5' }];
     public typeBucket: any = [{ value: 'page' }, { value: 'post' }, { value: 'hashtag' }];
     public titleBucket: any = [{ value: 'ก้าวไกลวันนี้' }, { value: 'ก้าวไกลทั่วไทย' }, { value: 'สภาก้าวไกล' }, { value: 'ก้าวไกลรอบด้าน' }];
-    public fieldBucket: any[] = [];
+    public fieldBucket: any = [{ value: 'id' }, { value: 'group' }, { value: 'province' }];
     public formType: FormGroup;
     public todayForm: FormGroup;
     public selectedValueType: string;
@@ -76,6 +76,8 @@ export class TodayPage extends AbstractPage implements OnInit {
     public isBucket2: boolean = false;
     public isBucket3: boolean = false;
     public dataInput: Today;
+    public getType:any =undefined;
+    public getField:any = undefined;
 
     constructor(emergencyEventFacade: EmergencyEventFacade, todayPageFacade: TodayPageFacade, hashTagFacade: HashTagFacade, router: Router, dialog: MatDialog, authenManager: AuthenManager, private fb: FormBuilder) {
         super(PAGE_NAME, dialog);
@@ -160,6 +162,8 @@ export class TodayPage extends AbstractPage implements OnInit {
     }
 
     buckets(): FormArray {
+        this.getType = this.selectedValueType;
+        this.getField = this.selectedValueField;
         return this.todayForm.get('bucket') as FormArray;
     }
 
@@ -196,18 +200,17 @@ export class TodayPage extends AbstractPage implements OnInit {
         this.employeeSkills(empIndex).removeAt(skillIndex);
     }
 
+
+
     public search() {
         let filter = new SearchFilter();
         filter.limit = SEARCH_LIMIT;
         filter.offset = SEARCH_OFFSET;
         filter.relation = [],
-            filter.whereConditions = {},
-            filter.count = false;
+        filter.whereConditions = {},
+        filter.count = false;
         filter.orderBy = {}
         this.todayPageFacade.search(filter).then((res: any) => {
-            if (res) {
-            }
-        }).catch((err: any) => {
         })
     }
 
@@ -459,5 +462,5 @@ export class TodayPage extends AbstractPage implements OnInit {
             this.fieldBucket = [{ value: 'count' }];
         }
     }
-    
+
 }

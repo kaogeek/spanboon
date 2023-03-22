@@ -25,11 +25,20 @@ import { PageObjectiveService } from '../../services/PageObjectiveService';
 import { PageGroupRequest } from '../requests/PageGroupRequest';
 import { PageGroup } from '../../models/PageGroup';
 import { PageGroupService } from '../../services/PageGroupService';
+import { SearchRequest } from '../requests/SearchRequest';
+import { SearchFilter } from '../requests/SearchFilterRequest';
+import { SearchHistoryService } from '../../services/SearchHistoryService';
+import { SEARCH_TYPE } from '../../../constants/SearchType';
+import { EmergencyEventService } from '../../services/EmergencyEventService';
+import { HashTagService } from '../../services/HashTagService';
 @JsonController('/admin/page')
 export class AdminPageController {
     constructor(private pageService: PageService, private actionLogService: AdminUserActionLogsService, private deletePageService: DeletePageService,
         private kaokaiTodayService: KaokaiTodayService,
         private pageObjectiveService: PageObjectiveService,
+        private emergencyEventService: EmergencyEventService,
+        private searchHistoryService: SearchHistoryService,
+        private hashTagService: HashTagService,
         private postsService: PostsService,
         private pageGroupService: PageGroupService
     ) { }
@@ -90,110 +99,15 @@ export class AdminPageController {
         }
     }
 
-    @Post('/request/title')
-    public async getTitle(@Res() res: any, @Req() req: any): Promise<any> {
-        const title = req.body.title;
-        if (title) {
-            // one-hot encoding 
-            const requestTitle = title;
-            if (requestTitle === 'ก้าวไกลวันนี้') {
-                for (const roundRobin of req.body.buckets) {
-                    if (roundRobin.name === 'คณะกรรมการบริหารพรรค') {
-                        const page_1 = await this.pageService.find({ isOfficial: true, roundRobin: 'คณะกรรมการบริหารพรรค' });
-                        const successResponse = ResponseUtil.getSuccessResponse('Successfully Bucket KaokaiToday', page_1);
-                        return res.status(200).send(successResponse);
-                    } else if (roundRobin.name === 'รองหัวหน้าพรรคก้าวไกล') {
-                        const page_2 = await this.pageService.find({ isOfficial: true, roundRobin: 'รองหัวหน้าพรรคก้าวไกล' });
-                        const successResponse = ResponseUtil.getSuccessResponse('Successfully Bucket KaokaiToday', page_2);
-                        return res.status(200).send(successResponse);
-                    } else if (roundRobin.name === 'รองเลขาธิการพรรคก้าวไกล') {
-                        const page_3 = await this.pageService.find({ isOfficial: true, roundRobin: 'รองเลขาธิการพรรคก้าวไกล' });
-                        const successResponse = ResponseUtil.getSuccessResponse('Successfully Bucket KaokaiToday', page_3);
-                        return res.status(200).send(successResponse);
-                    } else if (roundRobin.name === 'กองโฆษกพรรคก้าวไกล') {
-                        const page_4 = await this.pageService.find({ isOfficial: true, roundRobin: 'กองโฆษกพรรคก้าวไกล' });
-                        const successResponse = ResponseUtil.getSuccessResponse('Successfully Bucket KaokaiToday', page_4);
-                        return res.status(200).send(successResponse);
-                    } else if (roundRobin.name === 'ผู้สมัครของพรรคก้าวไกล') {
-                        const page_5 = await this.pageService.find({ isOfficial: true, roundRobin: 'ผู้สมัครของพรรคก้าวไกล' });
-                        const successResponse = ResponseUtil.getSuccessResponse('Successfully Bucket KaokaiToday', page_5);
-                        return res.status(200).send(successResponse);
-                    }
-                }
-            } else if (requestTitle === 'สภาก้าวไกล') {
-                // #HashTag
-                // db.Page.aggregate([{
-                // $match:{'isOfficial':true}},
-                // {'$lookup':
-                //  {from:'Posts',
-                // 'let':{'id':'$_id'},
-                // 'pipeline':[{'$match':{'$expr':{'$eq':['$$id','$pageId']}}},{$limit:1}],as:'Posts'}
-                // }
-                // ])
-                const pageObjStmt = [
-                    { // sample post for one
-                        $lookup: {
-                            from: 'Posts',
-                            let: { 'id': '$_id' },
-                            pipeline: [
-                                { $match: { $expr: { $eq: ['$$id', '$objective'] } } },
-                                { $limit: 1 }
-                            ],
-                            as: 'samplePost'
-                        }
-                    },
-                    {
-                        $match: {
-                            'samplePost.0': { $exists: true }
-                        }
-                    },
-                    /*
-                    {
-                        $lookup: {
-                            from: 'Page',
-                            localField: 'pageId',
-                            foreignField: '_id',
-                            as: 'page'
-                        }
-                    }, */
-                    {
-                        $lookup: {
-                            from: 'Page',
-                            let: { 'id': '$_id' },
-                            pipeline: [{
-                                $match: { $expr: { $eq: ['$$', '$pageId'] } }
-                            }],
-                            as: 'page'
-                        }
-                    },
-                    {
-                        $lookup: {
-                            from: 'HashTag',
-                            localField: 'hashTag',
-                            foreignField: '_id',
-                            as: 'hashTagObj'
-                        }
-                    }
-                ];
-                /* 
-                if (searchOfficialOnly) {
-                    pageObjStmt.splice(7, 0, { $match: { 'page.isOfficial': true, 'page.banned': false } });
-                } */
-
-                const searchResult = await this.pageObjectiveService.aggregate(pageObjStmt);
-                const successResponse = ResponseUtil.getSuccessResponse('Successfully Bucket KaokaiToday', searchResult);
-                return res.status(200).send(successResponse);
-            } else if (requestTitle === 'ก้าวไกลทั่วไทย') {
-                // #จังหวัด province
-            } else if (requestTitle === 'ก้าวไกลรอบด้าน') {
-                // #บริบทเพจ ประเด็น
-
-            }
-        } else {
-            const errorResponse = ResponseUtil.getErrorResponse('Please select the title.', undefined);
-            return res.status(400).send(errorResponse);
-        }
-    }
+    @Post('/request/search')
+    @Authorized()
+    public async searchAll(@Body({ validate: true }) data: SearchRequest, @Res() res: any, @Req() req: any): Promise<any> {
+        const search: any = {};
+        const filter: SearchFilter = data.filter;
+        const keyword = data.keyword;
+        const exp = { $regex: '.*' + keyword + '.*', $options: 'si' };
+        const successResponse = ResponseUtil.getSuccessResponse('Approve Official Page Success', exp);
+        return res.status(200).send(successResponse);    }
 
     @Post('/group')
     @Authorized()
@@ -217,7 +131,7 @@ export class AdminPageController {
         const objId = new ObjectID(id);
         const pageGroup = await this.pageGroupService.findOne({ _id: objId });
         if (pageGroup) {
-            const query = {_id:pageGroup.id};
+            const query = { _id: pageGroup.id };
             const newValues = { $set: { name: EditPageGroupRequest.name, detail: EditPageGroupRequest.detail } };
             const update = await this.pageGroupService.update(query, newValues);
             if (update) {

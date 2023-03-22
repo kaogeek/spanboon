@@ -231,7 +231,11 @@ export class MainPageController {
         const successResponse = ResponseUtil.getSuccessResponse('Successfully Main Page Data', content);
         return res.status(200).send(successResponse);
     }
-    // Find Page API
+
+    @Get('/content/v3')
+    public async testCheckTimer(@QueryParam('offset') offset: number, @QueryParam('section') section: string,  @QueryParam('date') date: any, @Res() res: any, @Req() req: any): Promise<any> {
+        
+    }    // Find Page API
     /**
      * @api {get} /api/main/content Find Main Page Data API
      * @apiGroup MainPage
@@ -672,6 +676,8 @@ export class MainPageController {
             const search: any = {};
             const userId = data.userId;
             const keyword = data.keyword;
+            console.log('userId',userId);
+            console.log('keyword',keyword);
             const filter: SearchFilter = data.filter;
             const exp = { $regex: '.*' + keyword + '.*', $options: 'si' };
             const pageResultStmt = [];
@@ -707,6 +713,7 @@ export class MainPageController {
                 ];
             }
             const histories = await this.searchHistoryService.aggregate(historyQuery);
+            console.log('histories',histories);
             historyRows = histories.length;
             pageLimit = historyLimit - historyRows;
             if (filter !== undefined) {
