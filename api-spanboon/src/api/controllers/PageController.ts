@@ -2450,7 +2450,6 @@ export class PageController {
     }
 
     @Get('/group/receive')
-    @Authorized('user')
     public async getPageGroup(@Res() res: any, @Req() req: any): Promise<any>{
         const pageGroup = await this.pageGroupService.find();
         if(pageGroup.length > 0){
