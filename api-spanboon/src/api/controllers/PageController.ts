@@ -2508,7 +2508,7 @@ export class PageController {
             let pageInstagramURL = pages.instagramURL;
             let pageTwitterURL = pages.twitterURL;
             let pageEmail = pages.email;
-            let pageGroup = pages.group;
+            const pageGroup = pages.group;
             const pageProvince = pages.province;
             const pageAccessLevel = pages.pageAccessLevel;
             // const assetQuery = { userId: ownerUsers };

@@ -232,9 +232,9 @@ export class MainPageController {
         return res.status(200).send(successResponse);
     }
 
-    @Get('/content/v3')
+    @Get('/content/v4')
     public async testCheckTimer(@QueryParam('offset') offset: number, @QueryParam('section') section: string,  @QueryParam('date') date: any, @Res() res: any, @Req() req: any): Promise<any> {
-        
+        console.log('return undefined');
     }    // Find Page API
     /**
      * @api {get} /api/main/content Find Main Page Data API
