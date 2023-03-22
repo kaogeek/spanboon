@@ -62,11 +62,12 @@ import { ImageUtil } from '../../utils/ImageUtil';
 import { KaoKaiHashTagModelProcessor } from '../processors/KaoKaiHashTagModelProcessor';
 import { KaokaiAllProvinceModelProcessor } from '../processors/KaokaiAllProvinceModelProcessor';
 import { KaokaiTodayService } from '../services/KaokaiTodayService';
-import { TODAY_DATETIME_GAP, DEFAULT_TODAY_DATETIME_GAP,TIMER_CHECK_DAY,DEFALUT_TIMER_CHECK_DAY } from '../../constants/SystemConfig';
+import { TODAY_DATETIME_GAP, DEFAULT_TODAY_DATETIME_GAP,KAOKAITODAY_TIMER_CHECK_DATE,DEFAULT_KAOKAITODAY_TIMER_CHECK_DAY } from '../../constants/SystemConfig';
 import { ConfigService } from '../services/ConfigService';
 import { KaokaiTodaySnapShotService } from '../services/KaokaiTodaySnapShot';
 import { KaokaiContentModelProcessor } from '../processors/KaokaiContentModelProcessor';
 import { MAILService } from '../../auth/mail.services';
+import { KaokaiFollowerModelProcessor } from '../processors/KaokaiFollowerModelProcessor';
 @JsonController('/main')
 export class MainPageController {
     constructor(
@@ -85,7 +86,8 @@ export class MainPageController {
         private assetService: AssetService,
         private kaokaiTodayService: KaokaiTodayService,
         private configService: ConfigService,
-        private kaokaiTodaySnapShotService: KaokaiTodaySnapShotService
+        private kaokaiTodaySnapShotService: KaokaiTodaySnapShotService,
+        private kaokaiFollowerModelProcessor:KaokaiFollowerModelProcessor
     ) { }
     // Home page content V2
     @Get('/content/v3')
@@ -104,7 +106,14 @@ export class MainPageController {
             assetTodayDate = assetassetTodayDateGap.value;
         }
         const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), assetTodayDate);
-
+        if(toDate){
+            const checkSnapshot = await this.kaokaiTodaySnapShotService.findOne({endDateTime: toDate});
+            
+            if(checkSnapshot !== undefined && checkSnapshot !== null){
+                const successResponseS = ResponseUtil.getSuccessResponse('Successfully Main Page Data', checkSnapshot.data);
+                return res.status(200).send(successResponseS);        
+            }
+        }
         // ordering
         const emerProcessor: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service);
         emerProcessor.setConfig({
@@ -208,7 +217,22 @@ export class MainPageController {
 
         const kaokaiContent = await kaokaiContentProcessor.process();
         // pipeline: [{ $match: { $expr: { $in: ['$_id', bucketF] }, isOfficial: true } }],
+        const kaokaiFollowerProcessor:KaokaiFollowerModelProcessor = new KaokaiFollowerModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService, this.pageService);
+        kaokaiFollowerProcessor.setData({
+            userId,
+            startDateTime: monthRange[0],
+            endDateTime: monthRange[1],
+            checkPosition1,
+            checkPosition2,
+            checkPosition3,
+            checkPosition4
+        });
 
+        kaokaiFollowerProcessor.setConfig({
+            searchOfficialOnly
+        });
+
+        const kaokaiFollower = await kaokaiFollowerProcessor.process();
         // hashTag
         const hashTagSumma = await this.hashTagService.aggregate([{ $sort: { count: -1 } }, { $limit: 3 }]);
         const result: any = {};
@@ -263,8 +287,8 @@ export class MainPageController {
         const now = new Date(); // Get the current time
         const hours = now.getHours(); // Get the hours of the current time
         const minutes = now.getMinutes(); // Get the minutes of the current time
-        const assetTimerCheck = await this.configService.getConfig(TIMER_CHECK_DAY);
-        let assetTimer = DEFALUT_TIMER_CHECK_DAY;
+        const assetTimerCheck = await this.configService.getConfig(KAOKAITODAY_TIMER_CHECK_DATE);
+        let assetTimer = DEFAULT_KAOKAITODAY_TIMER_CHECK_DAY;
         if(assetTimerCheck){
             assetTimer = assetTimerCheck.value;
         }
@@ -272,18 +296,16 @@ export class MainPageController {
         const hourSplit =split[0];
         const minuteSpit = split[1];
         if (hours ===  parseInt(hourSplit,10) && minutes === parseInt(minuteSpit,10)) {
-            // The current time is 06:00 am, so process your code here
             console.log('Processing code at 06:00 am');
             const successResponseF = ResponseUtil.getSuccessResponse('Successfully Main Page Data', undefined);
             return res.status(200).send(successResponseF);
-            // ...
         } else {
-            // The current time is not 06:00 am, so do nothing
             console.log('Current time is not 06:00 am');
             const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
             return res.status(400).send(errorResponse);
         }
-    }    // Find Page API
+    }    
+    // Find Page API
     /**
      * @api {get} /api/main/content Find Main Page Data API
      * @apiGroup MainPage
@@ -1688,25 +1710,39 @@ export class MainPageController {
 
     private async snapShotToday(data: any, startDateRange: Date, endDateTimeRange: Date, assetTodayDate: number, userId?: any): Promise<any> {
         // check before create
+        const now = new Date(); // Get the current time
+        const hours = now.getHours(); // Get the hours of the current time
+        const minutes = now.getMinutes(); // Get the minutes of the current time
+        const assetTimerCheck = await this.configService.getConfig(KAOKAITODAY_TIMER_CHECK_DATE);
+        let assetTimer = DEFAULT_KAOKAITODAY_TIMER_CHECK_DAY;
+        if(assetTimerCheck){
+            assetTimer = assetTimerCheck.value;
+        }
+        const split = assetTimer.split(':');
+        const hourSplit =split[0];
+        const minuteSpit = split[1];
+
         const checkCreate = await this.kaokaiTodaySnapShotService.findOne({ startDateTime: startDateRange, endDateTime: endDateTimeRange });
         if (checkCreate !== undefined && checkCreate !== null) {
             return checkCreate.data;
         }
         // Check Date time === 06:00 morning
         let content = undefined;
-        const contents = data;
-        const startDate = startDateRange;
-        const endDate = endDateTimeRange;
-        const result: any = {};
-        result.data = contents;
-        result.startDateTime = startDate;
-        result.endDateTime = endDate;
-        const snapShot = await this.kaokaiTodaySnapShotService.create(result);
-        const user = await this.userService.findOne({ email: 'tarawut.c@absolute.co.th' });
-        if (snapShot) {
-            content = await this.kaokaiTodaySnapShotService.findOne({ startDateTime: startDateRange, endDateTime: endDateTimeRange });
-            if (content) {
-                this.pushNotification(user, user.email, content.data, 'ก้าวไกลวันนี้');
+        if (hours ===  parseInt(hourSplit,10) && minutes === parseInt(minuteSpit,10)) {
+            const contents = data;
+            const startDate = startDateRange;
+            const endDate = endDateTimeRange;
+            const result: any = {};
+            result.data = contents;
+            result.startDateTime = startDate;
+            result.endDateTime = endDate;
+            const snapShot = await this.kaokaiTodaySnapShotService.create(result);
+            const user = await this.userService.findOne({ email: 'tarawut.c@absolute.co.th' });
+            if (snapShot) {
+                content = await this.kaokaiTodaySnapShotService.findOne({ startDateTime: startDateRange, endDateTime: endDateTimeRange });
+                if (content) {
+                    this.pushNotification(user, user.email, content.data, 'ก้าวไกลวันนี้');
+                }
             }
         }
         // 

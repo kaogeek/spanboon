@@ -2521,8 +2521,8 @@ export class PageController {
             let pageInstagramURL = pages.instagramURL;
             let pageTwitterURL = pages.twitterURL;
             let pageEmail = pages.email;
-            const pageGroup = pages.group;
-            const pageProvince = pages.province;
+            let pageGroup = pages.group;
+            let pageProvince = pages.province;
             const pageAccessLevel = pages.pageAccessLevel;
             // const assetQuery = { userId: ownerUsers };
             // const newFileName = ownerUsers + FileUtil.renameFile + ownerUsers;
@@ -2573,6 +2573,13 @@ export class PageController {
 
             if (pageEmail === null || pageEmail === undefined) {
                 pageEmail = pageUpdate.email;
+            }
+
+            if(pageProvince === null || pageProvince === undefined){
+                pageProvince = pageUpdate.province;
+            }
+            if(pageGroup === null || pageGroup === undefined){
+                pageGroup = pageUpdate.group;
             }
 
             // let updateImageAsset;
