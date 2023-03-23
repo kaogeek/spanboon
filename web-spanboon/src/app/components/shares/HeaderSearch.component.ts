@@ -377,7 +377,6 @@ export class HeaderSearch extends AbstractPage implements OnInit {
   }
 
   public keyUpAutoComp(value: string): void {
-    console.log('value',value);
     let userId = this.getCurrentUserId();
     let search: any;
     if (userId !== undefined) {

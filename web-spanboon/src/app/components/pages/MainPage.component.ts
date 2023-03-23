@@ -11,10 +11,11 @@ import * as $ from 'jquery';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { AbstractPage } from './AbstractPage';
 import { MatDialog } from '@angular/material';
-import { DialogPoliciesAndTerms, DialogPost } from '../shares/shares';
 import { AuthenManager } from '../../services/AuthenManager.service';
 import { UserAccessFacade } from '../../services/facade/UserAccessFacade.service';
 import { filter } from 'rxjs/internal/operators/filter';
+import { DialogPost } from '../shares/dialog/DialogPost.component';
+import { DialogPoliciesAndTerms } from '../shares/dialog/DialogPoliciesAndTerms.component';
 
 declare var $: any;
 const PAGE_NAME: string = '';

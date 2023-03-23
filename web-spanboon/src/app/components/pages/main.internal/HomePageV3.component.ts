@@ -8,7 +8,6 @@
 import { Component, OnInit, EventEmitter, HostListener } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Gallery } from '@ngx-gallery/core';
-import { AuthenManager, MainPageSlideFacade, HashTagFacade, AssetFacade, PageFacade, SeoService, UserSubjectFacade } from '../../../services/services';
 import { AbstractPage } from '../AbstractPage';
 import { Router, ActivatedRoute } from '@angular/router';
 import { PostFacade } from '../../../services/facade/PostFacade.service';
@@ -16,7 +15,16 @@ import { CacheConfigInfo } from '../../../services/CacheConfigInfo.service';
 import { PLATFORM_NAME_TH } from 'src/custom/variable';
 import { SearchFilter } from '../../../models/SearchFilter';
 import { environment } from 'src/environments/environment';
-import { DialogCheckBox, DialogPostCrad, DialogAlert } from '../../components';
+import { MainPageSlideFacade } from 'src/app/services/facade/MainPageSlideFacade.service';
+import { HashTagFacade } from 'src/app/services/facade/HashTagFacade.service';
+import { PageFacade } from 'src/app/services/facade/PageFacade.service';
+import { AssetFacade } from 'src/app/services/facade/AssetFacade.service';
+import { SeoService } from 'src/app/services/SeoService.service';
+import { UserSubjectFacade } from 'src/app/services/facade/UserSubjectFacade.service';
+import { AuthenManager } from 'src/app/services/AuthenManager.service';
+import { DialogAlert } from '../../shares/dialog/DialogAlert.component';
+import { DialogCheckBox } from '../../shares/dialog/DialogCheckBox.component';
+import { DialogPostCrad } from '../../shares/dialog/DialogPostCrad.component';
 
 
 declare var $: any;
@@ -35,6 +43,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   public showLoading: boolean;
   public isPostNewTab: boolean = false;
   public isRes: boolean = false;
+  public isAnnounce: boolean = false;
   public windowWidth: any;
   public mainPageModelFacade: MainPageSlideFacade;
   public model: any = undefined;
@@ -334,8 +343,10 @@ export class HomePageV3 extends AbstractPage implements OnInit {
 
     if (this.windowWidth <= 479) {
       this.isPostNewTab = true;
+      this.isAnnounce = true;
     } else {
       this.isPostNewTab = false;
+      this.isAnnounce = false;
     }
 
     if (this.windowWidth <= 1024) {

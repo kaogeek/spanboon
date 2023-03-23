@@ -1,78 +1,155 @@
 .home-page {
 
-
   section {
     padding: 15px;
+
+    &.section-0 {
+      padding: 0;
+
+      >.container {
+        max-width: unset;
+
+        >.header-announcement {
+          height: 50px;
+          display: flex;
+
+          >.announce {
+            background-color: #0c3455;
+            display: flex;
+            align-items: center;
+            width: 75%;
+
+            @media (max-width: $xxlarge) {
+              width: 70%;
+            }
+
+            @media (max-width: $large) {
+              width: 65%;
+            }
+
+            @media (max-width: $medium) {
+              width: 60%;
+            }
+
+            >marquee {
+              @include font-size-9($font-head-100);
+              display: inline-block;
+              color: white;
+            }
+          }
+
+          >.label-date {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #fafafa;
+            cursor: pointer;
+            width: 25%;
+
+            &.label-date-2 {
+              width: 100%;
+              justify-content: end;
+
+            }
+
+            >svg {
+              width: 30pt;
+              height: 30pt;
+              margin: 0 10px;
+              flex: 0 0 auto;
+              opacity: 0.4;
+
+              @media (max-width: 610px) {
+                display: none;
+              }
+            }
+
+            @media (max-width: $xxlarge) {
+              width: 30%;
+            }
+
+            @media (max-width: $large) {
+              width: 35%;
+            }
+
+            @media (max-width: $medium) {
+              width: 40%;
+            }
+
+            >.newspaper_title {
+              text-align: center;
+              @include font-size-8($font-head-400);
+              color: $brandcolor2;
+              margin: 0 10px;
+              flex: 0 0 auto;
+
+              @media (max-width: $large) {
+                @include font-size-9($font-head-400);
+              }
+            }
+
+            >.Newspaper_SelectDate {
+              >.mat-form-field-hide-placeholder {
+                >.mat-form-field-wrapper {
+                  >.mat-form-field-flex {
+                    >.mat-form-field-infix {
+                      margin-top: 7px;
+                      @include font-size-8($font-head-400);
+                      color: black;
+                      width: 110px;
+
+                      @media (max-width: $large) {
+                        @include font-size-9($font-head-400);
+                        width: 90px;
+                      }
+
+                      >input {
+                        cursor: pointer;
+                      }
+                    }
+
+                    >.mat-form-field-suffix {
+                      >.mat-datepicker-toggle {
+                        >.mat-icon-button {
+                          >.mat-button-wrapper {
+                            svg {
+                              width: 100%;
+                              margin-bottom: 4px;
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+
+                  >.mat-form-field-underline {
+                    display: none;
+                  }
+                }
+              }
+
+              .datepickerOne {
+                background: lightgreen;
+              }
+
+              .datepickerOne .mat-calendar-body-today:not(.mat-calendar-body-selected) {
+                border-color: darkgreen;
+              }
+
+              .mat-datepicker-content .datepickerOne.mat-calendar {
+                width: 500px;
+                height: auto;
+              }
+            }
+          }
+        }
+      }
+    }
   }
 
   .container {
     margin: 0 auto;
     max-width: 1280px;
-
-    .label-date {
-      display: flex;
-      align-items: center;
-
-      >.newspaper_title {
-        font-size: 1.75rem;
-        color: orange;
-        font-family: "Anakotmai-Medium";
-        padding: 0;
-        margin: 0;
-      }
-
-      >.Newspaper_SelectDate {
-        margin-left: 16px;
-
-        >.mat-form-field-hide-placeholder {
-          >.mat-form-field-wrapper {
-            >.mat-form-field-flex {
-              >.mat-form-field-infix {
-                margin-top: 7px;
-                font-size: 20px;
-                color: orange;
-                font-family: "Anakotmai-Medium";
-                width: 110px;
-
-                >input {
-                  cursor: pointer;
-                }
-              }
-
-              >.mat-form-field-suffix {
-                >.mat-datepicker-toggle {
-                  >.mat-icon-button {
-                    >.mat-button-wrapper {
-                      svg {
-                        width: 100%;
-                        margin-bottom: 4px;
-                      }
-                    }
-                  }
-                }
-              }
-            }
-
-            >.mat-form-field-underline {
-              display: none;
-            }
-          }
-        }
-
-        .datepickerOne {
-          background: lightgreen;
-        }
-
-        .datepickerOne .mat-calendar-body-today:not(.mat-calendar-body-selected) {
-          border-color: darkgreen;
-        }
-
-        .mat-datepicker-content .datepickerOne.mat-calendar {
-          width: 500px;
-          height: auto;
-        }
-      }
-    }
 
     @media (max-width: $xxlarge) {
       max-width: 1024px;
