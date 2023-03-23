@@ -5,6 +5,11 @@
     Author: Americaso <treerayuth.o@absolute.co.th>
 -->
 
+<!--  <input matInput type="text" class="input-data"
+    placeholder="ชื่อคนหรือเพจ" name="createdname"
+    [(ngModel)]="createdName" [matAutocomplete]="autoComplete"
+    (keyup)="keyUpAutoComp($event)">-->
+
 <div class="admin-config-page">
     <mat-drawer-container class="example-container" [hasBackdrop]="true">
         <mat-drawer #drawer [mode]="'over'" [position]="'end'" [disableClose]="true">
@@ -132,13 +137,37 @@
                                                                             fill="#000000"></path>
                                                                     </g>
                                                                 </svg>
-                                                                <div *ngFor="
-                                                                    let skill of employeeSkills(empIndex).controls;
+                                                                <div *ngFor="let skill of employeeSkills(empIndex).controls;
                                                                     let skillIndex = index ">
                                                                     <div [formGroupName]="skillIndex">
                                                                         Value :
-                                                                        <input type="text" formControlName="value"
-                                                                            [ngClass]="skill.get('value')?.errors ? 'valid' : 'invalid'" />
+                                                                        <input [formControl]="searchUser" type="text"
+                                                                            formControlName="value"
+                                                                            [ngClass]="skill.get('value')?.errors ? 'valid' : 'invalid'"
+                                                                            [matAutocomplete]="autoComplete"
+                                                                            name="createdname"
+                                                                            [(ngModel)]="createdName"
+                                                                            [value] ='createdName' />
+                                                                            <mat-autocomplete #autoComplete="matAutocomplete">
+                                                                                <mat-option class="mat-option-progress" *ngIf="isLoading">
+                                                                                    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                                                                                </mat-option>
+                                                                                <ng-container *ngIf="!isLoading">
+                                                                                    <mat-option class="img-users" *ngFor="let user of autoComp.result"
+                                                                                        (click)="selectAutoComp(user)" >
+                                                                                        <div class="list-autocomp">
+                                                                                        
+                                                                                            <div class="show-name">
+                                                                                                {{user.label || user.name}}
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </mat-option>
+                                                                                </ng-container>
+                                                                            </mat-autocomplete>
+                                                                        <span class="material-icons autocomp-close"
+                                                                            (click)="resetAutocomp()">
+                                                                            close
+                                                                        </span>
                                                                         <button mat-raised-button
                                                                             (click)="removeEmployeeSkill(empIndex, skillIndex)">
                                                                             <img src="../../../assets/img/delete.png"

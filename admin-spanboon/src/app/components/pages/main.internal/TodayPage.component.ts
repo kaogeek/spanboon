@@ -18,6 +18,8 @@ import { AuthenManager } from '../../../services/AuthenManager.service';
 import { Router } from '@angular/router';
 import { FormGroup, FormControl, Validators, FormBuilder, FormArray } from '@angular/forms';
 import { TodayPageFacade } from '../../../services/facade/TodayPageFacade.service';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
+import { fromEvent, Subject, Subscription } from 'rxjs';
 
 const PAGE_NAME: string = "today";
 
@@ -30,6 +32,9 @@ const SEARCH_OFFSET: number = 0;
     templateUrl: './TodayPage.component.html'
 })
 export class TodayPage extends AbstractPage implements OnInit {
+    searchUser = new FormControl();
+    private unsubscriber = new Subject<void>();
+    debouncedValue = "";
 
     public static readonly PAGE_NAME: string = PAGE_NAME;
     @ViewChild('myInput') myInputVariable: ElementRef;
@@ -40,8 +45,7 @@ export class TodayPage extends AbstractPage implements OnInit {
     public hashTagFacade: HashTagFacade;
     private authenManager: AuthenManager;
     private router: Router;
-
-
+    public createdName: any;
     public imagesAvatar: any;
     public dataForm: EmergencyEvent;
     public valueBool: boolean;
@@ -76,8 +80,11 @@ export class TodayPage extends AbstractPage implements OnInit {
     public isBucket2: boolean = false;
     public isBucket3: boolean = false;
     public dataInput: Today;
-    public getType:any =undefined;
-    public getField:any = undefined;
+    public getType: any = undefined;
+    public getField: any = undefined;
+    public isLoading: boolean;
+    public autoComp: any;
+    public stackArray: any[] = [];
 
     constructor(emergencyEventFacade: EmergencyEventFacade, todayPageFacade: TodayPageFacade, hashTagFacade: HashTagFacade, router: Router, dialog: MatDialog, authenManager: AuthenManager, private fb: FormBuilder) {
         super(PAGE_NAME, dialog);
@@ -153,8 +160,20 @@ export class TodayPage extends AbstractPage implements OnInit {
             'id': new FormControl(null, { validators: [Validators.required] })
         });
         this.search();
+        this.searchUser.valueChanges
+            .pipe(
+                debounceTime(500)
+                , takeUntil(this.unsubscriber)
+            ).subscribe((value: any) => {
+                this.debouncedValue = value;
+                this.keyUpAutoComp(this.debouncedValue);
+            });
     }
-
+    public selectAutoComp(data) {
+        this.createdName = data.label;
+        this.stackArray.push(this.createdName);
+        // this.searchTrendTag();
+    }
     setForm() {
         this.todayForm = this.fb.group({
             bucket: this.fb.array([]),
@@ -162,9 +181,8 @@ export class TodayPage extends AbstractPage implements OnInit {
     }
 
     buckets(): FormArray {
-        this.getType = this.selectedValueType;
-        this.getField = this.selectedValueField;
         return this.todayForm.get('bucket') as FormArray;
+
     }
 
     newEmployee(): FormGroup {
@@ -201,14 +219,29 @@ export class TodayPage extends AbstractPage implements OnInit {
     }
 
 
-
+    public async keyUpAutoComp(text) {
+        try {
+            this.isLoading = true;
+            // await this.accountFacade.search(data);
+            this.todayPageFacade.searchObject(this.selectedValueType, this.selectedValueField, text).then((res) => {
+                this.autoComp = res;
+            })
+            this.isLoading = false;
+        } catch (error) {
+            this.isLoading = false;
+            console.log(error)
+        }
+    }
+    public resetAutocomp() {
+        this.createdName = '';
+    }
     public search() {
         let filter = new SearchFilter();
         filter.limit = SEARCH_LIMIT;
         filter.offset = SEARCH_OFFSET;
         filter.relation = [],
-        filter.whereConditions = {},
-        filter.count = false;
+            filter.whereConditions = {},
+            filter.count = false;
         filter.orderBy = {}
         this.todayPageFacade.search(filter).then((res: any) => {
         })

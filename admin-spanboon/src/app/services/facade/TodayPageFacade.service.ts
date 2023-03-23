@@ -111,13 +111,19 @@ export class TodayPageFacade extends AbstractFacade {
         });
     }
 
-    public searchObject(type:any,field:any): Promise<Today[]> {
+    public searchObject(type:any,field:any,text: any): Promise<Today[]> {
         return new Promise((resolve, reject) => {
             let url: string = this.baseURL + '/admin/page/request/search';
             let body: any ={
                 'type':type,
-                'field':field
+                'field':field,
+                'keyword':text
             }
+            this.http.post(url, body).toPromise().then((response: any) => {
+                resolve(response.data);
+              }).catch((error: any) => {
+                reject(error);
+              });
         });
     }
     public delete(id: any): Promise<Today[]> {

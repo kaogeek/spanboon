@@ -39,6 +39,12 @@ export class SocialPost extends BaseModel {
     @Column({ name: 'postByType' })
     public postByType: string;
 
+    @Column({ name: 'link'})
+    public link:string;
+
+    @Column({ name: 'photos'})
+    public photos:any;
+
     @BeforeInsert()
     public createDetails(): any {
         this.createdDate = moment().toDate();

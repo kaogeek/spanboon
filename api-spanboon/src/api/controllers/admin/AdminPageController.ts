@@ -26,8 +26,6 @@ import { PageGroupRequest } from '../requests/PageGroupRequest';
 import { PageGroup } from '../../models/PageGroup';
 import { PageGroupService } from '../../services/PageGroupService';
 import { SearchRequest } from '../requests/SearchRequest';
-import { SearchFilter } from '../requests/SearchFilterRequest';
-import { SearchHistoryService } from '../../services/SearchHistoryService';
 import { SEARCH_TYPE } from '../../../constants/SearchType';
 import { EmergencyEventService } from '../../services/EmergencyEventService';
 import { HashTagService } from '../../services/HashTagService';
@@ -37,7 +35,6 @@ export class AdminPageController {
         private kaokaiTodayService: KaokaiTodayService,
         private pageObjectiveService: PageObjectiveService,
         private emergencyEventService: EmergencyEventService,
-        private searchHistoryService: SearchHistoryService,
         private hashTagService: HashTagService,
         private postsService: PostsService,
         private pageGroupService: PageGroupService
@@ -100,14 +97,175 @@ export class AdminPageController {
     }
 
     @Post('/request/search')
-    @Authorized()
     public async searchAll(@Body({ validate: true }) data: SearchRequest, @Res() res: any, @Req() req: any): Promise<any> {
         const search: any = {};
-        const filter: SearchFilter = data.filter;
-        const keyword = data.keyword;
-        const exp = { $regex: '.*' + keyword + '.*', $options: 'si' };
-        const successResponse = ResponseUtil.getSuccessResponse('Approve Official Page Success', exp);
-        return res.status(200).send(successResponse);    }
+        const keywords = data.keyword;
+        const exp = { $regex: '.*' + keywords + '.*', $options: 'si' };
+        const limit = 10;
+        const searchResults = [];
+        const postObject = [];
+        const bucketF = [];
+        if (data.type === '' && data.field === '') {
+            const errorResponse = ResponseUtil.getErrorResponse('Please Select Type and Field..', undefined);
+            return res.status(400).send(errorResponse);
+        }
+        if (data.type === 'page' && data.field === 'id') {
+            const pageQuery = [
+                { $match: {isOfficial: true, banned: false,name:exp} },
+                { $limit: 10 }
+            ];
+            const pages: any[] = await this.pageService.aggregate(pageQuery);
+            let pageId = undefined;
+            let pageName = undefined;
+            for (const page of pages) {
+                pageId = page._id;
+                pageName = page.name;
+                searchResults.push({ value: pageId, label: pageName, type: SEARCH_TYPE.PAGE });
+            }
+        } else if (data.type === 'page' && data.field === 'group') {
+            const pageQuery = [
+                { $match: {isOfficial: true, banned: false,group:exp} },
+                { $limit: 10 }
+            ];
+            const pages: any[] = await this.pageService.aggregate(pageQuery);
+            let pageId = undefined;
+            let pageName = undefined;
+            for (const page of pages) {
+                pageId = page._id;
+                pageName = page.name;
+                searchResults.push({ value: pageId, label: pageName, type: SEARCH_TYPE.PAGE });
+            }
+        } else if (data.type === 'page' && data.field === 'province') {
+            const pageQuery = [
+                { $match: {isOfficial: true, banned: false,province:exp} },
+                { $limit: 10 }
+            ];
+            const pages: any[] = await this.pageService.aggregate(pageQuery);
+            let pageId = undefined;
+            let pageName = undefined;
+            for (const page of pages) {
+                pageId = page._id;
+                pageName = page.name;
+                searchResults.push({ value: pageId, label: pageName, type: SEARCH_TYPE.PAGE });
+            }
+        } else if (data.type === 'post' && data.field === 'emergencyEvent') {
+            const postEmergencys = await this.emergencyEventService.aggregate([
+                {
+                    $match: { title: exp },
+                },
+                { $limit: 10 }
+            ]);
+            
+            if (postEmergencys.length > 0) {
+                for(const postEmergency of postEmergencys){
+                    postObject.push(new ObjectID(postEmergency._id));
+                }
+            }
+            const postStmt1 = [
+                { $match: { isDraft: false, deleted: false, hidden: false, emergencyEvent: { $ne: null, $in: postObject } } },
+                { $limit: 10 }
+            ]; 
+            const postStmds: any[] = await this.postsService.aggregate(postStmt1);
+            let postId = undefined;
+            let postTitle = undefined;
+            for (const postStmd of postStmds) {
+                postId = postStmd._id;
+                postTitle = postStmd.title;
+                searchResults.push({ value: postId, label: postTitle, type: SEARCH_TYPE.PAGE });
+            }
+
+        } else if (data.type === 'post' && data.field === 'objective') {
+            const postObjectiveS = await this.pageObjectiveService.aggregate([
+                {
+                    $match: { title: exp }
+                },
+                {
+                    $limit:10
+                }
+            ]);
+
+            if (postObjectiveS.length > 0) {
+                for(const postObjective of postObjectiveS){
+                    postObject.push(new ObjectID(postObjective._id));
+                }
+            }
+            const postStmt1 = [
+                { $match: { isDraft: false, deleted: false, hidden: false, objective: { $ne: null, $in: postObject } } },
+                { $limit: 10 }
+            ]; 
+            const postStmds: any[] = await this.postsService.aggregate(postStmt1);
+            let postId = undefined;
+            let postTitle = undefined;
+            for (const postStmd of postStmds) {
+                postId = postStmd._id;
+                postTitle = postStmd.title;
+                searchResults.push({ value: postId, label: postTitle, type: SEARCH_TYPE.PAGE });
+            }
+
+        } else if (data.type === 'post' && data.field === 'score') {
+            const returnUnderfined = undefined;
+            searchResults.push({ value: returnUnderfined, label: returnUnderfined, type: SEARCH_TYPE.PAGE });
+        } else if (data.type === 'post' && data.field === 'hashtag') {
+            const hashTagSearch = await this.hashTagService.aggregate(
+                [
+                    {
+                        $match: { name: exp }
+                    },
+                    {
+                        $limit:10
+                    }
+                ]);
+            if (hashTagSearch.length > 0) {
+                for(const hashTags of hashTagSearch){
+                    postObject.push(new ObjectID(hashTags._id));
+                }
+            }
+            const postAggregateSet1 = await this.postsService.aggregate(
+                [
+                    { $match: { isDraft: false, deleted: false, hidden: false, postsHashTags: { $ne:null,$in: postObject } } },
+                    { $limit: 10}
+                ]
+            );
+            let postId = undefined;
+            let postTitle = undefined;
+            for (const postStmd of postAggregateSet1) {
+                postId = postStmd._id;
+                postTitle = postStmd.title;
+                searchResults.push({ value: postId, label: postTitle, type: SEARCH_TYPE.PAGE });
+            }
+
+        } else {
+            const hashTagMost = await this.hashTagService.searchHashSec(limit);
+            if (hashTagMost.length >= 0) {
+                for (const hashTagMostS of hashTagMost) {
+                    bucketF.push(new ObjectID(hashTagMostS.id));
+                }
+            }
+            const postStmts = [
+                { $match: { isDraft: false, deleted: false, hidden: false, postsHashTags: { $ne: null, $in: bucketF } } },
+                { $limit: 10}
+            ];
+            const postAggregateSet1 = await this.postsService.aggregate(postStmts);
+
+            let postId = undefined;
+            let postTitle = undefined;
+            for (const postStmd of postAggregateSet1) {
+                postId = postStmd._id;
+                postTitle = postStmd.title;
+                searchResults.push({ value: postId, label: postTitle, type: SEARCH_TYPE.PAGE });
+            }
+
+        }
+        search.result = searchResults;
+        if (search !== null && search !== undefined && Object.keys(search).length > 0) {
+            const successResponse = ResponseUtil.getSuccessResponse('Search Success', search);
+            return res.status(200).send(successResponse);
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Search Failed', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+    }
 
     @Post('/group')
     @Authorized()

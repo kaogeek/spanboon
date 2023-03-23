@@ -794,13 +794,22 @@ export class FacebookWebhookController {
                 }
                 const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
                 return res.status(200).send(successResponse);
-            } else if (body.entry[0].changes[0].value.verb === 'edited' && body.entry[0].changes[0].value.link !== undefined && body.entry[0].changes[0].value.item === 'photo') {
+            } else if (body.entry[0].changes[0].value.verb === 'edited' && body.entry[0].changes[0].value.link === undefined && body.entry[0].changes[0].value.item === 'photo') {
                 // update single photo
                 const findPost = await this.socialPostService.findOne({ socialId: body.entry[0].changes[0].value.post_id, socialType: 'FACEBOOK' });
                 if (findPost === undefined && findPost === null) {
                     const successResponseError = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
                     return res.status(200).send(successResponseError);
                 }
+                // const result = await this.pageSocialAccountService.delete({ page: pageData.id, providerName: PROVIDER.FACEBOOK });
+                if (findPost) {
+                    const result = await this.postsService.delete({ _id: ObjectID(findPost.postId) });
+                    if (result) {
+                        const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                        return res.status(200).send(successResponse);
+                    }
+                }
+                /*
                 const photoGallery = [];
                 const assetPic = await this.assetService.createAssetFromURL(body.entry[0].changes[0].value.link, pageIdFB.ownerUser);
                 const assetObj = await this.assetService.findOne({ _id: assetPic.id });
@@ -819,8 +828,19 @@ export class FacebookWebhookController {
                         await this.assetService.update({ _id: assetObj.id, userId: pageIdFB.ownerUser }, { $set: { expirationDate: null } });
                     }
                 }
-                const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
-                return res.status(200).send(successResponse);
+                */
+
+            } else if (body.entry[0].changes[0].value.verb === 'edited' && body.entry[0].changes[0].value.link !== undefined && body.entry[0].changes[0].value.photos === undefined && body.entry[0].changes[0].value.item === 'photo') {
+
+                const findPost = await this.socialPostService.findOne({ socialId: body.entry[0].changes[0].value.post_id, socialType: 'FACEBOOK' });
+                if (findPost === undefined && findPost === null) {
+                    const successResponseError = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                    return res.status(200).send(successResponseError);
+                }
+
+            } else if (body.entry[0].changes[0].value.verb === 'edited' && body.entry[0].changes[0].value.link === undefined && body.entry[0].changes[0].value.photos !== undefined && body.entry[0].changes[0].value.item === 'photo') {
+                const successResponseError = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                return res.status(200).send(successResponseError);
             } else if (body.entry[0].changes[0].value.verb === 'add' && body.entry[0].changes[0].value.reaction_type === 'like' || body.entry[0].changes[0].value.reaction_type === 'love' && body.entry[0].changes[0].value.item === 'reaction') {
                 const likeConstance = 1;
                 const findSocialPost = await this.socialPostService.findOne({ socialId: body.entry[0].changes[0].value.post_id });
