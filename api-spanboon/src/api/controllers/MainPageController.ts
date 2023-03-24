@@ -258,8 +258,8 @@ export class MainPageController {
                     continue;
                 }
             }
-
-            const successResponseF = ResponseUtil.getSuccessResponse('Successfully Filter Range Days.', stackDays);
+            const sortDate = stackDays.sort((a,b)=> new Date(a).getTime() - new Date(b).getTime());
+            const successResponseF = ResponseUtil.getSuccessResponse('Successfully Filter Range Days.', sortDate);
             return res.status(200).send(successResponseF);
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Error Filter Range Date.', undefined);
