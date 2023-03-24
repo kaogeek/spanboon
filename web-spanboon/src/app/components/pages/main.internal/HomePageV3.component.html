@@ -18,11 +18,14 @@
         <div class="container">
             <div class="header-announcement">
                 <div class="announce" *ngIf="!isAnnounce">
-                    <marquee direction="left" loop="">
+                    <marquee direction="left" id="scroll_news" loop=""
+                        onMouseOver="document.getElementById('scroll_news').stop();"
+                        onMouseOut="document.getElementById('scroll_news').start();">
                         ต้องก้าวไกลให้ไทยก้าวหน้า เปลี่ยนรัฐบาลไม่พอ ต้องเปลี่ยนประเทศ
                     </marquee>
                 </div>
-                <div class="label-date" (click)="picker.open()" [ngClass]="{'label-date-2': isAnnounce}">
+                <div class="label-date" (click)="!isLoading ? picker.open() : null"
+                    [ngClass]="{'label-date-2': isAnnounce}">
                     <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink"
                         xmlns:svgjs="http://svgjs.com/svgjs" width="512" height="512" x="0" y="0"
                         viewBox="0 0 455.005 455.005" xml:space="preserve" class="">
@@ -39,9 +42,8 @@
                     <span class="Newspaper_SelectDate">
                         <loading *ngIf="isLoading"></loading>
                         <mat-form-field class="custom-class">
-                            <input matInput [matDatepicker]="picker" [(ngModel)]="testValues?testValues:startDate"
-                                [max]="startDate" (dateChange)="saveDate($event)" disabled>
-                            <!-- <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle> -->
+                            <input matInput [matDatepicker]="picker" [matDatepickerFilter]="dateFilter"
+                                [(ngModel)]="testValues?testValues:startDate" (dateChange)="saveDate($event)" disabled>
                             <mat-datepicker #picker panelClass="datepickerOne" disabled="false"></mat-datepicker>
                         </mat-form-field>
                     </span>

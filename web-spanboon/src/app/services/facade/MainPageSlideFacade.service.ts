@@ -51,6 +51,22 @@ export class MainPageSlideFacade extends AbstractFacade {
     });
   }
 
+  public getDate(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/main/days/check';
+
+      let httpOptions: any = {
+        headers: this.authMgr.getDefaultOptions()
+      };
+
+      this.http.get(url, httpOptions).toPromise().then((response: any) => {
+        resolve(response.data);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
   public getSearchAll(search: any): Promise<any[]> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/main/search';

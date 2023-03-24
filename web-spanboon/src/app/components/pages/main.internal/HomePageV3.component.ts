@@ -59,6 +59,8 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   public testValues: any = undefined;
   public apiBaseURL = environment.apiBaseURL;
   public queryParamsUrl: any;
+  public filterDate: any = [];
+  public filterMonth: number;
 
   maxDate = new Date();
 
@@ -109,6 +111,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     }
     this.stopIsloading();
     this.getScreenSize();
+    this.getDateFilter();
     super.ngOnInit();
   }
   public async saveDate(event: any) {
@@ -122,7 +125,9 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     const formattedDate = `${day}-${month}-${year}`;
     this.mainPageModelFacade.getMainPageModelV3(this.user, this.startDateLong).then((res) => {
       this.model = res;
-      this.testValues = new Date(this.startDateLong).toISOString(); // convert to ISO string
+      const dateFormat = new Date(date);
+      const dateReal = dateFormat.setDate(dateFormat.getDate());
+      this.testValues = new Date(dateReal).toISOString(); // convert to ISO string
       localStorage.setItem('datetime', JSON.stringify(this.testValues));
       this.isLoading = false;
     }).catch((err) => {
@@ -234,6 +239,43 @@ export class HomePageV3 extends AbstractPage implements OnInit {
         }
       }
     }
+  }
+
+  dateFilt: any
+
+  dateFilter: (dateFilt: Date | null) => boolean =
+    (dateFilt: Date | null) => {
+      const day = (dateFilt || new Date()).getDate();
+      const month = (dateFilt.getMonth() + 1).toString().padStart(2, '0');
+      for (let d of this.filterDate) {
+        if (day === parseInt(d)) {
+          if (Number(month) === Number(this.filterMonth)) {
+            return day === parseInt(d);
+          }
+        }
+      }
+    }
+
+  public getDateFilter() {
+    this.mainPageModelFacade.getDate().then((res) => {
+      if (res) {
+        let listDay: any[] = [];
+        for (let date of res) {
+          const split = date.split('-');
+          const getDays = split[2];
+          const getMonths = split[1];
+          const splitTime = getDays.split('T');
+          const days = splitTime[0];
+          listDay.push(days);
+          this.filterMonth = getMonths;
+        }
+        this.filterDate = listDay;
+      }
+    }).catch((error) => {
+      if (error) {
+        console.log("error", error)
+      }
+    })
   }
 
   public getSubject() {
