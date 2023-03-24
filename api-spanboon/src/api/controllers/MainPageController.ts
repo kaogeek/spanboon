@@ -121,10 +121,6 @@ export class MainPageController {
         // ordering
         const emerProcessor: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service);
         emerProcessor.setConfig({
-            showUserAction: true,
-            offset,
-            date,
-            searchOfficialOnly,
             assetEmergenDays
         });
         const emerSectionModel = await emerProcessor.process2();
@@ -249,7 +245,27 @@ export class MainPageController {
         return res.status(200).send(successResponse);
     }
 
+    @Get('/days/check')
+    public async daysCheck(@Res() res: any, @Req() req: any): Promise<any> {
+        const dateTime = await this.kaokaiTodaySnapShotService.find();
+        const stackDays = [];
 
+        if (dateTime.length > 0) {
+            for(const day of dateTime){
+                if(day.endDateTime){
+                    stackDays.push(day.endDateTime);
+                }else{
+                    continue;
+                }
+            }
+
+            const successResponseF = ResponseUtil.getSuccessResponse('Successfully Filter Range Days.', stackDays);
+            return res.status(200).send(successResponseF);
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Error Filter Range Date.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
 
     @Get('/date/check')
     public async dateCheck(@Body({ validate: true }) data: CheckDateRange, @Res() res: any, @Req() req: any): Promise<any> {
