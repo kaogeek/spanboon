@@ -402,20 +402,25 @@ export class AdminPageController {
         const objId = new ObjectID(id);
         const kaoKaiToday = await this.kaokaiTodayService.findOne({ _id: objId });
         if (kaoKaiToday) {
-            for (const [i, updateKaokaiToday] of createKaokaiTodayRequest.buckets.Entity()) {
-                if (updateKaokaiToday.name !== undefined && updateKaokaiToday.values !== null) {
-                    const query = { _id: objId };
-                    const newValues = {
-                        $set: {
-                            title: createKaokaiTodayRequest.title,
-                            [`buckets.${i}.name`]: `${updateKaokaiToday.name}`,
-                            'buckets.0.values': [updateKaokaiToday.values]
-                        }
-                    };
-                    await this.kaokaiTodayService.update(query, newValues);
-                } else {
-                    continue;
+            const query = {_id:kaoKaiToday.id};
+            const newValues ={
+                $set:{
+                    title:createKaokaiTodayRequest.title,
+                    type:createKaokaiTodayRequest.type,
+                    field:createKaokaiTodayRequest.field,
+                    position:createKaokaiTodayRequest.position,
+                    limit:createKaokaiTodayRequest.limit,
+                    'buckets.0.name': createKaokaiTodayRequest.buckets[0] ? createKaokaiTodayRequest.buckets[0].name : undefined,
+                    'buckets.1.name': createKaokaiTodayRequest.buckets[1] ? createKaokaiTodayRequest.buckets[1].name : undefined,
+                    'buckets.2.name': createKaokaiTodayRequest.buckets[2] ? createKaokaiTodayRequest.buckets[2].name : undefined,
+                    'buckets.0.values': createKaokaiTodayRequest.buckets[0] ? createKaokaiTodayRequest.buckets[0].values : undefined,
+                    'buckets.1.values': createKaokaiTodayRequest.buckets[1] ? createKaokaiTodayRequest.buckets[1].values : undefined,
+                    'buckets.2.values': createKaokaiTodayRequest.buckets[2] ? createKaokaiTodayRequest.buckets[2].values : undefined,
                 }
+            };
+            const update = await this.kaokaiTodayService.update(query,newValues);
+            if(update){
+                console.log('pass1');
             }
 
             const successResponse = ResponseUtil.getSuccessResponse('Update KaokaiToday is successfully.', undefined);

@@ -33,6 +33,9 @@ export class Config extends BaseModel {
     @Column({ name: 'subject'})
     public subject:any;
 
+    @Column({ name: 'endDateTime'})
+    public endDateTime:Date;
+    
     @BeforeInsert()
     public createDetails(): any {
         this.createdDate = moment().toDate();

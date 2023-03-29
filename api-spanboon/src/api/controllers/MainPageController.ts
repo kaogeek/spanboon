@@ -109,7 +109,9 @@ export class MainPageController {
         if (assetTodayRangeDate) {
             assetEmergenDays = assetTodayRangeDate.value;
         }
+        const emergencyCheckEndDate = assetTodayRangeDate.endDateTime;
         const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), assetTodayDate);
+        /*
         if (toDate) {
             const checkSnapshot = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: toDate });
 
@@ -117,12 +119,14 @@ export class MainPageController {
                 const successResponseS = ResponseUtil.getSuccessResponse('Successfully Main Page Data', checkSnapshot.data);
                 return res.status(200).send(successResponseS);
             }
-        }
+        } */
         // ordering
         const emerProcessor: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service);
-        emerProcessor.setConfig({
-            assetEmergenDays
+        emerProcessor.setData({
+            assetEmergenDays,
+            emergencyCheckEndDate
         });
+
         const emerSectionModel = await emerProcessor.process2();
         // summation
         const postProcessor: PostSectionProcessor2 = new PostSectionProcessor2(this.postsService, this.s3Service, this.userLikeService);
@@ -267,30 +271,6 @@ export class MainPageController {
         }
     }
 
-    @Get('/date/check')
-    public async dateCheck(@Body({ validate: true }) data: CheckDateRange, @Res() res: any, @Req() req: any): Promise<any> {
-        const startDate = new Date(data.startDateTime);
-        const endDate = new Date(data.endDateTime);
-        if (startDate === undefined && endDate === undefined) {
-            const errorResponse = ResponseUtil.getErrorResponse('StartDate and EndDate Must not undefined.', undefined);
-            return res.status(400).send(errorResponse);
-        }
-        const dateTime = await this.kaokaiTodaySnapShotService.aggregate(
-            [
-                {
-                    $match: { endDateTime: { $lte: endDate, $gte: startDate } }
-                }
-            ]
-        );
-        if (dateTime.length > 0) {
-            const successResponseF = ResponseUtil.getSuccessResponse('Successfully Filter Range Date.', dateTime);
-            return res.status(200).send(successResponseF);
-        } else {
-            const errorResponse = ResponseUtil.getErrorResponse('Error Filter Range Date.', undefined);
-            return res.status(400).send(errorResponse);
-        }
-    }
-
     // Find Page API
     /**
      * @api {get} /api/main/content Find Main Page Data API
@@ -358,26 +338,7 @@ export class MainPageController {
                     return res.status(400).send(errorResponse);
                 }
             } else if (section === 'STILLLOOKING') {
-                // const stillLKProcessorSec: StillLookingSectionProcessor = new StillLookingSectionProcessor(this.postsService, this.needsService, this.userFollowService);
-                // stillLKProcessorSec.setData({
-                //     userId
-                // });
-                // stillLKProcessorSec.setConfig({
-                //     showUserAction: true,
-                //     offset,
-                //     date
-                // });
-                // const stillLKSectionModelSec = await stillLKProcessorSec.process();
-                // const slResult: any = {};
-                // slResult.contents = stillLKSectionModelSec.contents;
 
-                // if (slResult) {
-                //     const successResponse = ResponseUtil.getSuccessResponse('Successfully Main Page Data', slResult);
-                //     return res.status(200).send(successResponse);
-                // } else {
-                //     const errorResponse = ResponseUtil.getErrorResponse('Unable got Main Page Data', undefined);
-                //     return res.status(400).send(errorResponse);
-                // }
                 const errorResponse = ResponseUtil.getErrorResponse('Unable got Main Page Data', undefined);
                 return res.status(400).send(errorResponse);
             } else if (section === 'RECOMMEND') {

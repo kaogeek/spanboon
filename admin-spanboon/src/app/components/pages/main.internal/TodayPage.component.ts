@@ -20,6 +20,7 @@ import { FormGroup, FormControl, Validators, FormBuilder, FormArray } from '@ang
 import { TodayPageFacade } from '../../../services/facade/TodayPageFacade.service';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import { fromEvent, Subject, Subscription } from 'rxjs';
+import { Location } from '@angular/common';
 
 const PAGE_NAME: string = "today";
 
@@ -32,7 +33,13 @@ const SEARCH_OFFSET: number = 0;
     templateUrl: './TodayPage.component.html'
 })
 export class TodayPage extends AbstractPage implements OnInit {
-    searchUser = new FormControl();
+    searchUser_first = new FormControl();
+    searchUser_second = new FormControl();
+    searchUser_third = new FormControl();
+
+    searchTitle_first = new FormControl();
+    searchTitle_second = new FormControl();
+    searchTitle_third = new FormControl();
     private unsubscriber = new Subject<void>();
     debouncedValue = "";
 
@@ -60,7 +67,7 @@ export class TodayPage extends AbstractPage implements OnInit {
     public imageName: any;
     public ordering: number;
     public isSave: boolean = false;
-    public position: any = [{ value: '1' }, { value: '2' }, { value: '3' }, { value: '4' }, { value: '5' }];
+    public position: number;
     public typeBucket: any = [{ value: 'page' }, { value: 'post' }, { value: 'hashtag' }];
     public titleBucket: any = [{ value: 'ก้าวไกลวันนี้' }, { value: 'ก้าวไกลทั่วไทย' }, { value: 'สภาก้าวไกล' }, { value: 'ก้าวไกลรอบด้าน' }];
     public fieldBucket: any = [{ value: 'id' }, { value: 'group' }, { value: 'province' }];
@@ -84,9 +91,37 @@ export class TodayPage extends AbstractPage implements OnInit {
     public getField: any = undefined;
     public isLoading: boolean;
     public autoComp: any;
-    public stackArray: any[] = [];
-
-    constructor(emergencyEventFacade: EmergencyEventFacade, todayPageFacade: TodayPageFacade, hashTagFacade: HashTagFacade, router: Router, dialog: MatDialog, authenManager: AuthenManager, private fb: FormBuilder) {
+    public stackBuckets: any[] = [];
+    public testBuckets_first: any = [];
+    public testBuckets_second: any = [];
+    public testBuckets_third: any = [];
+    public stackValue: any = [];
+    public countArray: number = 1;
+    public title: string;
+    public position_first: number = 1;
+    public position_second: number = 2;
+    public position_third: number = 3;
+    public value_first: string = '';
+    public value_second: string = '';
+    public value_third: string = '';
+    public value_stack_first: any = [];
+    public value_stack_second: any = [];
+    public value_stack_third: any = [];
+    public nameOneTitle: string;
+    public nameTwoTitle: string;
+    public nameThreeTitle: string;
+    public limit:number;
+    public edit:string;
+    public _id:string;
+    constructor(
+        emergencyEventFacade: EmergencyEventFacade, 
+        todayPageFacade: TodayPageFacade, 
+        hashTagFacade: HashTagFacade, 
+        router: Router, 
+        dialog: MatDialog, 
+        authenManager: AuthenManager, 
+        private fb: FormBuilder,
+        private location: Location) {
         super(PAGE_NAME, dialog);
         this.emergencyEventFacade = emergencyEventFacade;
         this.todayPageFacade = todayPageFacade;
@@ -153,25 +188,66 @@ export class TodayPage extends AbstractPage implements OnInit {
         this.setFields();
 
     }
-
+    refreshPage() {
+        location.reload();
+    }
     public ngOnInit() {
         this.setForm();
         this.formType = new FormGroup({
             'id': new FormControl(null, { validators: [Validators.required] })
         });
         this.search();
-        this.searchUser.valueChanges
+        this.searchUser_first.valueChanges
             .pipe(
                 debounceTime(500)
                 , takeUntil(this.unsubscriber)
             ).subscribe((value: any) => {
+                const bucket_first = 1;
                 this.debouncedValue = value;
-                this.keyUpAutoComp(this.debouncedValue);
+                this.keyUpAutoComp(this.debouncedValue, bucket_first);
+                const test = this.autoComp;
+            });
+        this.searchUser_second.valueChanges
+            .pipe(
+                debounceTime(500)
+                , takeUntil(this.unsubscriber)
+            ).subscribe((value: any) => {
+                const bucket_second = 2;
+                this.debouncedValue = value;
+                this.keyUpAutoComp(this.debouncedValue, bucket_second);
+            });
+        this.searchUser_third.valueChanges
+            .pipe(
+                debounceTime(500)
+                , takeUntil(this.unsubscriber)
+            ).subscribe((value: any) => {
+                const bucket_third = 3;
+                this.debouncedValue = value;
+                this.keyUpAutoComp(this.debouncedValue, bucket_third);
             });
     }
-    public selectAutoComp(data) {
-        this.createdName = data.label;
-        this.stackArray.push(this.createdName);
+    public selectAutoComp(data, position?: number) {
+        if (position === 1) {
+            let stackValues = { 'index': this.testBuckets_first.length, 'value': data.label,'_id':data.value};
+            this.value_first = data.label;
+            if (this.value_first !== undefined) {
+                this.value_stack_first.push(stackValues);
+            }
+        } else if (position === 2) {
+            let stackSecondValues = { 'index': this.testBuckets_second.length, 'value': data.label,'_id':data.value };
+            this.value_second = data.label;
+            if (this.value_second !== undefined) {
+                this.value_stack_second.push(stackSecondValues);
+            }
+        } else if (position === 3) {
+            let stackThirdValues = { 'index': this.testBuckets_third.length, 'value': data.label,'_id':data.value };
+            this.value_third = data.label;
+            if (this.value_third !== undefined) {
+                this.value_stack_third.push(stackThirdValues);
+            }
+
+        }
+
         // this.searchTrendTag();
     }
     setForm() {
@@ -193,11 +269,94 @@ export class TodayPage extends AbstractPage implements OnInit {
     }
 
     clickAdd() {
-        this.buckets().push(this.newEmployee());
+        let stackBucket = { 'position': this.stackBuckets.length };
+        if (this.stackBuckets.length < 3) {
+            if (this.stackBuckets[0] === undefined) {
+                this.stackBuckets.push(stackBucket);
+            } else if (this.stackBuckets[1] === undefined) {
+                this.stackBuckets.push(stackBucket);
+            } else if (this.stackBuckets[2] === undefined) {
+                this.stackBuckets.push(stackBucket);
+            }
+        }
+    }
+    clickAddMiniBucket_first() {
+        if (this.testBuckets_first.length > 0) {
+            this.value_first = undefined;
+        }
+        let text1 = this.testBuckets_first.length;
+        let miniBucket = { 'textPosition': text1 };
+        this.testBuckets_first.push(miniBucket);
+    }
+    clickAddMiniBucket_second() {
+        if (this.testBuckets_second.length > 0) {
+            this.value_second = undefined;
+        } else {
+            let text2 = this.testBuckets_second.length;
+            let miniBucket = { 'textPosition': text2 };
+            this.testBuckets_second.push(miniBucket);
+        }
+    }
+    clickAddMiniBucket_third() {
+        if (this.testBuckets_third.length > 0) {
+            this.value_third = undefined;
+        } else {
+            let text3 = this.testBuckets_third.length;
+            let miniBucket = { 'textPosition': text3 };
+            this.testBuckets_third.push(miniBucket);
+        }
+    }
+    removeValue(position:number,index:number){
+        if(position === 1){
+            this.value_stack_first.splice(index,1);
+            this.value_first = '';
+        }else if(position === 2){
+            this.value_stack_second.splice(index,1);
+            this.value_second = '';
+
+        }else if(position === 3){
+            this.value_stack_third.splice(index,1);
+            this.value_third = '';
+        }
     }
 
-    removeEmployee(empIndex: number) {
-        this.buckets().removeAt(empIndex);
+    removeEmployee(position: any, empIndex: number) {
+        for(const bucket of this.stackBuckets){
+            if(bucket.position === empIndex){
+                if(bucket.position === 0){
+                    this.nameOneTitle = '';
+                    this.stackBuckets.splice(empIndex,1);
+                    this.value_first = '';
+                    for (let i = 0; i < this.stackBuckets.length; i++) {
+                        this.stackBuckets[i].position = i;
+
+                    }
+                    for (let j =0; j<this.value_stack_first.length;j++){
+                        this.value_stack_first.shift();
+                    }
+                    // update index
+                }else if(bucket.position === 1){
+                    this.nameTwoTitle = '';
+                    this.value_second = '';
+                    this.stackBuckets.splice(empIndex,1);
+                    for (let i = 1; i < this.stackBuckets.length; i++) {
+                        this.stackBuckets[i].position = i;;
+                    }
+                    for (let j =0; j<this.value_stack_second.length;j++){
+                        this.value_stack_second.shift();
+                    }
+                    // update index                
+                }else if(bucket.position === 2){
+                    this.nameThreeTitle = '';
+                    this.value_third = '';
+                    this.stackBuckets.splice(empIndex,1);
+                    for (let j =0; j<this.value_stack_third.length;j++){
+                        this.value_stack_third.shift();
+                    }
+                }
+            }
+        }
+
     }
 
     employeeSkills(empIndex: number): FormArray {
@@ -219,13 +378,15 @@ export class TodayPage extends AbstractPage implements OnInit {
     }
 
 
-    public async keyUpAutoComp(text) {
+    public async keyUpAutoComp(text, positionBucket: number) {
         try {
+            const position = positionBucket;
             this.isLoading = true;
             // await this.accountFacade.search(data);
             this.todayPageFacade.searchObject(this.selectedValueType, this.selectedValueField, text).then((res) => {
-                this.autoComp = res;
+                this.autoComp = res.result;
             })
+
             this.isLoading = false;
         } catch (error) {
             this.isLoading = false;
@@ -292,9 +453,11 @@ export class TodayPage extends AbstractPage implements OnInit {
     }
 
     public clickEditForm(data: any): void {
-        this.selectedPosition = data.position;
         this.setFields();
         this.drawer.toggle();
+        let miniBuckets = undefined;
+        let clickEdit = 'edit';
+        this.edit = clickEdit;
         if (data.type === 'page') {
             this.fieldBucket = [{ value: 'id' }, { value: 'group' }, { value: 'province' }];
         } else if (data.type === 'post') {
@@ -302,17 +465,60 @@ export class TodayPage extends AbstractPage implements OnInit {
         } else {
             this.fieldBucket = [{ value: 'count' }];
         }
-
-        this.selectedPosition = data.position;
+        this._id = data.id;
         this.selectedValueTitle = data.title;
         this.selectedValueType = data.type;
         this.selectedValueField = data.field;
-        let bucket: any[] = [];
-        let buckets: any[] = [];
-        for (let item of data.buckets) {
-            bucket.push(item);
-            this.buckets().push(this.newEmployee())
+        this.selectedPosition = data.position;
+        if(data.buckets.length > 0){
+            for(let i = 0;i<data.buckets.length;i++){
+                let stackBucket = { 'position': i };
+                miniBuckets = this.stackBuckets.push(stackBucket);
+            }
         }
+        // testBuckets_first
+        if(miniBuckets !== undefined){
+            if(data.buckets[0] !== undefined){
+                this.nameOneTitle = data.buckets[0].name;
+
+            }if(data.buckets[1] !== undefined){
+                this.nameTwoTitle =data.buckets[1].name;
+
+            }if(data.buckets[2] !== undefined){
+                this.nameThreeTitle = data.buckets[2].name;
+            }
+        }
+        if(data.buckets[0]!== undefined){
+            for(let i = 0; i<data.buckets[0].values.length;i++){
+                let miniBucket = { 'textPosition': i };
+                const bucketMiniF = this.testBuckets_first.push(miniBucket);
+                if(bucketMiniF !== undefined){
+                    let stackFirstValues = { 'index': i, 'value': data.buckets[0].values[i],'_id':data.buckets[0].values[i]};
+                    this.value_stack_first.push(stackFirstValues);
+                }
+            }
+        }
+        if(data.buckets[1]!== undefined){
+            for(let y = 0; y<data.buckets[1].values.length;y++){
+                let miniBucket = { 'textPosition': y };
+                const bucketMiniS = this.testBuckets_second.push(miniBucket);
+                if(bucketMiniS !== undefined){
+                    let stackSecondValues = { 'index': y, 'value': data.buckets[1].values[y],'_id':data.buckets[1].values[y]};
+                    this.value_stack_second.push(stackSecondValues);
+                }
+            }
+        }
+        if(data.buckets[2] !== undefined){
+            for(let z = 0; z<data.buckets[2].values.length;z++){
+                let miniBucket = { 'textPosition': z };
+                const bucketMiniT = this.testBuckets_third.push(miniBucket);
+                if(bucketMiniT !== undefined){
+                    let stackThirdValues = { 'index': z, 'value': data.buckets[2].values[z],'_id':data.buckets[2].values[z]};
+                    this.value_stack_third.push(stackThirdValues);
+                }
+            }
+        }
+        this.limit = data.limit;
     }
 
     public handleFileInput(files: FileList) {
@@ -419,48 +625,70 @@ export class TodayPage extends AbstractPage implements OnInit {
     }
 
     public clickSave() {
-        const bucketList = this.buckets().value;
-        let bucket: any[] = [];
-        let buckets: any[] = [];
-        for (let index = 0; index < bucketList.length; index++) {
-            bucket.push(bucketList[index]);
-        }
-
-        for (let index = 0; index < bucket.length; index++) {
-            let val: any = {
-                name: '',
-                values: []
-            };
-            val['name'] = bucket[index].name;
-            bucket[index].values.map((res: any) => {
-                val['values'].push(res.value);
-            });
-
-            buckets.push(val);
-        }
-
-        let data = {
-            title: this.selectedValueTitle,
-            type: this.selectedValueType,
-            field: this.selectedValueField,
-            position: this.selectedPosition,
-            buckets
-        }
-        if (this.todayForm.invalid) {
-            return;
-        }
-        if (this.selectedValueTitle === '') {
-            return;
-        }
-        this.todayPageFacade.create(data).then((res) => {
-            if (res) {
-                this.table.searchData();
-                this.drawer.toggle();
+        const bucketF = [];
+        const bucketS = [];
+        const bucketT = [];
+        if(this.edit === undefined){
+            if(this.value_stack_first.length > 0){
+                for(const valueStack_f of this.value_stack_first){
+                    bucketF.push(valueStack_f._id);
+                }
             }
-        })
-    }
-
-    public selectData(data) {
+            if(this.value_stack_second.length > 0){
+                for(const valueStack_s of this.value_stack_second){
+                    bucketS.push(valueStack_s._id);
+                }
+            }
+            if(this.value_stack_third.length > 0){
+                for(const valueStack_t of this.value_stack_third){
+                    bucketT.push(valueStack_t._id);
+                }
+            }
+            const buckets = [{'name':this.nameOneTitle,'values':bucketF},{'name':this.nameTwoTitle,'values':bucketS},{'name':this.nameThreeTitle,'values':bucketT}];
+            const result: any = {};
+            result.title = this.selectedValueTitle;
+            result.type = this.selectedValueType;
+            result.field = this.selectedValueField;
+            result.flag = null;
+            result.limit = this.limit;
+            result.buckets = buckets;
+            result.position = this.selectedPosition;
+            
+            this.todayPageFacade.create(result).then((res) => {
+                if (res) {
+                    this.table.searchData();
+                    this.drawer.toggle();
+                }
+            }) 
+        }else{
+            const id = this._id;
+            if(this.value_stack_first.length > 0){
+                for(const valueStack_f of this.value_stack_first){
+                    bucketF.push(valueStack_f._id);
+                }
+            }
+            if(this.value_stack_second.length > 0){
+                for(const valueStack_s of this.value_stack_second){
+                    bucketS.push(valueStack_s._id);
+                }
+            }
+            if(this.value_stack_third.length > 0){
+                for(const valueStack_t of this.value_stack_third){
+                    bucketT.push(valueStack_t._id);
+                }
+            }
+            const buckets = [{'name':this.nameOneTitle,'values':bucketF},{'name':this.nameTwoTitle,'values':bucketS},{'name':this.nameThreeTitle,'values':bucketT}];
+            const result: any = {};
+            result.title = this.selectedValueTitle;
+            result.type = this.selectedValueType;
+            result.field = this.selectedValueField;
+            result.flag = null;
+            result.limit = this.limit;
+            result.buckets = buckets;
+            result.position = this.selectedPosition;
+            this.todayPageFacade.edit(id,result);
+            console.log('pasdsadasda edit',result);
+        } 
     }
 
     public seleceType(event) {

@@ -48,7 +48,37 @@ export class AdminConfigController {
     @Authorized()
     public async createConfig(@Body({ validate: true }) config: CreateConfigRequest, @Res() res: any, @Req() req: any): Promise<any> {
         const currentConfig = await this.configService.findOne({ where: { name: config.name } });
+        const configName = config.name;
+        if(configName === 'kaokaiToday.time.emergencyEvent.date'){
+            const dateFormat = new Date();
+            const dateReal = dateFormat.setDate(dateFormat.getDate() + parseInt(config.value,10));
+            const toDate = new Date(dateReal);
 
+            const userId = new ObjectID(req.user.id);
+            const configValueDate: Config = new Config();
+            configValueDate.name = config.name;
+            configValueDate.value = config.value;
+            configValueDate.type = config.type;
+            configValueDate.endDateTime = toDate;
+            configValueDate.createdByUsername = req.user.username;
+            configValueDate.createdBy = userId;
+            const emergencyEventDate: Config = await this.configService.create(configValueDate);
+            
+            if (emergencyEventDate) {
+                const ipAddress = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress).split(',')[0];
+                const adminLogs = new AdminUserActionLogs();
+                adminLogs.userId = userId;
+                adminLogs.action = CONFIG_LOG_ACTION.CREATE;
+                adminLogs.contentType = LOG_TYPE.CONFIG;
+                adminLogs.contentId = new ObjectID(emergencyEventDate.id);
+                adminLogs.ip = ipAddress;
+                adminLogs.data = emergencyEventDate;
+                await this.actionLogService.create(adminLogs);
+    
+                const successResponse = ResponseUtil.getSuccessResponse('Successfully create config', emergencyEventDate);
+                return res.status(200).send(successResponse);
+            }
+        }
         if (currentConfig) {
             const errorResponse = ResponseUtil.getErrorResponse('Duplicate Config name', currentConfig);
             return res.status(400).send(errorResponse);

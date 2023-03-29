@@ -39,7 +39,7 @@ export class TodayPageFacade extends AbstractFacade {
             new Error("Id is required.");
         }
         return new Promise((resolve, reject) => {
-            let url: string = this.baseURL + '/admin/page/processor/' + id;
+            let url: string = this.baseURL + '/admin/page/'+ id +'/processor';
             let options = this.getDefaultOptions();
             this.http.put(url, body, options).toPromise().then((response: any) => {
                 resolve(response.data);
@@ -111,7 +111,7 @@ export class TodayPageFacade extends AbstractFacade {
         });
     }
 
-    public searchObject(type:any,field:any,text: any): Promise<Today[]> {
+    public searchObject(type:any,field:any,text: any): Promise<any> {
         return new Promise((resolve, reject) => {
             let url: string = this.baseURL + '/admin/page/request/search';
             let body: any ={

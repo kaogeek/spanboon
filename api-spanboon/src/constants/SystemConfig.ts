@@ -67,5 +67,5 @@ export const DEFAULT_TODAY_DATETIME_GAP = 30;
 export const KAOKAITODAY_TIMER_CHECK_DATE = 'kaokaiToday.snapshot.timer.check.date';
 export const DEFAULT_KAOKAITODAY_TIMER_CHECK_DAY = '06:00';
 
-export const KAOKAITODAY_RANGE_DATE_EMERGENCY ='kaokaiToday.range.date.emergency';
-export const DEFAULT_KAOKAITODAY_RANGE_DATE_EMERGENY ='365';
+export const KAOKAITODAY_RANGE_DATE_EMERGENCY ='kaokaiToday.time.emergencyEvent.date';
+export const DEFAULT_KAOKAITODAY_RANGE_DATE_EMERGENY =365;
