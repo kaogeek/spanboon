@@ -159,6 +159,15 @@
       max-width: 768px;
     }
 
+    .wrapper-hastags {
+      padding: 20px 0;
+      @include font-size-10($font-head-400);
+
+      >.header-hastags {
+        color: $brandcolor2;
+      }
+    }
+
     a:-webkit-any-link {
       color: unset;
     }

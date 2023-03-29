@@ -56,6 +56,21 @@
     </section>
     <section class="section-1" *ngIf="!showLoading">
         <div class="container">
+            <div class="wrapper-hastags" *ngIf="(model && model.emergencyEvents.contents.length === 0) && (model && model.postSectionModel.contents.length > 0) && (model && model.pageRoundRobin
+                .contents.length > 0)">
+                <span class="header-hastags">มาใหม่ : </span>
+                <a class="tag-link" (click)="clickToPage(model && model.hashTagSumma[0].name,'hashTagSumma')">#{{model
+                    &&
+                    model.hashTagSumma[0].name}}</a>
+                <span> | </span>
+                <a class="tag-link" (click)="clickToPage(model && model.hashTagSumma[1].name,'hashTagSumma')">#{{model
+                    &&
+                    model.hashTagSumma[1].name}}</a>
+                <span> | </span>
+                <a class=" tag-link" (click)="clickToPage(model && model.hashTagSumma[2].name,'hashTagSumma')">#{{model
+                    &&
+                    model.hashTagSumma[2].name}}</a>
+            </div>
             <div class="wrapper-1">
                 <div class="wrapper-1-left" *ngIf="model && model.emergencyEvents.contents.length > 0"
                     [ngStyle]="{'width': !isRes && (model && model.postSectionModel.contents.length > 0) && (model && model.pageRoundRobin.contents.length > 0) ? '50%' : '100%'}">
@@ -232,24 +247,26 @@
                                 </div>
                                 <div class="wrapper-news-post"
                                     [ngClass]="!isRes && (model && model.emergencyEvents.contents.length === 0) && (model && model.postSectionModel.contents.length < 3) && (model.postSectionModel.contents.length !== 1) ? 'news-post-flex' : 'flex-content'"
-                                    *ngIf="model && model.postSectionModel.contents.length > 0"
-                                    (click)="isPostNewTab ? openDilogPost(model && model.postSectionModel.contents[1]) : clickToPost(model && model.postSectionModel.contents[1].post._id)">
+                                    *ngIf="model && model.postSectionModel.contents.length > 0">
                                     <ng-container
                                         *ngIf="model && model.postSectionModel.contents.length >= 3; else elseContentSec2">
                                         <div class="wrapper-news-post-img md-none-min">
                                             <img src="{{apiBaseURL + (model && model.postSectionModel.contents[1].coverPageUrl) + '/image'}}"
-                                                alt="">
+                                                alt=""
+                                                (click)="isPostNewTab ? openDilogPost(model && model.postSectionModel.contents[1]) : clickToPost(model && model.postSectionModel.contents[1].post._id)">
                                         </div>
                                     </ng-container>
                                     <ng-template #elseContentSec2>
                                         <ng-container
                                             *ngIf="model && model.postSectionModel.contents[1]; else elseCoverImageSec2">
                                             <div class="wrapper-news-post-img"
+                                                (click)="isPostNewTab ? openDilogPost(model && model.postSectionModel.contents[1]) : clickToPost(model && model.postSectionModel.contents[1].post._id)"
                                                 [ngClass]="!isRes && (model && model.emergencyEvents.contents.length === 0) && model && model.postSectionModel.contents.length === 2 ? 'post-wid' : ''">
                                                 <ng-container
                                                     *ngIf="model && model.postSectionModel.contents[1].coverPageUrl; else elseTextTitle">
                                                     <img src="{{apiBaseURL + (model && model.postSectionModel.contents[1].coverPageUrl) + '/image'}}"
-                                                        alt="">
+                                                        alt=""
+                                                        (click)="isPostNewTab ? openDilogPost(model && model.postSectionModel.contents[1]) : clickToPost(model && model.postSectionModel.contents[1].post._id)">
                                                 </ng-container>
                                                 <ng-template #elseTextTitle>
                                                     <span
@@ -268,20 +285,39 @@
                                                 <ng-template #elseImageSec>
                                                     <img style="aspect-ratio: 16/9;"
                                                         src="{{apiBaseURL + (model && model.postSectionModel.contents[0].coverPageUrl) + '/image'}}"
-                                                        alt="">
+                                                        alt=""
+                                                        (click)="isPostNewTab ? openDilogPost(model && model.postSectionModel.contents[0]) : clickToPost(model && model.postSectionModel.contents[0].post._id)">
                                                 </ng-template>
                                             </div>
                                         </ng-template>
                                     </ng-template>
                                     <div class="detail"
                                         [ngClass]="!isRes && model && model.postSectionModel.contents.length === 2 ? 'post-wid' : ''">
-                                        <p class="title md-none-min"
-                                            (click)="isPostNewTab ? openDilogPost(model && model.postSectionModel.contents[1]) : clickToPost(model && model.postSectionModel.contents[1].post._id)"
-                                            [innerHTML]="model && model.postSectionModel.contents[1] ? model && model.postSectionModel.contents[1].post.title : model && model.postSectionModel.contents[0].post.title | highlight">
-                                        </p>
+                                        <ng-container
+                                            *ngIf="model && model.postSectionModel.contents.length === 2; else elseTitleDetail">
+                                            <p class="title md-none-min"
+                                                (click)="isPostNewTab ? openDilogPost(model && model.postSectionModel.contents[1]) : clickToPost(model && model.postSectionModel.contents[1].post._id)"
+                                                [innerHTML]="model && model.postSectionModel.contents[1].post.title | highlight">
+                                            </p>
+                                        </ng-container>
+                                        <ng-template #elseTitleDetail>
+                                            <ng-container
+                                                *ngIf="model && model.postSectionModel.contents.length >= 3; else elseTitleMd">
+                                                <p class="title md-none-min"
+                                                    (click)="isPostNewTab ? openDilogPost(model && model.postSectionModel.contents[1]) : clickToPost(model && model.postSectionModel.contents[1].post._id)"
+                                                    [innerHTML]="model && model.postSectionModel.contents[1].post.title | highlight">
+                                                </p>
+                                            </ng-container>
+                                            <ng-template #elseTitleMd>
+                                                <p class="title md-none-min"
+                                                    (click)="isPostNewTab ? openDilogPost(model && model.postSectionModel.contents[0]) : clickToPost(model && model.postSectionModel.contents[0].post._id)"
+                                                    [innerHTML]="model && model.postSectionModel.contents[0].post.title | highlight">
+                                                </p>
+                                            </ng-template>
+                                        </ng-template>
                                         <div class="owner-post md-none-min">
                                             <p class="owner-name"
-                                                (click)="clickToPageUser(model && model.postSectionModel.contents[1].owner.id)"
+                                                (click)="model && model.postSectionModel.contents[1] ? clickToPageUser(model && model.postSectionModel.contents[1].owner.id) : clickToPageUser(model && model.postSectionModel.contents[0].owner.id)"
                                                 [innerHTML]="model && model.postSectionModel.contents[1] ? model && model.postSectionModel.contents[1].owner.name : model.postSectionModel.contents[0].owner.name">
                                             </p>
                                         </div>
@@ -307,15 +343,33 @@
                                                 shortNumber}} แชร์</span>
                                         </p>
                                         <div class="wrapper-title-topic md-none-max">
-                                            <p class="title-topic"
-                                                (click)="isPostNewTab ? openDilogPost(model && model.postSectionModel.contents[1]) : clickToPost(model && model.postSectionModel.contents[1].post._id)"
-                                                [innerHTML]="model && model.postSectionModel.contents[1] ? model && model.postSectionModel.contents[1].post.title : model && model.postSectionModel.contents[0].post.title | highlight">
-                                            </p>
+                                            <ng-container
+                                                *ngIf="model && model.postSectionModel.contents.length === 2; else elseTitleTopic">
+                                                <p class="title-topic"
+                                                    (click)="isPostNewTab ? openDilogPost(model && model.postSectionModel.contents[1]) : clickToPost(model && model.postSectionModel.contents[1].post._id)"
+                                                    [innerHTML]="model && model.postSectionModel.contents[1].post.title | highlight">
+                                                </p>
+                                            </ng-container>
+                                            <ng-template #elseTitleTopic>
+                                                <ng-container
+                                                    *ngIf="model && model.postSectionModel.contents.length >= 3; else elseContent3">
+                                                    <p class="title-topic"
+                                                        (click)="isPostNewTab ? openDilogPost(model && model.postSectionModel.contents[1]) : clickToPost(model && model.postSectionModel.contents[1].post._id)"
+                                                        [innerHTML]="model && model.postSectionModel.contents[1].post.title | highlight">
+                                                    </p>
+                                                </ng-container>
+                                                <ng-template #elseContent3>
+                                                    <p class="title-topic"
+                                                        (click)="isPostNewTab ? openDilogPost(model && model.postSectionModel.contents[0]) : clickToPost(model && model.postSectionModel.contents[0].post._id)"
+                                                        [innerHTML]="model && model.postSectionModel.contents[0].post.title | highlight">
+                                                    </p>
+                                                </ng-template>
+                                            </ng-template>
                                             <a class="tag-link gray time"
                                                 *ngIf="model && model.postSectionModel.contents.length >= 3"
                                                 (click)="clickToPost(model && model.postSectionModel.contents[1].post._id)"
                                                 [innerHTML]="model &&
-                                            model.postSectionModel.contents[1] ? model.postSectionModel.contents[1].post.createdDate : model.postSectionModel.contents[0].post.createdDate |
+                                            model.postSectionModel.contents[1] ? (model.postSectionModel.contents[1].post.createdDate | thformatdatetime) : model.postSectionModel.contents[0].post.createdDate |
                                             thformatdatetime"></a>
                                         </div>
                                     </div>
@@ -481,13 +535,13 @@
                                     </span>
                                 </div>
                                 <div class="wrapper-news-post" *ngIf="model && model.pageRoundRobin.contents.length > 0"
-                                    [ngClass]="(!isRes && model && model.pageRoundRobin.contents.length < 3) && (model.pageRoundRobin.contents.length !== 1) ? 'news-post-flex' : 'flex-content'"
-                                    (click)="isPostNewTab ? openDilogPost(model && model.pageRoundRobin.contents[1]) : (clickToPost(model && model.pageRoundRobin.contents[1].post._id))">
+                                    [ngClass]="(!isRes && model && model.pageRoundRobin.contents.length < 3) && (model.pageRoundRobin.contents.length !== 1) ? 'news-post-flex' : 'flex-content'">
                                     <ng-container
                                         *ngIf="model && model.pageRoundRobin.contents.length >= 3; else elseContent2">
                                         <div class="wrapper-news-post-img md-none-min">
                                             <img src="{{apiBaseURL + (model && model.pageRoundRobin.contents[1].coverPageUrl) + '/image'}}"
-                                                alt="">
+                                                alt=""
+                                                (click)="isPostNewTab ? openDilogPost(model && model.pageRoundRobin.contents[1]) : (clickToPost(model && model.pageRoundRobin.contents[1].post._id))">
                                         </div>
                                     </ng-container>
                                     <ng-template #elseContent2>
@@ -496,7 +550,8 @@
                                             <div class="wrapper-news-post-img"
                                                 [ngClass]="!isRes && model && model.pageRoundRobin.contents.length === 2 ? 'post-wid' : ''">
                                                 <img src="{{apiBaseURL + (model && model.pageRoundRobin.contents[1].coverPageUrl) + '/image'}}"
-                                                    alt="">
+                                                    alt=""
+                                                    (click)="isPostNewTab ? openDilogPost(model && model.pageRoundRobin.contents[1]) : (clickToPost(model && model.pageRoundRobin.contents[1].post._id))">
                                             </div>
                                         </ng-container>
                                         <ng-template #elseCoverImage2>
@@ -505,12 +560,14 @@
                                                     *ngIf="model && model.pageRoundRobin.contents.length === 2; else elseImageRound">
                                                     <img style="aspect-ratio: 16/9;"
                                                         src="{{apiBaseURL + (model && model.pageRoundRobin.contents[1].coverPageUrl) + '/image'}}"
-                                                        alt="">
+                                                        alt=""
+                                                        (click)="isPostNewTab ? openDilogPost(model && model.pageRoundRobin.contents[1]) : (clickToPost(model && model.pageRoundRobin.contents[1].post._id))">
                                                 </ng-container>
                                                 <ng-template #elseImageRound>
                                                     <img style="aspect-ratio: 16/9;"
                                                         src="{{apiBaseURL + (model && model.pageRoundRobin.contents[0].coverPageUrl) + '/image'}}"
-                                                        alt="">
+                                                        alt=""
+                                                        (click)="isPostNewTab ? openDilogPost(model && model.pageRoundRobin.contents[0]) : (clickToPost(model && model.pageRoundRobin.contents[0].post._id))">
                                                 </ng-template>
                                             </div>
                                         </ng-template>
@@ -520,13 +577,24 @@
                                         <ng-container
                                             *ngIf="model && model.pageRoundRobin.contents === 2; else elseDetail2">
                                             <p class="title md-none-min"
+                                                (click)="isPostNewTab ? openDilogPost(model && model.pageRoundRobin.contents[1]) : (clickToPost(model && model.pageRoundRobin.contents[1].post._id))"
                                                 [innerHTML]="model && model.pageRoundRobin.contents[1].post.title | highlight">
                                             </p>
                                         </ng-container>
                                         <ng-template #elseDetail2>
-                                            <p class="title md-none-min"
-                                                [innerHTML]="model && model.pageRoundRobin.contents[0].post.title | highlight">
-                                            </p>
+                                            <ng-container
+                                                *ngIf="model && model.pageRoundRobin.contents.length >= 3; else elseTitleMd2">
+                                                <p class="title md-none-min"
+                                                    (click)="isPostNewTab ? openDilogPost(model && model.pageRoundRobin.contents[1]) : (clickToPost(model && model.pageRoundRobin.contents[1].post._id))"
+                                                    [innerHTML]="model && model.pageRoundRobin.contents[1].post.title | highlight">
+                                                </p>
+                                            </ng-container>
+                                            <ng-template #elseTitleMd2>
+                                                <p class="title md-none-min"
+                                                    (click)="isPostNewTab ? openDilogPost(model && model.pageRoundRobin.contents[0]) : (clickToPost(model && model.pageRoundRobin.contents[0].post._id))"
+                                                    [innerHTML]="model && model.pageRoundRobin.contents[0].post.title | highlight">
+                                                </p>
+                                            </ng-template>
                                         </ng-template>
                                         <div class="owner-post md-none-min">
                                             <ng-container
@@ -537,10 +605,19 @@
                                                 </p>
                                             </ng-container>
                                             <ng-template #elseOwnerPost>
-                                                <p class="owner-name"
-                                                    (click)="clickToPageUser(model && model.pageRoundRobin.contents[0].owner.id)"
-                                                    [innerHTML]="model && model.pageRoundRobin.contents[0].owner.name ? model && model.pageRoundRobin.contents[0].owner.name : model && model.pageRoundRobin.contents[0].owner.displayName">
-                                                </p>
+                                                <ng-container
+                                                    *ngIf="model && model.pageRoundRobin.contents.length >= 3; else elseOwnerPage">
+                                                    <p class="owner-name"
+                                                        (click)="clickToPageUser(model && model.pageRoundRobin.contents[1].owner.id)"
+                                                        [innerHTML]="model && model.pageRoundRobin.contents[1].owner.name ? model && model.pageRoundRobin.contents[1].owner.name : model && model.pageRoundRobin.contents[1].owner.displayName">
+                                                    </p>
+                                                </ng-container>
+                                                <ng-template #elseOwnerPage>
+                                                    <p class="owner-name"
+                                                        (click)="clickToPageUser(model && model.pageRoundRobin.contents[0].owner.id)"
+                                                        [innerHTML]="model && model.pageRoundRobin.contents[0].owner.name ? model && model.pageRoundRobin.contents[0].owner.name : model && model.pageRoundRobin.contents[0].owner.displayName">
+                                                    </p>
+                                                </ng-template>
                                             </ng-template>
                                         </div>
                                         <p class="amount-social md-none-min">
@@ -574,17 +651,24 @@
                                                 <a class="tag-link gray time"
                                                     *ngIf="model && model.pageRoundRobin.contents.length >= 3"
                                                     (click)="clickToPost(model && model.pageRoundRobin.contents[1].post._id)"
-                                                    [innerHTML]="model &&
-                                                model.pageRoundRobin.contents[1].post.createdDate |
-                                                thformatdatetime"></a>
+                                                    [innerHTML]="model && model.pageRoundRobin.contents[1] ? (model && model.pageRoundRobin.contents[1].post.createdDate | thformatdatetime) : model && model.pageRoundRobin.contents[0].post.createdDate | thformatdatetime"></a>
                                             </div>
                                         </ng-container>
                                         <ng-template #elseTitleTagLink>
                                             <div class="wrapper-title-topic md-none-max">
-                                                <p class="title-topic"
-                                                    (click)="isPostNewTab ? openDilogPost(model && model.pageRoundRobin.contents[0]) : clickToPost(model && model.pageRoundRobin.contents[0].post._id)"
-                                                    [innerHTML]="model && model.pageRoundRobin.contents[0].post.title | highlight">
-                                                </p>
+                                                <ng-container
+                                                    *ngIf="model && model.pageRoundRobin.contents.length >= 3; else elseTitlePage">
+                                                    <p class="title-topic"
+                                                        (click)="isPostNewTab ? openDilogPost(model && model.pageRoundRobin.contents[1]) : clickToPost(model && model.pageRoundRobin.contents[1].post._id)"
+                                                        [innerHTML]="model && model.pageRoundRobin.contents[1].post.title | highlight">
+                                                    </p>
+                                                </ng-container>
+                                                <ng-template #elseTitlePage>
+                                                    <p class="title-topic"
+                                                        (click)="isPostNewTab ? openDilogPost(model && model.pageRoundRobin.contents[0]) : clickToPost(model && model.pageRoundRobin.contents[0].post._id)"
+                                                        [innerHTML]="model && model.pageRoundRobin.contents[0].post.title | highlight">
+                                                    </p>
+                                                </ng-template>
                                                 <a class="tag-link gray time"
                                                     (click)="clickToPost(model && model.pageRoundRobin.contents[0].post._id)"
                                                     [innerHTML]="model &&
