@@ -48,7 +48,16 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                 }
                 const roundRobin = await this.kaokaiTodayService.findOne({ position: sortV[0] });
                 if (roundRobin.position === null) {
-                    resolve(undefined);
+                    const result: SectionModel = new SectionModel();
+                    result.title = (this.config === undefined || this.config.title === undefined) ? roundRobin.title : roundRobin.title;
+                    result.subtitle = '';
+                    result.description = '';
+                    result.iconUrl = '';
+                    result.contents = [];
+                    result.type = this.getType(); // set type by processor type
+                    result.position = null;
+                    // result.contents.push(contents);
+                    resolve(result);
                 }
                 let limit: number = undefined;
                 let offset: number = undefined;

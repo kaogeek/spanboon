@@ -123,18 +123,9 @@ export class AdminPageController {
                 searchResults.push({ value: pageId, label: pageName, type: SEARCH_TYPE.PAGE });
             }
         } else if (data.type === 'page' && data.field === 'group') {
-            const pageQuery = [
-                { $match: {isOfficial: true, banned: false,group:exp} },
-                { $limit: 10 }
-            ];
-            const pages: any[] = await this.pageService.aggregate(pageQuery);
-            let pageId = undefined;
-            let pageName = undefined;
-            for (const page of pages) {
-                pageId = page._id;
-                pageName = page.name;
-                searchResults.push({ value: pageId, label: pageName, type: SEARCH_TYPE.PAGE });
-            }
+            const pages: any[] = await this.pageGroupService.find({});         
+            const successResponseGroup = ResponseUtil.getSuccessResponse('Search Page Group Success.', pages);
+            return res.status(200).send(successResponseGroup);
         } else if (data.type === 'page' && data.field === 'province') {
             const pageQuery = [
                 { $match: {isOfficial: true, banned: false,province:exp} },
