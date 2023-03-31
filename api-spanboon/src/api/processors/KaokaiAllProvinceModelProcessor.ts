@@ -76,6 +76,9 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     }
                 }
                 const provincePage = await this.kaokaiTodayService.findOne({ position: sortV[0] });
+                if (provincePage.position === null) {
+                    resolve(undefined);
+                }
                 limit = (limit === undefined || limit === null) ? provincePage.limit : this.DEFAULT_SEARCH_LIMIT;
                 offset = (offset === undefined || offset === null) ? this.DEFAULT_SEARCH_OFFSET : offset;
                 const searchFilter: SearchFilter = new SearchFilter();

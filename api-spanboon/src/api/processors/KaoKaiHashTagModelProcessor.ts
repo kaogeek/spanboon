@@ -77,6 +77,9 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     }
                 }
                 const hashTagProcessor = await this.kaokaiTodayService.findOne({ position: sortV[0] });
+                if (hashTagProcessor.position === null) {
+                    resolve(undefined);
+                }
                 limit = (limit === undefined || limit === null) ? hashTagProcessor.limit : this.DEFAULT_SEARCH_LIMIT;
                 offset = (offset === undefined || offset === null) ? this.DEFAULT_SEARCH_OFFSET : offset;
                 const searchFilter: SearchFilter = new SearchFilter();

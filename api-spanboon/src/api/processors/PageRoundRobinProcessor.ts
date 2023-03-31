@@ -47,7 +47,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     }
                 }
                 const roundRobin = await this.kaokaiTodayService.findOne({ position: sortV[0] });
-                if (roundRobin === undefined) {
+                if (roundRobin.position === null) {
                     resolve(undefined);
                 }
                 let limit: number = undefined;

@@ -66,6 +66,9 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     }
                 }
                 const majorTrend = await this.kaokaiTodayService.findOne({ position: sortV[0] });
+                if (majorTrend.position === null) {
+                    resolve(undefined);
+                }
                 let limit: number = undefined;
                 let offset: number = undefined;
                 if (this.config !== undefined && this.config !== null) {
