@@ -49,7 +49,7 @@
                                         <mat-form-field>
                                             <mat-label>ประเภทข้อมูล</mat-label>
                                             <mat-select [(ngModel)]="selectedValueType" name="type"
-                                                (selectionChange)="seleceType($event)">
+                                                (selectionChange)="seleceType($event);changeData()">
                                                 <mat-option *ngFor="let type of typeBucket" [value]="type.value">
                                                     {{type.value}}
                                                 </mat-option>
@@ -58,7 +58,8 @@
                                         <div>
                                             <mat-form-field>
                                                 <mat-label>ฟิลด์</mat-label>
-                                                <mat-select [(ngModel)]="selectedValueField" name="field">
+                                                <mat-select [(ngModel)]="selectedValueField" name="field"
+                                                    (selectionChange)="changeData()">
                                                     <mat-option *ngFor="let type of fieldBucket" [value]="type.value">
                                                         {{type.value}}
                                                     </mat-option>
@@ -174,7 +175,7 @@
                                                                                 [formControl]="searchUser_first"
                                                                                 [matAutocomplete]="autoComplete"
                                                                                 [(ngModel)]="value_first"
-                                                                                placeholder="">
+                                                                                placeholder="เลือกข้อมูล">
                                                                             <mat-autocomplete
                                                                                 #autoComplete="matAutocomplete">
                                                                                 <mat-option class="mat-option-progress"
@@ -277,6 +278,7 @@
                                                                             <input type="text" class="input-auto"
                                                                                 [formControl]="searchUser_second"
                                                                                 [matAutocomplete]="autoComplete"
+                                                                                placeholder="เลือกข้อมูล"
                                                                                 [(ngModel)]="value_second">
                                                                             <mat-autocomplete
                                                                                 #autoComplete="matAutocomplete">
@@ -380,6 +382,7 @@
                                                                             <input type='text' class="input-auto"
                                                                                 [formControl]="searchUser_third"
                                                                                 [matAutocomplete]="autoComplete"
+                                                                                placeholder="เลือกข้อมูล"
                                                                                 [(ngModel)]="value_third" />
                                                                             <mat-autocomplete
                                                                                 #autoComplete="matAutocomplete">
