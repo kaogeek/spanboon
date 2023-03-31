@@ -145,14 +145,15 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     });
     this.router.navigate(['/home'], { queryParams: { date: formattedDate } });
   }
+
   public async getMainPageModelV3(userId?) {
     // 1678726800000
     let testDate = JSON.parse(localStorage.getItem('datetime'));
     if (testDate !== null) {
       this.testValues = testDate;
     }
-    if (this.queryParamsUrl !== undefined) {
-      this.mainPageModelFacade.getMainPageModelV3(userId, this.queryParamsUrl).then((res) => {
+    if (!!this.queryParamsUrl) {
+      this.mainPageModelFacade.getMainPageModelV3(userId, (this.queryParamsUrl ? this.queryParamsUrl : null)).then((res) => {
         this.testValues = new Date(this.queryParamsUrl).toISOString();
         this.model = res;
         for (let index = 0; index < this.model.postSectionModel.contents.length; index++) {

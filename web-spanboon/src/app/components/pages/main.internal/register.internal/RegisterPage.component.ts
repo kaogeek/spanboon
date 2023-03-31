@@ -5,7 +5,7 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-import { Component, ElementRef, EventEmitter, NgZone, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, NgZone, OnInit, Output, ViewChild } from '@angular/core';
 import { MatDatepicker, MatDatepickerInputEvent } from '@angular/material';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthenManager, NotificationManager, ObservableManager, TwitterService, UserFacade } from '../../../../services/services';
@@ -19,7 +19,6 @@ import { User } from '../../../../models/User';
 import { DialogPassword } from '../../../../components/shares/shares';
 import { Asset } from '../../../../models/Asset';
 import { SocialAuthService, SocialUser } from 'angularx-social-login';
-import * as $ from 'jquery';
 import { environment } from 'src/environments/environment';
 import { fromEvent, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';

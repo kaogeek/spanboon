@@ -82,6 +82,7 @@
               color: $brandcolor2;
               margin: 0 10px;
               flex: 0 0 auto;
+              user-select: none;
 
               @media (max-width: $large) {
                 @include font-size-9($font-head-400);
@@ -342,6 +343,7 @@
           -webkit-box-orient: vertical;
           overflow: hidden;
           word-break: break-word;
+          line-height: 26px;
         }
 
         >.owner-post {
