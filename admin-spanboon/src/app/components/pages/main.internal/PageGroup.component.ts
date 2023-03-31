@@ -56,7 +56,7 @@ export class PageGroup extends AbstractPage implements OnInit {
         this.fieldTable = [
             {
                 name: "name",
-                label: "ชื่อกลุ่ม",
+                label: "รายละเอียด",
                 width: "330pt",
                 class: "", formatColor: false, formatImage: false,
                 link: [],

@@ -543,14 +543,31 @@ export class TodayPage extends AbstractPage implements OnInit {
         this.selectedValueField = "";
         this.selectedValueTitle = "";
         this.selectedValueType = "";
+        this.nameOneTitle = "";
+        this.nameTwoTitle = "";
+        this.nameThreeTitle = "";
         this.limit = undefined;
         this.selectedPosition = undefined;
         this.dataForm.ordering = undefined;
 
     }
 
+    public changeData() {
+        this.nameOneTitle = "";
+        this.nameTwoTitle = "";
+        this.nameThreeTitle = "";
+        this.stackBuckets = [];
+        this.testBuckets_first.splice(0)
+        this.testBuckets_second.splice(0)
+        this.testBuckets_third.splice(0)
+    }
+
     public clickCreateForm(): void {
         this.setFields();
+        this.stackBuckets = [];
+        this.testBuckets_first.splice(0)
+        this.testBuckets_second.splice(0)
+        this.testBuckets_third.splice(0)
         this.drawer.toggle();
     }
 
