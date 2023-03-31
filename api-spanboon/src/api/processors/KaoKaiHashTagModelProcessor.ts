@@ -69,10 +69,21 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     checkPosition3 = this.data.checkPosition3;
                 }
                 const sortV = [];
+                const negative = [];
+                // const today = moment().add(month, 'month').toDate();
                 for (const sort of sorts) {
-                    if (sort !== undefined && sort !== null && sort !== checkPosition1 && sort !== checkPosition2 && sort !== checkPosition3) {
+                    if (sort !== undefined && sort !== null && sort > 0 && sort !== checkPosition1 && sort !== checkPosition2 && sort !== checkPosition3) {
                         sortV.push(sort);
-                    } else {
+                    } else if(sort !== undefined && sort !== null && sort < 0){
+                        negative.push(sort);
+                    }else {
+                        continue;
+                    }
+                }   
+                for(const nega of negative){
+                    if(nega !== undefined && nega !== null && nega !== checkPosition1 && nega !== checkPosition2 && nega !== checkPosition3){
+                        sortV.push(nega);
+                    }else{
                         continue;
                     }
                 }
@@ -249,7 +260,9 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                             }
                         ]
                     );
-                    postAggregateAll.push(postAggregateSet1);
+                    if(postAggregateSet1.length >0){
+                        postAggregateAll.push(postAggregateSet1);
+                    }
                     const postAggregateSet2 = await this.postsService.aggregate(
                         [
                             { $match: { isDraft: false, deleted: false, hidden: false, postsHashTags: { $in: hashTagStack2 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
@@ -312,7 +325,9 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                             }
                         ]
                     );
-                    postAggregateAll.push(postAggregateSet2);
+                    if(postAggregateSet2.length >0){
+                        postAggregateAll.push(postAggregateSet2);
+                    }
                     const postAggregateSet3 = await this.postsService.aggregate(
                         [
                             { $match: { isDraft: false, deleted: false, hidden: false, postsHashTags: { $in: hashTagStack3 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
@@ -375,7 +390,9 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                             }
                         ]
                     );
-                    postAggregateAll.push(postAggregateSet3);
+                    if(postAggregateSet3.length>0){
+                        postAggregateAll.push(postAggregateSet3);
+                    }
                     const stackPage = [];
                     for (let i = 0; i < postAggregateAll[0].length; i++) {
                         for (let j = 0; j < postAggregateAll.length; j++) {
@@ -1264,7 +1281,9 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                             },
                         ]
                     );
-                    pageStacks.push(postAggregateSet1);
+                    if(postAggregateSet1.length>0){
+                        pageStacks.push(postAggregateSet1);
+                    }
                     const postAggregateSet2 = await this.postsService.aggregate(
                         [
                             { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince2 } } },
@@ -1329,7 +1348,9 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                             },
                         ]
                     );
-                    pageStacks.push(postAggregateSet2);
+                    if(postAggregateSet2.length>0){
+                        pageStacks.push(postAggregateSet2);
+                    }
                     const postAggregateSet3 = await this.postsService.aggregate(
                         [
                             { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince3 } } },
@@ -1394,7 +1415,9 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                             },
                         ]
                     );
-                    pageStacks.push(postAggregateSet3);
+                    if(postAggregateSet3.length>0){
+                        pageStacks.push(postAggregateSet3);
+                    }
                     // set 1
                     const stackPage = [];
                     for (let i = 0; i < pageStacks[0].length; i++) {
@@ -1596,7 +1619,9 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                             },
                         ]
                     );
-                    pageStacks.push(postAggregateSet1);
+                    if(postAggregateSet1.length>0){
+                        pageStacks.push(postAggregateSet1);
+                    }
                     const postAggregateSet2 = await this.postsService.aggregate(
                         [
                             { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince2 } } },
@@ -1661,7 +1686,9 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                             },
                         ]
                     );
-                    pageStacks.push(postAggregateSet2);
+                    if(postAggregateSet2.length>0){
+                        pageStacks.push(postAggregateSet2);
+                    }
                     const postAggregateSet3 = await this.postsService.aggregate(
                         [
                             { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince3 } } },
@@ -1726,7 +1753,9 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                             },
                         ]
                     );
-                    pageStacks.push(postAggregateSet3);
+                    if(postAggregateSet3.length>0){
+                        pageStacks.push(postAggregateSet3);
+                    }
                     // set 1
                     const stackPage = [];
                     for (let i = 0; i < pageStacks[0].length; i++) {
@@ -1877,7 +1906,9 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                             },
                         ]
                     );
-                    bucketAll.push(postAggregateSet1);
+                    if(postAggregateSet1.length>0){
+                        bucketAll.push(postAggregateSet1);
+                    }
                     const postAggregateSet2 = await this.postsService.aggregate(
                         [
                             { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: bucketS }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
@@ -1942,7 +1973,9 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                             },
                         ]
                     );
-                    bucketAll.push(postAggregateSet2);
+                    if(postAggregateSet2.length>0){
+                        bucketAll.push(postAggregateSet2);
+                    }
                     const postAggregateSet3 = await this.postsService.aggregate(
                         [
                             { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: bucketT }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
@@ -2007,7 +2040,9 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                             },
                         ]
                     );
-                    bucketAll.push(postAggregateSet3);
+                    if(postAggregateSet3.length>0){
+                        bucketAll.push(postAggregateSet3);
+                    }
                     const stackPage = [];
                     for (let i = 0; i < bucketAll[0].length; i++) {
                         for (let j = 0; j < bucketAll.length; j++) {

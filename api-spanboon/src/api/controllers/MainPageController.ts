@@ -110,7 +110,7 @@ export class MainPageController {
         }
         const emergencyCheckEndDate = assetTodayRangeDate.endDateTime;
         const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), assetTodayDate);
-
+        /* 
         if (toDate) {
             const checkSnapshot = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: toDate });
 
@@ -118,7 +118,7 @@ export class MainPageController {
                 const successResponseS = ResponseUtil.getSuccessResponse('Successfully Main Page Data', checkSnapshot.data);
                 return res.status(200).send(successResponseS);
             }
-        }
+        } */
         // ordering
         const emerProcessor: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service);
         emerProcessor.setData({
@@ -1675,22 +1675,22 @@ export class MainPageController {
         }
         // Check Date time === 06:00 morning
         let content = undefined;
-
+        /*
         if (hours === parseInt(hourSplit, 10) && minutes === parseInt(minuteSpit, 10)) {
-            const contents = data;
-            const startDate = startDateRange;
-            const endDate = endDateTimeToday;
-            const result: any = {};
-            result.data = contents;
-            result.startDateTime = startDate;
-            result.endDateTime = endDate;
-            const snapShot = await this.kaokaiTodaySnapShotService.create(result);
-            const user = await this.userService.findOne({ email: 'tarawut.c@absolute.co.th' });
-            if (snapShot) {
-                content = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: endDateTimeToday });
-                if (content) {
-                    this.pushNotification(user, user.email, content.data, 'ก้าวไกลวันนี้', endDateTimeToday);
-                }
+        } */
+        const contents = data;
+        const startDate = startDateRange;
+        const endDate = endDateTimeToday;
+        const result: any = {};
+        result.data = contents;
+        result.startDateTime = startDate;
+        result.endDateTime = endDate;
+        const snapShot = await this.kaokaiTodaySnapShotService.create(result);
+        const user = await this.userService.findOne({ email: 'tarawut.c@absolute.co.th' });
+        if (snapShot) {
+            content = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: endDateTimeToday });
+            if (content) {
+                this.pushNotification(user, user.email, content.data, 'ก้าวไกลวันนี้', endDateTimeToday);
             }
         }
         // 

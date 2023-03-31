@@ -147,19 +147,9 @@ export class AdminPageController {
                 { $limit: 10 }
             ]);
             
-            if (postEmergencys.length > 0) {
-                for(const postEmergency of postEmergencys){
-                    postObject.push(new ObjectID(postEmergency._id));
-                }
-            }
-            const postStmt1 = [
-                { $match: { isDraft: false, deleted: false, hidden: false, emergencyEvent: { $ne: null, $in: postObject } } },
-                { $limit: 10 }
-            ]; 
-            const postStmds: any[] = await this.postsService.aggregate(postStmt1);
             let postId = undefined;
             let postTitle = undefined;
-            for (const postStmd of postStmds) {
+            for (const postStmd of postEmergencys) {
                 postId = postStmd._id;
                 postTitle = postStmd.title;
                 searchResults.push({ value: postId, label: postTitle, type: SEARCH_TYPE.PAGE });
@@ -175,19 +165,9 @@ export class AdminPageController {
                 }
             ]);
 
-            if (postObjectiveS.length > 0) {
-                for(const postObjective of postObjectiveS){
-                    postObject.push(new ObjectID(postObjective._id));
-                }
-            }
-            const postStmt1 = [
-                { $match: { isDraft: false, deleted: false, hidden: false, objective: { $ne: null, $in: postObject } } },
-                { $limit: 10 }
-            ]; 
-            const postStmds: any[] = await this.postsService.aggregate(postStmt1);
             let postId = undefined;
             let postTitle = undefined;
-            for (const postStmd of postStmds) {
+            for (const postStmd of postObjectiveS) {
                 postId = postStmd._id;
                 postTitle = postStmd.title;
                 searchResults.push({ value: postId, label: postTitle, type: SEARCH_TYPE.PAGE });
@@ -206,22 +186,11 @@ export class AdminPageController {
                         $limit:10
                     }
                 ]);
-            if (hashTagSearch.length > 0) {
-                for(const hashTags of hashTagSearch){
-                    postObject.push(new ObjectID(hashTags._id));
-                }
-            }
-            const postAggregateSet1 = await this.postsService.aggregate(
-                [
-                    { $match: { isDraft: false, deleted: false, hidden: false, postsHashTags: { $ne:null,$in: postObject } } },
-                    { $limit: 10}
-                ]
-            );
             let postId = undefined;
             let postTitle = undefined;
-            for (const postStmd of postAggregateSet1) {
+            for (const postStmd of hashTagSearch) {
                 postId = postStmd._id;
-                postTitle = postStmd.title;
+                postTitle = postStmd.name;
                 searchResults.push({ value: postId, label: postTitle, type: SEARCH_TYPE.PAGE });
             }
 

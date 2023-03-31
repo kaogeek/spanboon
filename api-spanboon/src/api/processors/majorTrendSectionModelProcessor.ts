@@ -58,10 +58,21 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     checkPosition = this.data.checkPosition1;
                 }
                 const sortV = [];
+                const negative = [];
+                // const today = moment().add(month, 'month').toDate();
                 for (const sort of sorts) {
-                    if (sort !== undefined && sort !== null && sort !== checkPosition) {
+                    if (sort !== undefined && sort !== null && sort > 0 && sort !== checkPosition) {
                         sortV.push(sort);
-                    } else {
+                    } else if(sort !== undefined && sort !== null && sort < 0){
+                        negative.push(sort);
+                    }else {
+                        continue;
+                    }
+                }   
+                for(const nega of negative){
+                    if(nega !== undefined && nega !== null  && nega !== checkPosition){
+                        sortV.push(nega);
+                    }else{
                         continue;
                     }
                 }
@@ -1391,7 +1402,9 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                             },
                         ]
                     );
-                    pageStacks.push(postAggregateSet1);
+                    if(postAggregateSet1.length>0){
+                        pageStacks.push(postAggregateSet1);
+                    }
                     const postAggregateSet2 = await this.postsService.aggregate(
                         [
                             { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince2 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
@@ -1457,7 +1470,9 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                             },
                         ]
                     );
-                    pageStacks.push(postAggregateSet2);
+                    if(postAggregateSet2.length>0){
+                        pageStacks.push(postAggregateSet2);
+                    }
                     const postAggregateSet3 = await this.postsService.aggregate(
                         [
                             { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince3 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
@@ -1522,7 +1537,9 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                             },
                         ]
                     );
-                    pageStacks.push(postAggregateSet3);
+                    if(postAggregateSet3.length>0){
+                        pageStacks.push(postAggregateSet3);
+                    }
                     // set 1
                     const stackPage = [];
                     for (let i = 0; i < pageStacks[0].length; i++) {
@@ -1724,7 +1741,9 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                             },
                         ]
                     );
-                    pageStacks.push(postAggregateSet1);
+                    if(postAggregateSet1.length>0){
+                        pageStacks.push(postAggregateSet1);
+                    }
                     const postAggregateSet2 = await this.postsService.aggregate(
                         [
                             { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince2 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
@@ -1789,7 +1808,9 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                             },
                         ]
                     );
-                    pageStacks.push(postAggregateSet2);
+                    if(postAggregateSet2.length>0){
+                        pageStacks.push(postAggregateSet2);
+                    }
                     const postAggregateSet3 = await this.postsService.aggregate(
                         [
                             { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince3 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
@@ -1854,7 +1875,9 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                             },
                         ]
                     );
-                    pageStacks.push(postAggregateSet3);
+                    if(postAggregateSet3.length>0){
+                        pageStacks.push(postAggregateSet3);
+                    }
                     // set 1
                     const stackPage = [];
                     for (let i = 0; i < pageStacks[0].length; i++) {
@@ -1940,7 +1963,6 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                             }
                         }
                     }
-                    console.log('bucketF', bucketF);
                     // set 1
                     const postAggregateSet1 = await this.postsService.aggregate(
                         [
@@ -2006,7 +2028,9 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                             },
                         ]
                     );
-                    bucketAll.push(postAggregateSet1);
+                    if(postAggregateSet1.length>0){
+                        bucketAll.push(postAggregateSet1);
+                    }
                     const postAggregateSet2 = await this.postsService.aggregate(
                         [
                             { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: bucketS }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
@@ -2071,7 +2095,9 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                             },
                         ]
                     );
-                    bucketAll.push(postAggregateSet2);
+                    if(postAggregateSet2.length>0){
+                        bucketAll.push(postAggregateSet2);
+                    }
                     const postAggregateSet3 = await this.postsService.aggregate(
                         [
                             { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: bucketT }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
@@ -2136,7 +2162,9 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                             },
                         ]
                     );
-                    bucketAll.push(postAggregateSet3);
+                    if(postAggregateSet3.length>0){
+                        bucketAll.push(postAggregateSet3);
+                    }
                     const stackPage = [];
                     for (let i = 0; i < bucketAll[0].length; i++) {
                         for (let j = 0; j < bucketAll.length; j++) {

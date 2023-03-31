@@ -38,11 +38,21 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                 }
                 const sortV = [];
                 const sorts = position.sort((a, b) => Math.abs(a) - Math.abs(b) || a - b);
+                const negative = [];
                 // const today = moment().add(month, 'month').toDate();
                 for (const sort of sorts) {
-                    if (sort !== undefined && sort !== null) {
+                    if (sort !== undefined && sort !== null && sort > 0) {
                         sortV.push(sort);
-                    } else {
+                    } else if(sort !== undefined && sort !== null && sort < 0){
+                        negative.push(sort);
+                    }else {
+                        continue;
+                    }
+                }   
+                for(const nega of negative){
+                    if(nega !== undefined && nega !== null){
+                        sortV.push(nega);
+                    }else{
                         continue;
                     }
                 }
@@ -215,7 +225,9 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                             },
                         ]
                     );
-                    bucketAll.push(postAggregateSet1);
+                    if(postAggregateSet1.length>0){
+                        bucketAll.push(postAggregateSet1);
+                    }
                     const postAggregateSet2 = await this.postsService.aggregate(
                         [
                             { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: bucketS }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
@@ -280,7 +292,9 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                             },
                         ]
                     );
-                    bucketAll.push(postAggregateSet2);
+                    if(postAggregateSet2.length>0){
+                        bucketAll.push(postAggregateSet2);
+                    }
                     const postAggregateSet3 = await this.postsService.aggregate(
                         [
                             { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: bucketT }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
@@ -345,7 +359,9 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                             },
                         ]
                     );
-                    bucketAll.push(postAggregateSet3);
+                    if(postAggregateSet3.length>0){
+                        bucketAll.push(postAggregateSet3);
+                    }
                     const stackPage = [];
                     for (let i = 0; i < bucketAll[0].length; i++) {
                         for (let j = 0; j < bucketAll.length; j++) {
@@ -548,7 +564,9 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                             },
                         ]
                     );
-                    pageStacks.push(postAggregateSet1);
+                    if(postAggregateSet1.length>0){
+                        pageStacks.push(postAggregateSet1);
+                    }
                     const postAggregateSet2 = await this.postsService.aggregate(
                         [
                             { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince2 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
@@ -613,7 +631,9 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                             },
                         ]
                     );
-                    pageStacks.push(postAggregateSet2);
+                    if(postAggregateSet2.length>0){
+                        pageStacks.push(postAggregateSet2);
+                    }
                     const postAggregateSet3 = await this.postsService.aggregate(
                         [
                             { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince3 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
@@ -678,7 +698,9 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                             },
                         ]
                     );
-                    pageStacks.push(postAggregateSet3);
+                    if(postAggregateSet3.length>0){
+                        pageStacks.push(postAggregateSet3);
+                    }
                     // set 1
                     const stackPage = [];
                     for (let i = 0; i < pageStacks[0].length; i++) {
@@ -948,8 +970,9 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     ];
 
                     const postAggregate1 = await this.postsService.aggregate(postStmt1);
-                    postObject.push(postAggregate1);
-
+                    if(postAggregate1.length>0){
+                        postObject.push(postAggregate1);
+                    }
                     const postStmt2 = [
                         { $match: { isDraft: false, deleted: false, hidden: false, objective: { $ne: null, $in: bucketS }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
                         { $sort: { summationScore: -1 } },
@@ -1015,8 +1038,9 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     ];
 
                     const postAggregate2 = await this.postsService.aggregate(postStmt2);
-                    postObject.push(postAggregate2);
-
+                    if(postAggregate2.length>0){
+                        postObject.push(postAggregate2);
+                    }
                     const postStmt3 = [
                         { $match: { isDraft: false, deleted: false, hidden: false, objective: { $ne: null, $in: bucketT }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
                         { $sort: { summationScore: -1 } },
@@ -1081,8 +1105,9 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                         }
                     ];
                     const postAggregate3 = await this.postsService.aggregate(postStmt3);
-                    postObject.push(postAggregate3);
-
+                    if(postAggregate3.length>0){
+                        postObject.push(postAggregate3);
+                    }
                     const stackPage = [];
                     for (let i = 0; i < postObject[0].length; i++) {
                         for (let j = 0; j < postObject.length; j++) {
@@ -1230,8 +1255,9 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     ];
 
                     const postAggregate1 = await this.postsService.aggregate(postStmt1);
-                    postObject.push(postAggregate1);
-
+                    if(postAggregate1.length>0){
+                        postObject.push(postAggregate1);
+                    }
                     const postStmt2 = [
                         { $match: { isDraft: false, deleted: false, hidden: false, emergencyEvent: { $ne: null, $in: bucketS } } },
                         { $sort: { summationScore: -1 } },
@@ -1297,8 +1323,9 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     ];
 
                     const postAggregate2 = await this.postsService.aggregate(postStmt2);
-                    postObject.push(postAggregate2);
-
+                    if(postAggregate2.length>0){
+                        postObject.push(postAggregate2);
+                    }
                     const postStmt3 = [
                         { $match: { isDraft: false, deleted: false, hidden: false, emergencyEvent: { $ne: null, $in: bucketT } } },
                         { $sort: { summationScore: -1 } },
@@ -1363,8 +1390,9 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                         }
                     ];
                     const postAggregate3 = await this.postsService.aggregate(postStmt3);
-                    postObject.push(postAggregate3);
-
+                    if(postAggregate3.length>0){
+                        postObject.push(postAggregate3);
+                    }
                     const stackPage = [];
                     for (let i = 0; i < postObject[0].length; i++) {
                         for (let j = 0; j < postObject.length; j++) {
@@ -1550,7 +1578,9 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                             }
                         ]
                     );
-                    postAggregateAll.push(postAggregateSet1);
+                    if(postAggregateSet1.length>0){
+                        postAggregateAll.push(postAggregateSet1);
+                    }
                     const postAggregateSet2 = await this.postsService.aggregate(
                         [
                             { $match: { isDraft: false, deleted: false, hidden: false, postsHashTags: { $in: hashTagStack2 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
@@ -1613,7 +1643,9 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                             }
                         ]
                     );
-                    postAggregateAll.push(postAggregateSet2);
+                    if(postAggregateSet2.length>0){
+                        postAggregateAll.push(postAggregateSet2);
+                    }
                     const postAggregateSet3 = await this.postsService.aggregate(
                         [
                             { $match: { isDraft: false, deleted: false, hidden: false, postsHashTags: { $in: hashTagStack3 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
@@ -1676,7 +1708,9 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                             }
                         ]
                     );
-                    postAggregateAll.push(postAggregateSet3);
+                    if(postAggregateSet3.length>0){
+                        postAggregateAll.push(postAggregateSet3);
+                    }
                     const stackPage = [];
                     for (let i = 0; i < postAggregateAll[0].length; i++) {
                         for (let j = 0; j < postAggregateAll.length; j++) {
@@ -2002,7 +2036,9 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                             },
                         ]
                     );
-                    pageStacks.push(postAggregateSet1);
+                    if(postAggregateSet1.length>0){
+                        pageStacks.push(postAggregateSet1);
+                    }
                     const postAggregateSet2 = await this.postsService.aggregate(
                         [
                             { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince2 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
@@ -2068,7 +2104,9 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                             },
                         ]
                     );
-                    pageStacks.push(postAggregateSet2);
+                    if(postAggregateSet2.length >0){
+                        pageStacks.push(postAggregateSet2);
+                    }
                     const postAggregateSet3 = await this.postsService.aggregate(
                         [
                             { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince3 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
@@ -2133,7 +2171,9 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                             },
                         ]
                     );
-                    pageStacks.push(postAggregateSet3);
+                    if(postAggregateSet3.length>0){
+                        pageStacks.push(postAggregateSet3);
+                    }
                     // set 1
                     const stackPage = [];
                     for (let i = 0; i < pageStacks[0].length; i++) {

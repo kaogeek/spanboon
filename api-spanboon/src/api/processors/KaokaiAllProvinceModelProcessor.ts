@@ -68,10 +68,21 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     checkPosition2 = this.data.checkPosition2;
                 }
                 const sortV = [];
+                const negative = [];
+                // const today = moment().add(month, 'month').toDate();
                 for (const sort of sorts) {
-                    if (sort !== undefined && sort !== null && sort !== checkPosition1 && sort !== checkPosition2) {
+                    if (sort !== undefined && sort !== null && sort > 0 && sort !== checkPosition1 && sort !== checkPosition2) {
                         sortV.push(sort);
-                    } else {
+                    } else if(sort !== undefined && sort !== null && sort < 0 && sort !== checkPosition1 && sort !== checkPosition2){
+                        negative.push(sort);
+                    }else {
+                        continue;
+                    }
+                }   
+                for(const nega of negative){
+                    if(nega !== undefined && nega !== null && nega !== checkPosition1 && nega !== checkPosition2){
+                        sortV.push(nega);
+                    }else{
                         continue;
                     }
                 }
@@ -283,7 +294,9 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                             },
                         ]
                     );
-                    pageStacks.push(postAggregateSet1);
+                    if(postAggregateSet1.length >0){
+                        pageStacks.push(postAggregateSet1);
+                    }
                     const postAggregateSet2 = await this.postsService.aggregate(
                         [
                             { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince2 } } },
@@ -348,7 +361,9 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                             },
                         ]
                     );
-                    pageStacks.push(postAggregateSet2);
+                    if(postAggregateSet2.length>0){
+                        pageStacks.push(postAggregateSet2);
+                    }
                     const postAggregateSet3 = await this.postsService.aggregate(
                         [
                             { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince3 } } },
@@ -413,7 +428,9 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                             },
                         ]
                     );
-                    pageStacks.push(postAggregateSet3);
+                    if(postAggregateSet3.length >0){
+                        pageStacks.push(postAggregateSet3);
+                    }
                     // set 1
                     const stackPage = [];
                     for (let i = 0; i < pageStacks[0].length; i++) {
