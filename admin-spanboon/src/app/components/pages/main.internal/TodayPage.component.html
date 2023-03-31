@@ -5,22 +5,17 @@
     Author: Americaso <treerayuth.o@absolute.co.th>
 -->
 
-<!--  <input matInput type="text" class="input-data"
-    placeholder="ชื่อคนหรือเพจ" name="createdname"
-    [(ngModel)]="createdName" [matAutocomplete]="autoComplete"
-    (keyup)="keyUpAutoComp($event)">-->
-
 <div class="admin-config-page">
     <mat-drawer-container class="example-container" [hasBackdrop]="true">
         <mat-drawer #drawer [mode]="'over'" [position]="'end'" [disableClose]="true">
             <div class="form-admin">
                 <div class="wrapper">
                     <div class="form-header">
-                        <ng-container *ngIf="selectedValueTitle === ''; else elseTitle">
-                            <h5 class="title">สร้าง{{title | titlecase}}</h5>
+                        <ng-container *ngIf="edit; else elseTitle">
+                            <h5 class="title">แก้ไข{{title | titlecase}}</h5>
                         </ng-container>
                         <ng-template #elseTitle>
-                            <h5 class="title">แก้ไข{{title | titlecase}}</h5>
+                            <h5 class="title">สร้าง{{title | titlecase}}</h5>
                         </ng-template>
                     </div>
                     <div class="form-body">
@@ -40,15 +35,8 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <!-- <label>Title *</label>
-                                        <input type="text" class="form-control" [(ngModel)]="dataForm.title"
-                                            [ngModelOptions]="{standalone: true}">
-                                        <div class="alert alert-danger" style="margin-top: 5pt;"
-                                            *ngIf="submitted && dataForm.title === ''">
-                                            กรุณาใส่ ชื่อ
-                                        </div> -->
                                         <mat-form-field>
-                                            <mat-label>Title</mat-label>
+                                            <mat-label>หัวเรื่อง</mat-label>
                                             <input matInput type="text" name="title" id="title" placeholder="Title *"
                                                 [(ngModel)]="selectedValueTitle" required>
                                         </mat-form-field>
@@ -59,7 +47,7 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <mat-form-field>
-                                            <mat-label>Type</mat-label>
+                                            <mat-label>ประเภทข้อมูล</mat-label>
                                             <mat-select [(ngModel)]="selectedValueType" name="type"
                                                 (selectionChange)="seleceType($event)">
                                                 <mat-option *ngFor="let type of typeBucket" [value]="type.value">
@@ -69,7 +57,7 @@
                                         </mat-form-field>
                                         <div>
                                             <mat-form-field>
-                                                <mat-label>Field</mat-label>
+                                                <mat-label>ฟิลด์</mat-label>
                                                 <mat-select [(ngModel)]="selectedValueField" name="field">
                                                     <mat-option *ngFor="let type of fieldBucket" [value]="type.value">
                                                         {{type.value}}
@@ -79,7 +67,7 @@
                                         </div>
                                         <div>
                                             <mat-form-field>
-                                                <mat-label>Position</mat-label>
+                                                <mat-label>ตำแหน่ง</mat-label>
                                                 <input matInput type="number" name="selectedPosition"
                                                     id="selectedPosition" placeholder="position *"
                                                     [(ngModel)]="selectedPosition" required>
@@ -87,8 +75,8 @@
                                         </div>
                                         <div>
                                             <mat-form-field>
-                                                <mat-label>Limit</mat-label>
-                                                <input matInput type="number" name="limit" id="limit"
+                                                <mat-label>จำนวน</mat-label>
+                                                <input matInput type="number" name="limit" id="limit" class="inputArrow"
                                                     placeholder="limit *" [(ngModel)]="limit" required>
                                             </mat-form-field>
                                         </div>
@@ -96,7 +84,7 @@
                                             *ngIf="(selectedValueField !== 'score' ) && (selectedValueField !== 'count' )">
                                             <div class="container-bucket">
                                                 <form [formGroup]="todayForm">
-                                                    <span>bucket</span>
+                                                    <span>กลุ่มแสดงข้อมูล</span>
                                                     <svg width="200px" height="200px" viewBox="0 0 24 24" fill="none"
                                                         (click)="buckets().value.length < 3 ? clickAdd() : null"
                                                         style="width: 18px;height: 18px;margin-left: 5px;"
@@ -117,8 +105,9 @@
                                                         <div *ngIf="stackBuckets[0].position === 0">
                                                             <div class="wrapper-bucket">
                                                                 <div class="field-data">
-                                                                    Name:
-                                                                    <input type="text" [formControl]='searchTitle_first'
+                                                                    ชื่อกลุ่ม :
+                                                                    <input class="text" type="text"
+                                                                        [formControl]='searchTitle_first'
                                                                         [(ngModel)]="nameOneTitle">
                                                                     <button mat-raised-button
                                                                         (click)="removeEmployee(stackBuckets[0],stackBuckets[0].position)  ">
@@ -126,7 +115,7 @@
                                                                             alt="">
                                                                     </button>
                                                                     <div class="field-value">
-                                                                        <span>เพิ่ม values {{stackBucket}}</span>
+                                                                        <span>เพิ่มข้อมูล {{stackBucket}}</span>
                                                                         <svg width="200px" height="200px"
                                                                             viewBox="0 0 24 24" fill="none"
                                                                             (click)="clickAddMiniBucket_first()"
@@ -153,38 +142,64 @@
                                                                             *ngIf="testBuckets_first.length >0">
                                                                             <div class='value_bucket'
                                                                                 *ngFor="let value_first of value_stack_first ; let i=index">
-                                                                                <span>{{value_first.value}}</span>
-                                                                                <button mat-raised-button
-                                                                                    (click)="removeValue(position_first,i)">
-                                                                                    <img src="../../../assets/img/delete.png"
-                                                                                        alt="">
-                                                                                </button>
+                                                                                <div class="value-box">
+                                                                                    <span>{{value_first.value}}</span>
+                                                                                    <button mat-raised-button
+                                                                                        (click)="removeValue(position_first,i)">
+                                                                                        <img src="../../../assets/img/delete.png"
+                                                                                            alt="">
+                                                                                    </button>
+                                                                                </div>
                                                                             </div>
                                                                         </ng-container>
-                                                                        <input type="text"
-                                                                            [formControl]="searchUser_first"
-                                                                            [matAutocomplete]="autoComplete"
-                                                                            [(ngModel)]="value_first">
-                                                                        <mat-autocomplete
-                                                                            #autoComplete="matAutocomplete">
-                                                                            <mat-option class="mat-option-progress"
-                                                                                *ngIf="isLoading">
-                                                                                <mat-progress-bar
-                                                                                    mode="indeterminate"></mat-progress-bar>
-                                                                            </mat-option>
-                                                                            <ng-container *ngIf="!isLoading">
-                                                                                <mat-option class="img-users"
-                                                                                    *ngFor="let user of autoComp"
-                                                                                    (click)="selectAutoComp(user,position_first)"
-                                                                                    [value]="user.label">
-                                                                                    <div class="list-autocomp">
-                                                                                        <div class="show-name">
-                                                                                            {{user.label}}
-                                                                                        </div>
-                                                                                    </div>
+                                                                        <ng-container
+                                                                            *ngIf="selectedValueField === 'province'; else elseTemplate">
+                                                                            <mat-form-field appearance="none">
+                                                                                <mat-select
+                                                                                    [(ngModel)]="selectedValueProvince1"
+                                                                                    name="province"
+                                                                                    [ngModelOptions]="{standalone: true}"
+                                                                                    placeholder='จังหวัด' required>
+                                                                                    <mat-option
+                                                                                        *ngFor="let province of provinces"
+                                                                                        [value]="province.value"
+                                                                                        (click)="selectAutoComp(province,position_first)">
+                                                                                        {{province.viewValue}}
+                                                                                    </mat-option>
+                                                                                </mat-select>
+                                                                            </mat-form-field>
+                                                                        </ng-container>
+                                                                        <ng-template #elseTemplate>
+                                                                            <input type="text" class="input-auto"
+                                                                                [formControl]="searchUser_first"
+                                                                                [matAutocomplete]="autoComplete"
+                                                                                [(ngModel)]="value_first"
+                                                                                placeholder="">
+                                                                            <mat-autocomplete
+                                                                                #autoComplete="matAutocomplete">
+                                                                                <mat-option class="mat-option-progress"
+                                                                                    *ngIf="isLoading">
+                                                                                    <mat-progress-bar
+                                                                                        mode="indeterminate"></mat-progress-bar>
                                                                                 </mat-option>
-                                                                            </ng-container>
-                                                                        </mat-autocomplete>
+                                                                                <ng-container *ngIf="!isLoading">
+                                                                                    <mat-option class="img-users"
+                                                                                        *ngFor="let user of autoComp"
+                                                                                        (click)="selectAutoComp(user,position_first)"
+                                                                                        [value]="user.label ?
+                                                                                        user.label :
+                                                                                        user.detail">
+                                                                                        <div class="list-autocomp">
+                                                                                            <div class="show-name">
+                                                                                                {{user.label ?
+                                                                                                user.label :
+                                                                                                user.detail}}
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </mat-option>
+                                                                                </ng-container>
+                                                                            </mat-autocomplete>
+                                                                        </ng-template>
                                                                     </ng-container>
                                                                 </div>
                                                             </div>
@@ -194,8 +209,8 @@
                                                         <div *ngIf="stackBuckets[1].position === 1">
                                                             <div class="wrapper-bucket">
                                                                 <div class="field-data">
-                                                                    Name:
-                                                                    <input type="text"
+                                                                    ชื่อกลุ่ม :
+                                                                    <input class="text" type="text"
                                                                         [formControl]='searchTitle_second'
                                                                         [(ngModel)]="nameTwoTitle" />
                                                                     <button mat-raised-button
@@ -204,7 +219,7 @@
                                                                             alt="">
                                                                     </button>
                                                                     <div class="field-value">
-                                                                        <span>เพิ่ม values {{stackBucket}}</span>
+                                                                        <span>เพิ่มข้อมูล {{stackBucket}}</span>
                                                                         <svg width="200px" height="200px"
                                                                             viewBox="0 0 24 24" fill="none"
                                                                             (click)="clickAddMiniBucket_second()"
@@ -231,38 +246,63 @@
                                                                             *ngIf="testBuckets_second.length >0">
                                                                             <div class='value_bucket'
                                                                                 *ngFor="let value_second of value_stack_second ; let i=index">
-                                                                                <span>{{value_second.value}}</span>
-                                                                                <button mat-raised-button
-                                                                                    (click)="removeValue(position_second,i)">
-                                                                                    <img src="../../../assets/img/delete.png"
-                                                                                        alt="">
-                                                                                </button>
+                                                                                <div class="value-box">
+                                                                                    <span>{{value_second.value}}</span>
+                                                                                    <button mat-raised-button
+                                                                                        (click)="removeValue(position_second,i)">
+                                                                                        <img src="../../../assets/img/delete.png"
+                                                                                            alt="">
+                                                                                    </button>
+                                                                                </div>
                                                                             </div>
                                                                         </ng-container>
-                                                                        <input type="text"
-                                                                            [formControl]="searchUser_second"
-                                                                            [matAutocomplete]="autoComplete"
-                                                                            [(ngModel)]="value_second">
-                                                                        <mat-autocomplete
-                                                                            #autoComplete="matAutocomplete">
-                                                                            <mat-option class="mat-option-progress"
-                                                                                *ngIf="isLoading">
-                                                                                <mat-progress-bar
-                                                                                    mode="indeterminate"></mat-progress-bar>
-                                                                            </mat-option>
-                                                                            <ng-container *ngIf="!isLoading">
-                                                                                <mat-option class="img-users"
-                                                                                    *ngFor="let user of autoComp"
-                                                                                    (click)="selectAutoComp(user,position_second)"
-                                                                                    [value]="user.label">
-                                                                                    <div class="list-autocomp">
-                                                                                        <div class="show-name">
-                                                                                            {{user.label}}
-                                                                                        </div>
-                                                                                    </div>
+                                                                        <ng-container
+                                                                            *ngIf="selectedValueField === 'province'; else elseTemplate">
+                                                                            <mat-form-field appearance="none">
+                                                                                <mat-select
+                                                                                    [(ngModel)]="selectedValueProvince2"
+                                                                                    name="province"
+                                                                                    [ngModelOptions]="{standalone: true}"
+                                                                                    placeholder='จังหวัด' required>
+                                                                                    <mat-option
+                                                                                        *ngFor="let province of provinces"
+                                                                                        [value]="province.value"
+                                                                                        (click)="selectAutoComp(province,position_second)">
+                                                                                        {{province.viewValue}}
+                                                                                    </mat-option>
+                                                                                </mat-select>
+                                                                            </mat-form-field>
+                                                                        </ng-container>
+                                                                        <ng-template #elseTemplate>
+                                                                            <input type="text" class="input-auto"
+                                                                                [formControl]="searchUser_second"
+                                                                                [matAutocomplete]="autoComplete"
+                                                                                [(ngModel)]="value_second">
+                                                                            <mat-autocomplete
+                                                                                #autoComplete="matAutocomplete">
+                                                                                <mat-option class="mat-option-progress"
+                                                                                    *ngIf="isLoading">
+                                                                                    <mat-progress-bar
+                                                                                        mode="indeterminate"></mat-progress-bar>
                                                                                 </mat-option>
-                                                                            </ng-container>
-                                                                        </mat-autocomplete>
+                                                                                <ng-container *ngIf="!isLoading">
+                                                                                    <mat-option class="img-users"
+                                                                                        *ngFor="let user of autoComp"
+                                                                                        (click)="selectAutoComp(user,position_second)"
+                                                                                        [value]="user.label ?
+                                                                                        user.label :
+                                                                                        user.detail">
+                                                                                        <div class="list-autocomp">
+                                                                                            <div class="show-name">
+                                                                                                {{user.label ?
+                                                                                                user.label :
+                                                                                                user.detail}}
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </mat-option>
+                                                                                </ng-container>
+                                                                            </mat-autocomplete>
+                                                                        </ng-template>
                                                                     </ng-container>
                                                                 </div>
                                                             </div>
@@ -272,8 +312,9 @@
                                                         <div *ngIf="stackBuckets[2].position === 2">
                                                             <div class="wrapper-bucket">
                                                                 <div class="field-data">
-                                                                    Name:
-                                                                    <input type="text" [formControl]='searchTitle_third'
+                                                                    ชื่อกลุ่ม :
+                                                                    <input class="text" type="text"
+                                                                        [formControl]='searchTitle_third'
                                                                         [(ngModel)]="nameThreeTitle" />
                                                                     <button mat-raised-button
                                                                         (click)="removeEmployee(stackBuckets[2],stackBuckets[2].position) ">
@@ -281,7 +322,7 @@
                                                                             alt="">
                                                                     </button>
                                                                     <div class="field-value">
-                                                                        <span>เพิ่ม values {{stackBucket}}</span>
+                                                                        <span>เพิ่มข้อมูล {{stackBucket}}</span>
                                                                         <svg width="200px" height="200px"
                                                                             viewBox="0 0 24 24" fill="none"
                                                                             (click)="clickAddMiniBucket_third()"
@@ -308,38 +349,63 @@
                                                                             *ngIf="value_stack_third.length >0">
                                                                             <div class='value_bucket'
                                                                                 *ngFor="let value_third of value_stack_third; let i=index">
-                                                                                <span>{{value_third.value}}</span>
-                                                                                <button mat-raised-button
-                                                                                    (click)="removeValue(position_third,i)">
-                                                                                    <img src="../../../assets/img/delete.png"
-                                                                                        alt="">
-                                                                                </button>
+                                                                                <div class="value-box">
+                                                                                    <span>{{value_third.value}}</span>
+                                                                                    <button mat-raised-button
+                                                                                        (click)="removeValue(position_third,i)">
+                                                                                        <img src="../../../assets/img/delete.png"
+                                                                                            alt="">
+                                                                                    </button>
+                                                                                </div>
                                                                             </div>
                                                                         </ng-container>
-                                                                        <input type='text'
-                                                                            [formControl]="searchUser_third"
-                                                                            [matAutocomplete]="autoComplete"
-                                                                            [(ngModel)]="value_third" />
-                                                                        <mat-autocomplete
-                                                                            #autoComplete="matAutocomplete">
-                                                                            <mat-option class="mat-option-progress"
-                                                                                *ngIf="isLoading">
-                                                                                <mat-progress-bar
-                                                                                    mode="indeterminate"></mat-progress-bar>
-                                                                            </mat-option>
-                                                                            <ng-container *ngIf="!isLoading">
-                                                                                <mat-option class="img-users"
-                                                                                    *ngFor="let user of autoComp"
-                                                                                    (click)="selectAutoComp(user,position_third)"
-                                                                                    [value]="user.label">
-                                                                                    <div class="list-autocomp">
-                                                                                        <div class="show-name">
-                                                                                            {{user.label}}
-                                                                                        </div>
-                                                                                    </div>
+                                                                        <ng-container
+                                                                            *ngIf="selectedValueField === 'province'; else elseTemplate">
+                                                                            <mat-form-field appearance="none">
+                                                                                <mat-select
+                                                                                    [(ngModel)]="selectedValueProvince3"
+                                                                                    name="province"
+                                                                                    [ngModelOptions]="{standalone: true}"
+                                                                                    placeholder='จังหวัด' required>
+                                                                                    <mat-option
+                                                                                        *ngFor="let province of provinces"
+                                                                                        [value]="province.value"
+                                                                                        (click)="selectAutoComp(province,position_third)">
+                                                                                        {{province.viewValue}}
+                                                                                    </mat-option>
+                                                                                </mat-select>
+                                                                            </mat-form-field>
+                                                                        </ng-container>
+                                                                        <ng-template #elseTemplate>
+                                                                            <input type='text' class="input-auto"
+                                                                                [formControl]="searchUser_third"
+                                                                                [matAutocomplete]="autoComplete"
+                                                                                [(ngModel)]="value_third" />
+                                                                            <mat-autocomplete
+                                                                                #autoComplete="matAutocomplete">
+                                                                                <mat-option class="mat-option-progress"
+                                                                                    *ngIf="isLoading">
+                                                                                    <mat-progress-bar
+                                                                                        mode="indeterminate"></mat-progress-bar>
                                                                                 </mat-option>
-                                                                            </ng-container>
-                                                                        </mat-autocomplete>
+                                                                                <ng-container *ngIf="!isLoading">
+                                                                                    <mat-option class="img-users"
+                                                                                        *ngFor="let user of autoComp"
+                                                                                        (click)="selectAutoComp(user,position_third)"
+                                                                                        [value]="user.label ?
+                                                                                        user.label :
+                                                                                        user.detail">
+                                                                                        <div class="list-autocomp">
+                                                                                            <div class="show-name">
+                                                                                                {{user.label ?
+                                                                                                user.label :
+                                                                                                user.detail}}
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </mat-option>
+                                                                                </ng-container>
+                                                                            </mat-autocomplete>
+                                                                        </ng-template>
                                                                     </ng-container>
                                                                 </div>
                                                             </div>

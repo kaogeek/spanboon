@@ -6,10 +6,7 @@
  */
 
 import { Component, OnInit } from '@angular/core';
-import { SearchFilter } from '../../../models/SearchFilter';
 import { Page } from '../../../models/Page';
-import { BanRequest } from '../../../models/BanRequest';
-import { PageApproveRequest } from '../../../models/PageApproveRequest';
 import { PageFacade } from '../../../services/facade/PageFacade.service';
 import { AbstractPage } from '../AbstractPage.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -32,7 +29,7 @@ export class PageGroup extends AbstractPage implements OnInit {
     public static readonly PAGE_NAME: string = PAGE_NAME;
 
     public pageFacade: PageFacade;
-    public pageGroupFacade:PageGroupFacade;
+    public pageGroupFacade: PageGroupFacade;
     private authenManager: AuthenManager;
     private router: Router;
     public isSave: boolean = false;
@@ -46,7 +43,7 @@ export class PageGroup extends AbstractPage implements OnInit {
     public isOfficialPage: {};
     public orderBy: any = {};
 
-    constructor(pageFacade: PageFacade,pageGroupFacade:PageGroupFacade, router: Router, dialog: MatDialog, authenManager: AuthenManager) {
+    constructor(pageFacade: PageFacade, pageGroupFacade: PageGroupFacade, router: Router, dialog: MatDialog, authenManager: AuthenManager) {
         super(PAGE_NAME, dialog);
         this.pageFacade = pageFacade;
         this.pageGroupFacade = pageGroupFacade;
@@ -102,7 +99,7 @@ export class PageGroup extends AbstractPage implements OnInit {
         this.dataForm.name = "";
         this.dataForm.detail = "";
         this.valueBool = true;
-        this.valuetring = ""; 
+        this.valuetring = "";
         this.valueNum = 0;
         this.orinalDataForm = JSON.parse(JSON.stringify(this.dataForm));
     }
@@ -139,7 +136,6 @@ export class PageGroup extends AbstractPage implements OnInit {
 
     public search() {
         this.pageGroupFacade.find().then((res: any) => {
-            console.log('res',res);
         }).catch((err: any) => {
         })
     }
