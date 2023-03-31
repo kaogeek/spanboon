@@ -1699,9 +1699,8 @@ export class MainPageController {
     private async pushNotification(user: User, email: string, content: any, subject: string, date?: Date): Promise<any> {
         // chaluck.s@absolute.co.th
         // junsuda.s@absolute.co.th
-        console.log('pasd4324efgfdfdsmk');
-        const picPostMajorF = content.majorTrend.contents[0].coverPageUrl ? process.env.APP_TEST_API + content.majorTrend.contents[0].coverPageUrl + '/image' : 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png';
-        const picPostMajorS = content.majorTrend.contents[1].coverPageUrl ? process.env.APP_TEST_API + content.majorTrend.contents[1].coverPageUrl + '/image' : 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png';
+        const picPostMajorF = content.majorTrend.contents[0].coverPageUrl ? process.env.APP_API + content.majorTrend.contents[0].coverPageUrl + '/image' : '';
+        const picPostMajorS = content.majorTrend.contents[1].coverPageUrl ? process.env.APP_API + content.majorTrend.contents[1].coverPageUrl + '/image' : '';
 
         const postMajorTitleF = content.majorTrend.contents[0].post.title;
         const postMajorTitleS = content.majorTrend.contents[1].post.title;
@@ -1722,9 +1721,9 @@ export class MainPageController {
         let linkPostRoundRobinT = undefined;
 
         if (content.pageRoundRobin.title === 'ก้าวไกลวันนี้') {
-            picPostRoundRobinF = process.env.APP_TEST_API + content.pageRoundRobin.contents[0].coverPageUrl ? process.env.APP_TEST_API + content.pageRoundRobin.contents[0].coverPageUrl + '/image' : '';
-            picPostRoundRobinS = process.env.APP_TEST_API + content.pageRoundRobin.contents[1].coverPageUrl ? process.env.APP_TEST_API + content.pageRoundRobin.contents[1].coverPageUrl + '/image' : '';
-            picPostRoundRobinT = process.env.APP_TEST_API + content.pageRoundRobin.contents[2].coverPageUrl ? process.env.APP_TEST_API + content.pageRoundRobin.contents[2].coverPageUrl + '/image' : '';
+            picPostRoundRobinF = process.env.APP_API + content.pageRoundRobin.contents[0].coverPageUrl ? process.env.APP_API + content.pageRoundRobin.contents[0].coverPageUrl + '/image' : '';
+            picPostRoundRobinS = process.env.APP_API + content.pageRoundRobin.contents[1].coverPageUrl ? process.env.APP_API + content.pageRoundRobin.contents[1].coverPageUrl + '/image' : '';
+            picPostRoundRobinT = process.env.APP_API + content.pageRoundRobin.contents[2].coverPageUrl ? process.env.APP_API + content.pageRoundRobin.contents[2].coverPageUrl + '/image' : '';
             postRoundRobinF = content.pageRoundRobin.contents[0].post.title;
             nameRoundRobinF = content.pageRoundRobin.contents[0].owner.name;
             postRoundRobinS = content.pageRoundRobin.contents[1].post.title;
@@ -1747,7 +1746,7 @@ export class MainPageController {
             splitDetailPostSection = postSection.post.detail;
             postSection = content.postSectionModel.contents[0];
             linkPostSection = process.env.APP_POST + '/' + postSection.post._id;
-            picPostSection = content.postSectionModel.contents[0].coverPageUrl ? process.env.APP_TEST_API + content.postSectionModel.contents[0].coverPageUrl + '/image' : 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png';
+            picPostSection = content.postSectionModel.contents[0].coverPageUrl ? process.env.APP_API + content.postSectionModel.contents[0].coverPageUrl + '/image' : '';
             hashTag = content.hashTagSumma[0].name;
             if (splitPostSection.length >= 139) {
                 splitPostSection = postSection.post.title.slice(0, 139);

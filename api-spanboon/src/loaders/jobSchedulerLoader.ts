@@ -34,15 +34,6 @@ export const jobSchedulerLoader: MicroframeworkLoader = (settings: Microframewor
     });
     
     // Run Every 24 Hours
-    schedule.scheduleJob('0 */24 * * *', () =>{
-        axios.post(process.env.APP_SUMMATION).then((res) =>{
-            console.log(`Update summation : ${res.status}`);
-        }).catch((err) =>{
-            console.log('err:' +err);
-        });
-    });
-
-    // Run Every 24 Hours
     schedule.scheduleJob('*/1 * * * *', () =>{
         axios.get(process.env.APP_API_PROCESSV3).then((res) =>{
             console.log(`Update summation : ${res.status}`);
