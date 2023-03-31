@@ -67,7 +67,7 @@ export class TodayPage extends AbstractPage implements OnInit {
     public ordering: number;
     public isSave: boolean = false;
     public position: number;
-    public typeBucket: any = [{ value: 'page' }, { value: 'post' }, { value: 'hashTag' }];
+    public typeBucket: any = [{ value: 'page' }, { value: 'post' }, { value: 'hashtag' }];
     public titleBucket: any = [{ value: 'ก้าวไกลวันนี้' }, { value: 'ก้าวไกลทั่วไทย' }, { value: 'สภาก้าวไกล' }, { value: 'ก้าวไกลรอบด้าน' }];
     public fieldBucket: any = [{ value: 'id' }, { value: 'group' }, { value: 'province' }];
     public formType: FormGroup;
@@ -543,6 +543,7 @@ export class TodayPage extends AbstractPage implements OnInit {
         this.selectedValueField = "";
         this.selectedValueTitle = "";
         this.selectedValueType = "";
+        this.limit = undefined;
         this.selectedPosition = undefined;
         this.dataForm.ordering = undefined;
 
@@ -550,7 +551,6 @@ export class TodayPage extends AbstractPage implements OnInit {
 
     public clickCreateForm(): void {
         this.setFields();
-        // this.myInputVariable.nativeElement.value = "";
         this.drawer.toggle();
     }
 
@@ -563,7 +563,7 @@ export class TodayPage extends AbstractPage implements OnInit {
         if (data.type === 'page') {
             this.fieldBucket = [{ value: 'id' }, { value: 'group' }, { value: 'province' }];
         } else if (data.type === 'post') {
-            this.fieldBucket = [{ value: 'emergencyEvent' }, { value: 'objective' }, { value: 'score' }, { value: 'hashTag' }];
+            this.fieldBucket = [{ value: 'emergencyEvent' }, { value: 'objective' }, { value: 'score' }, { value: 'hashtag' }];
         } else {
             this.fieldBucket = [{ value: 'count' }];
         }
@@ -830,7 +830,7 @@ export class TodayPage extends AbstractPage implements OnInit {
                     value: 'score'
                 },
                 {
-                    value: 'hashTag'
+                    value: 'hashtag'
                 }
             ];
         } else {
