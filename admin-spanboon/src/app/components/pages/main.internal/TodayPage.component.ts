@@ -557,14 +557,21 @@ export class TodayPage extends AbstractPage implements OnInit {
         this.nameTwoTitle = "";
         this.nameThreeTitle = "";
         this.stackBuckets = [];
-        this.testBuckets_first.splice(0)
-        this.testBuckets_second.splice(0)
-        this.testBuckets_third.splice(0)
+        this.value_stack_first.splice(0);
+        this.value_stack_second.splice(0);
+        this.value_stack_third.splice(0);
+        this.testBuckets_first.splice(0);
+        this.testBuckets_second.splice(0);
+        this.testBuckets_third.splice(0);
     }
 
     public clickCreateForm(): void {
         this.setFields();
+        this.selectedValueTitle = "";
         this.stackBuckets = [];
+        this.value_stack_first.splice(0);
+        this.value_stack_second.splice(0);
+        this.value_stack_third.splice(0);
         this.testBuckets_first.splice(0)
         this.testBuckets_second.splice(0)
         this.testBuckets_third.splice(0)
@@ -690,7 +697,7 @@ export class TodayPage extends AbstractPage implements OnInit {
         if (this.edit === undefined) {
             if (this.value_stack_first.length > 0) {
                 for (const valueStack_f of this.value_stack_first) {
-                    if (this.selectedValueField === 'group') {
+                    if ((this.selectedValueField === 'group') || (this.selectedValueField === 'hashtag')) {
                         bucketF.push(valueStack_f.value);
                     } else {
                         bucketF.push(valueStack_f._id);
@@ -699,7 +706,7 @@ export class TodayPage extends AbstractPage implements OnInit {
             }
             if (this.value_stack_second.length > 0) {
                 for (const valueStack_s of this.value_stack_second) {
-                    if (this.selectedValueField === 'group') {
+                    if ((this.selectedValueField === 'group') || (this.selectedValueField === 'hashtag')) {
                         bucketS.push(valueStack_s.value);
                     } else {
                         bucketS.push(valueStack_s._id);
@@ -708,7 +715,7 @@ export class TodayPage extends AbstractPage implements OnInit {
             }
             if (this.value_stack_third.length > 0) {
                 for (const valueStack_t of this.value_stack_third) {
-                    if (this.selectedValueField === 'group') {
+                    if ((this.selectedValueField === 'group') || (this.selectedValueField === 'hashtag')) {
                         bucketT.push(valueStack_t.value);
                     } else {
                         bucketT.push(valueStack_t._id);
