@@ -62,7 +62,7 @@
                 <ng-container *ngFor="let field of fieldTable">
                     <ng-container matColumnDef="{{field.name}}">
                         <th mat-header-cell *matHeaderCellDef mat-sort-header> {{field.label}} </th>
-                        <td mat-cell *matCellDef="let element"
+                        <td mat-cell *matCellDef="let element" style="padding: 10px 6px;line-height: 1.5;"
                             [ngStyle]="{'width': field.width, 'min-width': field.width, 'max-width': field.width, 'text-align': field.align}"
                             [ngClass]="field.class">
                             <admin-col-table *ngIf="!field.select" [fieldTable]="field" [data]="element">

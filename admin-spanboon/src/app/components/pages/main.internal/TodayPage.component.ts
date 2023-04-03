@@ -112,7 +112,7 @@ export class TodayPage extends AbstractPage implements OnInit {
     public nameOneTitle: string;
     public nameTwoTitle: string;
     public nameThreeTitle: string;
-    public limit: number;
+    public limit: number = 10;
     public edit: string;
     public _id: string;
     public provinces: any = [
@@ -547,7 +547,7 @@ export class TodayPage extends AbstractPage implements OnInit {
         this.nameOneTitle = "";
         this.nameTwoTitle = "";
         this.nameThreeTitle = "";
-        this.limit = undefined;
+        this.limit = 10;
         this.selectedPosition = undefined;
         this.dataForm.ordering = undefined;
 
@@ -581,27 +581,27 @@ export class TodayPage extends AbstractPage implements OnInit {
 
     public clickEditForm(data: any): void {
         let dataComp;
+        this.setFields();
+        this.drawer.toggle();
+        let miniBuckets = undefined;
+        let clickEdit = 'edit';
+        this.edit = clickEdit;
+        if (data.type === 'page') {
+            this.fieldBucket = [{ value: 'id' }, { value: 'group' }, { value: 'province' }];
+        } else if (data.type === 'post') {
+            this.fieldBucket = [{ value: 'emergencyEvent' }, { value: 'objective' }, { value: 'score' }, { value: 'hashtag' }];
+        } else {
+            this.fieldBucket = [{ value: 'count' }];
+        }
+        this._id = data.id;
+        this.selectedValueTitle = data.title;
+        this.selectedValueType = data.type;
+        this.selectedValueField = data.field;
+        this.selectedPosition = data.position;
         this.todayPageFacade.searchComp(data).then((res) => {
             if (res) {
                 dataComp = res;
 
-                this.setFields();
-                this.drawer.toggle();
-                let miniBuckets = undefined;
-                let clickEdit = 'edit';
-                this.edit = clickEdit;
-                if (data.type === 'page') {
-                    this.fieldBucket = [{ value: 'id' }, { value: 'group' }, { value: 'province' }];
-                } else if (data.type === 'post') {
-                    this.fieldBucket = [{ value: 'emergencyEvent' }, { value: 'objective' }, { value: 'score' }, { value: 'hashtag' }];
-                } else {
-                    this.fieldBucket = [{ value: 'count' }];
-                }
-                this._id = data.id;
-                this.selectedValueTitle = data.title;
-                this.selectedValueType = data.type;
-                this.selectedValueField = data.field;
-                this.selectedPosition = data.position;
                 if (data.buckets.length > 0) {
                     for (let i = 0; i < data.buckets.length; i++) {
                         let stackBucket = { 'position': i };
@@ -647,6 +647,60 @@ export class TodayPage extends AbstractPage implements OnInit {
                             const bucketMiniT = this.testBuckets_third.push(miniBucket);
                             if (bucketMiniT !== undefined) {
                                 let stackThirdValues = { 'index': z, 'value': dataComp[2][z].title ? dataComp[2][z].title : dataComp[2][z].name, '_id': dataComp[2][z]._id };
+                                this.value_stack_third.push(stackThirdValues);
+                            }
+                        }
+                    }
+                }
+                this.limit = data.limit;
+            }
+        }).catch((err) => {
+            if (err) {
+                if (data.buckets.length > 0) {
+                    for (let i = 0; i < data.buckets.length; i++) {
+                        let stackBucket = { 'position': i };
+                        miniBuckets = this.stackBuckets.push(stackBucket);
+                    }
+                }
+                // testBuckets_first
+                if (miniBuckets !== undefined) {
+                    if (data.buckets[0] !== undefined) {
+                        this.nameOneTitle = data.buckets[0].name;
+
+                    } if (data.buckets[1] !== undefined) {
+                        this.nameTwoTitle = data.buckets[1].name;
+
+                    } if (data.buckets[2] !== undefined) {
+                        this.nameThreeTitle = data.buckets[2].name;
+                    }
+                }
+                if ((data.field !== 'count') && (data.field !== 'score')) {
+                    if (data.buckets[0] !== undefined) {
+                        for (let i = 0; i < data.buckets[0].values.length; i++) {
+                            let miniBucket = { 'textPosition': i };
+                            const bucketMiniF = this.testBuckets_first.push(miniBucket);
+                            if (bucketMiniF !== undefined) {
+                                let stackFirstValues = { 'index': i, 'value': data.buckets[0].values[i], '_id': data.buckets[0].values[i] };
+                                this.value_stack_first.push(stackFirstValues);
+                            }
+                        }
+                    }
+                    if (data.buckets[1] !== undefined) {
+                        for (let y = 0; y < data.buckets[1].values.length; y++) {
+                            let miniBucket = { 'textPosition': y };
+                            const bucketMiniS = this.testBuckets_second.push(miniBucket);
+                            if (bucketMiniS !== undefined) {
+                                let stackSecondValues = { 'index': y, 'value': data.buckets[1].values[y], '_id': data.buckets[1].values[y] };
+                                this.value_stack_second.push(stackSecondValues);
+                            }
+                        }
+                    }
+                    if (data.buckets[2] !== undefined) {
+                        for (let z = 0; z < data.buckets[2].values.length; z++) {
+                            let miniBucket = { 'textPosition': z };
+                            const bucketMiniT = this.testBuckets_third.push(miniBucket);
+                            if (bucketMiniT !== undefined) {
+                                let stackThirdValues = { 'index': z, 'value': data.buckets[2].values[z], '_id': data.buckets[2].values[z] };
                                 this.value_stack_third.push(stackThirdValues);
                             }
                         }
