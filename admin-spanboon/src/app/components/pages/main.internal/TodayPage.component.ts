@@ -287,6 +287,7 @@ export class TodayPage extends AbstractPage implements OnInit {
                 if (!!this.value_stack_third) {
                     this.value_stack_third.splice(0)
                 }
+                this.edit = undefined;
                 this.drawer.toggle();
             }
         });
@@ -757,6 +758,7 @@ export class TodayPage extends AbstractPage implements OnInit {
                 if (!!this.value_stack_third) {
                     this.value_stack_third.splice(0)
                 }
+                this.edit = undefined;
                 this.drawer.toggle();
             })
         } else {
@@ -823,6 +825,7 @@ export class TodayPage extends AbstractPage implements OnInit {
                 if (!!this.value_stack_third) {
                     this.value_stack_third.splice(0)
                 }
+                this.edit = undefined;
                 this.drawer.toggle();
                 this.setFields();
             })
