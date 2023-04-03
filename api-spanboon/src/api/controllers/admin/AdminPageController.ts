@@ -96,7 +96,7 @@ export class AdminPageController {
         }
     }
 
-    @Post('/test/search')
+    @Post('/edit/search')
     public async searchGet(@Body({ validate: true }) data: SearchRequest,@Res() res: any, @Req() req: any):Promise<any>{
         if(data.type === 'page' && data.field === 'id'){
             const bucketAll = [];
@@ -134,10 +134,81 @@ export class AdminPageController {
             }
             const successResponseGroup = ResponseUtil.getSuccessResponse('Search Page Group Success.', bucketAll);
             return res.status(200).send(successResponseGroup);
+
+        }if(data.type === 'post' && data.field === 'objective'){
+            const bucketAll = [];
+            const bucketF = [];
+            const bucketS = [];
+            const bucketT = [];
+            // roundRobin.buckets[0] !== undefined 
+            if(data.buckets[0] !== undefined){
+                for(const stack of data.buckets[0].values){
+                    bucketF.push(new ObjectID(stack));
+                }
+            }
+            if(data.buckets[1] !== undefined){
+                for(const stack of data.buckets[1].values){
+                    bucketS.push(new ObjectID(stack));
+                }
+            }
+            if(data.buckets[2] !== undefined){
+                for(const stack of data.buckets[2].values){
+                    bucketT.push(new ObjectID(stack));
+                }
+            }
+            if(bucketF.length >0){
+                const pageF = await this.pageObjectiveService.aggregate([{$match:{_id:{$in:bucketF}}}]);
+                bucketAll.push(pageF);
+            }
+            if(bucketS.length >0){
+                const pageS = await this.pageObjectiveService.aggregate([{$match:{_id:{$in:bucketS}}}]);
+                bucketAll.push(pageS);
+            }
+            if(bucketT.length >0){
+                const pageT = await this.pageObjectiveService.aggregate([{$match:{_id:{$in:bucketT}}}]);
+                bucketAll.push(pageT);
+
+            }
+            const successResponseGroup = ResponseUtil.getSuccessResponse('Search Page Group Success.', bucketAll);
+            return res.status(200).send(successResponseGroup);
+        }if(data.type === 'post' && data.field === 'emergencyEvent'){
+            const bucketAll = [];
+            const bucketF = [];
+            const bucketS = [];
+            const bucketT = [];
+            // roundRobin.buckets[0] !== undefined 
+            if(data.buckets[0] !== undefined){
+                for(const stack of data.buckets[0].values){
+                    bucketF.push(new ObjectID(stack));
+                }
+            }
+            if(data.buckets[1] !== undefined){
+                for(const stack of data.buckets[1].values){
+                    bucketS.push(new ObjectID(stack));
+                }
+            }
+            if(data.buckets[2] !== undefined){
+                for(const stack of data.buckets[2].values){
+                    bucketT.push(new ObjectID(stack));
+                }
+            }
+            if(bucketF.length >0){
+                const pageF = await this.emergencyEventService.aggregate([{$match:{_id:{$in:bucketF}}}]);
+                bucketAll.push(pageF);
+            }
+            if(bucketS.length >0){
+                const pageS = await this.emergencyEventService.aggregate([{$match:{_id:{$in:bucketS}}}]);
+                bucketAll.push(pageS);
+            }
+            if(bucketT.length >0){
+                const pageT = await this.emergencyEventService.aggregate([{$match:{_id:{$in:bucketT}}}]);
+                bucketAll.push(pageT);
+
+            }
+            const successResponseGroup = ResponseUtil.getSuccessResponse('Search Page Group Success.', bucketAll);
+            return res.status(200).send(successResponseGroup);
         }
-
     }
-
     @Post('/request/search')
     public async searchAll(@Body({ validate: true }) data: SearchRequest, @Res() res: any, @Req() req: any): Promise<any> {
         const search: any = {};
