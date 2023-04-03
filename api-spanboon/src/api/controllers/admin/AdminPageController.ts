@@ -96,6 +96,16 @@ export class AdminPageController {
         }
     }
 
+    @Get('/reeust/search')
+    public async searchGet(@Body({ validate: true }) data: SearchRequest,@Res() res: any, @Req() req: any):Promise<any>{
+        if(data.type === 'page' && data.field === 'id'){
+            const pageSearch = await this.pageService.aggregate([{$match:{
+                _id:{ $in: undefined }
+            }}])
+            return res.status(200).send('Search is sucessfully.',pageSearch);
+        }
+    }
+
     @Post('/request/search')
     public async searchAll(@Body({ validate: true }) data: SearchRequest, @Res() res: any, @Req() req: any): Promise<any> {
         const search: any = {};
@@ -103,7 +113,6 @@ export class AdminPageController {
         const exp = { $regex: '.*' + keywords + '.*', $options: 'si' };
         const limit = 10;
         const searchResults = [];
-        const postObject = [];
         const bucketF = [];
         if (data.type === '' && data.field === '') {
             const errorResponse = ResponseUtil.getErrorResponse('Please Select Type and Field..', undefined);

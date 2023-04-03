@@ -1720,7 +1720,7 @@ export class MainPageController {
         let linkPostRoundRobinS = undefined;
         let linkPostRoundRobinT = undefined;
 
-        if (content.pageRoundRobin.title === 'ก้าวไกลวันนี้') {
+        if (content.pageRoundRobin.contents.length>0) {
             picPostRoundRobinF = process.env.APP_API + content.pageRoundRobin.contents[0].coverPageUrl ? process.env.APP_API + content.pageRoundRobin.contents[0].coverPageUrl + '/image' : '';
             picPostRoundRobinS = process.env.APP_API + content.pageRoundRobin.contents[1].coverPageUrl ? process.env.APP_API + content.pageRoundRobin.contents[1].coverPageUrl + '/image' : '';
             picPostRoundRobinT = process.env.APP_API + content.pageRoundRobin.contents[2].coverPageUrl ? process.env.APP_API + content.pageRoundRobin.contents[2].coverPageUrl + '/image' : '';
