@@ -96,13 +96,29 @@ export class AdminPageController {
         }
     }
 
-    @Get('/request/search')
+    @Post('/test/search')
     public async searchGet(@Body({ validate: true }) data: SearchRequest,@Res() res: any, @Req() req: any):Promise<any>{
         if(data.type === 'page' && data.field === 'id'){
-            const pageSearch = await this.pageService.aggregate([{$match:{
-                _id:{ $in: undefined }
-            }}])
-            return res.status(200).send('Search is sucessfully.',pageSearch);
+            const buckets = [];
+            // roundRobin.buckets[0] !== undefined 
+            if(data.buckets[0] !== undefined){
+                for(const stack of data.buckets[0].values){
+                    buckets.push(new ObjectID(stack));
+                }
+            }
+            if(data.buckets[1] !== undefined){
+                for(const stack of data.buckets[1].values){
+                    buckets.push(new ObjectID(stack));
+                }
+            }
+            if(data.buckets[2] !== undefined){
+                for(const stack of data.buckets[2].values){
+                    buckets.push(new ObjectID(stack));
+                }
+            }
+            const page = await this.pageService.aggregate([{$match:{_id:{$in:buckets}}}]);
+            const successResponseGroup = ResponseUtil.getSuccessResponse('Search Page Group Success.', page);
+            return res.status(200).send(successResponseGroup);
         }
     }
 

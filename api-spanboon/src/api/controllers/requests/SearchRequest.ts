@@ -15,4 +15,5 @@ export class SearchRequest {
     public filter: SearchFilter;
     public type:string;
     public field:string;
+    public buckets:any;
 }
