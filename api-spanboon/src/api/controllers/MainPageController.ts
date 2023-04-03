@@ -185,7 +185,11 @@ export class MainPageController {
             searchOfficialOnly
         });
         const kaokaiProvince = await kaokaiProvinceProcessor.process();
-        const checkPosition3 = kaokaiProvince.position;
+        let checkPosition3 = undefined;
+        // kaokaiProvince.position;
+        if(kaokaiProvince.position !== undefined){
+            checkPosition3 = kaokaiProvince.position;
+        }
         const kaokaiHashTagProcessor: KaoKaiHashTagModelProcessor = new KaoKaiHashTagModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService, this.pageService);
         kaokaiHashTagProcessor.setData({
             userId,
@@ -201,7 +205,11 @@ export class MainPageController {
         });
 
         const kaokaiHashTag = await kaokaiHashTagProcessor.process();
-        const checkPosition4 = kaokaiHashTag.position;
+        let checkPosition4 = undefined;
+        // kaokaiHashTag.position;
+        if(kaokaiHashTag.position !== undefined){
+            checkPosition4 = kaokaiHashTag.position;
+        }
 
         const kaokaiContentProcessor: KaokaiContentModelProcessor = new KaokaiContentModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService, this.pageService);
         kaokaiContentProcessor.setData({

@@ -59,7 +59,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                 const roundRobin = await this.kaokaiTodayService.findOne({ position: sortV[0] });
                 if (roundRobin.position === null) {
                     const result: SectionModel = new SectionModel();
-                    result.title = (this.config === undefined || this.config.title === undefined) ? roundRobin.title : roundRobin.title;
+                    result.title = (this.config === undefined || this.config.title === undefined) ? roundRobin.title : 'ก้าวไกลวันนี้';
                     result.subtitle = '';
                     result.description = '';
                     result.iconUrl = '';

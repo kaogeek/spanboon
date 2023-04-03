@@ -89,7 +89,16 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                 }
                 const hashTagProcessor = await this.kaokaiTodayService.findOne({ position: sortV[0] });
                 if (hashTagProcessor.position === null) {
-                    resolve(undefined);
+                    const result: SectionModel = new SectionModel();
+                    result.title = (this.config === undefined || this.config.title === undefined) ? hashTagProcessor.title : hashTagProcessor.title;
+                    result.subtitle = '';
+                    result.description = '';
+                    result.iconUrl = '';
+                    result.contents = [];
+                    result.type = this.getType(); // set type by processor type
+                    result.position = null;
+                    // result.contents.push(contents);
+                    resolve(result);
                 }
                 limit = (limit === undefined || limit === null) ? hashTagProcessor.limit : this.DEFAULT_SEARCH_LIMIT;
                 offset = (offset === undefined || offset === null) ? this.DEFAULT_SEARCH_OFFSET : offset;

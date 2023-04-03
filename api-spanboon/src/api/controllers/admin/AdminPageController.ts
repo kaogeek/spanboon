@@ -19,6 +19,7 @@ import { LOG_TYPE, PAGE_LOG_ACTION } from '../../../constants/LogsAction';
 import { DeletePageService } from '../../services/DeletePageService';
 import { PostsService } from '../../services/PostsService';
 import { KaokaiToday } from '../../models/KaokaiToday';
+import { SearchFilter } from '../requests/SearchFilterRequest';
 import { KaokaiTodayService } from '../../services/KaokaiTodayService';
 import { CreateKaokaiTodayRequest } from '../requests/CreateKaokaiTodayRequest';
 import { PageObjectiveService } from '../../services/PageObjectiveService';
@@ -402,8 +403,9 @@ export class AdminPageController {
         }
     }
 
-    @Get('/receive/bucket')
-    public async receiveBucket(@Res() res: any, @Req() req: any): Promise<any> {
+    @Post('/receive/bucket')
+    public async receiveBucket(@Body({ validate: true }) filter: SearchFilter,@Res() res: any, @Req() req: any): Promise<any> {
+        
         const bucketAll = await this.kaokaiTodayService.find({});
         if (bucketAll.length > 0) {
             const successResponse = ResponseUtil.getSuccessResponse('Here this is your bucket boi.', bucketAll);
