@@ -96,7 +96,7 @@ export class AdminPageController {
         }
     }
 
-    @Get('/reeust/search')
+    @Get('/request/search')
     public async searchGet(@Body({ validate: true }) data: SearchRequest,@Res() res: any, @Req() req: any):Promise<any>{
         if(data.type === 'page' && data.field === 'id'){
             const pageSearch = await this.pageService.aggregate([{$match:{
