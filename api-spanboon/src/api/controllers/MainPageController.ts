@@ -187,7 +187,7 @@ export class MainPageController {
         const kaokaiProvince = await kaokaiProvinceProcessor.process();
         let checkPosition3 = undefined;
         // kaokaiProvince.position;
-        if(kaokaiProvince.position !== undefined){
+        if (kaokaiProvince.position !== undefined) {
             checkPosition3 = kaokaiProvince.position;
         }
         const kaokaiHashTagProcessor: KaoKaiHashTagModelProcessor = new KaoKaiHashTagModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService, this.pageService);
@@ -207,7 +207,7 @@ export class MainPageController {
         const kaokaiHashTag = await kaokaiHashTagProcessor.process();
         let checkPosition4 = undefined;
         // kaokaiHashTag.position;
-        if(kaokaiHashTag.position !== undefined){
+        if (kaokaiHashTag.position !== undefined) {
             checkPosition4 = kaokaiHashTag.position;
         }
 
@@ -1728,7 +1728,7 @@ export class MainPageController {
         let linkPostRoundRobinS = undefined;
         let linkPostRoundRobinT = undefined;
 
-        if (content.pageRoundRobin.contents.length>0) {
+        if (content.pageRoundRobin.contents.length > 0) {
             picPostRoundRobinF = process.env.APP_API + content.pageRoundRobin.contents[0].coverPageUrl ? process.env.APP_API + content.pageRoundRobin.contents[0].coverPageUrl + '/image' : '';
             picPostRoundRobinS = process.env.APP_API + content.pageRoundRobin.contents[1].coverPageUrl ? process.env.APP_API + content.pageRoundRobin.contents[1].coverPageUrl + '/image' : '';
             picPostRoundRobinT = process.env.APP_API + content.pageRoundRobin.contents[2].coverPageUrl ? process.env.APP_API + content.pageRoundRobin.contents[2].coverPageUrl + '/image' : '';

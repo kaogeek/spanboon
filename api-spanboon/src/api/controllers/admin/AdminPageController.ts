@@ -98,111 +98,111 @@ export class AdminPageController {
     }
 
     @Post('/edit/search')
-    public async searchGet(@Body({ validate: true }) data: SearchRequest,@Res() res: any, @Req() req: any):Promise<any>{
-        if(data.type === 'page' && data.field === 'id'){
+    public async searchGet(@Body({ validate: true }) data: SearchRequest, @Res() res: any, @Req() req: any): Promise<any> {
+        if (data.type === 'page' && data.field === 'id') {
             const bucketAll = [];
             const bucketF = [];
             const bucketS = [];
             const bucketT = [];
             // roundRobin.buckets[0] !== undefined 
-            if(data.buckets[0] !== undefined){
-                for(const stack of data.buckets[0].values){
+            if (data.buckets[0] !== undefined) {
+                for (const stack of data.buckets[0].values) {
                     bucketF.push(new ObjectID(stack));
                 }
             }
-            if(data.buckets[1] !== undefined){
-                for(const stack of data.buckets[1].values){
+            if (data.buckets[1] !== undefined) {
+                for (const stack of data.buckets[1].values) {
                     bucketS.push(new ObjectID(stack));
                 }
             }
-            if(data.buckets[2] !== undefined){
-                for(const stack of data.buckets[2].values){
+            if (data.buckets[2] !== undefined) {
+                for (const stack of data.buckets[2].values) {
                     bucketT.push(new ObjectID(stack));
                 }
             }
-            if(bucketF.length >0){
-                const pageF = await this.pageService.aggregate([{$match:{_id:{$in:bucketF}}}]);
+            if (bucketF.length > 0) {
+                const pageF = await this.pageService.aggregate([{ $match: { _id: { $in: bucketF } } }]);
                 bucketAll.push(pageF);
             }
-            if(bucketS.length >0){
-                const pageS = await this.pageService.aggregate([{$match:{_id:{$in:bucketS}}}]);
+            if (bucketS.length > 0) {
+                const pageS = await this.pageService.aggregate([{ $match: { _id: { $in: bucketS } } }]);
                 bucketAll.push(pageS);
             }
-            if(bucketT.length >0){
-                const pageT = await this.pageService.aggregate([{$match:{_id:{$in:bucketT}}}]);
+            if (bucketT.length > 0) {
+                const pageT = await this.pageService.aggregate([{ $match: { _id: { $in: bucketT } } }]);
                 bucketAll.push(pageT);
 
             }
             const successResponseGroup = ResponseUtil.getSuccessResponse('Search Page Group Success.', bucketAll);
             return res.status(200).send(successResponseGroup);
 
-        }if(data.type === 'post' && data.field === 'objective'){
+        } if (data.type === 'post' && data.field === 'objective') {
             const bucketAll = [];
             const bucketF = [];
             const bucketS = [];
             const bucketT = [];
             // roundRobin.buckets[0] !== undefined 
-            if(data.buckets[0] !== undefined){
-                for(const stack of data.buckets[0].values){
+            if (data.buckets[0] !== undefined) {
+                for (const stack of data.buckets[0].values) {
                     bucketF.push(new ObjectID(stack));
                 }
             }
-            if(data.buckets[1] !== undefined){
-                for(const stack of data.buckets[1].values){
+            if (data.buckets[1] !== undefined) {
+                for (const stack of data.buckets[1].values) {
                     bucketS.push(new ObjectID(stack));
                 }
             }
-            if(data.buckets[2] !== undefined){
-                for(const stack of data.buckets[2].values){
+            if (data.buckets[2] !== undefined) {
+                for (const stack of data.buckets[2].values) {
                     bucketT.push(new ObjectID(stack));
                 }
             }
-            if(bucketF.length >0){
-                const pageF = await this.pageObjectiveService.aggregate([{$match:{_id:{$in:bucketF}}}]);
+            if (bucketF.length > 0) {
+                const pageF = await this.pageObjectiveService.aggregate([{ $match: { _id: { $in: bucketF } } }]);
                 bucketAll.push(pageF);
             }
-            if(bucketS.length >0){
-                const pageS = await this.pageObjectiveService.aggregate([{$match:{_id:{$in:bucketS}}}]);
+            if (bucketS.length > 0) {
+                const pageS = await this.pageObjectiveService.aggregate([{ $match: { _id: { $in: bucketS } } }]);
                 bucketAll.push(pageS);
             }
-            if(bucketT.length >0){
-                const pageT = await this.pageObjectiveService.aggregate([{$match:{_id:{$in:bucketT}}}]);
+            if (bucketT.length > 0) {
+                const pageT = await this.pageObjectiveService.aggregate([{ $match: { _id: { $in: bucketT } } }]);
                 bucketAll.push(pageT);
 
             }
             const successResponseGroup = ResponseUtil.getSuccessResponse('Search Page Group Success.', bucketAll);
             return res.status(200).send(successResponseGroup);
-        }if(data.type === 'post' && data.field === 'emergencyEvent'){
+        } if (data.type === 'post' && data.field === 'emergencyEvent') {
             const bucketAll = [];
             const bucketF = [];
             const bucketS = [];
             const bucketT = [];
             // roundRobin.buckets[0] !== undefined 
-            if(data.buckets[0] !== undefined){
-                for(const stack of data.buckets[0].values){
+            if (data.buckets[0] !== undefined) {
+                for (const stack of data.buckets[0].values) {
                     bucketF.push(new ObjectID(stack));
                 }
             }
-            if(data.buckets[1] !== undefined){
-                for(const stack of data.buckets[1].values){
+            if (data.buckets[1] !== undefined) {
+                for (const stack of data.buckets[1].values) {
                     bucketS.push(new ObjectID(stack));
                 }
             }
-            if(data.buckets[2] !== undefined){
-                for(const stack of data.buckets[2].values){
+            if (data.buckets[2] !== undefined) {
+                for (const stack of data.buckets[2].values) {
                     bucketT.push(new ObjectID(stack));
                 }
             }
-            if(bucketF.length >0){
-                const pageF = await this.emergencyEventService.aggregate([{$match:{_id:{$in:bucketF}}}]);
+            if (bucketF.length > 0) {
+                const pageF = await this.emergencyEventService.aggregate([{ $match: { _id: { $in: bucketF } } }]);
                 bucketAll.push(pageF);
             }
-            if(bucketS.length >0){
-                const pageS = await this.emergencyEventService.aggregate([{$match:{_id:{$in:bucketS}}}]);
+            if (bucketS.length > 0) {
+                const pageS = await this.emergencyEventService.aggregate([{ $match: { _id: { $in: bucketS } } }]);
                 bucketAll.push(pageS);
             }
-            if(bucketT.length >0){
-                const pageT = await this.emergencyEventService.aggregate([{$match:{_id:{$in:bucketT}}}]);
+            if (bucketT.length > 0) {
+                const pageT = await this.emergencyEventService.aggregate([{ $match: { _id: { $in: bucketT } } }]);
                 bucketAll.push(pageT);
 
             }
@@ -224,7 +224,7 @@ export class AdminPageController {
         }
         if (data.type === 'page' && data.field === 'id') {
             const pageQuery = [
-                { $match: {isOfficial: true, banned: false,name:exp} },
+                { $match: { isOfficial: true, banned: false, name: exp } },
                 { $limit: 10 }
             ];
             const pages: any[] = await this.pageService.aggregate(pageQuery);
@@ -236,12 +236,12 @@ export class AdminPageController {
                 searchResults.push({ value: pageId, label: pageName, type: SEARCH_TYPE.PAGE });
             }
         } else if (data.type === 'page' && data.field === 'group') {
-            const pages: any[] = await this.pageGroupService.find({});         
+            const pages: any[] = await this.pageGroupService.find({});
             const successResponseGroup = ResponseUtil.getSuccessResponse('Search Page Group Success.', pages);
             return res.status(200).send(successResponseGroup);
         } else if (data.type === 'page' && data.field === 'province') {
             const pageQuery = [
-                { $match: {isOfficial: true, banned: false,province:exp} },
+                { $match: { isOfficial: true, banned: false, province: exp } },
                 { $limit: 10 }
             ];
             const pages: any[] = await this.pageService.aggregate(pageQuery);
@@ -259,7 +259,7 @@ export class AdminPageController {
                 },
                 { $limit: 10 }
             ]);
-            
+
             let postId = undefined;
             let postTitle = undefined;
             for (const postStmd of postEmergencys) {
@@ -274,7 +274,7 @@ export class AdminPageController {
                     $match: { title: exp }
                 },
                 {
-                    $limit:10
+                    $limit: 10
                 }
             ]);
 
@@ -296,7 +296,7 @@ export class AdminPageController {
                         $match: { name: exp }
                     },
                     {
-                        $limit:10
+                        $limit: 10
                     }
                 ]);
             let postId = undefined;
@@ -316,7 +316,7 @@ export class AdminPageController {
             }
             const postStmts = [
                 { $match: { isDraft: false, deleted: false, hidden: false, postsHashTags: { $ne: null, $in: bucketF } } },
-                { $limit: 10}
+                { $limit: 10 }
             ];
             const postAggregateSet1 = await this.postsService.aggregate(postStmts);
 
@@ -404,9 +404,8 @@ export class AdminPageController {
     }
 
     @Post('/receive/bucket')
-    public async receiveBucket(@Body({ validate: true }) filter: SearchFilter,@Res() res: any, @Req() req: any): Promise<any> {
-        
-        const bucketAll = await this.kaokaiTodayService.find({});
+    public async receiveBucket(@Body({ validate: true }) filter: SearchFilter, @Res() res: any, @Req() req: any): Promise<any> {
+        const bucketAll = await this.kaokaiTodayService.search(filter);
         if (bucketAll.length > 0) {
             const successResponse = ResponseUtil.getSuccessResponse('Here this is your bucket boi.', bucketAll);
             return res.status(200).send(successResponse);
@@ -476,14 +475,14 @@ export class AdminPageController {
         const objId = new ObjectID(id);
         const kaoKaiToday = await this.kaokaiTodayService.findOne({ _id: objId });
         if (kaoKaiToday) {
-            const query = {_id:kaoKaiToday.id};
-            const newValues ={
-                $set:{
-                    title:createKaokaiTodayRequest.title,
-                    type:createKaokaiTodayRequest.type,
-                    field:createKaokaiTodayRequest.field,
-                    position:createKaokaiTodayRequest.position,
-                    limit:createKaokaiTodayRequest.limit,
+            const query = { _id: kaoKaiToday.id };
+            const newValues = {
+                $set: {
+                    title: createKaokaiTodayRequest.title,
+                    type: createKaokaiTodayRequest.type,
+                    field: createKaokaiTodayRequest.field,
+                    position: createKaokaiTodayRequest.position,
+                    limit: createKaokaiTodayRequest.limit,
                     'buckets.0.name': createKaokaiTodayRequest.buckets[0] ? createKaokaiTodayRequest.buckets[0].name : undefined,
                     'buckets.1.name': createKaokaiTodayRequest.buckets[1] ? createKaokaiTodayRequest.buckets[1].name : undefined,
                     'buckets.2.name': createKaokaiTodayRequest.buckets[2] ? createKaokaiTodayRequest.buckets[2].name : undefined,
@@ -492,8 +491,8 @@ export class AdminPageController {
                     'buckets.2.values': createKaokaiTodayRequest.buckets[2] ? createKaokaiTodayRequest.buckets[2].values : undefined,
                 }
             };
-            const update = await this.kaokaiTodayService.update(query,newValues);
-            if(update){
+            const update = await this.kaokaiTodayService.update(query, newValues);
+            if (update) {
                 console.log('pass1');
             }
 
