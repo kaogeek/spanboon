@@ -95,7 +95,7 @@ export class TodayPageFacade extends AbstractFacade {
                 body = Object.assign(searchFilter)
             }
             let options = this.getDefaultOptions();
-            this.http.get(url).toPromise().then((response: any) => {
+            this.http.post(url, body).toPromise().then((response: any) => {
                 for (let r of response.data) {
                     if (r.coverPageURL != null && r.coverPageURL != undefined) {
                         this.getPathFile(r.coverPageURL).then((res: any) => {
@@ -126,6 +126,19 @@ export class TodayPageFacade extends AbstractFacade {
             });
         });
     }
+
+    public searchComp(data: any): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let url: string = this.baseURL + '/admin/page/edit/search';
+            let body = data;
+            this.http.post(url, body).toPromise().then((response: any) => {
+                resolve(response.data);
+            }).catch((error: any) => {
+                reject(error);
+            });
+        });
+    }
+
     public delete(id: any): Promise<Today[]> {
         if (id === undefined || id === null) {
             new Error("Id is required.");
