@@ -99,27 +99,43 @@ export class AdminPageController {
     @Post('/test/search')
     public async searchGet(@Body({ validate: true }) data: SearchRequest,@Res() res: any, @Req() req: any):Promise<any>{
         if(data.type === 'page' && data.field === 'id'){
-            const buckets = [];
+            const bucketAll = [];
+            const bucketF = [];
+            const bucketS = [];
+            const bucketT = [];
             // roundRobin.buckets[0] !== undefined 
             if(data.buckets[0] !== undefined){
                 for(const stack of data.buckets[0].values){
-                    buckets.push(new ObjectID(stack));
+                    bucketF.push(new ObjectID(stack));
                 }
             }
             if(data.buckets[1] !== undefined){
                 for(const stack of data.buckets[1].values){
-                    buckets.push(new ObjectID(stack));
+                    bucketS.push(new ObjectID(stack));
                 }
             }
             if(data.buckets[2] !== undefined){
                 for(const stack of data.buckets[2].values){
-                    buckets.push(new ObjectID(stack));
+                    bucketT.push(new ObjectID(stack));
                 }
             }
-            const page = await this.pageService.aggregate([{$match:{_id:{$in:buckets}}}]);
-            const successResponseGroup = ResponseUtil.getSuccessResponse('Search Page Group Success.', page);
+            if(bucketF.length >0){
+                const pageF = await this.pageService.aggregate([{$match:{_id:{$in:bucketF}}}]);
+                bucketAll.push(pageF);
+            }
+            if(bucketS.length >0){
+                const pageS = await this.pageService.aggregate([{$match:{_id:{$in:bucketS}}}]);
+                bucketAll.push(pageS);
+            }
+            if(bucketT.length >0){
+                const pageT = await this.pageService.aggregate([{$match:{_id:{$in:bucketT}}}]);
+                bucketAll.push(pageT);
+
+            }
+            const successResponseGroup = ResponseUtil.getSuccessResponse('Search Page Group Success.', bucketAll);
             return res.status(200).send(successResponseGroup);
         }
+
     }
 
     @Post('/request/search')
