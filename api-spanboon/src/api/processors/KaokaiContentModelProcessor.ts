@@ -92,7 +92,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                 const ContentProcessor = await this.kaokaiTodayService.findOne({ position: sortV[0] });
                 if (ContentProcessor.position === null) {
                     const result: SectionModel = new SectionModel();
-                    result.title = (this.config === undefined || this.config.title === undefined) ? ContentProcessor.title : ContentProcessor.title;
+                    result.title = (this.config === undefined || this.config.title === undefined) ? ContentProcessor.title : 'ก้าวไกลรอบด้าน';
                     result.subtitle = '';
                     result.description = '';
                     result.iconUrl = '';
@@ -141,10 +141,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                     postMatchStmt.startDateTime = { $lte: today };
                 }
 
-                if (ContentProcessor === undefined) {
-                    resolve(undefined);
-                }
-                if (ContentProcessor.type === 'post' && ContentProcessor.field === 'hashTag') {
+                if (ContentProcessor.type === 'post' && ContentProcessor.field === 'hashtag') {
                     const bucketF = [];
                     const bucketS = [];
                     const bucketT = [];
@@ -891,7 +888,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                     }
 
                     const postStmt1 = [
-                        { $match: { isDraft: false, deleted: false, hidden: false, emergencyEvent: { $ne: null, $in: bucketF }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                        { $match: { isDraft: false, deleted: false, hidden: false, pageId:{$ne:null} ,emergencyEvent: { $ne: null, $in: bucketF }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
                         { $sort: { summationScore: -1 } },
 
                         {
@@ -960,7 +957,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                     }
 
                     const postStmt2 = [
-                        { $match: { isDraft: false, deleted: false, hidden: false, emergencyEvent: { $ne: null, $in: bucketS } } },
+                        { $match: { isDraft: false, deleted: false, hidden: false,pageId:{$ne:null} , emergencyEvent: { $ne: null, $in: bucketS } } },
                         { $sort: { summationScore: -1 } },
 
                         {
@@ -1028,7 +1025,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                         postObject.push(postAggregate2);
                     }
                     const postStmt3 = [
-                        { $match: { isDraft: false, deleted: false, hidden: false, emergencyEvent: { $ne: null, $in: bucketT } } },
+                        { $match: { isDraft: false, deleted: false, hidden: false,pageId:{$ne:null} , emergencyEvent: { $ne: null, $in: bucketT } } },
                         { $sort: { summationScore: -1 } },
 
                         {

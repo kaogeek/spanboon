@@ -1191,7 +1191,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     }
 
                     const postStmt1 = [
-                        { $match: { isDraft: false, deleted: false, hidden: false, emergencyEvent: { $ne: null, $in: bucketF }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                        { $match: { isDraft: false, deleted: false, hidden: false,pageId:{$ne:null} ,emergencyEvent: { $ne: null, $in: bucketF }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
                         { $sort: { summationScore: -1 } },
 
                         {
@@ -1259,7 +1259,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                         postObject.push(postAggregate1);
                     }
                     const postStmt2 = [
-                        { $match: { isDraft: false, deleted: false, hidden: false, emergencyEvent: { $ne: null, $in: bucketS } } },
+                        { $match: { isDraft: false, deleted: false, hidden: false,pageId:{$ne:null} , emergencyEvent: { $ne: null, $in: bucketS } } },
                         { $sort: { summationScore: -1 } },
 
                         {
@@ -1327,7 +1327,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                         postObject.push(postAggregate2);
                     }
                     const postStmt3 = [
-                        { $match: { isDraft: false, deleted: false, hidden: false, emergencyEvent: { $ne: null, $in: bucketT } } },
+                        { $match: { isDraft: false, deleted: false, hidden: false,pageId:{$ne:null} , emergencyEvent: { $ne: null, $in: bucketT } } },
                         { $sort: { summationScore: -1 } },
 
                         {
@@ -1451,7 +1451,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     }
                     result.dateTime = lastestDate;
                     resolve(result);
-                } else if (roundRobin.type === 'post' && roundRobin.field === 'hashTag') {
+                } else if (roundRobin.type === 'post' && roundRobin.field === 'hashtag') {
                     const bucketF = [];
                     const bucketS = [];
                     const bucketT = [];

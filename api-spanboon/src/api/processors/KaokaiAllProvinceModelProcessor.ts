@@ -88,7 +88,16 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                 }
                 const provincePage = await this.kaokaiTodayService.findOne({ position: sortV[0] });
                 if (provincePage.position === null) {
-                    resolve(undefined);
+                    const result: SectionModel = new SectionModel();
+                    result.title = (this.config === undefined || this.config.title === undefined) ? provincePage.title : 'ก้าวไกลทุกจังหวัด';
+                    result.subtitle = '';
+                    result.description = '';
+                    result.iconUrl = '';
+                    result.contents = [];
+                    result.type = this.getType(); // set type by processor type
+                    result.position = null;
+                    // result.contents.push(contents);
+                    resolve(result);      
                 }
                 limit = (limit === undefined || limit === null) ? provincePage.limit : this.DEFAULT_SEARCH_LIMIT;
                 offset = (offset === undefined || offset === null) ? this.DEFAULT_SEARCH_OFFSET : offset;
@@ -1252,7 +1261,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     }
 
                     const postStmt1 = [
-                        { $match: { isDraft: false, deleted: false, hidden: false, emergencyEvent: { $ne: null, $in: bucketF }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                        { $match: { isDraft: false, deleted: false, hidden: false,pageId:{$ne:null} , emergencyEvent: { $ne: null, $in: bucketF }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
                         { $sort: { summationScore: -1 } },
 
                         {
@@ -1319,7 +1328,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     postObject.push(postAggregate1);
 
                     const postStmt2 = [
-                        { $match: { isDraft: false, deleted: false, hidden: false, emergencyEvent: { $ne: null, $in: bucketS } } },
+                        { $match: { isDraft: false, deleted: false, hidden: false,pageId:{$ne:null} , emergencyEvent: { $ne: null, $in: bucketS } } },
                         { $sort: { summationScore: -1 } },
 
                         {
@@ -1386,7 +1395,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     postObject.push(postAggregate2);
 
                     const postStmt3 = [
-                        { $match: { isDraft: false, deleted: false, hidden: false, emergencyEvent: { $ne: null, $in: bucketT } } },
+                        { $match: { isDraft: false, deleted: false, hidden: false, pageId:{$ne:null} ,emergencyEvent: { $ne: null, $in: bucketT } } },
                         { $sort: { summationScore: -1 } },
 
                         {
@@ -1911,7 +1920,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     }
                     result.dateTime = lastestDate;
                     resolve(result);
-                } else if (provincePage.type === 'post' && provincePage.field === 'hashTag') {
+                } else if (provincePage.type === 'post' && provincePage.field === 'hashtag') {
                     const bucketF = [];
                     const bucketS = [];
                     const bucketT = [];

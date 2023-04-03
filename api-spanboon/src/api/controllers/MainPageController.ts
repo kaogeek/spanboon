@@ -205,6 +205,7 @@ export class MainPageController {
         });
 
         const kaokaiHashTag = await kaokaiHashTagProcessor.process();
+        console.log('kaokaiHashTag',kaokaiHashTag);
         let checkPosition4 = undefined;
         // kaokaiHashTag.position;
         if (kaokaiHashTag.position !== undefined) {
@@ -1716,16 +1717,18 @@ export class MainPageController {
         const postMajorNameS = content.majorTrend.contents[1].owner.name;
 
         let picPostRoundRobinF = undefined;
-        let picPostRoundRobinS = undefined;
-        let picPostRoundRobinT = undefined;
         let postRoundRobinF = undefined;
         let nameRoundRobinF = undefined;
+        let linkPostRoundRobinF = undefined;
+
+        let picPostRoundRobinS = undefined;
         let postRoundRobinS = undefined;
         let nameRoundRobinS = undefined;
+        let linkPostRoundRobinS = undefined;
+
+        let picPostRoundRobinT = undefined;
         let postRoundRobinT = undefined;
         let nameRoundRobinT = undefined;
-        let linkPostRoundRobinF = undefined;
-        let linkPostRoundRobinS = undefined;
         let linkPostRoundRobinT = undefined;
 
         if (content.pageRoundRobin.contents.length > 0) {
@@ -1733,10 +1736,19 @@ export class MainPageController {
             picPostRoundRobinS = process.env.APP_API + content.pageRoundRobin.contents[1].coverPageUrl ? process.env.APP_API + content.pageRoundRobin.contents[1].coverPageUrl + '/image' : '';
             picPostRoundRobinT = process.env.APP_API + content.pageRoundRobin.contents[2].coverPageUrl ? process.env.APP_API + content.pageRoundRobin.contents[2].coverPageUrl + '/image' : '';
             postRoundRobinF = content.pageRoundRobin.contents[0].post.title;
+            if(postRoundRobinF.length >38){
+                postRoundRobinF = content.pageRoundRobin.contents[0].post.title.slice(0,38) + '...';
+            }
             nameRoundRobinF = content.pageRoundRobin.contents[0].owner.name;
             postRoundRobinS = content.pageRoundRobin.contents[1].post.title;
+            if(postRoundRobinS.length >38){
+                postRoundRobinS = content.pageRoundRobin.contents[1].post.title.slice(0,38) + '...';
+            }
             nameRoundRobinS = content.pageRoundRobin.contents[1].owner.name;
             postRoundRobinT = content.pageRoundRobin.contents[2].post.title;
+            if(postRoundRobinT.length > 38){
+                postRoundRobinT = content.pageRoundRobin.contents[2].post.title.slice(0,38) + '...';
+            }
             nameRoundRobinT = content.pageRoundRobin.contents[2].owner.name;
             linkPostRoundRobinF = process.env.APP_POST + '/' + content.pageRoundRobin.contents[0].post._id;
             linkPostRoundRobinS = process.env.APP_POST + '/' + content.pageRoundRobin.contents[1].post._id;
@@ -1783,6 +1795,7 @@ export class MainPageController {
         });
         let sendMail = undefined;
         let message = undefined;
+
         if (picPostMajorF !== undefined &&
             picPostMajorS !== undefined &&
             postMajorTitleF !== undefined &&
@@ -1809,6 +1822,7 @@ export class MainPageController {
             picPostSection !== undefined &&
             splitPostSection !== undefined
         ) {
+            console.log('pdasdsfewfw');
             message = `
             <div style="padding: 10px;background: white;width: 850px;">
                <div style="width: 60px;height: 52px;padding: 10px;position: absolute;float: right;background: white;">
@@ -1941,46 +1955,46 @@ export class MainPageController {
                             <div
                                 style="display: flex; text-align: center;font-size: 12pt;width:100%;height: 210px;background: white;margin-bottom: 10px;">
                                 <img style="width: 100%;object-fit: cover;background: white;height:100%;"
-                                    src=${picPostRoundRobinT}>
-                            </div>
-                            <div style="margin-bottom: 5px;background: white;display: grid;">
-                                <span style="background: white;font-size: 14px;margin-bottom: 40px;color:black;">
-                                        ${postRoundRobinT}
-                                </span>
-                                <span style="background: white;color: gray;font-size: 14px;color:black;">โดย <span
-                                        style="color: #ee7623;font-size: 14px;background: white;">${nameRoundRobinT}</span></span>
-                            </div>
-                        </a>
-                    </div>
-                   <div style="width: 33.33%;background: white;padding-right: 5px;">
-                        <a href=${linkPostRoundRobinS} style='background:white;text-decoration:none;'>
-                            <div
-                                style="display: flex; text-align: center;font-size: 12pt;width:100%;height: 210px;background: white;margin-bottom: 10px;">
-                                <img style="width: 100%;object-fit: cover;background: white;height:100%;"
                                     src=${picPostRoundRobinF}>
                             </div>
                             <div style="margin-bottom: 5px;background: white;display: grid;">
                                 <span style="background: white;font-size: 14px;margin-bottom: 40px;color:black;">
                                         ${postRoundRobinF}
                                 </span>
-                                <span style="background: white;color: gray;font-size: 14px;">โดย <span
+                                <span style="background: white;color: gray;font-size: 14px;color:black;">โดย <span
                                         style="color: #ee7623;font-size: 14px;background: white;">${nameRoundRobinF}</span></span>
                             </div>
                         </a>
-                   </div>
+                    </div>
+                    <div style="width: 33.33%;background: white;padding-right: 5px;">
+                    <a href=${linkPostRoundRobinS} style='background:white;text-decoration:none;'>
+                        <div
+                            style="display: flex; text-align: center;font-size: 12pt;width:100%;height: 210px;background: white;margin-bottom: 10px;">
+                            <img style="width: 100%;object-fit: cover;background: white;height:100%;"
+                                src=${picPostRoundRobinS}>
+                        </div>
+                        <div style="margin-bottom: 5px;background: white;display: grid;">
+                            <span style="background: white;font-size: 14px;margin-bottom: 40px;color:black;">
+                                    ${postRoundRobinS}
+                            </span>
+                            <span style="background: white;color: gray;font-size: 14px;">โดย <span
+                                    style="color: #ee7623;font-size: 14px;background: white;">${nameRoundRobinS}</span></span>
+                        </div>
+                    </a>
+                    </div>
                    <div style="width: 33.33%;background: white;">
                         <a href=${linkPostRoundRobinT} style='background:white;text-decoration:none;'>
                             <div
                                 style="display: flex; text-align: center;font-size: 12pt;width:100%;background: white;margin-bottom: 10px;height:210px">
                                 <img style="width: 100%;object-fit: cover;background: white;height:100%;"
-                                    src=${picPostRoundRobinS}>
+                                    src=${picPostRoundRobinT}>
                             </div>
                             <div style="margin-bottom: 5px;background: white;display: grid;">
                                 <span style="background: white;font-size: 14px;margin-bottom: 40px;color:black;">
-                                        ${postRoundRobinS}
+                                        ${postRoundRobinT}
                                 </span>
                                 <span style="background: white;color: gray;font-size: 14px;">โดย <span
-                                        style="color: #ee7623;font-size: 14px;background: white;">${nameRoundRobinS}</span></span>
+                                        style="color: #ee7623;font-size: 14px;background: white;">${nameRoundRobinT}</span></span>
                             </div>
                         </a>
                    </div>
@@ -2115,14 +2129,14 @@ export class MainPageController {
                             <div
                                 style="display: flex; text-align: center;font-size: 12pt;width:100%;height: 210px;background: white;margin-bottom: 10px;">
                                 <img style="width: 100%;object-fit: cover;background: white;height:100%;"
-                                    src=${picPostRoundRobinT}>
+                                    src=${picPostRoundRobinF}>
                             </div>
                             <div style="margin-bottom: 5px;background: white;display: grid;">
                                 <span style="background: white;font-size: 14px;margin-bottom: 40px;color:black;">
-                                        ${postRoundRobinT}
+                                        ${postRoundRobinF}
                                 </span>
                                 <span style="background: white;color: gray;font-size: 14px;color:black;">โดย <span
-                                        style="color: #ee7623;font-size: 14px;background: white;">${nameRoundRobinT}</span></span>
+                                        style="color: #ee7623;font-size: 14px;background: white;">${nameRoundRobinF}</span></span>
                             </div>
                         </a>
                     </div>
@@ -2130,22 +2144,6 @@ export class MainPageController {
                         <a href=${linkPostRoundRobinS} style='background:white;text-decoration:none;'>
                             <div
                                 style="display: flex; text-align: center;font-size: 12pt;width:100%;height: 210px;background: white;margin-bottom: 10px;">
-                                <img style="width: 100%;object-fit: cover;background: white;height:100%;"
-                                    src=${picPostRoundRobinF}>
-                            </div>
-                            <div style="margin-bottom: 5px;background: white;display: grid;">
-                                <span style="background: white;font-size: 14px;margin-bottom: 40px;color:black;">
-                                        ${postRoundRobinF}
-                                </span>
-                                <span style="background: white;color: gray;font-size: 14px;">โดย <span
-                                        style="color: #ee7623;font-size: 14px;background: white;">${nameRoundRobinF}</span></span>
-                            </div>
-                        </a>
-                   </div>
-                   <div style="width: 33.33%;background: white;">
-                        <a href=${linkPostRoundRobinT} style='background:white;text-decoration:none;'>
-                            <div
-                                style="display: flex; text-align: center;font-size: 12pt;width:100%;background: white;margin-bottom: 10px;height:210px">
                                 <img style="width: 100%;object-fit: cover;background: white;height:100%;"
                                     src=${picPostRoundRobinS}>
                             </div>
@@ -2155,6 +2153,22 @@ export class MainPageController {
                                 </span>
                                 <span style="background: white;color: gray;font-size: 14px;">โดย <span
                                         style="color: #ee7623;font-size: 14px;background: white;">${nameRoundRobinS}</span></span>
+                            </div>
+                        </a>
+                   </div>
+                   <div style="width: 33.33%;background: white;">
+                        <a href=${linkPostRoundRobinT} style='background:white;text-decoration:none;'>
+                            <div
+                                style="display: flex; text-align: center;font-size: 12pt;width:100%;background: white;margin-bottom: 10px;height:210px">
+                                <img style="width: 100%;object-fit: cover;background: white;height:100%;"
+                                    src=${picPostRoundRobinT}>
+                            </div>
+                            <div style="margin-bottom: 5px;background: white;display: grid;">
+                                <span style="background: white;font-size: 14px;margin-bottom: 40px;color:black;">
+                                        ${postRoundRobinT}
+                                </span>
+                                <span style="background: white;color: gray;font-size: 14px;">โดย <span
+                                        style="color: #ee7623;font-size: 14px;background: white;">${nameRoundRobinT}</span></span>
                             </div>
                         </a>
                    </div>

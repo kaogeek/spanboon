@@ -421,7 +421,7 @@ export class AdminPageController {
         const titleRequest = createKaokaiTodayRequest.title;
         const positionNumber = createKaokaiTodayRequest.position;
 
-        if (createKaokaiTodayRequest.position > 4) {
+        if (createKaokaiTodayRequest.position > 5) {
             const successResponse = ResponseUtil.getSuccessResponse('Position must less or equal than 4.', undefined);
             return res.status(200).send(successResponse);
         }

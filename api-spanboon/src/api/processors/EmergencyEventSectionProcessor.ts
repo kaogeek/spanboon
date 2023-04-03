@@ -243,7 +243,7 @@ export class EmergencyEventSectionProcessor extends AbstractSectionModelProcesso
                     isPin: true,
                     isClose: false,
                 };
-                if(timeStampToday<timeStampSettings){
+                if(timeStampSettings>timeStampToday){
                     const searchResult = await this.emergencyEvent.aggregate([
                         { $match: searchFilter.whereConditions },
                         { $sort: { ordering: 1 } },

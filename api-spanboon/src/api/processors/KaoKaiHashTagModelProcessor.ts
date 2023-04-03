@@ -90,7 +90,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                 const hashTagProcessor = await this.kaokaiTodayService.findOne({ position: sortV[0] });
                 if (hashTagProcessor.position === null) {
                     const result: SectionModel = new SectionModel();
-                    result.title = (this.config === undefined || this.config.title === undefined) ? hashTagProcessor.title : hashTagProcessor.title;
+                    result.title = (this.config === undefined || this.config.title === undefined) ? hashTagProcessor.title : 'สภาก้าวไกล';
                     result.subtitle = '';
                     result.description = '';
                     result.iconUrl = '';
@@ -139,10 +139,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     postMatchStmt.startDateTime = { $lte: today };
                 }
 
-                if (hashTagProcessor === undefined) {
-                    resolve(undefined);
-                }
-                if (hashTagProcessor.type === 'post' && hashTagProcessor.field === 'hashTag') {
+                if (hashTagProcessor.type === 'post' && hashTagProcessor.field === 'hashtag') {
                     const bucketF = [];
                     const bucketS = [];
                     const bucketT = [];
@@ -891,7 +888,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     }
 
                     const postStmt1 = [
-                        { $match: { isDraft: false, deleted: false, hidden: false, emergencyEvent: { $ne: null, $in: bucketF }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                        { $match: { isDraft: false, deleted: false, hidden: false,pageId:{$ne:null} , emergencyEvent: { $ne: null, $in: bucketF }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
                         { $sort: { summationScore: -1 } },
 
                         {
@@ -958,7 +955,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     postObject.push(postAggregate1);
 
                     const postStmt2 = [
-                        { $match: { isDraft: false, deleted: false, hidden: false, emergencyEvent: { $ne: null, $in: bucketS } } },
+                        { $match: { isDraft: false, deleted: false, hidden: false,pageId:{$ne:null} , emergencyEvent: { $ne: null, $in: bucketS } } },
                         { $sort: { summationScore: -1 } },
 
                         {
@@ -1025,7 +1022,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     postObject.push(postAggregate2);
 
                     const postStmt3 = [
-                        { $match: { isDraft: false, deleted: false, hidden: false, emergencyEvent: { $ne: null, $in: bucketT } } },
+                        { $match: { isDraft: false, deleted: false, hidden: false,pageId:{$ne:null} , emergencyEvent: { $ne: null, $in: bucketT } } },
                         { $sort: { summationScore: -1 } },
 
                         {

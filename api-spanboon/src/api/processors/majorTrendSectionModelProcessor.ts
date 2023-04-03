@@ -78,7 +78,16 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                 }
                 const majorTrend = await this.kaokaiTodayService.findOne({ position: sortV[0] });
                 if (majorTrend.position === null) {
-                    resolve(undefined);
+                    const result: SectionModel = new SectionModel();
+                    result.title = (this.config === undefined || this.config.title === undefined) ? majorTrend.title : 'เกาะกระแส';
+                    result.subtitle = '';
+                    result.description = '';
+                    result.iconUrl = '';
+                    result.contents = [];
+                    result.type = this.getType(); // set type by processor type
+                    result.position = null;
+                    // result.contents.push(contents);
+                    resolve(result);                
                 }
                 let limit: number = undefined;
                 let offset: number = undefined;
@@ -567,7 +576,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     }
 
                     const postStmt1 = [
-                        { $match: { isDraft: false, deleted: false, hidden: false, emergencyEvent: { $ne: null, $in: bucketF }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                        { $match: { isDraft: false, deleted: false, hidden: false,pageId:{$ne:null} , emergencyEvent: { $ne: null, $in: bucketF }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
                         { $sort: { summationScore: -1 } },
 
                         {
@@ -634,7 +643,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     postObject.push(postAggregate1);
 
                     const postStmt2 = [
-                        { $match: { isDraft: false, deleted: false, hidden: false, emergencyEvent: { $ne: null, $in: bucketS } } },
+                        { $match: { isDraft: false, deleted: false, hidden: false,pageId:{$ne:null} , emergencyEvent: { $ne: null, $in: bucketS } } },
                         { $sort: { summationScore: -1 } },
 
                         {
@@ -701,7 +710,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     postObject.push(postAggregate2);
 
                     const postStmt3 = [
-                        { $match: { isDraft: false, deleted: false, hidden: false, emergencyEvent: { $ne: null, $in: bucketT } } },
+                        { $match: { isDraft: false, deleted: false, hidden: false,pageId:{$ne:null} , emergencyEvent: { $ne: null, $in: bucketT } } },
                         { $sort: { summationScore: -1 } },
 
                         {
@@ -824,7 +833,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     }
                     result.dateTime = lastestDate;
                     resolve(result);
-                } else if (majorTrend.type === 'post' && majorTrend.field === 'hashTag') {
+                } else if (majorTrend.type === 'post' && majorTrend.field === 'hashtag') {
                     const bucketF = [];
                     const bucketS = [];
                     const bucketT = [];
