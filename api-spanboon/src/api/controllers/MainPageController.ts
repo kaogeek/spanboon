@@ -205,7 +205,6 @@ export class MainPageController {
         });
 
         const kaokaiHashTag = await kaokaiHashTagProcessor.process();
-        console.log('kaokaiHashTag',kaokaiHashTag);
         let checkPosition4 = undefined;
         // kaokaiHashTag.position;
         if (kaokaiHashTag.position !== undefined) {
