@@ -374,7 +374,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     }
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
-                    result.title = (this.config === undefined || this.config.title === undefined) ? roundRobin.title : this.config.title;
+                    result.title = (this.config === undefined || this.config.title === undefined) ? roundRobin.title : 'ก้าวไกลวันนี้';
                     result.subtitle = (this.config === undefined || this.config.subtitle === undefined) ? 'โพสต์ที่เกิดขึ้นในเดือนนี้ ภายในแพลตฟอร์ม' : this.config.subtitle;
                     result.description = '';
                     result.iconUrl = '';
@@ -714,7 +714,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     }
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
-                    result.title = (this.config === undefined || this.config.title === undefined) ? roundRobin.title : roundRobin.title;
+                    result.title = (this.config === undefined || this.config.title === undefined) ? roundRobin.title : 'ก้าวไกลวันนี้';
                     result.description = '';
                     result.iconUrl = '';
                     result.contents = [];
@@ -834,7 +834,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
 
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
-                    result.title = (this.config === undefined || this.config.title === undefined) ? roundRobin.title : roundRobin.title;
+                    result.title = (this.config === undefined || this.config.title === undefined) ? roundRobin.title : 'ก้าวไกลวันนี้';
                     result.subtitle = '';
                     result.description = '';
                     result.iconUrl = '';
@@ -1120,7 +1120,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     }
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
-                    result.title = (this.config === undefined || this.config.title === undefined) ? roundRobin.title : this.config.title;
+                    result.title = (this.config === undefined || this.config.title === undefined) ? roundRobin.title : 'ก้าวไกลวันนี้';
                     result.subtitle = (this.config === undefined || this.config.subtitle === undefined) ? 'โพสต์ที่เกิดขึ้นในเดือนนี้ ภายในแพลตฟอร์ม' : this.config.subtitle;
                     result.description = '';
                     result.iconUrl = '';
@@ -1406,7 +1406,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
 
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
-                    result.title = (this.config === undefined || this.config.title === undefined) ? roundRobin.title : this.config.title;
+                    result.title = (this.config === undefined || this.config.title === undefined) ? roundRobin.title : 'ก้าวไกลวันนี้';
                     result.subtitle = (this.config === undefined || this.config.subtitle === undefined) ? 'โพสต์ที่เกิดขึ้นในเดือนนี้ ภายในแพลตฟอร์ม' : this.config.subtitle;
                     result.description = '';
                     result.iconUrl = '';
@@ -1724,7 +1724,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
 
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
-                    result.title = (this.config === undefined || this.config.title === undefined) ? roundRobin.title : roundRobin.title;
+                    result.title = (this.config === undefined || this.config.title === undefined) ? roundRobin.title : 'ก้าวไกลวันนี้';
                     result.subtitle = '';
                     result.description = '';
                     result.iconUrl = '';
@@ -1849,7 +1849,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
 
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
-                    result.title = (this.config === undefined || this.config.title === undefined) ? roundRobin.title : this.config.title;
+                    result.title = (this.config === undefined || this.config.title === undefined) ? roundRobin.title : 'ก้าวไกลวันนี้';
                     result.subtitle = (this.config === undefined || this.config.subtitle === undefined) ? 'โพสต์ที่เกิดขึ้นในเดือนนี้ ภายในแพลตฟอร์ม' : this.config.subtitle;
                     result.description = '';
                     result.iconUrl = '';
@@ -2187,7 +2187,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     }
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
-                    result.title = (this.config === undefined || this.config.title === undefined) ? roundRobin.title : roundRobin.title;
+                    result.title = (this.config === undefined || this.config.title === undefined) ? roundRobin.title : 'ก้าวไกลวันนี้';
                     result.description = '';
                     result.iconUrl = '';
                     result.contents = [];
@@ -2232,6 +2232,17 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     }
                     result.dateTime = lastestDate;
 
+                    resolve(result);
+                }else{
+                    const result: SectionModel = new SectionModel();
+                    result.title = (this.config === undefined || this.config.title === undefined) ? roundRobin.title : 'ก้าวไกลวันนี้';
+                    result.subtitle = '';
+                    result.description = '';
+                    result.iconUrl = '';
+                    result.contents = [];
+                    result.type = this.getType(); // set type by processor type
+                    result.position = null;
+                    // result.contents.push(contents);
                     resolve(result);
                 }
             } catch (error) {

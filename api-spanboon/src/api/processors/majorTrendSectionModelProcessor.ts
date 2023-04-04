@@ -2234,6 +2234,17 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     result.dateTime = lastestDate;
 
                     resolve(result);
+                }else{
+                    const result: SectionModel = new SectionModel();
+                    result.title = (this.config === undefined || this.config.title === undefined) ? majorTrend.title : 'เกาะกระแส';
+                    result.subtitle = '';
+                    result.description = '';
+                    result.iconUrl = '';
+                    result.contents = [];
+                    result.type = this.getType(); // set type by processor type
+                    result.position = null;
+                    // result.contents.push(contents);
+                    resolve(result);
                 }
             } catch (error) {
                 reject(error);

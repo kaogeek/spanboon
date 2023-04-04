@@ -408,7 +408,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
 
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
-                    result.title = (this.config === undefined || this.config.title === undefined) ? ContentProcessor.title : ContentProcessor.title;
+                    result.title = (this.config === undefined || this.config.title === undefined) ? ContentProcessor.title : 'ก้าวไกลรอบด้าน';
                     result.subtitle = '';
                     result.description = '';
                     result.iconUrl = '';
@@ -530,7 +530,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
 
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
-                    result.title = (this.config === undefined || this.config.title === undefined) ? ContentProcessor.title : ContentProcessor.title;
+                    result.title = (this.config === undefined || this.config.title === undefined) ? ContentProcessor.title : 'ก้าวไกลรอบด้าน';
                     result.subtitle = '';
                     result.description = '';
                     result.iconUrl = '';
@@ -817,7 +817,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                     }
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
-                    result.title = (this.config === undefined || this.config.title === undefined) ? ContentProcessor.title : ContentProcessor.title;
+                    result.title = (this.config === undefined || this.config.title === undefined) ? ContentProcessor.title : 'ก้าวไกลรอบด้าน';
                     result.subtitle = '';
                     result.description = '';
                     result.iconUrl = '';
@@ -1104,7 +1104,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
 
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
-                    result.title = (this.config === undefined || this.config.title === undefined) ? ContentProcessor.title : this.config.title;
+                    result.title = (this.config === undefined || this.config.title === undefined) ? ContentProcessor.title : 'ก้าวไกลรอบด้าน';
                     result.subtitle = (this.config === undefined || this.config.subtitle === undefined) ? 'โพสต์ที่เกิดขึ้นในเดือนนี้ ภายในแพลตฟอร์ม' : this.config.subtitle;
                     result.description = '';
                     result.iconUrl = '';
@@ -1150,7 +1150,6 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                     result.dateTime = lastestDate;
                     resolve(result);
                 } else if (ContentProcessor.type === 'page' && ContentProcessor.field === 'group') {
-                    console.log('pass1');
                     const bucketF = [];
                     const bucketS = [];
                     const bucketT = [];
@@ -1443,7 +1442,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                     }
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
-                    result.title = (this.config === undefined || this.config.title === undefined) ? ContentProcessor.title : ContentProcessor.title;
+                    result.title = (this.config === undefined || this.config.title === undefined) ? ContentProcessor.title : 'ก้าวไกลรอบด้าน';
                     result.description = '';
                     result.iconUrl = '';
                     result.contents = [];
@@ -1781,7 +1780,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                     }
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
-                    result.title = (this.config === undefined || this.config.title === undefined) ? ContentProcessor.title : ContentProcessor.title;
+                    result.title = (this.config === undefined || this.config.title === undefined) ? ContentProcessor.title : 'ก้าวไกลรอบด้าน';
                     result.description = '';
                     result.iconUrl = '';
                     result.contents = [];
@@ -2067,7 +2066,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                     }
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
-                    result.title = (this.config === undefined || this.config.title === undefined) ? ContentProcessor.title : ContentProcessor.title;
+                    result.title = (this.config === undefined || this.config.title === undefined) ? ContentProcessor.title : 'ก้าวไกลรอบด้าน';
                     result.subtitle = (this.config === undefined || this.config.subtitle === undefined) ? 'โพสต์ที่เกิดขึ้นในเดือนนี้ ภายในแพลตฟอร์ม' : this.config.subtitle;
                     result.description = '';
                     result.iconUrl = '';
@@ -2192,7 +2191,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
 
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
-                    result.title = (this.config === undefined || this.config.title === undefined) ? ContentProcessor.title : ContentProcessor.title;
+                    result.title = (this.config === undefined || this.config.title === undefined) ? ContentProcessor.title :'ก้าวไกลรอบด้าน';
                     result.subtitle = '';
                     result.description = '';
                     result.iconUrl = '';
@@ -2236,6 +2235,17 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                         result.contents.push(contents);
                     }
                     result.dateTime = lastestDate;
+                    resolve(result);
+                }else{
+                    const result: SectionModel = new SectionModel();
+                    result.title = (this.config === undefined || this.config.title === undefined) ? ContentProcessor.title : 'ก้าวไกลรอบด้าน';
+                    result.subtitle = '';
+                    result.description = '';
+                    result.iconUrl = '';
+                    result.contents = [];
+                    result.type = this.getType(); // set type by processor type
+                    result.position = null;
+                    // result.contents.push(contents);
                     resolve(result);
                 }
             } catch (error) {

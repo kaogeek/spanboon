@@ -110,7 +110,7 @@ export class MainPageController {
         }
         const emergencyCheckEndDate = assetTodayRangeDate.endDateTime;
         const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), assetTodayDate);
-        /* 
+        
         if (toDate) {
             const checkSnapshot = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: toDate });
 
@@ -118,7 +118,7 @@ export class MainPageController {
                 const successResponseS = ResponseUtil.getSuccessResponse('Successfully Main Page Data', checkSnapshot.data);
                 return res.status(200).send(successResponseS);
             }
-        } */
+        } 
         // ordering
         const emerProcessor: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service);
         emerProcessor.setData({
@@ -1683,24 +1683,45 @@ export class MainPageController {
         }
         // Check Date time === 06:00 morning
         let content = undefined;
-        /*
-        if (hours === parseInt(hourSplit, 10) && minutes === parseInt(minuteSpit, 10)) {
-        } */
-        const contents = data;
-        const startDate = startDateRange;
-        const endDate = endDateTimeToday;
-        const result: any = {};
-        result.data = contents;
-        result.startDateTime = startDate;
-        result.endDateTime = endDate;
-        const snapShot = await this.kaokaiTodaySnapShotService.create(result);
-        const user = await this.userService.findOne({ email: 'tarawut.c@absolute.co.th' });
-        if (snapShot) {
-            content = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: endDateTimeToday });
-            if (content) {
-                this.pushNotification(user, user.email, content.data, 'ก้าวไกลวันนี้', endDateTimeToday);
-            }
+        const buckets =[];
+        let snapShot = undefined;
+        if(data.emergencyEvents.contents.length>0){
+            buckets.push(data.emergencyEvents.contents);
+        }if(data.postSectionModel.contents.length>0){
+            buckets.push(data.postSectionModel.contents);
+        }if(data.pageRoundRobin.contents.length>0){
+            buckets.push(data.pageRoundRobin.contents);
+        }if(data.majorTrend.contents.length>0){
+            buckets.push(data.majorTrend.contents);
+        }if(data.kaokaiProvince.contents.length>0){
+            buckets.push(data.kaokaiProvince.contents);
+        }if(data.kaokaiHashTag.contents.length>0){
+            buckets.push(data.kaokaiHashTag.contents);
+        }if(data.kaokaiContent.contents.length>0){
+            buckets.push(data.kaokaiContent.contents);
         }
+        if (hours === parseInt(hourSplit, 10) && minutes === parseInt(minuteSpit, 10)) {
+            const contents = data;
+            const startDate = startDateRange;
+            const endDate = endDateTimeToday;
+            const result: any = {};
+            result.data = contents;
+            result.startDateTime = startDate;
+            result.endDateTime = endDate;
+            if(buckets.length>0){
+                snapShot = await this.kaokaiTodaySnapShotService.create(result);
+            }
+            const user = await this.userService.findOne({ email: 'tarawut.c@absolute.co.th' });
+            if (snapShot) {
+                content = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: endDateTimeToday });
+                if (content) {
+                    this.pushNotification(user, user.email, content.data, 'ก้าวไกลวันนี้', endDateTimeToday);
+                }
+            }else{
+                const errorResponse = ResponseUtil.getErrorResponse('Search Error', undefined);
+                return errorResponse;
+            }
+        } 
         // 
         return content.data;
     }
@@ -1738,17 +1759,17 @@ export class MainPageController {
             if(postRoundRobinF.length >38){
                 postRoundRobinF = content.pageRoundRobin.contents[0].post.title.slice(0,38) + '...';
             }
-            nameRoundRobinF = content.pageRoundRobin.contents[0].owner.name;
+            nameRoundRobinF = content.pageRoundRobin.contents[0].owner.name ? content.pageRoundRobin.contents[0].owner.name: content.pageRoundRobin.contents[0].owner.displayName;
             postRoundRobinS = content.pageRoundRobin.contents[1].post.title;
             if(postRoundRobinS.length >38){
                 postRoundRobinS = content.pageRoundRobin.contents[1].post.title.slice(0,38) + '...';
             }
-            nameRoundRobinS = content.pageRoundRobin.contents[1].owner.name;
+            nameRoundRobinS = content.pageRoundRobin.contents[1].owner.name ? content.pageRoundRobin.contents[1].owner.name: content.pageRoundRobin.contents[1].owner.displayName;
             postRoundRobinT = content.pageRoundRobin.contents[2].post.title;
             if(postRoundRobinT.length > 38){
                 postRoundRobinT = content.pageRoundRobin.contents[2].post.title.slice(0,38) + '...';
             }
-            nameRoundRobinT = content.pageRoundRobin.contents[2].owner.name;
+            nameRoundRobinT = content.pageRoundRobin.contents[2].owner.name ? content.pageRoundRobin.contents[2].owner.name : content.pageRoundRobin.contents[2].owner.displayName;
             linkPostRoundRobinF = process.env.APP_POST + '/' + content.pageRoundRobin.contents[0].post._id;
             linkPostRoundRobinS = process.env.APP_POST + '/' + content.pageRoundRobin.contents[1].post._id;
             linkPostRoundRobinT = process.env.APP_POST + '/' + content.pageRoundRobin.contents[2].post._id;
@@ -1821,7 +1842,6 @@ export class MainPageController {
             picPostSection !== undefined &&
             splitPostSection !== undefined
         ) {
-            console.log('pdasdsfewfw');
             message = `
             <div style="padding: 10px;background: white;width: 850px;">
                <div style="width: 60px;height: 52px;padding: 10px;position: absolute;float: right;background: white;">

@@ -412,7 +412,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
 
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
-                    result.title = (this.config === undefined || this.config.title === undefined) ? hashTagProcessor.title : hashTagProcessor.title;
+                    result.title = (this.config === undefined || this.config.title === undefined) ? hashTagProcessor.title : 'สภาก้าวไกล';
                     result.subtitle = '';
                     result.description = '';
                     result.iconUrl = '';
@@ -534,7 +534,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
 
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
-                    result.title = (this.config === undefined || this.config.title === undefined) ? hashTagProcessor.title : hashTagProcessor.title;
+                    result.title = (this.config === undefined || this.config.title === undefined) ? hashTagProcessor.title : 'สภาก้าวไกล';
                     result.subtitle = '';
                     result.description = '';
                     result.iconUrl = '';
@@ -817,7 +817,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     }
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
-                    result.title = (this.config === undefined || this.config.title === undefined) ? hashTagProcessor.title : hashTagProcessor.title;
+                    result.title = (this.config === undefined || this.config.title === undefined) ? hashTagProcessor.title : 'สภาก้าวไกล';
                     result.subtitle = '';
                     result.description = '';
                     result.iconUrl = '';
@@ -1100,7 +1100,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
 
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
-                    result.title = (this.config === undefined || this.config.title === undefined) ? hashTagProcessor.title : this.config.title;
+                    result.title = (this.config === undefined || this.config.title === undefined) ? hashTagProcessor.title : 'สภาก้าวไกล';
                     result.subtitle = (this.config === undefined || this.config.subtitle === undefined) ? 'โพสต์ที่เกิดขึ้นในเดือนนี้ ภายในแพลตฟอร์ม' : this.config.subtitle;
                     result.description = '';
                     result.iconUrl = '';
@@ -1437,7 +1437,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     }
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
-                    result.title = (this.config === undefined || this.config.title === undefined) ? hashTagProcessor.title : hashTagProcessor.title;
+                    result.title = (this.config === undefined || this.config.title === undefined) ? hashTagProcessor.title : 'สภาก้าวไกล';
                     result.description = '';
                     result.iconUrl = '';
                     result.contents = [];
@@ -1775,7 +1775,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     }
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
-                    result.title = (this.config === undefined || this.config.title === undefined) ? hashTagProcessor.title : hashTagProcessor.title;
+                    result.title = (this.config === undefined || this.config.title === undefined) ? hashTagProcessor.title : 'สภาก้าวไกล';
                     result.description = '';
                     result.iconUrl = '';
                     result.contents = [];
@@ -2061,7 +2061,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     }
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
-                    result.title = (this.config === undefined || this.config.title === undefined) ? hashTagProcessor.title : hashTagProcessor.title;
+                    result.title = (this.config === undefined || this.config.title === undefined) ? hashTagProcessor.title : 'สภาก้าวไกล';
                     result.subtitle = (this.config === undefined || this.config.subtitle === undefined) ? 'โพสต์ที่เกิดขึ้นในเดือนนี้ ภายในแพลตฟอร์ม' : this.config.subtitle;
                     result.description = '';
                     result.iconUrl = '';
@@ -2186,7 +2186,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
 
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
-                    result.title = (this.config === undefined || this.config.title === undefined) ? hashTagProcessor.title : hashTagProcessor.title;
+                    result.title = (this.config === undefined || this.config.title === undefined) ? hashTagProcessor.title : 'สภาก้าวไกล';
                     result.subtitle = '';
                     result.description = '';
                     result.iconUrl = '';
@@ -2230,6 +2230,17 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                         result.contents.push(contents);
                     }
                     result.dateTime = lastestDate;
+                    resolve(result);
+                }else{
+                    const result: SectionModel = new SectionModel();
+                    result.title = (this.config === undefined || this.config.title === undefined) ? hashTagProcessor.title : 'สภาก้าวไกล';
+                    result.subtitle = '';
+                    result.description = '';
+                    result.iconUrl = '';
+                    result.contents = [];
+                    result.type = this.getType(); // set type by processor type
+                    result.position = null;
+                    // result.contents.push(contents);
                     resolve(result);
                 }
             } catch (error) {
