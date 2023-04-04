@@ -423,7 +423,7 @@
                         </form>
                     </div>
                     <div class="wrapper-action">
-                        <button mat-raised-button class="btn-close" (click)="refreshPage()">ปิด</button>
+                        <button mat-raised-button class="btn-close" (click)="clickClose()">ปิด</button>
                         <button mat-raised-button class="btn-save" (click)="clickSave()">บันทึก</button>
                     </div>
                 </div>
@@ -431,7 +431,7 @@
         </mat-drawer>
         <mat-drawer-content>
             <div class="main-content">
-                <admin-table-component #table [isPin]="true" [orderBy]="orderBy" [facade]="todayPageFacade"
+                <admin-table-component #table [isPin]="false" [orderBy]="orderBy" [facade]="todayPageFacade"
                     [title]="'ก้าวไกลหน้าหนึ่ง'" [fieldTable]="fieldTable" [actions]="actions"
                     (create)="clickCreateForm()" (edit)="clickEditForm($event)"
                     (delete)="clickDelete($event)"></admin-table-component>

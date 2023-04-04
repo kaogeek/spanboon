@@ -14,3 +14,4 @@ export * from './FormComponent.component';
 export * from './TableComponent.component';
 export * from './DialogDeleteComponent.component';
 export * from './DialogWarningComponent.component';
+export * from './DialogAlert.component';

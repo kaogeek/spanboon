@@ -21,6 +21,7 @@ import { TodayPageFacade } from '../../../services/facade/TodayPageFacade.servic
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import { fromEvent, Subject, Subscription } from 'rxjs';
 import { Location } from '@angular/common';
+import { DialogAlert } from '../../shares/DialogAlert.component';
 
 const PAGE_NAME: string = "today";
 
@@ -270,7 +271,21 @@ export class TodayPage extends AbstractPage implements OnInit {
         this.setFields();
 
     }
-    refreshPage() {
+    public clickClose() {
+        if (
+            !this.selectedValueTitle &&
+            !this.selectedValueType &&
+            !this.selectedValueField &&
+            !this.selectedPosition &&
+            this.limit === 10 &&
+            this.value_stack_first.length === 0 &&
+            this.value_stack_second.length === 0 &&
+            this.value_stack_third.length === 0
+        ) {
+            this.drawer.toggle();
+            return;
+        }
+
         let dialogRef = this.dialog.open(DialogWarningComponent, {
             data: {
                 title: "คุณมีข้อมูลที่ยังไม่ได้บันทึกต้องการปิดหรือไม่"
@@ -756,6 +771,25 @@ export class TodayPage extends AbstractPage implements OnInit {
         const bucketF = [];
         const bucketS = [];
         const bucketT = [];
+        if (this.selectedPosition > 5) {
+            let dialogRef = this.dialog.open(DialogAlert, {
+                data: {
+                    title: "ช่องตำแหน่งไม่สามารถใส่เกิน 5 ได้",
+                    isClose: false,
+                    isConfirm: true,
+                    confirm: {
+                        text: "ตกลง"
+                    }
+                }
+            });
+            dialogRef.afterClosed().subscribe(result => {
+                if (result) {
+                }
+            });
+
+            return;
+        }
+
         if (this.edit === undefined) {
             if (this.value_stack_first.length > 0) {
                 for (const valueStack_f of this.value_stack_first) {
@@ -797,6 +831,7 @@ export class TodayPage extends AbstractPage implements OnInit {
             if ((result.field === 'count') || (result.field === 'score')) {
                 result.buckets = [];
             }
+            console.log("cxzczxc")
 
             if (result.title === '') {
                 return;
@@ -805,6 +840,29 @@ export class TodayPage extends AbstractPage implements OnInit {
             } else if (result.field === '') {
                 return;
             } else if (result.limit === '' || result.limit === null || result.limit === undefined) {
+                return;
+            }
+
+            if (this.stackBuckets.length === 0 &&
+                this.value_stack_first.length === 0 &&
+                this.value_stack_second.length === 0 &&
+                this.value_stack_third.length === 0
+            ) {
+                let dialogRef = this.dialog.open(DialogAlert, {
+                    data: {
+                        title: "กรุณาเพิ่มกลุ่มข้อมูล",
+                        isClose: false,
+                        isConfirm: true,
+                        confirm: {
+                            text: "ตกลง"
+                        }
+                    }
+                });
+                dialogRef.afterClosed().subscribe(result => {
+                    if (result) {
+                    }
+                });
+
                 return;
             }
 

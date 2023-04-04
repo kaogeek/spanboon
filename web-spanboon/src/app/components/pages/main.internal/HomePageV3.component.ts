@@ -26,7 +26,6 @@ import { DialogAlert } from '../../shares/dialog/DialogAlert.component';
 import { DialogCheckBox } from '../../shares/dialog/DialogCheckBox.component';
 import { DialogPostCrad } from '../../shares/dialog/DialogPostCrad.component';
 
-
 declare var $: any;
 
 const PAGE_NAME: string = 'home';
@@ -60,7 +59,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   public apiBaseURL = environment.apiBaseURL;
   public queryParamsUrl: any;
   public filterDate: any = [];
-  public filterMonth: number;
+  public filterMonth: any = [];
 
   maxDate = new Date();
 
@@ -114,6 +113,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     this.getDateFilter();
     super.ngOnInit();
   }
+
   public async saveDate(event: any) {
     this.isLoading = true;
     this.user;
@@ -131,12 +131,22 @@ export class HomePageV3 extends AbstractPage implements OnInit {
       localStorage.setItem('datetime', JSON.stringify(this.testValues));
       this.isLoading = false;
     }).catch((err) => {
+      const date = new Date(this.queryParamsUrl).toISOString();
+      const split = date.split('-');
+      const split1 = split[2];
+      const split2 = split1.split('T');
+      const split3 = split2[0];
+      const days = Number(split3) + 1;
+      const day = days.toString().padStart(2, '0')
+      const month = split[1];
+      const year = split[0];
+      const dateNow = day + '-' + month + '-' + year;
       this.isLoading = false;
       this.testValues = new Date();
       this.dialog.open(DialogAlert, {
         disableClose: true,
         data: {
-          text: 'ไม่พบหน้าหนึ่งฉบับวันที่',
+          text: 'ไม่พบหน้าหนึ่งฉบับวันที่ ' + dateNow,
           bottomText1: 'ตกลง',
           btDisplay1: "none"
         }
@@ -164,12 +174,22 @@ export class HomePageV3 extends AbstractPage implements OnInit {
           }
         }
       }).catch((err) => {
+        const date = new Date(this.queryParamsUrl).toISOString();
+        const split = date.split('-');
+        const split1 = split[2];
+        const split2 = split1.split('T');
+        const split3 = split2[0];
+        const days = Number(split3) + 1;
+        const day = days.toString().padStart(2, '0')
+        const month = split[1];
+        const year = split[0];
+        const dateNow = day + '-' + month + '-' + year;
         this.isLoading = false;
         this.testValues = new Date();
         this.dialog.open(DialogAlert, {
           disableClose: true,
           data: {
-            text: 'ไม่พบหน้าหนึ่งฉบับวันที่',
+            text: 'ไม่พบหน้าหนึ่งฉบับวันที่ ' + dateNow,
             bottomText1: 'ตกลง',
             btDisplay1: "none"
           }
@@ -246,12 +266,15 @@ export class HomePageV3 extends AbstractPage implements OnInit {
 
   dateFilter: (dateFilt: Date | null) => boolean =
     (dateFilt: Date | null) => {
-      const day = (dateFilt || new Date()).getDate();
+      const day = (dateFilt || new Date()).getDate().toString().padStart(2, '0');
       const month = (dateFilt.getMonth() + 1).toString().padStart(2, '0');
+      const md = day + '-' + month;
       for (let d of this.filterDate) {
-        if (day === parseInt(d)) {
-          if (Number(month) === Number(this.filterMonth)) {
-            return day === parseInt(d);
+        if (md === d.toString()) {
+          const split = d.split('-');
+          const daySplit = split[0];
+          if (Number(day) === Number(daySplit)) {
+            return Number(day) === Number(daySplit);
           }
         }
       }
@@ -261,16 +284,20 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     this.mainPageModelFacade.getDate().then((res) => {
       if (res) {
         let listDay: any[] = [];
+        let listMonth: any[] = [];
         for (let date of res) {
           const split = date.split('-');
           const getDays = split[2];
           const getMonths = split[1];
           const splitTime = getDays.split('T');
           const days = splitTime[0];
-          listDay.push(days);
-          this.filterMonth = getMonths;
+          const daymonth = days + '-' + getMonths;
+          listMonth.push(getMonths);
+          listDay.push(daymonth);
         }
+        this.filterMonth = listMonth;
         this.filterDate = listDay;
+
       }
     }).catch((error) => {
       if (error) {
