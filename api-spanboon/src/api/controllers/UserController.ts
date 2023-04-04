@@ -145,7 +145,33 @@ export class UserController {
             }
         }
     }
-
+    @Post('/ua')
+    @Authorized('user')
+    public async uaVersion(@Res() res: any, @Req() req: any): Promise<any> {
+        const userId = new ObjectID(req.user.id);
+        const user = await this.userService.findOne({_id:userId});
+        if(user){
+            const query ={_id:userId};
+            const newValues = {$set:
+                {
+                    uaAcceptDate:req.body.uaAcceptDate,
+                    uaVersion:req.body.uaVersion,
+                    tos:req.body.tos,
+                    tosVersion:req.body.tosVersion
+                }};
+            const update = await this.userService.update(query,newValues);
+            if(update){
+                const successResponseF = ResponseUtil.getSuccessResponse('Successfully Accepted Ua and Tos.', undefined);
+                return res.status(200).send(successResponseF);
+            }else{
+                const errorResponse = ResponseUtil.getErrorResponse('Cannot Update.', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        }else{
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot Find User.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
     @Get('/subject/search')
     @Authorized('user')
     public async subject(@QueryParam('mode') mode: string, @Res() res: any, @Req() req: any): Promise<any> {
