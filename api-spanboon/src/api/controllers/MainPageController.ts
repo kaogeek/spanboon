@@ -6,7 +6,7 @@
  */
 
 import 'reflect-metadata';
-import { JsonController, Res, Get, Post, Body, Req, QueryParam,Authorized } from 'routing-controllers';
+import { JsonController, Res, Get, Post, Body, Req, QueryParam, Authorized } from 'routing-controllers';
 import { ResponseUtil } from '../../utils/ResponseUtil';
 import { ProcessorUtil } from '../../utils/ProcessorUtil';
 import { ObjectID } from 'mongodb';
@@ -110,18 +110,18 @@ export class MainPageController {
         }
         const emergencyCheckEndDate = assetTodayRangeDate.endDateTime;
         const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), assetTodayDate);
-        
+
         if (toDate) {
             const checkSnapshot = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: toDate });
 
             if (checkSnapshot !== undefined && checkSnapshot !== null) {
                 const successResponseS = ResponseUtil.getSuccessResponse('Successfully Main Page Data', checkSnapshot.data);
                 return res.status(200).send(successResponseS);
-            }else{
-                const maxDate = await this.kaokaiTodaySnapShotService.aggregate([{$sort:{endDateTime: -1}},{$limit:1}]);
+            } else {
+                const maxDate = await this.kaokaiTodaySnapShotService.aggregate([{ $sort: { endDateTime: -1 } }, { $limit: 1 }]);
                 return maxDate[0];
             }
-        }  
+        }
         // ordering
         const emerProcessor: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service);
         emerProcessor.setData({
@@ -1703,7 +1703,7 @@ export class MainPageController {
         } if (data.kaokaiContent.contents.length > 0) {
             buckets.push(data.kaokaiContent.contents);
         }
-        
+
         if (hours === parseInt(hourSplit, 10) && minutes === parseInt(minuteSpit, 10)) {
             const contents = data;
             const startDate = startDateRange;
@@ -1722,8 +1722,8 @@ export class MainPageController {
                     this.pushNotification(user, user.email, content.data, 'ก้าวไกลวันนี้', endDateTimeToday);
                 }
             }
-        }else{
-            const maxDate = await this.kaokaiTodaySnapShotService.aggregate([{$sort:{endDateTime: -1}},{$limit:1}]);
+        } else {
+            const maxDate = await this.kaokaiTodaySnapShotService.aggregate([{ $sort: { endDateTime: -1 } }, { $limit: 1 }]);
             return maxDate[0];
         }
 
@@ -1756,23 +1756,37 @@ export class MainPageController {
         let linkPostRoundRobinT = undefined;
 
         if (content.pageRoundRobin.contents.length > 0) {
-            postRoundRobinF = content.pageRoundRobin.contents[0].post.title;
-            nameRoundRobinF = content.pageRoundRobin.contents[0].owner.name ? content.pageRoundRobin.contents[0].owner.name : content.pageRoundRobin.contents[0].owner.displayName;
-            linkPostRoundRobinF = process.env.APP_POST + '/' + content.pageRoundRobin.contents[0].post._id;
-            if (postRoundRobinF.length > 38) {
-                postRoundRobinF = content.pageRoundRobin.contents[0].post.title.slice(0, 38) + '...';
+            if (content.pageRoundRobin.contents[0] !== undefined) {
+                nameRoundRobinF = content.pageRoundRobin.contents[0].owner.name ? content.pageRoundRobin.contents[0].owner.name : content.pageRoundRobin.contents[0].owner.displayName;
+            }
+            if (content.pageRoundRobin.contents[0] !== undefined) {
+                linkPostRoundRobinF = process.env.APP_POST + '/' + content.pageRoundRobin.contents[0].post._id;
+            }
+            if (content.pageRoundRobin.contents[0] !== undefined) {
+                postRoundRobinF = content.pageRoundRobin.contents[0].post.title;
+                if(postRoundRobinF.length >38){
+                    postRoundRobinF = content.pageRoundRobin.contents[0].post.title.slice(0, 38) + '...';
+                }
             }
             if (content.pageRoundRobin.contents[0] !== undefined) {
                 picPostRoundRobinF = process.env.APP_API + content.pageRoundRobin.contents[0].coverPageUrl ? process.env.APP_API + content.pageRoundRobin.contents[0].coverPageUrl + '/image' : '';
             }
-            postRoundRobinS = content.pageRoundRobin.contents[1].post.title;
-            nameRoundRobinS = content.pageRoundRobin.contents[1].owner.name ? content.pageRoundRobin.contents[1].owner.name : content.pageRoundRobin.contents[1].owner.displayName;
-            linkPostRoundRobinS = process.env.APP_POST + '/' + content.pageRoundRobin.contents[1].post._id;
+
+            if (content.pageRoundRobin.contents[1] !== undefined) {
+                postRoundRobinS = content.pageRoundRobin.contents[1].post.title;
+                if (postRoundRobinS.length > 38) {
+                    postRoundRobinS = content.pageRoundRobin.contents[1].post.title.slice(0, 38) + '...';
+                }
+
+            }
+            if (content.pageRoundRobin.contents[1] !== undefined) {
+                nameRoundRobinS = content.pageRoundRobin.contents[1].owner.name ? content.pageRoundRobin.contents[1].owner.name : content.pageRoundRobin.contents[1].owner.displayName;
+            }
+            if (content.pageRoundRobin.contents[1] !== undefined) {
+                linkPostRoundRobinS = process.env.APP_POST + '/' + content.pageRoundRobin.contents[1].post._id;
+            }
             if (content.pageRoundRobin.contents[1] !== undefined) {
                 picPostRoundRobinS = process.env.APP_API + content.pageRoundRobin.contents[1].coverPageUrl ? process.env.APP_API + content.pageRoundRobin.contents[1].coverPageUrl + '/image' : '';
-            }
-            if (postRoundRobinS.length > 38) {
-                postRoundRobinS = content.pageRoundRobin.contents[1].post.title.slice(0, 38) + '...';
             }
 
             if (content.pageRoundRobin.contents[2] !== undefined) {
@@ -2711,7 +2725,7 @@ export class MainPageController {
                 </div>`;
 
             sendMail = MAILService.pushNotification(message, email, subject);
-        }else if(picPostMajorF !== undefined &&
+        } else if (picPostMajorF !== undefined &&
             picPostMajorS !== undefined &&
             postMajorTitleF !== undefined &&
             postMajorTitleS !== undefined &&
@@ -2736,8 +2750,8 @@ export class MainPageController {
             hashTag !== undefined &&
             picPostSection !== undefined &&
             splitPostSection !== undefined
-            ){
-                message = `
+        ) {
+            message = `
                 <div style="padding: 10px;background: white;width: 850px;">
                    <div style="width: 60px;height: 52px;padding: 10px;position: absolute;float: right;background: white;">
                         <img src='https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png'

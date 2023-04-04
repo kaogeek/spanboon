@@ -145,6 +145,7 @@ export class UserController {
             }
         }
     }
+
     @Post('/ua')
     @Authorized('user')
     public async uaVersion(@Res() res: any, @Req() req: any): Promise<any> {
@@ -154,7 +155,7 @@ export class UserController {
             const query ={_id:userId};
             const newValues = {$set:
                 {
-                    uaAcceptDate:req.body.uaAcceptDate,
+                    ua:req.body.ua,
                     uaVersion:req.body.uaVersion,
                     tos:req.body.tos,
                     tosVersion:req.body.tosVersion
