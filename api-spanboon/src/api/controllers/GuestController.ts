@@ -143,8 +143,10 @@ export class GuestController {
                 user.mergeEM = true;
                 user.subjectAttention = undefined;
                 user.province = users.province;
-                user.uaAcceptDate = users.uaAcceptDate;
-                user.uaVersion = users.uaVersion;
+                user.ua = undefined;
+                user.uaVersion = undefined;
+                user.tos = undefined;
+                user.tosVersion = undefined;
 
                 if (gender !== null || gender !== undefined) {
                     user.gender = gender;
@@ -299,8 +301,10 @@ export class GuestController {
                 user.mergeFB = true;
                 user.subjectAttention = undefined;
                 user.province = users.province;
-                user.uaAcceptDate = users.uaAcceptDate;
-                user.uaVersion = users.uaVersion;
+                user.ua = undefined;
+                user.uaVersion = undefined;
+                user.tos = undefined;
+                user.tosVersion = undefined;
 
                 if (gender !== null || gender !== undefined) {
                     user.gender = gender;
@@ -446,8 +450,10 @@ export class GuestController {
                 user.mergeAP = true;
                 user.subjectAttention = undefined;
                 user.province = users.province;
-                user.uaAcceptDate = users.uaAcceptDate;
-                user.uaVersion = users.uaVersion;
+                user.ua = undefined;
+                user.uaVersion = undefined;
+                user.tos = undefined;
+                user.tosVersion = undefined;
 
                 if (gender !== null || gender !== undefined) {
                     user.gender = gender;
@@ -615,8 +621,10 @@ export class GuestController {
                 user.mergeGG = true;
                 user.subjectAttention = undefined;
                 user.province = users.province;
-                user.uaAcceptDate = users.uaAcceptDate;
-                user.uaVersion = users.uaVersion;
+                user.ua = undefined;
+                user.uaVersion = undefined;
+                user.tos = undefined;
+                user.tosVersion = undefined;
 
                 if (gender !== null || gender !== undefined) {
                     user.gender = gender;
@@ -779,8 +787,10 @@ export class GuestController {
                 user.mergeTW = true;
                 user.subjectAttention = undefined;
                 user.province = users.province;
-                user.uaAcceptDate = users.uaAcceptDate;
-                user.uaVersion = users.uaVersion;
+                user.ua = undefined;
+                user.uaVersion = undefined;
+                user.tos = undefined;
+                user.tosVersion = undefined;
 
                 if (gender !== null || gender !== undefined) {
                     user.gender = gender;

@@ -73,16 +73,16 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                 for (const sort of sorts) {
                     if (sort !== undefined && sort !== null && sort > 0 && sort !== checkPosition1 && sort !== checkPosition2) {
                         sortV.push(sort);
-                    } else if(sort !== undefined && sort !== null && sort < 0 && sort !== checkPosition1 && sort !== checkPosition2){
+                    } else if (sort !== undefined && sort !== null && sort < 0 && sort !== checkPosition1 && sort !== checkPosition2) {
                         negative.push(sort);
-                    }else {
+                    } else {
                         continue;
                     }
-                }   
-                for(const nega of negative){
-                    if(nega !== undefined && nega !== null && nega !== checkPosition1 && nega !== checkPosition2){
+                }
+                for (const nega of negative) {
+                    if (nega !== undefined && nega !== null && nega !== checkPosition1 && nega !== checkPosition2) {
                         sortV.push(nega);
-                    }else{
+                    } else {
                         continue;
                     }
                 }
@@ -97,7 +97,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     result.type = this.getType(); // set type by processor type
                     result.position = null;
                     // result.contents.push(contents);
-                    resolve(result);      
+                    resolve(result);
                 }
                 limit = (limit === undefined || limit === null) ? provincePage.limit : this.DEFAULT_SEARCH_LIMIT;
                 offset = (offset === undefined || offset === null) ? this.DEFAULT_SEARCH_OFFSET : offset;
@@ -303,7 +303,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                             },
                         ]
                     );
-                    if(postAggregateSet1.length >0){
+                    if (postAggregateSet1.length > 0) {
                         pageStacks.push(postAggregateSet1);
                     }
                     const postAggregateSet2 = await this.postsService.aggregate(
@@ -370,7 +370,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                             },
                         ]
                     );
-                    if(postAggregateSet2.length>0){
+                    if (postAggregateSet2.length > 0) {
                         pageStacks.push(postAggregateSet2);
                     }
                     const postAggregateSet3 = await this.postsService.aggregate(
@@ -437,7 +437,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                             },
                         ]
                     );
-                    if(postAggregateSet3.length >0){
+                    if (postAggregateSet3.length > 0) {
                         pageStacks.push(postAggregateSet3);
                     }
                     // set 1
@@ -1261,7 +1261,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     }
 
                     const postStmt1 = [
-                        { $match: { isDraft: false, deleted: false, hidden: false,pageId:{$ne:null} , emergencyEvent: { $ne: null, $in: bucketF }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                        { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $ne: null }, emergencyEvent: { $ne: null, $in: bucketF }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
                         { $sort: { summationScore: -1 } },
 
                         {
@@ -1328,7 +1328,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     postObject.push(postAggregate1);
 
                     const postStmt2 = [
-                        { $match: { isDraft: false, deleted: false, hidden: false,pageId:{$ne:null} , emergencyEvent: { $ne: null, $in: bucketS } } },
+                        { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $ne: null }, emergencyEvent: { $ne: null, $in: bucketS } } },
                         { $sort: { summationScore: -1 } },
 
                         {
@@ -1395,7 +1395,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     postObject.push(postAggregate2);
 
                     const postStmt3 = [
-                        { $match: { isDraft: false, deleted: false, hidden: false, pageId:{$ne:null} ,emergencyEvent: { $ne: null, $in: bucketT } } },
+                        { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $ne: null }, emergencyEvent: { $ne: null, $in: bucketT } } },
                         { $sort: { summationScore: -1 } },
 
                         {
@@ -2235,7 +2235,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     result.dateTime = lastestDate;
 
                     resolve(result);
-                }else{
+                } else {
                     const result: SectionModel = new SectionModel();
                     result.title = (this.config === undefined || this.config.title === undefined) ? provincePage.title : 'ก้าวไกลทุกจังหวัด';
                     result.subtitle = '';

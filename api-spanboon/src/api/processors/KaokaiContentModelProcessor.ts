@@ -76,16 +76,16 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                 for (const sort of sorts) {
                     if (sort !== undefined && sort !== null && sort > 0 && sort !== checkPosition1 && sort !== checkPosition2 && sort !== checkPosition3 && sort !== checkPosition4) {
                         sortV.push(sort);
-                    } else if(sort !== undefined && sort !== null && sort < 0 && sort !== checkPosition1 && sort !== checkPosition2 && sort !== checkPosition3 && sort !== checkPosition4){
+                    } else if (sort !== undefined && sort !== null && sort < 0 && sort !== checkPosition1 && sort !== checkPosition2 && sort !== checkPosition3 && sort !== checkPosition4) {
                         negative.push(sort);
-                    }else {
+                    } else {
                         continue;
                     }
-                }   
-                for(const nega of negative){
-                    if(nega !== undefined && nega !== null && nega !== checkPosition1 && nega !== checkPosition2 && nega !== checkPosition3 && nega !== checkPosition4){
+                }
+                for (const nega of negative) {
+                    if (nega !== undefined && nega !== null && nega !== checkPosition1 && nega !== checkPosition2 && nega !== checkPosition3 && nega !== checkPosition4) {
                         sortV.push(nega);
-                    }else{
+                    } else {
                         continue;
                     }
                 }
@@ -100,8 +100,8 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                     result.type = this.getType(); // set type by processor type
                     result.position = null;
                     // result.contents.push(contents);
-                    resolve(result);                
-                }                
+                    resolve(result);
+                }
                 limit = (limit === undefined || limit === null) ? ContentProcessor.limit : this.DEFAULT_SEARCH_LIMIT;
                 offset = (offset === undefined || offset === null) ? this.DEFAULT_SEARCH_OFFSET : offset;
                 const searchFilter: SearchFilter = new SearchFilter();
@@ -665,7 +665,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
 
                     ];
                     const postAggregate = await this.postsService.aggregate(postStmt);
-                    if(postAggregate.length >0){
+                    if (postAggregate.length > 0) {
                         bucketAll.push(postAggregate);
                     }
                     const postStmt2 = [
@@ -733,7 +733,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
 
                     ];
                     const postAggregate2 = await this.postsService.aggregate(postStmt2);
-                    if(postAggregate2.length >0){
+                    if (postAggregate2.length > 0) {
                         bucketAll.push(postAggregate2);
                     }
                     const postStmt3 = [
@@ -802,7 +802,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                     ];
 
                     const postAggregate3 = await this.postsService.aggregate(postStmt3);
-                    if(postAggregate3.length >0){
+                    if (postAggregate3.length > 0) {
                         bucketAll.push(postAggregate3);
                     }
                     const stackPage = [];
@@ -888,7 +888,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                     }
 
                     const postStmt1 = [
-                        { $match: { isDraft: false, deleted: false, hidden: false, pageId:{$ne:null} ,emergencyEvent: { $ne: null, $in: bucketF }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                        { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $ne: null }, emergencyEvent: { $ne: null, $in: bucketF }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
                         { $sort: { summationScore: -1 } },
 
                         {
@@ -952,12 +952,12 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                     ];
 
                     const postAggregate1 = await this.postsService.aggregate(postStmt1);
-                    if(postAggregate1.length >0){
+                    if (postAggregate1.length > 0) {
                         postObject.push(postAggregate1);
                     }
 
                     const postStmt2 = [
-                        { $match: { isDraft: false, deleted: false, hidden: false,pageId:{$ne:null} , emergencyEvent: { $ne: null, $in: bucketS } } },
+                        { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $ne: null }, emergencyEvent: { $ne: null, $in: bucketS } } },
                         { $sort: { summationScore: -1 } },
 
                         {
@@ -1021,11 +1021,11 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                     ];
 
                     const postAggregate2 = await this.postsService.aggregate(postStmt2);
-                    if(postAggregate2.length >0){
+                    if (postAggregate2.length > 0) {
                         postObject.push(postAggregate2);
                     }
                     const postStmt3 = [
-                        { $match: { isDraft: false, deleted: false, hidden: false,pageId:{$ne:null} , emergencyEvent: { $ne: null, $in: bucketT } } },
+                        { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $ne: null }, emergencyEvent: { $ne: null, $in: bucketT } } },
                         { $sort: { summationScore: -1 } },
 
                         {
@@ -1088,7 +1088,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                         }
                     ];
                     const postAggregate3 = await this.postsService.aggregate(postStmt3);
-                    if(postAggregate3.length>0){
+                    if (postAggregate3.length > 0) {
                         postObject.push(postAggregate3);
                     }
                     const stackPage = [];
@@ -1292,7 +1292,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                             },
                         ]
                     );
-                    if(postAggregateSet1.length >0){
+                    if (postAggregateSet1.length > 0) {
                         pageStacks.push(postAggregateSet1);
                     }
                     const postAggregateSet2 = await this.postsService.aggregate(
@@ -1359,7 +1359,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                             },
                         ]
                     );
-                    if(postAggregateSet2.length >0){
+                    if (postAggregateSet2.length > 0) {
                         pageStacks.push(postAggregateSet2);
                     }
                     const postAggregateSet3 = await this.postsService.aggregate(
@@ -1426,7 +1426,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                             },
                         ]
                     );
-                    if(postAggregateSet3.length >0){
+                    if (postAggregateSet3.length > 0) {
                         pageStacks.push(postAggregateSet3);
                     }
                     // set 1
@@ -1630,7 +1630,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                             },
                         ]
                     );
-                    if(postAggregateSet1.length >0){
+                    if (postAggregateSet1.length > 0) {
                         pageStacks.push(postAggregateSet1);
                     }
                     const postAggregateSet2 = await this.postsService.aggregate(
@@ -1697,7 +1697,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                             },
                         ]
                     );
-                    if(postAggregateSet2.length>0){
+                    if (postAggregateSet2.length > 0) {
                         pageStacks.push(postAggregateSet2);
                     }
                     const postAggregateSet3 = await this.postsService.aggregate(
@@ -1764,7 +1764,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                             },
                         ]
                     );
-                    if(postAggregateSet3.length >0){
+                    if (postAggregateSet3.length > 0) {
                         pageStacks.push(postAggregateSet3);
                     }
                     // set 1
@@ -1917,7 +1917,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                             },
                         ]
                     );
-                    if(postAggregateSet1.length >0){
+                    if (postAggregateSet1.length > 0) {
                         bucketAll.push(postAggregateSet1);
                     }
                     const postAggregateSet2 = await this.postsService.aggregate(
@@ -1984,7 +1984,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                             },
                         ]
                     );
-                    if(postAggregateSet2.length){
+                    if (postAggregateSet2.length) {
                         bucketAll.push(postAggregateSet2);
                     }
                     const postAggregateSet3 = await this.postsService.aggregate(
@@ -2051,7 +2051,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                             },
                         ]
                     );
-                    if(postAggregateSet3.length>0){
+                    if (postAggregateSet3.length > 0) {
                         bucketAll.push(postAggregateSet3);
                     }
                     const stackPage = [];
@@ -2191,7 +2191,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
 
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
-                    result.title = (this.config === undefined || this.config.title === undefined) ? ContentProcessor.title :'ก้าวไกลรอบด้าน';
+                    result.title = (this.config === undefined || this.config.title === undefined) ? ContentProcessor.title : 'ก้าวไกลรอบด้าน';
                     result.subtitle = '';
                     result.description = '';
                     result.iconUrl = '';
@@ -2236,7 +2236,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                     }
                     result.dateTime = lastestDate;
                     resolve(result);
-                }else{
+                } else {
                     const result: SectionModel = new SectionModel();
                     result.title = (this.config === undefined || this.config.title === undefined) ? ContentProcessor.title : 'ก้าวไกลรอบด้าน';
                     result.subtitle = '';

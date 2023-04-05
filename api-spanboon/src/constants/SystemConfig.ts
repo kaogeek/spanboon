@@ -69,3 +69,8 @@ export const DEFAULT_KAOKAITODAY_TIMER_CHECK_DAY = '06:00';
 
 export const KAOKAITODAY_RANGE_DATE_EMERGENCY ='kaokaiToday.time.emergencyEvent.date';
 export const DEFAULT_KAOKAITODAY_RANGE_DATE_EMERGENY =365;
+
+export const SWITCH_CASE_SEND_EMAIL = 'switch.case.send.email';
+export const DEFAULT_SWITCH_CASE_SEND_EMAIL = true;
+
+export const THE_TODAY_USER_LIST = 'the.today.user.list';

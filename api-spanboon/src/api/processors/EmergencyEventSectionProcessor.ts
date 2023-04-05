@@ -243,7 +243,7 @@ export class EmergencyEventSectionProcessor extends AbstractSectionModelProcesso
                     isPin: true,
                     isClose: false,
                 };
-                if(timeStampSettings>timeStampToday){
+                if (timeStampSettings > timeStampToday) {
                     const searchResult = await this.emergencyEvent.aggregate([
                         { $match: searchFilter.whereConditions },
                         { $sort: { ordering: 1 } },
@@ -371,7 +371,7 @@ export class EmergencyEventSectionProcessor extends AbstractSectionModelProcesso
                     result.dateTime = lastestDate;
 
                     resolve(result);
-                }else{
+                } else {
                     const searchResult = await this.emergencyEvent.aggregate([
                         { $match: searchFilter.whereConditions },
                         { $sort: { ordering: 1 } },
@@ -494,7 +494,7 @@ export class EmergencyEventSectionProcessor extends AbstractSectionModelProcesso
 
                         contentModel.dateTime = row.createdDate;
                         contentModel.data = moreData;
-                        // result.contents.push(contentModel);
+                        result.contents.push(contentModel);
                     }
                     result.dateTime = lastestDate;
 

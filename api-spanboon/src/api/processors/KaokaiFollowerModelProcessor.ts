@@ -39,28 +39,28 @@ export class KaokaiFollowerModelProcessor extends AbstractSeparateSectionProcess
                 }
                 const pageContent = [];
                 const userContent = [];
-                const follower = await this.userFollowService.find({userId:new ObjectID(userId)});
-                if(follower.length >0){
-                    for(const follow of follower){
-                        if(follow.subjectType === 'PAGE'){
+                const follower = await this.userFollowService.find({ userId: new ObjectID(userId) });
+                if (follower.length > 0) {
+                    for (const follow of follower) {
+                        if (follow.subjectType === 'PAGE') {
                             pageContent.push(new ObjectID(follow.subjectId));
-                        }else{
+                        } else {
                             userContent.push(new ObjectID(follow.subjectId));
                         }
                     }
-                }else{
+                } else {
                     resolve(undefined);
                 }
                 const postStmd = await this.postsService.aggregate(
                     [
-                        {$match:{ isDraft: false, deleted: false, hidden: false,pageId:{$in:pageContent},ownerUser:{$in:userContent}}},
-                        {$sort:{createdDate:-1}},
-                        {$limit:limit},
+                        { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageContent }, ownerUser: { $in: userContent } } },
+                        { $sort: { createdDate: -1 } },
+                        { $limit: limit },
                     ]
                 );
                 const lastestDate = null;
                 const result: SectionModel = new SectionModel();
-                result.title = (this.config === undefined || this.config.title === undefined) ? 'ข่าวสารก่อนหน้านี้':'ข่าวสารก่อนหน้านี้';
+                result.title = (this.config === undefined || this.config.title === undefined) ? 'ข่าวสารก่อนหน้านี้' : 'ข่าวสารก่อนหน้านี้';
                 result.subtitle = '';
                 result.description = '';
                 result.iconUrl = '';
