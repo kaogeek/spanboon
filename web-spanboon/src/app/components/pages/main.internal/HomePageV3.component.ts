@@ -43,6 +43,8 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   public isPostNewTab: boolean = false;
   public isRes: boolean = false;
   public isAnnounce: boolean = false;
+  public isKaokai: boolean = false;
+  public isOldContent: boolean = false;
   public windowWidth: any;
   public mainPageModelFacade: MainPageSlideFacade;
   public model: any = undefined;
@@ -268,7 +270,8 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     (dateFilt: Date | null) => {
       const day = (dateFilt || new Date()).getDate().toString().padStart(2, '0');
       const month = (dateFilt.getMonth() + 1).toString().padStart(2, '0');
-      const md = day + '-' + month;
+      const year = (dateFilt.getFullYear());
+      const md = day + '-' + month + '-' + year;
       for (let d of this.filterDate) {
         if (md === d.toString()) {
           const split = d.split('-');
@@ -289,9 +292,10 @@ export class HomePageV3 extends AbstractPage implements OnInit {
           const split = date.split('-');
           const getDays = split[2];
           const getMonths = split[1];
+          const getYear = split[0];
           const splitTime = getDays.split('T');
           const days = splitTime[0];
-          const daymonth = days + '-' + getMonths;
+          const daymonth = days + '-' + getMonths + '-' + getYear;
           listMonth.push(getMonths);
           listDay.push(daymonth);
         }
@@ -414,9 +418,11 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     if (this.windowWidth <= 479) {
       this.isPostNewTab = true;
       this.isAnnounce = true;
+      this.isKaokai = true;
     } else {
       this.isPostNewTab = false;
       this.isAnnounce = false;
+      this.isKaokai = false;
     }
 
     if (this.windowWidth <= 1024) {

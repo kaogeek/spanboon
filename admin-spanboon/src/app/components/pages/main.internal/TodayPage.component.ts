@@ -227,6 +227,26 @@ export class TodayPage extends AbstractPage implements OnInit {
                 align: "center"
             },
             {
+                name: "type",
+                label: "ประเภท",
+                width: "100pt",
+                class: "", formatColor: false, formatImage: false,
+                link: [],
+                formatDate: false,
+                formatId: false,
+                align: "center"
+            },
+            {
+                name: "field",
+                label: "ฟิลด์",
+                width: "100pt",
+                class: "", formatColor: false, formatImage: false,
+                link: [],
+                formatDate: false,
+                formatId: false,
+                align: "center"
+            },
+            {
                 name: "bucket1",
                 label: "ถัง 1",
                 width: "180pt",
@@ -831,7 +851,6 @@ export class TodayPage extends AbstractPage implements OnInit {
             if ((result.field === 'count') || (result.field === 'score')) {
                 result.buckets = [];
             }
-            console.log("cxzczxc")
 
             if (result.title === '') {
                 return;

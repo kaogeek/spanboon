@@ -43,7 +43,6 @@ export class DialogCheckBox extends AbstractPage {
     }
 
     public ngOnInit(): void {
-        console.log(this.data)
     }
 
     public ngAfterViewInit(): void {

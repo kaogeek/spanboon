@@ -45,6 +45,7 @@ export class AuthenManager {
   isDesktopDevice: boolean;
   isTablet: boolean;
   isMobile: boolean;
+  isTos: string;
   constructor(http: HttpClient, observManager: ObservableManager, routeActivated: ActivatedRoute) {
     this.http = http;
     this.observManager = observManager;
@@ -429,6 +430,27 @@ export class AuthenManager {
     });
   }
 
+  public UserUA(tos: string, plc: string, date: any): Promise<any> {
+
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/user/ua';
+      let body = {
+        "uaAcceptDate": date,
+        "tosAcceptDate": date,
+        "uaVersion": plc,
+        "tosVersion": tos
+      }
+
+      let options = this.getDefaultOptions();
+
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
   public clearStorage(): void {
     this.token = undefined;
     this.user = undefined;
@@ -629,19 +651,32 @@ export class AuthenManager {
   }
 
   public getPolicy() {
-    const local = localStorage.getItem('policy');
-    if (!!local) {
-      return local;
+    const plc = this.user.uaVersion;
+    if (!!plc) {
+      return plc;
     } else {
       return null;
     }
   }
 
   public setPolicy(policy: string) {
-    localStorage.setItem('policy', policy);
+    const tos = this.isTos;
+    const plc = policy;
+    const date = new Date();
+    if (!!tos && !!plc) {
+      this.UserUA(tos, plc, date).then((res) => {
+        if (res) {
+        }
+      }).catch((err) => {
+        if (err) {
+        }
+      })
+    }
   }
 
-  public checkVersionPolicy(version: string): boolean {
+  public checkVersionPolicy(version: string, user: any): boolean {
+    let users = JSON.parse(localStorage.getItem('pageUser'));
+    this.user = user ? user : users;
     if (this.getPolicy() === version) {
       return true;
     } else {
@@ -650,19 +685,21 @@ export class AuthenManager {
   }
 
   public getTos(): string {
-    const local = localStorage.getItem('tos');
-    if (!!local) {
-      return local;
+    const tos = this.user.tosVersion;
+    if (!!tos) {
+      return tos;
     } else {
       return null;
     }
   }
 
   public setTos(tos: string) {
-    localStorage.setItem('tos', tos);
+    this.isTos = 'v2';
   }
 
-  public checkVersionTos(version: string): boolean {
+  public checkVersionTos(version: string, user: any): boolean {
+    let users = JSON.parse(localStorage.getItem('pageUser'));
+    this.user = user ? user : users;
     if (this.getTos() === version) {
       return true;
     } else {

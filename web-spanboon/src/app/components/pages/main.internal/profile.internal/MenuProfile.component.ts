@@ -29,7 +29,8 @@ export class MenuProfile extends AbstractPage implements OnInit {
     public router: Router;
     private observManager: ObservableManager;
     private assetFacade: AssetFacade;
-    public isActive: boolean;
+    public isActive1: boolean;
+    public isActive2: boolean;
     public isSelect: boolean;
     public profileUser: any;
 
@@ -172,13 +173,16 @@ export class MenuProfile extends AbstractPage implements OnInit {
     }
 
     public getLinkProfile() {
-        this.isActive = true;
+        this.isActive1 = true;
+        this.isActive2 = false;
         this.router.navigateByUrl("/profile/" + this.getCurrentUniqueId());
 
     }
 
     public settingProfile() {
-        this.showAlertDevelopDialog();
+        this.isActive2 = true;
+        this.isActive1 = false;
+        this.router.navigateByUrl("/account/settings");
     }
 
     public notificationProfile() {
