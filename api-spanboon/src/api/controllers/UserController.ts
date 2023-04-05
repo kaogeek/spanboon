@@ -146,9 +146,9 @@ export class UserController {
         }
     }
 
-    @Post('/send/email')
+    @Post('/notification/settings')
     @Authorized('user')
-    public async sendEmail(@Res() res: any, @Req() req: any): Promise<any> {
+    public async settingsUserProfile(@Res() res: any, @Req() req: any): Promise<any> {
         const userId = new ObjectID(req.user.id);
         const user = await this.userService.findOne({ _id: userId });
         if (user) {
@@ -156,7 +156,7 @@ export class UserController {
             const newValues = {
                 $set:
                 {
-                    sendEmail: req.body.sendEmail,
+                    subscribeEmail: req.body.sendEmail,
 
                 }
             };
