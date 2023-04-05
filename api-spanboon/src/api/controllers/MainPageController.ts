@@ -27,7 +27,7 @@ import { LastestLookingSectionProcessor } from '../processors/LastestLookingSect
 // import { StillLookingSectionProcessor } from '../processors/StillLookingSectionProcessor';
 import { EmergencyEventSectionProcessor } from '../processors/EmergencyEventSectionProcessor';
 import { PostSectionProcessor } from '../processors/PostSectionProcessor';
-import { PostSectionProcessor2 } from '../processors/PostSectionProcessor2';
+import { SummationPostProcessor } from '../processors/SummationPostProcessor';
 import { PageRoundRobinProcessor } from '../processors/PageRoundRobinProcessor';
 import { MajorTrendSectionModelProcessor } from '../processors/majorTrendSectionModelProcessor';
 import { ObjectiveProcessor } from '../processors/ObjectiveProcessor';
@@ -138,17 +138,17 @@ export class MainPageController {
 
         const emerSectionModel = await emerProcessor.process2();
         // summation
-        const postProcessor: PostSectionProcessor2 = new PostSectionProcessor2(this.postsService, this.s3Service, this.userLikeService);
-        postProcessor.setData({
+        const summaTionpostProcessor: SummationPostProcessor = new SummationPostProcessor(this.postsService, this.s3Service, this.userLikeService);
+        summaTionpostProcessor.setData({
             userId,
             startDateTime: monthRange[0],
             endDateTime: monthRange[1]
         });
-        postProcessor.setConfig({
+        summaTionpostProcessor.setConfig({
             searchOfficialOnly
         });
 
-        const postSectionModel = await postProcessor.process();
+        const postSectionModel = await summaTionpostProcessor.process();
         // roundRobin
         const pageProcessor: PageRoundRobinProcessor = new PageRoundRobinProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService, this.pageService);
         pageProcessor.setData({
@@ -391,19 +391,30 @@ export class MainPageController {
 
     @Get('/days/check')
     public async daysCheck(@Res() res: any, @Req() req: any): Promise<any> {
-        const dateTime = await this.kaokaiTodaySnapShotService.find();
-        const stackDays = [];
-
-        if (dateTime.length > 0) {
-            for (const day of dateTime) {
-                if (day.endDateTime) {
-                    stackDays.push(day.endDateTime);
-                } else {
-                    continue;
+        const now = new Date();
+        const year = now.getFullYear(); // Get the current year
+        const startDate = new Date(year, 0, 1);
+        const endDate = new Date(year, 11, 31);
+        const dateTime = await this.kaokaiTodaySnapShotService.aggregate
+        ([
+            {
+                $match:
+                {
+                    endDateTime:{$gte:startDate,$lte:endDate},
+                }
+            },
+            {
+                $sort:{endDateTime:-1}
+            },
+            {
+                $project:{
+                    endDateTime:1,
+                    _id:0
                 }
             }
-            const sortDate = stackDays.sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
-            const successResponseF = ResponseUtil.getSuccessResponse('Successfully Filter Range Days.', sortDate);
+        ]);
+        if (dateTime.length > 0) {
+            const successResponseF = ResponseUtil.getSuccessResponse('Successfully Filter Range Days.', dateTime);
             return res.status(200).send(successResponseF);
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Error Filter Range Date.', undefined);
@@ -1847,7 +1858,7 @@ export class MainPageController {
                         user = await this.userService.findOne({ email: userEmail });
                         if (user.sendEmail === true) {
                             this.pushNotification(user, user.email, content.data, 'ก้าวไกลวันนี้', endDateTimeToday);
-                        }else{
+                        } else {
                             continue;
                         }
                     }

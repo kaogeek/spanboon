@@ -15,7 +15,7 @@ import { UserLike } from '../models/UserLike';
 import { LIKE_TYPE } from '../../constants/LikeType';
 import moment from 'moment';
 import { ObjectID } from 'mongodb';
-export class PostSectionProcessor2 extends AbstractSeparateSectionProcessor {
+export class SummationPostProcessor extends AbstractSeparateSectionProcessor {
 
     private DEFAULT_SEARCH_LIMIT = 10;
     private DEFAULT_SEARCH_OFFSET = 0;
