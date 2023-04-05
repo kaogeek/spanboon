@@ -49,7 +49,7 @@ export const POST_WEIGHT_SCORE = {
     Y: 'score.weight.facebook',
     Lof: 'score.like.facebook',
     Cof: 'score.comment.facebook',
-    Sof: 'score.shape.facebook'
+    Sof: 'score.share.facebook'
 };
 export const DEFAULT_POST_WEIGHT_SCORE = {
     X: 2,
@@ -70,7 +70,7 @@ export const DEFAULT_KAOKAITODAY_TIMER_CHECK_DAY = '06:00';
 export const KAOKAITODAY_RANGE_DATE_EMERGENCY ='kaokaiToday.time.emergencyEvent.date';
 export const DEFAULT_KAOKAITODAY_RANGE_DATE_EMERGENY =365;
 
-export const SWITCH_CASE_SEND_EMAIL = 'switch.case.send.email';
+export const SWITCH_CASE_SEND_EMAIL = 'kaokaiToday.case.send.email.available';
 export const DEFAULT_SWITCH_CASE_SEND_EMAIL = true;
 
 export const SEND_EMAIL_TO_USER = 'send.email.to.user';

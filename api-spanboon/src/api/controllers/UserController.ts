@@ -146,29 +146,58 @@ export class UserController {
         }
     }
 
+    @Post('/send/email')
+    @Authorized('user')
+    public async sendEmail(@Res() res: any, @Req() req: any): Promise<any> {
+        const userId = new ObjectID(req.user.id);
+        const user = await this.userService.findOne({ _id: userId });
+        if (user) {
+            const query = { _id: userId };
+            const newValues = {
+                $set:
+                {
+                    sendEmail: req.body.sendEmail,
+
+                }
+            };
+            const update = await this.userService.update(query, newValues);
+            if (update) {
+                const successResponseF = ResponseUtil.getSuccessResponse('Successfully Update Status.', undefined);
+                return res.status(200).send(successResponseF);
+            } else {
+                const errorResponse = ResponseUtil.getErrorResponse('Cannot Update.', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot Find User.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
     @Post('/ua')
     @Authorized('user')
     public async uaVersion(@Res() res: any, @Req() req: any): Promise<any> {
         const userId = new ObjectID(req.user.id);
-        const user = await this.userService.findOne({_id:userId});
-        if(user){
-            const query ={_id:userId};
-            const newValues = {$set:
+        const user = await this.userService.findOne({ _id: userId });
+        if (user) {
+            const query = { _id: userId };
+            const newValues = {
+                $set:
                 {
-                    ua:req.body.ua,
-                    uaVersion:req.body.uaVersion,
-                    tos:req.body.tos,
-                    tosVersion:req.body.tosVersion
-                }};
-            const update = await this.userService.update(query,newValues);
-            if(update){
+                    ua: req.body.ua,
+                    uaVersion: req.body.uaVersion,
+                    tos: req.body.tos,
+                    tosVersion: req.body.tosVersion
+                }
+            };
+            const update = await this.userService.update(query, newValues);
+            if (update) {
                 const successResponseF = ResponseUtil.getSuccessResponse('Successfully Accepted Ua and Tos.', undefined);
                 return res.status(200).send(successResponseF);
-            }else{
+            } else {
                 const errorResponse = ResponseUtil.getErrorResponse('Cannot Update.', undefined);
                 return res.status(400).send(errorResponse);
             }
-        }else{
+        } else {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot Find User.', undefined);
             return res.status(400).send(errorResponse);
         }
@@ -180,22 +209,22 @@ export class UserController {
         if (mode !== undefined) {
             mode = mode.toLocaleLowerCase();
         }
-        const userObjId = await this.userService.findOne({_id:ObjectID(uid)});
-        if(userObjId.subjectAttention !== undefined && userObjId.subjectAttention !== null){
+        const userObjId = await this.userService.findOne({ _id: ObjectID(uid) });
+        if (userObjId.subjectAttention !== undefined && userObjId.subjectAttention !== null) {
             const ErrorResponse: any = { status: 0, message: 'You already selected subjectAttention.' };
             return res.status(400).send(ErrorResponse);
         }
-        if(uid !== undefined){
+        if (uid !== undefined) {
             // subject 
             const contentPage = await this.pageService.aggregate([
-                {$match:{subject:{$ne:null}}},
-                {$group:{_id:{subject:'$subject'}}}
+                { $match: { subject: { $ne: null } } },
+                { $group: { _id: { subject: '$subject' } } }
             ]);
-            if(contentPage !== undefined && contentPage !== null){
+            if (contentPage !== undefined && contentPage !== null) {
                 const successResponse = ResponseUtil.getSuccessResponse('Search HashTag.', contentPage);
                 return res.status(200).send(successResponse);
             }
-        }else{
+        } else {
             const ErrorResponse: any = { status: 0, message: 'Error maybe login is not success.' };
             return res.status(400).send(ErrorResponse);
         }
@@ -205,29 +234,29 @@ export class UserController {
     @Authorized('user')
     public async subjectUser(@Body({ validate: true }) userHashtag: UserTagRequest, @QueryParam('mode') mode: string, @Res() res: any, @Req() req: any): Promise<any> {
         const uid = new ObjectID(req.user.id);
-        const userContent = await this.userService.findOne({_id:uid});
+        const userContent = await this.userService.findOne({ _id: uid });
         if (mode !== undefined) {
             mode = mode.toLocaleLowerCase();
         }
-        if(uid === undefined && uid === null){
+        if (uid === undefined && uid === null) {
             const ErrorResponse: any = { status: 0, message: 'Error maybe login is not success.' };
             return res.status(400).send(ErrorResponse);
         }
-        if(userHashtag.subject.length > 5){
+        if (userHashtag.subject.length > 5) {
             const ErrorResponse: any = { status: 0, message: 'Error Please select content at less than or equal 5.' };
             return res.status(400).send(ErrorResponse);
         }
-        if(userContent.subjectAttention !== undefined && userContent.subjectAttention !== null && userContent.subjectAttention.length >0){
+        if (userContent.subjectAttention !== undefined && userContent.subjectAttention !== null && userContent.subjectAttention.length > 0) {
             const ErrorResponse: any = { status: 0, message: 'You have been selected content.' };
             return res.status(400).send(ErrorResponse);
         }
-        const query = {_id:uid};
-        const newValues = {$set:{subjectAttention:userHashtag.subject}};
-        const update = await this.userService.update(query,newValues);
-        if(update){
+        const query = { _id: uid };
+        const newValues = { $set: { subjectAttention: userHashtag.subject } };
+        const update = await this.userService.update(query, newValues);
+        if (update) {
             const successResponse = ResponseUtil.getSuccessResponse('Update HashTag is successfully.', newValues);
             return res.status(200).send(successResponse);
-        }else{
+        } else {
             const ErrorResponse: any = { status: 0, message: 'Cannot be update.' };
             return res.status(400).send(ErrorResponse);
         }

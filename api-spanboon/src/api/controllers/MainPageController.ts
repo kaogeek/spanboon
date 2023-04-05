@@ -127,9 +127,6 @@ export class MainPageController {
             if (checkSnapshot !== undefined && checkSnapshot !== null) {
                 const successResponseS = ResponseUtil.getSuccessResponse('Successfully Main Page Data', checkSnapshot.data);
                 return res.status(200).send(successResponseS);
-            } else {
-                const maxDate = await this.kaokaiTodaySnapShotService.aggregate([{ $sort: { endDateTime: -1 } }, { $limit: 1 }]);
-                return maxDate[0];
             }
         }
         // ordering
@@ -240,9 +237,133 @@ export class MainPageController {
         });
 
         const kaokaiContent = await kaokaiContentProcessor.process();
+
         // pipeline: [{ $match: { $expr: { $in: ['$_id', bucketF] }, isOfficial: true } }],
         // hashTag
         const hashTagSumma = await this.hashTagService.aggregate([{ $sort: { count: -1 } }, { $limit: 3 }]);
+        if (emerSectionModel.contents.length === 0 &&
+            postSectionModel.contents.length === 0 &&
+            pageRoundRobin.contents.length === 0 &&
+            majorTrend.contents.length === 0 &&
+            kaokaiProvince.contents.length === 0 &&
+            kaokaiHashTag.contents.length === 0 &&
+            kaokaiContent.contents.length === 0
+        ) {
+            const emerProcessorUn: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service);
+            emerProcessorUn.setData({
+                assetEmergenDays,
+                emergencyCheckEndDate
+            });
+
+            const emerSectionModelUn = await emerProcessorUn.process2();
+            const postProcessorUn: PostSectionProcessor = new PostSectionProcessor(this.postsService, this.s3Service, this.userLikeService);
+            postProcessorUn.setData({
+                userId,
+                startDateTime: monthRange[0],
+                endDateTime: monthRange[1]
+            });
+            postProcessorUn.setConfig({
+                searchOfficialOnly
+            });
+            const postSectionModelUn = await postProcessorUn.process();
+            const pageProcessorUn: PageRoundRobinProcessor = new PageRoundRobinProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService, this.pageService);
+            pageProcessorUn.setData({
+                userId,
+                startDateTime: monthRange[0],
+                endDateTime: monthRange[1]
+            });
+
+            pageProcessorUn.setConfig({
+                searchOfficialOnly
+            });
+            // party executive committee
+            // deputy leader
+            // deputy secretary of the party
+            const pageRoundRobinUn = await pageProcessorUn.processV2();
+            const checkPosition1Un = pageRoundRobinUn.position;
+            // เกาะกระแส
+            const majorTrendProcessorUn: MajorTrendSectionModelProcessor = new MajorTrendSectionModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService, this.pageService);
+            majorTrendProcessorUn.setData({
+                userId,
+                startDateTime: monthRange[0],
+                endDateTime: monthRange[1],
+                checkPosition1Un
+            });
+
+            majorTrendProcessorUn.setConfig({
+                searchOfficialOnly
+            });
+            const majorTrendUn = await majorTrendProcessorUn.processV2();
+            const checkPosition2Un = majorTrendUn.position;
+            const kaokaiProvinceProcessorUn: KaokaiAllProvinceModelProcessor = new KaokaiAllProvinceModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService, this.pageService);
+            kaokaiProvinceProcessorUn.setData({
+                userId,
+                startDateTime: monthRange[0],
+                endDateTime: monthRange[1],
+                checkPosition1Un,
+                checkPosition2Un
+
+            });
+
+            kaokaiProvinceProcessorUn.setConfig({
+                searchOfficialOnly
+            });
+            const kaokaiProvinceUn = await kaokaiProvinceProcessorUn.processV2();
+            let checkPosition3Un = undefined;
+            if (kaokaiProvinceUn.position !== undefined) {
+                checkPosition3Un = kaokaiProvinceUn.position;
+            }
+            const kaokaiHashTagProcessorUn: KaoKaiHashTagModelProcessor = new KaoKaiHashTagModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService, this.pageService);
+            kaokaiHashTagProcessorUn.setData({
+                userId,
+                startDateTime: monthRange[0],
+                endDateTime: monthRange[1],
+                checkPosition1Un,
+                checkPosition2Un,
+                checkPosition3Un
+            });
+
+            kaokaiHashTagProcessorUn.setConfig({
+                searchOfficialOnly
+            });
+
+            const kaokaiHashTagUn = await kaokaiHashTagProcessorUn.processV2();
+            let checkPosition4Un = undefined;
+            if (kaokaiHashTagUn.position !== undefined) {
+                checkPosition4Un = kaokaiHashTagUn.position;
+            }
+            const kaokaiContentProcessorUn: KaokaiContentModelProcessor = new KaokaiContentModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService, this.pageService);
+            kaokaiContentProcessorUn.setData({
+                userId,
+                startDateTime: monthRange[0],
+                endDateTime: monthRange[1],
+                checkPosition1Un,
+                checkPosition2Un,
+                checkPosition3Un,
+                checkPosition4Un
+            });
+
+            kaokaiContentProcessorUn.setConfig({
+                searchOfficialOnly
+            });
+
+            const kaokaiContentUn = await kaokaiContentProcessorUn.processV2();
+
+            // pipeline: [{ $match: { $expr: { $in: ['$_id', bucketF] }, isOfficial: true } }],
+            // hashTag
+            const hashTagSummaUn = await this.hashTagService.aggregate([{ $sort: { count: -1 } }, { $limit: 3 }]);
+            const resultUn: any = {};
+            resultUn.emergencyEvents = emerSectionModelUn;
+            resultUn.hashTagSumma = hashTagSummaUn;
+            resultUn.postSectionModel = postSectionModelUn;
+            resultUn.pageRoundRobin = pageRoundRobinUn;
+            resultUn.majorTrend = majorTrendUn;
+            resultUn.kaokaiProvince = kaokaiProvinceUn;
+            resultUn.kaokaiHashTag = kaokaiHashTagUn;
+            resultUn.kaokaiContent = kaokaiContentUn;
+            const successResponseUn = ResponseUtil.getSuccessResponse('Successfully Main Page Data', resultUn);
+            return res.status(200).send(successResponseUn);
+        }
         const result: any = {};
         result.emergencyEvents = emerSectionModel;
         result.hashTagSumma = hashTagSumma;
@@ -1740,7 +1861,11 @@ export class MainPageController {
                 if (emailStack.length > 0 && switchEmail === true) {
                     for (const userEmail of emailStack) {
                         user = await this.userService.findOne({ email: userEmail });
-                        this.pushNotification(user, user.email, content.data, 'ก้าวไกลวันนี้', endDateTimeToday);
+                        if (user.sendEmail === true) {
+                            this.pushNotification(user, user.email, content.data, 'ก้าวไกลวันนี้', endDateTimeToday);
+                        }else{
+                            continue;
+                        }
                     }
                 }
             }
@@ -1774,7 +1899,14 @@ export class MainPageController {
         let postRoundRobinT = undefined;
         let nameRoundRobinT = undefined;
         let linkPostRoundRobinT = undefined;
-
+        const dateFormat = new Date(date);
+        const dateReal = dateFormat.setDate(dateFormat.getDate() - 1);
+        const toDate = new Date(dateReal);
+        const year = toDate.getFullYear();
+        const month = (toDate.getMonth() + 1).toString().padStart(2, '0');
+        const day = toDate.getDate().toString().padStart(2, '0');
+        const formattedDate = `${day}-${month}-${year}`;
+        const homePage = process.env.APP_HOME + `?date=${formattedDate}`;
         if (content.pageRoundRobin.contents.length > 0) {
             if (content.pageRoundRobin.contents[0] !== undefined) {
                 nameRoundRobinF = content.pageRoundRobin.contents[0].owner.name ? content.pageRoundRobin.contents[0].owner.name : content.pageRoundRobin.contents[0].owner.displayName;
@@ -1834,9 +1966,13 @@ export class MainPageController {
         let splitPostSection = undefined;
         let splitDetailPostSection = undefined;
         if (content.postSectionModel.contents.length > 0) {
-            splitPostSection = postSection.post.title;
-            splitDetailPostSection = postSection.post.detail;
             postSection = content.postSectionModel.contents[0];
+            if (postSection.post.title.length > 0) {
+                splitPostSection = postSection.post.title;
+            }
+            if (postSection.post.detail.length > 0) {
+                splitDetailPostSection = postSection.post.detail;
+            }
             linkPostSection = process.env.APP_POST + '/' + postSection.post._id;
             picPostSection = content.postSectionModel.contents[0].coverPageUrl ? process.env.APP_API + content.postSectionModel.contents[0].coverPageUrl + '/image' : '';
             hashTag = content.hashTagSumma[0].name;
@@ -2071,7 +2207,7 @@ export class MainPageController {
                    </div>
                </div>
                <div align='center' style="margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px;border:1px solid #ee7623;">
-                    <a href=${process.env.APP_HOME} style=" background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
+                    <a href=${homePage} style=" background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
                 </div>
                <div align='center' style="width: 100%;background: white;padding-top: 15px;margin-bottom: 10px;">
                     <div style='background: white;width:40%;margin: 0 auto'>
@@ -2245,7 +2381,7 @@ export class MainPageController {
                    </div>
                </div>
                <div align='center' style="margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px;border:1px solid #ee7623;">
-                    <a href=${process.env.APP_HOME} style=" background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
+                    <a href=${homePage} style=" background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
                 </div>
                <div align='center' style="width: 100%;background: white;padding-top: 15px;margin-bottom: 10px;">
                     <div style='background: white;width:40%;margin: 0 auto'>
@@ -2367,7 +2503,7 @@ export class MainPageController {
                         </div>
                     </div>
                     <div align='center' style="margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px;border:1px solid #ee7623;">
-                            <a href=${process.env.APP_HOME} style=" background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
+                            <a href=${homePage} style=" background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
                         </div>
                     <div align='center' style="width: 100%;background: white;padding-top: 15px;margin-bottom: 10px;">
                             <div style='background: white;width:40%;margin: 0 auto'>
@@ -2532,7 +2668,7 @@ export class MainPageController {
                     </div>
                 </div>
                <div align='center' style="margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px;border:1px solid #ee7623;">
-                    <a href=${process.env.APP_HOME} style=" background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
+                    <a href=${homePage} style=" background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
                 </div>
                <div align='center' style="width: 100%;background: white;padding-top: 15px;margin-bottom: 10px;">
                     <div style='background: white;width:40%;margin: 0 auto'>
@@ -2731,7 +2867,7 @@ export class MainPageController {
                         </div>
                    </div>
                    <div align='center' style="margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px;border:1px solid #ee7623;">
-                        <a href=${process.env.APP_HOME} style=" background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
+                        <a href=${homePage} style=" background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
                     </div>
                    <div align='center' style="width: 100%;background: white;padding-top: 15px;margin-bottom: 10px;">
                         <div style='background: white;width:40%;margin: 0 auto'>
@@ -2916,7 +3052,7 @@ export class MainPageController {
                         </div>
                    </div>
                    <div align='center' style="margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px;border:1px solid #ee7623;">
-                        <a href=${process.env.APP_HOME} style=" background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
+                        <a href=${homePage} style=" background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
                     </div>
                    <div align='center' style="width: 100%;background: white;padding-top: 15px;margin-bottom: 10px;">
                         <div style='background: white;width:40%;margin: 0 auto'>
@@ -3058,7 +3194,7 @@ export class MainPageController {
                         </div>
                    </div>
                    <div align='center' style="margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px;border:1px solid #ee7623;">
-                        <a href=${process.env.APP_HOME} style=" background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
+                        <a href=${homePage} style=" background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
                     </div>
                    <div align='center' style="width: 100%;background: white;padding-top: 15px;margin-bottom: 10px;">
                         <div style='background: white;width:40%;margin: 0 auto'>
@@ -3215,7 +3351,7 @@ export class MainPageController {
                         </div>
                    </div>
                    <div align='center' style="margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px;border:1px solid #ee7623;">
-                        <a href=${process.env.APP_HOME} style=" background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
+                        <a href=${homePage} style=" background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
                     </div>
                    <div align='center' style="width: 100%;background: white;padding-top: 15px;margin-bottom: 10px;">
                         <div style='background: white;width:40%;margin: 0 auto'>
