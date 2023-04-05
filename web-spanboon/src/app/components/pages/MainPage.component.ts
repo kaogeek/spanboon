@@ -17,6 +17,7 @@ import { filter } from 'rxjs/internal/operators/filter';
 import { DialogPost } from '../shares/dialog/DialogPost.component';
 import { DialogPoliciesAndTerms } from '../shares/dialog/DialogPoliciesAndTerms.component';
 
+const PAGE_USER: string = 'pageUser';
 declare var $: any;
 const PAGE_NAME: string = '';
 
@@ -38,6 +39,7 @@ export class MainPage extends AbstractPage implements OnInit {
   public isPost: boolean = false;
   public isprofile: boolean = false;
   public isLoading: boolean;
+  public isUA: boolean = false;
   public user: any;
   public data: any;
   public isDev: boolean = true;
@@ -93,16 +95,34 @@ export class MainPage extends AbstractPage implements OnInit {
         }
 
         if (this.isLogin()) {
-          const policy = this.authenManager.checkVersionPolicy('v2');
-          const tos = this.authenManager.checkVersionTos('v2');
+          let token = localStorage.getItem('token');
+          let mode = localStorage.getItem('mode');
+          this.authenManager.checkAccountStatus(token, mode, { updateUser: true }).then((res) => {
+            if (res) {
+              this.isUA = true;
+              localStorage.setItem(PAGE_USER, JSON.stringify(res.user));
+              sessionStorage.setItem(PAGE_USER, JSON.stringify(res.user));
+              this.observManager.createSubject('setting.account');
+              this.observManager.publish('setting.account', {
+                data: res.user
+              });
 
-          if (!policy || await this.authenManager.getParams('policy')) {
-            this._dialogPolicy();
-          }
+              if (this.isUA && !res.user.tosVersion && !res.user.uaVersion) {
+                const policy = this.authenManager.checkVersionPolicy('v2', this.user);
+                const tos = this.authenManager.checkVersionTos('v2', this.user);
+                if (!policy || this.authenManager.getParams('policy')) {
+                  this._dialogPolicy();
+                }
 
-          if (!tos || await this.authenManager.getParams('tos')) {
-            this._dialogTerms();
-          }
+                if (!tos || this.authenManager.getParams('tos')) {
+                  this._dialogTerms();
+                }
+                this.isUA = false;
+              }
+            }
+          }).catch((err) => {
+            if (err) { }
+          })
         }
       }
     });

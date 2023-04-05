@@ -52,7 +52,7 @@
                 </div>
             </div>
             <div class="list-setting">
-                <div class="setting" [class.active-link]="isActive" (click)="getLinkProfile()">
+                <div class="setting" [class.active-link]="isActive1" (click)="getLinkProfile()">
                     <svg class="icon" id="social-media" xmlns="http://www.w3.org/2000/svg" width="19.257"
                         height="19.257" viewBox="0 0 19.257 19.257">
                         <g id="Group_403" data-name="Group 403" transform="translate(0 13.855)">
@@ -78,7 +78,7 @@
                         ไทมไลน์
                     </div>
                 </div>
-                <!-- <div class="setting" (click)="settingProfile()">
+                <div class="setting" [class.active-link]="isActive2" (click)="settingProfile()">
                     <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16.334" height="16.773"
                         viewBox="0 0 16.334 16.773">
                         <g id="tools-and-utensils" transform="translate(-6.71)" opacity="0.34">
@@ -93,7 +93,7 @@
                         จัดการบัญชี
                     </div>
                 </div>
-                <div class="setting" (click)="notificationProfile()">
+                <!-- <div class="setting" (click)="notificationProfile()">
                     <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="18.722" height="20.424"
                         viewBox="0 0 18.722 20.424">
                         <g id="musical-instrument" transform="translate(0 0)">

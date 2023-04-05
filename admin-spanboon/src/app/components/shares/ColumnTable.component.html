@@ -94,10 +94,22 @@
             </ng-container>
             <ng-template #elseData>
                 <ng-container
-                    *ngIf="(fieldTable.name !== 'bucket1') && (fieldTable.name !== 'bucket2') && (fieldTable.name !== 'bucket3'); else elseBucket">
+                    *ngIf="(fieldTable.name !== 'type') && (fieldTable.name !== 'field') && (fieldTable.name !== 'bucket1') && (fieldTable.name !== 'bucket2') && (fieldTable.name !== 'bucket3'); else elseBucket">
                     -
                 </ng-container>
                 <ng-template #elseBucket>
+                    <div *ngIf="fieldTable.name === 'type'">
+                        <div *ngIf="data.type">
+                            <span style="font-size: 16px;" *ngIf="data.type !== ''">
+                                {{data.type ? data.type : ''}}</span>
+                        </div>
+                    </div>
+                    <div *ngIf="fieldTable.name === 'field'">
+                        <div *ngIf="data.field">
+                            <span style="font-size: 16px;" *ngIf="data.field !== ''">ฟิลด์ :
+                                {{data.field ? data.field : ''}}</span>
+                        </div>
+                    </div>
                     <div *ngIf="fieldTable.name === 'bucket1'">
                         <div *ngIf="data.buckets[0]">
                             <span style="font-size: 16px;"

@@ -52,6 +52,15 @@
 
             }
 
+            >span:first-child {
+              display: flex;
+              width: 100%;
+              justify-content: center;
+              @include font-size-8($font-head-400);
+              color: $brandcolor2;
+              flex: 1 1 0%;
+            }
+
             >svg {
               width: 30pt;
               height: 30pt;
@@ -95,12 +104,12 @@
                   >.mat-form-field-flex {
                     >.mat-form-field-infix {
                       margin-top: 7px;
-                      @include font-size-8($font-head-400);
+                      @include font-size-8($font-head-100);
                       color: black;
                       width: 110px;
 
                       @media (max-width: $large) {
-                        @include font-size-9($font-head-400);
+                        @include font-size-9($font-head-100);
                         width: 90px;
                       }
 

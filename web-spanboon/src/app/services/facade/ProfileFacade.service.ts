@@ -46,6 +46,23 @@ export class ProfileFacade extends AbstractFacade {
     return httpOptions;
   }
 
+  public setEmailPushNotification(data: boolean): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/user/send/email';
+      let body = {
+        "sendEmail": data
+      }
+
+      let options = this.getDefaultOptions();
+
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
   public searchType(data: any, userId: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/profile/' + userId + '/post/search';

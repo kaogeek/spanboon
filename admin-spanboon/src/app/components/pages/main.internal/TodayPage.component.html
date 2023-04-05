@@ -23,18 +23,6 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <ng-container>
-                                            <mat-slide-toggle [(ngModel)]="dataForm.isPin"
-                                                [ngModelOptions]="{standalone: true}">
-                                            </mat-slide-toggle>
-                                        </ng-container>
-                                        <label style="margin-left: 10px;">ปักหมุด</label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group">
                                         <mat-form-field>
                                             <mat-label>หัวเรื่อง</mat-label>
                                             <input matInput type="text" name="title" id="title" placeholder="Title *"
@@ -431,7 +419,7 @@
         </mat-drawer>
         <mat-drawer-content>
             <div class="main-content">
-                <admin-table-component #table [isPin]="false" [orderBy]="orderBy" [facade]="todayPageFacade"
+                <admin-table-component #table [orderBy]="orderBy" [facade]="todayPageFacade"
                     [title]="'ก้าวไกลหน้าหนึ่ง'" [fieldTable]="fieldTable" [actions]="actions"
                     (create)="clickCreateForm()" (edit)="clickEditForm($event)"
                     (delete)="clickDelete($event)"></admin-table-component>

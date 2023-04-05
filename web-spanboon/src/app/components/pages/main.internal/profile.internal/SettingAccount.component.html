@@ -7,11 +7,11 @@
 
 <div class="setting-account">
     <div class="container">
-        <div class="setting-top"> 
+        <div class="setting-top">
             <div class="label-top">การตั้งค่า</div>
         </div>
-        <div class="settings-flex"> 
-            <div class="settings-left"> 
+        <div class="settings-flex">
+            <div class="settings-left">
                 <div class="settings-list">
                     <div class="list-item-menu" matRipple matTooltip="{{link.label}}" [matTooltipPosition]="'right'"
                         *ngFor="let link of links" (click)="selecedInformation(link)"
@@ -21,8 +21,19 @@
                     </div>
                 </div>
             </div>
-            <div class="settings-right">  
-               
+            <div class="settings-right">
+                <div class="settings-wrapper">
+                    <div class="container-general">
+                        <div class="slide-email">
+                            <ng-container>
+                                <mat-slide-toggle [(ngModel)]="isSend" [ngModelOptions]="{standalone: true}"
+                                    (change)="emailNoti($event)" [checked]="isSend">
+                                </mat-slide-toggle>
+                            </ng-container>
+                            <label style="margin-left: 10px;">รับข่าวสารจาก Email</label>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

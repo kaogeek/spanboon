@@ -8,7 +8,7 @@
 import { Component, OnInit, ViewChild, ElementRef, Input, EventEmitter, Output } from '@angular/core';
 import { MatAutocompleteTrigger, MatInput, MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
-import { AuthenManager, ObservableManager, AssetFacade } from '../../../../services/services';
+import { AuthenManager, ObservableManager, AssetFacade, ProfileFacade } from '../../../../services/services';
 import { AbstractPage } from '../../AbstractPage';
 
 const DEFAULT_USER_ICON: string = '../../../../assets/img/profile.svg';
@@ -26,7 +26,10 @@ export class SettingAccount extends AbstractPage implements OnInit {
     public router: Router;
     private observManager: ObservableManager;
     private assetFacade: AssetFacade;
+    private profileFacade: ProfileFacade;
     public selected: any;
+    public isSend: boolean;
+    public user: any;
 
     public links = [
         {
@@ -34,30 +37,40 @@ export class SettingAccount extends AbstractPage implements OnInit {
             icon: "settings",
             label: this.PLATFORM_GENERAL_TEXT,
         },
-        {
-            link: "",
-            icon: "security",
-            label: "ความปลอดภัยและล็อคอิน",
-        },
-        {
-            link: "",
-            icon: "notifications_none",
-            label: "การแจ้งเตือน",
-        },
-        {
-            link: "",
-            icon: "public",
-            label: "โพสต์",
-        },
+        // {
+        //     link: "",
+        //     icon: "security",
+        //     label: "ความปลอดภัยและล็อคอิน",
+        // },
+        // {
+        //     link: "",
+        //     icon: "notifications_none",
+        //     label: "การแจ้งเตือน",
+        // },
+        // {
+        //     link: "",
+        //     icon: "public",
+        //     label: "โพสต์",
+        // },
     ];
 
     constructor(router: Router, authenManager: AuthenManager, observManager: ObservableManager, assetFacade: AssetFacade,
-        dialog: MatDialog) {
+        dialog: MatDialog, profileFacade: ProfileFacade) {
         super(PAGE_NAME, authenManager, dialog, router);
         this.router = router;
         this.authenManager = authenManager;
         this.observManager = observManager;
         this.assetFacade = assetFacade;
+        this.profileFacade = profileFacade;
+
+        this.observManager.subscribe('setting.account', (res: any) => {
+            if (res) {
+                this.user = res.data;
+                if (!!this.user) {
+                    this.checkSendEmail();
+                }
+            }
+        });
     }
 
     public ngOnInit(): void {
@@ -79,7 +92,26 @@ export class SettingAccount extends AbstractPage implements OnInit {
         return;
     }
 
+    public checkSendEmail() {
+        if (!!this.user) {
+            if (this.user.sendEmail === true) {
+                this.isSend = true;
+                return true;
+            } else {
+                this.isSend = false;
+                return false;
+            }
+        }
+    }
+
     public selecedInformation(link: any) {
         this.selected = link.label;
+    }
+
+    public emailNoti($event) {
+        this.profileFacade.setEmailPushNotification($event.checked).then((res) => {
+            if (res) {
+            }
+        })
     }
 }
