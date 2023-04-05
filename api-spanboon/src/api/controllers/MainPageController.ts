@@ -389,12 +389,16 @@ export class MainPageController {
         return res.status(200).send(successResponse);
     }
 
-    @Get('/days/check')
+    @Post('/days/check')
     public async daysCheck(@Res() res: any, @Req() req: any): Promise<any> {
         const now = new Date();
         const year = now.getFullYear(); // Get the current year
-        const startDate = new Date(year, 0, 1);
-        const endDate = new Date(year, 11, 31);
+        let startDate = new Date(year, 0, 1);
+        let endDate = new Date(year, 11, 31);
+        if(req.body.startDate !== undefined && req.body.endDate !== undefined){
+            startDate = req.body.startDate;
+            endDate = req.body.endDate;
+        }
         const dateTime = await this.kaokaiTodaySnapShotService.aggregate
         ([
             {
