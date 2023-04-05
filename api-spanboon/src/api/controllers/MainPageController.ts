@@ -1829,22 +1829,6 @@ export class MainPageController {
         }
         // Check Date time === 06:00 morning
         let content = undefined;
-        const buckets = [];
-        if (data.emergencyEvents.contents.length > 0) {
-            buckets.push(data.emergencyEvents.contents);
-        } if (data.postSectionModel.contents.length > 0) {
-            buckets.push(data.postSectionModel.contents);
-        } if (data.pageRoundRobin.contents.length > 0) {
-            buckets.push(data.pageRoundRobin.contents);
-        } if (data.majorTrend.contents.length > 0) {
-            buckets.push(data.majorTrend.contents);
-        } if (data.kaokaiProvince.contents.length > 0) {
-            buckets.push(data.kaokaiProvince.contents);
-        } if (data.kaokaiHashTag.contents.length > 0) {
-            buckets.push(data.kaokaiHashTag.contents);
-        } if (data.kaokaiContent.contents.length > 0) {
-            buckets.push(data.kaokaiContent.contents);
-        }
 
         if (hours === parseInt(hourSplit, 10) && minutes === parseInt(minuteSpit, 10)) {
             const contents = data;
