@@ -70,7 +70,7 @@ import {
     DEFAULT_KAOKAITODAY_RANGE_DATE_EMERGENY,
     SWITCH_CASE_SEND_EMAIL,
     DEFAULT_SWITCH_CASE_SEND_EMAIL,
-    THE_TODAY_USER_LIST
+    SEND_EMAIL_TO_USER
 } from '../../constants/SystemConfig';
 import { ConfigService } from '../services/ConfigService';
 import { KaokaiTodaySnapShotService } from '../services/KaokaiTodaySnapShot';
@@ -1681,7 +1681,7 @@ export class MainPageController {
         if (switchSendEmail) {
             switchEmail = Boolean(switchSendEmail.value);
         }
-        const listEmail = await this.configService.getConfig(THE_TODAY_USER_LIST);
+        const listEmail = await this.configService.getConfig(SEND_EMAIL_TO_USER);
         const splitComma = listEmail.value.split(',');
         const emailStack = [];
         if (splitComma.length > 0) {
