@@ -57,6 +57,12 @@ export class PageFacade extends AbstractFacade {
     });
   }
 
+  public groups(): Promise<any>{
+    return new Promise((resolve,reject) =>{
+      let url: string = this.baseURL + '/page';
+      let body: any = {}
+    })
+  }
   public searchType(data: any, pageId: string): Promise<Page> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/page/' + pageId + '/post/search';

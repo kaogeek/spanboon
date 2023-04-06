@@ -212,6 +212,12 @@ export class DialogPost extends AbstractPage {
               res.data._id = this.data._id;
               this.isPostLoading = false;
               this.dialogRef.close(res.data);
+            } else if (res.message === "You have been delete Post gallery ") {
+              alertMessages = 'แก้ไขโพสต์สำเร็จ'
+              this.showAlertDialogWarming(alertMessages, "none");
+              this.isPostLoading = false;
+              this.boxPost.clearDataAll();
+              this.dialogRef.close();
             }
           }
         }).catch((err: any) => {

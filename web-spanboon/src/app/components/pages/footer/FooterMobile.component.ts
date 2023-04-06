@@ -5,7 +5,7 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-import { Component, OnInit, HostListener, EventEmitter } from '@angular/core';
+import { Component, OnInit, EventEmitter } from '@angular/core';
 import { CacheConfigInfo } from '../../../services/CacheConfigInfo.service';
 import * as $ from 'jquery';
 import { AbstractPage } from '../AbstractPage';

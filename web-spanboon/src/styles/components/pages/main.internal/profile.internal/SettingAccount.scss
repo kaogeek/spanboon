@@ -13,12 +13,14 @@
         max-width: 1280px;
         margin: 0 auto;
         padding: 0 10px;
+
         >.setting-top {
             padding-top: 10pt;
             display: flex;
             flex-direction: row;
             justify-content: flex-start;
             align-items: stretch;
+
             >.label-top {
                 width: calc(300px - 20pt);
                 border-radius: 4px 0 0 4px;
@@ -29,21 +31,22 @@
                 @include font-size-7($font-head-500);
             }
         }
-        > .settings-flex {
+
+        >.settings-flex {
             padding: 10pt 0;
             display: flex;
             flex-direction: row;
 
-            > .settings-left {
+            >.settings-left {
                 width: 300px;
-                margin-right: 10pt; 
+                margin-right: 10pt;
 
-                > .settings-list {
+                >.settings-list {
                     border-radius: 4px;
                     border: 1px solid $border-color;
-                    background: $white; 
+                    background: $white;
 
-                    > .list-item-menu {
+                    >.list-item-menu {
                         display: flex;
                         flex-direction: row;
                         justify-content: flex-start;
@@ -66,24 +69,35 @@
                             opacity: 1;
                         }
 
-                        > .settings-icon {
+                        >.settings-icon {
                             margin-right: 8pt;
                             color: $brandcolor2;
                         }
 
-                        > .settings-title {
-                        }
+                        >.settings-title {}
                     }
                 }
             }
 
-            > .settings-right {
+            >.settings-right {
                 width: calc(100% - 300px - 10pt);
                 border-radius: 4px;
                 border: 1px solid $border-color;
                 background: $white;
                 padding-bottom: 20pt;
                 // padding: 20pt;
+
+                >.settings-wrapper {
+                    padding: 20px 20px 0 20px;
+
+                    >.container-general {
+                        >.slide-email {
+                            >label {
+                                @include font-size-9($font-head-500);
+                            }
+                        }
+                    }
+                }
             }
         }
     }

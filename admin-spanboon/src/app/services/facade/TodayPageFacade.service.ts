@@ -39,7 +39,7 @@ export class TodayPageFacade extends AbstractFacade {
             new Error("Id is required.");
         }
         return new Promise((resolve, reject) => {
-            let url: string = this.baseURL + '/admin/page/processor/' + id;
+            let url: string = this.baseURL + '/admin/page/' + id + '/processor';
             let options = this.getDefaultOptions();
             this.http.put(url, body, options).toPromise().then((response: any) => {
                 resolve(response.data);
@@ -95,7 +95,7 @@ export class TodayPageFacade extends AbstractFacade {
                 body = Object.assign(searchFilter)
             }
             let options = this.getDefaultOptions();
-            this.http.get(url).toPromise().then((response: any) => {
+            this.http.post(url, body).toPromise().then((response: any) => {
                 for (let r of response.data) {
                     if (r.coverPageURL != null && r.coverPageURL != undefined) {
                         this.getPathFile(r.coverPageURL).then((res: any) => {
@@ -111,12 +111,40 @@ export class TodayPageFacade extends AbstractFacade {
         });
     }
 
+    public searchObject(type: any, field: any, text: any): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let url: string = this.baseURL + '/admin/page/request/search';
+            let body: any = {
+                'type': type,
+                'field': field,
+                'keyword': text
+            }
+            this.http.post(url, body).toPromise().then((response: any) => {
+                resolve(response.data);
+            }).catch((error: any) => {
+                reject(error);
+            });
+        });
+    }
+
+    public searchComp(data: any): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let url: string = this.baseURL + '/admin/page/edit/search';
+            let body = data;
+            this.http.post(url, body).toPromise().then((response: any) => {
+                resolve(response.data);
+            }).catch((error: any) => {
+                reject(error);
+            });
+        });
+    }
+
     public delete(id: any): Promise<Today[]> {
         if (id === undefined || id === null) {
             new Error("Id is required.");
         }
         return new Promise((resolve, reject) => {
-            let url: string = this.baseURL + '/admin/page/processor/' + id;
+            let url: string = this.baseURL + '/admin/page/' + id + '/processor/';
             let options = this.getDefaultOptions();
             this.http.delete(url, options).toPromise().then((response: any) => {
                 resolve(response.data as Today[]);

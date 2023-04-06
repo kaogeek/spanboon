@@ -13,4 +13,7 @@ export class SearchRequest {
     public keyword: string[];
     public userId: string;
     public filter: SearchFilter;
+    public type:string;
+    public field:string;
+    public buckets:any;
 }

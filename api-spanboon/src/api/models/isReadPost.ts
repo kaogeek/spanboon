@@ -4,7 +4,7 @@ import { ObjectID } from 'mongodb';
 import { BaseModel } from './BaseModel';
 import moment from 'moment';
 
-@Entity('Otp')
+@Entity('IsReadPost')
 export class IsReadPost extends BaseModel {
 
     @ObjectIdColumn({ name: '_id' })

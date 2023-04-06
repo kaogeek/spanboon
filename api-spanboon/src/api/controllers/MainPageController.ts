@@ -6,7 +6,7 @@
  */
 
 import 'reflect-metadata';
-import {  JsonController, Res, Get, Post, Body, Req,QueryParam } from 'routing-controllers';
+import { JsonController, Res, Get, Post, Body, Req, QueryParam } from 'routing-controllers';
 import { ResponseUtil } from '../../utils/ResponseUtil';
 import { ProcessorUtil } from '../../utils/ProcessorUtil';
 import { ObjectID } from 'mongodb';
@@ -27,7 +27,7 @@ import { LastestLookingSectionProcessor } from '../processors/LastestLookingSect
 // import { StillLookingSectionProcessor } from '../processors/StillLookingSectionProcessor';
 import { EmergencyEventSectionProcessor } from '../processors/EmergencyEventSectionProcessor';
 import { PostSectionProcessor } from '../processors/PostSectionProcessor';
-import { PostSectionProcessor2 } from '../processors/PostSectionProcessor2';
+import { SummationPostProcessor } from '../processors/SummationPostProcessor';
 import { PageRoundRobinProcessor } from '../processors/PageRoundRobinProcessor';
 import { MajorTrendSectionModelProcessor } from '../processors/majorTrendSectionModelProcessor';
 import { ObjectiveProcessor } from '../processors/ObjectiveProcessor';
@@ -61,7 +61,17 @@ import { ImageUtil } from '../../utils/ImageUtil';
 import { KaoKaiHashTagModelProcessor } from '../processors/KaoKaiHashTagModelProcessor';
 import { KaokaiAllProvinceModelProcessor } from '../processors/KaokaiAllProvinceModelProcessor';
 import { KaokaiTodayService } from '../services/KaokaiTodayService';
-import { TODAY_DATETIME_GAP, DEFAULT_TODAY_DATETIME_GAP } from '../../constants/SystemConfig';
+import {
+    TODAY_DATETIME_GAP,
+    DEFAULT_TODAY_DATETIME_GAP,
+    KAOKAITODAY_TIMER_CHECK_DATE,
+    DEFAULT_KAOKAITODAY_TIMER_CHECK_DAY,
+    KAOKAITODAY_RANGE_DATE_EMERGENCY,
+    DEFAULT_KAOKAITODAY_RANGE_DATE_EMERGENY,
+    SWITCH_CASE_SEND_EMAIL,
+    DEFAULT_SWITCH_CASE_SEND_EMAIL,
+    SEND_EMAIL_TO_USER
+} from '../../constants/SystemConfig';
 import { ConfigService } from '../services/ConfigService';
 import { KaokaiTodaySnapShotService } from '../services/KaokaiTodaySnapShot';
 import { KaokaiContentModelProcessor } from '../processors/KaokaiContentModelProcessor';
@@ -84,46 +94,61 @@ export class MainPageController {
         private assetService: AssetService,
         private kaokaiTodayService: KaokaiTodayService,
         private configService: ConfigService,
-        private kaokaiTodaySnapShotService: KaokaiTodaySnapShotService
+        private kaokaiTodaySnapShotService: KaokaiTodaySnapShotService,
     ) { }
     // Home page content V2
     @Get('/content/v3')
-    public async getContentListV2(@QueryParam('offset') offset: number, @QueryParam('section') section: string,  @QueryParam('date') date: any, @Res() res: any, @Req() req: any): Promise<any> {
+    public async getContentListV2(@QueryParam('offset') offset: number, @QueryParam('section') section: string, @QueryParam('date') date: any, @Res() res: any, @Req() req: any): Promise<any> {
         const dateFormat = new Date(date);
-        const dateReal = dateFormat.setDate(dateFormat.getDate() +1);
+        const dateReal = dateFormat.setDate(dateFormat.getDate() + 1);
         const toDate = new Date(dateReal);
         let content = undefined;
         const userId = req.headers.userid;
         const mainPageSearchConfig = await this.pageService.searchPageOfficialConfig();
         const searchOfficialOnly = mainPageSearchConfig.searchOfficialOnly;
-        const assetassetTodayDateGap = await this.configService.getConfig(TODAY_DATETIME_GAP);
+        const assetTodayDateGap = await this.configService.getConfig(TODAY_DATETIME_GAP);
+        const assetTodayRangeDate = await this.configService.getConfig(KAOKAITODAY_RANGE_DATE_EMERGENCY);
+        let assetEmergenDays = DEFAULT_KAOKAITODAY_RANGE_DATE_EMERGENY;
         let assetTodayDate = DEFAULT_TODAY_DATETIME_GAP;
-        if (assetassetTodayDateGap) {
-            assetTodayDate = assetassetTodayDateGap.value;
+
+        if (assetTodayDateGap) {
+            assetTodayDate = assetTodayDateGap.value;
+        }
+
+        if (assetTodayRangeDate) {
+            assetEmergenDays = assetTodayRangeDate.value;
+        }
+        const emergencyCheckEndDate = assetTodayRangeDate.endDateTime;
+        const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), assetTodayDate);
+
+        if (toDate) {
+            const checkSnapshot = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: toDate });
+
+            if (checkSnapshot !== undefined && checkSnapshot !== null) {
+                const successResponseS = ResponseUtil.getSuccessResponse('Successfully Main Page Data', checkSnapshot.data);
+                return res.status(200).send(successResponseS);
+            }
         }
         // ordering
         const emerProcessor: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service);
-        emerProcessor.setConfig({
-            showUserAction: true,
-            offset,
-            date,
-            searchOfficialOnly
+        emerProcessor.setData({
+            assetEmergenDays,
+            emergencyCheckEndDate
         });
+
         const emerSectionModel = await emerProcessor.process2();
-        const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), assetTodayDate);
         // summation
-        const postProcessor: PostSectionProcessor2 = new PostSectionProcessor2(this.postsService, this.s3Service, this.userLikeService);
-        postProcessor.setData({
+        const summaTionpostProcessor: SummationPostProcessor = new SummationPostProcessor(this.postsService, this.s3Service, this.userLikeService);
+        summaTionpostProcessor.setData({
             userId,
             startDateTime: monthRange[0],
             endDateTime: monthRange[1]
         });
-        postProcessor.setConfig({
+        summaTionpostProcessor.setConfig({
             searchOfficialOnly
         });
 
-        const postSectionModel = await postProcessor.process();
-
+        const postSectionModel = await summaTionpostProcessor.process();
         // roundRobin
         const pageProcessor: PageRoundRobinProcessor = new PageRoundRobinProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService, this.pageService);
         pageProcessor.setData({
@@ -170,7 +195,11 @@ export class MainPageController {
             searchOfficialOnly
         });
         const kaokaiProvince = await kaokaiProvinceProcessor.process();
-        const checkPosition3 = kaokaiProvince.position;
+        let checkPosition3 = undefined;
+        // kaokaiProvince.position;
+        if (kaokaiProvince.position !== undefined) {
+            checkPosition3 = kaokaiProvince.position;
+        }
         const kaokaiHashTagProcessor: KaoKaiHashTagModelProcessor = new KaoKaiHashTagModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService, this.pageService);
         kaokaiHashTagProcessor.setData({
             userId,
@@ -186,7 +215,11 @@ export class MainPageController {
         });
 
         const kaokaiHashTag = await kaokaiHashTagProcessor.process();
-        const checkPosition4 = kaokaiHashTag.position;
+        let checkPosition4 = undefined;
+        // kaokaiHashTag.position;
+        if (kaokaiHashTag.position !== undefined) {
+            checkPosition4 = kaokaiHashTag.position;
+        }
 
         const kaokaiContentProcessor: KaokaiContentModelProcessor = new KaokaiContentModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService, this.pageService);
         kaokaiContentProcessor.setData({
@@ -204,10 +237,133 @@ export class MainPageController {
         });
 
         const kaokaiContent = await kaokaiContentProcessor.process();
-        // pipeline: [{ $match: { $expr: { $in: ['$_id', bucketF] }, isOfficial: true } }],
 
+        // pipeline: [{ $match: { $expr: { $in: ['$_id', bucketF] }, isOfficial: true } }],
         // hashTag
         const hashTagSumma = await this.hashTagService.aggregate([{ $sort: { count: -1 } }, { $limit: 3 }]);
+        if (emerSectionModel.contents.length === 0 &&
+            postSectionModel.contents.length === 0 &&
+            pageRoundRobin.contents.length === 0 &&
+            majorTrend.contents.length === 0 &&
+            kaokaiProvince.contents.length === 0 &&
+            kaokaiHashTag.contents.length === 0 &&
+            kaokaiContent.contents.length === 0
+        ) {
+            const emerProcessorUn: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service);
+            emerProcessorUn.setData({
+                assetEmergenDays,
+                emergencyCheckEndDate
+            });
+
+            const emerSectionModelUn = await emerProcessorUn.process2();
+            const postProcessorUn: PostSectionProcessor = new PostSectionProcessor(this.postsService, this.s3Service, this.userLikeService);
+            postProcessorUn.setData({
+                userId,
+                startDateTime: monthRange[0],
+                endDateTime: monthRange[1]
+            });
+            postProcessorUn.setConfig({
+                searchOfficialOnly
+            });
+            const postSectionModelUn = await postProcessorUn.process();
+            const pageProcessorUn: PageRoundRobinProcessor = new PageRoundRobinProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService, this.pageService);
+            pageProcessorUn.setData({
+                userId,
+                startDateTime: monthRange[0],
+                endDateTime: monthRange[1]
+            });
+
+            pageProcessorUn.setConfig({
+                searchOfficialOnly
+            });
+            // party executive committee
+            // deputy leader
+            // deputy secretary of the party
+            const pageRoundRobinUn = await pageProcessorUn.processV2();
+            const checkPosition1Un = pageRoundRobinUn.position;
+            // เกาะกระแส
+            const majorTrendProcessorUn: MajorTrendSectionModelProcessor = new MajorTrendSectionModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService, this.pageService);
+            majorTrendProcessorUn.setData({
+                userId,
+                startDateTime: monthRange[0],
+                endDateTime: monthRange[1],
+                checkPosition1Un
+            });
+
+            majorTrendProcessorUn.setConfig({
+                searchOfficialOnly
+            });
+            const majorTrendUn = await majorTrendProcessorUn.processV2();
+            const checkPosition2Un = majorTrendUn.position;
+            const kaokaiProvinceProcessorUn: KaokaiAllProvinceModelProcessor = new KaokaiAllProvinceModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService, this.pageService);
+            kaokaiProvinceProcessorUn.setData({
+                userId,
+                startDateTime: monthRange[0],
+                endDateTime: monthRange[1],
+                checkPosition1Un,
+                checkPosition2Un
+
+            });
+
+            kaokaiProvinceProcessorUn.setConfig({
+                searchOfficialOnly
+            });
+            const kaokaiProvinceUn = await kaokaiProvinceProcessorUn.processV2();
+            let checkPosition3Un = undefined;
+            if (kaokaiProvinceUn.position !== undefined) {
+                checkPosition3Un = kaokaiProvinceUn.position;
+            }
+            const kaokaiHashTagProcessorUn: KaoKaiHashTagModelProcessor = new KaoKaiHashTagModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService, this.pageService);
+            kaokaiHashTagProcessorUn.setData({
+                userId,
+                startDateTime: monthRange[0],
+                endDateTime: monthRange[1],
+                checkPosition1Un,
+                checkPosition2Un,
+                checkPosition3Un
+            });
+
+            kaokaiHashTagProcessorUn.setConfig({
+                searchOfficialOnly
+            });
+
+            const kaokaiHashTagUn = await kaokaiHashTagProcessorUn.processV2();
+            let checkPosition4Un = undefined;
+            if (kaokaiHashTagUn.position !== undefined) {
+                checkPosition4Un = kaokaiHashTagUn.position;
+            }
+            const kaokaiContentProcessorUn: KaokaiContentModelProcessor = new KaokaiContentModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService, this.pageService);
+            kaokaiContentProcessorUn.setData({
+                userId,
+                startDateTime: monthRange[0],
+                endDateTime: monthRange[1],
+                checkPosition1Un,
+                checkPosition2Un,
+                checkPosition3Un,
+                checkPosition4Un
+            });
+
+            kaokaiContentProcessorUn.setConfig({
+                searchOfficialOnly
+            });
+
+            const kaokaiContentUn = await kaokaiContentProcessorUn.processV2();
+
+            // pipeline: [{ $match: { $expr: { $in: ['$_id', bucketF] }, isOfficial: true } }],
+            // hashTag
+            const hashTagSummaUn = await this.hashTagService.aggregate([{ $sort: { count: -1 } }, { $limit: 3 }]);
+            const resultUn: any = {};
+            resultUn.emergencyEvents = emerSectionModelUn;
+            resultUn.hashTagSumma = hashTagSummaUn;
+            resultUn.postSectionModel = postSectionModelUn;
+            resultUn.pageRoundRobin = pageRoundRobinUn;
+            resultUn.majorTrend = majorTrendUn;
+            resultUn.kaokaiProvince = kaokaiProvinceUn;
+            resultUn.kaokaiHashTag = kaokaiHashTagUn;
+            resultUn.kaokaiContent = kaokaiContentUn;
+            const successResponseUn = ResponseUtil.getSuccessResponse('Successfully Main Page Data', resultUn);
+            return res.status(200).send(successResponseUn);
+        }
         const result: any = {};
         result.emergencyEvents = emerSectionModel;
         result.hashTagSumma = hashTagSumma;
@@ -217,13 +373,14 @@ export class MainPageController {
         result.kaokaiProvince = kaokaiProvince;
         result.kaokaiHashTag = kaokaiHashTag;
         result.kaokaiContent = kaokaiContent;
-        content = await this.snapShotToday(result, monthRange[0], monthRange[1], assetTodayDate,userId);
-        if(date !== undefined && date !== null ){
-            content = await this.kaokaiTodaySnapShotService.findOne({endDateTime: toDate });
-            if(content){
+        content = await this.snapShotToday(result, monthRange[0], monthRange[1], assetTodayDate, userId);
+
+        if (date !== undefined && date !== null) {
+            content = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: toDate });
+            if (content) {
                 const successResponseF = ResponseUtil.getSuccessResponse('Successfully Main Page Data', content.data);
                 return res.status(200).send(successResponseF);
-            }else{
+            } else {
                 const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
                 return res.status(400).send(errorResponse);
             }
@@ -231,6 +388,44 @@ export class MainPageController {
         const successResponse = ResponseUtil.getSuccessResponse('Successfully Main Page Data', content);
         return res.status(200).send(successResponse);
     }
+
+    @Post('/days/check')
+    public async daysCheck(@Res() res: any, @Req() req: any): Promise<any> {
+        const now = new Date();
+        const year = now.getFullYear(); // Get the current year
+        let startDate = new Date(year, 0, 1);
+        let endDate = new Date(year, 11, 31);
+        if(req.body.startDate !== undefined && req.body.endDate !== undefined){
+            startDate = req.body.startDate;
+            endDate = req.body.endDate;
+        }
+        const dateTime = await this.kaokaiTodaySnapShotService.aggregate
+        ([
+            {
+                $match:
+                {
+                    endDateTime:{$gte:startDate,$lte:endDate},
+                }
+            },
+            {
+                $sort:{endDateTime:-1}
+            },
+            {
+                $project:{
+                    endDateTime:1,
+                    _id:0
+                }
+            }
+        ]);
+        if (dateTime.length > 0) {
+            const successResponseF = ResponseUtil.getSuccessResponse('Successfully Filter Range Days.', dateTime);
+            return res.status(200).send(successResponseF);
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Error Filter Range Date.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+
     // Find Page API
     /**
      * @api {get} /api/main/content Find Main Page Data API
@@ -298,26 +493,7 @@ export class MainPageController {
                     return res.status(400).send(errorResponse);
                 }
             } else if (section === 'STILLLOOKING') {
-                // const stillLKProcessorSec: StillLookingSectionProcessor = new StillLookingSectionProcessor(this.postsService, this.needsService, this.userFollowService);
-                // stillLKProcessorSec.setData({
-                //     userId
-                // });
-                // stillLKProcessorSec.setConfig({
-                //     showUserAction: true,
-                //     offset,
-                //     date
-                // });
-                // const stillLKSectionModelSec = await stillLKProcessorSec.process();
-                // const slResult: any = {};
-                // slResult.contents = stillLKSectionModelSec.contents;
 
-                // if (slResult) {
-                //     const successResponse = ResponseUtil.getSuccessResponse('Successfully Main Page Data', slResult);
-                //     return res.status(200).send(successResponse);
-                // } else {
-                //     const errorResponse = ResponseUtil.getErrorResponse('Unable got Main Page Data', undefined);
-                //     return res.status(400).send(errorResponse);
-                // }
                 const errorResponse = ResponseUtil.getErrorResponse('Unable got Main Page Data', undefined);
                 return res.status(400).send(errorResponse);
             } else if (section === 'RECOMMEND') {
@@ -1634,66 +1810,182 @@ export class MainPageController {
         }
     }
 
-    private async snapShotToday(data: any, startDateRange: Date, endDateTimeRange: Date, assetTodayDate: number,userId?:any): Promise<any> {
-        /* 
-        const objId = new ObjectID(userId);
-        if(objId !== undefined && objId !== null){
-            const checkUserId = await this.kaokaiTodaySnapShotService.findOne({userId:objId});
-            if(checkUserId !== undefined && checkUserId !== null){
-                return checkUserId.data;
-            }
-            let contentuserId = undefined;
-            const contentsUserId = data;
-            const startDateUserId = startDateRange;
-            const endDateUserId = endDateTimeRange;
-            const resultUserId: any = {};
-            resultUserId.data = contentsUserId;
-            resultUserId.startDateTime = startDateUserId;
-            resultUserId.endDateTime = endDateUserId;
-            resultUserId.userId = new ObjectID(userId);
-            const snapShotUserId = await this.kaokaiTodaySnapShotService.create(resultUserId);
-            if (snapShotUserId) {
-                contentuserId = await this.kaokaiTodaySnapShotService.findOne({ startDateTime: startDateRange, endDateTime: endDateTimeRange,userId:objId });
-            }
-            // 
-            return contentuserId.data;
-        } */
+    private async snapShotToday(data: any, startDateRange: Date, endDateTimeToday: Date, assetTodayDate: number, userId?: any): Promise<any> {
         // check before create
-        const checkCreate = await this.kaokaiTodaySnapShotService.findOne({ startDateTime: startDateRange, endDateTime: endDateTimeRange });
+        let switchEmail = DEFAULT_SWITCH_CASE_SEND_EMAIL;
+        const switchSendEmail = await this.configService.getConfig(SWITCH_CASE_SEND_EMAIL);
+        if (switchSendEmail) {
+            switchEmail = Boolean(switchSendEmail.value);
+        }
+        const listEmail = await this.configService.getConfig(SEND_EMAIL_TO_USER);
+        const splitComma = listEmail.value.split(',');
+        const emailStack = [];
+        if (splitComma.length > 0) {
+            for (const email of splitComma) {
+                emailStack.push(String(email));
+            }
+        }
+        const now = new Date(); // Get the current time
+        const hours = now.getHours(); // Get the hours of the current time
+        const minutes = now.getMinutes(); // Get the minutes of the current time
+        const assetTimerCheck = await this.configService.getConfig(KAOKAITODAY_TIMER_CHECK_DATE);
+        let assetTimer = DEFAULT_KAOKAITODAY_TIMER_CHECK_DAY;
+        if (assetTimerCheck) {
+            assetTimer = assetTimerCheck.value;
+        }
+        const split = assetTimer.split(':');
+        const hourSplit = split[0];
+        const minuteSpit = split[1];
+
+        const checkCreate = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: endDateTimeToday });
+
         if (checkCreate !== undefined && checkCreate !== null) {
             return checkCreate.data;
         }
+        // Check Date time === 06:00 morning
         let content = undefined;
-        const contents = data;
-        const startDate = startDateRange;
-        const endDate = endDateTimeRange;
-        const result: any = {};
-        result.data = contents;
-        result.startDateTime = startDate;
-        result.endDateTime = endDate;
-        const snapShot = await this.kaokaiTodaySnapShotService.create(result);
-        const user = await this.userService.findOne({ email: 'tarawut.c@absolute.co.th' });
-        if (snapShot) {
-            content = await this.kaokaiTodaySnapShotService.findOne({ startDateTime: startDateRange, endDateTime: endDateTimeRange });
-            if (content) {
-                this.pushNotification(user, user.email, content.data, 'ก้าวไกลวันนี้');
+
+        if (hours === parseInt(hourSplit, 10) && minutes === parseInt(minuteSpit, 10)) {
+            const contents = data;
+            const startDate = startDateRange;
+            const endDate = endDateTimeToday;
+            const result: any = {};
+            result.data = contents;
+            result.startDateTime = startDate;
+            result.endDateTime = endDate;
+            const snapshot = await this.kaokaiTodaySnapShotService.create(result);
+            if (snapshot) {
+                content = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: endDateTimeToday });
+                let user = undefined;
+                if (emailStack.length > 0 && switchEmail === true) {
+                    for (const userEmail of emailStack) {
+                        user = await this.userService.findOne({ email: userEmail });
+                        if (user.sendEmail === true) {
+                            this.pushNotification(user, user.email, content.data, 'ก้าวไกลวันนี้', endDateTimeToday);
+                        } else {
+                            continue;
+                        }
+                    }
+                }
             }
+        } else {
+            const maxDate = await this.kaokaiTodaySnapShotService.aggregate([{ $sort: { endDateTime: -1 } }, { $limit: 1 }]);
+            return maxDate[0];
         }
-        // 
-        return content.data;
     }
-    private async pushNotification(user: User, email: string, content: any, subject: string): Promise<any> {
+    private async pushNotification(user: User, email: string, content: any, subject: string, date?: Date): Promise<any> {
         // chaluck.s@absolute.co.th
         // junsuda.s@absolute.co.th
-        const profile = user.imageURL ? process.env.APP_TEST_API + '/' + user.imageURL + '/image' : 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png';
-        const profileRoundRobin = content.pageRoundRobin.contents[0].owner.imageURL ? process.env.APP_TEST_API + content.pageRoundRobin.contents[0].owner.imageURL + '/image' : 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png';
-        const profileMajorTrend = content.majorTrend.contents[0].owner.imageURL ? process.env.APP_TEST_API + content.majorTrend.contents[0].owner.imageURL + '/image' : 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png';
-        const profileKaokaiProvince = content.kaokaiProvince.contents[0].owner.imageURL ? process.env.APP_TEST_API + content.kaokaiProvince.contents[0].owner.imageURL + '/image' : 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png';
-        const profileKaokaiHashTag = content.kaokaiHashTag.contents[0].owner.imageURL ? process.env.APP_TEST_API + content.kaokaiHashTag.contents[0].owner.imageURL + '/image' : 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png';
-        const picPageRoundRobinPics = content.pageRoundRobin.contents[0].coverPageUrl ? process.env.APP_TEST_API + content.pageRoundRobin.contents[0].coverPageUrl + '/image' : '';
-        const picMajorTrendsPics = content.majorTrend.contents[0].coverPageUrl ? process.env.APP_TEST_API + content.majorTrend.contents[0].coverPageUrl + '/image' : '';
-        const pickaokaiProvincePics = content.kaokaiProvince.contents[0].coverPageUrl ? process.env.APP_TEST_API + content.kaokaiProvince.contents[0].coverPageUrl + '/image' : '';
-        const pickaokaiHashTagPics = content.kaokaiHashTag.contents[0].coverPageUrl ? process.env.APP_TEST_API + content.kaokaiHashTag.contents[0].coverPageUrl + '/image' : '';
+        const picPostMajorF = content.majorTrend.contents[0].coverPageUrl ? process.env.APP_API + content.majorTrend.contents[0].coverPageUrl + '/image' : '';
+        const picPostMajorS = content.majorTrend.contents[1].coverPageUrl ? process.env.APP_API + content.majorTrend.contents[1].coverPageUrl + '/image' : '';
+
+        const postMajorTitleF = content.majorTrend.contents[0].post.title;
+        const postMajorTitleS = content.majorTrend.contents[1].post.title;
+        const postMajorNameF = content.majorTrend.contents[0].owner.name;
+        const postMajorNameS = content.majorTrend.contents[1].owner.name;
+
+        let picPostRoundRobinF = undefined;
+        let postRoundRobinF = undefined;
+        let nameRoundRobinF = undefined;
+        let linkPostRoundRobinF = undefined;
+
+        let picPostRoundRobinS = undefined;
+        let postRoundRobinS = undefined;
+        let nameRoundRobinS = undefined;
+        let linkPostRoundRobinS = undefined;
+
+        let picPostRoundRobinT = undefined;
+        let postRoundRobinT = undefined;
+        let nameRoundRobinT = undefined;
+        let linkPostRoundRobinT = undefined;
+        const dateFormat = new Date(date);
+        const dateReal = dateFormat.setDate(dateFormat.getDate() - 1);
+        const toDate = new Date(dateReal);
+        const year = toDate.getFullYear();
+        const month = (toDate.getMonth() + 1).toString().padStart(2, '0');
+        const day = toDate.getDate().toString().padStart(2, '0');
+        const formattedDate = `${day}-${month}-${year}`;
+        const homePage = process.env.APP_HOME + `?date=${formattedDate}`;
+        if (content.pageRoundRobin.contents.length > 0) {
+            if (content.pageRoundRobin.contents[0] !== undefined) {
+                nameRoundRobinF = content.pageRoundRobin.contents[0].owner.name ? content.pageRoundRobin.contents[0].owner.name : content.pageRoundRobin.contents[0].owner.displayName;
+            }
+            if (content.pageRoundRobin.contents[0] !== undefined) {
+                linkPostRoundRobinF = process.env.APP_POST + '/' + content.pageRoundRobin.contents[0].post._id;
+            }
+            if (content.pageRoundRobin.contents[0] !== undefined) {
+                postRoundRobinF = content.pageRoundRobin.contents[0].post.title;
+                if (postRoundRobinF.length > 38) {
+                    postRoundRobinF = content.pageRoundRobin.contents[0].post.title.slice(0, 38) + '...';
+                }
+            }
+            if (content.pageRoundRobin.contents[0] !== undefined) {
+                picPostRoundRobinF = process.env.APP_API + content.pageRoundRobin.contents[0].coverPageUrl ? process.env.APP_API + content.pageRoundRobin.contents[0].coverPageUrl + '/image' : '';
+            }
+            if (content.pageRoundRobin.contents[1] !== undefined) {
+                postRoundRobinS = content.pageRoundRobin.contents[1].post.title;
+                if (postRoundRobinS.length > 38) {
+                    postRoundRobinS = content.pageRoundRobin.contents[1].post.title.slice(0, 38) + '...';
+                }
+
+            }
+            if (content.pageRoundRobin.contents[1] !== undefined) {
+                nameRoundRobinS = content.pageRoundRobin.contents[1].owner.name ? content.pageRoundRobin.contents[1].owner.name : content.pageRoundRobin.contents[1].owner.displayName;
+            }
+            if (content.pageRoundRobin.contents[1] !== undefined) {
+                linkPostRoundRobinS = process.env.APP_POST + '/' + content.pageRoundRobin.contents[1].post._id;
+            }
+            if (content.pageRoundRobin.contents[1] !== undefined) {
+                picPostRoundRobinS = process.env.APP_API + content.pageRoundRobin.contents[1].coverPageUrl ? process.env.APP_API + content.pageRoundRobin.contents[1].coverPageUrl + '/image' : '';
+            }
+
+            if (content.pageRoundRobin.contents[2] !== undefined) {
+                picPostRoundRobinT = process.env.APP_API + content.pageRoundRobin.contents[2].coverPageUrl ? process.env.APP_API + content.pageRoundRobin.contents[2].coverPageUrl + '/image' : '';
+            }
+
+            if (content.pageRoundRobin.contents[2] !== undefined) {
+                postRoundRobinT = content.pageRoundRobin.contents[2].post.title;
+                if (postRoundRobinT.length > 38) {
+                    postRoundRobinT = content.pageRoundRobin.contents[2].post.title.slice(0, 38) + '...';
+                }
+            }
+            if (content.pageRoundRobin.contents[2] !== undefined) {
+                nameRoundRobinT = content.pageRoundRobin.contents[2].owner.name ? content.pageRoundRobin.contents[2].owner.name : content.pageRoundRobin.contents[2].owner.displayName;
+            }
+            if (content.pageRoundRobin.contents[2] !== undefined) {
+                linkPostRoundRobinT = process.env.APP_POST + '/' + content.pageRoundRobin.contents[2].post._id;
+            }
+
+        }
+        // link post
+        let postSection = undefined;
+        let linkPostSection = undefined;
+        let picPostSection = undefined;
+        let hashTag = undefined;
+        let splitPostSection = undefined;
+        let splitDetailPostSection = undefined;
+        if (content.postSectionModel.contents.length > 0) {
+            postSection = content.postSectionModel.contents[0];
+            if (postSection.post.title.length > 0) {
+                splitPostSection = postSection.post.title;
+            }
+            if (postSection.post.detail.length > 0) {
+                splitDetailPostSection = postSection.post.detail;
+            }
+            linkPostSection = process.env.APP_POST + '/' + postSection.post._id;
+            picPostSection = content.postSectionModel.contents[0].coverPageUrl ? process.env.APP_API + content.postSectionModel.contents[0].coverPageUrl + '/image' : '';
+            hashTag = content.hashTagSumma[0].name;
+            if (splitPostSection.length >= 139) {
+                splitPostSection = postSection.post.title.slice(0, 139);
+            }
+            if (splitDetailPostSection.length >= 280) {
+                splitDetailPostSection = postSection.post.detail.slice(0, 280) + '.....';
+            }
+        }
+
+        const linkPostMajorTrendF = process.env.APP_POST + '/' + content.majorTrend.contents[0].post._id;
+        const linkPostMajorTrendS = process.env.APP_POST + '/' + content.majorTrend.contents[1].post._id;
+
         const loveIcons = 'https://ea.twimg.com/email/self_serve/media/icon_like-1497559206788.png';
         const commentIcons = 'https://ea.twimg.com/email/self_serve/media/icon_reply-1497559206779.png';
         const shareIcons = 'https://ea.twimg.com/email/self_serve/media/icon_retweet-1497559206722.png';
@@ -1701,77 +1993,1379 @@ export class MainPageController {
         const linkAppStore = 'https://apps.apple.com/th/app/mfp-today/id6444463783?l=th';
         const linkPicPlaySyore = 'https://w7.pngwing.com/pngs/91/37/png-transparent-google-play-android-app-store-android-text-logo-microsoft-store.png';
         const linkPicAppStore = 'https://e7.pngegg.com/pngimages/506/939/png-clipart-app-store-logo-iphone-app-store-get-started-now-button-electronics-text.png';
-        const uniqueRoundRobin = content.pageRoundRobin.contents[0].owner.uniqueId ? '@' + content.pageRoundRobin.contents[0].owner.uniqueId : '';
-        const uniqueMajorTrend = content.majorTrend.contents[0].owner.uniqueId ? '@' + content.majorTrend.contents[0].owner.uniqueId : '';
-        const uniqueProvince = content.kaokaiProvince.contents[0].owner.uniqueId ? '@' + content.kaokaiProvince.contents[0].owner.uniqueId : '';
-        const uniqueHashtag = content.kaokaiHashTag.contents[0].owner.uniqueId ? '@' + content.kaokaiHashTag.contents[0].owner.uniqueId : '';
 
+        const oneDay = 24 * 60 * 60 * 1000; // one day in milliseconds
+        const thaiDate = new Date(date.getTime() - oneDay).toLocaleDateString('th-TH', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+        });
         let sendMail = undefined;
-        if (content.pageRoundRobin.contents[0] !== undefined && content.pageRoundRobin.contents[0] !== null && content.majorTrend.contents[0] !== undefined && content.majorTrend.contents[0] !== null && content.kaokaiProvince.contents[0] !== undefined && content.kaokaiProvince.contents[0] !== null && content.kaokaiHashTag.contents[0] !== undefined && content.kaokaiHashTag.contents[0] !== null) {
-            let message = `<div style='display:flex;'><img src=${profile} alt='profile' style='width:80px;height:80px;margin-bottom:10px;margin-right:15px;border-radius: 50%'><div style='width:730px;margin-bottom:10px;margin-top:25px;font-weight:300'>${user.firstName} ${user.lastName}</div><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png' alt='Today' style='width:30px;height:30px;margin-bottom:10px;margin-top:20px'></div>`;
-            // padding:0px;border:1px solid #AAB8C2;background-color:#FFFFFF;border-radius:4px
-            if (content.pageRoundRobin.contents[0] !== undefined && content.pageRoundRobin.contents[0] !== null) {
-                message += `<a href=${process.env.APP_WEBSITE} style='text-decoration: none;outline: none;color:black'>
-                <div style='background-color:#FFFFFF;height:auto;padding:30px;border: 1px solid #AAB8C2;border-radius: 5px;width:800px'><span style='font-size:25px;font-weight: 100;color:orange;margin-bottom:35px;background-color:#FFFFFF'>${content.pageRoundRobin.title}</span>
-                <div style='display:flex;background-color:#FFFFFF'><img src=${profileRoundRobin} alt='profile' style='width:80px;height:75px;margin-bottom:10px;margin-right:15px;border-radius: 50%;margin-top:25px'><div style='display:block;background-color:#FFFFFF'><div style='background-color:#FFFFFF;margin-bottom:10px;margin-top:35px;font-weight:300'>${content.pageRoundRobin.contents[0].owner.name}</div><div style='background-color:#FFFFFF;margin-bottom:10px;font-weight:100; color:#657786'>${uniqueRoundRobin}</div></div></div>
-                <img src=${picPageRoundRobinPics} style='padding:30px;width:750px;height:490px;background-color:#FFFFFF'>
-                <p style='background-color:#FFFFFF;font-size:20px;margin-top:25px;margin-bottom:25px;font-weight: 200'>${content.pageRoundRobin.contents[0].post.title}</p> <div style='margin-bottom:30px;background-color:#FFFFFF'>${content.pageRoundRobin.contents[0].post.detail}</div> 
-                <div style='display:flex; background-color:#FFFFFF'>
-                <span style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
-                <img src=${commentIcons} style='width:20px;height:20px;background-color: #FFFFFF;'> ${content.pageRoundRobin.contents[0].post.commentCount}</span>
-                <span style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
-                <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'> ${content.pageRoundRobin.contents[0].post.shareCount}</span>
-                <span style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
-                <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'> ${content.pageRoundRobin.contents[0].post.likeCount}</span>
-                </div></div></a>`;
-            } if (content.majorTrend.contents[0] !== undefined && content.majorTrend.contents[0] !== null) {
-                message += `<a href=${process.env.APP_WEBSITE} style='text-decoration: none;outline: none;color:black;'>
-                <div style='background-color:#FFFFFF;height:auto;padding:30px;border: 1px solid #AAB8C2;border-radius: 5px;width:800px;margin-top:15px'>
-                <span style='font-size:25px;font-weight: 100;color:orange;margin-bottom:35px;background-color:#FFFFFF'>${content.majorTrend.title}</span>
-                <div style='display:flex;background-color:#FFFFFF'><img src=${profileMajorTrend} alt='profile' style='width:80px;height:75px;margin-bottom:10px;margin-right:15px;border-radius: 50%;margin-top:25px'><div style='display:block;background-color:#FFFFFF'><div style='background-color:#FFFFFF;margin-bottom:10px;margin-top:35px;font-weight:300'>${content.majorTrend.contents[0].owner.name}</div><div style='background-color:#FFFFFF;margin-bottom:10px;font-weight:100; color:#657786'>${uniqueMajorTrend}</div></div></div>
-                <img src=${picMajorTrendsPics} style='padding:30px;width:750px;height:490px;background-color:#FFFFFF'>
-                <p style='background-color:#FFFFFF;font-size:20px;margin-top:25px;margin-bottom:25px;font-weight: 200'>${content.majorTrend.contents[0].post.title}</p> 
-                <div style='margin-bottom:30px;background-color:#FFFFFF'>${content.majorTrend.contents[0].post.detail}</div> <div style='display:flex; background-color:#FFFFFF'>
-                <span style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
-                <img src=${commentIcons} style='width:20px;height:20px;background-color: #FFFFFF;'> ${content.majorTrend.contents[0].post.commentCount}</span>
-                <span style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
-                <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'> ${content.majorTrend.contents[0].post.shareCount}</span>
-                <span style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
-                <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'> ${content.majorTrend.contents[0].post.likeCount}</span>
-                </div></div></a>`;
-            } if (content.kaokaiProvince.contents[0] !== undefined && content.kaokaiProvince.contents[0] !== null) {
-                message += `<a href=${process.env.APP_WEBSITE} style='text-decoration: none;outline: none;color:black;'>
-                <div style='background-color:#FFFFFF;height:auto;padding:30px;border: 1px solid #AAB8C2;border-radius: 5px;width:800px;margin-top:15px'>
-                <span style='font-size:25px;font-weight: 100;color:orange;margin-bottom:35px;background-color:#FFFFFF'>${content.kaokaiProvince.title}</span>
-                <div style='display:flex;background-color:#FFFFFF'><img src=${profileKaokaiProvince} alt='profile' style='width:80px;height:75px;margin-bottom:10px;margin-right:15px;border-radius: 50%;margin-top:25px'><div style='display:block;background-color:#FFFFFF'><div style='background-color:#FFFFFF;margin-bottom:10px;margin-top:35px;font-weight:300'>${content.kaokaiProvince.contents[0].owner.name}</div><div style='background-color:#FFFFFF;margin-bottom:10px;font-weight:100; color:#657786'>${uniqueProvince}</div></div></div>
-                <img src=${pickaokaiProvincePics} style='padding:30px;width:750px;height:490px;background-color:#FFFFFF'><p style='background-color:#FFFFFF;font-size:20px;margin-top:25px;margin-bottom:25px;font-weight: 200'>${content.kaokaiProvince.contents[0].post.title}</p> 
-                <div style='margin-bottom:30px;background-color:#FFFFFF'>${content.kaokaiProvince.contents[0].post.detail}</div> <div style='display:flex; background-color:#FFFFFF'>
-                <span style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
-                <img src=${commentIcons} style='width:20px;height:20px;background-color: #FFFFFF;'> ${content.kaokaiProvince.contents[0].post.commentCount}</span>
-                <span style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
-                <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'> ${content.kaokaiProvince.contents[0].post.shareCount}</span>
-                <span style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
-                <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'> ${content.kaokaiProvince.contents[0].post.likeCount}</span>
-                </div></div></a>`;
-            } if (content.kaokaiHashTag.contents[0] !== undefined && content.kaokaiHashTag.contents[0] !== null) {
-                message += `<a href=${process.env.APP_WEBSITE} style='text-decoration: none;outline: none;color:black;'>
-                <div style='background-color:#FFFFFF;height:auto;padding:30px;border: 1px solid #AAB8C2;border-radius: 5px;width:800px;margin-top:15px'>
-                <span style='font-size:25px;font-weight: 100;color:orange;margin-bottom:35px;background-color:#FFFFFF'>${content.kaokaiHashTag.title}</span>
-                <div style='display:flex;background-color:#FFFFFF'><img src=${profileKaokaiHashTag} alt='profile' style='width:80px;height:75px;margin-bottom:10px;margin-right:15px;border-radius: 50%;margin-top:25px'><div style='display:block;background-color:#FFFFFF'><div style='background-color:#FFFFFF;margin-bottom:10px;margin-top:35px;font-weight:300'>${content.kaokaiHashTag.contents[0].owner.name}</div><div style='background-color:#FFFFFF;margin-bottom:10px;font-weight:100; color:#657786'>${uniqueHashtag}</div></div></div>
-                <img src=${pickaokaiHashTagPics} style='padding:30px;width:750px;height:490px;background-color:#FFFFFF'><p style='background-color:#FFFFFF;font-size:20px;margin-top:25px;margin-bottom:25px;font-weight: 200'>${content.kaokaiHashTag.contents[0].post.title}</p> 
-                <div style='margin-bottom:30px;background-color:#FFFFFF'>${content.kaokaiHashTag.contents[0].post.detail}</div> <div style='display:flex; background-color:#FFFFFF'>
-                <span style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
-                <img src=${commentIcons} style='width:20px;height:20px;background-color: #FFFFFF;'> ${content.kaokaiHashTag.contents[0].post.commentCount}</span>
-                <span style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
-                <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'> ${content.kaokaiHashTag.contents[0].post.shareCount}</span>
-                <span style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
-                <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'> ${content.kaokaiHashTag.contents[0].post.likeCount}</span>
-                </div></div></a>`;
-            }
-            message += `<div style='display:flex;'><a href=${linkPlayStore}><img src=${linkPicPlaySyore} style='width:150px;margin-top:15px;margin-right:20px'></a><a href=${linkAppStore}><img src=${linkPicAppStore} style='width:150px;margin-top:15px'></a></div>`;
+        let message = undefined;
+
+        if (picPostMajorF !== undefined &&
+            picPostMajorS !== undefined &&
+            postMajorTitleF !== undefined &&
+            postMajorTitleS !== undefined &&
+            postMajorNameF !== undefined &&
+            postMajorNameS !== undefined &&
+            picPostRoundRobinF !== undefined &&
+            picPostRoundRobinS !== undefined &&
+            picPostRoundRobinT !== undefined &&
+            postRoundRobinF !== undefined &&
+            nameRoundRobinF !== undefined &&
+            postRoundRobinS !== undefined &&
+            nameRoundRobinS !== undefined &&
+            postRoundRobinT !== undefined &&
+            nameRoundRobinT !== undefined &&
+            postSection !== undefined &&
+            linkPostSection !== undefined &&
+            linkPostMajorTrendF !== undefined &&
+            linkPostMajorTrendS !== undefined &&
+            linkPostRoundRobinF !== undefined &&
+            linkPostRoundRobinS !== undefined &&
+            linkPostRoundRobinT !== undefined &&
+            hashTag !== undefined &&
+            picPostSection !== undefined &&
+            splitPostSection !== undefined
+        ) {
+            message = `
+            <div style="padding: 10px;background: white;width: 850px;">
+               <div style="width: 60px;height: 52px;padding: 10px;position: absolute;float: right;background: white;">
+                    <img src='https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png'
+                       alt='profile' style=" width: 100%;height: 100%;object-fit: cover;background: white;">
+               </div>
+               <div style="display: grid;margin: 30px 40px;
+               gap: 5px;">
+                   <span
+                       style="font-size: 26pt;padding-bottom: 10px;background: white;color: #ee7623;text-align: center;">ก้าวไกลวันนี้</span>
+                   <span style="background: white;color: #ee7623;text-align: center;">ฉบับวันที่ <span style = 'background: white;color:black;'>${thaiDate}</span></span>
+               </div>
+            
+            
+               <div style="width: 100%;padding-bottom: 20px;background: white;">
+                   <div style="padding: 15px 0;background-color: #f8f8f8;padding-bottom: 10px;">
+                       <span style="color:orange;font-size: 10pt;padding-left: 20px;background-color: #f8f8f8">มาใหม่ : </span>
+                       <a style="font-size: 10pt;background-color: #f8f8f8">#${hashTag}</a>
+                   </div>
+                    <div style="width: 100%;padding-top: 10px;display: flex;background: white; border-bottom: 1px solid gray;">
+                        <a href=${linkPostSection} style='display:flex;background:white;text-decoration:none;'>
+                            <div style="display: flex; text-align: center;font-size: 12pt;height: 370px;background: white;">
+                                <img style="width: 100%;height: 100%;object-fit: cover;background: white;"
+                                    src=${picPostSection}>
+                            </div>
+                            <div style="background: white;width: 70%;text-decoration:none;color:black">
+                                <div style="display: grid;word-break: break-all;padding: 15px;background: white; text-decoration:none;color:black">
+                                    <span style="background: white;font-size: 16pt;">
+                                        ${splitPostSection}
+                                    </span>
+                                    <span style="background: white;">
+                                        ${splitDetailPostSection}
+                                    </span>
+                                    <span style="background: white;color: gray;font-size: 14px;">#${postSection.post.objectiveTag}</span>
+                                    <span style="background: white;color: gray;font-size: 14px;">โดย <span style="color: #ee7623;font-size: 14px;background: white;">${postSection.owner.name}</span></span>
+                                            <div style='display:flex; background-color:#FFFFFF'>
+                                            <span
+                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                <img src=${commentIcons} style='width:20px;height:20px;background-color: #FFFFFF;'>
+                                                ${postSection.post.commentCount}</span>
+                                            <span
+                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                ${postSection.post.shareCount}</span>
+                                            <span
+                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                ${postSection.post.likeCount}</span>
+                                        </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+               </div>
+            
+            
+               <div style="width: 100%;background: white;border-bottom: 1px solid gray;">
+                   <div style="width: 100%;display: flex;background: white;">
+                        <div style="width: 50%;margin-right: 5px;background: white;">
+                            <a href=${linkPostMajorTrendF} style='background:white;text-decoration:none;'>
+                                <div style="display: flex;gap: 5px;background: white;">
+                                    <div
+                                        style="display: flex; text-align: center;font-size: 12pt;width:400px;height:340px;background: white;">
+                                        <img style="margin-left:15px;width: 100%;height: 100%;object-fit: cover;background: white;"
+                                            src=${picPostMajorF}>
+                                    </div>
+                                </div>
+                                <div
+                                    style="display: grid;word-break: break-all;margin-top: 15px;padding: 15px;background: white;margin-bottom: 10px;">
+                                    <span style="background: white;margin-bottom: 10px;color:black;">
+                                        ${postMajorTitleF}
+                                    </span>
+                                    <span style="background: white;color: gray;font-size: 14px;margin-bottom: 10px;">โดย <span
+                                            style="color: #ee7623;font-size: 14px;background: white;">${postMajorNameF}</span></span>
+                                    <div style='display:flex; background-color:#FFFFFF'>
+                                        <span
+                                            style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                            <img src=${commentIcons} style='width:20px;height:20px;background-color: #FFFFFF;'>
+                                            ${content.pageRoundRobin.contents[0].post.commentCount}</span>
+                                        <span
+                                            style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                            <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                            ${content.pageRoundRobin.contents[0].post.shareCount}</span>
+                                        <span
+                                            style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                            <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                            ${content.pageRoundRobin.contents[0].post.likeCount}</span>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div style="width: 50%;margin-right: 5px;background: white;">
+                            <a href=${linkPostMajorTrendS} style='background:white;text-decoration:none;'>
+                                <div style="display: flex;gap: 5px;background: white;">
+                                    <div
+                                        style="display: flex; text-align: center;font-size: 12pt;width:400px;height:340px;background: white;">
+                                        <img style="width: 100%;height: 100%;object-fit: cover;background: white;margin-left:15px"
+                                            src=${picPostMajorS}>
+                                    </div>
+                                </div>
+                                <div
+                                    style="display: grid;word-break: break-all;margin-top: 15px;padding: 15px;background: white;margin-bottom: 10px;">
+                                    <span style="background: white;margin-bottom: 10px;color:black;">
+                                        ${postMajorTitleS}
+                                    </span>
+                                    <span style="background: white;color: gray;font-size: 14px;margin-bottom: 10px;">โดย <span
+                                            style="color: #ee7623;font-size: 14px;background: white;">${postMajorNameS}</span></span>
+                                    <div style='display:flex; background-color:#FFFFFF'>
+                                        <span
+                                            style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                            <img src=${commentIcons} style='width:20px;height:20px;background-color: #FFFFFF;'>
+                                            ${content.pageRoundRobin.contents[0].post.commentCount}</span>
+                                        <span
+                                            style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                            <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                            ${content.pageRoundRobin.contents[0].post.shareCount}</span>
+                                        <span
+                                            style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                            <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                            ${content.pageRoundRobin.contents[0].post.likeCount}</span>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                   </div>
+               </div>
+               <div style="display: flex;background: white;padding-top: 15px;padding-bottom: 15px;border-bottom: 1px solid gray;">
+                    <div style="width: 33.33%;background: white;padding-right: 5px;">
+                        <a href=${linkPostRoundRobinF} style='background:white;text-decoration:none;'>
+                            <div
+                                style="display: flex; text-align: center;font-size: 12pt;width:100%;height: 210px;background: white;margin-bottom: 10px;">
+                                <img style="width: 100%;object-fit: cover;background: white;height:100%;"
+                                    src=${picPostRoundRobinF}>
+                            </div>
+                            <div style="margin-bottom: 5px;background: white;display: grid;">
+                                <span style="background: white;font-size: 14px;margin-bottom: 40px;color:black;">
+                                        ${postRoundRobinF}
+                                </span>
+                                <span style="background: white;color: gray;font-size: 14px;color:black;">โดย <span
+                                        style="color: #ee7623;font-size: 14px;background: white;">${nameRoundRobinF}</span></span>
+                            </div>
+                        </a>
+                    </div>
+                    <div style="width: 33.33%;background: white;padding-right: 5px;">
+                    <a href=${linkPostRoundRobinS} style='background:white;text-decoration:none;'>
+                        <div
+                            style="display: flex; text-align: center;font-size: 12pt;width:100%;height: 210px;background: white;margin-bottom: 10px;">
+                            <img style="width: 100%;object-fit: cover;background: white;height:100%;"
+                                src=${picPostRoundRobinS}>
+                        </div>
+                        <div style="margin-bottom: 5px;background: white;display: grid;">
+                            <span style="background: white;font-size: 14px;margin-bottom: 40px;color:black;">
+                                    ${postRoundRobinS}
+                            </span>
+                            <span style="background: white;color: gray;font-size: 14px;">โดย <span
+                                    style="color: #ee7623;font-size: 14px;background: white;">${nameRoundRobinS}</span></span>
+                        </div>
+                    </a>
+                    </div>
+                   <div style="width: 33.33%;background: white;">
+                        <a href=${linkPostRoundRobinT} style='background:white;text-decoration:none;'>
+                            <div
+                                style="display: flex; text-align: center;font-size: 12pt;width:100%;background: white;margin-bottom: 10px;height:210px">
+                                <img style="width: 100%;object-fit: cover;background: white;height:100%;"
+                                    src=${picPostRoundRobinT}>
+                            </div>
+                            <div style="margin-bottom: 5px;background: white;display: grid;">
+                                <span style="background: white;font-size: 14px;margin-bottom: 40px;color:black;">
+                                        ${postRoundRobinT}
+                                </span>
+                                <span style="background: white;color: gray;font-size: 14px;">โดย <span
+                                        style="color: #ee7623;font-size: 14px;background: white;">${nameRoundRobinT}</span></span>
+                            </div>
+                        </a>
+                   </div>
+               </div>
+               <div align='center' style="margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px;border:1px solid #ee7623;">
+                    <a href=${homePage} style=" background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
+                </div>
+               <div align='center' style="width: 100%;background: white;padding-top: 15px;margin-bottom: 10px;">
+                    <div style='background: white;width:40%;margin: 0 auto'>
+                        <a href=${linkPlayStore} style="background: white;margin: 0 auto">
+                            <img src=${linkPicPlaySyore} style='width:150px;background: white;'>
+                        </a>
+                        <a href=${linkAppStore} style="background: white;margin: 0 auto">
+                            <img src=${linkPicAppStore} style='width:150px;background: white;'></a>
+                    </div>
+               </div>
+            </div>`;
 
             sendMail = MAILService.pushNotification(message, email, subject);
-        } else {
+        } else if (
+            picPostMajorF !== undefined &&
+            picPostMajorS !== undefined &&
+            postMajorTitleF !== undefined &&
+            postMajorTitleS !== undefined &&
+            postMajorNameF !== undefined &&
+            postMajorNameS !== undefined &&
+            picPostRoundRobinF !== undefined &&
+            picPostRoundRobinS !== undefined &&
+            picPostRoundRobinT !== undefined &&
+            postRoundRobinF !== undefined &&
+            nameRoundRobinF !== undefined &&
+            postRoundRobinS !== undefined &&
+            nameRoundRobinS !== undefined &&
+            postRoundRobinT !== undefined &&
+            nameRoundRobinT !== undefined &&
+            postSection === undefined &&
+            linkPostSection === undefined &&
+            linkPostMajorTrendF !== undefined &&
+            linkPostMajorTrendS !== undefined &&
+            linkPostRoundRobinF !== undefined &&
+            linkPostRoundRobinS !== undefined &&
+            linkPostRoundRobinT !== undefined &&
+            hashTag === undefined &&
+            picPostSection === undefined &&
+            splitPostSection === undefined
+        ) {
+            message = `
+            <div style="padding: 10px;background: white;width: 850px;">
+               <div style="width: 60px;height: 52px;padding: 10px;position: absolute;float: right;background: white;">
+                    <img src='https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png'
+                       alt='profile' style=" width: 100%;height: 100%;object-fit: cover;background: white;">
+               </div>
+               <div style="display: grid;margin: 30px 40px;
+               gap: 5px;">
+                   <span
+                       style="font-size: 26pt;padding-bottom: 10px;background: white;color: #ee7623;text-align: center;">ก้าวไกลวันนี้</span>
+                   <span style="background: white;color: #ee7623;text-align: center;">ฉบับวันที่ <span style = 'background: white;color:black;'>${thaiDate}</span></span>
+               </div>
+               <div style="width: 100%;background: white;border-bottom: 1px solid gray;">
+                   <div style="width: 100%;display: flex;background: white;">
+                        <div style="width: 50%;margin-right: 5px;background: white;">
+                            <a href=${linkPostMajorTrendF} style='background:white;text-decoration:none;'>
+                                <div style="display: flex;gap: 5px;background: white;">
+                                    <div
+                                        style="display: flex; text-align: center;font-size: 12pt;width:400px;height:340px;background: white;">
+                                        <img style="margin-left:15px;width: 100%;height: 100%;object-fit: cover;background: white;"
+                                            src=${picPostMajorF}>
+                                    </div>
+                                </div>
+                                <div
+                                    style="display: grid;word-break: break-all;margin-top: 15px;padding: 15px;background: white;margin-bottom: 10px;">
+                                    <span style="background: white;margin-bottom: 10px;color:black;">
+                                        ${postMajorTitleF}
+                                    </span>
+                                    <span style="background: white;color: gray;font-size: 14px;margin-bottom: 10px;">โดย <span
+                                            style="color: #ee7623;font-size: 14px;background: white;">${postMajorNameF}</span></span>
+                                    <div style='display:flex; background-color:#FFFFFF'>
+                                        <span
+                                            style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                            <img src=${commentIcons} style='width:20px;height:20px;background-color: #FFFFFF;'>
+                                            ${content.pageRoundRobin.contents[0].post.commentCount}</span>
+                                        <span
+                                            style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                            <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                            ${content.pageRoundRobin.contents[0].post.shareCount}</span>
+                                        <span
+                                            style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                            <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                            ${content.pageRoundRobin.contents[0].post.likeCount}</span>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div style="width: 50%;margin-right: 5px;background: white;">
+                            <a href=${linkPostMajorTrendS} style='background:white;text-decoration:none;'>
+                                <div style="display: flex;gap: 5px;background: white;">
+                                    <div
+                                        style="display: flex; text-align: center;font-size: 12pt;width:400px;height:340px;background: white;">
+                                        <img style="width: 100%;height: 100%;object-fit: cover;background: white;margin-left:15px"
+                                            src=${picPostMajorS}>
+                                    </div>
+                                </div>
+                                <div
+                                    style="display: grid;word-break: break-all;margin-top: 15px;padding: 15px;background: white;margin-bottom: 10px;">
+                                    <span style="background: white;margin-bottom: 10px;color:black;">
+                                        ${postMajorTitleS}
+                                    </span>
+                                    <span style="background: white;color: gray;font-size: 14px;margin-bottom: 10px;">โดย <span
+                                            style="color: #ee7623;font-size: 14px;background: white;">${postMajorNameS}</span></span>
+                                    <div style='display:flex; background-color:#FFFFFF'>
+                                        <span
+                                            style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                            <img src=${commentIcons} style='width:20px;height:20px;background-color: #FFFFFF;'>
+                                            ${content.pageRoundRobin.contents[0].post.commentCount}</span>
+                                        <span
+                                            style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                            <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                            ${content.pageRoundRobin.contents[0].post.shareCount}</span>
+                                        <span
+                                            style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                            <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                            ${content.pageRoundRobin.contents[0].post.likeCount}</span>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                   </div>
+               </div>
+               <div style="display: flex;background: white;padding-top: 15px;padding-bottom: 15px;border-bottom: 1px solid gray;">
+                    <div style="width: 33.33%;background: white;padding-right: 5px;">
+                        <a href=${linkPostRoundRobinF} style='background:white;text-decoration:none;'>
+                            <div
+                                style="display: flex; text-align: center;font-size: 12pt;width:100%;height: 210px;background: white;margin-bottom: 10px;">
+                                <img style="width: 100%;object-fit: cover;background: white;height:100%;"
+                                    src=${picPostRoundRobinF}>
+                            </div>
+                            <div style="margin-bottom: 5px;background: white;display: grid;">
+                                <span style="background: white;font-size: 14px;margin-bottom: 40px;color:black;">
+                                        ${postRoundRobinF}
+                                </span>
+                                <span style="background: white;color: gray;font-size: 14px;color:black;">โดย <span
+                                        style="color: #ee7623;font-size: 14px;background: white;">${nameRoundRobinF}</span></span>
+                            </div>
+                        </a>
+                    </div>
+                   <div style="width: 33.33%;background: white;padding-right: 5px;">
+                        <a href=${linkPostRoundRobinS} style='background:white;text-decoration:none;'>
+                            <div
+                                style="display: flex; text-align: center;font-size: 12pt;width:100%;height: 210px;background: white;margin-bottom: 10px;">
+                                <img style="width: 100%;object-fit: cover;background: white;height:100%;"
+                                    src=${picPostRoundRobinS}>
+                            </div>
+                            <div style="margin-bottom: 5px;background: white;display: grid;">
+                                <span style="background: white;font-size: 14px;margin-bottom: 40px;color:black;">
+                                        ${postRoundRobinS}
+                                </span>
+                                <span style="background: white;color: gray;font-size: 14px;">โดย <span
+                                        style="color: #ee7623;font-size: 14px;background: white;">${nameRoundRobinS}</span></span>
+                            </div>
+                        </a>
+                   </div>
+                   <div style="width: 33.33%;background: white;">
+                        <a href=${linkPostRoundRobinT} style='background:white;text-decoration:none;'>
+                            <div
+                                style="display: flex; text-align: center;font-size: 12pt;width:100%;background: white;margin-bottom: 10px;height:210px">
+                                <img style="width: 100%;object-fit: cover;background: white;height:100%;"
+                                    src=${picPostRoundRobinT}>
+                            </div>
+                            <div style="margin-bottom: 5px;background: white;display: grid;">
+                                <span style="background: white;font-size: 14px;margin-bottom: 40px;color:black;">
+                                        ${postRoundRobinT}
+                                </span>
+                                <span style="background: white;color: gray;font-size: 14px;">โดย <span
+                                        style="color: #ee7623;font-size: 14px;background: white;">${nameRoundRobinT}</span></span>
+                            </div>
+                        </a>
+                   </div>
+               </div>
+               <div align='center' style="margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px;border:1px solid #ee7623;">
+                    <a href=${homePage} style=" background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
+                </div>
+               <div align='center' style="width: 100%;background: white;padding-top: 15px;margin-bottom: 10px;">
+                    <div style='background: white;width:40%;margin: 0 auto'>
+                        <a href=${linkPlayStore} style="background: white;margin: 0 auto">
+                            <img src=${linkPicPlaySyore} style='width:150px;background: white;'>
+                        </a>
+                        <a href=${linkAppStore} style="background: white;margin: 0 auto">
+                            <img src=${linkPicAppStore} style='width:150px;background: white;'></a>
+                    </div>
+               </div>
+            </div>`;
+            sendMail = MAILService.pushNotification(message, email, subject);
+        } else if (
+            picPostMajorF !== undefined &&
+            picPostMajorS !== undefined &&
+            postMajorTitleF !== undefined &&
+            postMajorTitleS !== undefined &&
+            postMajorNameF !== undefined &&
+            postMajorNameS !== undefined &&
+            picPostRoundRobinF === undefined &&
+            picPostRoundRobinS === undefined &&
+            picPostRoundRobinT === undefined &&
+            postRoundRobinF === undefined &&
+            nameRoundRobinF === undefined &&
+            postRoundRobinS === undefined &&
+            nameRoundRobinS === undefined &&
+            postRoundRobinT === undefined &&
+            nameRoundRobinT === undefined &&
+            postSection === undefined &&
+            linkPostSection === undefined &&
+            linkPostMajorTrendF !== undefined &&
+            linkPostMajorTrendS !== undefined &&
+            linkPostRoundRobinF === undefined &&
+            linkPostRoundRobinS === undefined &&
+            linkPostRoundRobinT === undefined &&
+            hashTag === undefined &&
+            picPostSection === undefined &&
+            splitPostSection === undefined) {
+            message = `
+                <div style="padding: 10px;background: white;width: 850px;">
+                    <div style="width: 60px;height: 52px;padding: 10px;position: absolute;float: right;background: white;">
+                            <img src='https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png'
+                            alt='profile' style=" width: 100%;height: 100%;object-fit: cover;background: white;">
+                    </div>
+                    <div style="display: grid;margin: 30px 40px;
+                    gap: 5px;">
+                        <span
+                            style="font-size: 26pt;padding-bottom: 10px;background: white;color: #ee7623;text-align: center;">ก้าวไกลวันนี้</span>
+                        <span style="background: white;color: #ee7623;text-align: center;">ฉบับวันที่ <span style = 'background: white;color:black;'>${thaiDate}</span></span>
+                    </div>
+                    <div style="width: 100%;background: white;border-bottom: 1px solid gray;">
+                        <div style="width: 100%;display: flex;background: white;">
+                                <div style="width: 50%;margin-right: 5px;background: white;">
+                                    <a href=${linkPostMajorTrendF} style='background:white;text-decoration:none;'>
+                                        <div style="display: flex;gap: 5px;background: white;">
+                                            <div
+                                                style="display: flex; text-align: center;font-size: 12pt;width:400px;height:340px;background: white;">
+                                                <img style="margin-left:15px;width: 100%;height: 100%;object-fit: cover;background: white;"
+                                                    src=${picPostMajorF}>
+                                            </div>
+                                        </div>
+                                        <div
+                                            style="display: grid;word-break: break-all;margin-top: 15px;padding: 15px;background: white;margin-bottom: 10px;">
+                                            <span style="background: white;margin-bottom: 10px;color:black;">
+                                                ${postMajorTitleF}
+                                            </span>
+                                            <span style="background: white;color: gray;font-size: 14px;margin-bottom: 10px;">โดย <span
+                                                    style="color: #ee7623;font-size: 14px;background: white;">${postMajorNameF}</span></span>
+                                            <div style='display:flex; background-color:#FFFFFF'>
+                                                <span
+                                                    style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                    <img src=${commentIcons} style='width:20px;height:20px;background-color: #FFFFFF;'>
+                                                    ${content.pageRoundRobin.contents[0].post.commentCount}</span>
+                                                <span
+                                                    style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                    <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                    ${content.pageRoundRobin.contents[0].post.shareCount}</span>
+                                                <span
+                                                    style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                    <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                    ${content.pageRoundRobin.contents[0].post.likeCount}</span>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div style="width: 50%;margin-right: 5px;background: white;">
+                                    <a href=${linkPostMajorTrendS} style='background:white;text-decoration:none;'>
+                                        <div style="display: flex;gap: 5px;background: white;">
+                                            <div
+                                                style="display: flex; text-align: center;font-size: 12pt;width:400px;height:340px;background: white;">
+                                                <img style="width: 100%;height: 100%;object-fit: cover;background: white;margin-left:15px"
+                                                    src=${picPostMajorS}>
+                                            </div>
+                                        </div>
+                                        <div
+                                            style="display: grid;word-break: break-all;margin-top: 15px;padding: 15px;background: white;margin-bottom: 10px;">
+                                            <span style="background: white;margin-bottom: 10px;color:black;">
+                                                ${postMajorTitleS}
+                                            </span>
+                                            <span style="background: white;color: gray;font-size: 14px;margin-bottom: 10px;">โดย <span
+                                                    style="color: #ee7623;font-size: 14px;background: white;">${postMajorNameS}</span></span>
+                                            <div style='display:flex; background-color:#FFFFFF'>
+                                                <span
+                                                    style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                    <img src=${commentIcons} style='width:20px;height:20px;background-color: #FFFFFF;'>
+                                                    ${content.pageRoundRobin.contents[0].post.commentCount}</span>
+                                                <span
+                                                    style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                    <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                    ${content.pageRoundRobin.contents[0].post.shareCount}</span>
+                                                <span
+                                                    style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                    <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                    ${content.pageRoundRobin.contents[0].post.likeCount}</span>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                        </div>
+                    </div>
+                    <div align='center' style="margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px;border:1px solid #ee7623;">
+                            <a href=${homePage} style=" background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
+                        </div>
+                    <div align='center' style="width: 100%;background: white;padding-top: 15px;margin-bottom: 10px;">
+                            <div style='background: white;width:40%;margin: 0 auto'>
+                                <a href=${linkPlayStore} style="background: white;margin: 0 auto">
+                                    <img src=${linkPicPlaySyore} style='width:150px;background: white;'>
+                                </a>
+                                <a href=${linkAppStore} style="background: white;margin: 0 auto">
+                                    <img src=${linkPicAppStore} style='width:150px;background: white;'></a>
+                            </div>
+                    </div>
+                </div>`;
+            sendMail = MAILService.pushNotification(message, email, subject);
+        } else if (
+            picPostMajorF !== undefined &&
+            picPostMajorS !== undefined &&
+            postMajorTitleF !== undefined &&
+            postMajorTitleS !== undefined &&
+            postMajorNameF !== undefined &&
+            postMajorNameS !== undefined &&
+            picPostRoundRobinF === undefined &&
+            picPostRoundRobinS === undefined &&
+            picPostRoundRobinT === undefined &&
+            postRoundRobinF === undefined &&
+            nameRoundRobinF === undefined &&
+            postRoundRobinS === undefined &&
+            nameRoundRobinS === undefined &&
+            postRoundRobinT === undefined &&
+            nameRoundRobinT === undefined &&
+            postSection !== undefined &&
+            linkPostSection !== undefined &&
+            linkPostMajorTrendF !== undefined &&
+            linkPostMajorTrendS !== undefined &&
+            linkPostRoundRobinF === undefined &&
+            linkPostRoundRobinS === undefined &&
+            linkPostRoundRobinT === undefined &&
+            hashTag !== undefined &&
+            picPostSection !== undefined &&
+            splitPostSection !== undefined
+        ) {
+            message = `
+            <div style="padding: 10px;background: white;width: 850px;">
+               <div style="width: 60px;height: 52px;padding: 10px;position: absolute;float: right;background: white;">
+                    <img src='https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png'
+                       alt='profile' style=" width: 100%;height: 100%;object-fit: cover;background: white;">
+               </div>
+               <div style="display: grid;margin: 30px 40px;
+               gap: 5px;">
+                   <span
+                       style="font-size: 26pt;padding-bottom: 10px;background: white;color: #ee7623;text-align: center;">ก้าวไกลวันนี้</span>
+                   <span style="background: white;color: #ee7623;text-align: center;">ฉบับวันที่ <span style = 'background: white;color:black;'>${thaiDate}</span></span>
+               </div>
+            
+            
+               <div style="width: 100%;padding-bottom: 20px;background: white;">
+                   <div style="padding: 15px 0;background-color: #f8f8f8;padding-bottom: 10px;">
+                       <span style="color:orange;font-size: 10pt;padding-left: 20px;background-color: #f8f8f8">มาใหม่ : </span>
+                       <a style="font-size: 10pt;background-color: #f8f8f8">#${hashTag}</a>
+                   </div>
+                    <div style="width: 100%;padding-top: 10px;display: flex;background: white; border-bottom: 1px solid gray;">
+                        <a href=${linkPostSection} style='display:flex;background:white;text-decoration:none;'>
+                            <div style="display: flex; text-align: center;font-size: 12pt;height: 370px;background: white;">
+                                <img style="width: 100%;height: 100%;object-fit: cover;background: white;"
+                                    src=${picPostSection}>
+                            </div>
+                            <div style="background: white;width: 70%;text-decoration:none;color:black">
+                                <div style="display: grid;word-break: break-all;padding: 15px;background: white; text-decoration:none;color:black">
+                                    <span style="background: white;font-size: 16pt;">
+                                        ${splitPostSection}
+                                    </span>
+                                    <span style="background: white;">
+                                        ${splitDetailPostSection}
+                                    </span>
+                                    <span style="background: white;color: gray;font-size: 14px;">#${postSection.post.objectiveTag}</span>
+                                    <span style="background: white;color: gray;font-size: 14px;">โดย <span style="color: #ee7623;font-size: 14px;background: white;">${postSection.owner.name}</span></span>
+                                            <div style='display:flex; background-color:#FFFFFF'>
+                                            <span
+                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                <img src=${commentIcons} style='width:20px;height:20px;background-color: #FFFFFF;'>
+                                                ${postSection.post.commentCount}</span>
+                                            <span
+                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                ${postSection.post.shareCount}</span>
+                                            <span
+                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                ${postSection.post.likeCount}</span>
+                                        </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+               </div>
+               <div style="width: 100%;background: white;border-bottom: 1px solid gray;">
+                    <div style="width: 100%;display: flex;background: white;">
+                            <div style="width: 50%;margin-right: 5px;background: white;">
+                                <a href=${linkPostMajorTrendF} style='background:white;text-decoration:none;'>
+                                    <div style="display: flex;gap: 5px;background: white;">
+                                        <div
+                                            style="display: flex; text-align: center;font-size: 12pt;width:400px;height:340px;background: white;">
+                                            <img style="margin-left:15px;width: 100%;height: 100%;object-fit: cover;background: white;"
+                                                src=${picPostMajorF}>
+                                        </div>
+                                    </div>
+                                    <div
+                                        style="display: grid;word-break: break-all;margin-top: 15px;padding: 15px;background: white;margin-bottom: 10px;">
+                                        <span style="background: white;margin-bottom: 10px;color:black;">
+                                            ${postMajorTitleF}
+                                        </span>
+                                        <span style="background: white;color: gray;font-size: 14px;margin-bottom: 10px;">โดย <span
+                                                style="color: #ee7623;font-size: 14px;background: white;">${postMajorNameF}</span></span>
+                                        <div style='display:flex; background-color:#FFFFFF'>
+                                            <span
+                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                <img src=${commentIcons} style='width:20px;height:20px;background-color: #FFFFFF;'>
+                                                ${content.pageRoundRobin.contents[0].post.commentCount}</span>
+                                            <span
+                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                ${content.pageRoundRobin.contents[0].post.shareCount}</span>
+                                            <span
+                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                ${content.pageRoundRobin.contents[0].post.likeCount}</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div style="width: 50%;margin-right: 5px;background: white;">
+                                <a href=${linkPostMajorTrendS} style='background:white;text-decoration:none;'>
+                                    <div style="display: flex;gap: 5px;background: white;">
+                                        <div
+                                            style="display: flex; text-align: center;font-size: 12pt;width:400px;height:340px;background: white;">
+                                            <img style="width: 100%;height: 100%;object-fit: cover;background: white;margin-left:15px"
+                                                src=${picPostMajorS}>
+                                        </div>
+                                    </div>
+                                    <div
+                                        style="display: grid;word-break: break-all;margin-top: 15px;padding: 15px;background: white;margin-bottom: 10px;">
+                                        <span style="background: white;margin-bottom: 10px;color:black;">
+                                            ${postMajorTitleS}
+                                        </span>
+                                        <span style="background: white;color: gray;font-size: 14px;margin-bottom: 10px;">โดย <span
+                                                style="color: #ee7623;font-size: 14px;background: white;">${postMajorNameS}</span></span>
+                                        <div style='display:flex; background-color:#FFFFFF'>
+                                            <span
+                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                <img src=${commentIcons} style='width:20px;height:20px;background-color: #FFFFFF;'>
+                                                ${content.pageRoundRobin.contents[0].post.commentCount}</span>
+                                            <span
+                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                ${content.pageRoundRobin.contents[0].post.shareCount}</span>
+                                            <span
+                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                ${content.pageRoundRobin.contents[0].post.likeCount}</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                    </div>
+                </div>
+               <div align='center' style="margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px;border:1px solid #ee7623;">
+                    <a href=${homePage} style=" background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
+                </div>
+               <div align='center' style="width: 100%;background: white;padding-top: 15px;margin-bottom: 10px;">
+                    <div style='background: white;width:40%;margin: 0 auto'>
+                        <a href=${linkPlayStore} style="background: white;margin: 0 auto">
+                            <img src=${linkPicPlaySyore} style='width:150px;background: white;'>
+                        </a>
+                        <a href=${linkAppStore} style="background: white;margin: 0 auto">
+                            <img src=${linkPicAppStore} style='width:150px;background: white;'></a>
+                    </div>
+               </div>
+            </div>`;
+            sendMail = MAILService.pushNotification(message, email, subject);
+        } else if (picPostMajorF !== undefined &&
+            picPostMajorS !== undefined &&
+            postMajorTitleF !== undefined &&
+            postMajorTitleS !== undefined &&
+            postMajorNameF !== undefined &&
+            postMajorNameS !== undefined &&
+            picPostRoundRobinF !== undefined &&
+            picPostRoundRobinS !== undefined &&
+            picPostRoundRobinT === undefined &&
+            postRoundRobinF !== undefined &&
+            nameRoundRobinF !== undefined &&
+            postRoundRobinS !== undefined &&
+            nameRoundRobinS !== undefined &&
+            postRoundRobinT === undefined &&
+            nameRoundRobinT === undefined &&
+            postSection !== undefined &&
+            linkPostSection !== undefined &&
+            linkPostMajorTrendF !== undefined &&
+            linkPostMajorTrendS !== undefined &&
+            linkPostRoundRobinF !== undefined &&
+            linkPostRoundRobinS !== undefined &&
+            linkPostRoundRobinT === undefined &&
+            hashTag !== undefined &&
+            picPostSection !== undefined &&
+            splitPostSection !== undefined) {
+            message = `
+                <div style="padding: 10px;background: white;width: 850px;">
+                   <div style="width: 60px;height: 52px;padding: 10px;position: absolute;float: right;background: white;">
+                        <img src='https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png'
+                           alt='profile' style=" width: 100%;height: 100%;object-fit: cover;background: white;">
+                   </div>
+                   <div style="display: grid;margin: 30px 40px;
+                   gap: 5px;">
+                       <span
+                           style="font-size: 26pt;padding-bottom: 10px;background: white;color: #ee7623;text-align: center;">ก้าวไกลวันนี้</span>
+                       <span style="background: white;color: #ee7623;text-align: center;">ฉบับวันที่ <span style = 'background: white;color:black;'>${thaiDate}</span></span>
+                   </div>
+                
+                
+                   <div style="width: 100%;padding-bottom: 20px;background: white;">
+                       <div style="padding: 15px 0;background-color: #f8f8f8;padding-bottom: 10px;">
+                           <span style="color:orange;font-size: 10pt;padding-left: 20px;background-color: #f8f8f8">มาใหม่ : </span>
+                           <a style="font-size: 10pt;background-color: #f8f8f8">#${hashTag}</a>
+                       </div>
+                        <div style="width: 100%;padding-top: 10px;display: flex;background: white; border-bottom: 1px solid gray;">
+                            <a href=${linkPostSection} style='display:flex;background:white;text-decoration:none;'>
+                                <div style="display: flex; text-align: center;font-size: 12pt;height: 370px;background: white;">
+                                    <img style="width: 100%;height: 100%;object-fit: cover;background: white;"
+                                        src=${picPostSection}>
+                                </div>
+                                <div style="background: white;width: 70%;text-decoration:none;color:black">
+                                    <div style="display: grid;word-break: break-all;padding: 15px;background: white; text-decoration:none;color:black">
+                                        <span style="background: white;font-size: 16pt;">
+                                            ${splitPostSection}
+                                        </span>
+                                        <span style="background: white;">
+                                            ${splitDetailPostSection}
+                                        </span>
+                                        <span style="background: white;color: gray;font-size: 14px;">#${postSection.post.objectiveTag}</span>
+                                        <span style="background: white;color: gray;font-size: 14px;">โดย <span style="color: #ee7623;font-size: 14px;background: white;">${postSection.owner.name}</span></span>
+                                                <div style='display:flex; background-color:#FFFFFF'>
+                                                <span
+                                                    style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                    <img src=${commentIcons} style='width:20px;height:20px;background-color: #FFFFFF;'>
+                                                    ${postSection.post.commentCount}</span>
+                                                <span
+                                                    style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                    <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                    ${postSection.post.shareCount}</span>
+                                                <span
+                                                    style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                    <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                    ${postSection.post.likeCount}</span>
+                                            </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                   </div>
+                
+                
+                   <div style="width: 100%;background: white;border-bottom: 1px solid gray;">
+                       <div style="width: 100%;display: flex;background: white;">
+                            <div style="width: 50%;margin-right: 5px;background: white;">
+                                <a href=${linkPostMajorTrendF} style='background:white;text-decoration:none;'>
+                                    <div style="display: flex;gap: 5px;background: white;">
+                                        <div
+                                            style="display: flex; text-align: center;font-size: 12pt;width:400px;height:340px;background: white;">
+                                            <img style="margin-left:15px;width: 100%;height: 100%;object-fit: cover;background: white;"
+                                                src=${picPostMajorF}>
+                                        </div>
+                                    </div>
+                                    <div
+                                        style="display: grid;word-break: break-all;margin-top: 15px;padding: 15px;background: white;margin-bottom: 10px;">
+                                        <span style="background: white;margin-bottom: 10px;color:black;">
+                                            ${postMajorTitleF}
+                                        </span>
+                                        <span style="background: white;color: gray;font-size: 14px;margin-bottom: 10px;">โดย <span
+                                                style="color: #ee7623;font-size: 14px;background: white;">${postMajorNameF}</span></span>
+                                        <div style='display:flex; background-color:#FFFFFF'>
+                                            <span
+                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                <img src=${commentIcons} style='width:20px;height:20px;background-color: #FFFFFF;'>
+                                                ${content.pageRoundRobin.contents[0].post.commentCount}</span>
+                                            <span
+                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                ${content.pageRoundRobin.contents[0].post.shareCount}</span>
+                                            <span
+                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                ${content.pageRoundRobin.contents[0].post.likeCount}</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div style="width: 50%;margin-right: 5px;background: white;">
+                                <a href=${linkPostMajorTrendS} style='background:white;text-decoration:none;'>
+                                    <div style="display: flex;gap: 5px;background: white;">
+                                        <div
+                                            style="display: flex; text-align: center;font-size: 12pt;width:400px;height:340px;background: white;">
+                                            <img style="width: 100%;height: 100%;object-fit: cover;background: white;margin-left:15px"
+                                                src=${picPostMajorS}>
+                                        </div>
+                                    </div>
+                                    <div
+                                        style="display: grid;word-break: break-all;margin-top: 15px;padding: 15px;background: white;margin-bottom: 10px;">
+                                        <span style="background: white;margin-bottom: 10px;color:black;">
+                                            ${postMajorTitleS}
+                                        </span>
+                                        <span style="background: white;color: gray;font-size: 14px;margin-bottom: 10px;">โดย <span
+                                                style="color: #ee7623;font-size: 14px;background: white;">${postMajorNameS}</span></span>
+                                        <div style='display:flex; background-color:#FFFFFF'>
+                                            <span
+                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                <img src=${commentIcons} style='width:20px;height:20px;background-color: #FFFFFF;'>
+                                                ${content.pageRoundRobin.contents[0].post.commentCount}</span>
+                                            <span
+                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                ${content.pageRoundRobin.contents[0].post.shareCount}</span>
+                                            <span
+                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                ${content.pageRoundRobin.contents[0].post.likeCount}</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                       </div>
+                   </div>
+                   <div style="display: flex;background: white;padding-top: 15px;padding-bottom: 15px;border-bottom: 1px solid gray;">
+                        <div style="width: 50%;background: white;padding-right: 5px;">
+                            <a href=${linkPostRoundRobinF} style='background:white;text-decoration:none;'>
+                                <div
+                                    style="display: flex; text-align: center;font-size: 12pt;width:100%;height: 210px;background: white;margin-bottom: 10px;">
+                                    <img style="width: 100%;object-fit: cover;background: white;height:100%;"
+                                        src=${picPostRoundRobinF}>
+                                </div>
+                                <div style="margin-bottom: 5px;background: white;display: grid;">
+                                    <span style="background: white;font-size: 14px;margin-bottom: 40px;color:black;">
+                                            ${postRoundRobinF}
+                                    </span>
+                                    <span style="background: white;color: gray;font-size: 14px;color:black;">โดย <span
+                                            style="color: #ee7623;font-size: 14px;background: white;">${nameRoundRobinF}</span></span>
+                                </div>
+                            </a>
+                        </div>
+                        <div style="width: 50%;background: white;padding-right: 5px;">
+                        <a href=${linkPostRoundRobinS} style='background:white;text-decoration:none;'>
+                            <div
+                                style="display: flex; text-align: center;font-size: 12pt;width:100%;height: 210px;background: white;margin-bottom: 10px;">
+                                <img style="width: 100%;object-fit: cover;background: white;height:100%;"
+                                    src=${picPostRoundRobinS}>
+                            </div>
+                            <div style="margin-bottom: 5px;background: white;display: grid;">
+                                <span style="background: white;font-size: 14px;margin-bottom: 40px;color:black;">
+                                        ${postRoundRobinS}
+                                </span>
+                                <span style="background: white;color: gray;font-size: 14px;">โดย <span
+                                        style="color: #ee7623;font-size: 14px;background: white;">${nameRoundRobinS}</span></span>
+                            </div>
+                        </a>
+                        </div>
+                   </div>
+                   <div align='center' style="margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px;border:1px solid #ee7623;">
+                        <a href=${homePage} style=" background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
+                    </div>
+                   <div align='center' style="width: 100%;background: white;padding-top: 15px;margin-bottom: 10px;">
+                        <div style='background: white;width:40%;margin: 0 auto'>
+                            <a href=${linkPlayStore} style="background: white;margin: 0 auto">
+                                <img src=${linkPicPlaySyore} style='width:150px;background: white;'>
+                            </a>
+                            <a href=${linkAppStore} style="background: white;margin: 0 auto">
+                                <img src=${linkPicAppStore} style='width:150px;background: white;'></a>
+                        </div>
+                   </div>
+                </div>`;
+
+            sendMail = MAILService.pushNotification(message, email, subject);
+        } else if (picPostMajorF !== undefined &&
+            picPostMajorS !== undefined &&
+            postMajorTitleF !== undefined &&
+            postMajorTitleS !== undefined &&
+            postMajorNameF !== undefined &&
+            postMajorNameS !== undefined &&
+            picPostRoundRobinF !== undefined &&
+            picPostRoundRobinS === undefined &&
+            picPostRoundRobinT === undefined &&
+            postRoundRobinF !== undefined &&
+            nameRoundRobinF !== undefined &&
+            postRoundRobinS === undefined &&
+            nameRoundRobinS === undefined &&
+            postRoundRobinT === undefined &&
+            nameRoundRobinT === undefined &&
+            postSection !== undefined &&
+            linkPostSection !== undefined &&
+            linkPostMajorTrendF !== undefined &&
+            linkPostMajorTrendS !== undefined &&
+            linkPostRoundRobinF !== undefined &&
+            linkPostRoundRobinS === undefined &&
+            linkPostRoundRobinT === undefined &&
+            hashTag !== undefined &&
+            picPostSection !== undefined &&
+            splitPostSection !== undefined
+        ) {
+            message = `
+                <div style="padding: 10px;background: white;width: 850px;">
+                   <div style="width: 60px;height: 52px;padding: 10px;position: absolute;float: right;background: white;">
+                        <img src='https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png'
+                           alt='profile' style=" width: 100%;height: 100%;object-fit: cover;background: white;">
+                   </div>
+                   <div style="display: grid;margin: 30px 40px;
+                   gap: 5px;">
+                       <span
+                           style="font-size: 26pt;padding-bottom: 10px;background: white;color: #ee7623;text-align: center;">ก้าวไกลวันนี้</span>
+                       <span style="background: white;color: #ee7623;text-align: center;">ฉบับวันที่ <span style = 'background: white;color:black;'>${thaiDate}</span></span>
+                   </div>
+                
+                
+                   <div style="width: 100%;padding-bottom: 20px;background: white;">
+                       <div style="padding: 15px 0;background-color: #f8f8f8;padding-bottom: 10px;">
+                           <span style="color:orange;font-size: 10pt;padding-left: 20px;background-color: #f8f8f8">มาใหม่ : </span>
+                           <a style="font-size: 10pt;background-color: #f8f8f8">#${hashTag}</a>
+                       </div>
+                        <div style="width: 100%;padding-top: 10px;display: flex;background: white; border-bottom: 1px solid gray;">
+                            <a href=${linkPostSection} style='display:flex;background:white;text-decoration:none;'>
+                                <div style="display: flex; text-align: center;font-size: 12pt;height: 370px;background: white;">
+                                    <img style="width: 100%;height: 100%;object-fit: cover;background: white;"
+                                        src=${picPostSection}>
+                                </div>
+                                <div style="background: white;width: 70%;text-decoration:none;color:black">
+                                    <div style="display: grid;word-break: break-all;padding: 15px;background: white; text-decoration:none;color:black">
+                                        <span style="background: white;font-size: 16pt;">
+                                            ${splitPostSection}
+                                        </span>
+                                        <span style="background: white;">
+                                            ${splitDetailPostSection}
+                                        </span>
+                                        <span style="background: white;color: gray;font-size: 14px;">#${postSection.post.objectiveTag}</span>
+                                        <span style="background: white;color: gray;font-size: 14px;">โดย <span style="color: #ee7623;font-size: 14px;background: white;">${postSection.owner.name}</span></span>
+                                                <div style='display:flex; background-color:#FFFFFF'>
+                                                <span
+                                                    style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                    <img src=${commentIcons} style='width:20px;height:20px;background-color: #FFFFFF;'>
+                                                    ${postSection.post.commentCount}</span>
+                                                <span
+                                                    style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                    <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                    ${postSection.post.shareCount}</span>
+                                                <span
+                                                    style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                    <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                    ${postSection.post.likeCount}</span>
+                                            </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                   </div>
+                
+                
+                   <div style="width: 100%;background: white;border-bottom: 1px solid gray;">
+                       <div style="width: 100%;display: flex;background: white;">
+                            <div style="width: 50%;margin-right: 5px;background: white;">
+                                <a href=${linkPostMajorTrendF} style='background:white;text-decoration:none;'>
+                                    <div style="display: flex;gap: 5px;background: white;">
+                                        <div
+                                            style="display: flex; text-align: center;font-size: 12pt;width:400px;height:340px;background: white;">
+                                            <img style="margin-left:15px;width: 100%;height: 100%;object-fit: cover;background: white;"
+                                                src=${picPostMajorF}>
+                                        </div>
+                                    </div>
+                                    <div
+                                        style="display: grid;word-break: break-all;margin-top: 15px;padding: 15px;background: white;margin-bottom: 10px;">
+                                        <span style="background: white;margin-bottom: 10px;color:black;">
+                                            ${postMajorTitleF}
+                                        </span>
+                                        <span style="background: white;color: gray;font-size: 14px;margin-bottom: 10px;">โดย <span
+                                                style="color: #ee7623;font-size: 14px;background: white;">${postMajorNameF}</span></span>
+                                        <div style='display:flex; background-color:#FFFFFF'>
+                                            <span
+                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                <img src=${commentIcons} style='width:20px;height:20px;background-color: #FFFFFF;'>
+                                                ${content.pageRoundRobin.contents[0].post.commentCount}</span>
+                                            <span
+                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                ${content.pageRoundRobin.contents[0].post.shareCount}</span>
+                                            <span
+                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                ${content.pageRoundRobin.contents[0].post.likeCount}</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div style="width: 50%;margin-right: 5px;background: white;">
+                                <a href=${linkPostMajorTrendS} style='background:white;text-decoration:none;'>
+                                    <div style="display: flex;gap: 5px;background: white;">
+                                        <div
+                                            style="display: flex; text-align: center;font-size: 12pt;width:400px;height:340px;background: white;">
+                                            <img style="width: 100%;height: 100%;object-fit: cover;background: white;margin-left:15px"
+                                                src=${picPostMajorS}>
+                                        </div>
+                                    </div>
+                                    <div
+                                        style="display: grid;word-break: break-all;margin-top: 15px;padding: 15px;background: white;margin-bottom: 10px;">
+                                        <span style="background: white;margin-bottom: 10px;color:black;">
+                                            ${postMajorTitleS}
+                                        </span>
+                                        <span style="background: white;color: gray;font-size: 14px;margin-bottom: 10px;">โดย <span
+                                                style="color: #ee7623;font-size: 14px;background: white;">${postMajorNameS}</span></span>
+                                        <div style='display:flex; background-color:#FFFFFF'>
+                                            <span
+                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                <img src=${commentIcons} style='width:20px;height:20px;background-color: #FFFFFF;'>
+                                                ${content.pageRoundRobin.contents[0].post.commentCount}</span>
+                                            <span
+                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                ${content.pageRoundRobin.contents[0].post.shareCount}</span>
+                                            <span
+                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                ${content.pageRoundRobin.contents[0].post.likeCount}</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                       </div>
+                   </div>
+                   <div style="display: flex;background: white;padding-top: 15px;padding-bottom: 15px;border-bottom: 1px solid gray;">
+                        <div style="width: 100%;background: white;padding-right: 5px;">
+                            <a href=${linkPostRoundRobinF} style='background:white;text-decoration:none;'>
+                                <div
+                                    style="display: flex; text-align: center;font-size: 12pt;width:100%;height: 210px;background: white;margin-bottom: 10px;">
+                                    <img style="width: 100%;object-fit: cover;background: white;height:100%;"
+                                        src=${picPostRoundRobinF}>
+                                </div>
+                                <div style="margin-bottom: 5px;background: white;display: grid;">
+                                    <span style="background: white;font-size: 14px;margin-bottom: 40px;color:black;">
+                                            ${postRoundRobinF}
+                                    </span>
+                                    <span style="background: white;color: gray;font-size: 14px;color:black;">โดย <span
+                                            style="color: #ee7623;font-size: 14px;background: white;">${nameRoundRobinF}</span></span>
+                                </div>
+                            </a>
+                        </div>
+                   </div>
+                   <div align='center' style="margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px;border:1px solid #ee7623;">
+                        <a href=${homePage} style=" background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
+                    </div>
+                   <div align='center' style="width: 100%;background: white;padding-top: 15px;margin-bottom: 10px;">
+                        <div style='background: white;width:40%;margin: 0 auto'>
+                            <a href=${linkPlayStore} style="background: white;margin: 0 auto">
+                                <img src=${linkPicPlaySyore} style='width:150px;background: white;'>
+                            </a>
+                            <a href=${linkAppStore} style="background: white;margin: 0 auto">
+                                <img src=${linkPicAppStore} style='width:150px;background: white;'></a>
+                        </div>
+                   </div>
+                </div>`;
+
+            sendMail = MAILService.pushNotification(message, email, subject);
+
+        } else if (picPostMajorF !== undefined &&
+            picPostMajorS !== undefined &&
+            postMajorTitleF !== undefined &&
+            postMajorTitleS !== undefined &&
+            postMajorNameF !== undefined &&
+            postMajorNameS !== undefined &&
+            picPostRoundRobinF !== undefined &&
+            picPostRoundRobinS === undefined &&
+            picPostRoundRobinT === undefined &&
+            postRoundRobinF !== undefined &&
+            nameRoundRobinF !== undefined &&
+            postRoundRobinS === undefined &&
+            nameRoundRobinS === undefined &&
+            postRoundRobinT === undefined &&
+            nameRoundRobinT === undefined &&
+            postSection === undefined &&
+            linkPostSection === undefined &&
+            linkPostMajorTrendF !== undefined &&
+            linkPostMajorTrendS !== undefined &&
+            linkPostRoundRobinF !== undefined &&
+            linkPostRoundRobinS === undefined &&
+            linkPostRoundRobinT === undefined &&
+            hashTag === undefined &&
+            picPostSection === undefined &&
+            splitPostSection === undefined
+        ) {
+            message = `
+                <div style="padding: 10px;background: white;width: 850px;">
+                   <div style="width: 60px;height: 52px;padding: 10px;position: absolute;float: right;background: white;">
+                        <img src='https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png'
+                           alt='profile' style=" width: 100%;height: 100%;object-fit: cover;background: white;">
+                   </div>
+                   <div style="display: grid;margin: 30px 40px;
+                   gap: 5px;">
+                       <span
+                           style="font-size: 26pt;padding-bottom: 10px;background: white;color: #ee7623;text-align: center;">ก้าวไกลวันนี้</span>
+                       <span style="background: white;color: #ee7623;text-align: center;">ฉบับวันที่ <span style = 'background: white;color:black;'>${thaiDate}</span></span>
+                   </div>    
+                   <div style="width: 100%;background: white;border-bottom: 1px solid gray;">
+                       <div style="width: 100%;display: flex;background: white;">
+                            <div style="width: 50%;margin-right: 5px;background: white;">
+                                <a href=${linkPostMajorTrendF} style='background:white;text-decoration:none;'>
+                                    <div style="display: flex;gap: 5px;background: white;">
+                                        <div
+                                            style="display: flex; text-align: center;font-size: 12pt;width:400px;height:340px;background: white;">
+                                            <img style="margin-left:15px;width: 100%;height: 100%;object-fit: cover;background: white;"
+                                                src=${picPostMajorF}>
+                                        </div>
+                                    </div>
+                                    <div
+                                        style="display: grid;word-break: break-all;margin-top: 15px;padding: 15px;background: white;margin-bottom: 10px;">
+                                        <span style="background: white;margin-bottom: 10px;color:black;">
+                                            ${postMajorTitleF}
+                                        </span>
+                                        <span style="background: white;color: gray;font-size: 14px;margin-bottom: 10px;">โดย <span
+                                                style="color: #ee7623;font-size: 14px;background: white;">${postMajorNameF}</span></span>
+                                        <div style='display:flex; background-color:#FFFFFF'>
+                                            <span
+                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                <img src=${commentIcons} style='width:20px;height:20px;background-color: #FFFFFF;'>
+                                                ${content.pageRoundRobin.contents[0].post.commentCount}</span>
+                                            <span
+                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                ${content.pageRoundRobin.contents[0].post.shareCount}</span>
+                                            <span
+                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                ${content.pageRoundRobin.contents[0].post.likeCount}</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div style="width: 50%;margin-right: 5px;background: white;">
+                                <a href=${linkPostMajorTrendS} style='background:white;text-decoration:none;'>
+                                    <div style="display: flex;gap: 5px;background: white;">
+                                        <div
+                                            style="display: flex; text-align: center;font-size: 12pt;width:400px;height:340px;background: white;">
+                                            <img style="width: 100%;height: 100%;object-fit: cover;background: white;margin-left:15px"
+                                                src=${picPostMajorS}>
+                                        </div>
+                                    </div>
+                                    <div
+                                        style="display: grid;word-break: break-all;margin-top: 15px;padding: 15px;background: white;margin-bottom: 10px;">
+                                        <span style="background: white;margin-bottom: 10px;color:black;">
+                                            ${postMajorTitleS}
+                                        </span>
+                                        <span style="background: white;color: gray;font-size: 14px;margin-bottom: 10px;">โดย <span
+                                                style="color: #ee7623;font-size: 14px;background: white;">${postMajorNameS}</span></span>
+                                        <div style='display:flex; background-color:#FFFFFF'>
+                                            <span
+                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                <img src=${commentIcons} style='width:20px;height:20px;background-color: #FFFFFF;'>
+                                                ${content.pageRoundRobin.contents[0].post.commentCount}</span>
+                                            <span
+                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                ${content.pageRoundRobin.contents[0].post.shareCount}</span>
+                                            <span
+                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                ${content.pageRoundRobin.contents[0].post.likeCount}</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                       </div>
+                   </div>
+                   <div style="display: flex;background: white;padding-top: 15px;padding-bottom: 15px;border-bottom: 1px solid gray;">
+                        <div style="width: 100%;background: white;padding-right: 5px;">
+                            <a href=${linkPostRoundRobinF} style='background:white;text-decoration:none;'>
+                                <div
+                                    style="display: flex; text-align: center;font-size: 12pt;width:100%;height: 210px;background: white;margin-bottom: 10px;">
+                                    <img style="width: 100%;object-fit: cover;background: white;height:100%;"
+                                        src=${picPostRoundRobinF}>
+                                </div>
+                                <div style="margin-bottom: 5px;background: white;display: grid;">
+                                    <span style="background: white;font-size: 14px;margin-bottom: 40px;color:black;">
+                                            ${postRoundRobinF}
+                                    </span>
+                                    <span style="background: white;color: gray;font-size: 14px;color:black;">โดย <span
+                                            style="color: #ee7623;font-size: 14px;background: white;">${nameRoundRobinF}</span></span>
+                                </div>
+                            </a>
+                        </div>
+                   </div>
+                   <div align='center' style="margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px;border:1px solid #ee7623;">
+                        <a href=${homePage} style=" background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
+                    </div>
+                   <div align='center' style="width: 100%;background: white;padding-top: 15px;margin-bottom: 10px;">
+                        <div style='background: white;width:40%;margin: 0 auto'>
+                            <a href=${linkPlayStore} style="background: white;margin: 0 auto">
+                                <img src=${linkPicPlaySyore} style='width:150px;background: white;'>
+                            </a>
+                            <a href=${linkAppStore} style="background: white;margin: 0 auto">
+                                <img src=${linkPicAppStore} style='width:150px;background: white;'></a>
+                        </div>
+                   </div>
+                </div>`;
+
+            sendMail = MAILService.pushNotification(message, email, subject);
+
+        } else if (picPostMajorF !== undefined &&
+            picPostMajorS !== undefined &&
+            postMajorTitleF !== undefined &&
+            postMajorTitleS !== undefined &&
+            postMajorNameF !== undefined &&
+            postMajorNameS !== undefined &&
+            picPostRoundRobinF !== undefined &&
+            picPostRoundRobinS !== undefined &&
+            picPostRoundRobinT === undefined &&
+            postRoundRobinF !== undefined &&
+            nameRoundRobinF !== undefined &&
+            postRoundRobinS !== undefined &&
+            nameRoundRobinS !== undefined &&
+            postRoundRobinT === undefined &&
+            nameRoundRobinT === undefined &&
+            postSection === undefined &&
+            linkPostSection === undefined &&
+            linkPostMajorTrendF !== undefined &&
+            linkPostMajorTrendS !== undefined &&
+            linkPostRoundRobinF !== undefined &&
+            linkPostRoundRobinS !== undefined &&
+            linkPostRoundRobinT === undefined &&
+            hashTag === undefined &&
+            picPostSection === undefined &&
+            splitPostSection === undefined) {
+            message = `
+                <div style="padding: 10px;background: white;width: 850px;">
+                   <div style="width: 60px;height: 52px;padding: 10px;position: absolute;float: right;background: white;">
+                        <img src='https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png'
+                           alt='profile' style=" width: 100%;height: 100%;object-fit: cover;background: white;">
+                   </div>
+                   <div style="display: grid;margin: 30px 40px;
+                   gap: 5px;">
+                       <span
+                           style="font-size: 26pt;padding-bottom: 10px;background: white;color: #ee7623;text-align: center;">ก้าวไกลวันนี้</span>
+                       <span style="background: white;color: #ee7623;text-align: center;">ฉบับวันที่ <span style = 'background: white;color:black;'>${thaiDate}</span></span>
+                   </div>    
+                   <div style="width: 100%;background: white;border-bottom: 1px solid gray;">
+                       <div style="width: 100%;display: flex;background: white;">
+                            <div style="width: 50%;margin-right: 5px;background: white;">
+                                <a href=${linkPostMajorTrendF} style='background:white;text-decoration:none;'>
+                                    <div style="display: flex;gap: 5px;background: white;">
+                                        <div
+                                            style="display: flex; text-align: center;font-size: 12pt;width:400px;height:340px;background: white;">
+                                            <img style="margin-left:15px;width: 100%;height: 100%;object-fit: cover;background: white;"
+                                                src=${picPostMajorF}>
+                                        </div>
+                                    </div>
+                                    <div
+                                        style="display: grid;word-break: break-all;margin-top: 15px;padding: 15px;background: white;margin-bottom: 10px;">
+                                        <span style="background: white;margin-bottom: 10px;color:black;">
+                                            ${postMajorTitleF}
+                                        </span>
+                                        <span style="background: white;color: gray;font-size: 14px;margin-bottom: 10px;">โดย <span
+                                                style="color: #ee7623;font-size: 14px;background: white;">${postMajorNameF}</span></span>
+                                        <div style='display:flex; background-color:#FFFFFF'>
+                                            <span
+                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                <img src=${commentIcons} style='width:20px;height:20px;background-color: #FFFFFF;'>
+                                                ${content.pageRoundRobin.contents[0].post.commentCount}</span>
+                                            <span
+                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                ${content.pageRoundRobin.contents[0].post.shareCount}</span>
+                                            <span
+                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                ${content.pageRoundRobin.contents[0].post.likeCount}</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div style="width: 50%;margin-right: 5px;background: white;">
+                                <a href=${linkPostMajorTrendS} style='background:white;text-decoration:none;'>
+                                    <div style="display: flex;gap: 5px;background: white;">
+                                        <div
+                                            style="display: flex; text-align: center;font-size: 12pt;width:400px;height:340px;background: white;">
+                                            <img style="width: 100%;height: 100%;object-fit: cover;background: white;margin-left:15px"
+                                                src=${picPostMajorS}>
+                                        </div>
+                                    </div>
+                                    <div
+                                        style="display: grid;word-break: break-all;margin-top: 15px;padding: 15px;background: white;margin-bottom: 10px;">
+                                        <span style="background: white;margin-bottom: 10px;color:black;">
+                                            ${postMajorTitleS}
+                                        </span>
+                                        <span style="background: white;color: gray;font-size: 14px;margin-bottom: 10px;">โดย <span
+                                                style="color: #ee7623;font-size: 14px;background: white;">${postMajorNameS}</span></span>
+                                        <div style='display:flex; background-color:#FFFFFF'>
+                                            <span
+                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                <img src=${commentIcons} style='width:20px;height:20px;background-color: #FFFFFF;'>
+                                                ${content.pageRoundRobin.contents[0].post.commentCount}</span>
+                                            <span
+                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                ${content.pageRoundRobin.contents[0].post.shareCount}</span>
+                                            <span
+                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                ${content.pageRoundRobin.contents[0].post.likeCount}</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                       </div>
+                   </div>
+                   <div style="display: flex;background: white;padding-top: 15px;padding-bottom: 15px;border-bottom: 1px solid gray;">
+                        <div style="width: 50%;background: white;padding-right: 5px;">
+                            <a href=${linkPostRoundRobinF} style='background:white;text-decoration:none;'>
+                                <div
+                                    style="display: flex; text-align: center;font-size: 12pt;width:100%;height: 210px;background: white;margin-bottom: 10px;">
+                                    <img style="width: 100%;object-fit: cover;background: white;height:100%;"
+                                        src=${picPostRoundRobinF}>
+                                </div>
+                                <div style="margin-bottom: 5px;background: white;display: grid;">
+                                    <span style="background: white;font-size: 14px;margin-bottom: 40px;color:black;">
+                                            ${postRoundRobinF}
+                                    </span>
+                                    <span style="background: white;color: gray;font-size: 14px;color:black;">โดย <span
+                                            style="color: #ee7623;font-size: 14px;background: white;">${nameRoundRobinF}</span></span>
+                                </div>
+                            </a>
+                        </div>
+                        <div style="width: 50%;background: white;padding-right: 5px;">
+                        <a href=${linkPostRoundRobinS} style='background:white;text-decoration:none;'>
+                            <div
+                                style="display: flex; text-align: center;font-size: 12pt;width:100%;height: 210px;background: white;margin-bottom: 10px;">
+                                <img style="width: 100%;object-fit: cover;background: white;height:100%;"
+                                    src=${picPostRoundRobinS}>
+                            </div>
+                            <div style="margin-bottom: 5px;background: white;display: grid;">
+                                <span style="background: white;font-size: 14px;margin-bottom: 40px;color:black;">
+                                        ${postRoundRobinS}
+                                </span>
+                                <span style="background: white;color: gray;font-size: 14px;">โดย <span
+                                        style="color: #ee7623;font-size: 14px;background: white;">${nameRoundRobinS}</span></span>
+                            </div>
+                        </a>
+                        </div>
+                   </div>
+                   <div align='center' style="margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px;border:1px solid #ee7623;">
+                        <a href=${homePage} style=" background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
+                    </div>
+                   <div align='center' style="width: 100%;background: white;padding-top: 15px;margin-bottom: 10px;">
+                        <div style='background: white;width:40%;margin: 0 auto'>
+                            <a href=${linkPlayStore} style="background: white;margin: 0 auto">
+                                <img src=${linkPicPlaySyore} style='width:150px;background: white;'>
+                            </a>
+                            <a href=${linkAppStore} style="background: white;margin: 0 auto">
+                                <img src=${linkPicAppStore} style='width:150px;background: white;'></a>
+                        </div>
+                   </div>
+                </div>`;
+
+            sendMail = MAILService.pushNotification(message, email, subject);
+        }
+        else {
             return ResponseUtil.getErrorResponse('error in sending email', '');
 
         }
@@ -1781,6 +3375,7 @@ export class MainPageController {
             return ResponseUtil.getErrorResponse('error in sending email', '');
         }
     }
+
     private parseUserField(user: any): any {
         const userResult: any = {};
 

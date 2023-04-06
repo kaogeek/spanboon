@@ -126,8 +126,11 @@ export class User extends BaseModel {
     @Column({ name: 'province' })
     public province: string;
 
-    @Column({ name: 'uaAcceptDate' })
-    public uaAcceptDate: Date;
+    @Column({ name: 'subscribeEmail'})
+    public subscribeEmail: boolean;
+
+    @Column({ name: 'ua' })
+    public ua: Date;
 
     @Column({ name: 'uaVersion' })
     public uaVersion: number;

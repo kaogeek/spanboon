@@ -19,17 +19,24 @@ import { LOG_TYPE, PAGE_LOG_ACTION } from '../../../constants/LogsAction';
 import { DeletePageService } from '../../services/DeletePageService';
 import { PostsService } from '../../services/PostsService';
 import { KaokaiToday } from '../../models/KaokaiToday';
+import { SearchFilter } from '../requests/SearchFilterRequest';
 import { KaokaiTodayService } from '../../services/KaokaiTodayService';
 import { CreateKaokaiTodayRequest } from '../requests/CreateKaokaiTodayRequest';
 import { PageObjectiveService } from '../../services/PageObjectiveService';
 import { PageGroupRequest } from '../requests/PageGroupRequest';
 import { PageGroup } from '../../models/PageGroup';
 import { PageGroupService } from '../../services/PageGroupService';
+import { SearchRequest } from '../requests/SearchRequest';
+import { SEARCH_TYPE } from '../../../constants/SearchType';
+import { EmergencyEventService } from '../../services/EmergencyEventService';
+import { HashTagService } from '../../services/HashTagService';
 @JsonController('/admin/page')
 export class AdminPageController {
     constructor(private pageService: PageService, private actionLogService: AdminUserActionLogsService, private deletePageService: DeletePageService,
         private kaokaiTodayService: KaokaiTodayService,
         private pageObjectiveService: PageObjectiveService,
+        private emergencyEventService: EmergencyEventService,
+        private hashTagService: HashTagService,
         private postsService: PostsService,
         private pageGroupService: PageGroupService
     ) { }
@@ -90,109 +97,247 @@ export class AdminPageController {
         }
     }
 
-    @Post('/request/title')
-    public async getTitle(@Res() res: any, @Req() req: any): Promise<any> {
-        const title = req.body.title;
-        if (title) {
-            // one-hot encoding 
-            const requestTitle = title;
-            if (requestTitle === 'ก้าวไกลวันนี้') {
-                for (const roundRobin of req.body.buckets) {
-                    if (roundRobin.name === 'คณะกรรมการบริหารพรรค') {
-                        const page_1 = await this.pageService.find({ isOfficial: true, roundRobin: 'คณะกรรมการบริหารพรรค' });
-                        const successResponse = ResponseUtil.getSuccessResponse('Successfully Bucket KaokaiToday', page_1);
-                        return res.status(200).send(successResponse);
-                    } else if (roundRobin.name === 'รองหัวหน้าพรรคก้าวไกล') {
-                        const page_2 = await this.pageService.find({ isOfficial: true, roundRobin: 'รองหัวหน้าพรรคก้าวไกล' });
-                        const successResponse = ResponseUtil.getSuccessResponse('Successfully Bucket KaokaiToday', page_2);
-                        return res.status(200).send(successResponse);
-                    } else if (roundRobin.name === 'รองเลขาธิการพรรคก้าวไกล') {
-                        const page_3 = await this.pageService.find({ isOfficial: true, roundRobin: 'รองเลขาธิการพรรคก้าวไกล' });
-                        const successResponse = ResponseUtil.getSuccessResponse('Successfully Bucket KaokaiToday', page_3);
-                        return res.status(200).send(successResponse);
-                    } else if (roundRobin.name === 'กองโฆษกพรรคก้าวไกล') {
-                        const page_4 = await this.pageService.find({ isOfficial: true, roundRobin: 'กองโฆษกพรรคก้าวไกล' });
-                        const successResponse = ResponseUtil.getSuccessResponse('Successfully Bucket KaokaiToday', page_4);
-                        return res.status(200).send(successResponse);
-                    } else if (roundRobin.name === 'ผู้สมัครของพรรคก้าวไกล') {
-                        const page_5 = await this.pageService.find({ isOfficial: true, roundRobin: 'ผู้สมัครของพรรคก้าวไกล' });
-                        const successResponse = ResponseUtil.getSuccessResponse('Successfully Bucket KaokaiToday', page_5);
-                        return res.status(200).send(successResponse);
-                    }
+    @Post('/edit/search')
+    public async searchGet(@Body({ validate: true }) data: SearchRequest, @Res() res: any, @Req() req: any): Promise<any> {
+        if (data.type === 'page' && data.field === 'id') {
+            const bucketAll = [];
+            const bucketF = [];
+            const bucketS = [];
+            const bucketT = [];
+            // roundRobin.buckets[0] !== undefined 
+            if (data.buckets[0] !== undefined) {
+                for (const stack of data.buckets[0].values) {
+                    bucketF.push(new ObjectID(stack));
                 }
-            } else if (requestTitle === 'สภาก้าวไกล') {
-                // #HashTag
-                // db.Page.aggregate([{
-                // $match:{'isOfficial':true}},
-                // {'$lookup':
-                //  {from:'Posts',
-                // 'let':{'id':'$_id'},
-                // 'pipeline':[{'$match':{'$expr':{'$eq':['$$id','$pageId']}}},{$limit:1}],as:'Posts'}
-                // }
-                // ])
-                const pageObjStmt = [
-                    { // sample post for one
-                        $lookup: {
-                            from: 'Posts',
-                            let: { 'id': '$_id' },
-                            pipeline: [
-                                { $match: { $expr: { $eq: ['$$id', '$objective'] } } },
-                                { $limit: 1 }
-                            ],
-                            as: 'samplePost'
-                        }
-                    },
-                    {
-                        $match: {
-                            'samplePost.0': { $exists: true }
-                        }
-                    },
-                    /*
-                    {
-                        $lookup: {
-                            from: 'Page',
-                            localField: 'pageId',
-                            foreignField: '_id',
-                            as: 'page'
-                        }
-                    }, */
-                    {
-                        $lookup: {
-                            from: 'Page',
-                            let: { 'id': '$_id' },
-                            pipeline: [{
-                                $match: { $expr: { $eq: ['$$', '$pageId'] } }
-                            }],
-                            as: 'page'
-                        }
-                    },
-                    {
-                        $lookup: {
-                            from: 'HashTag',
-                            localField: 'hashTag',
-                            foreignField: '_id',
-                            as: 'hashTagObj'
-                        }
-                    }
-                ];
-                /* 
-                if (searchOfficialOnly) {
-                    pageObjStmt.splice(7, 0, { $match: { 'page.isOfficial': true, 'page.banned': false } });
-                } */
-
-                const searchResult = await this.pageObjectiveService.aggregate(pageObjStmt);
-                const successResponse = ResponseUtil.getSuccessResponse('Successfully Bucket KaokaiToday', searchResult);
-                return res.status(200).send(successResponse);
-            } else if (requestTitle === 'ก้าวไกลทั่วไทย') {
-                // #จังหวัด province
-            } else if (requestTitle === 'ก้าวไกลรอบด้าน') {
-                // #บริบทเพจ ประเด็น
+            }
+            if (data.buckets[1] !== undefined) {
+                for (const stack of data.buckets[1].values) {
+                    bucketS.push(new ObjectID(stack));
+                }
+            }
+            if (data.buckets[2] !== undefined) {
+                for (const stack of data.buckets[2].values) {
+                    bucketT.push(new ObjectID(stack));
+                }
+            }
+            if (bucketF.length > 0) {
+                const pageF = await this.pageService.aggregate([{ $match: { _id: { $in: bucketF } } }]);
+                bucketAll.push(pageF);
+            }
+            if (bucketS.length > 0) {
+                const pageS = await this.pageService.aggregate([{ $match: { _id: { $in: bucketS } } }]);
+                bucketAll.push(pageS);
+            }
+            if (bucketT.length > 0) {
+                const pageT = await this.pageService.aggregate([{ $match: { _id: { $in: bucketT } } }]);
+                bucketAll.push(pageT);
 
             }
-        } else {
-            const errorResponse = ResponseUtil.getErrorResponse('Please select the title.', undefined);
+            const successResponseGroup = ResponseUtil.getSuccessResponse('Search Page Group Success.', bucketAll);
+            return res.status(200).send(successResponseGroup);
+
+        } if (data.type === 'post' && data.field === 'objective') {
+            const bucketAll = [];
+            const bucketF = [];
+            const bucketS = [];
+            const bucketT = [];
+            // roundRobin.buckets[0] !== undefined 
+            if (data.buckets[0] !== undefined) {
+                for (const stack of data.buckets[0].values) {
+                    bucketF.push(new ObjectID(stack));
+                }
+            }
+            if (data.buckets[1] !== undefined) {
+                for (const stack of data.buckets[1].values) {
+                    bucketS.push(new ObjectID(stack));
+                }
+            }
+            if (data.buckets[2] !== undefined) {
+                for (const stack of data.buckets[2].values) {
+                    bucketT.push(new ObjectID(stack));
+                }
+            }
+            if (bucketF.length > 0) {
+                const pageF = await this.pageObjectiveService.aggregate([{ $match: { _id: { $in: bucketF } } }]);
+                bucketAll.push(pageF);
+            }
+            if (bucketS.length > 0) {
+                const pageS = await this.pageObjectiveService.aggregate([{ $match: { _id: { $in: bucketS } } }]);
+                bucketAll.push(pageS);
+            }
+            if (bucketT.length > 0) {
+                const pageT = await this.pageObjectiveService.aggregate([{ $match: { _id: { $in: bucketT } } }]);
+                bucketAll.push(pageT);
+
+            }
+            const successResponseGroup = ResponseUtil.getSuccessResponse('Search Page Group Success.', bucketAll);
+            return res.status(200).send(successResponseGroup);
+        } if (data.type === 'post' && data.field === 'emergencyEvent') {
+            const bucketAll = [];
+            const bucketF = [];
+            const bucketS = [];
+            const bucketT = [];
+            // roundRobin.buckets[0] !== undefined 
+            if (data.buckets[0] !== undefined) {
+                for (const stack of data.buckets[0].values) {
+                    bucketF.push(new ObjectID(stack));
+                }
+            }
+            if (data.buckets[1] !== undefined) {
+                for (const stack of data.buckets[1].values) {
+                    bucketS.push(new ObjectID(stack));
+                }
+            }
+            if (data.buckets[2] !== undefined) {
+                for (const stack of data.buckets[2].values) {
+                    bucketT.push(new ObjectID(stack));
+                }
+            }
+            if (bucketF.length > 0) {
+                const pageF = await this.emergencyEventService.aggregate([{ $match: { _id: { $in: bucketF } } }]);
+                bucketAll.push(pageF);
+            }
+            if (bucketS.length > 0) {
+                const pageS = await this.emergencyEventService.aggregate([{ $match: { _id: { $in: bucketS } } }]);
+                bucketAll.push(pageS);
+            }
+            if (bucketT.length > 0) {
+                const pageT = await this.emergencyEventService.aggregate([{ $match: { _id: { $in: bucketT } } }]);
+                bucketAll.push(pageT);
+
+            }
+            const successResponseGroup = ResponseUtil.getSuccessResponse('Search Page Group Success.', bucketAll);
+            return res.status(200).send(successResponseGroup);
+        }
+    }
+    @Post('/request/search')
+    public async searchAll(@Body({ validate: true }) data: SearchRequest, @Res() res: any, @Req() req: any): Promise<any> {
+        const search: any = {};
+        const keywords = data.keyword;
+        const exp = { $regex: '.*' + keywords + '.*', $options: 'si' };
+        const limit = 10;
+        const searchResults = [];
+        const bucketF = [];
+        if (data.type === '' && data.field === '') {
+            const errorResponse = ResponseUtil.getErrorResponse('Please Select Type and Field..', undefined);
             return res.status(400).send(errorResponse);
         }
+        if (data.type === 'page' && data.field === 'id') {
+            const pageQuery = [
+                { $match: { isOfficial: true, banned: false, name: exp } },
+                { $limit: 10 }
+            ];
+            const pages: any[] = await this.pageService.aggregate(pageQuery);
+            let pageId = undefined;
+            let pageName = undefined;
+            for (const page of pages) {
+                pageId = page._id;
+                pageName = page.name;
+                searchResults.push({ value: pageId, label: pageName, type: SEARCH_TYPE.PAGE });
+            }
+        } else if (data.type === 'page' && data.field === 'group') {
+            const pages: any[] = await this.pageGroupService.find({});
+            const successResponseGroup = ResponseUtil.getSuccessResponse('Search Page Group Success.', pages);
+            return res.status(200).send(successResponseGroup);
+        } else if (data.type === 'page' && data.field === 'province') {
+            const pageQuery = [
+                { $match: { isOfficial: true, banned: false, province: exp } },
+                { $limit: 10 }
+            ];
+            const pages: any[] = await this.pageService.aggregate(pageQuery);
+            let pageId = undefined;
+            let pageName = undefined;
+            for (const page of pages) {
+                pageId = page._id;
+                pageName = page.name;
+                searchResults.push({ value: pageId, label: pageName, type: SEARCH_TYPE.PAGE });
+            }
+        } else if (data.type === 'post' && data.field === 'emergencyEvent') {
+            const postEmergencys = await this.emergencyEventService.aggregate([
+                {
+                    $match: { title: exp },
+                },
+                { $limit: 10 }
+            ]);
+
+            let postId = undefined;
+            let postTitle = undefined;
+            for (const postStmd of postEmergencys) {
+                postId = postStmd._id;
+                postTitle = postStmd.title;
+                searchResults.push({ value: postId, label: postTitle, type: SEARCH_TYPE.PAGE });
+            }
+
+        } else if (data.type === 'post' && data.field === 'objective') {
+            const postObjectiveS = await this.pageObjectiveService.aggregate([
+                {
+                    $match: { title: exp }
+                },
+                {
+                    $limit: 10
+                }
+            ]);
+
+            let postId = undefined;
+            let postTitle = undefined;
+            for (const postStmd of postObjectiveS) {
+                postId = postStmd._id;
+                postTitle = postStmd.title;
+                searchResults.push({ value: postId, label: postTitle, type: SEARCH_TYPE.PAGE });
+            }
+
+        } else if (data.type === 'post' && data.field === 'score') {
+            const returnUnderfined = undefined;
+            searchResults.push({ value: returnUnderfined, label: returnUnderfined, type: SEARCH_TYPE.PAGE });
+        } else if (data.type === 'post' && data.field === 'hashtag') {
+            const hashTagSearch = await this.hashTagService.aggregate(
+                [
+                    {
+                        $match: { name: exp }
+                    },
+                    {
+                        $limit: 10
+                    }
+                ]);
+            let postId = undefined;
+            let postTitle = undefined;
+            for (const postStmd of hashTagSearch) {
+                postId = postStmd._id;
+                postTitle = postStmd.name;
+                searchResults.push({ value: postId, label: postTitle, type: SEARCH_TYPE.PAGE });
+            }
+
+        } else {
+            const hashTagMost = await this.hashTagService.searchHashSec(limit);
+            if (hashTagMost.length >= 0) {
+                for (const hashTagMostS of hashTagMost) {
+                    bucketF.push(new ObjectID(hashTagMostS.id));
+                }
+            }
+            const postStmts = [
+                { $match: { isDraft: false, deleted: false, hidden: false, postsHashTags: { $ne: null, $in: bucketF } } },
+                { $limit: 10 }
+            ];
+            const postAggregateSet1 = await this.postsService.aggregate(postStmts);
+
+            let postId = undefined;
+            let postTitle = undefined;
+            for (const postStmd of postAggregateSet1) {
+                postId = postStmd._id;
+                postTitle = postStmd.title;
+                searchResults.push({ value: postId, label: postTitle, type: SEARCH_TYPE.PAGE });
+            }
+
+        }
+        search.result = searchResults;
+        if (search !== null && search !== undefined && Object.keys(search).length > 0) {
+            const successResponse = ResponseUtil.getSuccessResponse('Search Success', search);
+            return res.status(200).send(successResponse);
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Search Failed', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
     }
 
     @Post('/group')
@@ -217,7 +362,7 @@ export class AdminPageController {
         const objId = new ObjectID(id);
         const pageGroup = await this.pageGroupService.findOne({ _id: objId });
         if (pageGroup) {
-            const query = {_id:pageGroup.id};
+            const query = { _id: pageGroup.id };
             const newValues = { $set: { name: EditPageGroupRequest.name, detail: EditPageGroupRequest.detail } };
             const update = await this.pageGroupService.update(query, newValues);
             if (update) {
@@ -258,9 +403,9 @@ export class AdminPageController {
         }
     }
 
-    @Get('/receive/bucket')
-    public async receiveBucket(@Res() res: any, @Req() req: any): Promise<any> {
-        const bucketAll = await this.kaokaiTodayService.find({});
+    @Post('/receive/bucket')
+    public async receiveBucket(@Body({ validate: true }) filter: SearchFilter, @Res() res: any, @Req() req: any): Promise<any> {
+        const bucketAll = await this.kaokaiTodayService.search(filter);
         if (bucketAll.length > 0) {
             const successResponse = ResponseUtil.getSuccessResponse('Here this is your bucket boi.', bucketAll);
             return res.status(200).send(successResponse);
@@ -276,7 +421,7 @@ export class AdminPageController {
         const titleRequest = createKaokaiTodayRequest.title;
         const positionNumber = createKaokaiTodayRequest.position;
 
-        if (createKaokaiTodayRequest.position > 4) {
+        if (createKaokaiTodayRequest.position > 5) {
             const successResponse = ResponseUtil.getSuccessResponse('Position must less or equal than 4.', undefined);
             return res.status(200).send(successResponse);
         }
@@ -330,20 +475,25 @@ export class AdminPageController {
         const objId = new ObjectID(id);
         const kaoKaiToday = await this.kaokaiTodayService.findOne({ _id: objId });
         if (kaoKaiToday) {
-            for (const [i, updateKaokaiToday] of createKaokaiTodayRequest.buckets.Entity()) {
-                if (updateKaokaiToday.name !== undefined && updateKaokaiToday.values !== null) {
-                    const query = { _id: objId };
-                    const newValues = {
-                        $set: {
-                            title: createKaokaiTodayRequest.title,
-                            [`buckets.${i}.name`]: `${updateKaokaiToday.name}`,
-                            'buckets.0.values': [updateKaokaiToday.values]
-                        }
-                    };
-                    await this.kaokaiTodayService.update(query, newValues);
-                } else {
-                    continue;
+            const query = { _id: kaoKaiToday.id };
+            const newValues = {
+                $set: {
+                    title: createKaokaiTodayRequest.title,
+                    type: createKaokaiTodayRequest.type,
+                    field: createKaokaiTodayRequest.field,
+                    position: createKaokaiTodayRequest.position,
+                    limit: createKaokaiTodayRequest.limit,
+                    'buckets.0.name': createKaokaiTodayRequest.buckets[0] ? createKaokaiTodayRequest.buckets[0].name : undefined,
+                    'buckets.1.name': createKaokaiTodayRequest.buckets[1] ? createKaokaiTodayRequest.buckets[1].name : undefined,
+                    'buckets.2.name': createKaokaiTodayRequest.buckets[2] ? createKaokaiTodayRequest.buckets[2].name : undefined,
+                    'buckets.0.values': createKaokaiTodayRequest.buckets[0] ? createKaokaiTodayRequest.buckets[0].values : undefined,
+                    'buckets.1.values': createKaokaiTodayRequest.buckets[1] ? createKaokaiTodayRequest.buckets[1].values : undefined,
+                    'buckets.2.values': createKaokaiTodayRequest.buckets[2] ? createKaokaiTodayRequest.buckets[2].values : undefined,
                 }
+            };
+            const update = await this.kaokaiTodayService.update(query, newValues);
+            if (update) {
+                console.log('pass1');
             }
 
             const successResponse = ResponseUtil.getSuccessResponse('Update KaokaiToday is successfully.', undefined);

@@ -127,6 +127,7 @@ export class AboutPage extends AbstractPage implements OnInit {
         { value: 'ภูเก็ต', viewValue: 'ภูเก็ต' },
         { value: 'สมุทรสงคราม', viewValue: 'สมุทรสงคราม' }
     ];
+    public groups: any = [];
     public isCard1: boolean = false;
     public isCard2: boolean = false;
     public isCard3: boolean = false;
@@ -139,6 +140,7 @@ export class AboutPage extends AbstractPage implements OnInit {
     public isCard10: boolean = false;
     public isCard11: boolean = false;
     public isCard12: boolean = false;
+    public isCard13: boolean = false;
     public isActiveButton1: boolean = false;
     public isActiveButton2: boolean = false;
     public isActiveButton3: boolean = false;
@@ -149,8 +151,12 @@ export class AboutPage extends AbstractPage implements OnInit {
     public isActiveButton10: boolean = false;
     public isActiveButton11: boolean = false;
     public isActiveButton12: boolean = false;
+    public isActiveButton13: boolean = false;
     public isActiveButtonEmail: boolean = false;
     public isActiveButtonWeb: boolean = false;
+
+    public selectedProvince: string;
+    public selectedGroup: string;
 
     public isTimeSet: boolean = true;
 
@@ -274,6 +280,14 @@ export class AboutPage extends AbstractPage implements OnInit {
 
     public ngOnInit(): void {
         this.crateValueAbout();
+        this.getGroupList();
+        if (!!this.dataPage.group) {
+            this.selectedGroup = this.dataPage.group
+        }
+
+        if (!!this.dataPage.province) {
+            this.selectedProvince = this.dataPage.province
+        }
     }
 
     public async ngOnChanges(changes: SimpleChanges): Promise<void> {
@@ -311,6 +325,14 @@ export class AboutPage extends AbstractPage implements OnInit {
         return this.dirtyCancelEvent;
     }
 
+    public getGroupList() {
+        this.aboutPageFacade.getGroups(this.pageId).then((res) => {
+            if (res) {
+                this.groups = res.data;
+            }
+        })
+    }
+
     public clickCard(items: any) {
         if (items === '1') {
             this.isCard1 = true;
@@ -334,8 +356,10 @@ export class AboutPage extends AbstractPage implements OnInit {
             this.isCard10 = true;
         } else if (items === '11') {
             this.isCard11 = true;
-        } else if (items === '12'){
+        } else if (items === '12') {
             this.isCard12 = true;
+        } else if (items === '13') {
+            this.isCard13 = true;
         }
     }
 
@@ -388,14 +412,18 @@ export class AboutPage extends AbstractPage implements OnInit {
             this.isCard10 = false;
             this.isActiveButton10 = false;
             this.resetValue(data, 10);
-        } else if (items === '11' ) {
+        } else if (items === '11') {
             this.isCard11 = false;
             this.isActiveButton11 = false;
             this.resetValue(data, 11);
-        } else if (items === '12'){
+        } else if (items === '12') {
             this.isCard12 = false;
             this.isActiveButton12 = false;
-            this.resetValue(data,12);
+            this.resetValue(data, 12);
+        } else if (items === '13') {
+            this.isCard13 = false;
+            this.isActiveButton13 = false;
+            this.resetValue(data, 13);
         }
     }
 
@@ -433,9 +461,12 @@ export class AboutPage extends AbstractPage implements OnInit {
         } else if (index === 11) {
             this.isCard11 = false;
             this.isActiveButton11 = false;
-        } else if (index === 12){
+        } else if (index === 12) {
             this.isCard12 = false;
             this.isActiveButton12 = false;
+        } else if (index === 13) {
+            this.isCard13 = false;
+            this.isActiveButton13 = false;
         }
     }
 
@@ -555,7 +586,6 @@ export class AboutPage extends AbstractPage implements OnInit {
                     }
                     document.getElementById('pageUsername').focus();
                 }).catch((err) => {
-                    console.log("error", err)
                     this.uuid = false;
                     this.isActiveButton2 = false;
                     document.getElementById('pageUsername').style.border = '2px solid red';
@@ -633,12 +663,13 @@ export class AboutPage extends AbstractPage implements OnInit {
             } else {
                 this.isActiveButton11 = true;
             }
-        } else if (index === 12){
-            const province = this.dataPage && this.dataPage.province;
-            if (text === province) {
-                this.isActiveButton12 = false;
-            } else {
+        } else if (index === 12) {
+            if (!!this.selectedProvince) {
                 this.isActiveButton12 = true;
+            }
+        } else if (index === 13) {
+            if (!!this.selectedGroup) {
+                this.isActiveButton13 = true;
             }
         }
     }
@@ -713,7 +744,16 @@ export class AboutPage extends AbstractPage implements OnInit {
             body = {
                 twitterURL: groupAbout!.get('twitterURL')!.value
             }
+        } else if (index === 12) {
+            body = {
+                province: this.selectedProvince
+            }
+        } else if (index === 13) {
+            body = {
+                group: this.selectedGroup
+            }
         }
+
         this.pageFacade.updateProfilePage(this.pageId, body).then((res) => {
             if (res.data) {
                 this.observManager.publish('page.about', res);
@@ -825,6 +865,16 @@ export class AboutPage extends AbstractPage implements OnInit {
             } else {
                 groupAbout!.get('longtitudeAboutPage')!.setValue(this.longtitudeAboutPage!.value);
             }
+        }
+    }
+
+    public selectType($event, index: number) {
+        if (index === 12) {
+            this.selectedProvince = $event.value;
+            this.changeActive('province', index);
+        } else if (index === 13) {
+            this.selectedGroup = $event.value;
+            this.changeActive('group', index);
         }
     }
 

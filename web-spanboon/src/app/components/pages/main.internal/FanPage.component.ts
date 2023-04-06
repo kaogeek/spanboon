@@ -5,22 +5,19 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-import { Component, OnInit, Input, ViewChild, ElementRef, HostListener, EventEmitter, Output, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ElementRef, EventEmitter, Output, OnDestroy } from '@angular/core';
 import { ObjectiveFacade, NeedsFacade, AssetFacade, AuthenManager, ObservableManager, PageFacade, PostCommentFacade, PostFacade, UserFacade, UserEngagementFacade, Engagement, RecommendFacade, AboutPageFacade, SeoService, ProfileFacade, PostActionService, UserAccessFacade } from '../../../services/services';
-import { MatDialog, MatDialogRef } from '@angular/material';
+import { MatDialog } from '@angular/material';
 import { AbstractPageImageLoader } from '../AbstractPageImageLoader';
 import { DialogImage } from '../../shares/dialog/DialogImage.component';
-import { DialogReboonTopic } from '../../shares/dialog/DialogReboonTopic.component';
 import { FileHandle } from '../../shares/directive/directives';
 import * as $ from 'jquery';
 import { Asset } from '../../../models/Asset';
 import { CommentPosts } from '../../../models/CommentPosts';
-import { Router, ActivatedRoute, NavigationEnd, ActivationEnd } from '@angular/router';
+import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { CacheConfigInfo } from '../../../services/CacheConfigInfo.service';
 import { ValidBase64ImageUtil } from '../../../utils/ValidBase64ImageUtil';
 import { SearchFilter } from '../../../models/SearchFilter';
-import { RePost } from '../../../models/RePost';
-import { MESSAGE } from '../../../AlertMessage';
 import { BoxPost } from '../../shares/BoxPost.component';
 import { DialogMedia } from '../../shares/dialog/DialogMedia.component';
 import { DialogAlert, DialogPost, DialogShare } from '../../shares/shares';

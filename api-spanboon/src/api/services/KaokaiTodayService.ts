@@ -9,6 +9,8 @@ import { Service } from 'typedi';
 import { OrmRepository } from 'typeorm-typedi-extensions';
 import { Logger, LoggerInterface } from '../../decorators/Logger';
 import { KaokaiTodayRepository } from '../repositories/KaokaiTodayRepository';
+import { SearchFilter } from '../controllers/requests/SearchFilterRequest';
+import { SearchUtil } from '../../utils/SearchUtil';
 @Service()
 export class KaokaiTodayService {
 
@@ -40,5 +42,11 @@ export class KaokaiTodayService {
         this.log.info('Update a token');
 
         return await this.kaokaiTodayRepository.updateOne(query, newValue);
+    }
+
+    public search(filter: SearchFilter): Promise<any> {
+        const dateSort = { 'createdDate': -1 };
+        const condition: any = SearchUtil.createFindCondition(filter.limit, filter.offset, filter.select, filter.relation, filter.whereConditions, dateSort);
+        return this.kaokaiTodayRepository.find(condition);
     }
 }

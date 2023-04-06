@@ -170,13 +170,13 @@ export class EmergencyEventController {
 
         const CheckOrdering = await this.emergencyEventService.findOne({ ordering: orderingSequence });
         if (CheckOrdering !== undefined) {
-            const checkSequences = await this.emergencyEventService.find({$and: [{ ordering: { $gt:orderingSequence} }, { ordering: { $ne: null } }] });
-            for(const sequences of checkSequences){
-                if(sequences !== undefined && sequences !== null){
-                    const queryUpdate = {_id:sequences.id};
-                    const newValues = {ordering:sequences.ordering + 1};
-                    await this.emergencyEventService.update(queryUpdate,newValues);
-                }else{
+            const checkSequences = await this.emergencyEventService.find({ $and: [{ ordering: { $gt: orderingSequence } }, { ordering: { $ne: null } }] });
+            for (const sequences of checkSequences) {
+                if (sequences !== undefined && sequences !== null) {
+                    const queryUpdate = { _id: sequences.id };
+                    const newValues = { ordering: sequences.ordering + 1 };
+                    await this.emergencyEventService.update(queryUpdate, newValues);
+                } else {
                     continue;
                 }
             }
@@ -239,7 +239,6 @@ export class EmergencyEventController {
         } else {
             objectiveLists = await this.emergencyEventService.search(filter);
         }
-
         if (objectiveLists !== null && objectiveLists !== undefined) {
             const hashTagIdList = [];
             const objectiveMap = {};

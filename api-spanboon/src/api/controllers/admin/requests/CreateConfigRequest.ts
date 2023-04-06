@@ -11,6 +11,7 @@ export class CreateConfigRequest {
     @IsNotEmpty()
     public name: string;
     public value: string;
+    public endDateTime:Date;
     @IsNotEmpty()
     public type: string;
 }

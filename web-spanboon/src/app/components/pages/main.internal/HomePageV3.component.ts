@@ -8,7 +8,6 @@
 import { Component, OnInit, EventEmitter, HostListener } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Gallery } from '@ngx-gallery/core';
-import { AuthenManager, MainPageSlideFacade, HashTagFacade, AssetFacade, PageFacade, SeoService, UserSubjectFacade } from '../../../services/services';
 import { AbstractPage } from '../AbstractPage';
 import { Router, ActivatedRoute } from '@angular/router';
 import { PostFacade } from '../../../services/facade/PostFacade.service';
@@ -16,8 +15,16 @@ import { CacheConfigInfo } from '../../../services/CacheConfigInfo.service';
 import { PLATFORM_NAME_TH } from 'src/custom/variable';
 import { SearchFilter } from '../../../models/SearchFilter';
 import { environment } from 'src/environments/environment';
-import { DialogCheckBox, DialogPostCrad, DialogAlert } from '../../components';
-
+import { MainPageSlideFacade } from 'src/app/services/facade/MainPageSlideFacade.service';
+import { HashTagFacade } from 'src/app/services/facade/HashTagFacade.service';
+import { PageFacade } from 'src/app/services/facade/PageFacade.service';
+import { AssetFacade } from 'src/app/services/facade/AssetFacade.service';
+import { SeoService } from 'src/app/services/SeoService.service';
+import { UserSubjectFacade } from 'src/app/services/facade/UserSubjectFacade.service';
+import { AuthenManager } from 'src/app/services/AuthenManager.service';
+import { DialogAlert } from '../../shares/dialog/DialogAlert.component';
+import { DialogCheckBox } from '../../shares/dialog/DialogCheckBox.component';
+import { DialogPostCrad } from '../../shares/dialog/DialogPostCrad.component';
 
 declare var $: any;
 
@@ -34,6 +41,10 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   public isLoading: boolean;
   public showLoading: boolean;
   public isPostNewTab: boolean = false;
+  public isRes: boolean = false;
+  public isAnnounce: boolean = false;
+  public isKaokai: boolean = false;
+  public isOldContent: boolean = false;
   public windowWidth: any;
   public mainPageModelFacade: MainPageSlideFacade;
   public model: any = undefined;
@@ -49,6 +60,8 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   public testValues: any = undefined;
   public apiBaseURL = environment.apiBaseURL;
   public queryParamsUrl: any;
+  public filterDate: any = [];
+  public filterMonth: any = [];
 
   maxDate = new Date();
 
@@ -99,8 +112,10 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     }
     this.stopIsloading();
     this.getScreenSize();
+    this.getDateFilter();
     super.ngOnInit();
   }
+
   public async saveDate(event: any) {
     this.isLoading = true;
     this.user;
@@ -112,16 +127,28 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     const formattedDate = `${day}-${month}-${year}`;
     this.mainPageModelFacade.getMainPageModelV3(this.user, this.startDateLong).then((res) => {
       this.model = res;
-      this.testValues = new Date(this.startDateLong).toISOString(); // convert to ISO string
+      const dateFormat = new Date(date);
+      const dateReal = dateFormat.setDate(dateFormat.getDate());
+      this.testValues = new Date(dateReal).toISOString(); // convert to ISO string
       localStorage.setItem('datetime', JSON.stringify(this.testValues));
       this.isLoading = false;
     }).catch((err) => {
+      const date = new Date(this.queryParamsUrl).toISOString();
+      const split = date.split('-');
+      const split1 = split[2];
+      const split2 = split1.split('T');
+      const split3 = split2[0];
+      const days = Number(split3) + 1;
+      const day = days.toString().padStart(2, '0')
+      const month = split[1];
+      const year = split[0];
+      const dateNow = day + '-' + month + '-' + year;
       this.isLoading = false;
       this.testValues = new Date();
       this.dialog.open(DialogAlert, {
         disableClose: true,
         data: {
-          text: 'ไม่เจอหนังสือพิมพ์ฉบับนี้',
+          text: 'ไม่พบหน้าหนึ่งฉบับวันที่ ' + dateNow,
           bottomText1: 'ตกลง',
           btDisplay1: "none"
         }
@@ -130,14 +157,15 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     });
     this.router.navigate(['/home'], { queryParams: { date: formattedDate } });
   }
+
   public async getMainPageModelV3(userId?) {
     // 1678726800000
     let testDate = JSON.parse(localStorage.getItem('datetime'));
     if (testDate !== null) {
       this.testValues = testDate;
     }
-    if(this.queryParamsUrl!== undefined){
-      this.mainPageModelFacade.getMainPageModelV3(userId, this.queryParamsUrl).then((res) => {
+    if (!!this.queryParamsUrl) {
+      this.mainPageModelFacade.getMainPageModelV3(userId, (this.queryParamsUrl ? this.queryParamsUrl : null)).then((res) => {
         this.testValues = new Date(this.queryParamsUrl).toISOString();
         this.model = res;
         for (let index = 0; index < this.model.postSectionModel.contents.length; index++) {
@@ -148,12 +176,22 @@ export class HomePageV3 extends AbstractPage implements OnInit {
           }
         }
       }).catch((err) => {
+        const date = new Date(this.queryParamsUrl).toISOString();
+        const split = date.split('-');
+        const split1 = split[2];
+        const split2 = split1.split('T');
+        const split3 = split2[0];
+        const days = Number(split3) + 1;
+        const day = days.toString().padStart(2, '0')
+        const month = split[1];
+        const year = split[0];
+        const dateNow = day + '-' + month + '-' + year;
         this.isLoading = false;
         this.testValues = new Date();
         this.dialog.open(DialogAlert, {
           disableClose: true,
           data: {
-            text: 'ไม่เจอหนังสือพิมพ์ฉบับนี้',
+            text: 'ไม่พบหน้าหนึ่งฉบับวันที่ ' + dateNow,
             bottomText1: 'ตกลง',
             btDisplay1: "none"
           }
@@ -224,6 +262,52 @@ export class HomePageV3 extends AbstractPage implements OnInit {
         }
       }
     }
+  }
+
+  dateFilt: any
+
+  dateFilter: (dateFilt: Date | null) => boolean =
+    (dateFilt: Date | null) => {
+      const day = (dateFilt || new Date()).getDate().toString().padStart(2, '0');
+      const month = (dateFilt.getMonth() + 1).toString().padStart(2, '0');
+      const year = (dateFilt.getFullYear());
+      const md = day + '-' + month + '-' + year;
+      for (let d of this.filterDate) {
+        if (md === d.toString()) {
+          const split = d.split('-');
+          const daySplit = split[0];
+          if (Number(day) === Number(daySplit)) {
+            return Number(day) === Number(daySplit);
+          }
+        }
+      }
+    }
+
+  public getDateFilter() {
+    this.mainPageModelFacade.getDate().then((res) => {
+      if (res) {
+        let listDay: any[] = [];
+        let listMonth: any[] = [];
+        for (let date of res) {
+          const split = date.split('-');
+          const getDays = split[2];
+          const getMonths = split[1];
+          const getYear = split[0];
+          const splitTime = getDays.split('T');
+          const days = splitTime[0];
+          const daymonth = days + '-' + getMonths + '-' + getYear;
+          listMonth.push(getMonths);
+          listDay.push(daymonth);
+        }
+        this.filterMonth = listMonth;
+        this.filterDate = listDay;
+
+      }
+    }).catch((error) => {
+      if (error) {
+        console.log("error", error)
+      }
+    })
   }
 
   public getSubject() {
@@ -333,10 +417,18 @@ export class HomePageV3 extends AbstractPage implements OnInit {
 
     if (this.windowWidth <= 479) {
       this.isPostNewTab = true;
-      console.log("newTab true", this.isPostNewTab)
+      this.isAnnounce = true;
+      this.isKaokai = true;
     } else {
       this.isPostNewTab = false;
-      console.log("newTab false", this.isPostNewTab)
+      this.isAnnounce = false;
+      this.isKaokai = false;
+    }
+
+    if (this.windowWidth <= 1024) {
+      this.isRes = true;
+    } else {
+      this.isRes = false;
     }
   }
   public stopIsloading() {

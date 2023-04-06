@@ -402,6 +402,7 @@ export class HeaderSearch extends AbstractPage implements OnInit {
   }
 
   public onClickSearchLink(event) {
+    // ?????
     let data = this.search.nativeElement.value;
     this.clickOpenLink(data, true);
   }

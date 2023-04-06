@@ -43,6 +43,12 @@ export class EmergencyEvent extends BaseModel {
     @Column({ name: 'ordering' })
     public ordering: number;
 
+    @Column({ name: 'startDateTime' })
+    public startDateTime: Date;
+
+    @Column({ name: 'endDateTime' })
+    public endDateTime: Date;
+    
     @BeforeInsert()
     public createDetails(): any {
         this.createdDate = moment().toDate();

@@ -30,6 +30,10 @@
         z-index: 2;
         align-items: center;
 
+        @media (max-width: $small) {
+            position: fixed;
+        }
+
         >svg {
             width: 14px;
         }
@@ -66,11 +70,20 @@
             margin: unset;
             overflow: unset;
 
+            @media (max-width: $small) {
+                margin-top: 60px;
+            }
+
             >.header-post {
                 position: sticky;
                 z-index: 99;
                 top: 0;
                 background-color: white;
+
+                @media (max-width: $small) {
+                    width: 100vw;
+                    position: fixed;
+                }
             }
 
             display-gallery {

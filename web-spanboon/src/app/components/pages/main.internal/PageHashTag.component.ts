@@ -570,7 +570,6 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       let data = {
         keyword: text
       }
-
       this.dataUser = await this.accountFacade.search(data);
 
       for (let data of this.dataUser) {
