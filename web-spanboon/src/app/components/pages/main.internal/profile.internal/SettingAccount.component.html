@@ -22,18 +22,7 @@
                 </div>
             </div>
             <div class="settings-right">
-                <div class="settings-wrapper">
-                    <div class="container-general">
-                        <div class="slide-email">
-                            <ng-container>
-                                <mat-slide-toggle [(ngModel)]="isSend" [ngModelOptions]="{standalone: true}"
-                                    (change)="emailNoti($event)" [checked]="isSend">
-                                </mat-slide-toggle>
-                            </ng-container>
-                            <label style="margin-left: 10px;">รับข่าวสารจาก Email</label>
-                        </div>
-                    </div>
-                </div>
+                <edit-profile-card [dataProfile]="data"></edit-profile-card>
             </div>
         </div>
     </div>

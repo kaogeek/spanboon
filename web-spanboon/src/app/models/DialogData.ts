@@ -14,6 +14,7 @@ export class DialogData extends BaseModel {
   height: string;
   title: string;
   text: string;
+  text2: string;
   bgColor: string;
   textColor: string;
   item: string;

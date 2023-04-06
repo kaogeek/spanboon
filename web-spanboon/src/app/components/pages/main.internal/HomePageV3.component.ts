@@ -185,13 +185,20 @@ export class HomePageV3 extends AbstractPage implements OnInit {
         const day = days.toString().padStart(2, '0')
         const month = split[1];
         const year = split[0];
-        const dateNow = day + '-' + month + '-' + year;
+        const thaiMonth = new Date().toLocaleDateString('th-TH', {
+          month: 'long',
+        });
+        const thaiYear = new Date().toLocaleDateString('th-TH', {
+          year: 'numeric',
+        });
+        const dateNow = day + ' ' + thaiMonth + ' ' + thaiYear;
         this.isLoading = false;
         this.testValues = new Date();
         this.dialog.open(DialogAlert, {
           disableClose: true,
           data: {
-            text: 'ไม่พบหน้าหนึ่งฉบับวันที่ ' + dateNow,
+            text: 'ไม่พบหน้าหนึ่งฉบับวันที่',
+            text2: dateNow,
             bottomText1: 'ตกลง',
             btDisplay1: "none"
           }
