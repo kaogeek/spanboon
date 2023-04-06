@@ -677,7 +677,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
           });
         }).catch((err: any) => {
           console.log(err)
-        })
+        });
       }
     });
   }

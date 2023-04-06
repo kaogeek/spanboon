@@ -48,7 +48,7 @@ export class ProfileFacade extends AbstractFacade {
 
   public setEmailPushNotification(data: boolean): Promise<any> {
     return new Promise((resolve, reject) => {
-      let url: string = this.baseURL + '/user/send/email';
+      let url: string = this.baseURL + '/user/notification/settings';
       let body = {
         "sendEmail": data
       }

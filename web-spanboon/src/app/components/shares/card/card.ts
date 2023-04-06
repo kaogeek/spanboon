@@ -28,3 +28,4 @@ export * from './CardFulfillItem.component';
 export * from './CardChatFulfill.component';
 export * from './PostSwiperCard.component';
 export * from './CardContentHome.component';
+export * from './EditProfileCard.component';

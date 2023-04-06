@@ -1,0 +1,67 @@
+<div class="wrapper-dialog-edit-profile">
+    <div class="wrapper-body-edit-profile">
+        <form [formGroup]="formProfile">
+            <label class="form-label-error">
+                <span *ngIf="isCheck">
+                    กรุณากรอกชื่อที่ต้องการแสดง
+                </span>
+            </label>
+            <div class="form-group-div">
+                <div class="form-group">
+                    <div class="form-col">
+                        <input type="text" [class.error-msg]="formProfile.get('displayName').invalid"
+                            (keyup)="keyupGetData()" formControlName="displayName" placeholder="ชื่อที่ต้องการแสดง"
+                            class="input-text">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-col">
+                        <input type="text" placeholder="ชื่อ" [class.error-msg]="formProfile.get('displayName').invalid"
+                            (keyup)="keyupGetData()" class="input-text-group" formControlName="firstName">
+                    </div>
+                    <div class="form-col">
+                        <input type="text" placeholder="นามสกุล" class="input-text-group" formControlName="lastName"
+                            (keyup)="keyupGetData()">
+                    </div>
+                </div>
+
+                <label for="birthdate" class="form-label">วันเกิด</label>
+                <div class="form-group">
+                    <mat-form-field>
+                        <input matInput [matDatepicker]="dp" placeholder="" formControlName="birthDate" [min]="minDate"
+                            [max]="maxDate" (keyup)="keyupGetData()">
+                        <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+                        <mat-datepicker #dp disabled="false"></mat-datepicker>
+                    </mat-form-field>
+
+                </div>
+                <label for="male female custom" class="form-label">เพศ</label>
+                <div class="form-group">
+                    <div class="div-gender">
+                        <mat-radio-group class="custom-control-input" formControlName="gender">
+                            <mat-radio-button [value]="0">ชาย</mat-radio-button>
+                            <mat-radio-button [value]="1">หญิง</mat-radio-button>
+                        </mat-radio-group>
+                    </div>
+                </div>
+
+                <label class="form-label">รับข่าวสารจาก Email</label>
+                <div class="form-group">
+                    <div class="slide-email">
+                        <ng-container>
+                            <mat-slide-toggle formControlName="subscribeEmail" (change)="emailNoti($event)">
+                            </mat-slide-toggle>
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    </div>
+    <div class="wrapper-footer">
+        <!-- <button mat-button (click)="onNoClick()">No Thanks</button> -->
+        <button mat-button [ngStyle]="{'opacity': formProfile.invalid ? '0.5' : '1'}" [disabled]="formProfile.invalid"
+            (click)="formProfile.valid ? editProfile() : null">ยืนยัน</button>
+    </div>
+</div>
