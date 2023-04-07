@@ -5,8 +5,8 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-import { Component, OnInit, EventEmitter, HostListener } from '@angular/core';
-import { MatDialog } from '@angular/material';
+import { Component, OnInit, EventEmitter, HostListener, Output } from '@angular/core';
+import { MatDatepickerInputEvent, MatDialog } from '@angular/material';
 import { Gallery } from '@ngx-gallery/core';
 import { AbstractPage } from '../AbstractPage';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -57,7 +57,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   public pageUser: any;
   public startDateLong: number;
   public user: any;
-  public testValues: any = undefined;
+  public dateValues: any = undefined;
   public apiBaseURL = environment.apiBaseURL;
   public queryParamsUrl: any;
   public filterDate: any = [];
@@ -129,8 +129,8 @@ export class HomePageV3 extends AbstractPage implements OnInit {
       this.model = res;
       const dateFormat = new Date(date);
       const dateReal = dateFormat.setDate(dateFormat.getDate());
-      this.testValues = new Date(dateReal).toISOString(); // convert to ISO string
-      localStorage.setItem('datetime', JSON.stringify(this.testValues));
+      this.dateValues = new Date(dateReal).toISOString(); // convert to ISO string
+      localStorage.setItem('datetime', JSON.stringify(this.dateValues));
       this.isLoading = false;
     }).catch((err) => {
       const date = new Date(this.queryParamsUrl).toISOString();
@@ -144,7 +144,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
       const year = split[0];
       const dateNow = day + '-' + month + '-' + year;
       this.isLoading = false;
-      this.testValues = new Date();
+      this.dateValues = new Date();
       this.dialog.open(DialogAlert, {
         disableClose: true,
         data: {
@@ -162,11 +162,11 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     // 1678726800000
     let testDate = JSON.parse(localStorage.getItem('datetime'));
     if (testDate !== null) {
-      this.testValues = testDate;
+      this.dateValues = testDate;
     }
     if (!!this.queryParamsUrl) {
       this.mainPageModelFacade.getMainPageModelV3(userId, (this.queryParamsUrl ? this.queryParamsUrl : null)).then((res) => {
-        this.testValues = new Date(this.queryParamsUrl).toISOString();
+        this.dateValues = new Date(this.queryParamsUrl).toISOString();
         this.model = res;
         for (let index = 0; index < this.model.postSectionModel.contents.length; index++) {
           if (this.model.postSectionModel.contents[index].post.type === "FULFILLMENT") {
@@ -193,7 +193,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
         });
         const dateNow = day + ' ' + thaiMonth + ' ' + thaiYear;
         this.isLoading = false;
-        this.testValues = new Date();
+        this.dateValues = new Date();
         this.dialog.open(DialogAlert, {
           disableClose: true,
           data: {
@@ -296,7 +296,8 @@ export class HomePageV3 extends AbstractPage implements OnInit {
         let listDay: any[] = [];
         let listMonth: any[] = [];
         for (let date of res) {
-          const split = date.split('-');
+          let enddate = date.endDateTime;
+          const split = enddate.split('-');
           const getDays = split[2];
           const getMonths = split[1];
           const getYear = split[0];

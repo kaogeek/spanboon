@@ -39,9 +39,9 @@
                 <label for="male female custom" class="form-label">เพศ</label>
                 <div class="form-group">
                     <div class="div-gender">
-                        <mat-radio-group class="custom-control-input" formControlName="gender">
-                            <mat-radio-button [value]="0">ชาย</mat-radio-button>
-                            <mat-radio-button [value]="1">หญิง</mat-radio-button>
+                        <mat-radio-group class="custom-control-input" formControlName="gender" (click)="testJa($event)">
+                            <mat-radio-button [value]="0" [checked]="data.gender === 0">ชาย</mat-radio-button>
+                            <mat-radio-button [value]="1" [checked]="data.gender === 1">หญิง</mat-radio-button>
                         </mat-radio-group>
                     </div>
                 </div>

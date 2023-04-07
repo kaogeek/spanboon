@@ -25,7 +25,6 @@ export class SettingAccount extends AbstractPage implements OnInit {
 
     public static readonly PAGE_NAME: string = PAGE_NAME;
 
-    private dateAdapter: DateAdapter<Date>
     public router: Router;
     private observManager: ObservableManager;
     private assetFacade: AssetFacade;
@@ -69,37 +68,12 @@ export class SettingAccount extends AbstractPage implements OnInit {
         this.router = router;
         this.authenManager = authenManager;
         this.assetFacade = assetFacade;
-        this.dataUser = {};
-        this.dataUser.birthday = new Date();
-        this.minDate.setDate(this.minDate.getDate());
-        this.minDate.setFullYear(this.minDate.getFullYear() - 200);
-        this.maxDate.setDate(this.maxDate.getDate());
-        this.maxDate.setFullYear(this.maxDate.getFullYear());
-
-        this.dateAdapter = dateAdapter;
-        this.dateAdapter.setLocale('th-TH');
-        this.profileFacade = profileFacade;
-        this.observManager = observManager;
-        this.startDate = this.maxDate;
-        if (this.data !== undefined && this.data !== null) {
-            this.dataUser = this.data;
-        }
-
-        this.observManager.subscribe('setting.account', (res: any) => {
-            if (res) {
-                this.user = res.data;
-                if (!!this.user) {
-                    this.checkSendEmail();
-                }
-            }
-        });
     }
 
     public ngOnInit(): void {
     }
     public ngOnDestroy(): void {
         super.ngOnDestroy();
-        this.observManager.complete('setting.account');
     }
 
     isPageDirty(): boolean {
@@ -115,34 +89,7 @@ export class SettingAccount extends AbstractPage implements OnInit {
         return;
     }
 
-    public checkSendEmail() {
-        if (!!this.user) {
-            if (this.user.subscribeEmail === true) {
-                this.isSend = true;
-                return true;
-            } else {
-                this.isSend = false;
-                return false;
-            }
-        }
-    }
-
-    public editProfile() {
-        if (this.data.displayName === "" || this.data.displayName === null) {
-            this.isCheck = true;
-            document.getElementById("displayName").focus();
-        } else {
-        }
-    }
-
     public selecedInformation(link: any) {
         this.selected = link.label;
-    }
-
-    public emailNoti($event) {
-        this.profileFacade.setEmailPushNotification($event.checked).then((res) => {
-            if (res) {
-            }
-        })
     }
 }

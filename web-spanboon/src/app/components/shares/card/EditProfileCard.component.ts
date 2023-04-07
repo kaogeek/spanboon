@@ -117,6 +117,7 @@ export class EditProfileCard extends AbstractPage implements OnInit {
       }
       this.profileFacade.edit(userId, data).then((res: any) => {
         if (res) {
+          this.data = res;
           this.success.emit(false);
           let dialog = this.dialog.open(DialogAlert, {
             disableClose: true,
