@@ -395,16 +395,17 @@ export class MainPageController {
         const year = now.getFullYear(); // Get the current year
         let startDate = new Date(year, 0, 1);
         let endDate = new Date(year, 11, 31);
-        if(req.body.startDate !== undefined && req.body.endDate !== undefined){
+        if(req.body.currectDate !== undefined && req.body.endDate !== undefined){
             startDate = req.body.startDate;
             endDate = req.body.endDate;
         }
+
         const dateTime = await this.kaokaiTodaySnapShotService.aggregate
         ([
             {
                 $match:
                 {
-                    endDateTime:{$gte:startDate,$lte:endDate},
+                    endDateTime:{$gte:new Date(startDate),$lte:new Date(endDate)},
                 }
             },
             {
@@ -1860,7 +1861,7 @@ export class MainPageController {
                 if (emailStack.length > 0 && switchEmail === true) {
                     for (const userEmail of emailStack) {
                         user = await this.userService.findOne({ email: userEmail });
-                        if (user.sendEmail === true) {
+                        if (user.subscribeEmail === true) {
                             this.pushNotification(user, user.email, content.data, 'ก้าวไกลวันนี้', endDateTimeToday);
                         } else {
                             continue;
@@ -1874,6 +1875,10 @@ export class MainPageController {
         }
     }
     private async pushNotification(user: User, email: string, content: any, subject: string, date?: Date): Promise<any> {
+        if(date === undefined){
+            const errorResponse = ResponseUtil.getErrorResponse('Date time undefined.', undefined);
+            return errorResponse;        
+        }
         // chaluck.s@absolute.co.th
         // junsuda.s@absolute.co.th
         const picPostMajorF = content.majorTrend.contents[0].coverPageUrl ? process.env.APP_API + content.majorTrend.contents[0].coverPageUrl + '/image' : '';
