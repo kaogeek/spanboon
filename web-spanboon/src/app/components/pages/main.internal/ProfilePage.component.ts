@@ -251,6 +251,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     this.observManager.subscribe(REFRESH_DATA, (result: any) => {
       if (result) {
         // this.resPost.posts.unshift(result);
+        this.resProfile.displayName = result.displayName;
       }
     });
   }

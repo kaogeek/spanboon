@@ -19,6 +19,7 @@ import { ValidBase64ImageUtil } from '../../../../utils/ValidBase64ImageUtil';
 const DEFAULT_USER_ICON: string = '../../../../assets/img/profile.svg';
 const REDIRECT_PATH: string = '/home';
 const PAGE_NAME: string = 'menu';
+const REFRESH_DATA: string = 'refresh_page';
 
 @Component({
     selector: 'btn-menu-profile',
@@ -61,6 +62,12 @@ export class MenuProfile extends AbstractPage implements OnInit {
             // this.getProfileImage(data);
             this.reloadUserImage();
         });
+        this.observManager.subscribe(REFRESH_DATA, (result: any) => {
+            if (result) {
+                // this.resPost.posts.unshift(result);
+                this.userImage.displayName = result.displayName;
+            }
+        });
     }
 
     public ngOnInit(): void {
@@ -69,6 +76,7 @@ export class MenuProfile extends AbstractPage implements OnInit {
 
     public ngOnDestroy(): void {
         super.ngOnDestroy();
+        this.observManager.complete(REFRESH_DATA);
     }
 
     isPageDirty(): boolean {
