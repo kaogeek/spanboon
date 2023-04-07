@@ -1811,7 +1811,7 @@ export class MainPageController {
         }
     }
 
-    private async snapShotToday(data: any, startDateRange: Date, endDateTimeToday: Date, assetTodayDate: number, userId?: any): Promise<any> {
+    public async snapShotToday(data: any, startDateRange: Date, endDateTimeToday: Date, assetTodayDate: number, userId?: any): Promise<any> {
         // check before create
         let switchEmail = DEFAULT_SWITCH_CASE_SEND_EMAIL;
         const switchSendEmail = await this.configService.getConfig(SWITCH_CASE_SEND_EMAIL);
@@ -1874,7 +1874,7 @@ export class MainPageController {
             return maxDate[0];
         }
     }
-    private async pushNotification(user: User, email: string, content: any, subject: string, date?: Date): Promise<any> {
+    public async pushNotification(user: User, email: string, content: any, subject: string, date?: Date): Promise<any> {
         if(date === undefined){
             const errorResponse = ResponseUtil.getErrorResponse('Date time undefined.', undefined);
             return errorResponse;        
