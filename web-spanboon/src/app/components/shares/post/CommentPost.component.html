@@ -44,8 +44,9 @@
         </div>
         <div class="comment-input">
             <div class="comment-i_u">
-                <span class="username"
-                    (click)="clickToUser(comment.page?comment.page:comment.user)">{{comment.page?comment.page.name:comment.user.displayName}}</span>
+                <div class="displayProfile"><span class="username"
+                        (click)="clickToUser(comment.page?comment.page:comment.user)">{{comment.page?comment.page.name:comment.user.displayName}}</span>
+                    </div>
                 <input *ngIf="comment.isEdit" #textcomment id="textcomment" class="comment-comment comment-edit"
                     placeholder="แสดงความคิดเห็น..." (keyup.enter)="commentActionSave('EDIT',comment,i)"
                     [(ngModel)]="commentEdit" type="text">

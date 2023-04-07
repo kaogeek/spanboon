@@ -35,6 +35,10 @@ export class PageConfigService {
         return await this.pageConfigRepository.updateOne(query, newValue);
     }
 
+    public updateMany(query: any, newValue: any): Promise<any> {
+        return this.pageConfigRepository.updateMany(query, newValue);
+    }
+
     public async getConfig(name: string, pageId: ObjectID): Promise<any> {
         const condition = { name, page: pageId };
         return await this.pageConfigRepository.findOne(condition);

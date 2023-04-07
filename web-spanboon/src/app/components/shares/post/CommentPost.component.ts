@@ -87,6 +87,10 @@ export class CommentPost {
     }
   }
 
+  public clickDeleteComment(data: any) {
+    let pageId = data._id ? data._id : data.id;
+  }
+
   public menuProfile(data: any) {
   }
 }
