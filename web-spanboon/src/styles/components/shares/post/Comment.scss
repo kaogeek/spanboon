@@ -54,13 +54,23 @@ comment-post {
           word-break: break-all;
           padding: 5pt 10pt;
           background: $bg-grey;
-
-          > .username {
-            color: $brandcolor2;
-            @include font-size-10($font-head-500);
-            cursor: pointer;
-            &:hover {
-              color: rgba($brandcolor2, 0.95);
+          > .displayProfile{
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            > .username {
+              color: $brandcolor2;
+              @include font-size-10($font-head-500);
+              cursor: pointer;
+              &:hover {
+                color: rgba($brandcolor2, 0.95);
+              }
+            }
+            >.mat-button-wrapper {
+              >.material-icons {
+                font-size: $font-size-icon-large;
+                font-family: "Material Icons" !important;
+              }
             }
           }
 

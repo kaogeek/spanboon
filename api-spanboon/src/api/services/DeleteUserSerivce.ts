@@ -30,7 +30,6 @@ import { PageSocialAccountService } from './PageSocialAccountService';
 import { PageObjectiveService } from './PageObjectiveService';
 import { PageConfigService } from './PageConfigService';
 import { PageAccessLevelService } from './PageAccessLevelService';
-import { ObjectID } from 'mongodb';
 
 @Service()
 export class DeleteUserService {
@@ -115,12 +114,30 @@ export class DeleteUserService {
             // The question is this user have a page ???
             const pageOwner = await this.pageService.findOne({ ownerUser: userObjId });
             if (pageOwner !== undefined) {
+                const stackBuckets = [];
                 const pageAccessLevel = await this.pageAccessLevelService.find({ user: userObjId });
                 for (const accessLevel of pageAccessLevel) {
                     if (accessLevel !== undefined) {
-                        await this.pageAccessLevelService.delete({ _id: accessLevel.id });
+                        const permissions = await this.pageAccessLevelService.findOne({ _id: accessLevel.id,user:userObjId });
+                        if(permissions.level === 'ADMIN'){
+                            stackBuckets.push(permissions);
+                        }
+                        await this.pageAccessLevelService.delete({ _id: accessLevel.id,user:userObjId });
                     } else {
                         continue;
+                    }
+                }
+                if(stackBuckets.length>0){
+                    for(const stack of stackBuckets){
+                        if(stack.level !== 'OWNER'){
+                            const pagePremissionOwner = await this.pageAccessLevelService.findOne({page:stack.page,level:'OWNER'});
+                            const query = {pageId:pagePremissionOwner.page,ownerUser:userObjId};
+                            const newValues = {$set:{ownerUser:pagePremissionOwner.user}};
+                            await this.postsService.updateMany(query,newValues);
+                        }else{
+                            continue;
+                        }
+                    
                     }
                 }
                 const pageUsageHistory = await this.pageUsageHistoryService.findOne({ userId: userObjId });
@@ -152,9 +169,9 @@ export class DeleteUserService {
                 if (socialPostOwn !== undefined) {
                     await this.socialPostService.deleteMany({ pageId: pageOwner.id });
                 }
-                const postOwn = await this.postsService.findOne({ ownerUser: userObjId });
+                const postOwn = await this.postsService.findOne({pageId:pageOwner.id, ownerUser: userObjId });
                 if (postOwn !== undefined) {
-                    await this.postsService.deleteMany({ ownerUser: userObjId });
+                    await this.postsService.deleteMany({ownerUser: userObjId });
                 }
                 const postCommentOwn = await this.postsCommentService.findOne({ user: userObjId });
                 if (postCommentOwn !== undefined) {
@@ -173,25 +190,34 @@ export class DeleteUserService {
                 }
             } else {
                 // check this user have permission page ????
-                const updateStatus = await this.pageAccessLevelService.findOne({ user: userObjId });
+                const stackPage = [];
                 const permissionAccess = await this.pageAccessLevelService.find({ user: userObjId });
                 for (const access of permissionAccess) {
-                    if (access !== undefined && access.level !== 'OWNER') {
+                    if (access !== undefined) {
+                        stackPage.push(access);
                         await this.pageAccessLevelService.delete({ user: access.user });
                     } else {
                         continue;
                     }
                 }
+                /*
+                let page = undefined;
+                for(const stack of stackPage){
+                    if(stack){
+                        page = await this.pageService.findOne({_id:stack.page});
+                    }else{
+                        continue;
+                    }
+                }
+                
                 if (updateStatus !== undefined) {
                     const ownerPage = await this.pageService.findOne({ _id: updateStatus.page });
                     const ownerPost = await this.postsService.findOne({ ownerUser: ownerPage.ownerUser, pageId: ownerPage.id });
                     if (ownerPost !== undefined && ownerPage !== undefined) {
-                        const query = { pageId: ObjectID(ownerPage.id),ownerUser: userObjId};
-                        const newValues = { $set: { ownerUser: ObjectID(ownerPage.ownerUser) } };
                         await this.postsService.updateMany(query, newValues);
 
                     }
-                }
+                } */
                 // deleteOne User
                 const userOwn = await this.userService.findOne({ _id: userObjId });
                 if (userOwn) {

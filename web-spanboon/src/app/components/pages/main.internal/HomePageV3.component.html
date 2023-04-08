@@ -44,7 +44,7 @@
                         <loading *ngIf="isLoading"></loading>
                         <mat-form-field class="custom-class">
                             <input matInput [matDatepicker]="picker" [matDatepickerFilter]="dateFilter"
-                                [(ngModel)]="testValues?testValues:startDate" (dateChange)="saveDate($event)" disabled>
+                                [(ngModel)]="dateValues?dateValues:startDate" (dateChange)="saveDate($event)" disabled>
                             <mat-datepicker #picker panelClass="datepickerOne" disabled="false"></mat-datepicker>
                         </mat-form-field>
                     </span>

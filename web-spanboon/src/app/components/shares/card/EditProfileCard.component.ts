@@ -13,10 +13,12 @@ import * as moment from 'moment';
 import { DateAdapter } from 'saturn-datepicker';
 import { AuthenManager } from 'src/app/services/AuthenManager.service';
 import { ProfileFacade } from 'src/app/services/facade/ProfileFacade.service';
+import { ObservableManager } from 'src/app/services/ObservableManager.service';
 import { AbstractPage } from '../../pages/AbstractPage';
 import { DialogAlert } from '../dialog/DialogAlert.component';
 
 const PAGE_NAME: string = 'editprofilecard';
+const REFRESH_DATA: string = 'refresh_page';
 
 @Component({
   selector: 'edit-profile-card',
@@ -28,6 +30,7 @@ export class EditProfileCard extends AbstractPage implements OnInit {
   public isCheck: boolean;
   protected router: Router;
   private profileFacade: ProfileFacade;
+  private observManager: ObservableManager;
   public dataUser: any;
   public formProfile: FormGroup;
   public authenManager: AuthenManager;
@@ -50,11 +53,13 @@ export class EditProfileCard extends AbstractPage implements OnInit {
     public data: any,
     dateAdapter: DateAdapter<Date>,
     public formBuilder: FormBuilder,
-    authenManager: AuthenManager
+    authenManager: AuthenManager,
+    observManager: ObservableManager
   ) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.router = router;
     this.authenManager = authenManager;
+    this.observManager = observManager;
     this.dataUser = {};
     this.dataUser.birthday = new Date();
     this.minDate.setDate(this.minDate.getDate());
@@ -117,6 +122,15 @@ export class EditProfileCard extends AbstractPage implements OnInit {
       }
       this.profileFacade.edit(userId, data).then((res: any) => {
         if (res) {
+          let pageUser = JSON.parse(localStorage.getItem('pageUser'));
+          pageUser.displayName = res.displayName;
+          pageUser.firstName = res.firstName;
+          pageUser.lastName = res.lastName;
+          pageUser.birthdate = res.birthdate;
+          pageUser.gender = res.gender;
+          localStorage.setItem('pageUser', JSON.stringify(pageUser));
+          this.data = res;
+          this.observManager.publish(REFRESH_DATA, res);
           this.success.emit(false);
           let dialog = this.dialog.open(DialogAlert, {
             disableClose: true,
@@ -148,7 +162,7 @@ export class EditProfileCard extends AbstractPage implements OnInit {
       firstName: ['', [Validators.required]],
       lastName: ['', [Validators.required]],
       birthDate: ['', [Validators.required]],
-      gender: ['', [Validators.required]],
+      gender: [''],
       subscribeEmail: false,
     })
   }

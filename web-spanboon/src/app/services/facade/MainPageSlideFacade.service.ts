@@ -59,7 +59,7 @@ export class MainPageSlideFacade extends AbstractFacade {
         headers: this.authMgr.getDefaultOptions()
       };
 
-      this.http.get(url, httpOptions).toPromise().then((response: any) => {
+      this.http.post(url, httpOptions).toPromise().then((response: any) => {
         resolve(response.data);
       }).catch((error: any) => {
         reject(error);

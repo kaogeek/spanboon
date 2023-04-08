@@ -128,7 +128,7 @@ export class EmergencyEventPage extends AbstractPage implements OnInit {
         ];
         this.actions = {
             isOfficial: false,
-            isBan: true,
+            isBan: false,
             isApprove: false,
             isUnApprove: false,
             isSelect: false,

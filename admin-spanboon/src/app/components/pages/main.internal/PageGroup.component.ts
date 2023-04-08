@@ -76,8 +76,8 @@ export class PageGroup extends AbstractPage implements OnInit {
             }
         ];
         this.actions = {
-            isOfficial: true,
-            isBan: true,
+            isOfficial: false,
+            isBan: false,
             isApprove: false,
             isUnApprove: false,
             isSelect: false,

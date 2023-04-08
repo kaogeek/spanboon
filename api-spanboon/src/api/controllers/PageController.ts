@@ -3085,12 +3085,11 @@ export class PageController {
         if (!isUserCanAccess) {
             return res.status(401).send(ResponseUtil.getErrorResponse('You cannot access the page.', undefined));
         }
-
         let result = undefined;
-        const query = { name, page: pageObjId };
+        const query = {page: pageObjId };
         const currentConfig = await this.pageConfigService.findOne(query);
         if (currentConfig) {
-            result = await this.pageConfigService.update(query, {
+            result = await this.pageConfigService.updateMany(query, {
                 $set: {
                     value: configValue.value,
                     type: configValue.type

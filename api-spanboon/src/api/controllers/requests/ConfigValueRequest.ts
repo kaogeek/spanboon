@@ -11,5 +11,7 @@ export class ConfigValueRequest {
 
     public value: any;
     public type: string;
+    public AutoPost:string;
+    public AutoFetch:string;
 
 }

@@ -67,6 +67,7 @@ export class TodayPage extends AbstractPage implements OnInit {
     public imageName: any;
     public ordering: number;
     public isSave: boolean = false;
+    public orderBy: any = {};
     public position: number;
     public typeBucket: any = [{ value: 'page' }, { value: 'post' }, { value: 'hashtag' }];
     public titleBucket: any = [{ value: 'ก้าวไกลวันนี้' }, { value: 'ก้าวไกลทั่วไทย' }, { value: 'สภาก้าวไกล' }, { value: 'ก้าวไกลรอบด้าน' }];
