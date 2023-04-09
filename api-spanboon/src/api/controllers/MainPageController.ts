@@ -241,8 +241,7 @@ export class MainPageController {
         // pipeline: [{ $match: { $expr: { $in: ['$_id', bucketF] }, isOfficial: true } }],
         // hashTag
         const hashTagSumma = await this.hashTagService.aggregate([{ $sort: { count: -1 } }, { $limit: 3 }]);
-        if (emerSectionModel.contents.length === 0 &&
-            postSectionModel.contents.length === 0 &&
+        if (
             pageRoundRobin.contents.length === 0 &&
             majorTrend.contents.length === 0 &&
             kaokaiProvince.contents.length === 0 &&
@@ -280,28 +279,23 @@ export class MainPageController {
             // deputy leader
             // deputy secretary of the party
             const pageRoundRobinUn = await pageProcessorUn.processV2();
-            const checkPosition1Un = pageRoundRobinUn.position;
             // เกาะกระแส
             const majorTrendProcessorUn: MajorTrendSectionModelProcessor = new MajorTrendSectionModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService, this.pageService);
             majorTrendProcessorUn.setData({
                 userId,
                 startDateTime: monthRange[0],
                 endDateTime: monthRange[1],
-                checkPosition1Un
             });
 
             majorTrendProcessorUn.setConfig({
                 searchOfficialOnly
             });
             const majorTrendUn = await majorTrendProcessorUn.processV2();
-            const checkPosition2Un = majorTrendUn.position;
             const kaokaiProvinceProcessorUn: KaokaiAllProvinceModelProcessor = new KaokaiAllProvinceModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService, this.pageService);
             kaokaiProvinceProcessorUn.setData({
                 userId,
                 startDateTime: monthRange[0],
                 endDateTime: monthRange[1],
-                checkPosition1Un,
-                checkPosition2Un
 
             });
 
@@ -309,45 +303,18 @@ export class MainPageController {
                 searchOfficialOnly
             });
             const kaokaiProvinceUn = await kaokaiProvinceProcessorUn.processV2();
-            let checkPosition3Un = undefined;
-            if (kaokaiProvinceUn.position !== undefined) {
-                checkPosition3Un = kaokaiProvinceUn.position;
-            }
             const kaokaiHashTagProcessorUn: KaoKaiHashTagModelProcessor = new KaoKaiHashTagModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService, this.pageService);
             kaokaiHashTagProcessorUn.setData({
                 userId,
                 startDateTime: monthRange[0],
                 endDateTime: monthRange[1],
-                checkPosition1Un,
-                checkPosition2Un,
-                checkPosition3Un
             });
 
             kaokaiHashTagProcessorUn.setConfig({
                 searchOfficialOnly
             });
-
+          
             const kaokaiHashTagUn = await kaokaiHashTagProcessorUn.processV2();
-            let checkPosition4Un = undefined;
-            if (kaokaiHashTagUn.position !== undefined) {
-                checkPosition4Un = kaokaiHashTagUn.position;
-            }
-            const kaokaiContentProcessorUn: KaokaiContentModelProcessor = new KaokaiContentModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService, this.pageService);
-            kaokaiContentProcessorUn.setData({
-                userId,
-                startDateTime: monthRange[0],
-                endDateTime: monthRange[1],
-                checkPosition1Un,
-                checkPosition2Un,
-                checkPosition3Un,
-                checkPosition4Un
-            });
-
-            kaokaiContentProcessorUn.setConfig({
-                searchOfficialOnly
-            });
-
-            const kaokaiContentUn = await kaokaiContentProcessorUn.processV2();
 
             // pipeline: [{ $match: { $expr: { $in: ['$_id', bucketF] }, isOfficial: true } }],
             // hashTag
@@ -360,7 +327,6 @@ export class MainPageController {
             resultUn.majorTrend = majorTrendUn;
             resultUn.kaokaiProvince = kaokaiProvinceUn;
             resultUn.kaokaiHashTag = kaokaiHashTagUn;
-            resultUn.kaokaiContent = kaokaiContentUn;
             const successResponseUn = ResponseUtil.getSuccessResponse('Successfully Main Page Data', resultUn);
             return res.status(200).send(successResponseUn);
         }
@@ -373,8 +339,7 @@ export class MainPageController {
         result.kaokaiProvince = kaokaiProvince;
         result.kaokaiHashTag = kaokaiHashTag;
         result.kaokaiContent = kaokaiContent;
-        content = await this.snapShotToday(result, monthRange[0], monthRange[1], assetTodayDate, userId);
-
+        content = await this.snapShotToday(result, monthRange[0], monthRange[1]);
         if (date !== undefined && date !== null) {
             content = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: toDate });
             if (content) {
@@ -395,29 +360,29 @@ export class MainPageController {
         const year = now.getFullYear(); // Get the current year
         let startDate = new Date(year, 0, 1);
         let endDate = new Date(year, 11, 31);
-        if(req.body.currectDate !== undefined && req.body.endDate !== undefined){
+        if (req.body.currectDate !== undefined && req.body.endDate !== undefined) {
             startDate = req.body.startDate;
             endDate = req.body.endDate;
         }
 
         const dateTime = await this.kaokaiTodaySnapShotService.aggregate
-        ([
-            {
-                $match:
+            ([
                 {
-                    endDateTime:{$gte:new Date(startDate),$lte:new Date(endDate)},
+                    $match:
+                    {
+                        endDateTime: { $gte: new Date(startDate), $lte: new Date(endDate) },
+                    }
+                },
+                {
+                    $sort: { endDateTime: -1 }
+                },
+                {
+                    $project: {
+                        endDateTime: 1,
+                        _id: 0
+                    }
                 }
-            },
-            {
-                $sort:{endDateTime:-1}
-            },
-            {
-                $project:{
-                    endDateTime:1,
-                    _id:0
-                }
-            }
-        ]);
+            ]);
         if (dateTime.length > 0) {
             const successResponseF = ResponseUtil.getSuccessResponse('Successfully Filter Range Days.', dateTime);
             return res.status(200).send(successResponseF);
@@ -1811,7 +1776,7 @@ export class MainPageController {
         }
     }
 
-    public async snapShotToday(data: any, startDateRange: Date, endDateTimeToday: Date, assetTodayDate: number, userId?: any): Promise<any> {
+    public async snapShotToday(data: any, startDateRange: Date, endDateTimeToday: Date): Promise<any> {
         // check before create
         let switchEmail = DEFAULT_SWITCH_CASE_SEND_EMAIL;
         const switchSendEmail = await this.configService.getConfig(SWITCH_CASE_SEND_EMAIL);
@@ -1875,9 +1840,9 @@ export class MainPageController {
         }
     }
     public async pushNotification(user: User, email: string, content: any, subject: string, date?: Date): Promise<any> {
-        if(date === undefined){
+        if (date === undefined) {
             const errorResponse = ResponseUtil.getErrorResponse('Date time undefined.', undefined);
-            return errorResponse;        
+            return errorResponse;
         }
         // chaluck.s@absolute.co.th
         // junsuda.s@absolute.co.th
