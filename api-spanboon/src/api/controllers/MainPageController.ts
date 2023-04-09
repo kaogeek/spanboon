@@ -1831,7 +1831,7 @@ export class MainPageController {
                         user = await this.userService.findOne({ email: userEmail });
                         if (user.subscribeEmail === true) {
                             console.log('pass ???? send email');
-                            this.pushNotification(user, user.email, content.data, 'ก้าวไกลวันนี้', endDateTimeToday);
+                            await this.pushNotification(user, user.email, content.data, 'ก้าวไกลวันนี้', endDateTimeToday);
                         } else {
                             continue;
                         }
