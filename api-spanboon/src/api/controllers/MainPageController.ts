@@ -112,15 +112,17 @@ export class MainPageController {
         let assetTodayDate = DEFAULT_TODAY_DATETIME_GAP;
 
         if (assetTodayDateGap) {
-            assetTodayDate = assetTodayDateGap.value;
+            assetTodayDate = parseInt(assetTodayDateGap.value, 10);
         }
 
         if (assetTodayRangeDate) {
             assetEmergenDays = assetTodayRangeDate.value;
         }
+        console.log('assetTodayDateGap', assetTodayDateGap);
+        console.log('assetTodayDate', assetTodayDate);
+        console.log('assetTodayDate', typeof (assetTodayDate));
         const emergencyCheckEndDate = assetTodayRangeDate.endDateTime;
         const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), assetTodayDate);
-
         if (toDate) {
             const checkSnapshot = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: toDate });
 
@@ -313,7 +315,7 @@ export class MainPageController {
             kaokaiHashTagProcessorUn.setConfig({
                 searchOfficialOnly
             });
-          
+
             const kaokaiHashTagUn = await kaokaiHashTagProcessorUn.processV2();
 
             // pipeline: [{ $match: { $expr: { $in: ['$_id', bucketF] }, isOfficial: true } }],
@@ -1810,8 +1812,9 @@ export class MainPageController {
         }
         // Check Date time === 06:00 morning
         let content = undefined;
-
+        console.log('endDateTimeToday', endDateTimeToday);
         if (hours === parseInt(hourSplit, 10) && minutes === parseInt(minuteSpit, 10)) {
+            console.log('pass snapshot ???');
             const contents = data;
             const startDate = startDateRange;
             const endDate = endDateTimeToday;
@@ -1827,6 +1830,7 @@ export class MainPageController {
                     for (const userEmail of emailStack) {
                         user = await this.userService.findOne({ email: userEmail });
                         if (user.subscribeEmail === true) {
+                            console.log('pass ???? send email');
                             this.pushNotification(user, user.email, content.data, 'ก้าวไกลวันนี้', endDateTimeToday);
                         } else {
                             continue;
@@ -1835,11 +1839,14 @@ export class MainPageController {
                 }
             }
         } else {
-            const maxDate = await this.kaokaiTodaySnapShotService.aggregate([{ $sort: { endDateTime: -1 } }, { $limit: 1 }]);
-            return maxDate[0];
+            console.log('pass2 error');
+            const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
+            return errorResponse;        
         }
     }
     public async pushNotification(user: User, email: string, content: any, subject: string, date?: Date): Promise<any> {
+        console.log('date', date);
+        console.log('check type of', typeof(date));
         if (date === undefined) {
             const errorResponse = ResponseUtil.getErrorResponse('Date time undefined.', undefined);
             return errorResponse;
@@ -1970,6 +1977,7 @@ export class MainPageController {
             month: 'long',
             day: 'numeric',
         });
+        console.log('thaiDate', thaiDate);
         let sendMail = undefined;
         let message = undefined;
 
