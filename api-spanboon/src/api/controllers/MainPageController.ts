@@ -351,7 +351,7 @@ export class MainPageController {
                 return res.status(400).send(errorResponse);
             }
         }
-        const successResponse = ResponseUtil.getSuccessResponse('Successfully Main Page Data', content.data);
+        const successResponse = ResponseUtil.getSuccessResponse('Successfully Main Page Data', content);
         return res.status(200).send(successResponse);
     }
 
