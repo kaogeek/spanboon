@@ -206,22 +206,26 @@ export class HomePageV3 extends AbstractPage implements OnInit {
         localStorage.removeItem('datetime')
         this.router.navigate(['/home']);
       })
-    }
-    this.user = userId;
-    this.isLoading = true;
-    this.mainPageModelFacade.getMainPageModelV3(userId, this.startDateLong).then((res) => {
-      console.log('res', res);
-      this.model = res;
-      for (let index = 0; index < this.model.postSectionModel.contents.length; index++) {
-        if (this.model.postSectionModel.contents[index].post.type === "FULFILLMENT") {
-          this.model.postSectionModel.contents.splice(index, 1);
-        } else if (this.model.postSectionModel.contents[index].coverPageUrl === undefined) {
-          this.model.postSectionModel.contents.splice(index, 1);
-        }
+    } else {
+      if (!this.queryParamsUrl) {
+        this.user = userId;
+        this.isLoading = true;
+        await this.mainPageModelFacade.getMainPageModelV3(userId, this.startDateLong).then((res) => {
+          if (res) {
+            this.model = res.data ? res.data : res;
+            for (let index = 0; index < this.model.postSectionModel.contents.length; index++) {
+              if (this.model.postSectionModel.contents[index].post.type === "FULFILLMENT") {
+                this.model.postSectionModel.contents.splice(index, 1);
+              } else if (this.model.postSectionModel.contents[index].coverPageUrl === undefined) {
+                this.model.postSectionModel.contents.splice(index, 1);
+              }
+            }
+          }
+        }).catch((err) => {
+          console.log('err', err);
+        })
       }
-    }).catch((err) => {
-      console.log('err', err);
-    })
+    }
 
 
     // if (this.isLogin) {
