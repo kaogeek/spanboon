@@ -116,12 +116,10 @@ export class MainPageController {
         }
 
         if (assetTodayRangeDate) {
-            assetEmergenDays = assetTodayRangeDate.value;
+            assetEmergenDays = parseInt(assetTodayRangeDate.value,10);
         }
-        console.log('assetTodayDateGap', assetTodayDateGap);
-        console.log('assetTodayDate', assetTodayDate);
-        console.log('assetTodayDate', typeof (assetTodayDate));
         const emergencyCheckEndDate = assetTodayRangeDate.endDateTime;
+        console.log('emergencyCheckEndDate',emergencyCheckEndDate);
         const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), assetTodayDate);
         if (toDate) {
             const checkSnapshot = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: toDate });
@@ -134,7 +132,6 @@ export class MainPageController {
         // ordering
         const emerProcessor: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service);
         emerProcessor.setData({
-            assetEmergenDays,
             emergencyCheckEndDate
         });
 
