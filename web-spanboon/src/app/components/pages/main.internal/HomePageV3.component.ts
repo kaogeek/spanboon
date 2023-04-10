@@ -210,7 +210,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     this.user = userId;
     this.isLoading = true;
     this.mainPageModelFacade.getMainPageModelV3(userId, this.startDateLong).then((res) => {
-      console.log('res',res);
+      console.log('res', res);
       this.model = res;
       for (let index = 0; index < this.model.postSectionModel.contents.length; index++) {
         if (this.model.postSectionModel.contents[index].post.type === "FULFILLMENT") {

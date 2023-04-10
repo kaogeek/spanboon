@@ -865,7 +865,9 @@ export class TodayPage extends AbstractPage implements OnInit {
             if (this.stackBuckets.length === 0 &&
                 this.value_stack_first.length === 0 &&
                 this.value_stack_second.length === 0 &&
-                this.value_stack_third.length === 0
+                this.value_stack_third.length === 0 &&
+                this.selectedValueField !== 'score' &&
+                this.selectedValueField !== 'count'
             ) {
                 let dialogRef = this.dialog.open(DialogAlert, {
                     data: {
@@ -949,6 +951,31 @@ export class TodayPage extends AbstractPage implements OnInit {
             } else if (result.field === '') {
                 return;
             } else if (result.limit === '' || result.limit === null || result.limit === undefined) {
+                return;
+            }
+
+            if (this.stackBuckets.length === 0 &&
+                this.value_stack_first.length === 0 &&
+                this.value_stack_second.length === 0 &&
+                this.value_stack_third.length === 0 &&
+                this.selectedValueField !== 'score' &&
+                this.selectedValueField !== 'count'
+            ) {
+                let dialogRef = this.dialog.open(DialogAlert, {
+                    data: {
+                        title: "กรุณาเพิ่มกลุ่มข้อมูล",
+                        isClose: false,
+                        isConfirm: true,
+                        confirm: {
+                            text: "ตกลง"
+                        }
+                    }
+                });
+                dialogRef.afterClosed().subscribe(result => {
+                    if (result) {
+                    }
+                });
+
                 return;
             }
 

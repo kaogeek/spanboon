@@ -219,8 +219,8 @@
                         <ng-container *ngIf="model && model!.postSectionModel!.contents[0].post.objective">
                             <div class="wrapper-banner-header banner-header-bg-gray"
                                 *ngIf="model && model.postSectionModel.contents.length > 0">
-                                <svg class="img-objective" xmlns="http://www.w3.org/2000/svg" width="22.899" height="22.899"
-                                    viewBox="0 0 22.899 22.899">
+                                <svg class="img-objective" xmlns="http://www.w3.org/2000/svg" width="22.899"
+                                    height="22.899" viewBox="0 0 22.899 22.899">
                                     <g id="mission" transform="translate(0)">
                                         <path id="Path_3205" data-name="Path 3205"
                                             d="M4.864,322.8a1.782,1.782,0,0,1,.267-1.475l3.26-4.646L6.552,314.13a.447.447,0,0,0-.726,0L.085,322.093a.447.447,0,0,0,.363.709Z"
@@ -318,10 +318,18 @@
                                                         [innerHTML]="model && model.postSectionModel.contents[1].post.title"></span>
                                                 </ng-container>
                                                 <ng-template #elseImageSec>
-                                                    <img style="aspect-ratio: 16/9;"
-                                                        src="{{apiBaseURL + (model && model.postSectionModel.contents[0].coverPageUrl) + '/image'}}"
-                                                        alt=""
-                                                        (click)="isPostNewTab ? openDilogPost(model && model.postSectionModel.contents[0]) : clickToPost(model && model.postSectionModel.contents[0].post._id)">
+                                                    <ng-container
+                                                        *ngIf="model &&
+                                                    model.postSectionModel.contents[0].coverPageUrl===null ; else elseCoverPagePost">
+                                                        <span
+                                                            [innerHTML]="model && model.postSectionModel.contents[0].post.title"></span>
+                                                    </ng-container>
+                                                    <ng-template #elseCoverPagePost>
+                                                        <img style="aspect-ratio: 16/9;"
+                                                            src="{{apiBaseURL + (model && model.postSectionModel.contents[0].coverPageUrl) + '/image'}}"
+                                                            alt=""
+                                                            (click)="isPostNewTab ? openDilogPost(model && model.postSectionModel.contents[0]) : clickToPost(model && model.postSectionModel.contents[0].post._id)">
+                                                    </ng-template>
                                                 </ng-template>
                                             </div>
                                         </ng-template>
@@ -753,13 +761,20 @@
                                     *ngIf="model && model.pageRoundRobin.contents.length >= 3"
                                     (click)="isPostNewTab ? openDilogPost(model && model.pageRoundRobin.contents[2]) : clickToPost(model && model.pageRoundRobin.contents[2].post._id)">
                                     <div class="wrapper-news-post-img md-none-min">
-                                        <img src="{{apiBaseURL + (model && model.pageRoundRobin.contents[2].coverPageUrl) + '/image'}}"
-                                            alt="">
+                                        <ng-container
+                                            *ngIf="model && model.pageRoundRobin.contents[2].coverPageUrl === null; else elseCoverPageRound2">
+                                            <span
+                                                [innerHTML]="model && model.pageRoundRobin.contents[2].post.title"></span>
+                                        </ng-container>
+                                        <ng-template #elseCoverPageRound2>
+                                            <img src="{{apiBaseURL + (model && model.pageRoundRobin.contents[2].coverPageUrl) + '/image'}}"
+                                                alt="">
+                                        </ng-template>
                                     </div>
                                     <div class="detail">
                                         <p class="title md-none-min"
                                             (click)="isPostNewTab ? openDilogPost(model && model.pageRoundRobin.contents[2]) : clickToPost(model && model.pageRoundRobin.contents[2].post._id)"
-                                            [innerHTML]="model && model.pageRoundRobin.contents[2].post.title | highlight">
+                                            [innerHTML]="model && model.pageRoundRobin.contents[2].coverPageUrl && model.pageRoundRobin.contents[2].coverPageUrl !== null ? (model && model.pageRoundRobin.contents[2].post.title | highlight) : model && model.pageRoundRobin.contents[2].post.detail | highlight">
                                         </p>
                                         <div class="owner-post md-none-min">
                                             <p class="owner-name"
@@ -820,13 +835,20 @@
                                     (click)="isPostNewTab ? openDilogPost(model && model.pageRoundRobin.contents[0]) : clickToPost(model && model.pageRoundRobin.contents[0].post._id)">
                                     <div class="wrapper-news-post-img"
                                         [ngClass]="!isRes && model && model.pageRoundRobin.contents.length < 3 ? 'post-wid' : ''">
-                                        <img src="{{apiBaseURL + (model && model.pageRoundRobin.contents[0].coverPageUrl) + '/image'}}"
-                                            alt="">
+                                        <ng-container
+                                            *ngIf="model && model.pageRoundRobin.contents[0].coverPageUrl === null; else elseCoverPageRound">
+                                            <span
+                                                [innerHTML]="model && model.pageRoundRobin.contents[0].post.title"></span>
+                                        </ng-container>
+                                        <ng-template #elseCoverPageRound>
+                                            <img src="{{apiBaseURL + (model && model.pageRoundRobin.contents[0].coverPageUrl) + '/image'}}"
+                                                alt="">
+                                        </ng-template>
                                     </div>
                                     <div class="detail"
                                         [ngClass]="!isRes && model && model.pageRoundRobin.contents.length < 3 ? 'post-wid' : ''">
                                         <p class="title"
-                                            [innerHTML]="model && model.pageRoundRobin.contents[0].coverPageUrl ? (model && model.pageRoundRobin.contents[0].post.title | highlight) : model && model.pageRoundRobin.contents[0].post.detail | highlight">
+                                            [innerHTML]="model && model.pageRoundRobin.contents[0].coverPageUrl && model.pageRoundRobin.contents[0].coverPageUrl !== null ? (model && model.pageRoundRobin.contents[0].post.title | highlight) : model && model.pageRoundRobin.contents[0].post.detail | highlight">
                                         </p>
                                         <div class="owner-post md-none-min">
                                             <p class="owner-name"
