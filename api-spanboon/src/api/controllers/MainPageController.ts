@@ -342,6 +342,15 @@ export class MainPageController {
         result.kaokaiHashTag = kaokaiHashTag;
         result.kaokaiContent = kaokaiContent;
         content = await this.snapShotToday(result, monthRange[0], monthRange[1]);
+        if (date !== undefined && date !== null) {
+            if (content) {
+                const successResponseF = ResponseUtil.getSuccessResponse('Successfully Main Page Data',content.data);
+                return res.status(200).send(successResponseF);
+            } else {
+                const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        }
         const successResponse = ResponseUtil.getSuccessResponse('Successfully Main Page Data', content.data);
         return res.status(200).send(successResponse);
     }
