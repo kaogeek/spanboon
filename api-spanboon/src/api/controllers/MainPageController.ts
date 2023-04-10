@@ -119,7 +119,6 @@ export class MainPageController {
             assetEmergenDays = parseInt(assetTodayRangeDate.value,10);
         }
         const emergencyCheckEndDate = assetTodayRangeDate.endDateTime;
-        console.log('emergencyCheckEndDate',emergencyCheckEndDate);
         const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), assetTodayDate);
         if (toDate) {
             const checkSnapshot = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: toDate });
@@ -1814,9 +1813,7 @@ export class MainPageController {
         }
         // Check Date time === 06:00 morning
         let content = undefined;
-        console.log('endDateTimeToday', endDateTimeToday);
         if (hours === parseInt(hourSplit, 10) && minutes === parseInt(minuteSpit, 10)) {
-            console.log('pass snapshot ???');
             const contents = data;
             const startDate = startDateRange;
             const endDate = endDateTimeToday;
@@ -1832,7 +1829,6 @@ export class MainPageController {
                     for (const userEmail of emailStack) {
                         user = await this.userService.findOne({ email: userEmail });
                         if (user.subscribeEmail === true) {
-                            console.log('pass ???? send email');
                             await this.pushNotification(user, user.email, content.data, 'ก้าวไกลวันนี้', endDateTimeToday);
                         } else {
                             continue;
@@ -1841,27 +1837,39 @@ export class MainPageController {
                 }
             }
         } else {
-            console.log('pass2 error');
-            const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
-            return errorResponse;        
+            const maxDate = await this.kaokaiTodaySnapShotService.aggregate([{ $sort: { endDateTime: -1 } }, { $limit: 1 }]);
+            return maxDate[0];       
         }
     }
     public async pushNotification(user: User, email: string, content: any, subject: string, date?: Date): Promise<any> {
-        console.log('date', date);
-        console.log('check type of', typeof(date));
+
         if (date === undefined) {
             const errorResponse = ResponseUtil.getErrorResponse('Date time undefined.', undefined);
             return errorResponse;
         }
         // chaluck.s@absolute.co.th
         // junsuda.s@absolute.co.th
-        const picPostMajorF = content.majorTrend.contents[0].coverPageUrl ? process.env.APP_API + content.majorTrend.contents[0].coverPageUrl + '/image' : '';
-        const picPostMajorS = content.majorTrend.contents[1].coverPageUrl ? process.env.APP_API + content.majorTrend.contents[1].coverPageUrl + '/image' : '';
-
-        const postMajorTitleF = content.majorTrend.contents[0].post.title;
-        const postMajorTitleS = content.majorTrend.contents[1].post.title;
-        const postMajorNameF = content.majorTrend.contents[0].owner.name;
-        const postMajorNameS = content.majorTrend.contents[1].owner.name;
+        let picPostMajorF = undefined;
+        let picPostMajorS = undefined;
+        if(content.majorTrend.contents[0] !== undefined){
+            picPostMajorF = content.majorTrend.contents[0].coverPageUrl ? process.env.APP_API + content.majorTrend.contents[0].coverPageUrl + '/image' : '';
+        }
+        if(content.majorTrend.contents[1] !== undefined){
+            picPostMajorS = content.majorTrend.contents[1].coverPageUrl ? process.env.APP_API + content.majorTrend.contents[1].coverPageUrl + '/image' : '';
+        }
+        let postMajorTitleF = undefined;
+        let postMajorTitleS = undefined;
+        let postMajorNameF = undefined;
+        let postMajorNameS = undefined;
+        if(content.majorTrend.contents[0] !== undefined){
+            postMajorTitleF = content.majorTrend.contents[0].post.title;
+        }if(content.majorTrend.contents[1] !== undefined){
+            postMajorTitleS = content.majorTrend.contents[1].post.title;
+        }if(content.majorTrend.contents[0] !== undefined){
+            postMajorNameF = content.majorTrend.contents[0].owner.name;
+        }if(content.majorTrend.contents[1] !== undefined){
+            postMajorNameS = content.majorTrend.contents[1].owner.name;
+        }
 
         let picPostRoundRobinF = undefined;
         let postRoundRobinF = undefined;
@@ -1961,9 +1969,13 @@ export class MainPageController {
                 splitDetailPostSection = postSection.post.detail.slice(0, 280) + '.....';
             }
         }
-
-        const linkPostMajorTrendF = process.env.APP_POST + '/' + content.majorTrend.contents[0].post._id;
-        const linkPostMajorTrendS = process.env.APP_POST + '/' + content.majorTrend.contents[1].post._id;
+        let linkPostMajorTrendF = undefined;
+        let linkPostMajorTrendS = undefined;
+        if(content.majorTrend.contents[0] !== undefined){
+            linkPostMajorTrendF = process.env.APP_POST + '/' + content.majorTrend.contents[0].post._id;
+        }if(content.majorTrend.contents[1] !== undefined){
+            linkPostMajorTrendS = process.env.APP_POST + '/' + content.majorTrend.contents[1].post._id;
+        }
 
         const loveIcons = 'https://ea.twimg.com/email/self_serve/media/icon_like-1497559206788.png';
         const commentIcons = 'https://ea.twimg.com/email/self_serve/media/icon_reply-1497559206779.png';
@@ -1979,7 +1991,6 @@ export class MainPageController {
             month: 'long',
             day: 'numeric',
         });
-        console.log('thaiDate', thaiDate);
         let sendMail = undefined;
         let message = undefined;
 
