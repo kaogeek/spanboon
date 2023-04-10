@@ -88,9 +88,9 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     }
                 }
                 const hashTagProcessor = await this.kaokaiTodayService.findOne({ position: sortV[0] });
-                if (hashTagProcessor.position === null) {
+                if (hashTagProcessor === undefined) {
                     const result: SectionModel = new SectionModel();
-                    result.title = (this.config === undefined || this.config.title === undefined) ? hashTagProcessor.title : 'สภาก้าวไกล';
+                    result.title = (this.config === undefined || this.config.title === undefined) ? 'สภาก้าวไกล' : 'สภาก้าวไกล';
                     result.subtitle = '';
                     result.description = '';
                     result.iconUrl = '';

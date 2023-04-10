@@ -118,6 +118,7 @@ export class MainPageController {
         if (assetTodayRangeDate) {
             assetEmergenDays = parseInt(assetTodayRangeDate.value,10);
         }
+        console.log('assetTodayRangeDate',assetTodayRangeDate);
         const emergencyCheckEndDate = assetTodayRangeDate.endDateTime;
         console.log('emergencyCheckEndDate',emergencyCheckEndDate);
         const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), assetTodayDate);
@@ -163,7 +164,11 @@ export class MainPageController {
         // deputy leader
         // deputy secretary of the party
         const pageRoundRobin = await pageProcessor.process();
-        const checkPosition1 = pageRoundRobin.position;
+        console.log('pageRoundRobin',pageRoundRobin.position);
+        let checkPosition1 = undefined;
+        if(pageRoundRobin.position !== undefined && pageRoundRobin.position !== null){
+            checkPosition1 = pageRoundRobin.position;
+        }
         // เกาะกระแส
         const majorTrendProcessor: MajorTrendSectionModelProcessor = new MajorTrendSectionModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService, this.pageService);
         majorTrendProcessor.setData({
@@ -177,7 +182,11 @@ export class MainPageController {
             searchOfficialOnly
         });
         const majorTrend = await majorTrendProcessor.process();
-        const checkPosition2 = majorTrend.position;
+        console.log('majorTrend',majorTrend.position);
+        let checkPosition2 = undefined;
+        if(majorTrend.position !== undefined && majorTrend.position !== null){
+            checkPosition2 = majorTrend.position;
+        }
         // ก้าวไกลสภา #hashTag
         // ก้าวไกลทุกจังหวัด
         const kaokaiProvinceProcessor: KaokaiAllProvinceModelProcessor = new KaokaiAllProvinceModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService, this.pageService);
@@ -194,9 +203,10 @@ export class MainPageController {
             searchOfficialOnly
         });
         const kaokaiProvince = await kaokaiProvinceProcessor.process();
+        console.log('kaokaiProvince',kaokaiProvince.position);
         let checkPosition3 = undefined;
         // kaokaiProvince.position;
-        if (kaokaiProvince.position !== undefined) {
+        if (kaokaiProvince.position !== undefined && kaokaiProvince.position !== null) {
             checkPosition3 = kaokaiProvince.position;
         }
         const kaokaiHashTagProcessor: KaoKaiHashTagModelProcessor = new KaoKaiHashTagModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService, this.pageService);
@@ -212,11 +222,11 @@ export class MainPageController {
         kaokaiHashTagProcessor.setConfig({
             searchOfficialOnly
         });
-
         const kaokaiHashTag = await kaokaiHashTagProcessor.process();
+        console.log('kaokaiHashTag',kaokaiHashTag.position);
         let checkPosition4 = undefined;
         // kaokaiHashTag.position;
-        if (kaokaiHashTag.position !== undefined) {
+        if (kaokaiHashTag.position !== undefined && kaokaiHashTag.position !== null) {
             checkPosition4 = kaokaiHashTag.position;
         }
 

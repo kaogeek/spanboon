@@ -229,8 +229,6 @@ export class EmergencyEventSectionProcessor extends AbstractSectionModelProcesso
 
                 }
                 // check Error ???
-
-                
                 if(emergencyEndDate !== undefined){
                     try{
                         const testCheck = emergencyEndDate.getTime();

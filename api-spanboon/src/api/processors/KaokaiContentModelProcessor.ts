@@ -90,9 +90,9 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                     }
                 }
                 const ContentProcessor = await this.kaokaiTodayService.findOne({ position: sortV[0] });
-                if (ContentProcessor.position === null) {
+                if (ContentProcessor === undefined) {
                     const result: SectionModel = new SectionModel();
-                    result.title = (this.config === undefined || this.config.title === undefined) ? ContentProcessor.title : 'ก้าวไกลรอบด้าน';
+                    result.title = (this.config === undefined || this.config.title === undefined) ? 'ก้าวไกลรอบด้าน' : 'ก้าวไกลรอบด้าน';
                     result.subtitle = '';
                     result.description = '';
                     result.iconUrl = '';

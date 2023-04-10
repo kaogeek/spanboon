@@ -87,9 +87,9 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     }
                 }
                 const provincePage = await this.kaokaiTodayService.findOne({ position: sortV[0] });
-                if (provincePage.position === null) {
+                if (provincePage === undefined) {
                     const result: SectionModel = new SectionModel();
-                    result.title = (this.config === undefined || this.config.title === undefined) ? provincePage.title : 'ก้าวไกลทุกจังหวัด';
+                    result.title = (this.config === undefined || this.config.title === undefined) ? 'ก้าวไกลทุกจังหวัด' : 'ก้าวไกลทุกจังหวัด';
                     result.subtitle = '';
                     result.description = '';
                     result.iconUrl = '';
@@ -2313,9 +2313,9 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     }
                 }
                 const provincePage = await this.kaokaiTodayService.findOne({ position: sortV[0] });
-                if (provincePage.position === null) {
+                if (provincePage === undefined) {
                     const result: SectionModel = new SectionModel();
-                    result.title = (this.config === undefined || this.config.title === undefined) ? provincePage.title : 'ก้าวไกลทุกจังหวัด';
+                    result.title = (this.config === undefined || this.config.title === undefined) ? 'ก้าวไกลทุกจังหวัด' : 'ก้าวไกลทุกจังหวัด';
                     result.subtitle = '';
                     result.description = '';
                     result.iconUrl = '';

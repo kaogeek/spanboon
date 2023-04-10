@@ -32,34 +32,39 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
             try {
                 // get config
                 const position = [];
-                const positionSequences = await this.kaokaiTodayService.find();
-                for (const sequence of positionSequences) {
-                    position.push(sequence.position);
-                }
                 const sortV = [];
-                const sorts = position.sort((a, b) => Math.abs(a) - Math.abs(b) || a - b);
                 const negative = [];
-                // const today = moment().add(month, 'month').toDate();
-                for (const sort of sorts) {
-                    if (sort !== undefined && sort !== null && sort > 0) {
-                        sortV.push(sort);
-                    } else if (sort !== undefined && sort !== null && sort < 0) {
-                        negative.push(sort);
-                    } else {
-                        continue;
+                const positionSequences = await this.kaokaiTodayService.find();
+                console.log('positionSequences',positionSequences.length > 0);
+                if(positionSequences.length>0){
+                    for (const sequence of positionSequences) {
+                        position.push(sequence.position);
                     }
-                }
-                for (const nega of negative) {
-                    if (nega !== undefined && nega !== null) {
-                        sortV.push(nega);
-                    } else {
-                        continue;
+                    const sorts = position.sort((a, b) => Math.abs(a) - Math.abs(b) || a - b);
+                    // const today = moment().add(month, 'month').toDate();
+                    for (const sort of sorts) {
+                        if (sort !== undefined && sort !== null && sort > 0) {
+                            sortV.push(sort);
+                        } else if (sort !== undefined && sort !== null && sort < 0) {
+                            negative.push(sort);
+                        } else {
+                            continue;
+                        }
+                    }
+                    for (const nega of negative) {
+                        if (nega !== undefined && nega !== null) {
+                            sortV.push(nega);
+                        } else {
+                            continue;
+                        }
                     }
                 }
                 const roundRobin = await this.kaokaiTodayService.findOne({ position: sortV[0] });
-                if (roundRobin.position === null) {
+                console.log('roundRobin',roundRobin);
+                if (roundRobin === undefined) {
+                    console.log('pass1');
                     const result: SectionModel = new SectionModel();
-                    result.title = (this.config === undefined || this.config.title === undefined) ? roundRobin.title : 'ก้าวไกลวันนี้';
+                    result.title = (this.config === undefined || this.config.title === undefined) ? 'ก้าวไกลวันนี้' : 'ก้าวไกลวันนี้';
                     result.subtitle = '';
                     result.description = '';
                     result.iconUrl = '';
