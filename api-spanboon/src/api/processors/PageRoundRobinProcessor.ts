@@ -35,7 +35,6 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                 const sortV = [];
                 const negative = [];
                 const positionSequences = await this.kaokaiTodayService.find();
-                console.log('positionSequences',positionSequences.length > 0);
                 if(positionSequences.length>0){
                     for (const sequence of positionSequences) {
                         position.push(sequence.position);
@@ -60,9 +59,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     }
                 }
                 const roundRobin = await this.kaokaiTodayService.findOne({ position: sortV[0] });
-                console.log('roundRobin',roundRobin);
                 if (roundRobin === undefined) {
-                    console.log('pass1');
                     const result: SectionModel = new SectionModel();
                     result.title = (this.config === undefined || this.config.title === undefined) ? 'ก้าวไกลวันนี้' : 'ก้าวไกลวันนี้';
                     result.subtitle = '';

@@ -118,7 +118,6 @@ export class MainPageController {
         if (assetTodayRangeDate) {
             assetEmergenDays = parseInt(assetTodayRangeDate.value,10);
         }
-        console.log('assetTodayRangeDate',assetTodayRangeDate);
         const emergencyCheckEndDate = assetTodayRangeDate.endDateTime;
         console.log('emergencyCheckEndDate',emergencyCheckEndDate);
         const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), assetTodayDate);
@@ -164,7 +163,6 @@ export class MainPageController {
         // deputy leader
         // deputy secretary of the party
         const pageRoundRobin = await pageProcessor.process();
-        console.log('pageRoundRobin',pageRoundRobin.position);
         let checkPosition1 = undefined;
         if(pageRoundRobin.position !== undefined && pageRoundRobin.position !== null){
             checkPosition1 = pageRoundRobin.position;
@@ -182,7 +180,6 @@ export class MainPageController {
             searchOfficialOnly
         });
         const majorTrend = await majorTrendProcessor.process();
-        console.log('majorTrend',majorTrend.position);
         let checkPosition2 = undefined;
         if(majorTrend.position !== undefined && majorTrend.position !== null){
             checkPosition2 = majorTrend.position;
@@ -203,7 +200,6 @@ export class MainPageController {
             searchOfficialOnly
         });
         const kaokaiProvince = await kaokaiProvinceProcessor.process();
-        console.log('kaokaiProvince',kaokaiProvince.position);
         let checkPosition3 = undefined;
         // kaokaiProvince.position;
         if (kaokaiProvince.position !== undefined && kaokaiProvince.position !== null) {
@@ -223,7 +219,6 @@ export class MainPageController {
             searchOfficialOnly
         });
         const kaokaiHashTag = await kaokaiHashTagProcessor.process();
-        console.log('kaokaiHashTag',kaokaiHashTag.position);
         let checkPosition4 = undefined;
         // kaokaiHashTag.position;
         if (kaokaiHashTag.position !== undefined && kaokaiHashTag.position !== null) {
