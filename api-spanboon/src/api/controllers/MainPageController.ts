@@ -122,7 +122,6 @@ export class MainPageController {
         const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), assetTodayDate);
         if (toDate) {
             const checkSnapshot = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: toDate });
-
             if (checkSnapshot !== undefined && checkSnapshot !== null) {
                 const successResponseS = ResponseUtil.getSuccessResponse('Successfully Main Page Data', checkSnapshot.data);
                 return res.status(200).send(successResponseS);
@@ -344,9 +343,8 @@ export class MainPageController {
         result.kaokaiContent = kaokaiContent;
         content = await this.snapShotToday(result, monthRange[0], monthRange[1]);
         if (date !== undefined && date !== null) {
-            content = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: toDate });
             if (content) {
-                const successResponseF = ResponseUtil.getSuccessResponse('Successfully Main Page Data', content.data);
+                const successResponseF = ResponseUtil.getSuccessResponse('Successfully Main Page Data',content.data);
                 return res.status(200).send(successResponseF);
             } else {
                 const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
@@ -1835,14 +1833,19 @@ export class MainPageController {
                         }
                     }
                 }
+                return snapshot;
             }
         } else {
             const maxDate = await this.kaokaiTodaySnapShotService.aggregate([{ $sort: { endDateTime: -1 } }, { $limit: 1 }]);
-            return maxDate[0];       
+            if(maxDate.length > 0){
+                return maxDate[0]; 
+            }else{
+                const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
+                return errorResponse;        
+            }      
         }
     }
     public async pushNotification(user: User, email: string, content: any, subject: string, date?: Date): Promise<any> {
-
         if (date === undefined) {
             const errorResponse = ResponseUtil.getErrorResponse('Date time undefined.', undefined);
             return errorResponse;
@@ -3355,8 +3358,7 @@ export class MainPageController {
                 </div>`;
 
             sendMail = MAILService.pushNotification(message, email, subject);
-        }
-        else {
+        }else {
             return ResponseUtil.getErrorResponse('error in sending email', '');
 
         }
