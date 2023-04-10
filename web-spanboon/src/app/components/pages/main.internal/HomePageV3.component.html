@@ -201,7 +201,8 @@
                 <div class="wrapper-1-right"
                     *ngIf="(model && model.pageRoundRobin.contents.length > 0) && (model && model.postSectionModel.contents.length > 0)"
                     [ngClass]="{'home-wrapper-right': model && model.emergencyEvents.contents.length <= 0}">
-                    <div class="wrapper-hastags" *ngIf="model && model.emergencyEvents.contents.length > 0">
+                    <div class="wrapper-hastags" *ngIf="model && model.emergencyEvents.contents.length > 0"
+                        [class.active]="model && model.postSectionModel.contents[0].post.objectiveTag === null">
                         <span class="header-hastags">มาใหม่ : </span>
                         <a class="tag-link"
                             (click)="clickToPage(model && model.hashTagSumma[0].name,'hashTagSumma')">#{{model &&

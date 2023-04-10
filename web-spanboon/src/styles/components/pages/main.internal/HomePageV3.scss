@@ -417,6 +417,10 @@
           padding: 20px 0;
           @include font-size-10($font-head-400);
 
+          &.active {
+            padding: 0;
+          }
+
           >.header-hastags {
             color: $brandcolor2;
           }
@@ -626,6 +630,7 @@
             -webkit-box-orient: vertical;
             overflow: hidden;
             margin-top: 10px;
+            word-break: break-word;
             @include font-size-9($font-head-500);
 
             &:hover {
