@@ -229,21 +229,9 @@ export class EmergencyEventSectionProcessor extends AbstractSectionModelProcesso
 
                 }
                 // check Error ???
-                if(emergencyEndDate !== undefined){
-                    try{
-                        const testCheck = emergencyEndDate.getTime();
-                        console.log('testCheck',testCheck);
-                    }catch(error){
-                        console.log('Error getTime from emergencyEndDate');
-                    }
-                }
-
-                console.log('emergencyEndDate ???',emergencyEndDate);
                 const today = new Date();
                 const timeStampToday = today.getTime();
                 const timeStampSettings = Date.parse(emergencyEndDate);
-                console.log('timeStampToday ????',timeStampToday);
-                console.log('timeStampSettings ????',timeStampSettings);
                 const searchFilter: SearchFilter = new SearchFilter();
                 searchFilter.offset = offset;
                 searchFilter.limit = limit;

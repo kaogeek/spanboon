@@ -119,7 +119,6 @@ export class MainPageController {
             assetEmergenDays = parseInt(assetTodayRangeDate.value,10);
         }
         const emergencyCheckEndDate = assetTodayRangeDate.endDateTime;
-        console.log('emergencyCheckEndDate',emergencyCheckEndDate);
         const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), assetTodayDate);
         if (toDate) {
             const checkSnapshot = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: toDate });
