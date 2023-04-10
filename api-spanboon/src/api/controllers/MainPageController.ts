@@ -351,8 +351,14 @@ export class MainPageController {
                 return res.status(400).send(errorResponse);
             }
         }
-        const successResponse = ResponseUtil.getSuccessResponse('Successfully Main Page Data', content);
-        return res.status(200).send(successResponse);
+        if(content){
+            const successResponse = ResponseUtil.getSuccessResponse('Successfully Main Page Data', content);
+            return res.status(200).send(successResponse);
+        }
+        else {
+            const errorResponse = ResponseUtil.getErrorResponse('Unable got Main Page Data', undefined);
+            return res.status(400).send(errorResponse);
+        }
     }
 
     @Post('/days/check')
@@ -1803,7 +1809,6 @@ export class MainPageController {
         const split = assetTimer.split(':');
         const hourSplit = split[0];
         const minuteSpit = split[1];
-
         const checkCreate = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: endDateTimeToday });
 
         if (checkCreate !== undefined && checkCreate !== null) {
@@ -3360,7 +3365,6 @@ export class MainPageController {
             sendMail = MAILService.pushNotification(message, email, subject);
         }else {
             return ResponseUtil.getErrorResponse('error in sending email', '');
-
         }
         if (sendMail) {
             return ResponseUtil.getSuccessResponse('Your Activation Code has been sent to your email inbox.', '');
