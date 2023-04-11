@@ -557,7 +557,7 @@ export class AdminPageController {
         }
         if (body !== undefined) {
             const query = { _id: pageObjId };
-            const newValues = { $set: { group: body.group } };
+            const newValues = { $set: { group: body.group,province:body.province } };
             const update = await this.pageService.update(query, newValues);
             if (update) {
                 return res.status(200).send(ResponseUtil.getSuccessResponse('Delete page is successfully.', true));

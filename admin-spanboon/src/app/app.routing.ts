@@ -27,6 +27,7 @@ import {
   AdminPage, 
   PageCategoryPage,
   TodayPage,
+  NewsPaper,
   PageGroup
 } from './components/components';
 const routes: Routes = [
@@ -57,6 +58,10 @@ const routes: Routes = [
       {
         path:TodayPage.PAGE_NAME,
         component:TodayPage
+      },
+      {
+        path:NewsPaper.PAGE_NAME,
+        component:NewsPaper
       },
       {
         path: StandardItemCategoryPage.PAGE_NAME,

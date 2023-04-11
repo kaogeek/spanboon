@@ -61,7 +61,8 @@ import {
   DialogWarningComponent,
   DialogAlert,
   TodayPage,
-  PageGroup
+  PageGroup,
+  NewsPaper
 } from './components/components';
 import {
   AuthenManager,
@@ -129,7 +130,8 @@ const COMPONENTS: any[] = [
   DialogWarningComponent,
   DialogAlert,
   TableComponent,
-  PageGroup
+  PageGroup,
+  NewsPaper
 ];
 
 const PIPE_CLASSES: any[] = [

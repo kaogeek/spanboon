@@ -18,8 +18,8 @@ import { AuthenManager } from '../../../services/AuthenManager.service';
 import { Router } from '@angular/router';
 import { FormGroup, FormControl, Validators, FormBuilder, FormArray } from '@angular/forms';
 import { TodayPageFacade } from '../../../services/facade/TodayPageFacade.service';
-import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
-import { fromEvent, Subject, Subscription } from 'rxjs';
+import { debounceTime, takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 import { Location } from '@angular/common';
 import { DialogAlert } from '../../shares/DialogAlert.component';
 

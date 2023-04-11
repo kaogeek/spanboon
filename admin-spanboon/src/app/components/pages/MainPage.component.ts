@@ -50,6 +50,13 @@ export const ROUTES: Routes[] = [
     path: "/main/today"
   },
   {
+    icon: '<img src="../../../assets/img/logo.png" width="25" height="20">',
+    title: "หนังสือพิมพ์",
+    subRoutes: [
+    ],
+    path: "/main/newspaper"
+  },
+  {
     icon: "<svg xmlns='http://www.w3.org/2000/svg' width='20' height='12' viewBox='0 0 24 16'><g id='Group_7' data-name='Group 7' transform='translate(166 -331)'><rect id='Rectangle_2' data-name='Rectangle 2' width='23' height='15' rx='1' transform='translate(-165.5 331.5)' stroke-width='1' stroke='#fff' stroke-linecap='round' stroke-linejoin='round' fill='none'/><rect id='Rectangle_3' data-name='Rectangle 3' width='23' height='3' transform='translate(-165.5 334.5)' stroke-width='1' stroke='#fff' stroke-linecap='round' stroke-linejoin='round' fill='none'/><line id='Line_7' data-name='Line 7' x2='4' transform='translate(-163.5 342.5)' fill='none' stroke='#fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1'/><line id='Line_8' data-name='Line 8' x2='3' transform='translate(-156.5 342.5)' fill='none' stroke='#fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1'/></g></svg>",
     title: "ตรวจสอบเพจ",
     subRoutes: [
