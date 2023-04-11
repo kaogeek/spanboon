@@ -62,7 +62,7 @@ import {
   DialogAlert,
   TodayPage,
   PageGroup,
-  NewsPaper
+  NewsPaperPage
 } from './components/components';
 import {
   AuthenManager,
@@ -80,7 +80,8 @@ import {
   TodayPageFacade,
   PageGroupFacade,
   PageUserFacade,
-  PageUserAdminFacade
+  PageUserAdminFacade,
+  NewsPaperFacade
   ,
 } from './services/services';
 import { UserFacade } from './services/facade/UserFacade.service';
@@ -131,7 +132,7 @@ const COMPONENTS: any[] = [
   DialogAlert,
   TableComponent,
   PageGroup,
-  NewsPaper
+  NewsPaperPage
 ];
 
 const PIPE_CLASSES: any[] = [
@@ -161,6 +162,7 @@ const SERVICE_CLASSES: any[] = [
   PageUserFacade,
   UserFacade,
   PageUserAdminFacade,
+  NewsPaperFacade,
   // other 
   {
     provide: SWIPER_CONFIG,

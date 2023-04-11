@@ -7,7 +7,7 @@
 
 import { BaseModel } from './BaseModel';
 
-export class NewsPaperModel extends BaseModel {
+export class NewsPaper extends BaseModel {
     public data: any;
     public startDateTime: any;
     public endDateTime: any;

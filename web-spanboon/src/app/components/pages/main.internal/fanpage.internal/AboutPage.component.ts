@@ -15,7 +15,7 @@ import { Subject } from "rxjs/internal/Subject";
 import { fromEvent } from "rxjs";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
 import { FormBuilder, FormGroup } from "@angular/forms";
-import { DialogAlert } from "src/app/components/shares/dialog/dialog";
+import { DialogAlert, DialogDropdown } from "src/app/components/shares/dialog/dialog";
 
 const PAGE_NAME: string = 'account';
 const SEARCH_LIMIT: number = 20;
@@ -329,8 +329,37 @@ export class AboutPage extends AbstractPage implements OnInit {
         this.aboutPageFacade.getGroups(this.pageId).then((res) => {
             if (res) {
                 this.groups = res.data;
+                this.checkGroup();
+                this.checkProvince();
             }
         })
+    }
+
+    public checkGroup() {
+        if (!this.dataPage.group) {
+            let dialog = this.dialog.open(DialogDropdown, {
+                disableClose: true,
+                data: {
+                    text: 'กรุณาเลือกกลุ่ม',
+                    group: this.groups,
+                    pageId: this.pageId,
+                    bottomColorText2: "black"
+                }
+            });
+        }
+    }
+
+    public checkProvince() {
+        if (!this.dataPage.province) {
+            let dialog = this.dialog.open(DialogDropdown, {
+                disableClose: true,
+                data: {
+                    text: 'กรุณาเลือกจังหวัด',
+                    pageId: this.pageId,
+                    bottomColorText2: "black"
+                }
+            });
+        }
     }
 
     public clickCard(items: any) {

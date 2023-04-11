@@ -59,6 +59,10 @@
               @include font-size-8($font-head-400);
               color: $brandcolor2;
               flex: 1 1 0%;
+
+              @media (max-width: 320px) {
+                @include font-size-9($font-head-400);
+              }
             }
 
             >svg {

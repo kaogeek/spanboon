@@ -10,25 +10,25 @@ import { CommonModule, } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 import { Routes, RouterModule } from '@angular/router';
 import {
-  MainPage, 
-  StandardItemCategoryPage, 
-  UserAdminPage, 
-  PostPage, 
-  EmergencyEventPage, 
-  PageObjectiveCategoryPage, 
-  StandardItemCustomPage, 
-  StandardItemReqRequestPage, 
-  HashtagPage, 
-  testPage, 
-  StandardItemPage, 
+  MainPage,
+  StandardItemCategoryPage,
+  UserAdminPage,
+  PostPage,
+  EmergencyEventPage,
+  PageObjectiveCategoryPage,
+  StandardItemCustomPage,
+  StandardItemReqRequestPage,
+  HashtagPage,
+  testPage,
+  StandardItemPage,
   LoginPage,
-  ConfigPage, 
-  UserPage, 
-  AdminPage, 
+  ConfigPage,
+  UserPage,
+  AdminPage,
   PageCategoryPage,
   TodayPage,
-  NewsPaper,
-  PageGroup
+  PageGroup,
+  NewsPaperPage
 } from './components/components';
 const routes: Routes = [
   {
@@ -56,12 +56,12 @@ const routes: Routes = [
         component: EmergencyEventPage
       },
       {
-        path:TodayPage.PAGE_NAME,
-        component:TodayPage
+        path: TodayPage.PAGE_NAME,
+        component: TodayPage
       },
       {
-        path:NewsPaper.PAGE_NAME,
-        component:NewsPaper
+        path: NewsPaperPage.PAGE_NAME,
+        component: NewsPaperPage
       },
       {
         path: StandardItemCategoryPage.PAGE_NAME,
