@@ -2000,7 +2000,6 @@ export class MainPageController {
         });
         let sendMail = undefined;
         let message = undefined;
-
         if (picPostMajorF !== undefined &&
             picPostMajorS !== undefined &&
             postMajorTitleF !== undefined &&
