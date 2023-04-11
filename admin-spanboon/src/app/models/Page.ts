@@ -13,6 +13,7 @@ export class Page extends BaseModel {
     public updateDate: Date
     public ownerUser: string
     public banned: boolean;
-    public group:string;
-    public detail:string
+    public group: string;
+    public province: string;
+    public detail: string
 }

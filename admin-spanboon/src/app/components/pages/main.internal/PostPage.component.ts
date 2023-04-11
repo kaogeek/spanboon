@@ -35,9 +35,9 @@ export class PostPage extends AbstractPage implements OnInit {
     private authenManager: AuthenManager;
     private router: Router;
     public isSave: boolean = false;
-    public pageGroupFacade:PageGroupFacade;
+    public pageGroupFacade: PageGroupFacade;
     public pageGroups: any = [];
-    public stackGroups:any = [];
+    public stackGroups: any = [];
     public dataForm: Page;
     public valueBool: boolean;
     public valuetring: string;
@@ -46,8 +46,87 @@ export class PostPage extends AbstractPage implements OnInit {
     public submitted = false;
     public isOfficialPage: {};
     public orderBy: any = {};
+    public provinces: any = [
+        { value: 'นครราชสีมา', viewValue: 'นครราชสีมา' },
+        { value: 'สมุทรสงคราม', viewValue: 'สมุทรสงคราม' },
+        { value: 'กาญจนบุรี', viewValue: 'กาญจนบุรี' },
+        { value: 'ตาก', viewValue: 'ตาก' },
+        { value: 'อุบลราชธานี', viewValue: 'อุบลราชธานี' },
+        { value: 'สุราษฎร์ธานี', viewValue: 'สุราษฎร์ธานี' },
+        { value: 'ชัยภูมิ', viewValue: 'ชัยภูมิ' },
+        { value: 'แม่ฮ่องสอน', viewValue: 'แม่ฮ่องสอน' },
+        { value: 'เพชรบูรณ์', viewValue: 'เพชรบูรณ์' },
+        { value: 'ลำปาง', viewValue: 'ลำปาง' },
+        { value: 'อุดรธานี', viewValue: 'อุดรธานี' },
+        { value: 'เชียงราย', viewValue: 'เชียงราย' },
+        { value: 'น่าน', viewValue: 'น่าน' },
+        { value: 'เลย', viewValue: 'เลย' },
+        { value: 'ขอนแก่น', viewValue: 'ขอนแก่น' },
+        { value: 'พิษณุโลก', viewValue: 'พิษณุโลก' },
+        { value: 'บุรีรัมย์', viewValue: 'บุรีรัมย์' },
+        { value: 'นครศรีธรรมราช', viewValue: 'นครศรีธรรมราช' },
+        { value: 'สกลนคร', viewValue: 'สกลนคร' },
+        { value: 'นครสวรรค์', viewValue: 'นครสวรรค์' },
+        { value: 'ศรีสะเกษ', viewValue: 'ศรีสะเกษ' },
+        { value: 'กำแพงเพชร', viewValue: 'กำแพงเพชร' },
+        { value: 'ร้อยเอ็ด', viewValue: 'ร้อยเอ็ด' },
+        { value: 'สุรินทร์', viewValue: 'สุรินทร์' },
+        { value: 'อุตรดิตถ์', viewValue: 'อุตรดิตถ์' },
+        { value: 'สงขลา', viewValue: 'สงขลา' },
+        { value: 'สระแก้ว', viewValue: 'สระแก้ว' },
+        { value: 'กาฬสินธุ์', viewValue: 'กาฬสินธุ์' },
+        { value: 'อุทัยธานี', viewValue: 'อุทัยธานี' },
+        { value: 'สุโขทัย', viewValue: 'สุโขทัย' },
+        { value: 'แพร่', viewValue: 'แพร่' },
+        { value: 'ประจวบคีรีขันธ์', viewValue: 'ประจวบคีรีขันธ์' },
+        { value: 'จันทบุรี', viewValue: 'จันทบุรี' },
+        { value: 'พะเยา', viewValue: 'พะเยา' },
+        { value: 'เพชรบุรี', viewValue: 'เพชรบุรี' },
+        { value: 'ลพบุรี', viewValue: 'ลพบุรี' },
+        { value: 'ชุมพร', viewValue: 'ชุมพร' },
+        { value: 'นครพนม', viewValue: 'นครพนม' },
+        { value: 'สุพรรณบุรี', viewValue: 'สุพรรณบุรี' },
+        { value: 'ฉะเชิงเทรา', viewValue: 'ฉะเชิงเทรา' },
+        { value: 'มหาสารคาม', viewValue: 'มหาสารคาม' },
+        { value: 'ราชบุรี', viewValue: 'ราชบุรี' },
+        { value: 'ตรัง', viewValue: 'ตรัง' },
+        { value: 'ปราจีนบุรี', viewValue: 'ปราจีนบุรี' },
+        { value: 'กระบี่', viewValue: 'กระบี่' },
+        { value: 'พิจิตร', viewValue: 'พิจิตร' },
+        { value: 'ยะลา', viewValue: 'ยะลา' },
+        { value: 'ลำพูน', viewValue: 'ลำพูน' },
+        { value: 'นราธิวาส', viewValue: 'นราธิวาส' },
+        { value: 'ชลบุรี', viewValue: 'ชลบุรี' },
+        { value: 'มุกดาหาร', viewValue: 'มุกดาหาร' },
+        { value: 'บึงกาฬ', viewValue: 'บึงกาฬ' },
+        { value: 'พังงา', viewValue: 'พังงา' },
+        { value: 'ยโสธร', viewValue: 'ยโสธร' },
+        { value: 'หนองบัวลำภู', viewValue: 'หนองบัวลำภู' },
+        { value: 'สระบุรี', viewValue: 'สระบุรี' },
+        { value: 'ระยอง', viewValue: 'ระยอง' },
+        { value: 'พัทลุง', viewValue: 'พัทลุง' },
+        { value: 'ระนอง', viewValue: 'ระนอง' },
+        { value: 'อำนาจเจริญ', viewValue: 'อำนาจเจริญ' },
+        { value: 'หนองคาย', viewValue: 'หนองคาย' },
+        { value: 'ตราด', viewValue: 'ตราด' },
+        { value: 'พระนครศรีอยุธยา', viewValue: 'พระนครศรีอยุธยา' },
+        { value: 'สตูล', viewValue: 'สตูล' },
+        { value: 'ชัยนาท', viewValue: 'ชัยนาท' },
+        { value: 'นครปฐม', viewValue: 'นครปฐม' },
+        { value: 'นครนายก', viewValue: 'นครนายก' },
+        { value: 'ปัตตานี', viewValue: 'ปัตตานี' },
+        { value: 'กรุงเทพมหานคร', viewValue: 'กรุงเทพมหานคร' },
+        { value: 'ปทุมธานี', viewValue: 'ปทุมธานี' },
+        { value: 'สมุทรปราการ', viewValue: 'สมุทรปราการ' },
+        { value: 'อ่างทอง', viewValue: 'อ่างทอง' },
+        { value: 'สมุทรสาคร', viewValue: 'สมุทรสาคร' },
+        { value: 'สิงห์บุรี', viewValue: 'สิงห์บุรี' },
+        { value: 'นนทบุรี', viewValue: 'นนทบุรี' },
+        { value: 'ภูเก็ต', viewValue: 'ภูเก็ต' },
+        { value: 'สมุทรสงคราม', viewValue: 'สมุทรสงคราม' }
+    ];
 
-    constructor(pageFacade: PageFacade,pageGroupFacade:PageGroupFacade, router: Router, dialog: MatDialog, authenManager: AuthenManager) {
+    constructor(pageFacade: PageFacade, pageGroupFacade: PageGroupFacade, router: Router, dialog: MatDialog, authenManager: AuthenManager) {
         super(PAGE_NAME, dialog);
         this.pageFacade = pageFacade;
         this.pageGroupFacade = pageGroupFacade;
@@ -71,6 +150,16 @@ export class PostPage extends AbstractPage implements OnInit {
             {
                 name: "group",
                 label: "กลุ่ม",
+                width: "150pt",
+                class: "", formatColor: false, formatImage: false,
+                link: [],
+                formatDate: false,
+                formatId: false,
+                align: "left"
+            },
+            {
+                name: "province",
+                label: "จังหวัด",
                 width: "150pt",
                 class: "", formatColor: false, formatImage: false,
                 link: [],
@@ -102,6 +191,7 @@ export class PostPage extends AbstractPage implements OnInit {
         this.dataForm = new Page();
         this.dataForm.name = "";
         this.dataForm.group = "";
+        this.dataForm.province = "";
         this.valueBool = true;
         this.valuetring = "";
         this.valueNum = 0;
@@ -143,8 +233,8 @@ export class PostPage extends AbstractPage implements OnInit {
         filter.limit = SEARCH_LIMIT;
         filter.offset = SEARCH_OFFSET;
         filter.relation = [],
-        filter.whereConditions = {},
-        filter.count = false;
+            filter.whereConditions = {},
+            filter.count = false;
         filter.orderBy = {}
         this.pageFacade.search(filter).then((res: any) => {
         }).catch((err: any) => {
@@ -152,10 +242,10 @@ export class PostPage extends AbstractPage implements OnInit {
     }
 
     public clickEditForm(data: any): void {
-        const stackPageGroup = this.pageGroupFacade.finds().then((datas)=>{
-            this.stackGroups =datas;
+        const stackPageGroup = this.pageGroupFacade.finds().then((datas) => {
+            this.stackGroups = datas;
         });
-    
+
         this.drawer.toggle();
         this.valueBool = true;
         this.valuetring = "";
@@ -292,6 +382,5 @@ export class PostPage extends AbstractPage implements OnInit {
         })
     }
     public seleceType(event) {
-        console.log('event',event);
     }
 }

@@ -32,9 +32,22 @@
                                         </div>
                                         <label style='margin-top:15px'>กลุ่ม *</label>
                                         <mat-form-field appearance="none">
-                                            <mat-select [(ngModel)]="dataForm.group" name="group" placeholder='dataForm.group'required>
-                                                <mat-option *ngFor="let stackGroup of stackGroups" [value]="stackGroup.detail">
+                                            <mat-select [(ngModel)]="dataForm.group" name="group"
+                                                placeholder='กรุณาเลือกกลุ่ม' required>
+                                                <mat-option>* ไม่เลือกกลุ่มใดๆ *</mat-option>
+                                                <mat-option *ngFor="let stackGroup of stackGroups"
+                                                    [value]="stackGroup.detail">
                                                     {{stackGroup.detail}}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                        <label style='margin-top:15px'>จังหวัด *</label>
+                                        <mat-form-field appearance="none">
+                                            <mat-select [(ngModel)]="dataForm.province" name="province"
+                                                placeholder='กรุณาเลือกจังหวัด' required>
+                                                <mat-option>* ไม่เลือกจังหวัดใดๆ *</mat-option>
+                                                <mat-option *ngFor="let province of provinces" [value]="province.value">
+                                                    {{province.value}}
                                                 </mat-option>
                                             </mat-select>
                                         </mat-form-field>
