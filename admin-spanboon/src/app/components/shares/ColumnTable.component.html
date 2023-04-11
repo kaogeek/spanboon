@@ -47,12 +47,17 @@
             </svg>
         </ng-container>
         <ng-template #elseTemplate>
-            -
-            <ng-container *ngIf="expression; else elseTemplate">
-
+            <ng-container
+                *ngIf="(fieldTable.name !== 'startDate') && (fieldTable.name !== 'endDate'); else elseTemplate">
+                -
             </ng-container>
             <ng-template #elseTemplate>
-
+                <div *ngIf="fieldTable.name === 'startDate'">
+                    {{data.startDateTime | thdatetime}}
+                </div>
+                <div *ngIf="fieldTable.name === 'endDate'">
+                    {{data.endDateTime | thdatetime}}
+                </div>
             </ng-template>
 
         </ng-template>

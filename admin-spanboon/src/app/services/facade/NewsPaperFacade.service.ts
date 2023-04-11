@@ -21,10 +21,20 @@ export class NewsPaperFacade extends AbstractFacade {
 
     public search(searchFilter: SearchFilter): Promise<NewsPaper[]> {
         return new Promise((resolve, reject) => {
-            let url: string = this.baseURL + '/admin/page/snapshot';
-
+            let url: string = this.baseURL + '/admin/page/search/snapshot';
+            let body: any = {
+                'count': searchFilter.count,
+                'limit': searchFilter.limit,
+                'offset': searchFilter.offset,
+                'orderBy': { 'createdDate': -1 },
+                'relation': searchFilter.relation,
+                'whereConditions': searchFilter.whereConditions
+            };
+            if (searchFilter !== null && searchFilter !== undefined) {
+                body = Object.assign(searchFilter)
+            }
             let options = this.getDefaultOptions();
-            this.http.get(url, options).toPromise().then((response: any) => {
+            this.http.post(url, body, options).toPromise().then((response: any) => {
                 for (let r of response.data) {
                     if (r.coverPageURL != null && r.coverPageURL != undefined) {
                         this.getPathFile(r.coverPageURL).then((res: any) => {

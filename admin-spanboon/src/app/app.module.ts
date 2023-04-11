@@ -88,7 +88,8 @@ import { UserFacade } from './services/facade/UserFacade.service';
 import {
   SafePipe,
   ShortNumberPipe,
-  PrefixNumberPipe
+  PrefixNumberPipe,
+  PipeThDatetimePipe
 } from './components/shares/pipes/pipes';
 
 const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
@@ -140,6 +141,7 @@ const PIPE_CLASSES: any[] = [
   SafePipe,
   ShortNumberPipe,
   PrefixNumberPipe,
+  PipeThDatetimePipe,
 ]
 
 const SERVICE_CLASSES: any[] = [
