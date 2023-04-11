@@ -74,8 +74,8 @@ export class NewsPaperPage extends AbstractPage implements OnInit {
             isApprove: false,
             isUnApprove: false,
             isSelect: false,
-            isCreate: true,
-            isEdit: true,
+            isCreate: false,
+            isEdit: false,
             isDelete: true,
             isComment: false,
             isBack: false

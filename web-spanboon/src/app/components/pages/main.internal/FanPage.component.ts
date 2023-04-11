@@ -20,7 +20,7 @@ import { ValidBase64ImageUtil } from '../../../utils/ValidBase64ImageUtil';
 import { SearchFilter } from '../../../models/SearchFilter';
 import { BoxPost } from '../../shares/BoxPost.component';
 import { DialogMedia } from '../../shares/dialog/DialogMedia.component';
-import { DialogAlert, DialogPost, DialogShare } from '../../shares/shares';
+import { DialogAlert, DialogDropdown, DialogPost, DialogShare } from '../../shares/shares';
 import { UserEngagement } from '../../../models/models';
 import { DirtyComponent } from 'src/app/dirty-component';
 import { filter } from 'rxjs/internal/operators/filter';
@@ -141,6 +141,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   public selectedIndex: number;
   public shareDialog: boolean;
   public mainPostLink: string;
+  public groups: any = [];
 
   public CheckPost: boolean = true;
   public isPostLoading: boolean = false;
@@ -346,11 +347,50 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     if (this.isLogin()) {
       this.getProfileImage();
     }
+    this.getGroupList();
     this.observManager.subscribe(REFRESH_DATA, (result: any) => {
       if (result) {
         // this.resPost.posts.unshift(result);
       }
     });
+  }
+
+  public getGroupList() {
+    this.aboutPageFacade.getGroups(this.pageId).then((res) => {
+      if (res) {
+        console.log("res", res)
+        this.groups = res.data;
+        this.checkGroup();
+        this.checkProvince();
+      }
+    })
+  }
+
+  public checkGroup() {
+    if (!this.resDataPage.group) {
+      let dialog = this.dialog.open(DialogDropdown, {
+        disableClose: true,
+        data: {
+          text: 'กรุณาเลือกกลุ่ม',
+          group: this.groups,
+          pageId: this.resDataPage.id,
+          bottomColorText2: "black"
+        }
+      });
+    }
+  }
+
+  public checkProvince() {
+    if (!this.resDataPage.province) {
+      let dialog = this.dialog.open(DialogDropdown, {
+        disableClose: true,
+        data: {
+          text: 'กรุณาเลือกจังหวัด',
+          pageId: this.resDataPage.id,
+          bottomColorText2: "black"
+        }
+      });
+    }
   }
 
   private stopLoading(): void {

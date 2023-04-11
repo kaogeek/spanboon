@@ -328,6 +328,7 @@ export class AboutPage extends AbstractPage implements OnInit {
     public getGroupList() {
         this.aboutPageFacade.getGroups(this.pageId).then((res) => {
             if (res) {
+                console.log("res", res)
                 this.groups = res.data;
                 this.checkGroup();
                 this.checkProvince();
