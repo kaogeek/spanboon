@@ -573,10 +573,10 @@ export class AdminPageController {
         }
     }
 
-    @Get('/snapshot')
+    @Post('/search/snapshot')
     @Authorized()
-    public async getSnapShot(@Res() res: any, @Req() req: any):Promise<any>{
-        const snapShots = await this.kaokaiTodaySnapShotService.find();
+    public async searchSnapShot(@Body({ validate: true }) filter: SearchFilter, @Res() res: any):Promise<any>{
+        const snapShots = await this.kaokaiTodaySnapShotService.search(filter.limit, filter.offset, filter.select, filter.relation, filter.whereConditions, filter.orderBy, filter.count);
         if(snapShots.length>0){
             const successResponse = ResponseUtil.getSuccessResponse('Get snapshot is sucessfully.', snapShots);
             return res.status(200).send(successResponse);

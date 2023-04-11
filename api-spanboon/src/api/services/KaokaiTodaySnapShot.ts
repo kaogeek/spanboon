@@ -9,6 +9,7 @@ import { Service } from 'typedi';
 import { OrmRepository } from 'typeorm-typedi-extensions';
 import { Logger, LoggerInterface } from '../../decorators/Logger';
 import { KaokaiTodaySnapShotRepository } from '../repositories/KaokaiTodaySnapShotRepository';
+import { SearchUtil } from '../../utils/SearchUtil';
 @Service()
 export class KaokaiTodaySnapShotService {
 
@@ -26,7 +27,15 @@ export class KaokaiTodaySnapShotService {
     public async findOne(findCondition: any): Promise<any> {
         return await this.kaokaiTodaySnapShotRepository.findOne(findCondition);
     }
+    public search(limit: number, offset: number, select: any = [], relation: any[], whereConditions: any = [], orderBy: any, count: boolean): Promise<any> {
+        const condition: any = SearchUtil.createFindCondition(limit, offset, select, relation, whereConditions, orderBy);
 
+        if (count) {
+            return this.kaokaiTodaySnapShotRepository.count();
+        } else {
+            return this.find(condition);
+        }
+    }
     public async find(findCondition?: any): Promise<any> {
         return await this.kaokaiTodaySnapShotRepository.find(findCondition);
     }
