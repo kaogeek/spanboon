@@ -199,10 +199,11 @@
                     </div>
                 </ng-container>
                 <div class="wrapper-1-right"
-                    *ngIf="(model && model.pageRoundRobin && model.pageRoundRobin.contents.length > 0) && (model && model.postSectionModel && model.postSectionModel.contents.length > 0)"
+                    *ngIf="(model && model.pageRoundRobin && model.pageRoundRobin.contents.length > 0) || (model && model.postSectionModel && model.postSectionModel.contents.length > 0)"
                     [ngClass]="{'home-wrapper-right': model && model.emergencyEvents.contents.length <= 0}">
-                    <div class="wrapper-hastags" *ngIf="model && model.emergencyEvents.contents.length > 0"
-                        [class.active]="model && model.postSectionModel.contents[0].post.objectiveTag === null">
+                    <div class="wrapper-hastags"
+                        *ngIf="(model && model.emergencyEvents.contents.length > 0) || (model && model.postSectionModel.contents.length > 0)"
+                        [class.active]="model && model.postSectionModel.contents.length > 0 && model.postSectionModel.contents[0].post.objectiveTag === null">
                         <span class="header-hastags">มาใหม่ : </span>
                         <a class="tag-link"
                             (click)="clickToPage(model && model.hashTagSumma[0].name,'hashTagSumma')">#{{model &&
@@ -216,7 +217,7 @@
                             (click)="clickToPage(model && model.hashTagSumma[2].name,'hashTagSumma')">#{{model &&
                             model.hashTagSumma[2].name}}</a>
                     </div>
-                    <div class="wrapper-section-model">
+                    <div class="wrapper-section-model" *ngIf="model && model.postSectionModel.contents.length > 0">
                         <ng-container *ngIf="model && model!.postSectionModel!.contents[0].post.objective">
                             <div class="wrapper-banner-header banner-header-bg-gray"
                                 *ngIf="model && model.postSectionModel.contents.length > 0">

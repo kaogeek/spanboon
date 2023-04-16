@@ -358,7 +358,6 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   public getGroupList() {
     this.aboutPageFacade.getGroups(this.pageId).then((res) => {
       if (res) {
-        console.log("res", res)
         this.groups = res.data;
         this.checkGroup();
         this.checkProvince();
