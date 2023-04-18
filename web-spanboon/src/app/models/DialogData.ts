@@ -15,6 +15,8 @@ export class DialogData extends BaseModel {
   title: string;
   text: string;
   text2: string;
+  group: any;
+  pageId: string;
   bgColor: string;
   textColor: string;
   item: string;

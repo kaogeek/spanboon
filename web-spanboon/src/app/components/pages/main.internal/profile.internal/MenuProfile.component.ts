@@ -5,7 +5,7 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-import { Component, OnInit, ViewChild, ElementRef, Input, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Input, EventEmitter, Output, HostListener } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { startWith, map } from 'rxjs/operators';
@@ -34,6 +34,8 @@ export class MenuProfile extends AbstractPage implements OnInit {
     public isActive2: boolean;
     public isSelect: boolean;
     public profileUser: any;
+    public windowWidth: any;
+    public isShowButton: boolean;
 
     @Output()
     public logout: EventEmitter<any> = new EventEmitter();
@@ -195,6 +197,17 @@ export class MenuProfile extends AbstractPage implements OnInit {
 
     public notificationProfile() {
         this.showAlertDevelopDialog();
+    }
+
+    @HostListener('window:resize', ['$event'])
+    public getScreenSize(event?) {
+        this.windowWidth = window.innerWidth;
+
+        if (this.windowWidth <= 340) {
+            this.isShowButton = true;
+        } else {
+            this.isShowButton = false;
+        }
     }
 
     onMouseEnterItem(e) {

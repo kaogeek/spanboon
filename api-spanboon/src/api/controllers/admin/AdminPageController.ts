@@ -30,6 +30,7 @@ import { SearchRequest } from '../requests/SearchRequest';
 import { SEARCH_TYPE } from '../../../constants/SearchType';
 import { EmergencyEventService } from '../../services/EmergencyEventService';
 import { HashTagService } from '../../services/HashTagService';
+import { KaokaiTodaySnapShotService } from '../../services/KaokaiTodaySnapShot';
 @JsonController('/admin/page')
 export class AdminPageController {
     constructor(private pageService: PageService, private actionLogService: AdminUserActionLogsService, private deletePageService: DeletePageService,
@@ -38,7 +39,8 @@ export class AdminPageController {
         private emergencyEventService: EmergencyEventService,
         private hashTagService: HashTagService,
         private postsService: PostsService,
-        private pageGroupService: PageGroupService
+        private pageGroupService: PageGroupService,
+        private kaokaiTodaySnapShotService:KaokaiTodaySnapShotService
     ) { }
 
     /**
@@ -557,7 +559,7 @@ export class AdminPageController {
         }
         if (body !== undefined) {
             const query = { _id: pageObjId };
-            const newValues = { $set: { group: body.group } };
+            const newValues = { $set: { group: body.group,province:body.province } };
             const update = await this.pageService.update(query, newValues);
             if (update) {
                 return res.status(200).send(ResponseUtil.getSuccessResponse('Delete page is successfully.', true));
@@ -567,6 +569,34 @@ export class AdminPageController {
             }
         } else {
             const errorResponse: any = { status: 0, message: 'Sorry cannnot delete page.' };
+            return res.status(400).send(errorResponse);
+        }
+    }
+
+    @Post('/snapshot/search')
+    @Authorized()
+    public async searchSnapShot(@Body({ validate: true }) filter: SearchFilter, @Res() res: any):Promise<any>{
+        const snapShots = await this.kaokaiTodaySnapShotService.search(filter.limit, filter.offset, filter.select, filter.relation, filter.whereConditions, filter.orderBy, filter.count);
+        if(snapShots.length>0){
+            const successResponse = ResponseUtil.getSuccessResponse('Get snapshot is sucessfully.', snapShots);
+            return res.status(200).send(successResponse);
+        }else{
+            const errorResponse = ResponseUtil.getErrorResponse('There are no snapshot.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+    @Delete('/:id/snapshot')
+    @Authorized()
+    public async deleteSnapShot(@Param('id') id: string,@Res() res: any, @Req() req: any):Promise<any>{
+        const idObj = new ObjectID(id);
+        if(idObj !== undefined){
+            const deleteSnapShot = await this.kaokaiTodaySnapShotService.delete({_id:idObj});
+            if(deleteSnapShot){
+                const successResponse = ResponseUtil.getSuccessResponse('Delete snapshot is sucessfully.', undefined);
+                return res.status(200).send(successResponse);
+            }
+        }else{
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot delete snapshot.', undefined);
             return res.status(400).send(errorResponse);
         }
     }

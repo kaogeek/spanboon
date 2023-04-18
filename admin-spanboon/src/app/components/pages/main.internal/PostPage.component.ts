@@ -17,6 +17,7 @@ import { DialogWarningComponent } from '../../shares/DialogWarningComponent.comp
 import { AuthenManager } from '../../../services/AuthenManager.service';
 import { Router } from '@angular/router';
 import { PageGroupFacade } from '../../../services/facade/PageGroupFacade.service';
+import { PROVINCE_LIST } from '../../../constants/Province';
 
 const PAGE_NAME: string = "page";
 
@@ -35,9 +36,9 @@ export class PostPage extends AbstractPage implements OnInit {
     private authenManager: AuthenManager;
     private router: Router;
     public isSave: boolean = false;
-    public pageGroupFacade:PageGroupFacade;
+    public pageGroupFacade: PageGroupFacade;
     public pageGroups: any = [];
-    public stackGroups:any = [];
+    public stackGroups: any = [];
     public dataForm: Page;
     public valueBool: boolean;
     public valuetring: string;
@@ -46,8 +47,9 @@ export class PostPage extends AbstractPage implements OnInit {
     public submitted = false;
     public isOfficialPage: {};
     public orderBy: any = {};
+    public provinces = PROVINCE_LIST;
 
-    constructor(pageFacade: PageFacade,pageGroupFacade:PageGroupFacade, router: Router, dialog: MatDialog, authenManager: AuthenManager) {
+    constructor(pageFacade: PageFacade, pageGroupFacade: PageGroupFacade, router: Router, dialog: MatDialog, authenManager: AuthenManager) {
         super(PAGE_NAME, dialog);
         this.pageFacade = pageFacade;
         this.pageGroupFacade = pageGroupFacade;
@@ -71,6 +73,16 @@ export class PostPage extends AbstractPage implements OnInit {
             {
                 name: "group",
                 label: "กลุ่ม",
+                width: "150pt",
+                class: "", formatColor: false, formatImage: false,
+                link: [],
+                formatDate: false,
+                formatId: false,
+                align: "left"
+            },
+            {
+                name: "province",
+                label: "จังหวัด",
                 width: "150pt",
                 class: "", formatColor: false, formatImage: false,
                 link: [],
@@ -102,6 +114,7 @@ export class PostPage extends AbstractPage implements OnInit {
         this.dataForm = new Page();
         this.dataForm.name = "";
         this.dataForm.group = "";
+        this.dataForm.province = "";
         this.valueBool = true;
         this.valuetring = "";
         this.valueNum = 0;
@@ -143,8 +156,8 @@ export class PostPage extends AbstractPage implements OnInit {
         filter.limit = SEARCH_LIMIT;
         filter.offset = SEARCH_OFFSET;
         filter.relation = [],
-        filter.whereConditions = {},
-        filter.count = false;
+            filter.whereConditions = {},
+            filter.count = false;
         filter.orderBy = {}
         this.pageFacade.search(filter).then((res: any) => {
         }).catch((err: any) => {
@@ -152,10 +165,10 @@ export class PostPage extends AbstractPage implements OnInit {
     }
 
     public clickEditForm(data: any): void {
-        const stackPageGroup = this.pageGroupFacade.finds().then((datas)=>{
-            this.stackGroups =datas;
+        const stackPageGroup = this.pageGroupFacade.finds().then((datas) => {
+            this.stackGroups = datas;
         });
-    
+
         this.drawer.toggle();
         this.valueBool = true;
         this.valuetring = "";
@@ -285,13 +298,14 @@ export class PostPage extends AbstractPage implements OnInit {
         this.pageFacade.edit(data.id, data).then((res) => {
             this.submitted = false;
             this.isSave = false;
+            this.table.searchData();
             this.drawer.toggle();
         }).catch((err: any) => {
             this.isSave = false;
+            this.table.searchData();
             this.dialogWarning(err.error.message);
-        })
+        });
     }
     public seleceType(event) {
-        console.log('event',event);
     }
 }

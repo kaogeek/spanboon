@@ -189,7 +189,8 @@
     display: inline-block;
     @include pointer();
     border-radius: 30px;
-    padding: 6px 25px;
+    padding: 6px 13px;
+    flex: 0 0 auto;
 
     &:hover {
         background-color: $brandcolor2 !important;

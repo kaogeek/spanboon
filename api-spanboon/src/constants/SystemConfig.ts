@@ -74,3 +74,6 @@ export const SWITCH_CASE_SEND_EMAIL = 'kaokaiToday.case.send.email.available';
 export const DEFAULT_SWITCH_CASE_SEND_EMAIL = true;
 
 export const SEND_EMAIL_TO_USER = 'send.email.to.user';
+
+export const KAOKAITODAY_ANNOUNCEMENT = 'kaokaiToday.announcement';
+export const KAOKAITODAY_LINK_ANNOUNCEMENT='kaokaiToday.link.announcement';

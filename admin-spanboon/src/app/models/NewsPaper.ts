@@ -5,7 +5,10 @@
  * Author: Americaso <treerayuth.o@absolute.co.th>
  */
 
-export * from './Safe.pipe';
-export * from './PrefixNumber.pipe';
-export * from './ShortNumber.pipe';
-export * from './PipeThDatetime.pipe';
+import { BaseModel } from './BaseModel';
+
+export class NewsPaper extends BaseModel {
+    public data: any;
+    public startDateTime: any;
+    public endDateTime: any;
+}

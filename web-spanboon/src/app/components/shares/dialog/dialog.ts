@@ -36,3 +36,4 @@ export * from './DialogConfirmInput.component';
 export * from './DialogAboutUs.component';
 export * from './DialogCheckBox.component';
 export * from './DialogPoliciesAndTerms.component';
+export * from './DialogDropdown.component';

@@ -35,7 +35,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                 const sortV = [];
                 const negative = [];
                 const positionSequences = await this.kaokaiTodayService.find();
-                if(positionSequences.length>0){
+                if (positionSequences.length > 0) {
                     for (const sequence of positionSequences) {
                         position.push(sequence.position);
                     }
@@ -365,12 +365,14 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                         bucketAll.push(postAggregateSet3);
                     }
                     const stackPage = [];
-                    for (let i = 0; i < bucketAll[0].length; i++) {
-                        for (let j = 0; j < bucketAll.length; j++) {
-                            if (bucketAll[j][i] !== undefined && bucketAll[j][i] !== null) {
-                                stackPage.push(bucketAll[j][i]);
-                            } else {
-                                continue;
+                    if (bucketAll.length > 0) {
+                        for (let i = 0; i < bucketAll[0].length; i++) {
+                            for (let j = 0; j < bucketAll.length; j++) {
+                                if (bucketAll[j][i] !== undefined && bucketAll[j][i] !== null) {
+                                    stackPage.push(bucketAll[j][i]);
+                                } else {
+                                    continue;
+                                }
                             }
                         }
                     }
@@ -2178,12 +2180,14 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     }
                     // set 1
                     const stackPage = [];
-                    for (let i = 0; i < pageStacks[0].length; i++) {
-                        for (let j = 0; j < pageStacks.length; j++) {
-                            if (pageStacks[j][i] !== undefined && pageStacks[j][i] !== null) {
-                                stackPage.push(pageStacks[j][i]);
-                            } else {
-                                continue;
+                    if (pageStacks.length > 0) {
+                        for (let i = 0; i < pageStacks[0].length; i++) {
+                            for (let j = 0; j < pageStacks.length; j++) {
+                                if (pageStacks[j][i] !== undefined && pageStacks[j][i] !== null) {
+                                    stackPage.push(pageStacks[j][i]);
+                                } else {
+                                    continue;
+                                }
                             }
                         }
                     }

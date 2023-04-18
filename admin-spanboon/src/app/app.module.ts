@@ -61,7 +61,8 @@ import {
   DialogWarningComponent,
   DialogAlert,
   TodayPage,
-  PageGroup
+  PageGroup,
+  NewsPaperPage
 } from './components/components';
 import {
   AuthenManager,
@@ -79,14 +80,16 @@ import {
   TodayPageFacade,
   PageGroupFacade,
   PageUserFacade,
-  PageUserAdminFacade
+  PageUserAdminFacade,
+  NewsPaperFacade
   ,
 } from './services/services';
 import { UserFacade } from './services/facade/UserFacade.service';
 import {
   SafePipe,
   ShortNumberPipe,
-  PrefixNumberPipe
+  PrefixNumberPipe,
+  PipeThDatetimePipe
 } from './components/shares/pipes/pipes';
 
 const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
@@ -129,7 +132,8 @@ const COMPONENTS: any[] = [
   DialogWarningComponent,
   DialogAlert,
   TableComponent,
-  PageGroup
+  PageGroup,
+  NewsPaperPage
 ];
 
 const PIPE_CLASSES: any[] = [
@@ -137,6 +141,7 @@ const PIPE_CLASSES: any[] = [
   SafePipe,
   ShortNumberPipe,
   PrefixNumberPipe,
+  PipeThDatetimePipe,
 ]
 
 const SERVICE_CLASSES: any[] = [
@@ -159,6 +164,7 @@ const SERVICE_CLASSES: any[] = [
   PageUserFacade,
   UserFacade,
   PageUserAdminFacade,
+  NewsPaperFacade,
   // other 
   {
     provide: SWIPER_CONFIG,

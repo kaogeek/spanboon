@@ -1230,7 +1230,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
 
                     const postAggregateSet1 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince1 } } },
+                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince1 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
                             { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
@@ -1297,7 +1297,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                     }
                     const postAggregateSet2 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince2 } } },
+                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince2 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
                             { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
@@ -1364,7 +1364,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                     }
                     const postAggregateSet3 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince3 } } },
+                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince3 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
                             { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
@@ -1431,12 +1431,14 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                     }
                     // set 1
                     const stackPage = [];
-                    for (let i = 0; i < pageStacks[0].length; i++) {
-                        for (let j = 0; j < pageStacks.length; j++) {
-                            if (pageStacks[j][i] !== undefined && pageStacks[j][i] !== null) {
-                                stackPage.push(pageStacks[j][i]);
-                            } else {
-                                continue;
+                    if (pageStacks.length > 0) {
+                        for (let i = 0; i < pageStacks[0].length; i++) {
+                            for (let j = 0; j < pageStacks.length; j++) {
+                                if (pageStacks[j][i] !== undefined && pageStacks[j][i] !== null) {
+                                    stackPage.push(pageStacks[j][i]);
+                                } else {
+                                    continue;
+                                }
                             }
                         }
                     }
@@ -1568,7 +1570,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
 
                     const postAggregateSet1 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince1 } } },
+                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince1 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime }  } },
                             { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
@@ -1635,7 +1637,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                     }
                     const postAggregateSet2 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince2 } } },
+                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince2 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime }  } },
                             { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
@@ -1702,7 +1704,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                     }
                     const postAggregateSet3 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince3 } } },
+                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince3 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime }  } },
                             { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
@@ -3458,7 +3460,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
 
                     const postAggregateSet1 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince1 } } },
+                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince1 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime }  } },
                             { $sort: { createdDate: -1 } },
                             {
                                 $lookup:
@@ -3525,7 +3527,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                     }
                     const postAggregateSet2 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince2 } } },
+                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince2 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime }  } },
                             { $sort: { createdDate: -1 } },
                             {
                                 $lookup:
@@ -3592,7 +3594,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                     }
                     const postAggregateSet3 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince3 } } },
+                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince3 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime }  } },
                             { $sort: { createdDate: -1 } },
                             {
                                 $lookup:

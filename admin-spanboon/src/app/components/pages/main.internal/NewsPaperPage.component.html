@@ -1,0 +1,143 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author: Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<div class="admin-config-page">
+    <mat-drawer-container class="example-container" [hasBackdrop]="true">
+        <mat-drawer #drawer [mode]="'over'" [position]="'end'" [disableClose]="true">
+            <div class="form-admin">
+                <div class="wrapper">
+                    <div class="form-header">
+                        <ng-container *ngIf="data; else elseTitle">
+                            <h5 class="title">สร้าง{{title | titlecase}}</h5>
+                        </ng-container>
+                        <ng-template #elseTitle>
+                            <h5 class="title">แก้ไข{{title | titlecase}}</h5>
+                        </ng-template>
+                    </div>
+                    <div class="form-body">
+                        <form>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <ng-container>
+                                            <mat-slide-toggle [(ngModel)]="dataForm.isPin"
+                                                [ngModelOptions]="{standalone: true}">
+                                            </mat-slide-toggle>
+                                        </ng-container>
+                                        <label style="margin-left: 10px;">ปักหมุด</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>ชื่อ *</label>
+                                        <input type="text" class="form-control" [(ngModel)]="dataForm.title"
+                                            [ngModelOptions]="{standalone: true}">
+                                        <div class="alert alert-danger" style="margin-top: 5pt;"
+                                            *ngIf="submitted && dataForm.title === ''">
+                                            กรุณาใส่ ชื่อ
+                                        </div>
+                                        <label>RoundRobin *</label>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>รายละเอียด *</label>
+                                        <ng-container>
+                                            <textarea class="form-control" [(ngModel)]="dataForm.detail"
+                                                [ngModelOptions]="{standalone: true}"></textarea>
+                                        </ng-container>
+                                        <div class="alert alert-danger" style="margin-top: 5pt;"
+                                            *ngIf="submitted && dataForm.detail === ''">
+                                            กรุณาใส่ รายละเอียด
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>รูปภาพ</label>
+                                        <div class="form-group">
+                                            <mat-form-field class="example-form-field">
+                                                <mat-label>เลือกรูปภาพ</mat-label>
+                                                <input *ngIf="!imageName" disabled matInput type="text"
+                                                    [(ngModel)]="dataForm.coverPageURL"
+                                                    [ngModelOptions]="{standalone: true}">
+                                                <input *ngIf="imageName" disabled matInput type="text"
+                                                    [(ngModel)]="imageName" [ngModelOptions]="{standalone: true}">
+                                                <button style="font-size: 25px;color: #a32126;" class="form-group"
+                                                    mat-button matSuffix mat-icon-button (click)="value=''">
+                                                    <mat-icon>add_photo_alternate</mat-icon>
+                                                    <input #myInput type="file" id="file"
+                                                        (change)="handleInputChange($event)">
+                                                </button>
+                                            </mat-form-field>
+                                            <!-- <label style="color: white;padding: 10px;background-color: #fd545a;border-radius: 8px;margin-top:15px;" for="file">Choose File</label> -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <div class="form-group">
+                                            <label>แท็กที่เกี่ยวข้อง</label>
+                                            <ng-container>
+                                                <input type="text" class="form-control" [(ngModel)]="dataForm.hashTag"
+                                                    [ngModelOptions]="{standalone: true}">
+                                            </ng-container>
+                                            <div class="alert alert-danger" style="margin-top: 5pt;"
+                                                *ngIf="submitted && dataForm.hashTag === ''">
+                                                กรุณาใส่ แท็กที่เกี่ยวข้อง
+                                            </div>
+                                            <!-- <label style="color: white;padding: 10px;background-color: #fd545a;border-radius: 8px;margin-top:15px;" for="file">Choose File</label> -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <div class="form-group">
+                                            <label>ลำดับเหตุการณ์</label>
+                                            <ng-container>
+                                                <input #inputOrder type="number" class="form-control inputArrow"
+                                                    id="inputOrder" [(ngModel)]="dataForm.ordering"
+                                                    [ngModelOptions]="{standalone: true}">
+                                            </ng-container>
+                                            <div class="alert alert-danger" style="margin-top: 5pt;"
+                                                *ngIf="submitted && (dataForm.ordering === null || dataForm.ordering === undefined)">
+                                                กรุณาใส่ ลำดับ
+                                            </div>
+                                            <!-- <label style="color: white;padding: 10px;background-color: #fd545a;border-radius: 8px;margin-top:15px;" for="file">Choose File</label> -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="wrapper-action">
+                        <button mat-raised-button class="btn-close" (click)="clickCloseDrawer()">ปิด</button>
+                        <button mat-raised-button class="btn-save" (click)="clickSave()">บันทึก</button>
+                    </div>
+                </div>
+            </div>
+        </mat-drawer>
+        <mat-drawer-content>
+            <div class="main-content">
+                <admin-table-component #table [isPin]="true" [facade]="newsPaperFacade" [title]="'หนังสือพิมพ์'"
+                    [fieldTable]="fieldTable" [actions]="actions" (create)="clickCreateForm()"
+                    (edit)="clickEditForm($event)" (delete)="clickDelete($event)"></admin-table-component>
+            </div>
+        </mat-drawer-content>
+    </mat-drawer-container>
+</div>
