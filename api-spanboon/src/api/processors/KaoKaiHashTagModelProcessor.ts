@@ -1225,7 +1225,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
 
                     const postAggregateSet1 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince1 } } },
+                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince1 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
                             { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
@@ -1292,7 +1292,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     }
                     const postAggregateSet2 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince2 } } },
+                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince2 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
                             { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
@@ -1359,7 +1359,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     }
                     const postAggregateSet3 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince3 } } },
+                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince3 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
                             { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
@@ -1563,7 +1563,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
 
                     const postAggregateSet1 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince1 } } },
+                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince1 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime }  } },
                             { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
@@ -1630,7 +1630,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     }
                     const postAggregateSet2 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince2 } } },
+                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince2 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime }  } },
                             { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
@@ -1697,7 +1697,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     }
                     const postAggregateSet3 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince3 } } },
+                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince3 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime }  } },
                             { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
@@ -1764,12 +1764,14 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     }
                     // set 1
                     const stackPage = [];
-                    for (let i = 0; i < pageStacks[0].length; i++) {
-                        for (let j = 0; j < pageStacks.length; j++) {
-                            if (pageStacks[j][i] !== undefined && pageStacks[j][i] !== null) {
-                                stackPage.push(pageStacks[j][i]);
-                            } else {
-                                continue;
+                    if(pageStacks.length>0){
+                        for (let i = 0; i < pageStacks[0].length; i++) {
+                            for (let j = 0; j < pageStacks.length; j++) {
+                                if (pageStacks[j][i] !== undefined && pageStacks[j][i] !== null) {
+                                    stackPage.push(pageStacks[j][i]);
+                                } else {
+                                    continue;
+                                }
                             }
                         }
                     }
@@ -2267,7 +2269,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                 }
 
                 let userId = undefined;
-                
+
                 let startDateTime: Date = undefined;
                 let endDateTime: Date = undefined;
                 if (this.data !== undefined && this.data !== null) {
@@ -2317,16 +2319,16 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                 }
                 const stackHashTag = [];
                 const hashTagMostly = await this.hashTagService.aggregate([{ $sort: { count: -1 } }, { $limit: 10 }]);
-                for(const hashTag of hashTagMostly){
-                    if(hashTag._id !== undefined){
+                for (const hashTag of hashTagMostly) {
+                    if (hashTag._id !== undefined) {
                         stackHashTag.push(new ObjectID(hashTag._id));
-                    }else{
+                    } else {
                         continue;
                     }
                 }
                 const postAggregateSet1 = await this.postsService.aggregate(
                     [
-                        { $match: { isDraft: false, deleted: false, hidden: false, postsHashTags: { $in: stackHashTag }} },
+                        { $match: { isDraft: false, deleted: false, hidden: false, postsHashTags: { $in: stackHashTag } } },
                         { $sort: { createdDate: -1 } },
                         {
                             $lookup:

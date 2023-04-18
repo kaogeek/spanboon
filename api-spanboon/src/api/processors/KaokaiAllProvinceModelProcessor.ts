@@ -238,10 +238,10 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     for (const provinces3 of pageProvince3) {
                         pageStackprovince3.push(new ObjectID(provinces3._id));
                     }
-
+                    
                     const postAggregateSet1 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince1 } } },
+                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince1 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
                             { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
@@ -308,7 +308,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     }
                     const postAggregateSet2 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince2 } } },
+                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince2 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
                             { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
@@ -375,7 +375,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     }
                     const postAggregateSet3 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince3 } } },
+                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince3 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
                             { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
@@ -579,7 +579,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
 
                     const postAggregateSet1 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince1 } } },
+                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince1 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
                             { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
@@ -644,7 +644,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     pageStacks.push(postAggregateSet1);
                     const postAggregateSet2 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince2 } } },
+                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince2 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
                             { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
@@ -709,7 +709,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     pageStacks.push(postAggregateSet2);
                     const postAggregateSet3 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince3 } } },
+                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince3 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
                             { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
@@ -774,12 +774,14 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     pageStacks.push(postAggregateSet3);
                     // set 1
                     const stackPage = [];
-                    for (let i = 0; i < pageStacks[0].length; i++) {
-                        for (let j = 0; j < pageStacks.length; j++) {
-                            if (pageStacks[j][i] !== undefined && pageStacks[j][i] !== null) {
-                                stackPage.push(pageStacks[j][i]);
-                            } else {
-                                continue;
+                    if (pageStacks.length > 0) {
+                        for (let i = 0; i < pageStacks[0].length; i++) {
+                            for (let j = 0; j < pageStacks.length; j++) {
+                                if (pageStacks[j][i] !== undefined && pageStacks[j][i] !== null) {
+                                    stackPage.push(pageStacks[j][i]);
+                                } else {
+                                    continue;
+                                }
                             }
                         }
                     }

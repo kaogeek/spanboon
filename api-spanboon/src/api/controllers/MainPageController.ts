@@ -60,6 +60,7 @@ import { AssetService } from '../services/AssetService';
 import { ImageUtil } from '../../utils/ImageUtil';
 import { KaoKaiHashTagModelProcessor } from '../processors/KaoKaiHashTagModelProcessor';
 import { KaokaiAllProvinceModelProcessor } from '../processors/KaokaiAllProvinceModelProcessor';
+// import { TrendForYouProcessor } from '../processors/TrendForYouProcessor';
 import { KaokaiTodayService } from '../services/KaokaiTodayService';
 import {
     TODAY_DATETIME_GAP,
@@ -1795,12 +1796,18 @@ export class MainPageController {
         if (switchSendEmail) {
             switchEmail = Boolean(switchSendEmail.value);
         }
-        const listEmail = await this.configService.getConfig(SEND_EMAIL_TO_USER);
-        const splitComma = listEmail.value.split(',');
+        /*
+            tarawut.c@absolute.co.th,chaluck.s@absolute.co.th,junsuda.s@absolute.co.th,panupap.s@absolute.co.th
+        */
+        let splitComma = undefined;
         const emailStack = [];
-        if (splitComma.length > 0) {
-            for (const email of splitComma) {
-                emailStack.push(String(email));
+        const listEmail = await this.configService.getConfig(SEND_EMAIL_TO_USER);
+        if (listEmail !== undefined) {
+            splitComma = listEmail.value.split(',');
+            if (splitComma.length > 0) {
+                for (const email of splitComma) {
+                    emailStack.push(String(email));
+                }
             }
         }
         const now = new Date(); // Get the current time
@@ -1820,37 +1827,69 @@ export class MainPageController {
         }
         // Check Date time === 06:00 morning
         let content = undefined;
-        if (hours === parseInt(hourSplit, 10) && minutes === parseInt(minuteSpit, 10)) {
-            const contents = data;
-            const startDate = startDateRange;
-            const endDate = endDateTimeToday;
-            const result: any = {};
-            result.data = contents;
-            result.startDateTime = startDate;
-            result.endDateTime = endDate;
-            const snapshot = await this.kaokaiTodaySnapShotService.create(result);
-            if (snapshot) {
-                content = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: endDateTimeToday });
-                let user = undefined;
-                if (switchEmail === true) {
-                    for (const userEmail of emailStack) {
-                        user = await this.userService.findOne({ email: userEmail.toString() });
-                        if (user.subscribeEmail === true) {
-                            await this.pushNotification(user, user.email, content.data, 'ก้าวไกลวันนี้', endDateTimeToday);
+        if (listEmail !== undefined) {
+            if (hours === parseInt(hourSplit, 10) && minutes === parseInt(minuteSpit, 10)) {
+                const contents = data;
+                const startDate = startDateRange;
+                const endDate = endDateTimeToday;
+                const result: any = {};
+                result.data = contents;
+                result.startDateTime = startDate;
+                result.endDateTime = endDate;
+                const snapshot = await this.kaokaiTodaySnapShotService.create(result);
+                if (snapshot) {
+                    content = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: endDateTimeToday });
+                    let user = undefined;
+                    if (switchEmail === true) {
+                        for (const userEmail of emailStack) {
+                            user = await this.userService.findOne({ email: userEmail.toString() });
+                            if (user) {
+                                await this.pushNotification(user, user.email, content.data, 'ก้าวไกลวันนี้', endDateTimeToday);
+                            } else {
+                                continue;
+                            }
+                        }
+                    }
+                    return snapshot;
+                }
+            } else {
+                const maxDate = await this.kaokaiTodaySnapShotService.aggregate([{ $sort: { endDateTime: -1 } }, { $limit: 1 }]);
+                if (maxDate.length > 0) {
+                    return maxDate[0];
+                } else {
+                    const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
+                    return errorResponse;
+                }
+            }
+        } else {
+            if (hours === parseInt(hourSplit, 10) && minutes === parseInt(minuteSpit, 10)) {
+                const contents = data;
+                const startDate = startDateRange;
+                const endDate = endDateTimeToday;
+                const result: any = {};
+                result.data = contents;
+                result.startDateTime = startDate;
+                result.endDateTime = endDate;
+                const snapshot = await this.kaokaiTodaySnapShotService.create(result);
+                if (snapshot) {
+                    content = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: endDateTimeToday });
+                    const users = await this.userService.find();
+                    for (const user of users) {
+                        if (user.subscribeEmail === true && switchEmail === true) {
+                            // await this.pushNotification(user, user.email, content.data, 'ก้าวไกลวันนี้', endDateTimeToday);
                         } else {
                             continue;
                         }
                     }
                 }
-                return snapshot;
-            }
-        } else {
-            const maxDate = await this.kaokaiTodaySnapShotService.aggregate([{ $sort: { endDateTime: -1 } }, { $limit: 1 }]);
-            if (maxDate.length > 0) {
-                return maxDate[0];
             } else {
-                const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
-                return errorResponse;
+                const maxDate = await this.kaokaiTodaySnapShotService.aggregate([{ $sort: { endDateTime: -1 } }, { $limit: 1 }]);
+                if (maxDate.length > 0) {
+                    return maxDate[0];
+                } else {
+                    const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
+                    return errorResponse;
+                }
             }
         }
     }
