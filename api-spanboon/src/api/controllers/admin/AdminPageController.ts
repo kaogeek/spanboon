@@ -573,7 +573,7 @@ export class AdminPageController {
         }
     }
 
-    @Post('/search/snapshot')
+    @Post('/snapshot/search')
     @Authorized()
     public async searchSnapShot(@Body({ validate: true }) filter: SearchFilter, @Res() res: any):Promise<any>{
         const snapShots = await this.kaokaiTodaySnapShotService.search(filter.limit, filter.offset, filter.select, filter.relation, filter.whereConditions, filter.orderBy, filter.count);

@@ -70,7 +70,8 @@ import {
     DEFAULT_KAOKAITODAY_RANGE_DATE_EMERGENY,
     SWITCH_CASE_SEND_EMAIL,
     DEFAULT_SWITCH_CASE_SEND_EMAIL,
-    SEND_EMAIL_TO_USER
+    SEND_EMAIL_TO_USER,
+    KAOKAITODAY_ANNOUNCEMENT
 } from '../../constants/SystemConfig';
 import { ConfigService } from '../services/ConfigService';
 import { KaokaiTodaySnapShotService } from '../services/KaokaiTodaySnapShot';
@@ -108,6 +109,7 @@ export class MainPageController {
         const searchOfficialOnly = mainPageSearchConfig.searchOfficialOnly;
         const assetTodayDateGap = await this.configService.getConfig(TODAY_DATETIME_GAP);
         const assetTodayRangeDate = await this.configService.getConfig(KAOKAITODAY_RANGE_DATE_EMERGENCY);
+        const announcement = await this.configService.getConfig(KAOKAITODAY_ANNOUNCEMENT);
         let assetEmergenDays = DEFAULT_KAOKAITODAY_RANGE_DATE_EMERGENY;
         let assetTodayDate = DEFAULT_TODAY_DATETIME_GAP;
 
@@ -341,6 +343,7 @@ export class MainPageController {
         result.kaokaiProvince = kaokaiProvince;
         result.kaokaiHashTag = kaokaiHashTag;
         result.kaokaiContent = kaokaiContent;
+        result.announcement = announcement.value;
         content = await this.snapShotToday(result, monthRange[0], monthRange[1]);
         if (date !== undefined && date !== null) {
             if (content) {
@@ -1809,7 +1812,6 @@ export class MainPageController {
         const hourSplit = split[0];
         const minuteSpit = split[1];
         const checkCreate = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: endDateTimeToday });
-
         if (checkCreate !== undefined && checkCreate !== null) {
             return checkCreate.data;
         }
@@ -1827,9 +1829,9 @@ export class MainPageController {
             if (snapshot) {
                 content = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: endDateTimeToday });
                 let user = undefined;
-                if (emailStack.length > 0 && switchEmail === true) {
+                if (switchEmail === true) {
                     for (const userEmail of emailStack) {
-                        user = await this.userService.findOne({ email: userEmail });
+                        user = await this.userService.findOne({ email: userEmail.toString() });
                         if (user.subscribeEmail === true) {
                             await this.pushNotification(user, user.email, content.data, 'ก้าวไกลวันนี้', endDateTimeToday);
                         } else {
