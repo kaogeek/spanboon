@@ -331,6 +331,7 @@ export class MainPageController {
             resultUn.majorTrend = majorTrendUn;
             resultUn.kaokaiProvince = kaokaiProvinceUn;
             resultUn.kaokaiHashTag = kaokaiHashTagUn;
+            resultUn.announcement = announcement.value;
             const successResponseUn = ResponseUtil.getSuccessResponse('Successfully Main Page Data', resultUn);
             return res.status(200).send(successResponseUn);
         }
