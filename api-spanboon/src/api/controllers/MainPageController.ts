@@ -71,7 +71,8 @@ import {
     SWITCH_CASE_SEND_EMAIL,
     DEFAULT_SWITCH_CASE_SEND_EMAIL,
     SEND_EMAIL_TO_USER,
-    KAOKAITODAY_ANNOUNCEMENT
+    KAOKAITODAY_ANNOUNCEMENT,
+    KAOKAITODAY_LINK_ANNOUNCEMENT
 } from '../../constants/SystemConfig';
 import { ConfigService } from '../services/ConfigService';
 import { KaokaiTodaySnapShotService } from '../services/KaokaiTodaySnapShot';
@@ -110,9 +111,9 @@ export class MainPageController {
         const assetTodayDateGap = await this.configService.getConfig(TODAY_DATETIME_GAP);
         const assetTodayRangeDate = await this.configService.getConfig(KAOKAITODAY_RANGE_DATE_EMERGENCY);
         const announcement = await this.configService.getConfig(KAOKAITODAY_ANNOUNCEMENT);
+        const linkAnnounceMent = await this.configService.getConfig(KAOKAITODAY_LINK_ANNOUNCEMENT);
         let assetEmergenDays = DEFAULT_KAOKAITODAY_RANGE_DATE_EMERGENY;
         let assetTodayDate = DEFAULT_TODAY_DATETIME_GAP;
-
         if (assetTodayDateGap) {
             assetTodayDate = parseInt(assetTodayDateGap.value, 10);
         }
@@ -345,6 +346,7 @@ export class MainPageController {
         result.kaokaiHashTag = kaokaiHashTag;
         result.kaokaiContent = kaokaiContent;
         result.announcement = announcement.value;
+        result.linkAnnounceMent = linkAnnounceMent.value;
         content = await this.snapShotToday(result, monthRange[0], monthRange[1]);
         if (date !== undefined && date !== null) {
             if (content) {
