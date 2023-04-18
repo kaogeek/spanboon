@@ -29,6 +29,7 @@ import { DialogPostCrad } from '../../shares/dialog/DialogPostCrad.component';
 declare var $: any;
 
 const PAGE_NAME: string = 'home';
+const ANNOUNCE_DEFAULT: string = 'ต้องก้าวไกลให้ไทยก้าวหน้า เปลี่ยนรัฐบาลไม่พอ ต้องเปลี่ยนประเทศ';
 
 @Component({
   selector: 'home-page-v3',
@@ -62,7 +63,8 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   public queryParamsUrl: any;
   public filterDate: any = [];
   public filterMonth: any = [];
-  public announcement: string = 'ต้องก้าวไกลให้ไทยก้าวหน้า เปลี่ยนรัฐบาลไม่พอ ต้องเปลี่ยนประเทศ';
+  public announcement = ANNOUNCE_DEFAULT;
+  public linkAnnounce = undefined;
 
   maxDate = new Date();
 
@@ -118,6 +120,8 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   }
 
   public async saveDate(event: any) {
+    this.announcement = ANNOUNCE_DEFAULT;
+    this.linkAnnounce = undefined;
     this.isLoading = true;
     this.user;
     this.startDateLong = new Date(event.value).getTime();
@@ -131,22 +135,25 @@ export class HomePageV3 extends AbstractPage implements OnInit {
       if (!!res.announcement) {
         this.announcement = res.announcement;
       }
+      if (!!res.linkAnnounceMent) {
+        this.linkAnnounce = res.linkAnnounceMent;
+      }
       const dateFormat = new Date(date);
       const dateReal = dateFormat.setDate(dateFormat.getDate());
       this.dateValues = new Date(dateReal).toISOString(); // convert to ISO string
       localStorage.setItem('datetime', JSON.stringify(this.dateValues));
       this.isLoading = false;
     }).catch((err) => {
-      const date = new Date(this.queryParamsUrl).toISOString();
-      const split = date.split('-');
-      const split1 = split[2];
-      const split2 = split1.split('T');
-      const split3 = split2[0];
-      const days = Number(split3) + 1;
-      const day = days.toString().padStart(2, '0')
-      const month = split[1];
-      const year = split[0];
-      const dateNow = day + '-' + month + '-' + year;
+      const thaiDay = new Date(this.queryParamsUrl).toLocaleDateString('th-TH', {
+        day: 'numeric',
+      });
+      const thaiMonth = new Date(this.queryParamsUrl).toLocaleDateString('th-TH', {
+        month: 'long',
+      });
+      const thaiYear = new Date(this.queryParamsUrl).toLocaleDateString('th-TH', {
+        year: 'numeric',
+      });
+      const dateNow = thaiDay + ' ' + thaiMonth + ' ' + thaiYear;
       this.isLoading = false;
       this.dateValues = new Date();
       this.dialog.open(DialogAlert, {
@@ -175,6 +182,9 @@ export class HomePageV3 extends AbstractPage implements OnInit {
         if (!!res.announcement) {
           this.announcement = res.announcement;
         }
+        if (!!res.linkAnnounceMent) {
+          this.linkAnnounce = res.linkAnnounceMent;
+        }
         for (let index = 0; index < this.model.postSectionModel.contents.length; index++) {
           if (this.model.postSectionModel.contents[index].post.type === "FULFILLMENT") {
             this.model.postSectionModel.contents.splice(index, 1);
@@ -183,22 +193,16 @@ export class HomePageV3 extends AbstractPage implements OnInit {
           }
         }
       }).catch((err) => {
-        const date = new Date(this.queryParamsUrl).toISOString();
-        const split = date.split('-');
-        const split1 = split[2];
-        const split2 = split1.split('T');
-        const split3 = split2[0];
-        const days = Number(split3) + 1;
-        const day = days.toString().padStart(2, '0')
-        const month = split[1];
-        const year = split[0];
-        const thaiMonth = new Date().toLocaleDateString('th-TH', {
+        const thaiDay = new Date(this.queryParamsUrl).toLocaleDateString('th-TH', {
+          day: 'numeric',
+        });
+        const thaiMonth = new Date(this.queryParamsUrl).toLocaleDateString('th-TH', {
           month: 'long',
         });
-        const thaiYear = new Date().toLocaleDateString('th-TH', {
+        const thaiYear = new Date(this.queryParamsUrl).toLocaleDateString('th-TH', {
           year: 'numeric',
         });
-        const dateNow = day + ' ' + thaiMonth + ' ' + thaiYear;
+        const dateNow = thaiDay + ' ' + thaiMonth + ' ' + thaiYear;
         this.isLoading = false;
         this.dateValues = new Date();
         this.dialog.open(DialogAlert, {
@@ -222,6 +226,9 @@ export class HomePageV3 extends AbstractPage implements OnInit {
             this.model = res.data ? res.data : res;
             if (!!res.announcement || !!res.data.announcement) {
               this.announcement = res.announcement ? res.announcement : res.data.announcement;
+            }
+            if (!!res.linkAnnounceMent || !!res.data.linkAnnounceMent) {
+              this.linkAnnounce = res.linkAnnounceMent ? res.linkAnnounceMent : res.data.linkAnnounceMent;
             }
             for (let index = 0; index < this.model.postSectionModel.contents.length; index++) {
               if (this.model.postSectionModel.contents[index].post.type === "FULFILLMENT") {
