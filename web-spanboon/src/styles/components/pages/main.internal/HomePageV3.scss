@@ -38,6 +38,11 @@
                 @include font-size-9($font-head-100);
                 display: inline-block;
                 color: white;
+
+                &:hover {
+                  color: $brandcolor2;
+                  text-decoration: underline;
+                }
               }
             }
 
