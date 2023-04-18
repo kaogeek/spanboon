@@ -31,6 +31,16 @@
               width: 60%;
             }
 
+            >a {
+              width: 100%;
+
+              >marquee {
+                @include font-size-9($font-head-100);
+                display: inline-block;
+                color: white;
+              }
+            }
+
             >marquee {
               @include font-size-9($font-head-100);
               display: inline-block;
