@@ -375,11 +375,13 @@ export class PostPage extends AbstractPage implements OnInit {
         this.pageFacade.edit(data.id, data).then((res) => {
             this.submitted = false;
             this.isSave = false;
+            this.table.searchData();
             this.drawer.toggle();
         }).catch((err: any) => {
             this.isSave = false;
+            this.table.searchData();
             this.dialogWarning(err.error.message);
-        })
+        });
     }
     public seleceType(event) {
     }

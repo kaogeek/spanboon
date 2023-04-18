@@ -347,7 +347,6 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     if (this.isLogin()) {
       this.getProfileImage();
     }
-    this.getGroupList();
     this.observManager.subscribe(REFRESH_DATA, (result: any) => {
       if (result) {
         // this.resPost.posts.unshift(result);
@@ -678,6 +677,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     if (pageId) {
       this.pageFacade.getAccess(pageId).then((res) => {
         if (res) {
+          this.getGroupList();
           this.pageId = res.data.id;
           for (let dataPage of res.data) {
             if (dataPage.level === 'OWNER') {
