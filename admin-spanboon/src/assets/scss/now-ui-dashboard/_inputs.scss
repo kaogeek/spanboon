@@ -279,20 +279,22 @@
         margin-top: 9px;
     }
 
-    >mat-form-field {
-        >.mat-form-field-wrapper {
-            >.mat-form-field-flex {
-                background-color: white;
+    >.input-post-page {
+        >mat-form-field {
+            >.mat-form-field-wrapper {
+                >.mat-form-field-flex {
+                    background-color: white;
 
-                >.mat-form-field-infix {
-                    border: 1px solid #e5e5e5;
-                    border-radius: 20px;
+                    >.mat-form-field-infix {
+                        border: 1px solid #e5e5e5;
+                        border-radius: 20px;
 
-                    .mat-select {
-                        >.mat-select-trigger {
-                            >.mat-select-value {
-                                >span {
-                                    margin-left: 10px;
+                        .mat-select {
+                            >.mat-select-trigger {
+                                >.mat-select-value {
+                                    >span {
+                                        margin-left: 10px;
+                                    }
                                 }
                             }
                         }

@@ -21,7 +21,7 @@
                     <marquee direction="left" id="scroll_news" loop=""
                         onMouseOver="document.getElementById('scroll_news').stop();"
                         onMouseOut="document.getElementById('scroll_news').start();">
-                        ต้องก้าวไกลให้ไทยก้าวหน้า เปลี่ยนรัฐบาลไม่พอ ต้องเปลี่ยนประเทศ
+                        {{announcement}}
                     </marquee>
                 </div>
                 <div class="label-date" (click)="!isLoading ? picker.open() : null"

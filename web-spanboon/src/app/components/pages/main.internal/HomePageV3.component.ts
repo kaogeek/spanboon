@@ -62,6 +62,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   public queryParamsUrl: any;
   public filterDate: any = [];
   public filterMonth: any = [];
+  public announcement: string = 'ต้องก้าวไกลให้ไทยก้าวหน้า เปลี่ยนรัฐบาลไม่พอ ต้องเปลี่ยนประเทศ';
 
   maxDate = new Date();
 
@@ -127,6 +128,9 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     const formattedDate = `${day}-${month}-${year}`;
     this.mainPageModelFacade.getMainPageModelV3(this.user, this.startDateLong).then((res) => {
       this.model = res;
+      if (!!res.announcement) {
+        this.announcement = res.announcement;
+      }
       const dateFormat = new Date(date);
       const dateReal = dateFormat.setDate(dateFormat.getDate());
       this.dateValues = new Date(dateReal).toISOString(); // convert to ISO string
@@ -168,6 +172,9 @@ export class HomePageV3 extends AbstractPage implements OnInit {
       this.mainPageModelFacade.getMainPageModelV3(userId, (this.queryParamsUrl ? this.queryParamsUrl : null)).then((res) => {
         this.dateValues = new Date(this.queryParamsUrl).toISOString();
         this.model = res;
+        if (!!res.announcement) {
+          this.announcement = res.announcement;
+        }
         for (let index = 0; index < this.model.postSectionModel.contents.length; index++) {
           if (this.model.postSectionModel.contents[index].post.type === "FULFILLMENT") {
             this.model.postSectionModel.contents.splice(index, 1);
@@ -213,6 +220,9 @@ export class HomePageV3 extends AbstractPage implements OnInit {
         await this.mainPageModelFacade.getMainPageModelV3(userId, this.startDateLong).then((res) => {
           if (res) {
             this.model = res.data ? res.data : res;
+            if (!!res.announcement || !!res.data.announcement) {
+              this.announcement = res.announcement ? res.announcement : res.data.announcement;
+            }
             for (let index = 0; index < this.model.postSectionModel.contents.length; index++) {
               if (this.model.postSectionModel.contents[index].post.type === "FULFILLMENT") {
                 this.model.postSectionModel.contents.splice(index, 1);

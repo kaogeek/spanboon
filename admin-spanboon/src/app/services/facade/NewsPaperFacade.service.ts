@@ -21,7 +21,7 @@ export class NewsPaperFacade extends AbstractFacade {
 
     public search(searchFilter: SearchFilter): Promise<NewsPaper[]> {
         return new Promise((resolve, reject) => {
-            let url: string = this.baseURL + '/admin/page/search/snapshot';
+            let url: string = this.baseURL + '/admin/page/snapshot/search';
             let body: any = {
                 'count': searchFilter.count,
                 'limit': searchFilter.limit,
