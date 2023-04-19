@@ -80,4 +80,3 @@ export const DEFAULT_KAOKAITODAY_ANNOUNCEMENT = 'สวัสดีก้าว�
 
 export const KAOKAITODAY_LINK_ANNOUNCEMENT='kaokaiToday.link.announcement';
 export const DEFAULT_KAOKAITODAY_LINK_ANNOUNCEMENT= 'home';
-
