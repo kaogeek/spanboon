@@ -49,4 +49,18 @@ export class NewsPaperFacade extends AbstractFacade {
             });
         });
     }
+    public delete(id: any): Promise<any> {
+        if (id === undefined || id === null) {
+          new Error("Id is required.");
+        }
+        return new Promise((resolve, reject) => {
+          let url: string = this.baseURL + '/admin/page/' + id + '/snapshot';
+          let options = this.getDefaultOptions();
+          this.http.delete(url, options).toPromise().then((response: any) => {
+            resolve(response.data);
+          }).catch((error: any) => {
+            reject(error);
+          });
+        });
+      }
 }

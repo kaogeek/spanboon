@@ -92,4 +92,22 @@ export class NewsPaperPage extends AbstractPage implements OnInit {
     public ngOnInit() {
         this.table.isNews = true;
     }
+    public clickDelete(data: any): void {
+        this.newsPaperFacade.delete(data.id).then((res) => {
+            let index = 0;
+            let dataTable = this.table.data;
+            for (let d of dataTable) {
+                if (d.id == data.id) {
+                    dataTable.splice(index, 1);
+                    this.table.setTableConfig(dataTable);
+                    // alert("success");
+                    this.dialogWarning("ลบข้อมูลสำเร็จ");
+                    break;
+                }
+                index++;
+            }
+        }).catch((err) => {
+            this.dialogWarning(err.error.message);
+        });
+    }
 }

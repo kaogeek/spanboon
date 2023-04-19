@@ -48,7 +48,7 @@
         <mat-drawer-content>
             <div class="main-content">
                 <admin-table-component #table [orderBy]="orderBy" [facade]="pageGroupFacade" [isApprovePage]="'true'"
-                    [title]="'เพจกลุ่ม'" (official)="clickOfficial($event)" (ban)="clickBan($event)"
+                    [title]="'เพจกลุ่ม'" 
                     [fieldTable]="fieldTable" [actions]="actions" [isOfficialPage]="isOfficialPage"
                     (edit)="clickEditForm($event)"
                     (create)="clickCreateForm()"
