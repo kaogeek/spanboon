@@ -73,7 +73,9 @@ import {
     DEFAULT_SWITCH_CASE_SEND_EMAIL,
     SEND_EMAIL_TO_USER,
     KAOKAITODAY_ANNOUNCEMENT,
-    KAOKAITODAY_LINK_ANNOUNCEMENT
+    KAOKAITODAY_LINK_ANNOUNCEMENT,
+    DEFAULT_KAOKAITODAY_ANNOUNCEMENT,
+    DEFAULT_KAOKAITODAY_LINK_ANNOUNCEMENT
 } from '../../constants/SystemConfig';
 import { ConfigService } from '../services/ConfigService';
 import { KaokaiTodaySnapShotService } from '../services/KaokaiTodaySnapShot';
@@ -113,6 +115,8 @@ export class MainPageController {
         const assetTodayRangeDate = await this.configService.getConfig(KAOKAITODAY_RANGE_DATE_EMERGENCY);
         const announcement = await this.configService.getConfig(KAOKAITODAY_ANNOUNCEMENT);
         const linkAnnounceMent = await this.configService.getConfig(KAOKAITODAY_LINK_ANNOUNCEMENT);
+        let announcements = DEFAULT_KAOKAITODAY_ANNOUNCEMENT;
+        let linkAnnouncements = DEFAULT_KAOKAITODAY_LINK_ANNOUNCEMENT;
         let assetEmergenDays = DEFAULT_KAOKAITODAY_RANGE_DATE_EMERGENY;
         let assetTodayDate = DEFAULT_TODAY_DATETIME_GAP;
         if (assetTodayDateGap) {
@@ -121,6 +125,12 @@ export class MainPageController {
 
         if (assetTodayRangeDate) {
             assetEmergenDays = parseInt(assetTodayRangeDate.value, 10);
+        }
+        if(announcement){
+            announcements = announcement.value;
+        }
+        if(linkAnnounceMent){
+            linkAnnouncements = linkAnnounceMent.value;
         }
         const emergencyCheckEndDate = assetTodayRangeDate.endDateTime;
         const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), assetTodayDate);
@@ -333,8 +343,8 @@ export class MainPageController {
             resultUn.majorTrend = majorTrendUn;
             resultUn.kaokaiProvince = kaokaiProvinceUn;
             resultUn.kaokaiHashTag = kaokaiHashTagUn;
-            resultUn.announcement = announcement.value;
-            resultUn.linkAnnounceMent = linkAnnounceMent.value;
+            resultUn.announcement = announcements;
+            resultUn.linkAnnounceMent = linkAnnouncements;
             const successResponseUn = ResponseUtil.getSuccessResponse('Successfully Main Page Data', resultUn);
             return res.status(200).send(successResponseUn);
         }
@@ -347,8 +357,8 @@ export class MainPageController {
         result.kaokaiProvince = kaokaiProvince;
         result.kaokaiHashTag = kaokaiHashTag;
         result.kaokaiContent = kaokaiContent;
-        result.announcement = announcement.value;
-        result.linkAnnounceMent = linkAnnounceMent.value;
+        result.announcement = announcements;
+        result.linkAnnounceMent = linkAnnouncements;
         content = await this.snapShotToday(result, monthRange[0], monthRange[1]);
         if (date !== undefined && date !== null) {
             if (content) {
@@ -1844,7 +1854,7 @@ export class MainPageController {
                     if (switchEmail === true) {
                         for (const userEmail of emailStack) {
                             user = await this.userService.findOne({ email: userEmail.toString() });
-                            if (user) {
+                            if (user.subscribeEmail === true ) {
                                 await this.pushNotification(user, user.email, content.data, 'ก้าวไกลวันนี้', endDateTimeToday);
                             } else {
                                 continue;
@@ -1877,7 +1887,7 @@ export class MainPageController {
                     const users = await this.userService.find();
                     for (const user of users) {
                         if (user.subscribeEmail === true && switchEmail === true) {
-                            // await this.pushNotification(user, user.email, content.data, 'ก้าวไกลวันนี้', endDateTimeToday);
+                            await this.pushNotification(user, user.email, content.data, 'ก้าวไกลวันนี้', endDateTimeToday);
                         } else {
                             continue;
                         }
