@@ -334,6 +334,7 @@ export class MainPageController {
             resultUn.kaokaiProvince = kaokaiProvinceUn;
             resultUn.kaokaiHashTag = kaokaiHashTagUn;
             resultUn.announcement = announcement.value;
+            resultUn.linkAnnounceMent = linkAnnounceMent.value;
             const successResponseUn = ResponseUtil.getSuccessResponse('Successfully Main Page Data', resultUn);
             return res.status(200).send(successResponseUn);
         }

@@ -400,16 +400,17 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                         postAggregateAll.push(postAggregateSet3);
                     }
                     const stackPage = [];
-                    for (let i = 0; i < postAggregateAll[0].length; i++) {
-                        for (let j = 0; j < postAggregateAll.length; j++) {
-                            if (postAggregateAll[j][i] !== undefined && postAggregateAll[j][i] !== null) {
-                                stackPage.push(postAggregateAll[j][i]);
-                            } else {
-                                continue;
+                    if(postAggregateAll.length>0){
+                        for (let i = 0; i < postAggregateAll[0].length; i++) {
+                            for (let j = 0; j < postAggregateAll.length; j++) {
+                                if (postAggregateAll[j][i] !== undefined && postAggregateAll[j][i] !== null) {
+                                    stackPage.push(postAggregateAll[j][i]);
+                                } else {
+                                    continue;
+                                }
                             }
                         }
                     }
-
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
                     result.title = (this.config === undefined || this.config.title === undefined) ? hashTagProcessor.title : 'สภาก้าวไกล';
@@ -806,12 +807,14 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     bucketAll.push(postAggregate3);
 
                     const stackPage = [];
-                    for (let i = 0; i < bucketAll[0].length; i++) {
-                        for (let j = 0; j < bucketAll.length; j++) {
-                            if (bucketAll[j][i] !== undefined && bucketAll[j][i] !== null) {
-                                stackPage.push(bucketAll[j][i]);
-                            } else {
-                                continue;
+                    if(bucketAll.length>0){
+                        for (let i = 0; i < bucketAll[0].length; i++) {
+                            for (let j = 0; j < bucketAll.length; j++) {
+                                if (bucketAll[j][i] !== undefined && bucketAll[j][i] !== null) {
+                                    stackPage.push(bucketAll[j][i]);
+                                } else {
+                                    continue;
+                                }
                             }
                         }
                     }
@@ -1088,16 +1091,17 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     postObject.push(postAggregate3);
 
                     const stackPage = [];
-                    for (let i = 0; i < postObject[0].length; i++) {
-                        for (let j = 0; j < postObject.length; j++) {
-                            if (postObject[j][i] !== undefined && postObject[j][i] !== null) {
-                                stackPage.push(postObject[j][i]);
-                            } else {
-                                continue;
+                    if(postObject.length>0){
+                        for (let i = 0; i < postObject[0].length; i++) {
+                            for (let j = 0; j < postObject.length; j++) {
+                                if (postObject[j][i] !== undefined && postObject[j][i] !== null) {
+                                    stackPage.push(postObject[j][i]);
+                                } else {
+                                    continue;
+                                }
                             }
                         }
                     }
-
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
                     result.title = (this.config === undefined || this.config.title === undefined) ? hashTagProcessor.title : 'สภาก้าวไกล';
@@ -1426,12 +1430,14 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     }
                     // set 1
                     const stackPage = [];
-                    for (let i = 0; i < pageStacks[0].length; i++) {
-                        for (let j = 0; j < pageStacks.length; j++) {
-                            if (pageStacks[j][i] !== undefined && pageStacks[j][i] !== null) {
-                                stackPage.push(pageStacks[j][i]);
-                            } else {
-                                continue;
+                    if(pageStacks.length>0){
+                        for (let i = 0; i < pageStacks[0].length; i++) {
+                            for (let j = 0; j < pageStacks.length; j++) {
+                                if (pageStacks[j][i] !== undefined && pageStacks[j][i] !== null) {
+                                    stackPage.push(pageStacks[j][i]);
+                                } else {
+                                    continue;
+                                }
                             }
                         }
                     }
@@ -2052,12 +2058,14 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                         bucketAll.push(postAggregateSet3);
                     }
                     const stackPage = [];
-                    for (let i = 0; i < bucketAll[0].length; i++) {
-                        for (let j = 0; j < bucketAll.length; j++) {
-                            if (bucketAll[j][i] !== undefined && bucketAll[j][i] !== null) {
-                                stackPage.push(bucketAll[j][i]);
-                            } else {
-                                continue;
+                    if(bucketAll.length>0){
+                        for (let i = 0; i < bucketAll[0].length; i++) {
+                            for (let j = 0; j < bucketAll.length; j++) {
+                                if (bucketAll[j][i] !== undefined && bucketAll[j][i] !== null) {
+                                    stackPage.push(bucketAll[j][i]);
+                                } else {
+                                    continue;
+                                }
                             }
                         }
                     }
