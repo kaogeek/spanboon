@@ -43,7 +43,7 @@ export const ROUTES: Routes[] = [
     path: "/main/emergency"
   },
   {
-    icon: '<img src="../../../assets/img/logo.png" width="25" height="20">',
+    icon: '<img src="../../../assets/img/mfp.svg" width="25" height="20">',
     title: "ก้าวไกลหน้าหนึ่ง",
     subRoutes: [
     ],
