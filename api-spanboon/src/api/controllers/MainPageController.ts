@@ -2272,7 +2272,7 @@ export class MainPageController {
                         </a>
                    </div>
                </div>
-               <a href=${homePage} style="display:block;text-align:center;width:100%;margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px;border:1px solid #ee7623; background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
+               <a href=${homePage} style="display:block;text-align:center;width:100%;margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px 0;border:1px solid #ee7623; background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
                <div align='center' style="width: 100%;background: white;padding-top: 15px;margin-bottom: 10px;">
                     <div style='background: white;width:40%;margin: 0 auto'>
                         <a href=${linkPlayStore} style="background: white;margin: 0 auto">
@@ -2444,7 +2444,7 @@ export class MainPageController {
                         </a>
                    </div>
                </div>
-               <a href=${homePage} style="display:block;text-align:center;width:100%;margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px;border:1px solid #ee7623; background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
+               <a href=${homePage} style="display:block;text-align:center;width:100%;margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px 0;border:1px solid #ee7623; background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
                <div align='center' style="width: 100%;background: white;padding-top: 15px;margin-bottom: 10px;">
                     <div style='background: white;width:40%;margin: 0 auto'>
                         <a href=${linkPlayStore} style="background: white;margin: 0 auto">
@@ -2564,7 +2564,7 @@ export class MainPageController {
                                 </div>
                         </div>
                     </div>
-                    <a href=${homePage} style="display:block;text-align:center;width:100%;margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px;border:1px solid #ee7623; background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
+                    <a href=${homePage} style="display:block;text-align:center;width:100%;margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px 0;border:1px solid #ee7623; background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
                     <div align='center' style="width: 100%;background: white;padding-top: 15px;margin-bottom: 10px;">
                             <div style='background: white;width:40%;margin: 0 auto'>
                                 <a href=${linkPlayStore} style="background: white;margin: 0 auto">
@@ -2727,7 +2727,7 @@ export class MainPageController {
                             </div>
                     </div>
                 </div>
-                <a href=${homePage} style="display:block;text-align:center;width:100%;margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px;border:1px solid #ee7623; background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
+                <a href=${homePage} style="display:block;text-align:center;width:100%;margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px 0;border:1px solid #ee7623; background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
                 <div align='center' style="width: 100%;background: white;padding-top: 15px;margin-bottom: 10px;">
                     <div style='background: white;width:40%;margin: 0 auto'>
                         <a href=${linkPlayStore} style="background: white;margin: 0 auto">
@@ -2924,7 +2924,7 @@ export class MainPageController {
                         </a>
                         </div>
                    </div>
-                   <a href=${homePage} style="display:block;text-align:center;width:100%;margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px;border:1px solid #ee7623; background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
+                   <a href=${homePage} style="display:block;text-align:center;width:100%;margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px 0;border:1px solid #ee7623; background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
                    <div align='center' style="width: 100%;background: white;padding-top: 15px;margin-bottom: 10px;">
                         <div style='background: white;width:40%;margin: 0 auto'>
                             <a href=${linkPlayStore} style="background: white;margin: 0 auto">
@@ -3107,7 +3107,7 @@ export class MainPageController {
                             </a>
                         </div>
                    </div>
-                   <a href=${homePage} style="display:block;text-align:center;width:100%;margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px;border:1px solid #ee7623; background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
+                   <a href=${homePage} style="display:block;text-align:center;width:100%;margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px 0;border:1px solid #ee7623; background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
                    <div align='center' style="width: 100%;background: white;padding-top: 15px;margin-bottom: 10px;">
                         <div style='background: white;width:40%;margin: 0 auto'>
                             <a href=${linkPlayStore} style="background: white;margin: 0 auto">
@@ -3247,7 +3247,7 @@ export class MainPageController {
                             </a>
                         </div>
                    </div>
-                   <a href=${homePage} style="display:block;text-align:center;width:100%;margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px;border:1px solid #ee7623; background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
+                   <a href=${homePage} style="display:block;text-align:center;width:100%;margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px 0;border:1px solid #ee7623; background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
                    <div align='center' style="width: 100%;background: white;padding-top: 15px;margin-bottom: 10px;">
                         <div style='background: white;width:40%;margin: 0 auto'>
                             <a href=${linkPlayStore} style="background: white;margin: 0 auto">
@@ -3402,7 +3402,7 @@ export class MainPageController {
                         </a>
                         </div>
                    </div>
-                   <a href=${homePage} style="display:block;text-align:center;width:100%;margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px;border:1px solid #ee7623; background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
+                   <a href=${homePage} style="display:block;text-align:center;width:100%;margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px 0;border:1px solid #ee7623; background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
                    <div align='center' style="width: 100%;background: white;padding-top: 15px;margin-bottom: 10px;">
                         <div style='background: white;width:40%;margin: 0 auto'>
                             <a href=${linkPlayStore} style="background: white;margin: 0 auto">
