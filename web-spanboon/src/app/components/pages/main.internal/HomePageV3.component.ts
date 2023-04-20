@@ -230,6 +230,10 @@ export class HomePageV3 extends AbstractPage implements OnInit {
             if (!!res.linkAnnounceMent || !!res.data.linkAnnounceMent) {
               this.linkAnnounce = res.linkAnnounceMent ? res.linkAnnounceMent : res.data.linkAnnounceMent;
             }
+            const dateFormat = new Date();
+            const dateReal = dateFormat.setDate(dateFormat.getDate());
+            this.dateValues = new Date(dateReal).toISOString(); // convert to ISO string
+            localStorage.setItem('datetime', JSON.stringify(this.dateValues));
             for (let index = 0; index < this.model.postSectionModel.contents.length; index++) {
               if (this.model.postSectionModel.contents[index].post.type === "FULFILLMENT") {
                 this.model.postSectionModel.contents.splice(index, 1);
