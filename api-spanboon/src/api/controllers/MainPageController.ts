@@ -176,6 +176,7 @@ export class MainPageController {
         // deputy secretary of the party
         const pageRoundRobin = await pageProcessor.process();
         let checkPosition1 = undefined;
+        const filterContentsRobin = pageRoundRobin.contents;
         if (pageRoundRobin.position !== undefined && pageRoundRobin.position !== null) {
             checkPosition1 = pageRoundRobin.position;
         }
@@ -185,6 +186,7 @@ export class MainPageController {
             userId,
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
+            filterContentsRobin,
             checkPosition1
         });
 
@@ -192,6 +194,7 @@ export class MainPageController {
             searchOfficialOnly
         });
         const majorTrend = await majorTrendProcessor.process();
+        const filterContentsMajor = majorTrend.contents;
         let checkPosition2 = undefined;
         if (majorTrend.position !== undefined && majorTrend.position !== null) {
             checkPosition2 = majorTrend.position;
@@ -203,15 +206,17 @@ export class MainPageController {
             userId,
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
+            filterContentsMajor,
             checkPosition1,
             checkPosition2
 
-        });
+        }); 
 
         kaokaiProvinceProcessor.setConfig({
             searchOfficialOnly
         });
         const kaokaiProvince = await kaokaiProvinceProcessor.process();
+        const filterContentsProvince = kaokaiProvince.contents;
         let checkPosition3 = undefined;
         // kaokaiProvince.position;
         if (kaokaiProvince.position !== undefined && kaokaiProvince.position !== null) {
@@ -222,6 +227,7 @@ export class MainPageController {
             userId,
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
+            filterContentsProvince,
             checkPosition1,
             checkPosition2,
             checkPosition3
@@ -231,6 +237,7 @@ export class MainPageController {
             searchOfficialOnly
         });
         const kaokaiHashTag = await kaokaiHashTagProcessor.process();
+        const filterContentsHashTag = kaokaiHashTag.contents;
         let checkPosition4 = undefined;
         // kaokaiHashTag.position;
         if (kaokaiHashTag.position !== undefined && kaokaiHashTag.position !== null) {
@@ -242,6 +249,7 @@ export class MainPageController {
             userId,
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
+            filterContentsHashTag,
             checkPosition1,
             checkPosition2,
             checkPosition3,
