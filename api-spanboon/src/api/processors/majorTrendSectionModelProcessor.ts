@@ -48,6 +48,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                 let checkPosition = undefined;
 
                 let userId = undefined;
+                let filterContentsRobin = undefined;
                 // get startDateTime, endDateTime
                 let startDateTime: Date = undefined;
                 let endDateTime: Date = undefined;
@@ -55,8 +56,10 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     startDateTime = this.data.startDateTime;
                     endDateTime = this.data.endDateTime;
                     userId = this.data.userId;
+                    filterContentsRobin = this.data.filterContentsRobin;
                     checkPosition = this.data.checkPosition1;
                 }
+                const postId = [];
                 const sortV = [];
                 const negative = [];
                 // const today = moment().add(month, 'month').toDate();
@@ -74,6 +77,11 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                         sortV.push(nega);
                     } else {
                         continue;
+                    }
+                }
+                if(filterContentsRobin.length>0){
+                    for(const contents of filterContentsRobin){
+                        postId.push(new ObjectID(contents.post._id));
                     }
                 }
                 const majorTrend = await this.kaokaiTodayService.findOne({ position: sortV[0] });
@@ -154,7 +162,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                 }
                 if (majorTrend.type === 'post' && majorTrend.field === 'score') {
                     const postStmt = [
-                        { $match: { isDraft: false, deleted: false, hidden: false, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                        { $match: { isDraft: false, deleted: false, hidden: false,_id:{$nin:postId} ,startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
                         { $sort: { summationScore: -1 } },
                         {
                             $lookup:
@@ -217,7 +225,6 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                         }
                     ];
                     const postAggregate = await this.postsService.aggregate(postStmt);
-
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
                     result.title = (this.config === undefined || this.config.title === undefined) ? majorTrend.title : this.config.title;
@@ -294,7 +301,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     }
 
                     const postStmt1 = [
-                        { $match: { isDraft: false, deleted: false, hidden: false, objective: { $ne: null, $in: bucketF }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                        { $match: { isDraft: false, deleted: false, hidden: false,_id:{$nin:postId} , objective: { $ne: null, $in: bucketF }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
                         { $sort: { summationScore: -1 } },
 
                         {
@@ -361,7 +368,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     postObject.push(postAggregate1);
 
                     const postStmt2 = [
-                        { $match: { isDraft: false, deleted: false, hidden: false, objective: { $ne: null, $in: bucketS }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                        { $match: { isDraft: false, deleted: false, hidden: false,_id:{$nin:postId} , objective: { $ne: null, $in: bucketS }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
                         { $sort: { summationScore: -1 } },
 
                         {
@@ -428,7 +435,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     postObject.push(postAggregate2);
 
                     const postStmt3 = [
-                        { $match: { isDraft: false, deleted: false, hidden: false, objective: { $ne: null, $in: bucketT }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                        { $match: { isDraft: false, deleted: false, hidden: false,_id:{$nin:postId} , objective: { $ne: null, $in: bucketT }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
                         { $sort: { summationScore: -1 } },
 
                         {
@@ -578,7 +585,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     }
 
                     const postStmt1 = [
-                        { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $ne: null }, emergencyEvent: { $ne: null, $in: bucketF }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                        { $match: { isDraft: false, deleted: false, hidden: false,_id:{$nin:postId} , pageId: { $ne: null }, emergencyEvent: { $ne: null, $in: bucketF }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
                         { $sort: { summationScore: -1 } },
 
                         {
@@ -645,7 +652,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     postObject.push(postAggregate1);
 
                     const postStmt2 = [
-                        { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $ne: null }, emergencyEvent: { $ne: null, $in: bucketS } } },
+                        { $match: { isDraft: false, deleted: false, hidden: false,_id:{$nin:postId} , pageId: { $ne: null }, emergencyEvent: { $ne: null, $in: bucketS } } },
                         { $sort: { summationScore: -1 } },
 
                         {
@@ -712,7 +719,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     postObject.push(postAggregate2);
 
                     const postStmt3 = [
-                        { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $ne: null }, emergencyEvent: { $ne: null, $in: bucketT } } },
+                        { $match: { isDraft: false, deleted: false, hidden: false,_id:{$nin:postId} , pageId: { $ne: null }, emergencyEvent: { $ne: null, $in: bucketT } } },
                         { $sort: { summationScore: -1 } },
 
                         {
@@ -903,7 +910,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
 
                     const postAggregateSet1 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, postsHashTags: { $in: hashTagStack1 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $match: { isDraft: false, deleted: false, hidden: false,_id:{$nin:postId} , postsHashTags: { $in: hashTagStack1 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
                             { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
@@ -966,7 +973,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     postAggregateAll.push(postAggregateSet1);
                     const postAggregateSet2 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, postsHashTags: { $in: hashTagStack2 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $match: { isDraft: false, deleted: false, hidden: false,_id:{$nin:postId} , postsHashTags: { $in: hashTagStack2 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
                             { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
@@ -1029,7 +1036,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     postAggregateAll.push(postAggregateSet2);
                     const postAggregateSet3 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, postsHashTags: { $in: hashTagStack3 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $match: { isDraft: false, deleted: false, hidden: false,_id:{$nin:postId} , postsHashTags: { $in: hashTagStack3 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
                             { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
@@ -1161,7 +1168,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                         }
                     }
                     const postStmt = [
-                        { $match: { isDraft: false, deleted: false, hidden: false, postsHashTags: { $in: bucketF } } },
+                        { $match: { isDraft: false, deleted: false, hidden: false,_id:{$nin:postId}, postsHashTags: { $in: bucketF } } },
                         { $sort: { summationScore: -1 } },
 
                         {
@@ -1353,7 +1360,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
 
                     const postAggregateSet1 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince1 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $match: { isDraft: false, deleted: false, hidden: false,_id:{$nin:postId} , pageId: { $in: pageStackprovince1 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
                             { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
@@ -1420,7 +1427,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     }
                     const postAggregateSet2 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince2 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $match: { isDraft: false, deleted: false, hidden: false,_id:{$nin:postId} , pageId: { $in: pageStackprovince2 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
                             { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
@@ -1488,7 +1495,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     }
                     const postAggregateSet3 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince3 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $match: { isDraft: false, deleted: false, hidden: false,_id:{$nin:postId} , pageId: { $in: pageStackprovince3 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
                             { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
@@ -1694,7 +1701,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
 
                     const postAggregateSet1 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince1 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $match: { isDraft: false, deleted: false, hidden: false,_id:{$nin:postId} , pageId: { $in: pageStackprovince1 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
                             { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
@@ -1761,7 +1768,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     }
                     const postAggregateSet2 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince2 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $match: { isDraft: false, deleted: false, hidden: false,_id:{$nin:postId} , pageId: { $in: pageStackprovince2 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
                             { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
@@ -1828,7 +1835,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     }
                     const postAggregateSet3 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince3 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $match: { isDraft: false, deleted: false, hidden: false,_id:{$nin:postId} , pageId: { $in: pageStackprovince3 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
                             { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
@@ -1983,7 +1990,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     // set 1
                     const postAggregateSet1 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: bucketF }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $match: { isDraft: false, deleted: false, hidden: false,_id:{$nin:postId} , pageId: { $in: bucketF }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
                             { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
@@ -2050,7 +2057,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     }
                     const postAggregateSet2 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: bucketS }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $match: { isDraft: false, deleted: false, hidden: false,_id:{$nin:postId} , pageId: { $in: bucketS }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
                             { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
@@ -2117,7 +2124,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     }
                     const postAggregateSet3 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: bucketT }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $match: { isDraft: false, deleted: false, hidden: false,_id:{$nin:postId} , pageId: { $in: bucketT }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
                             { $sort: { summationScore: -1 } },
                             {
                                 $lookup:

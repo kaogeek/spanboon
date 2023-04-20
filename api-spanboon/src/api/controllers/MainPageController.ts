@@ -126,10 +126,10 @@ export class MainPageController {
         if (assetTodayRangeDate) {
             assetEmergenDays = parseInt(assetTodayRangeDate.value, 10);
         }
-        if(announcement){
+        if (announcement) {
             announcements = announcement.value;
         }
-        if(linkAnnounceMent){
+        if (linkAnnounceMent) {
             linkAnnouncements = linkAnnounceMent.value;
         }
         const emergencyCheckEndDate = assetTodayRangeDate.endDateTime;
@@ -176,6 +176,7 @@ export class MainPageController {
         // deputy secretary of the party
         const pageRoundRobin = await pageProcessor.process();
         let checkPosition1 = undefined;
+        const filterContentsRobin = pageRoundRobin.contents;
         if (pageRoundRobin.position !== undefined && pageRoundRobin.position !== null) {
             checkPosition1 = pageRoundRobin.position;
         }
@@ -185,6 +186,7 @@ export class MainPageController {
             userId,
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
+            filterContentsRobin,
             checkPosition1
         });
 
@@ -192,6 +194,7 @@ export class MainPageController {
             searchOfficialOnly
         });
         const majorTrend = await majorTrendProcessor.process();
+        const filterContentsMajor = majorTrend.contents;
         let checkPosition2 = undefined;
         if (majorTrend.position !== undefined && majorTrend.position !== null) {
             checkPosition2 = majorTrend.position;
@@ -203,6 +206,7 @@ export class MainPageController {
             userId,
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
+            filterContentsMajor,
             checkPosition1,
             checkPosition2
 
@@ -212,6 +216,7 @@ export class MainPageController {
             searchOfficialOnly
         });
         const kaokaiProvince = await kaokaiProvinceProcessor.process();
+        const filterContentsProvince = kaokaiProvince.contents;
         let checkPosition3 = undefined;
         // kaokaiProvince.position;
         if (kaokaiProvince.position !== undefined && kaokaiProvince.position !== null) {
@@ -222,6 +227,7 @@ export class MainPageController {
             userId,
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
+            filterContentsProvince,
             checkPosition1,
             checkPosition2,
             checkPosition3
@@ -231,6 +237,7 @@ export class MainPageController {
             searchOfficialOnly
         });
         const kaokaiHashTag = await kaokaiHashTagProcessor.process();
+        const filterContentsHashTag = kaokaiHashTag.contents;
         let checkPosition4 = undefined;
         // kaokaiHashTag.position;
         if (kaokaiHashTag.position !== undefined && kaokaiHashTag.position !== null) {
@@ -242,6 +249,7 @@ export class MainPageController {
             userId,
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
+            filterContentsHashTag,
             checkPosition1,
             checkPosition2,
             checkPosition3,
@@ -1854,7 +1862,7 @@ export class MainPageController {
                     if (switchEmail === true) {
                         for (const userEmail of emailStack) {
                             user = await this.userService.findOne({ email: userEmail.toString() });
-                            if (user.subscribeEmail === true ) {
+                            if (user.subscribeEmail === true) {
                                 await this.pushNotification(user, user.email, content.data, 'ก้าวไกลวันนี้', endDateTimeToday);
                             } else {
                                 continue;
@@ -1905,12 +1913,40 @@ export class MainPageController {
         }
     }
     public async pushNotification(user: User, email: string, content: any, subject: string, date?: Date): Promise<any> {
+        const newsTitle = [];
         if (date === undefined) {
             const errorResponse = ResponseUtil.getErrorResponse('Date time undefined.', undefined);
             return errorResponse;
         }
         // chaluck.s@absolute.co.th
         // junsuda.s@absolute.co.th
+
+        let postSection = undefined;
+        let linkPostSection = undefined;
+        let picPostSection = undefined;
+        let hashTag = undefined;
+        let splitPostSection = undefined;
+        let splitDetailPostSection = undefined;
+        if (content.postSectionModel.contents.length > 0) {
+            postSection = content.postSectionModel.contents[0];
+            if (postSection.post.title.length > 0) {
+                splitPostSection = postSection.post.title;
+            }
+            if (postSection.post.detail.length > 0) {
+                splitDetailPostSection = postSection.post.detail;
+            }
+            linkPostSection = process.env.APP_POST + '/' + postSection.post._id;
+            picPostSection = content.postSectionModel.contents[0].coverPageUrl ? process.env.APP_API + content.postSectionModel.contents[0].coverPageUrl + '/image' : '';
+            hashTag = content.hashTagSumma[0].name;
+            if (splitPostSection.length >= 139) {
+                splitPostSection = postSection.post.title.slice(0, 139);
+            }
+            if (splitDetailPostSection.length >= 280) {
+                splitDetailPostSection = postSection.post.detail.slice(0, 280) + '.....';
+            }
+            newsTitle.push(splitPostSection);
+        }
+
         let picPostMajorF = undefined;
         let picPostMajorS = undefined;
         if (content.majorTrend.contents[0] !== undefined) {
@@ -1925,8 +1961,10 @@ export class MainPageController {
         let postMajorNameS = undefined;
         if (content.majorTrend.contents[0] !== undefined) {
             postMajorTitleF = content.majorTrend.contents[0].post.title;
+            newsTitle.push(postMajorTitleF);
         } if (content.majorTrend.contents[1] !== undefined) {
             postMajorTitleS = content.majorTrend.contents[1].post.title;
+            newsTitle.push(postMajorTitleS);
         } if (content.majorTrend.contents[0] !== undefined) {
             postMajorNameF = content.majorTrend.contents[0].owner.name;
         } if (content.majorTrend.contents[1] !== undefined) {
@@ -1967,6 +2005,7 @@ export class MainPageController {
                 if (postRoundRobinF.length > 38) {
                     postRoundRobinF = content.pageRoundRobin.contents[0].post.title.slice(0, 38) + '...';
                 }
+                newsTitle.push(postRoundRobinF);
             }
             if (content.pageRoundRobin.contents[0] !== undefined) {
                 picPostRoundRobinF = process.env.APP_API + content.pageRoundRobin.contents[0].coverPageUrl ? process.env.APP_API + content.pageRoundRobin.contents[0].coverPageUrl + '/image' : '';
@@ -1976,7 +2015,7 @@ export class MainPageController {
                 if (postRoundRobinS.length > 38) {
                     postRoundRobinS = content.pageRoundRobin.contents[1].post.title.slice(0, 38) + '...';
                 }
-
+                newsTitle.push(postRoundRobinS);
             }
             if (content.pageRoundRobin.contents[1] !== undefined) {
                 nameRoundRobinS = content.pageRoundRobin.contents[1].owner.name ? content.pageRoundRobin.contents[1].owner.name : content.pageRoundRobin.contents[1].owner.displayName;
@@ -1997,6 +2036,7 @@ export class MainPageController {
                 if (postRoundRobinT.length > 38) {
                     postRoundRobinT = content.pageRoundRobin.contents[2].post.title.slice(0, 38) + '...';
                 }
+                newsTitle.push(postRoundRobinT);
             }
             if (content.pageRoundRobin.contents[2] !== undefined) {
                 nameRoundRobinT = content.pageRoundRobin.contents[2].owner.name ? content.pageRoundRobin.contents[2].owner.name : content.pageRoundRobin.contents[2].owner.displayName;
@@ -2007,30 +2047,6 @@ export class MainPageController {
 
         }
         // link post
-        let postSection = undefined;
-        let linkPostSection = undefined;
-        let picPostSection = undefined;
-        let hashTag = undefined;
-        let splitPostSection = undefined;
-        let splitDetailPostSection = undefined;
-        if (content.postSectionModel.contents.length > 0) {
-            postSection = content.postSectionModel.contents[0];
-            if (postSection.post.title.length > 0) {
-                splitPostSection = postSection.post.title;
-            }
-            if (postSection.post.detail.length > 0) {
-                splitDetailPostSection = postSection.post.detail;
-            }
-            linkPostSection = process.env.APP_POST + '/' + postSection.post._id;
-            picPostSection = content.postSectionModel.contents[0].coverPageUrl ? process.env.APP_API + content.postSectionModel.contents[0].coverPageUrl + '/image' : '';
-            hashTag = content.hashTagSumma[0].name;
-            if (splitPostSection.length >= 139) {
-                splitPostSection = postSection.post.title.slice(0, 139);
-            }
-            if (splitDetailPostSection.length >= 280) {
-                splitDetailPostSection = postSection.post.detail.slice(0, 280) + '.....';
-            }
-        }
         let linkPostMajorTrendF = undefined;
         let linkPostMajorTrendS = undefined;
         if (content.majorTrend.contents[0] !== undefined) {
@@ -2038,7 +2054,6 @@ export class MainPageController {
         } if (content.majorTrend.contents[1] !== undefined) {
             linkPostMajorTrendS = process.env.APP_POST + '/' + content.majorTrend.contents[1].post._id;
         }
-
         const loveIcons = 'https://ea.twimg.com/email/self_serve/media/icon_like-1497559206788.png';
         const commentIcons = 'https://ea.twimg.com/email/self_serve/media/icon_reply-1497559206779.png';
         const shareIcons = 'https://ea.twimg.com/email/self_serve/media/icon_retweet-1497559206722.png';
@@ -2257,9 +2272,7 @@ export class MainPageController {
                         </a>
                    </div>
                </div>
-               <div align='center' style="margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px;border:1px solid #ee7623;">
-                    <a href=${homePage} style=" background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
-                </div>
+               <a href=${homePage} style="display:block;text-align:center;width:100%;margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px 0;border:1px solid #ee7623; background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
                <div align='center' style="width: 100%;background: white;padding-top: 15px;margin-bottom: 10px;">
                     <div style='background: white;width:40%;margin: 0 auto'>
                         <a href=${linkPlayStore} style="background: white;margin: 0 auto">
@@ -2271,7 +2284,7 @@ export class MainPageController {
                </div>
             </div>`;
 
-            sendMail = MAILService.pushNotification(message, email, subject);
+            sendMail = MAILService.pushNotification(message, email, newsTitle[0]);
         } else if (
             picPostMajorF !== undefined &&
             picPostMajorS !== undefined &&
@@ -2431,9 +2444,7 @@ export class MainPageController {
                         </a>
                    </div>
                </div>
-               <div align='center' style="margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px;border:1px solid #ee7623;">
-                    <a href=${homePage} style=" background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
-                </div>
+               <a href=${homePage} style="display:block;text-align:center;width:100%;margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px 0;border:1px solid #ee7623; background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
                <div align='center' style="width: 100%;background: white;padding-top: 15px;margin-bottom: 10px;">
                     <div style='background: white;width:40%;margin: 0 auto'>
                         <a href=${linkPlayStore} style="background: white;margin: 0 auto">
@@ -2444,7 +2455,7 @@ export class MainPageController {
                     </div>
                </div>
             </div>`;
-            sendMail = MAILService.pushNotification(message, email, subject);
+            sendMail = MAILService.pushNotification(message, email, newsTitle[0]);
         } else if (
             picPostMajorF !== undefined &&
             picPostMajorS !== undefined &&
@@ -2553,9 +2564,7 @@ export class MainPageController {
                                 </div>
                         </div>
                     </div>
-                    <div align='center' style="margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px;border:1px solid #ee7623;">
-                            <a href=${homePage} style=" background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
-                        </div>
+                    <a href=${homePage} style="display:block;text-align:center;width:100%;margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px 0;border:1px solid #ee7623; background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
                     <div align='center' style="width: 100%;background: white;padding-top: 15px;margin-bottom: 10px;">
                             <div style='background: white;width:40%;margin: 0 auto'>
                                 <a href=${linkPlayStore} style="background: white;margin: 0 auto">
@@ -2566,7 +2575,7 @@ export class MainPageController {
                             </div>
                     </div>
                 </div>`;
-            sendMail = MAILService.pushNotification(message, email, subject);
+            sendMail = MAILService.pushNotification(message, email, newsTitle[0]);
         } else if (
             picPostMajorF !== undefined &&
             picPostMajorS !== undefined &&
@@ -2718,10 +2727,8 @@ export class MainPageController {
                             </div>
                     </div>
                 </div>
-               <div align='center' style="margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px;border:1px solid #ee7623;">
-                    <a href=${homePage} style=" background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
-                </div>
-               <div align='center' style="width: 100%;background: white;padding-top: 15px;margin-bottom: 10px;">
+                <a href=${homePage} style="display:block;text-align:center;width:100%;margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px 0;border:1px solid #ee7623; background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
+                <div align='center' style="width: 100%;background: white;padding-top: 15px;margin-bottom: 10px;">
                     <div style='background: white;width:40%;margin: 0 auto'>
                         <a href=${linkPlayStore} style="background: white;margin: 0 auto">
                             <img src=${linkPicPlaySyore} style='width:150px;background: white;'>
@@ -2731,7 +2738,7 @@ export class MainPageController {
                     </div>
                </div>
             </div>`;
-            sendMail = MAILService.pushNotification(message, email, subject);
+            sendMail = MAILService.pushNotification(message, email, newsTitle[0]);
         } else if (picPostMajorF !== undefined &&
             picPostMajorS !== undefined &&
             postMajorTitleF !== undefined &&
@@ -2917,9 +2924,7 @@ export class MainPageController {
                         </a>
                         </div>
                    </div>
-                   <div align='center' style="margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px;border:1px solid #ee7623;">
-                        <a href=${homePage} style=" background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
-                    </div>
+                   <a href=${homePage} style="display:block;text-align:center;width:100%;margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px 0;border:1px solid #ee7623; background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
                    <div align='center' style="width: 100%;background: white;padding-top: 15px;margin-bottom: 10px;">
                         <div style='background: white;width:40%;margin: 0 auto'>
                             <a href=${linkPlayStore} style="background: white;margin: 0 auto">
@@ -2931,7 +2936,7 @@ export class MainPageController {
                    </div>
                 </div>`;
 
-            sendMail = MAILService.pushNotification(message, email, subject);
+            sendMail = MAILService.pushNotification(message, email, newsTitle[0]);
         } else if (picPostMajorF !== undefined &&
             picPostMajorS !== undefined &&
             postMajorTitleF !== undefined &&
@@ -3102,9 +3107,7 @@ export class MainPageController {
                             </a>
                         </div>
                    </div>
-                   <div align='center' style="margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px;border:1px solid #ee7623;">
-                        <a href=${homePage} style=" background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
-                    </div>
+                   <a href=${homePage} style="display:block;text-align:center;width:100%;margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px 0;border:1px solid #ee7623; background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
                    <div align='center' style="width: 100%;background: white;padding-top: 15px;margin-bottom: 10px;">
                         <div style='background: white;width:40%;margin: 0 auto'>
                             <a href=${linkPlayStore} style="background: white;margin: 0 auto">
@@ -3116,7 +3119,7 @@ export class MainPageController {
                    </div>
                 </div>`;
 
-            sendMail = MAILService.pushNotification(message, email, subject);
+            sendMail = MAILService.pushNotification(message, email, newsTitle[0]);
 
         } else if (picPostMajorF !== undefined &&
             picPostMajorS !== undefined &&
@@ -3244,9 +3247,7 @@ export class MainPageController {
                             </a>
                         </div>
                    </div>
-                   <div align='center' style="margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px;border:1px solid #ee7623;">
-                        <a href=${homePage} style=" background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
-                    </div>
+                   <a href=${homePage} style="display:block;text-align:center;width:100%;margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px 0;border:1px solid #ee7623; background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
                    <div align='center' style="width: 100%;background: white;padding-top: 15px;margin-bottom: 10px;">
                         <div style='background: white;width:40%;margin: 0 auto'>
                             <a href=${linkPlayStore} style="background: white;margin: 0 auto">
@@ -3258,7 +3259,7 @@ export class MainPageController {
                    </div>
                 </div>`;
 
-            sendMail = MAILService.pushNotification(message, email, subject);
+            sendMail = MAILService.pushNotification(message, email, newsTitle[0]);
 
         } else if (picPostMajorF !== undefined &&
             picPostMajorS !== undefined &&
@@ -3401,9 +3402,7 @@ export class MainPageController {
                         </a>
                         </div>
                    </div>
-                   <div align='center' style="margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px;border:1px solid #ee7623;">
-                        <a href=${homePage} style=" background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
-                    </div>
+                   <a href=${homePage} style="display:block;text-align:center;width:100%;margin-top:15px;background:white;margin-bottom:20px;border-radius:50px;padding:10px 0;border:1px solid #ee7623; background:white;color:#ee7623;text-decoration: none;">ติดตามพวกเราพรรคก้าวไกลได้ที่นี่</a>
                    <div align='center' style="width: 100%;background: white;padding-top: 15px;margin-bottom: 10px;">
                         <div style='background: white;width:40%;margin: 0 auto'>
                             <a href=${linkPlayStore} style="background: white;margin: 0 auto">
@@ -3415,7 +3414,7 @@ export class MainPageController {
                    </div>
                 </div>`;
 
-            sendMail = MAILService.pushNotification(message, email, subject);
+            sendMail = MAILService.pushNotification(message, email, newsTitle[0]);
         } else {
             return ResponseUtil.getErrorResponse('error in sending email', '');
         }
