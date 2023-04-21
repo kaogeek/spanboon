@@ -117,7 +117,8 @@ export class TodayPage extends AbstractPage implements OnInit {
     public limit: number = 10;
     public edit: string;
     public _id: string;
-    public provinces = PROVINCE_LIST;
+    public provinces;
+    public default_province;
     public orderBy: any = {};
 
     constructor(
@@ -252,6 +253,7 @@ export class TodayPage extends AbstractPage implements OnInit {
         });
     }
     public ngOnInit() {
+        this.getProvince();
         this.setForm();
         this.formType = new FormGroup({
             'id': new FormControl(null, { validators: [Validators.required] })
@@ -292,39 +294,55 @@ export class TodayPage extends AbstractPage implements OnInit {
                 }
             });
     }
+
+    public getProvince() {
+        this.todayPageFacade.getProvince().then((res) => {
+            if (res) {
+                this.provinces = res;
+                this.default_province = res;
+            }
+        })
+    }
+
     public selectAutoComp(data, position?: number) {
         let stackValues;
         let stackSecondValues;
         let stackThirdValues;
         if (position === 1) {
-            if (this.selectedValueField === 'group') {
+            if (this.selectedValueField === 'province') {
+                stackValues = { 'index': this.testBuckets_first.length, 'value': data, '_id': data };
+            } else if (this.selectedValueField === 'group') {
                 stackValues = { 'index': this.testBuckets_first.length, 'value': data.detail, '_id': data.id };
             } else {
                 stackValues = { 'index': this.testBuckets_first.length, 'value': data.label ? data.label : data.value, '_id': data.value };
             }
-            this.value_first = data.label ? data.label : data.value ? data.value : data.detail;
+            this.value_first = data.label ? data.label : data.value ? data.value : data.detail ? data.detail : data;
             if (this.value_first !== undefined) {
                 this.value_stack_first.push(stackValues);
                 this.value_first = '';
             }
         } else if (position === 2) {
-            if (this.selectedValueField === 'group') {
+            if (this.selectedValueField === 'province') {
+                stackSecondValues = { 'index': this.testBuckets_first.length, 'value': data, '_id': data };
+            } else if (this.selectedValueField === 'group') {
                 stackSecondValues = { 'index': this.testBuckets_first.length, 'value': data.detail, '_id': data.id };
             } else {
                 stackSecondValues = { 'index': this.testBuckets_first.length, 'value': data.label ? data.label : data.value, '_id': data.value };
             }
-            this.value_second = data.label ? data.label : data.value ? data.value : data.detail;
+            this.value_second = data.label ? data.label : data.value ? data.value : data.detail ? data.detail : data;
             if (this.value_second !== undefined) {
                 this.value_stack_second.push(stackSecondValues);
                 this.value_second = '';
             }
         } else if (position === 3) {
-            if (this.selectedValueField === 'group') {
+            if (this.selectedValueField === 'province') {
+                stackThirdValues = { 'index': this.testBuckets_first.length, 'value': data, '_id': data };
+            } else if (this.selectedValueField === 'group') {
                 stackThirdValues = { 'index': this.testBuckets_first.length, 'value': data.detail, '_id': data.id };
             } else {
                 stackThirdValues = { 'index': this.testBuckets_first.length, 'value': data.label ? data.label : data.value, '_id': data.value };
             }
-            this.value_third = data.label ? data.label : data.value ? data.value : data.detail;
+            this.value_third = data.label ? data.label : data.value ? data.value : data.detail ? data.detail : data;
             if (this.value_third !== undefined) {
                 this.value_stack_third.push(stackThirdValues);
                 this.value_third = '';
@@ -810,7 +828,6 @@ export class TodayPage extends AbstractPage implements OnInit {
 
                 return;
             }
-
             this.todayPageFacade.create(result).then((res) => {
                 this.table.searchData();
                 if (!!this.value_stack_first) {
@@ -902,7 +919,6 @@ export class TodayPage extends AbstractPage implements OnInit {
 
                 return;
             }
-
             this.todayPageFacade.edit(id, result).then((res) => {
                 this.table.searchData();
                 if (!!this.value_stack_first) {
