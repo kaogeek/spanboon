@@ -44,12 +44,15 @@
                                             </mat-form-field>
                                             <label style='margin-top:15px'>จังหวัด *</label>
                                             <mat-form-field appearance="none" class="input-post-page">
-                                                <mat-select [(ngModel)]="dataForm.province" name="province"
-                                                    placeholder='กรุณาเลือกจังหวัด' required>
+                                                <mat-select #selectProvince [(ngModel)]="dataForm.province"
+                                                    name="province" placeholder='กรุณาเลือกจังหวัด' required>
+                                                    <mat-select-filter *ngIf="selectProvince.focused"
+                                                        [array]="default_province" [color]="'#ffb250'"
+                                                        [placeholder]="'ค้นหาจังหวัดที่จะเลือก'"
+                                                        (filteredReturn)="provinces = $event"></mat-select-filter>
                                                     <mat-option>* ไม่เลือกจังหวัดใดๆ *</mat-option>
-                                                    <mat-option *ngFor="let province of provinces"
-                                                        [value]="province.value">
-                                                        {{province.value}}
+                                                    <mat-option *ngFor="let province of provinces" [value]="province">
+                                                        {{province}}
                                                     </mat-option>
                                                 </mat-select>
                                             </mat-form-field>

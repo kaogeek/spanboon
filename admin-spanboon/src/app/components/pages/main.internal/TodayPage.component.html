@@ -143,16 +143,22 @@
                                                                         <ng-container
                                                                             *ngIf="selectedValueField === 'province'; else elseTemplate">
                                                                             <mat-form-field appearance="none">
-                                                                                <mat-select
+                                                                                <mat-select #selectProvince1
                                                                                     [(ngModel)]="selectedValueProvince1"
                                                                                     name="province"
                                                                                     [ngModelOptions]="{standalone: true}"
                                                                                     placeholder='จังหวัด' required>
+                                                                                    <mat-select-filter
+                                                                                        *ngIf="selectProvince1.focused"
+                                                                                        [array]="default_province"
+                                                                                        [color]="'#ffb250'"
+                                                                                        [placeholder]="'ค้นหาจังหวัดที่จะเลือก'"
+                                                                                        (filteredReturn)="provinces = $event"></mat-select-filter>
                                                                                     <mat-option
                                                                                         *ngFor="let province of provinces"
-                                                                                        [value]="province.value"
+                                                                                        [value]="province"
                                                                                         (click)="selectAutoComp(province,position_first)">
-                                                                                        {{province.viewValue}}
+                                                                                        {{province}}
                                                                                     </mat-option>
                                                                                 </mat-select>
                                                                             </mat-form-field>
@@ -247,16 +253,22 @@
                                                                         <ng-container
                                                                             *ngIf="selectedValueField === 'province'; else elseTemplate">
                                                                             <mat-form-field appearance="none">
-                                                                                <mat-select
+                                                                                <mat-select #selectProvince2
                                                                                     [(ngModel)]="selectedValueProvince2"
                                                                                     name="province"
                                                                                     [ngModelOptions]="{standalone: true}"
                                                                                     placeholder='จังหวัด' required>
+                                                                                    <mat-select-filter
+                                                                                        *ngIf="selectProvince2.focused"
+                                                                                        [array]="default_province"
+                                                                                        [color]="'#ffb250'"
+                                                                                        [placeholder]="'ค้นหาจังหวัดที่จะเลือก'"
+                                                                                        (filteredReturn)="provinces = $event"></mat-select-filter>
                                                                                     <mat-option
                                                                                         *ngFor="let province of provinces"
-                                                                                        [value]="province.value"
+                                                                                        [value]="province"
                                                                                         (click)="selectAutoComp(province,position_second)">
-                                                                                        {{province.viewValue}}
+                                                                                        {{province}}
                                                                                     </mat-option>
                                                                                 </mat-select>
                                                                             </mat-form-field>
@@ -351,16 +363,22 @@
                                                                         <ng-container
                                                                             *ngIf="selectedValueField === 'province'; else elseTemplate">
                                                                             <mat-form-field appearance="none">
-                                                                                <mat-select
+                                                                                <mat-select #selectProvince3
                                                                                     [(ngModel)]="selectedValueProvince3"
                                                                                     name="province"
                                                                                     [ngModelOptions]="{standalone: true}"
                                                                                     placeholder='จังหวัด' required>
+                                                                                    <mat-select-filter
+                                                                                        *ngIf="selectProvince3.focused"
+                                                                                        [array]="default_province"
+                                                                                        [color]="'#ffb250'"
+                                                                                        [placeholder]="'ค้นหาจังหวัดที่จะเลือก'"
+                                                                                        (filteredReturn)="provinces = $event"></mat-select-filter>
                                                                                     <mat-option
                                                                                         *ngFor="let province of provinces"
-                                                                                        [value]="province.value"
+                                                                                        [value]="province"
                                                                                         (click)="selectAutoComp(province,position_third)">
-                                                                                        {{province.viewValue}}
+                                                                                        {{province}}
                                                                                     </mat-option>
                                                                                 </mat-select>
                                                                             </mat-form-field>

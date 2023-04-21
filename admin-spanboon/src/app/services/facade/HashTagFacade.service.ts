@@ -75,31 +75,7 @@ export class HashTagFacade extends AbstractFacade {
       }
       let options = this.getDefaultOptions();
       this.http.post(url, body, options).toPromise().then((response: any) => {
-        for (let r of response.data) {
-          if (r.iconURL != null && r.iconURL != undefined) {
-            this.getPathFile(r.iconURL).then((res: any) => {
-              r.img = res.data
-            }).catch((err: any) => {
-            });
-          }
-        }
         resolve(response.data as Hashtag[]);
-      }).catch((error: any) => {
-        reject(error);
-      });
-    });
-  }
-
-  public getPathFile(urlPath: any): Promise<Asset> {
-    return new Promise((resolve, reject) => {
-
-      let url: string = this.baseURL + urlPath;
-
-      let body: any = {};
-
-
-      this.http.get(url, body).toPromise().then((response: any) => {
-        resolve(response as Asset);
       }).catch((error: any) => {
         reject(error);
       });

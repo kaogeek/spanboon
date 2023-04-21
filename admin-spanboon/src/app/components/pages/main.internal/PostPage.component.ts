@@ -47,7 +47,8 @@ export class PostPage extends AbstractPage implements OnInit {
     public submitted = false;
     public isOfficialPage: {};
     public orderBy: any = {};
-    public provinces = PROVINCE_LIST;
+    public provinces;
+    public default_province;
 
     constructor(pageFacade: PageFacade, pageGroupFacade: PageGroupFacade, router: Router, dialog: MatDialog, authenManager: AuthenManager) {
         super(PAGE_NAME, dialog);
@@ -108,6 +109,16 @@ export class PostPage extends AbstractPage implements OnInit {
 
     public ngOnInit() {
         this.search();
+        this.getProvince();
+    }
+
+    public getProvince() {
+        this.pageFacade.getProvince().then((res) => {
+            if (res) {
+                this.provinces = res;
+                this.default_province = res;
+            }
+        })
     }
 
     private setFields(): void {

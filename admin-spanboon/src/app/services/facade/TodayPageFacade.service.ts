@@ -139,6 +139,25 @@ export class TodayPageFacade extends AbstractFacade {
         });
     }
 
+    public getProvince() {
+        return new Promise((resolve, reject) => {
+            let url: string = "https://raw.githubusercontent.com/earthchie/jquery.Thailand.js/master/jquery.Thailand.js/database/raw_database/raw_database.json";
+            let data = [];
+            this.http.get(url).toPromise().then((response: any) => {
+                for (let index = 0; index < response.length; index++) {
+                    const element = response[index].province;
+                    data.push(element)
+                }
+                var dataProvince = data.filter(function (elem, index, self) {
+                    return index === self.indexOf(elem);
+                });
+                resolve(dataProvince);
+            }).catch((error: any) => {
+                reject(error);
+            });
+        });
+    }
+
     public delete(id: any): Promise<Today[]> {
         if (id === undefined || id === null) {
             new Error("Id is required.");
