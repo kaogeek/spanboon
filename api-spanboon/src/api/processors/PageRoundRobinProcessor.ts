@@ -173,7 +173,8 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                                     from: 'Page',
                                     let: { 'pageId': '$pageId' },
                                     pipeline: [
-                                        { $match: { $expr: { $eq: ['$_id', '$$pageId'] } } }
+                                        { $match: { $expr: { $eq: ['$_id', '$$pageId'] } } },
+                                        { $project: { email: 0 } }
                                     ],
                                     as: 'page'
                                 }
@@ -240,7 +241,8 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                                     from: 'Page',
                                     let: { 'pageId': '$pageId' },
                                     pipeline: [
-                                        { $match: { $expr: { $eq: ['$_id', '$$pageId'] } } }
+                                        { $match: { $expr: { $eq: ['$_id', '$$pageId'] } } },
+                                        { $project: { email: 0 } }
                                     ],
                                     as: 'page'
                                 }
@@ -307,7 +309,8 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                                     from: 'Page',
                                     let: { 'pageId': '$pageId' },
                                     pipeline: [
-                                        { $match: { $expr: { $eq: ['$_id', '$$pageId'] } } }
+                                        { $match: { $expr: { $eq: ['$_id', '$$pageId'] } } },
+                                        { $project: { email: 0 } }
                                     ],
                                     as: 'page'
                                 }
@@ -515,6 +518,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                                     let: { 'pageId': '$pageId' },
                                     pipeline: [
                                         { $match: { $expr: { $eq: ['$_id', '$$pageId'] } } },
+                                        { $project: { email: 0 } }
                                     ],
                                     as: 'page'
                                 }
@@ -582,6 +586,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                                     let: { 'pageId': '$pageId' },
                                     pipeline: [
                                         { $match: { $expr: { $eq: ['$_id', '$$pageId'] } } },
+                                        { $project: { email: 0 } }
                                     ],
                                     as: 'page'
                                 }
@@ -649,6 +654,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                                     let: { 'pageId': '$pageId' },
                                     pipeline: [
                                         { $match: { $expr: { $eq: ['$_id', '$$pageId'] } } },
+                                        { $project: { email: 0 } }
                                     ],
                                     as: 'page'
                                 }
@@ -707,7 +713,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     }
                     // set 1
                     const stackPage = [];
-                    if(pageStacks.length>0){
+                    if (pageStacks.length > 0) {
                         for (let i = 0; i < pageStacks[0].length; i++) {
                             for (let j = 0; j < pageStacks.length; j++) {
                                 if (pageStacks[j][i] !== undefined && pageStacks[j][i] !== null) {
@@ -770,12 +776,14 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     const postStmt = [
                         { $match: postMatchStmt },
                         { $sort: { summationScore: -1 } },
-
                         {
-                            $lookup: {
+                            $lookup:
+                            {
                                 from: 'Page',
-                                localField: 'pageId',
-                                foreignField: '_id',
+                                let: { 'pageId': '$pageId' },
+                                pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                { $project: { email: 0 } }
+                                ],
                                 as: 'page'
                             }
                         },
@@ -916,10 +924,13 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                         { $sort: { summationScore: -1 } },
 
                         {
-                            $lookup: {
+                            $lookup:
+                            {
                                 from: 'Page',
-                                localField: 'pageId',
-                                foreignField: '_id',
+                                let: { 'pageId': '$pageId' },
+                                pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                { $project: { email: 0 } }
+                                ],
                                 as: 'page'
                             }
                         },
@@ -982,12 +993,14 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     const postStmt2 = [
                         { $match: { isDraft: false, deleted: false, hidden: false, objective: { $ne: null, $in: bucketS }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
                         { $sort: { summationScore: -1 } },
-
                         {
-                            $lookup: {
+                            $lookup:
+                            {
                                 from: 'Page',
-                                localField: 'pageId',
-                                foreignField: '_id',
+                                let: { 'pageId': '$pageId' },
+                                pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                { $project: { email: 0 } }
+                                ],
                                 as: 'page'
                             }
                         },
@@ -1050,12 +1063,14 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     const postStmt3 = [
                         { $match: { isDraft: false, deleted: false, hidden: false, objective: { $ne: null, $in: bucketT }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
                         { $sort: { summationScore: -1 } },
-
                         {
-                            $lookup: {
+                            $lookup:
+                            {
                                 from: 'Page',
-                                localField: 'pageId',
-                                foreignField: '_id',
+                                let: { 'pageId': '$pageId' },
+                                pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                { $project: { email: 0 } }
+                                ],
                                 as: 'page'
                             }
                         },
@@ -1115,7 +1130,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                         postObject.push(postAggregate3);
                     }
                     const stackPage = [];
-                    if(postObject.length>0){
+                    if (postObject.length > 0) {
                         for (let i = 0; i < postObject[0].length; i++) {
                             for (let j = 0; j < postObject.length; j++) {
                                 if (postObject[j][i] !== undefined && postObject[j][i] !== null) {
@@ -1203,10 +1218,13 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                         { $sort: { summationScore: -1 } },
 
                         {
-                            $lookup: {
+                            $lookup:
+                            {
                                 from: 'Page',
-                                localField: 'pageId',
-                                foreignField: '_id',
+                                let: { 'pageId': '$pageId' },
+                                pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                { $project: { email: 0 } }
+                                ],
                                 as: 'page'
                             }
                         },
@@ -1269,12 +1287,14 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     const postStmt2 = [
                         { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $ne: null }, emergencyEvent: { $ne: null, $in: bucketS } } },
                         { $sort: { summationScore: -1 } },
-
                         {
-                            $lookup: {
+                            $lookup:
+                            {
                                 from: 'Page',
-                                localField: 'pageId',
-                                foreignField: '_id',
+                                let: { 'pageId': '$pageId' },
+                                pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                { $project: { email: 0 } }
+                                ],
                                 as: 'page'
                             }
                         },
@@ -1337,12 +1357,14 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     const postStmt3 = [
                         { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $ne: null }, emergencyEvent: { $ne: null, $in: bucketT } } },
                         { $sort: { summationScore: -1 } },
-
                         {
-                            $lookup: {
+                            $lookup:
+                            {
                                 from: 'Page',
-                                localField: 'pageId',
-                                foreignField: '_id',
+                                let: { 'pageId': '$pageId' },
+                                pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                { $project: { email: 0 } }
+                                ],
                                 as: 'page'
                             }
                         },
@@ -1402,7 +1424,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                         postObject.push(postAggregate3);
                     }
                     const stackPage = [];
-                    if(postObject.length>0){
+                    if (postObject.length > 0) {
                         for (let i = 0; i < postObject[0].length; i++) {
                             for (let j = 0; j < postObject.length; j++) {
                                 if (postObject[j][i] !== undefined && postObject[j][i] !== null) {
@@ -1534,7 +1556,9 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                                 {
                                     from: 'Page',
                                     let: { 'pageId': '$pageId' },
-                                    pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } }],
+                                    pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                    { $project: { email: 0 } }
+                                    ],
                                     as: 'page'
                                 }
                             },
@@ -1599,7 +1623,9 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                                 {
                                     from: 'Page',
                                     let: { 'pageId': '$pageId' },
-                                    pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } }],
+                                    pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                    { $project: { email: 0 } }
+                                    ],
                                     as: 'page'
                                 }
                             },
@@ -1664,7 +1690,9 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                                 {
                                     from: 'Page',
                                     let: { 'pageId': '$pageId' },
-                                    pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } }],
+                                    pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                    { $project: { email: 0 } }
+                                    ],
                                     as: 'page'
                                 }
                             },
@@ -1721,7 +1749,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                         postAggregateAll.push(postAggregateSet3);
                     }
                     const stackPage = [];
-                    if(postAggregateAll.length>0){
+                    if (postAggregateAll.length > 0) {
                         for (let i = 0; i < postAggregateAll[0].length; i++) {
                             for (let j = 0; j < postAggregateAll.length; j++) {
                                 if (postAggregateAll[j][i] !== undefined && postAggregateAll[j][i] !== null) {
@@ -1795,10 +1823,13 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                         { $sort: { summationScore: -1 } },
 
                         {
-                            $lookup: {
+                            $lookup:
+                            {
                                 from: 'Page',
-                                localField: 'pageId',
-                                foreignField: '_id',
+                                let: { 'pageId': '$pageId' },
+                                pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                { $project: { email: 0 } }
+                                ],
                                 as: 'page'
                             }
                         },
@@ -1991,8 +2022,8 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                                 {
                                     from: 'Page',
                                     let: { 'pageId': '$pageId' },
-                                    pipeline: [
-                                        { $match: { $expr: { $eq: ['$_id', '$$pageId'] } } },
+                                    pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                    { $project: { email: 0 } }
                                     ],
                                     as: 'page'
                                 }
@@ -2058,8 +2089,8 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                                 {
                                     from: 'Page',
                                     let: { 'pageId': '$pageId' },
-                                    pipeline: [
-                                        { $match: { $expr: { $eq: ['$_id', '$$pageId'] } } },
+                                    pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                    { $project: { email: 0 } }
                                     ],
                                     as: 'page'
                                 }
@@ -2126,8 +2157,8 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                                 {
                                     from: 'Page',
                                     let: { 'pageId': '$pageId' },
-                                    pipeline: [
-                                        { $match: { $expr: { $eq: ['$_id', '$$pageId'] } } },
+                                    pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                    { $project: { email: 0 } }
                                     ],
                                     as: 'page'
                                 }
@@ -2339,10 +2370,13 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                 const postStmt = [
                     { $match: postMatchStmt },
                     {
-                        $lookup: {
+                        $lookup:
+                        {
                             from: 'Page',
-                            localField: 'pageId',
-                            foreignField: '_id',
+                            let: { 'pageId': '$pageId' },
+                            pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                            { $project: { email: 0 } }
+                            ],
                             as: 'page'
                         }
                     },

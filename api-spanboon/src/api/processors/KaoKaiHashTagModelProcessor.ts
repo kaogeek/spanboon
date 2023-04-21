@@ -216,7 +216,9 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                                 {
                                     from: 'Page',
                                     let: { 'pageId': '$pageId' },
-                                    pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } }],
+                                    pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                    { $project: { email: 0 } }
+                                ],
                                     as: 'page'
                                 }
                             },
@@ -281,7 +283,9 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                                 {
                                     from: 'Page',
                                     let: { 'pageId': '$pageId' },
-                                    pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } }],
+                                    pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                    { $project: { email: 0 } }
+                                ],
                                     as: 'page'
                                 }
                             },
@@ -346,7 +350,9 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                                 {
                                     from: 'Page',
                                     let: { 'pageId': '$pageId' },
-                                    pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } }],
+                                    pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                    { $project: { email: 0 } }
+                                ],
                                     as: 'page'
                                 }
                             },
@@ -473,7 +479,9 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                             {
                                 from: 'Page',
                                 let: { 'pageId': '$pageId' },
-                                pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } }],
+                                pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                { $project: { email: 0 } }
+                            ],
                                 as: 'page'
                             }
                         },
@@ -607,12 +615,14 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     const postStmt = [
                         { $match: { isDraft: false, deleted: false, hidden: false,_id:{$nin:postId}, objective: { $ne: null, $in: bucketF } } },
                         { $sort: { summationScore: -1 } },
-
                         {
-                            $lookup: {
+                            $lookup:
+                            {
                                 from: 'Page',
-                                localField: 'pageId',
-                                foreignField: '_id',
+                                let: { 'pageId': '$pageId' },
+                                pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                { $project: { email: 0 } }
+                            ],
                                 as: 'page'
                             }
                         },
@@ -675,10 +685,13 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                         { $sort: { summationScore: -1 } },
 
                         {
-                            $lookup: {
+                            $lookup:
+                            {
                                 from: 'Page',
-                                localField: 'pageId',
-                                foreignField: '_id',
+                                let: { 'pageId': '$pageId' },
+                                pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                { $project: { email: 0 } }
+                            ],
                                 as: 'page'
                             }
                         },
@@ -742,10 +755,13 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                         { $sort: { summationScore: -1 } },
 
                         {
-                            $lookup: {
+                            $lookup:
+                            {
                                 from: 'Page',
-                                localField: 'pageId',
-                                foreignField: '_id',
+                                let: { 'pageId': '$pageId' },
+                                pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                { $project: { email: 0 } }
+                            ],
                                 as: 'page'
                             }
                         },
@@ -892,12 +908,14 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     const postStmt1 = [
                         { $match: { isDraft: false, deleted: false, hidden: false,_id:{$nin:postId} , pageId: { $ne: null }, emergencyEvent: { $ne: null, $in: bucketF }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
                         { $sort: { summationScore: -1 } },
-
                         {
-                            $lookup: {
+                            $lookup:
+                            {
                                 from: 'Page',
-                                localField: 'pageId',
-                                foreignField: '_id',
+                                let: { 'pageId': '$pageId' },
+                                pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                { $project: { email: 0 } }
+                            ],
                                 as: 'page'
                             }
                         },
@@ -959,12 +977,14 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     const postStmt2 = [
                         { $match: { isDraft: false, deleted: false, hidden: false,_id:{$nin:postId} , pageId: { $ne: null }, emergencyEvent: { $ne: null, $in: bucketS } } },
                         { $sort: { summationScore: -1 } },
-
                         {
-                            $lookup: {
+                            $lookup:
+                            {
                                 from: 'Page',
-                                localField: 'pageId',
-                                foreignField: '_id',
+                                let: { 'pageId': '$pageId' },
+                                pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                { $project: { email: 0 } }
+                            ],
                                 as: 'page'
                             }
                         },
@@ -1026,12 +1046,14 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     const postStmt3 = [
                         { $match: { isDraft: false, deleted: false, hidden: false,_id:{$nin:postId} , pageId: { $ne: null }, emergencyEvent: { $ne: null, $in: bucketT } } },
                         { $sort: { summationScore: -1 } },
-
                         {
-                            $lookup: {
+                            $lookup:
+                            {
                                 from: 'Page',
-                                localField: 'pageId',
-                                foreignField: '_id',
+                                let: { 'pageId': '$pageId' },
+                                pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                { $project: { email: 0 } }
+                            ],
                                 as: 'page'
                             }
                         },
@@ -1235,9 +1257,9 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                                 {
                                     from: 'Page',
                                     let: { 'pageId': '$pageId' },
-                                    pipeline: [
-                                        { $match: { $expr: { $eq: ['$_id', '$$pageId'] } } },
-                                    ],
+                                    pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                    { $project: { email: 0 } }
+                                ],
                                     as: 'page'
                                 }
                             },
@@ -1302,9 +1324,9 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                                 {
                                     from: 'Page',
                                     let: { 'pageId': '$pageId' },
-                                    pipeline: [
-                                        { $match: { $expr: { $eq: ['$_id', '$$pageId'] } } },
-                                    ],
+                                    pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                    { $project: { email: 0 } }
+                                ],
                                     as: 'page'
                                 }
                             },
@@ -1369,9 +1391,9 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                                 {
                                     from: 'Page',
                                     let: { 'pageId': '$pageId' },
-                                    pipeline: [
-                                        { $match: { $expr: { $eq: ['$_id', '$$pageId'] } } },
-                                    ],
+                                    pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                    { $project: { email: 0 } }
+                                ],
                                     as: 'page'
                                 }
                             },
@@ -1575,9 +1597,9 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                                 {
                                     from: 'Page',
                                     let: { 'pageId': '$pageId' },
-                                    pipeline: [
-                                        { $match: { $expr: { $eq: ['$_id', '$$pageId'] } } },
-                                    ],
+                                    pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                    { $project: { email: 0 } }
+                                ],
                                     as: 'page'
                                 }
                             },
@@ -1642,9 +1664,9 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                                 {
                                     from: 'Page',
                                     let: { 'pageId': '$pageId' },
-                                    pipeline: [
-                                        { $match: { $expr: { $eq: ['$_id', '$$pageId'] } } },
-                                    ],
+                                    pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                    { $project: { email: 0 } }
+                                ],
                                     as: 'page'
                                 }
                             },
@@ -1709,9 +1731,9 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                                 {
                                     from: 'Page',
                                     let: { 'pageId': '$pageId' },
-                                    pipeline: [
-                                        { $match: { $expr: { $eq: ['$_id', '$$pageId'] } } },
-                                    ],
+                                    pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                    { $project: { email: 0 } }
+                                ],
                                     as: 'page'
                                 }
                             },
@@ -1864,9 +1886,9 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                                 {
                                     from: 'Page',
                                     let: { 'pageId': '$pageId' },
-                                    pipeline: [
-                                        { $match: { $expr: { $eq: ['$_id', '$$pageId'] } } }
-                                    ],
+                                    pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                    { $project: { email: 0 } }
+                                ],
                                     as: 'page'
                                 }
                             },
@@ -1931,9 +1953,9 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                                 {
                                     from: 'Page',
                                     let: { 'pageId': '$pageId' },
-                                    pipeline: [
-                                        { $match: { $expr: { $eq: ['$_id', '$$pageId'] } } }
-                                    ],
+                                    pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                    { $project: { email: 0 } }
+                                ],
                                     as: 'page'
                                 }
                             },
@@ -1998,9 +2020,9 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                                 {
                                     from: 'Page',
                                     let: { 'pageId': '$pageId' },
-                                    pipeline: [
-                                        { $match: { $expr: { $eq: ['$_id', '$$pageId'] } } }
-                                    ],
+                                    pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                    { $project: { email: 0 } }
+                                ],
                                     as: 'page'
                                 }
                             },
@@ -2129,12 +2151,14 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     const postStmt = [
                         { $match: { isDraft: false, deleted: false, hidden: false,_id:{$nin:postId}, postsHashTags: { $ne: null, $in: bucketF } } },
                         { $sort: { summationScore: -1 } },
-
                         {
-                            $lookup: {
+                            $lookup:
+                            {
                                 from: 'Page',
-                                localField: 'pageId',
-                                foreignField: '_id',
+                                let: { 'pageId': '$pageId' },
+                                pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                { $project: { email: 0 } }
+                            ],
                                 as: 'page'
                             }
                         },
@@ -2342,7 +2366,9 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                             {
                                 from: 'Page',
                                 let: { 'pageId': '$pageId' },
-                                pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } }],
+                                pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                { $project: { email: 0 } }
+                            ],
                                 as: 'page'
                             }
                         },

@@ -27,7 +27,7 @@ import { LastestLookingSectionProcessor } from '../processors/LastestLookingSect
 // import { StillLookingSectionProcessor } from '../processors/StillLookingSectionProcessor';
 import { EmergencyEventSectionProcessor } from '../processors/EmergencyEventSectionProcessor';
 import { PostSectionProcessor } from '../processors/PostSectionProcessor';
-import { SummationPostProcessor } from '../processors/SummationPostProcessor';
+import { PostSectionObjectiveProcessor } from '../processors/PostSectionObjectiveProcessor';
 import { PageRoundRobinProcessor } from '../processors/PageRoundRobinProcessor';
 import { MajorTrendSectionModelProcessor } from '../processors/majorTrendSectionModelProcessor';
 import { ObjectiveProcessor } from '../processors/ObjectiveProcessor';
@@ -149,17 +149,17 @@ export class MainPageController {
 
         const emerSectionModel = await emerProcessor.process2();
         // summation
-        const summaTionpostProcessor: SummationPostProcessor = new SummationPostProcessor(this.postsService, this.s3Service, this.userLikeService);
-        summaTionpostProcessor.setData({
+        const postSectionObjectiveProcessor: PostSectionObjectiveProcessor = new PostSectionObjectiveProcessor(this.postsService, this.s3Service, this.userLikeService);
+        postSectionObjectiveProcessor.setData({
             userId,
             startDateTime: monthRange[0],
             endDateTime: monthRange[1]
         });
-        summaTionpostProcessor.setConfig({
+        postSectionObjectiveProcessor.setConfig({
             searchOfficialOnly
         });
 
-        const postSectionModel = await summaTionpostProcessor.process();
+        const postSectionModel = await postSectionObjectiveProcessor.process();
         // roundRobin
         const pageProcessor: PageRoundRobinProcessor = new PageRoundRobinProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService, this.pageService);
         pageProcessor.setData({
@@ -2070,6 +2070,7 @@ export class MainPageController {
         });
         let sendMail = undefined;
         let message = undefined;
+
         if (picPostMajorF !== undefined &&
             picPostMajorS !== undefined &&
             postMajorTitleF !== undefined &&
