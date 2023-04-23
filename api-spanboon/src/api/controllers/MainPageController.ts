@@ -1946,31 +1946,58 @@ export class MainPageController {
             }
             newsTitle.push(splitPostSection);
         }
-
         let picPostMajorF = undefined;
         let picPostMajorS = undefined;
-        if (content.majorTrend.contents[0] !== undefined) {
-            picPostMajorF = content.majorTrend.contents[0].coverPageUrl ? process.env.APP_API + content.majorTrend.contents[0].coverPageUrl + '/image' : '';
-        }
-        if (content.majorTrend.contents[1] !== undefined) {
-            picPostMajorS = content.majorTrend.contents[1].coverPageUrl ? process.env.APP_API + content.majorTrend.contents[1].coverPageUrl + '/image' : '';
-        }
+
         let postMajorTitleF = undefined;
         let postMajorTitleS = undefined;
         let postMajorNameF = undefined;
         let postMajorNameS = undefined;
         if (content.majorTrend.contents[0] !== undefined) {
             postMajorTitleF = content.majorTrend.contents[0].post.title;
+            if (postMajorTitleF.length > 100) {
+                postMajorTitleF = content.majorTrend.contents[0].post.title.slice(0, 100) + '...';
+            }
             newsTitle.push(postMajorTitleF);
         } if (content.majorTrend.contents[1] !== undefined) {
             postMajorTitleS = content.majorTrend.contents[1].post.title;
+            if (postMajorTitleS.length > 100) {
+                postMajorTitleS = content.majorTrend.contents[1].post.title.slice(0, 100) + '...';
+            }
             newsTitle.push(postMajorTitleS);
         } if (content.majorTrend.contents[0] !== undefined) {
             postMajorNameF = content.majorTrend.contents[0].owner.name ? content.majorTrend.contents[0].owner.name : content.majorTrend.contents[0].owner.displayName;
         } if (content.majorTrend.contents[1] !== undefined) {
             postMajorNameS = content.majorTrend.contents[1].owner.name ? content.majorTrend.contents[1].owner.name : content.majorTrend.contents[1].owner.displayName;
         }
-
+        if (content.majorTrend.contents[0] !== undefined) {
+            picPostMajorF = content.majorTrend.contents[0].coverPageUrl ? `
+            <div style="display: flex;gap: 5px;background: white;">
+                <div
+                    style="display: flex; text-align: center;font-size: 12pt;width:400px;height:340px;background: white;">
+                    <img style="width: 100%;height: 100%;object-fit: cover;background: white;margin-left:15px"
+                        src=${process.env.APP_API + content.majorTrend.contents[0].coverPageUrl + '/image'}>
+                </div>
+            </div>`:
+                `<div style="display: flex;gap: 5px;width:400px;height:340px">
+                <span style="color:black;text-align: center;margin-top:160px;margin-bottom:133px">${postMajorTitleF}</span> 
+            </div>`;
+        }
+        if (content.majorTrend.contents[1] !== undefined) {
+            picPostMajorS = content.majorTrend.contents[1].coverPageUrl ? `
+            <div style="display: flex;gap: 5px;background: white;">
+                <div
+                    style="display: flex; text-align: center;font-size: 12pt;width:400px;height:340px;background: white;">
+                    <img style="width: 100%;height: 100%;object-fit: cover;background: white;margin-left:15px"
+                        src=${process.env.APP_API + content.majorTrend.contents[1].coverPageUrl + '/image'}>
+                </div>
+            </div>` :
+                `            
+            <div style="display: flex;gap: 5px;width:400px;height:340px">
+                <span style="color:black;text-align: center;margin-top:160px;margin-bottom:133px">${postMajorTitleS}</span> 
+            </div>`
+                ;
+        }
         let picPostRoundRobinF = undefined;
         let postRoundRobinF = undefined;
         let nameRoundRobinF = undefined;
@@ -2008,7 +2035,16 @@ export class MainPageController {
                 newsTitle.push(postRoundRobinF);
             }
             if (content.pageRoundRobin.contents[0] !== undefined) {
-                picPostRoundRobinF = process.env.APP_API + content.pageRoundRobin.contents[0].coverPageUrl ? process.env.APP_API + content.pageRoundRobin.contents[0].coverPageUrl + '/image' : '';
+                picPostRoundRobinF = content.pageRoundRobin.contents[0].coverPageUrl ?
+                    `
+                <div style="display: flex; text-align: center;font-size: 12pt;width:100%;height: 210px;background: white;margin-bottom: 10px;">
+                    <img style="width: 100%;object-fit: cover;background: white;height:100%;"
+                        src=${process.env.APP_API + content.pageRoundRobin.contents[0].coverPageUrl + '/image'}>
+                </div>`: `         
+                <div style="display: flex;gap: 5px;width:100%;height: 210px;">
+                    <span style="color:black;text-align: center;margin-top:100px">${postRoundRobinF}</span> 
+                </div>`
+                    ;
             }
             if (content.pageRoundRobin.contents[1] !== undefined) {
                 postRoundRobinS = content.pageRoundRobin.contents[1].post.title;
@@ -2024,11 +2060,29 @@ export class MainPageController {
                 linkPostRoundRobinS = process.env.APP_POST + '/' + content.pageRoundRobin.contents[1].post._id;
             }
             if (content.pageRoundRobin.contents[1] !== undefined) {
-                picPostRoundRobinS = process.env.APP_API + content.pageRoundRobin.contents[1].coverPageUrl ? process.env.APP_API + content.pageRoundRobin.contents[1].coverPageUrl + '/image' : '';
+                picPostRoundRobinS = content.pageRoundRobin.contents[1].coverPageUrl ?
+                    `
+                        <div style="display: flex; text-align: center;font-size: 12pt;width:100%;height: 210px;background: white;margin-bottom: 10px;">
+                            <img style="width: 100%;object-fit: cover;background: white;height:100%;"
+                                src=${process.env.APP_API + content.pageRoundRobin.contents[1].coverPageUrl + '/image'}>
+                        </div>`: `         
+                        <div style="display: flex;gap: 5px;width:100%;height: 210px;">
+                            <span style="color:black;text-align: center;margin-top:100px">${postRoundRobinS}</span> 
+                        </div>`
+                    ;
             }
 
             if (content.pageRoundRobin.contents[2] !== undefined) {
-                picPostRoundRobinT = process.env.APP_API + content.pageRoundRobin.contents[2].coverPageUrl ? process.env.APP_API + content.pageRoundRobin.contents[2].coverPageUrl + '/image' : '';
+                picPostRoundRobinT = content.pageRoundRobin.contents[2].coverPageUrl ?
+                    `
+                <div style="display: flex; text-align: center;font-size: 12pt;width:100%;height: 210px;background: white;margin-bottom: 10px;">
+                        <img style="width: 100%;object-fit: cover;background: white;height:100%;"
+                            src=${process.env.APP_API + content.pageRoundRobin.contents[2].coverPageUrl + '/image'}>
+                    </div>`: `         
+                    <div style="display: flex;gap: 5px;width:100%;height: 210px;">
+                        <span style="color:black;text-align: center;margin-top:100px">${postRoundRobinT}</span> 
+                </div>`
+                    ;
             }
 
             if (content.pageRoundRobin.contents[2] !== undefined) {
@@ -2156,13 +2210,7 @@ export class MainPageController {
                    <div style="width: 100%;display: flex;background: white;">
                         <div style="width: 50%;margin-right: 5px;background: white;">
                             <a href=${linkPostMajorTrendF} style='background:white;text-decoration:none;'>
-                                <div style="display: flex;gap: 5px;background: white;">
-                                    <div
-                                        style="display: flex; text-align: center;font-size: 12pt;width:400px;height:340px;background: white;">
-                                        <img style="margin-left:15px;width: 100%;height: 100%;object-fit: cover;background: white;"
-                                            src=${picPostMajorF}>
-                                    </div>
-                                </div>
+                                ${picPostMajorF}
                                 <div
                                     style="display: grid;word-break: break-all;margin-top: 15px;padding: 15px;background: white;margin-bottom: 10px;">
                                     <span style="background: white;margin-bottom: 10px;color:black;">
@@ -2189,13 +2237,7 @@ export class MainPageController {
                         </div>
                         <div style="width: 50%;margin-right: 5px;background: white;">
                             <a href=${linkPostMajorTrendS} style='background:white;text-decoration:none;'>
-                                <div style="display: flex;gap: 5px;background: white;">
-                                    <div
-                                        style="display: flex; text-align: center;font-size: 12pt;width:400px;height:340px;background: white;">
-                                        <img style="width: 100%;height: 100%;object-fit: cover;background: white;margin-left:15px"
-                                            src=${picPostMajorS}>
-                                    </div>
-                                </div>
+                                ${picPostMajorS}
                                 <div
                                     style="display: grid;word-break: break-all;margin-top: 15px;padding: 15px;background: white;margin-bottom: 10px;">
                                     <span style="background: white;margin-bottom: 10px;color:black;">
@@ -2225,11 +2267,7 @@ export class MainPageController {
                <div style="display: flex;background: white;padding-top: 15px;padding-bottom: 15px;border-bottom: 1px solid gray;">
                     <div style="width: 33.33%;background: white;padding-right: 5px;">
                         <a href=${linkPostRoundRobinF} style='background:white;text-decoration:none;'>
-                            <div
-                                style="display: flex; text-align: center;font-size: 12pt;width:100%;height: 210px;background: white;margin-bottom: 10px;">
-                                <img style="width: 100%;object-fit: cover;background: white;height:100%;"
-                                    src=${picPostRoundRobinF}>
-                            </div>
+                            ${picPostRoundRobinF}
                             <div style="margin-bottom: 5px;background: white;display: grid;">
                                 <span style="background: white;font-size: 14px;margin-bottom: 40px;color:black;">
                                         ${postRoundRobinF}
@@ -2241,11 +2279,7 @@ export class MainPageController {
                     </div>
                     <div style="width: 33.33%;background: white;padding-right: 5px;">
                     <a href=${linkPostRoundRobinS} style='background:white;text-decoration:none;'>
-                        <div
-                            style="display: flex; text-align: center;font-size: 12pt;width:100%;height: 210px;background: white;margin-bottom: 10px;">
-                            <img style="width: 100%;object-fit: cover;background: white;height:100%;"
-                                src=${picPostRoundRobinS}>
-                        </div>
+                        ${picPostRoundRobinS}
                         <div style="margin-bottom: 5px;background: white;display: grid;">
                             <span style="background: white;font-size: 14px;margin-bottom: 40px;color:black;">
                                     ${postRoundRobinS}
@@ -2257,11 +2291,7 @@ export class MainPageController {
                     </div>
                    <div style="width: 33.33%;background: white;">
                         <a href=${linkPostRoundRobinT} style='background:white;text-decoration:none;'>
-                            <div
-                                style="display: flex; text-align: center;font-size: 12pt;width:100%;background: white;margin-bottom: 10px;height:210px">
-                                <img style="width: 100%;object-fit: cover;background: white;height:100%;"
-                                    src=${picPostRoundRobinT}>
-                            </div>
+                            ${picPostRoundRobinT}
                             <div style="margin-bottom: 5px;background: white;display: grid;">
                                 <span style="background: white;font-size: 14px;margin-bottom: 40px;color:black;">
                                         ${postRoundRobinT}
@@ -2328,13 +2358,7 @@ export class MainPageController {
                    <div style="width: 100%;display: flex;background: white;">
                         <div style="width: 50%;margin-right: 5px;background: white;">
                             <a href=${linkPostMajorTrendF} style='background:white;text-decoration:none;'>
-                                <div style="display: flex;gap: 5px;background: white;">
-                                    <div
-                                        style="display: flex; text-align: center;font-size: 12pt;width:400px;height:340px;background: white;">
-                                        <img style="margin-left:15px;width: 100%;height: 100%;object-fit: cover;background: white;"
-                                            src=${picPostMajorF}>
-                                    </div>
-                                </div>
+                                ${picPostMajorF}
                                 <div
                                     style="display: grid;word-break: break-all;margin-top: 15px;padding: 15px;background: white;margin-bottom: 10px;">
                                     <span style="background: white;margin-bottom: 10px;color:black;">
@@ -2361,13 +2385,7 @@ export class MainPageController {
                         </div>
                         <div style="width: 50%;margin-right: 5px;background: white;">
                             <a href=${linkPostMajorTrendS} style='background:white;text-decoration:none;'>
-                                <div style="display: flex;gap: 5px;background: white;">
-                                    <div
-                                        style="display: flex; text-align: center;font-size: 12pt;width:400px;height:340px;background: white;">
-                                        <img style="width: 100%;height: 100%;object-fit: cover;background: white;margin-left:15px"
-                                            src=${picPostMajorS}>
-                                    </div>
-                                </div>
+                                ${picPostMajorS}
                                 <div
                                     style="display: grid;word-break: break-all;margin-top: 15px;padding: 15px;background: white;margin-bottom: 10px;">
                                     <span style="background: white;margin-bottom: 10px;color:black;">
@@ -2397,11 +2415,7 @@ export class MainPageController {
                <div style="display: flex;background: white;padding-top: 15px;padding-bottom: 15px;border-bottom: 1px solid gray;">
                     <div style="width: 33.33%;background: white;padding-right: 5px;">
                         <a href=${linkPostRoundRobinF} style='background:white;text-decoration:none;'>
-                            <div
-                                style="display: flex; text-align: center;font-size: 12pt;width:100%;height: 210px;background: white;margin-bottom: 10px;">
-                                <img style="width: 100%;object-fit: cover;background: white;height:100%;"
-                                    src=${picPostRoundRobinF}>
-                            </div>
+                            ${picPostRoundRobinF}
                             <div style="margin-bottom: 5px;background: white;display: grid;">
                                 <span style="background: white;font-size: 14px;margin-bottom: 40px;color:black;">
                                         ${postRoundRobinF}
@@ -2413,11 +2427,7 @@ export class MainPageController {
                     </div>
                    <div style="width: 33.33%;background: white;padding-right: 5px;">
                         <a href=${linkPostRoundRobinS} style='background:white;text-decoration:none;'>
-                            <div
-                                style="display: flex; text-align: center;font-size: 12pt;width:100%;height: 210px;background: white;margin-bottom: 10px;">
-                                <img style="width: 100%;object-fit: cover;background: white;height:100%;"
-                                    src=${picPostRoundRobinS}>
-                            </div>
+                            ${picPostRoundRobinS}
                             <div style="margin-bottom: 5px;background: white;display: grid;">
                                 <span style="background: white;font-size: 14px;margin-bottom: 40px;color:black;">
                                         ${postRoundRobinS}
@@ -2429,11 +2439,7 @@ export class MainPageController {
                    </div>
                    <div style="width: 33.33%;background: white;">
                         <a href=${linkPostRoundRobinT} style='background:white;text-decoration:none;'>
-                            <div
-                                style="display: flex; text-align: center;font-size: 12pt;width:100%;background: white;margin-bottom: 10px;height:210px">
-                                <img style="width: 100%;object-fit: cover;background: white;height:100%;"
-                                    src=${picPostRoundRobinT}>
-                            </div>
+                            ${picPostRoundRobinT}
                             <div style="margin-bottom: 5px;background: white;display: grid;">
                                 <span style="background: white;font-size: 14px;margin-bottom: 40px;color:black;">
                                         ${postRoundRobinT}
@@ -2498,13 +2504,7 @@ export class MainPageController {
                         <div style="width: 100%;display: flex;background: white;">
                                 <div style="width: 50%;margin-right: 5px;background: white;">
                                     <a href=${linkPostMajorTrendF} style='background:white;text-decoration:none;'>
-                                        <div style="display: flex;gap: 5px;background: white;">
-                                            <div
-                                                style="display: flex; text-align: center;font-size: 12pt;width:400px;height:340px;background: white;">
-                                                <img style="margin-left:15px;width: 100%;height: 100%;object-fit: cover;background: white;"
-                                                    src=${picPostMajorF}>
-                                            </div>
-                                        </div>
+                                        ${picPostMajorF}
                                         <div
                                             style="display: grid;word-break: break-all;margin-top: 15px;padding: 15px;background: white;margin-bottom: 10px;">
                                             <span style="background: white;margin-bottom: 10px;color:black;">
@@ -2531,13 +2531,7 @@ export class MainPageController {
                                 </div>
                                 <div style="width: 50%;margin-right: 5px;background: white;">
                                     <a href=${linkPostMajorTrendS} style='background:white;text-decoration:none;'>
-                                        <div style="display: flex;gap: 5px;background: white;">
-                                            <div
-                                                style="display: flex; text-align: center;font-size: 12pt;width:400px;height:340px;background: white;">
-                                                <img style="width: 100%;height: 100%;object-fit: cover;background: white;margin-left:15px"
-                                                    src=${picPostMajorS}>
-                                            </div>
-                                        </div>
+                                        ${picPostMajorS}
                                         <div
                                             style="display: grid;word-break: break-all;margin-top: 15px;padding: 15px;background: white;margin-bottom: 10px;">
                                             <span style="background: white;margin-bottom: 10px;color:black;">
@@ -2661,13 +2655,7 @@ export class MainPageController {
                     <div style="width: 100%;display: flex;background: white;">
                             <div style="width: 50%;margin-right: 5px;background: white;">
                                 <a href=${linkPostMajorTrendF} style='background:white;text-decoration:none;'>
-                                    <div style="display: flex;gap: 5px;background: white;">
-                                        <div
-                                            style="display: flex; text-align: center;font-size: 12pt;width:400px;height:340px;background: white;">
-                                            <img style="margin-left:15px;width: 100%;height: 100%;object-fit: cover;background: white;"
-                                                src=${picPostMajorF}>
-                                        </div>
-                                    </div>
+                                    ${picPostMajorF}
                                     <div
                                         style="display: grid;word-break: break-all;margin-top: 15px;padding: 15px;background: white;margin-bottom: 10px;">
                                         <span style="background: white;margin-bottom: 10px;color:black;">
@@ -2694,13 +2682,7 @@ export class MainPageController {
                             </div>
                             <div style="width: 50%;margin-right: 5px;background: white;">
                                 <a href=${linkPostMajorTrendS} style='background:white;text-decoration:none;'>
-                                    <div style="display: flex;gap: 5px;background: white;">
-                                        <div
-                                            style="display: flex; text-align: center;font-size: 12pt;width:400px;height:340px;background: white;">
-                                            <img style="width: 100%;height: 100%;object-fit: cover;background: white;margin-left:15px"
-                                                src=${picPostMajorS}>
-                                        </div>
-                                    </div>
+                                    ${picPostMajorS}
                                     <div
                                         style="display: grid;word-break: break-all;margin-top: 15px;padding: 15px;background: white;margin-bottom: 10px;">
                                         <span style="background: white;margin-bottom: 10px;color:black;">
@@ -2824,13 +2806,7 @@ export class MainPageController {
                        <div style="width: 100%;display: flex;background: white;">
                             <div style="width: 50%;margin-right: 5px;background: white;">
                                 <a href=${linkPostMajorTrendF} style='background:white;text-decoration:none;'>
-                                    <div style="display: flex;gap: 5px;background: white;">
-                                        <div
-                                            style="display: flex; text-align: center;font-size: 12pt;width:400px;height:340px;background: white;">
-                                            <img style="margin-left:15px;width: 100%;height: 100%;object-fit: cover;background: white;"
-                                                src=${picPostMajorF}>
-                                        </div>
-                                    </div>
+                                    ${picPostMajorF}
                                     <div
                                         style="display: grid;word-break: break-all;margin-top: 15px;padding: 15px;background: white;margin-bottom: 10px;">
                                         <span style="background: white;margin-bottom: 10px;color:black;">
@@ -2857,13 +2833,7 @@ export class MainPageController {
                             </div>
                             <div style="width: 50%;margin-right: 5px;background: white;">
                                 <a href=${linkPostMajorTrendS} style='background:white;text-decoration:none;'>
-                                    <div style="display: flex;gap: 5px;background: white;">
-                                        <div
-                                            style="display: flex; text-align: center;font-size: 12pt;width:400px;height:340px;background: white;">
-                                            <img style="width: 100%;height: 100%;object-fit: cover;background: white;margin-left:15px"
-                                                src=${picPostMajorS}>
-                                        </div>
-                                    </div>
+                                    ${picPostMajorS}
                                     <div
                                         style="display: grid;word-break: break-all;margin-top: 15px;padding: 15px;background: white;margin-bottom: 10px;">
                                         <span style="background: white;margin-bottom: 10px;color:black;">
@@ -2893,11 +2863,7 @@ export class MainPageController {
                    <div style="display: flex;background: white;padding-top: 15px;padding-bottom: 15px;border-bottom: 1px solid gray;">
                         <div style="width: 50%;background: white;padding-right: 5px;">
                             <a href=${linkPostRoundRobinF} style='background:white;text-decoration:none;'>
-                                <div
-                                    style="display: flex; text-align: center;font-size: 12pt;width:100%;height: 210px;background: white;margin-bottom: 10px;">
-                                    <img style="width: 100%;object-fit: cover;background: white;height:100%;"
-                                        src=${picPostRoundRobinF}>
-                                </div>
+                                ${picPostRoundRobinF}
                                 <div style="margin-bottom: 5px;background: white;display: grid;">
                                     <span style="background: white;font-size: 14px;margin-bottom: 40px;color:black;">
                                             ${postRoundRobinF}
@@ -2909,11 +2875,7 @@ export class MainPageController {
                         </div>
                         <div style="width: 50%;background: white;padding-right: 5px;">
                         <a href=${linkPostRoundRobinS} style='background:white;text-decoration:none;'>
-                            <div
-                                style="display: flex; text-align: center;font-size: 12pt;width:100%;height: 210px;background: white;margin-bottom: 10px;">
-                                <img style="width: 100%;object-fit: cover;background: white;height:100%;"
-                                    src=${picPostRoundRobinS}>
-                            </div>
+                            ${picPostRoundRobinS}
                             <div style="margin-bottom: 5px;background: white;display: grid;">
                                 <span style="background: white;font-size: 14px;margin-bottom: 40px;color:black;">
                                         ${postRoundRobinS}
@@ -3023,13 +2985,7 @@ export class MainPageController {
                        <div style="width: 100%;display: flex;background: white;">
                             <div style="width: 50%;margin-right: 5px;background: white;">
                                 <a href=${linkPostMajorTrendF} style='background:white;text-decoration:none;'>
-                                    <div style="display: flex;gap: 5px;background: white;">
-                                        <div
-                                            style="display: flex; text-align: center;font-size: 12pt;width:400px;height:340px;background: white;">
-                                            <img style="margin-left:15px;width: 100%;height: 100%;object-fit: cover;background: white;"
-                                                src=${picPostMajorF}>
-                                        </div>
-                                    </div>
+                                    ${picPostMajorF}
                                     <div
                                         style="display: grid;word-break: break-all;margin-top: 15px;padding: 15px;background: white;margin-bottom: 10px;">
                                         <span style="background: white;margin-bottom: 10px;color:black;">
@@ -3056,13 +3012,7 @@ export class MainPageController {
                             </div>
                             <div style="width: 50%;margin-right: 5px;background: white;">
                                 <a href=${linkPostMajorTrendS} style='background:white;text-decoration:none;'>
-                                    <div style="display: flex;gap: 5px;background: white;">
-                                        <div
-                                            style="display: flex; text-align: center;font-size: 12pt;width:400px;height:340px;background: white;">
-                                            <img style="width: 100%;height: 100%;object-fit: cover;background: white;margin-left:15px"
-                                                src=${picPostMajorS}>
-                                        </div>
-                                    </div>
+                                    ${picPostMajorS}
                                     <div
                                         style="display: grid;word-break: break-all;margin-top: 15px;padding: 15px;background: white;margin-bottom: 10px;">
                                         <span style="background: white;margin-bottom: 10px;color:black;">
@@ -3092,11 +3042,7 @@ export class MainPageController {
                    <div style="display: flex;background: white;padding-top: 15px;padding-bottom: 15px;border-bottom: 1px solid gray;">
                         <div style="width: 100%;background: white;padding-right: 5px;">
                             <a href=${linkPostRoundRobinF} style='background:white;text-decoration:none;'>
-                                <div
-                                    style="display: flex; text-align: center;font-size: 12pt;width:100%;height: 210px;background: white;margin-bottom: 10px;">
-                                    <img style="width: 100%;object-fit: cover;background: white;height:100%;"
-                                        src=${picPostRoundRobinF}>
-                                </div>
+                                ${picPostRoundRobinF}
                                 <div style="margin-bottom: 5px;background: white;display: grid;">
                                     <span style="background: white;font-size: 14px;margin-bottom: 40px;color:black;">
                                             ${postRoundRobinF}
@@ -3163,13 +3109,7 @@ export class MainPageController {
                        <div style="width: 100%;display: flex;background: white;">
                             <div style="width: 50%;margin-right: 5px;background: white;">
                                 <a href=${linkPostMajorTrendF} style='background:white;text-decoration:none;'>
-                                    <div style="display: flex;gap: 5px;background: white;">
-                                        <div
-                                            style="display: flex; text-align: center;font-size: 12pt;width:400px;height:340px;background: white;">
-                                            <img style="margin-left:15px;width: 100%;height: 100%;object-fit: cover;background: white;"
-                                                src=${picPostMajorF}>
-                                        </div>
-                                    </div>
+                                    ${picPostMajorF}
                                     <div
                                         style="display: grid;word-break: break-all;margin-top: 15px;padding: 15px;background: white;margin-bottom: 10px;">
                                         <span style="background: white;margin-bottom: 10px;color:black;">
@@ -3196,13 +3136,7 @@ export class MainPageController {
                             </div>
                             <div style="width: 50%;margin-right: 5px;background: white;">
                                 <a href=${linkPostMajorTrendS} style='background:white;text-decoration:none;'>
-                                    <div style="display: flex;gap: 5px;background: white;">
-                                        <div
-                                            style="display: flex; text-align: center;font-size: 12pt;width:400px;height:340px;background: white;">
-                                            <img style="width: 100%;height: 100%;object-fit: cover;background: white;margin-left:15px"
-                                                src=${picPostMajorS}>
-                                        </div>
-                                    </div>
+                                    ${picPostMajorS}
                                     <div
                                         style="display: grid;word-break: break-all;margin-top: 15px;padding: 15px;background: white;margin-bottom: 10px;">
                                         <span style="background: white;margin-bottom: 10px;color:black;">
@@ -3232,11 +3166,7 @@ export class MainPageController {
                    <div style="display: flex;background: white;padding-top: 15px;padding-bottom: 15px;border-bottom: 1px solid gray;">
                         <div style="width: 100%;background: white;padding-right: 5px;">
                             <a href=${linkPostRoundRobinF} style='background:white;text-decoration:none;'>
-                                <div
-                                    style="display: flex; text-align: center;font-size: 12pt;width:100%;height: 210px;background: white;margin-bottom: 10px;">
-                                    <img style="width: 100%;object-fit: cover;background: white;height:100%;"
-                                        src=${picPostRoundRobinF}>
-                                </div>
+                                ${picPostRoundRobinF}
                                 <div style="margin-bottom: 5px;background: white;display: grid;">
                                     <span style="background: white;font-size: 14px;margin-bottom: 40px;color:black;">
                                             ${postRoundRobinF}
@@ -3302,13 +3232,7 @@ export class MainPageController {
                        <div style="width: 100%;display: flex;background: white;">
                             <div style="width: 50%;margin-right: 5px;background: white;">
                                 <a href=${linkPostMajorTrendF} style='background:white;text-decoration:none;'>
-                                    <div style="display: flex;gap: 5px;background: white;">
-                                        <div
-                                            style="display: flex; text-align: center;font-size: 12pt;width:400px;height:340px;background: white;">
-                                            <img style="margin-left:15px;width: 100%;height: 100%;object-fit: cover;background: white;"
-                                                src=${picPostMajorF}>
-                                        </div>
-                                    </div>
+                                    ${picPostMajorF}
                                     <div
                                         style="display: grid;word-break: break-all;margin-top: 15px;padding: 15px;background: white;margin-bottom: 10px;">
                                         <span style="background: white;margin-bottom: 10px;color:black;">
@@ -3335,13 +3259,7 @@ export class MainPageController {
                             </div>
                             <div style="width: 50%;margin-right: 5px;background: white;">
                                 <a href=${linkPostMajorTrendS} style='background:white;text-decoration:none;'>
-                                    <div style="display: flex;gap: 5px;background: white;">
-                                        <div
-                                            style="display: flex; text-align: center;font-size: 12pt;width:400px;height:340px;background: white;">
-                                            <img style="width: 100%;height: 100%;object-fit: cover;background: white;margin-left:15px"
-                                                src=${picPostMajorS}>
-                                        </div>
-                                    </div>
+                                    ${picPostMajorS}
                                     <div
                                         style="display: grid;word-break: break-all;margin-top: 15px;padding: 15px;background: white;margin-bottom: 10px;">
                                         <span style="background: white;margin-bottom: 10px;color:black;">
@@ -3371,11 +3289,7 @@ export class MainPageController {
                    <div style="display: flex;background: white;padding-top: 15px;padding-bottom: 15px;border-bottom: 1px solid gray;">
                         <div style="width: 50%;background: white;padding-right: 5px;">
                             <a href=${linkPostRoundRobinF} style='background:white;text-decoration:none;'>
-                                <div
-                                    style="display: flex; text-align: center;font-size: 12pt;width:100%;height: 210px;background: white;margin-bottom: 10px;">
-                                    <img style="width: 100%;object-fit: cover;background: white;height:100%;"
-                                        src=${picPostRoundRobinF}>
-                                </div>
+                                ${picPostRoundRobinF}
                                 <div style="margin-bottom: 5px;background: white;display: grid;">
                                     <span style="background: white;font-size: 14px;margin-bottom: 40px;color:black;">
                                             ${postRoundRobinF}
@@ -3387,11 +3301,7 @@ export class MainPageController {
                         </div>
                         <div style="width: 50%;background: white;padding-right: 5px;">
                         <a href=${linkPostRoundRobinS} style='background:white;text-decoration:none;'>
-                            <div
-                                style="display: flex; text-align: center;font-size: 12pt;width:100%;height: 210px;background: white;margin-bottom: 10px;">
-                                <img style="width: 100%;object-fit: cover;background: white;height:100%;"
-                                    src=${picPostRoundRobinS}>
-                            </div>
+                            ${picPostRoundRobinS}
                             <div style="margin-bottom: 5px;background: white;display: grid;">
                                 <span style="background: white;font-size: 14px;margin-bottom: 40px;color:black;">
                                         ${postRoundRobinS}
