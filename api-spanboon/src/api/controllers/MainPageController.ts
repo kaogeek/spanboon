@@ -2073,6 +2073,14 @@ export class MainPageController {
             }
 
             if (content.pageRoundRobin.contents[2] !== undefined) {
+                postRoundRobinT = content.pageRoundRobin.contents[2].post.title;
+                if (postRoundRobinT.length > 38) {
+                    postRoundRobinT = content.pageRoundRobin.contents[2].post.title.slice(0, 38) + '...';
+                }
+                newsTitle.push(postRoundRobinT);
+            }
+
+            if (content.pageRoundRobin.contents[2] !== undefined) {
                 picPostRoundRobinT = content.pageRoundRobin.contents[2].coverPageUrl ?
                     `
                 <div style="display: flex; text-align: center;font-size: 12pt;width:100%;height: 210px;background: white;margin-bottom: 10px;">
@@ -2083,14 +2091,6 @@ export class MainPageController {
                         <span style="color:black;text-align: center;margin-top:100px">${postRoundRobinT}</span> 
                 </div>`
                     ;
-            }
-
-            if (content.pageRoundRobin.contents[2] !== undefined) {
-                postRoundRobinT = content.pageRoundRobin.contents[2].post.title;
-                if (postRoundRobinT.length > 38) {
-                    postRoundRobinT = content.pageRoundRobin.contents[2].post.title.slice(0, 38) + '...';
-                }
-                newsTitle.push(postRoundRobinT);
             }
             if (content.pageRoundRobin.contents[2] !== undefined) {
                 nameRoundRobinT = content.pageRoundRobin.contents[2].owner.name ? content.pageRoundRobin.contents[2].owner.name : content.pageRoundRobin.contents[2].owner.displayName;
