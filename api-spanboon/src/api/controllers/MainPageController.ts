@@ -1966,9 +1966,9 @@ export class MainPageController {
             postMajorTitleS = content.majorTrend.contents[1].post.title;
             newsTitle.push(postMajorTitleS);
         } if (content.majorTrend.contents[0] !== undefined) {
-            postMajorNameF = content.majorTrend.contents[0].owner.name;
+            postMajorNameF = content.majorTrend.contents[0].owner.name ? content.majorTrend.contents[0].owner.name : content.majorTrend.contents[0].owner.displayName;
         } if (content.majorTrend.contents[1] !== undefined) {
-            postMajorNameS = content.majorTrend.contents[1].owner.name;
+            postMajorNameS = content.majorTrend.contents[1].owner.name ? content.majorTrend.contents[1].owner.name : content.majorTrend.contents[1].owner.displayName;
         }
 
         let picPostRoundRobinF = undefined;
@@ -2070,7 +2070,6 @@ export class MainPageController {
         });
         let sendMail = undefined;
         let message = undefined;
-
         if (picPostMajorF !== undefined &&
             picPostMajorS !== undefined &&
             postMajorTitleF !== undefined &&
