@@ -1971,30 +1971,30 @@ export class MainPageController {
             postMajorNameS = content.majorTrend.contents[1].owner.name ? content.majorTrend.contents[1].owner.name : content.majorTrend.contents[1].owner.displayName;
         }
         if (content.majorTrend.contents[0] !== undefined) {
-            picPostMajorF = content.majorTrend.contents[0].coverPageUrl ? `
+            picPostMajorF = content.majorTrend.contents[0].coverPageSignUrl ? `
             <div style="display: flex;gap: 5px;background: white;">
                 <div
                     style="display: flex; text-align: center;font-size: 12pt;width:400px;height:340px;background: white;">
                     <img style="width: 100%;height: 100%;object-fit: cover;background: white;margin-left:15px"
-                        src=${process.env.APP_API + content.majorTrend.contents[0].coverPageUrl + '/image'}>
+                        src=${process.env.APP_CLOUDFRONT + content.majorTrend.contents[0].coverPageSignUrl}>
                 </div>
             </div>`:
                 `<div style="display: flex;gap: 5px;width:400px;height:340px">
-                <span style="color:black;text-align: center;margin-top:160px;margin-bottom:133px">${postMajorTitleF}</span> 
+                <span style="color:black;text-align: center;margin-top:160px;margin-bottom:133px;width: 100%;">${postMajorTitleF}</span> 
             </div>`;
         }
         if (content.majorTrend.contents[1] !== undefined) {
-            picPostMajorS = content.majorTrend.contents[1].coverPageUrl ? `
+            picPostMajorS = content.majorTrend.contents[1].coverPageSignUrl ? `
             <div style="display: flex;gap: 5px;background: white;">
                 <div
                     style="display: flex; text-align: center;font-size: 12pt;width:400px;height:340px;background: white;">
                     <img style="width: 100%;height: 100%;object-fit: cover;background: white;margin-left:15px"
-                        src=${process.env.APP_API + content.majorTrend.contents[1].coverPageUrl + '/image'}>
+                        src=${process.env.APP_CLOUDFRONT + content.majorTrend.contents[1].coverPageSignUrl}>
                 </div>
             </div>` :
                 `            
             <div style="display: flex;gap: 5px;width:400px;height:340px">
-                <span style="color:black;text-align: center;margin-top:160px;margin-bottom:133px">${postMajorTitleS}</span> 
+                <span style="color:black;text-align: center;margin-top:160px;margin-bottom:133px;width: 100%;">${postMajorTitleS}</span> 
             </div>`
                 ;
         }
@@ -2035,16 +2035,15 @@ export class MainPageController {
                 newsTitle.push(postRoundRobinF);
             }
             if (content.pageRoundRobin.contents[0] !== undefined) {
-                picPostRoundRobinF = content.pageRoundRobin.contents[0].coverPageUrl ?
+                picPostRoundRobinF = content.pageRoundRobin.contents[0].coverPageSignUrl ?
                     `
                 <div style="display: flex; text-align: center;font-size: 12pt;width:100%;height: 210px;background: white;margin-bottom: 10px;">
                     <img style="width: 100%;object-fit: cover;background: white;height:100%;"
-                        src=${process.env.APP_API + content.pageRoundRobin.contents[0].coverPageUrl + '/image'}>
+                        src=${process.env.APP_CLOUDFRONT + content.pageRoundRobin.contents[0].coverPageSignUrl}>
                 </div>`: `         
-                <div style="display: flex;gap: 5px;width:100%;height: 210px;">
-                    <span style="color:black;text-align: center;margin-top:100px">${postRoundRobinF}</span> 
-                </div>`
-                    ;
+                <div style="display: flex;gap: 5px;width:100%;height: 210px;margin-bottom:10px">
+                    <span style="color:black;text-align: center;margin-top:100px;width: 100%;">${postRoundRobinF}</span> 
+                </div>`;
             }
             if (content.pageRoundRobin.contents[1] !== undefined) {
                 postRoundRobinS = content.pageRoundRobin.contents[1].post.title;
@@ -2060,14 +2059,14 @@ export class MainPageController {
                 linkPostRoundRobinS = process.env.APP_POST + '/' + content.pageRoundRobin.contents[1].post._id;
             }
             if (content.pageRoundRobin.contents[1] !== undefined) {
-                picPostRoundRobinS = content.pageRoundRobin.contents[1].coverPageUrl ?
+                picPostRoundRobinS = content.pageRoundRobin.contents[1].coverPageSignUrl ?
                     `
                         <div style="display: flex; text-align: center;font-size: 12pt;width:100%;height: 210px;background: white;margin-bottom: 10px;">
                             <img style="width: 100%;object-fit: cover;background: white;height:100%;"
-                                src=${process.env.APP_API + content.pageRoundRobin.contents[1].coverPageUrl + '/image'}>
+                                src=${process.env.APP_CLOUDFRONT + content.pageRoundRobin.contents[1].coverPageSignUrl}>
                         </div>`: `         
-                        <div style="display: flex;gap: 5px;width:100%;height: 210px;">
-                            <span style="color:black;text-align: center;margin-top:100px">${postRoundRobinS}</span> 
+                        <div style="display: flex;gap: 5px;width:100%;height: 210px;margin-bottom:10px">
+                            <span style="color:black;text-align: center;margin-top:100px;width: 100%;">${postRoundRobinS}</span> 
                         </div>`
                     ;
             }
@@ -2081,14 +2080,14 @@ export class MainPageController {
             }
 
             if (content.pageRoundRobin.contents[2] !== undefined) {
-                picPostRoundRobinT = content.pageRoundRobin.contents[2].coverPageUrl ?
+                picPostRoundRobinT = content.pageRoundRobin.contents[2].coverPageSignUrl ?
                     `
                 <div style="display: flex; text-align: center;font-size: 12pt;width:100%;height: 210px;background: white;margin-bottom: 10px;">
                         <img style="width: 100%;object-fit: cover;background: white;height:100%;"
-                            src=${process.env.APP_API + content.pageRoundRobin.contents[2].coverPageUrl + '/image'}>
-                    </div>`: `         
-                    <div style="display: flex;gap: 5px;width:100%;height: 210px;">
-                        <span style="color:black;text-align: center;margin-top:100px">${postRoundRobinT}</span> 
+                            src=${process.env.APP_CLOUDFRONT + content.pageRoundRobin.contents[2].coverPageSignUrl}>
+                </div>`: `         
+                <div style="display: flex;gap: 5px;width:100%;height: 210px;margin-bottom:10px">
+                        <span style="color:black;text-align: center;margin-top:100px;width: 100%;">${postRoundRobinT}</span> 
                 </div>`
                     ;
             }

@@ -212,8 +212,6 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
 
                     const postAggregateSet1 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, postsHashTags: { $in: hashTagStack1 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                            { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
                                 {
@@ -225,6 +223,8 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                                     as: 'page'
                                 }
                             },
+                            { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, postsHashTags: { $in: hashTagStack1 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $sort: { summationScore: -1 } },
                             {
                                 $limit: limit
                             },
@@ -277,8 +277,6 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                     postAggregateAll.push(postAggregateSet1);
                     const postAggregateSet2 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, postsHashTags: { $in: hashTagStack2 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                            { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
                                 {
@@ -290,6 +288,8 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                                     as: 'page'
                                 }
                             },
+                            { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, postsHashTags: { $in: hashTagStack2 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $sort: { summationScore: -1 } },
                             {
                                 $limit: limit
                             },
@@ -342,8 +342,6 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                     postAggregateAll.push(postAggregateSet2);
                     const postAggregateSet3 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, postsHashTags: { $in: hashTagStack3 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                            { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
                                 {
@@ -355,6 +353,8 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                                     as: 'page'
                                 }
                             },
+                            { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, postsHashTags: { $in: hashTagStack3 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $sort: { summationScore: -1 } },
                             {
                                 $limit: limit
                             },
@@ -432,9 +432,9 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
 
                         const contents: any = {};
                         contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                        if (firstImage !== undefined && firstImage.s3FilePath !== undefined && firstImage.s3FilePath !== '') {
+                        if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
                             try {
-                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3FilePath);
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
                                 contents.coverPageSignUrl = signUrl;
                             } catch (error) {
                                 console.log('PostSectionProcessor: ' + error);
@@ -469,8 +469,6 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                     resolve(result);
                 } else if (ContentProcessor.type === 'post' && ContentProcessor.field === 'score') {
                     const postStmt = [
-                        { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                        { $sort: { summationScore: -1 } },
                         {
                             $lookup:
                             {
@@ -482,6 +480,8 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                                 as: 'page'
                             }
                         },
+                        { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                        { $sort: { summationScore: -1 } },
                         {
                             $unwind: {
                                 path: '$page',
@@ -550,9 +550,9 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
 
                         const contents: any = {};
                         contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                        if (firstImage !== undefined && firstImage.s3FilePath !== undefined && firstImage.s3FilePath !== '') {
+                        if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
                             try {
-                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3FilePath);
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
                                 contents.coverPageSignUrl = signUrl;
                             } catch (error) {
                                 console.log('PostSectionProcessor: ' + error);
@@ -608,8 +608,6 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                     }
 
                     const postStmt = [
-                        { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, objective: { $ne: null, $in: bucketF } } },
-                        { $sort: { summationScore: -1 } },
                         {
                             $lookup:
                             {
@@ -621,6 +619,8 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                                 as: 'page'
                             }
                         },
+                        { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, objective: { $ne: null, $in: bucketF } } },
+                        { $sort: { summationScore: -1 } },
                         {
                             $unwind: {
                                 path: '$page',
@@ -678,8 +678,6 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                         bucketAll.push(postAggregate);
                     }
                     const postStmt2 = [
-                        { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, objective: { $ne: null, $in: bucketS } } },
-                        { $sort: { summationScore: -1 } },
                         {
                             $lookup:
                             {
@@ -691,6 +689,8 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                                 as: 'page'
                             }
                         },
+                        { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, objective: { $ne: null, $in: bucketS } } },
+                        { $sort: { summationScore: -1 } },
                         {
                             $unwind: {
                                 path: '$page',
@@ -748,8 +748,6 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                         bucketAll.push(postAggregate2);
                     }
                     const postStmt3 = [
-                        { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, objective: { $ne: null, $in: bucketS } } },
-                        { $sort: { summationScore: -1 } },
                         {
                             $lookup:
                             {
@@ -761,6 +759,8 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                                 as: 'page'
                             }
                         },
+                        { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, objective: { $ne: null, $in: bucketS } } },
+                        { $sort: { summationScore: -1 } },
                         {
                             $unwind: {
                                 path: '$page',
@@ -845,9 +845,9 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
 
                         const contents: any = {};
                         contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                        if (firstImage !== undefined && firstImage.s3FilePath !== undefined && firstImage.s3FilePath !== '') {
+                        if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
                             try {
-                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3FilePath);
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
                                 contents.coverPageSignUrl = signUrl;
                             } catch (error) {
                                 console.log('PostSectionProcessor: ' + error);
@@ -903,8 +903,6 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                     }
 
                     const postStmt1 = [
-                        { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, pageId: { $ne: null }, emergencyEvent: { $ne: null, $in: bucketF }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                        { $sort: { summationScore: -1 } },
                         {
                             $lookup:
                             {
@@ -916,6 +914,8 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                                 as: 'page'
                             }
                         },
+                        { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, pageId: { $ne: null }, emergencyEvent: { $ne: null, $in: bucketF }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                        { $sort: { summationScore: -1 } },
                         {
                             $unwind: {
                                 path: '$page',
@@ -974,8 +974,6 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                     }
 
                     const postStmt2 = [
-                        { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, pageId: { $ne: null }, emergencyEvent: { $ne: null, $in: bucketS } } },
-                        { $sort: { summationScore: -1 } },
                         {
                             $lookup:
                             {
@@ -987,6 +985,8 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                                 as: 'page'
                             }
                         },
+                        { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, pageId: { $ne: null }, emergencyEvent: { $ne: null, $in: bucketS } } },
+                        { $sort: { summationScore: -1 } },
                         {
                             $unwind: {
                                 path: '$page',
@@ -1044,8 +1044,6 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                         postObject.push(postAggregate2);
                     }
                     const postStmt3 = [
-                        { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, pageId: { $ne: null }, emergencyEvent: { $ne: null, $in: bucketT } } },
-                        { $sort: { summationScore: -1 } },
                         {
                             $lookup:
                             {
@@ -1057,6 +1055,8 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                                 as: 'page'
                             }
                         },
+                        { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, pageId: { $ne: null }, emergencyEvent: { $ne: null, $in: bucketT } } },
+                        { $sort: { summationScore: -1 } },
                         {
                             $unwind: {
                                 path: '$page',
@@ -1139,9 +1139,9 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
 
                         const contents: any = {};
                         contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                        if (firstImage !== undefined && firstImage.s3FilePath !== undefined && firstImage.s3FilePath !== '') {
+                        if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
                             try {
-                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3FilePath);
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
                                 contents.coverPageSignUrl = signUrl;
                             } catch (error) {
                                 console.log('PostSectionProcessor: ' + error);
@@ -1252,8 +1252,6 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
 
                     const postAggregateSet1 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, pageId: { $in: pageStackprovince1 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                            { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
                                 {
@@ -1265,6 +1263,8 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                                     as: 'page'
                                 }
                             },
+                            { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, pageId: { $in: pageStackprovince1 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $sort: { summationScore: -1 } },
                             {
                                 $limit: limit
                             },
@@ -1319,8 +1319,6 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                     }
                     const postAggregateSet2 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, pageId: { $in: pageStackprovince2 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                            { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
                                 {
@@ -1332,6 +1330,8 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                                     as: 'page'
                                 }
                             },
+                            { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, pageId: { $in: pageStackprovince2 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $sort: { summationScore: -1 } },
                             {
                                 $limit: limit
                             },
@@ -1386,8 +1386,6 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                     }
                     const postAggregateSet3 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, pageId: { $in: pageStackprovince3 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                            { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
                                 {
@@ -1399,6 +1397,8 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                                     as: 'page'
                                 }
                             },
+                            { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, pageId: { $in: pageStackprovince3 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $sort: { summationScore: -1 } },
                             {
                                 $limit: limit
                             },
@@ -1478,9 +1478,9 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
 
                         const contents: any = {};
                         contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                        if (firstImage !== undefined && firstImage.s3FilePath !== undefined && firstImage.s3FilePath !== '') {
+                        if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
                             try {
-                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3FilePath);
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
                                 contents.coverPageSignUrl = signUrl;
                             } catch (error) {
                                 console.log('PostSectionProcessor: ' + error);
@@ -1592,8 +1592,6 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
 
                     const postAggregateSet1 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, pageId: { $in: pageStackprovince1 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                            { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
                                 {
@@ -1605,6 +1603,8 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                                     as: 'page'
                                 }
                             },
+                            { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, pageId: { $in: pageStackprovince1 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $sort: { summationScore: -1 } },
                             {
                                 $limit: limit
                             },
@@ -1659,8 +1659,6 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                     }
                     const postAggregateSet2 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, pageId: { $in: pageStackprovince2 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                            { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
                                 {
@@ -1672,6 +1670,8 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                                     as: 'page'
                                 }
                             },
+                            { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, pageId: { $in: pageStackprovince2 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $sort: { summationScore: -1 } },
                             {
                                 $limit: limit
                             },
@@ -1726,8 +1726,6 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                     }
                     const postAggregateSet3 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, pageId: { $in: pageStackprovince3 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                            { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
                                 {
@@ -1739,6 +1737,8 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                                     as: 'page'
                                 }
                             },
+                            { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, pageId: { $in: pageStackprovince3 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $sort: { summationScore: -1 } },
                             {
                                 $limit: limit
                             },
@@ -1818,9 +1818,9 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
 
                         const contents: any = {};
                         contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                        if (firstImage !== undefined && firstImage.s3FilePath !== undefined && firstImage.s3FilePath !== '') {
+                        if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
                             try {
-                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3FilePath);
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
                                 contents.coverPageSignUrl = signUrl;
                             } catch (error) {
                                 console.log('PostSectionProcessor: ' + error);
@@ -1881,8 +1881,6 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                     // set 1
                     const postAggregateSet1 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, pageId: { $in: bucketF }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                            { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
                                 {
@@ -1894,6 +1892,8 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                                     as: 'page'
                                 }
                             },
+                            { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, pageId: { $in: bucketF }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $sort: { summationScore: -1 } },
                             {
                                 $limit: limit
                             },
@@ -1948,8 +1948,6 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                     }
                     const postAggregateSet2 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, pageId: { $in: bucketS }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                            { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
                                 {
@@ -1961,6 +1959,8 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                                     as: 'page'
                                 }
                             },
+                            { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, pageId: { $in: bucketS }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $sort: { summationScore: -1 } },
                             {
                                 $limit: limit
                             },
@@ -2015,8 +2015,6 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                     }
                     const postAggregateSet3 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, pageId: { $in: bucketT }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                            { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
                                 {
@@ -2028,6 +2026,8 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                                     as: 'page'
                                 }
                             },
+                            { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, pageId: { $in: bucketT }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $sort: { summationScore: -1 } },
                             {
                                 $limit: limit
                             },
@@ -2107,9 +2107,9 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
 
                         const contents: any = {};
                         contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                        if (firstImage !== undefined && firstImage.s3FilePath !== undefined && firstImage.s3FilePath !== '') {
+                        if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
                             try {
-                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3FilePath);
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
                                 contents.coverPageSignUrl = signUrl;
                             } catch (error) {
                                 console.log('PostSectionProcessor: ' + error);
@@ -2151,8 +2151,6 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                         }
                     }
                     const postStmt = [
-                        { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, postsHashTags: { $ne: null, $in: bucketF } } },
-                        { $sort: { summationScore: -1 } },
                         {
                             $lookup:
                             {
@@ -2164,6 +2162,8 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                                 as: 'page'
                             }
                         },
+                        { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, postsHashTags: { $ne: null, $in: bucketF } } },
+                        { $sort: { summationScore: -1 } },
                         {
                             $unwind: {
                                 path: '$page',
@@ -2234,9 +2234,9 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
 
                         const contents: any = {};
                         contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                        if (firstImage !== undefined && firstImage.s3FilePath !== undefined && firstImage.s3FilePath !== '') {
+                        if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
                             try {
-                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3FilePath);
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
                                 contents.coverPageSignUrl = signUrl;
                             } catch (error) {
                                 console.log('PostSectionProcessor: ' + error);
@@ -2537,11 +2537,11 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                                 $lookup:
                                 {
                                     from: 'Page',
-                                        let: { 'pageId': '$pageId' },
+                                    let: { 'pageId': '$pageId' },
                                     pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
                                     { $project: { email: 0 } }
                                     ],
-                                        as: 'page'
+                                    as: 'page'
                                 }
                             },
                             {
@@ -2602,11 +2602,11 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                                 $lookup:
                                 {
                                     from: 'Page',
-                                        let: { 'pageId': '$pageId' },
+                                    let: { 'pageId': '$pageId' },
                                     pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
                                     { $project: { email: 0 } }
                                     ],
-                                        as: 'page'
+                                    as: 'page'
                                 }
                             },
                             {
@@ -2728,11 +2728,11 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                             $lookup:
                             {
                                 from: 'Page',
-                                    let: { 'pageId': '$pageId' },
+                                let: { 'pageId': '$pageId' },
                                 pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
                                 { $project: { email: 0 } }
                                 ],
-                                    as: 'page'
+                                as: 'page'
                             }
                         },
                         {
@@ -2873,11 +2873,11 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                             $lookup:
                             {
                                 from: 'Page',
-                                    let: { 'pageId': '$pageId' },
+                                let: { 'pageId': '$pageId' },
                                 pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
                                 { $project: { email: 0 } }
                                 ],
-                                    as: 'page'
+                                as: 'page'
                             }
                         },
                         {
@@ -2943,11 +2943,11 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                             $lookup:
                             {
                                 from: 'Page',
-                                    let: { 'pageId': '$pageId' },
+                                let: { 'pageId': '$pageId' },
                                 pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
                                 { $project: { email: 0 } }
                                 ],
-                                    as: 'page'
+                                as: 'page'
                             }
                         },
                         {
@@ -3013,11 +3013,11 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                             $lookup:
                             {
                                 from: 'Page',
-                                    let: { 'pageId': '$pageId' },
+                                let: { 'pageId': '$pageId' },
                                 pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
                                 { $project: { email: 0 } }
                                 ],
-                                    as: 'page'
+                                as: 'page'
                             }
                         },
                         {
@@ -3166,11 +3166,11 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                             $lookup:
                             {
                                 from: 'Page',
-                                    let: { 'pageId': '$pageId' },
+                                let: { 'pageId': '$pageId' },
                                 pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
                                 { $project: { email: 0 } }
                                 ],
-                                    as: 'page'
+                                as: 'page'
                             }
                         },
                         {
@@ -3237,11 +3237,11 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                             $lookup:
                             {
                                 from: 'Page',
-                                    let: { 'pageId': '$pageId' },
+                                let: { 'pageId': '$pageId' },
                                 pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
                                 { $project: { email: 0 } }
                                 ],
-                                    as: 'page'
+                                as: 'page'
                             }
                         },
                         {
@@ -3307,11 +3307,11 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                             $lookup:
                             {
                                 from: 'Page',
-                                    let: { 'pageId': '$pageId' },
+                                let: { 'pageId': '$pageId' },
                                 pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
                                 { $project: { email: 0 } }
                                 ],
-                                    as: 'page'
+                                as: 'page'
                             }
                         },
                         {
@@ -3514,11 +3514,11 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                                 $lookup:
                                 {
                                     from: 'Page',
-                                        let: { 'pageId': '$pageId' },
+                                    let: { 'pageId': '$pageId' },
                                     pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
                                     { $project: { email: 0 } }
                                     ],
-                                        as: 'page'
+                                    as: 'page'
                                 }
                             },
                             {
@@ -3581,11 +3581,11 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                                 $lookup:
                                 {
                                     from: 'Page',
-                                        let: { 'pageId': '$pageId' },
+                                    let: { 'pageId': '$pageId' },
                                     pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
                                     { $project: { email: 0 } }
                                     ],
-                                        as: 'page'
+                                    as: 'page'
                                 }
                             },
                             {
