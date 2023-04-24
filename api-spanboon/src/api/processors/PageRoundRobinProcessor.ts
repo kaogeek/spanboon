@@ -165,8 +165,6 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     // set 1
                     const postAggregateSet1 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: bucketF }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                            { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
                                 {
@@ -179,6 +177,8 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                                     as: 'page'
                                 }
                             },
+                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: bucketF }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $sort: { summationScore: -1 } },
                             {
                                 $limit: limit
                             },
@@ -233,8 +233,6 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     }
                     const postAggregateSet2 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: bucketS }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                            { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
                                 {
@@ -247,6 +245,8 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                                     as: 'page'
                                 }
                             },
+                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: bucketS }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $sort: { summationScore: -1 } },
                             {
                                 $limit: limit
                             },
@@ -301,8 +301,6 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     }
                     const postAggregateSet3 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: bucketT }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                            { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
                                 {
@@ -315,6 +313,8 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                                     as: 'page'
                                 }
                             },
+                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: bucketT }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $sort: { summationScore: -1 } },
                             {
                                 $limit: limit
                             },
@@ -391,18 +391,17 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     for (const row of stackPage) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
-
                         const contents: any = {};
                         contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                        if (firstImage !== undefined && firstImage.s3FilePath !== undefined && firstImage.s3FilePath !== '') {
+
+                        if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
                             try {
-                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3FilePath);
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
                                 contents.coverPageSignUrl = signUrl;
                             } catch (error) {
                                 console.log('PostSectionProcessor: ' + error);
                             }
                         }
-
                         // search isLike
                         row.isLike = false;
                         if (userId !== undefined && userId !== undefined && userId !== '') {
@@ -411,7 +410,6 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                                 row.isLike = true;
                             }
                         }
-
                         contents.owner = {};
                         if (row.page !== undefined) {
                             contents.owner = this.parsePageField(row.page);
@@ -509,8 +507,6 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
 
                     const postAggregateSet1 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince1 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                            { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
                                 {
@@ -523,6 +519,8 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                                     as: 'page'
                                 }
                             },
+                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince1 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $sort: { summationScore: -1 } },
                             {
                                 $limit: limit
                             },
@@ -577,8 +575,6 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     }
                     const postAggregateSet2 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince2 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                            { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
                                 {
@@ -591,6 +587,8 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                                     as: 'page'
                                 }
                             },
+                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince2 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $sort: { summationScore: -1 } },
                             {
                                 $limit: limit
                             },
@@ -645,8 +643,6 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     }
                     const postAggregateSet3 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince3 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                            { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
                                 {
@@ -659,6 +655,8 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                                     as: 'page'
                                 }
                             },
+                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince3 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $sort: { summationScore: -1 } },
                             {
                                 $limit: limit
                             },
@@ -738,9 +736,9 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
 
                         const contents: any = {};
                         contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                        if (firstImage !== undefined && firstImage.s3FilePath !== undefined && firstImage.s3FilePath !== '') {
+                        if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
                             try {
-                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3FilePath);
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
                                 contents.coverPageSignUrl = signUrl;
                             } catch (error) {
                                 console.log('PostSectionProcessor: ' + error);
@@ -774,8 +772,6 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     resolve(result);
                 } else if (roundRobin.type === 'post' && roundRobin.field === 'score') {
                     const postStmt = [
-                        { $match: postMatchStmt },
-                        { $sort: { summationScore: -1 } },
                         {
                             $lookup:
                             {
@@ -787,6 +783,8 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                                 as: 'page'
                             }
                         },
+                        { $match: postMatchStmt },
+                        { $sort: { summationScore: -1 } },
                         {
                             $unwind: {
                                 path: '$page',
@@ -861,9 +859,9 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
 
                         const contents: any = {};
                         contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                        if (firstImage !== undefined && firstImage.s3FilePath !== undefined && firstImage.s3FilePath !== '') {
+                        if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
                             try {
-                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3FilePath);
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
                                 contents.coverPageSignUrl = signUrl;
                             } catch (error) {
                                 console.log('PostSectionProcessor: ' + error);
@@ -920,9 +918,6 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     }
 
                     const postStmt1 = [
-                        { $match: { isDraft: false, deleted: false, hidden: false, objective: { $ne: null, $in: bucketF }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                        { $sort: { summationScore: -1 } },
-
                         {
                             $lookup:
                             {
@@ -934,6 +929,8 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                                 as: 'page'
                             }
                         },
+                        { $match: { isDraft: false, deleted: false, hidden: false, objective: { $ne: null, $in: bucketF }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                        { $sort: { summationScore: -1 } },
                         {
                             $unwind: {
                                 path: '$page',
@@ -991,8 +988,6 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                         postObject.push(postAggregate1);
                     }
                     const postStmt2 = [
-                        { $match: { isDraft: false, deleted: false, hidden: false, objective: { $ne: null, $in: bucketS }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                        { $sort: { summationScore: -1 } },
                         {
                             $lookup:
                             {
@@ -1004,6 +999,8 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                                 as: 'page'
                             }
                         },
+                        { $match: { isDraft: false, deleted: false, hidden: false, objective: { $ne: null, $in: bucketS }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                        { $sort: { summationScore: -1 } },
                         {
                             $unwind: {
                                 path: '$page',
@@ -1061,8 +1058,6 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                         postObject.push(postAggregate2);
                     }
                     const postStmt3 = [
-                        { $match: { isDraft: false, deleted: false, hidden: false, objective: { $ne: null, $in: bucketT }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                        { $sort: { summationScore: -1 } },
                         {
                             $lookup:
                             {
@@ -1074,6 +1069,8 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                                 as: 'page'
                             }
                         },
+                        { $match: { isDraft: false, deleted: false, hidden: false, objective: { $ne: null, $in: bucketT }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                        { $sort: { summationScore: -1 } },
                         {
                             $unwind: {
                                 path: '$page',
@@ -1156,9 +1153,9 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
 
                         const contents: any = {};
                         contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                        if (firstImage !== undefined && firstImage.s3FilePath !== undefined && firstImage.s3FilePath !== '') {
+                        if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
                             try {
-                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3FilePath);
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
                                 contents.coverPageSignUrl = signUrl;
                             } catch (error) {
                                 console.log('PostSectionProcessor: ' + error);
@@ -1214,9 +1211,6 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     }
 
                     const postStmt1 = [
-                        { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $ne: null }, emergencyEvent: { $ne: null, $in: bucketF }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                        { $sort: { summationScore: -1 } },
-
                         {
                             $lookup:
                             {
@@ -1228,6 +1222,8 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                                 as: 'page'
                             }
                         },
+                        { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $ne: null }, emergencyEvent: { $ne: null, $in: bucketF }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                        { $sort: { summationScore: -1 } },
                         {
                             $unwind: {
                                 path: '$page',
@@ -1285,8 +1281,6 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                         postObject.push(postAggregate1);
                     }
                     const postStmt2 = [
-                        { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $ne: null }, emergencyEvent: { $ne: null, $in: bucketS } } },
-                        { $sort: { summationScore: -1 } },
                         {
                             $lookup:
                             {
@@ -1298,6 +1292,8 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                                 as: 'page'
                             }
                         },
+                        { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $ne: null }, emergencyEvent: { $ne: null, $in: bucketS } } },
+                        { $sort: { summationScore: -1 } },
                         {
                             $unwind: {
                                 path: '$page',
@@ -1355,8 +1351,6 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                         postObject.push(postAggregate2);
                     }
                     const postStmt3 = [
-                        { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $ne: null }, emergencyEvent: { $ne: null, $in: bucketT } } },
-                        { $sort: { summationScore: -1 } },
                         {
                             $lookup:
                             {
@@ -1368,6 +1362,8 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                                 as: 'page'
                             }
                         },
+                        { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $ne: null }, emergencyEvent: { $ne: null, $in: bucketT } } },
+                        { $sort: { summationScore: -1 } },
                         {
                             $unwind: {
                                 path: '$page',
@@ -1450,9 +1446,9 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
 
                         const contents: any = {};
                         contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                        if (firstImage !== undefined && firstImage.s3FilePath !== undefined && firstImage.s3FilePath !== '') {
+                        if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
                             try {
-                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3FilePath);
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
                                 contents.coverPageSignUrl = signUrl;
                             } catch (error) {
                                 console.log('PostSectionProcessor: ' + error);
@@ -1549,8 +1545,6 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
 
                     const postAggregateSet1 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, postsHashTags: { $in: hashTagStack1 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                            { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
                                 {
@@ -1562,6 +1556,8 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                                     as: 'page'
                                 }
                             },
+                            { $match: { isDraft: false, deleted: false, hidden: false, postsHashTags: { $in: hashTagStack1 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $sort: { summationScore: -1 } },
                             {
                                 $limit: limit
                             },
@@ -1616,8 +1612,6 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     }
                     const postAggregateSet2 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, postsHashTags: { $in: hashTagStack2 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                            { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
                                 {
@@ -1629,6 +1623,8 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                                     as: 'page'
                                 }
                             },
+                            { $match: { isDraft: false, deleted: false, hidden: false, postsHashTags: { $in: hashTagStack2 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $sort: { summationScore: -1 } },
                             {
                                 $limit: limit
                             },
@@ -1683,8 +1679,6 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     }
                     const postAggregateSet3 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, postsHashTags: { $in: hashTagStack3 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                            { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
                                 {
@@ -1696,6 +1690,8 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                                     as: 'page'
                                 }
                             },
+                            { $match: { isDraft: false, deleted: false, hidden: false, postsHashTags: { $in: hashTagStack3 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $sort: { summationScore: -1 } },
                             {
                                 $limit: limit
                             },
@@ -1775,9 +1771,9 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
 
                         const contents: any = {};
                         contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                        if (firstImage !== undefined && firstImage.s3FilePath !== undefined && firstImage.s3FilePath !== '') {
+                        if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
                             try {
-                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3FilePath);
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
                                 contents.coverPageSignUrl = signUrl;
                             } catch (error) {
                                 console.log('PostSectionProcessor: ' + error);
@@ -1819,9 +1815,6 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                         }
                     }
                     const postStmt = [
-                        { $match: { isDraft: false, deleted: false, hidden: false, postsHashTags: { $in: bucketF } } },
-                        { $sort: { summationScore: -1 } },
-
                         {
                             $lookup:
                             {
@@ -1833,6 +1826,8 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                                 as: 'page'
                             }
                         },
+                        { $match: { isDraft: false, deleted: false, hidden: false, postsHashTags: { $in: bucketF } } },
+                        { $sort: { summationScore: -1 } },
                         {
                             $unwind: {
                                 path: '$page',
@@ -1903,9 +1898,9 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
 
                         const contents: any = {};
                         contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                        if (firstImage !== undefined && firstImage.s3FilePath !== undefined && firstImage.s3FilePath !== '') {
+                        if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
                             try {
-                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3FilePath);
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
                                 contents.coverPageSignUrl = signUrl;
                             } catch (error) {
                                 console.log('PostSectionProcessor: ' + error);
@@ -2015,8 +2010,6 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
 
                     const postAggregateSet1 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince1 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                            { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
                                 {
@@ -2028,6 +2021,8 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                                     as: 'page'
                                 }
                             },
+                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince1 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $sort: { summationScore: -1 } },
                             {
                                 $limit: limit
                             },
@@ -2082,8 +2077,6 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     }
                     const postAggregateSet2 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince2 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                            { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
                                 {
@@ -2095,6 +2088,8 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                                     as: 'page'
                                 }
                             },
+                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince2 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $sort: { summationScore: -1 } },
                             {
 
                                 $limit: limit
@@ -2150,8 +2145,6 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     }
                     const postAggregateSet3 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince3 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                            { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
                                 {
@@ -2163,6 +2156,8 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                                     as: 'page'
                                 }
                             },
+                            { $match: { isDraft: false, deleted: false, hidden: false, pageId: { $in: pageStackprovince3 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $sort: { summationScore: -1 } },
                             {
                                 $limit: limit
                             },
@@ -2242,9 +2237,9 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
 
                         const contents: any = {};
                         contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                        if (firstImage !== undefined && firstImage.s3FilePath !== undefined && firstImage.s3FilePath !== '') {
+                        if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
                             try {
-                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3FilePath);
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
                                 contents.coverPageSignUrl = signUrl;
                             } catch (error) {
                                 console.log('PostSectionProcessor: ' + error);
@@ -2453,9 +2448,9 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
 
                     const contents: any = {};
                     contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                    if (firstImage !== undefined && firstImage.s3FilePath !== undefined && firstImage.s3FilePath !== '') {
+                    if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
                         try {
-                            const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3FilePath);
+                            const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
                             contents.coverPageSignUrl = signUrl;
                         } catch (error) {
                             console.log('PostSectionProcessor: ' + error);
