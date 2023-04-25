@@ -363,7 +363,6 @@ export class EmergencyEventSectionProcessor extends AbstractSectionModelProcesso
                                 console.log('EmergencyEventSectionProcessor: ' + error);
                             }
                         }
-
                         contentModel.dateTime = row.createdDate;
                         contentModel.data = moreData;
                         result.contents.push(contentModel);

@@ -16,4 +16,5 @@ export class Page extends BaseModel {
     public group: string;
     public province: string;
     public detail: string
+    length: number;
 }

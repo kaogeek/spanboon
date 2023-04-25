@@ -94,7 +94,7 @@
                 </div>
                 <div class="objective-owner">
                     <div class="owner">
-                        <div class="detail">
+                        <div class="detail" *ngIf="objectiveData.relatedHashTags.length > 0">
                             <span class="title">แท็กที่เกี่ยวข้อง</span>
                             <span class="disiption"
                                 *ngFor="let item of objectiveData? objectiveData.relatedHashTags:[]; let index = index"

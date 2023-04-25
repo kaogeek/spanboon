@@ -18,7 +18,7 @@ import { DialogAlert } from '../../shares/dialog/DialogAlert.component';
 import { MESSAGE } from '../../../../custom/variable';
 import { GoogleLoginProvider, SocialAuthService } from 'angularx-social-login';
 import { TwitterService } from '../../../services/facade/TwitterService.service';
-import { CheckMergeUserFacade, NotificationManager } from 'src/app/services/services';
+import { CheckMergeUserFacade, NotificationManager, SeoService } from 'src/app/services/services';
 import { CountdownConfig, CountdownEvent } from "ngx-countdown";
 import { NgOtpInputComponent } from "ng-otp-input/lib/components/ng-otp-input/ng-otp-input.component";
 import { DialogConfirmInput } from '../../shares/dialog/DialogConfirmInput.component';
@@ -65,6 +65,7 @@ export class LoginPage extends AbstractPage implements OnInit {
   private activatedRoute: ActivatedRoute;
   private twitterService: TwitterService;
   private checkMergeUserFacade: CheckMergeUserFacade;
+  private seoService: SeoService;
   public imageProfile: string;
   public static readonly PAGE_NAME: string = PAGE_NAME;
   public authenManager: AuthenManager;
@@ -111,7 +112,7 @@ export class LoginPage extends AbstractPage implements OnInit {
   public accountTwitter = 'https://api.twitter.com/1.1/account/verify_credentials.json';
   constructor(authenManager: AuthenManager, private socialAuthService: SocialAuthService, activatedRoute: ActivatedRoute, router: Router, _ngZone: NgZone,
     observManager: ObservableManager, cacheConfigInfo: CacheConfigInfo, dialog: MatDialog, twitterService: TwitterService,
-    checkMergeUserFacade: CheckMergeUserFacade, private notificationManager: NotificationManager, private authService: SocialAuthService,
+    checkMergeUserFacade: CheckMergeUserFacade, private notificationManager: NotificationManager, private authService: SocialAuthService, seoService: SeoService,
   ) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.authenManager = authenManager;
@@ -124,6 +125,7 @@ export class LoginPage extends AbstractPage implements OnInit {
     this.cacheConfigInfo = cacheConfigInfo;
     this.twitterService = twitterService;
     this.checkMergeUserFacade = checkMergeUserFacade;
+    this.seoService = seoService;
 
     // this.cacheConfigInfo.getConfig(LOGIN_FACEBOOK_ENABLE).then((config: any) => {
     //   if (config.value !== undefined) {
@@ -139,6 +141,7 @@ export class LoginPage extends AbstractPage implements OnInit {
   }
 
   public ngOnInit() {
+    this.seoService.updateTitle("เข้าสู่ระบบหรือสมัครสมาชิก");
     this.observManager.subscribe(this.regis_merge, (res: any) => {
       if (res) {
       }

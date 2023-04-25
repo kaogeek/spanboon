@@ -79,8 +79,8 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                         continue;
                     }
                 }
-                if(filterContentsRobin.length>0){
-                    for(const contents of filterContentsRobin){
+                if (filterContentsRobin.length > 0) {
+                    for (const contents of filterContentsRobin) {
                         postId.push(new ObjectID(contents.post._id));
                     }
                 }
@@ -162,17 +162,19 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                 }
                 if (majorTrend.type === 'post' && majorTrend.field === 'score') {
                     const postStmt = [
-                        { $match: { isDraft: false, deleted: false, hidden: false,_id:{$nin:postId} ,startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                        { $sort: { summationScore: -1 } },
                         {
                             $lookup:
                             {
                                 from: 'Page',
                                 let: { 'pageId': '$pageId' },
-                                pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } }],
+                                pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                { $project: { email: 0 } }
+                                ],
                                 as: 'page'
                             }
                         },
+                        { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                        { $sort: { summationScore: -1 } },
                         {
                             $unwind: {
                                 path: '$page',
@@ -240,9 +242,9 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
 
                         const contents: any = {};
                         contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                        if (firstImage !== undefined && firstImage.s3FilePath !== undefined && firstImage.s3FilePath !== '') {
+                        if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
                             try {
-                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3FilePath);
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
                                 contents.coverPageSignUrl = signUrl;
                             } catch (error) {
                                 console.log('PostSectionProcessor: ' + error);
@@ -267,7 +269,6 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                         // remove page agg
                         // delete row.page;
                         delete row.user;
-
                         contents.post = row;
                         result.contents.push(contents);
                     }
@@ -301,17 +302,19 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     }
 
                     const postStmt1 = [
-                        { $match: { isDraft: false, deleted: false, hidden: false,_id:{$nin:postId} , objective: { $ne: null, $in: bucketF }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                        { $sort: { summationScore: -1 } },
-
                         {
-                            $lookup: {
+                            $lookup:
+                            {
                                 from: 'Page',
-                                localField: 'pageId',
-                                foreignField: '_id',
+                                let: { 'pageId': '$pageId' },
+                                pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                { $project: { email: 0 } }
+                                ],
                                 as: 'page'
                             }
                         },
+                        { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, objective: { $ne: null, $in: bucketF }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                        { $sort: { summationScore: -1 } },
                         {
                             $unwind: {
                                 path: '$page',
@@ -368,17 +371,19 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     postObject.push(postAggregate1);
 
                     const postStmt2 = [
-                        { $match: { isDraft: false, deleted: false, hidden: false,_id:{$nin:postId} , objective: { $ne: null, $in: bucketS }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                        { $sort: { summationScore: -1 } },
-
                         {
-                            $lookup: {
+                            $lookup:
+                            {
                                 from: 'Page',
-                                localField: 'pageId',
-                                foreignField: '_id',
+                                let: { 'pageId': '$pageId' },
+                                pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                { $project: { email: 0 } }
+                                ],
                                 as: 'page'
                             }
                         },
+                        { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, objective: { $ne: null, $in: bucketS }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                        { $sort: { summationScore: -1 } },
                         {
                             $unwind: {
                                 path: '$page',
@@ -435,17 +440,19 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     postObject.push(postAggregate2);
 
                     const postStmt3 = [
-                        { $match: { isDraft: false, deleted: false, hidden: false,_id:{$nin:postId} , objective: { $ne: null, $in: bucketT }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                        { $sort: { summationScore: -1 } },
-
                         {
-                            $lookup: {
+                            $lookup:
+                            {
                                 from: 'Page',
-                                localField: 'pageId',
-                                foreignField: '_id',
+                                let: { 'pageId': '$pageId' },
+                                pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                { $project: { email: 0 } }
+                                ],
                                 as: 'page'
                             }
                         },
+                        { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, objective: { $ne: null, $in: bucketT }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                        { $sort: { summationScore: -1 } },
                         {
                             $unwind: {
                                 path: '$page',
@@ -501,7 +508,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     postObject.push(postAggregate3);
 
                     const stackPage = [];
-                    if(postObject.length>0){
+                    if (postObject.length > 0) {
                         for (let i = 0; i < postObject[0].length; i++) {
                             for (let j = 0; j < postObject.length; j++) {
                                 if (postObject[j][i] !== undefined && postObject[j][i] !== null) {
@@ -527,9 +534,9 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
 
                         const contents: any = {};
                         contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                        if (firstImage !== undefined && firstImage.s3FilePath !== undefined && firstImage.s3FilePath !== '') {
+                        if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
                             try {
-                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3FilePath);
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
                                 contents.coverPageSignUrl = signUrl;
                             } catch (error) {
                                 console.log('PostSectionProcessor: ' + error);
@@ -555,7 +562,9 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                         // delete row.page;
                         delete row.user;
                         contents.post = row;
-                        result.contents.push(contents);
+                        if(contents.owner.isOfficial === true){
+                            result.contents.push(contents);
+                        }
                     }
                     result.dateTime = lastestDate;
                     resolve(result);
@@ -585,17 +594,19 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     }
 
                     const postStmt1 = [
-                        { $match: { isDraft: false, deleted: false, hidden: false,_id:{$nin:postId} , pageId: { $ne: null }, emergencyEvent: { $ne: null, $in: bucketF }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                        { $sort: { summationScore: -1 } },
-
                         {
-                            $lookup: {
+                            $lookup:
+                            {
                                 from: 'Page',
-                                localField: 'pageId',
-                                foreignField: '_id',
+                                let: { 'pageId': '$pageId' },
+                                pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                { $project: { email: 0 } }
+                                ],
                                 as: 'page'
                             }
                         },
+                        { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, pageId: { $ne: null }, emergencyEvent: { $ne: null, $in: bucketF }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                        { $sort: { summationScore: -1 } },
                         {
                             $unwind: {
                                 path: '$page',
@@ -652,17 +663,19 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     postObject.push(postAggregate1);
 
                     const postStmt2 = [
-                        { $match: { isDraft: false, deleted: false, hidden: false,_id:{$nin:postId} , pageId: { $ne: null }, emergencyEvent: { $ne: null, $in: bucketS } } },
-                        { $sort: { summationScore: -1 } },
-
                         {
-                            $lookup: {
+                            $lookup:
+                            {
                                 from: 'Page',
-                                localField: 'pageId',
-                                foreignField: '_id',
+                                let: { 'pageId': '$pageId' },
+                                pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                { $project: { email: 0 } }
+                                ],
                                 as: 'page'
                             }
                         },
+                        { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, pageId: { $ne: null }, emergencyEvent: { $ne: null, $in: bucketS } } },
+                        { $sort: { summationScore: -1 } },
                         {
                             $unwind: {
                                 path: '$page',
@@ -719,17 +732,19 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     postObject.push(postAggregate2);
 
                     const postStmt3 = [
-                        { $match: { isDraft: false, deleted: false, hidden: false,_id:{$nin:postId} , pageId: { $ne: null }, emergencyEvent: { $ne: null, $in: bucketT } } },
-                        { $sort: { summationScore: -1 } },
-
                         {
-                            $lookup: {
+                            $lookup:
+                            {
                                 from: 'Page',
-                                localField: 'pageId',
-                                foreignField: '_id',
+                                let: { 'pageId': '$pageId' },
+                                pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                { $project: { email: 0 } }
+                                ],
                                 as: 'page'
                             }
                         },
+                        { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, pageId: { $ne: null }, emergencyEvent: { $ne: null, $in: bucketT } } },
+                        { $sort: { summationScore: -1 } },
                         {
                             $unwind: {
                                 path: '$page',
@@ -785,7 +800,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     postObject.push(postAggregate3);
 
                     const stackPage = [];
-                    if(postObject.length>0){
+                    if (postObject.length > 0) {
                         for (let i = 0; i < postObject[0].length; i++) {
                             for (let j = 0; j < postObject.length; j++) {
                                 if (postObject[j][i] !== undefined && postObject[j][i] !== null) {
@@ -811,9 +826,9 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
 
                         const contents: any = {};
                         contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                        if (firstImage !== undefined && firstImage.s3FilePath !== undefined && firstImage.s3FilePath !== '') {
+                        if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
                             try {
-                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3FilePath);
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
                                 contents.coverPageSignUrl = signUrl;
                             } catch (error) {
                                 console.log('PostSectionProcessor: ' + error);
@@ -910,17 +925,19 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
 
                     const postAggregateSet1 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false,_id:{$nin:postId} , postsHashTags: { $in: hashTagStack1 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                            { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
                                 {
                                     from: 'Page',
                                     let: { 'pageId': '$pageId' },
-                                    pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } }],
+                                    pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                    { $project: { email: 0 } }
+                                    ],
                                     as: 'page'
                                 }
                             },
+                            { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, postsHashTags: { $in: hashTagStack1 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $sort: { summationScore: -1 } },
                             {
                                 $limit: limit
                             },
@@ -973,17 +990,19 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     postAggregateAll.push(postAggregateSet1);
                     const postAggregateSet2 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false,_id:{$nin:postId} , postsHashTags: { $in: hashTagStack2 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                            { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
                                 {
                                     from: 'Page',
                                     let: { 'pageId': '$pageId' },
-                                    pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } }],
+                                    pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                    { $project: { email: 0 } }
+                                    ],
                                     as: 'page'
                                 }
                             },
+                            { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, postsHashTags: { $in: hashTagStack2 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $sort: { summationScore: -1 } },
                             {
                                 $limit: limit
                             },
@@ -1036,17 +1055,19 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     postAggregateAll.push(postAggregateSet2);
                     const postAggregateSet3 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false,_id:{$nin:postId} , postsHashTags: { $in: hashTagStack3 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                            { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
                                 {
                                     from: 'Page',
                                     let: { 'pageId': '$pageId' },
-                                    pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } }],
+                                    pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                    { $project: { email: 0 } }
+                                    ],
                                     as: 'page'
                                 }
                             },
+                            { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, postsHashTags: { $in: hashTagStack3 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $sort: { summationScore: -1 } },
                             {
                                 $limit: limit
                             },
@@ -1098,7 +1119,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     );
                     postAggregateAll.push(postAggregateSet3);
                     const stackPage = [];
-                    if(postAggregateAll.length>0){
+                    if (postAggregateAll.length > 0) {
                         for (let i = 0; i < postAggregateAll[0].length; i++) {
                             for (let j = 0; j < postAggregateAll.length; j++) {
                                 if (postAggregateAll[j][i] !== undefined && postAggregateAll[j][i] !== null) {
@@ -1124,9 +1145,9 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
 
                         const contents: any = {};
                         contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                        if (firstImage !== undefined && firstImage.s3FilePath !== undefined && firstImage.s3FilePath !== '') {
+                        if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
                             try {
-                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3FilePath);
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
                                 contents.coverPageSignUrl = signUrl;
                             } catch (error) {
                                 console.log('PostSectionProcessor: ' + error);
@@ -1168,17 +1189,19 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                         }
                     }
                     const postStmt = [
-                        { $match: { isDraft: false, deleted: false, hidden: false,_id:{$nin:postId}, postsHashTags: { $in: bucketF } } },
-                        { $sort: { summationScore: -1 } },
-
                         {
-                            $lookup: {
+                            $lookup:
+                            {
                                 from: 'Page',
-                                localField: 'pageId',
-                                foreignField: '_id',
+                                let: { 'pageId': '$pageId' },
+                                pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                { $project: { email: 0 } }
+                                ],
                                 as: 'page'
                             }
                         },
+                        { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, postsHashTags: { $in: bucketF } } },
+                        { $sort: { summationScore: -1 } },
                         {
                             $unwind: {
                                 path: '$page',
@@ -1248,9 +1271,9 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
 
                         const contents: any = {};
                         contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                        if (firstImage !== undefined && firstImage.s3FilePath !== undefined && firstImage.s3FilePath !== '') {
+                        if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
                             try {
-                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3FilePath);
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
                                 contents.coverPageSignUrl = signUrl;
                             } catch (error) {
                                 console.log('PostSectionProcessor: ' + error);
@@ -1360,19 +1383,19 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
 
                     const postAggregateSet1 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false,_id:{$nin:postId} , pageId: { $in: pageStackprovince1 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                            { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
                                 {
                                     from: 'Page',
                                     let: { 'pageId': '$pageId' },
-                                    pipeline: [
-                                        { $match: { $expr: { $eq: ['$_id', '$$pageId'] } } },
+                                    pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                    { $project: { email: 0 } }
                                     ],
                                     as: 'page'
                                 }
                             },
+                            { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, pageId: { $in: pageStackprovince1 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $sort: { summationScore: -1 } },
                             {
                                 $limit: limit
                             },
@@ -1427,19 +1450,19 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     }
                     const postAggregateSet2 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false,_id:{$nin:postId} , pageId: { $in: pageStackprovince2 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                            { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
                                 {
                                     from: 'Page',
                                     let: { 'pageId': '$pageId' },
-                                    pipeline: [
-                                        { $match: { $expr: { $eq: ['$_id', '$$pageId'] } } },
+                                    pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                    { $project: { email: 0 } }
                                     ],
                                     as: 'page'
                                 }
                             },
+                            { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, pageId: { $in: pageStackprovince2 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $sort: { summationScore: -1 } },
                             {
 
                                 $limit: limit
@@ -1495,19 +1518,19 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     }
                     const postAggregateSet3 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false,_id:{$nin:postId} , pageId: { $in: pageStackprovince3 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                            { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
                                 {
                                     from: 'Page',
                                     let: { 'pageId': '$pageId' },
-                                    pipeline: [
-                                        { $match: { $expr: { $eq: ['$_id', '$$pageId'] } } },
+                                    pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                    { $project: { email: 0 } }
                                     ],
                                     as: 'page'
                                 }
                             },
+                            { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, pageId: { $in: pageStackprovince3 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $sort: { summationScore: -1 } },
                             {
                                 $limit: limit
                             },
@@ -1562,7 +1585,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     }
                     // set 1
                     const stackPage = [];
-                    if(pageStacks.length>0){
+                    if (pageStacks.length > 0) {
                         for (let i = 0; i < pageStacks[0].length; i++) {
                             for (let j = 0; j < pageStacks.length; j++) {
                                 if (pageStacks[j][i] !== undefined && pageStacks[j][i] !== null) {
@@ -1587,9 +1610,9 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
 
                         const contents: any = {};
                         contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                        if (firstImage !== undefined && firstImage.s3FilePath !== undefined && firstImage.s3FilePath !== '') {
+                        if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
                             try {
-                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3FilePath);
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
                                 contents.coverPageSignUrl = signUrl;
                             } catch (error) {
                                 console.log('PostSectionProcessor: ' + error);
@@ -1701,19 +1724,19 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
 
                     const postAggregateSet1 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false,_id:{$nin:postId} , pageId: { $in: pageStackprovince1 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                            { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
                                 {
                                     from: 'Page',
                                     let: { 'pageId': '$pageId' },
-                                    pipeline: [
-                                        { $match: { $expr: { $eq: ['$_id', '$$pageId'] } } },
+                                    pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                    { $project: { email: 0 } }
                                     ],
                                     as: 'page'
                                 }
                             },
+                            { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, pageId: { $in: pageStackprovince1 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $sort: { summationScore: -1 } },
                             {
                                 $limit: limit
                             },
@@ -1768,19 +1791,19 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     }
                     const postAggregateSet2 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false,_id:{$nin:postId} , pageId: { $in: pageStackprovince2 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                            { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
                                 {
                                     from: 'Page',
                                     let: { 'pageId': '$pageId' },
-                                    pipeline: [
-                                        { $match: { $expr: { $eq: ['$_id', '$$pageId'] } } },
+                                    pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                    { $project: { email: 0 } }
                                     ],
                                     as: 'page'
                                 }
                             },
+                            { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, pageId: { $in: pageStackprovince2 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $sort: { summationScore: -1 } },
                             {
                                 $limit: limit
                             },
@@ -1835,19 +1858,19 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     }
                     const postAggregateSet3 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false,_id:{$nin:postId} , pageId: { $in: pageStackprovince3 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                            { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
                                 {
                                     from: 'Page',
                                     let: { 'pageId': '$pageId' },
-                                    pipeline: [
-                                        { $match: { $expr: { $eq: ['$_id', '$$pageId'] } } },
+                                    pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                    { $project: { email: 0 } }
                                     ],
                                     as: 'page'
                                 }
                             },
+                            { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, pageId: { $in: pageStackprovince3 }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $sort: { summationScore: -1 } },
                             {
                                 $limit: limit
                             },
@@ -1902,7 +1925,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     }
                     // set 1
                     const stackPage = [];
-                    if(pageStacks.length>0){
+                    if (pageStacks.length > 0) {
                         for (let i = 0; i < pageStacks[0].length; i++) {
                             for (let j = 0; j < pageStacks.length; j++) {
                                 if (pageStacks[j][i] !== undefined && pageStacks[j][i] !== null) {
@@ -1927,9 +1950,9 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
 
                         const contents: any = {};
                         contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                        if (firstImage !== undefined && firstImage.s3FilePath !== undefined && firstImage.s3FilePath !== '') {
+                        if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
                             try {
-                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3FilePath);
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
                                 contents.coverPageSignUrl = signUrl;
                             } catch (error) {
                                 console.log('PostSectionProcessor: ' + error);
@@ -1990,19 +2013,19 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     // set 1
                     const postAggregateSet1 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false,_id:{$nin:postId} , pageId: { $in: bucketF }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                            { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
                                 {
                                     from: 'Page',
                                     let: { 'pageId': '$pageId' },
-                                    pipeline: [
-                                        { $match: { $expr: { $eq: ['$_id', '$$pageId'] } } }
+                                    pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                    { $project: { email: 0 } }
                                     ],
                                     as: 'page'
                                 }
                             },
+                            { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, pageId: { $in: bucketF }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $sort: { summationScore: -1 } },
                             {
                                 $limit: limit
                             },
@@ -2057,19 +2080,19 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     }
                     const postAggregateSet2 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false,_id:{$nin:postId} , pageId: { $in: bucketS }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                            { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
                                 {
                                     from: 'Page',
                                     let: { 'pageId': '$pageId' },
-                                    pipeline: [
-                                        { $match: { $expr: { $eq: ['$_id', '$$pageId'] } } }
+                                    pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                    { $project: { email: 0 } }
                                     ],
                                     as: 'page'
                                 }
                             },
+                            { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, pageId: { $in: bucketS }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $sort: { summationScore: -1 } },
                             {
                                 $limit: limit
                             },
@@ -2124,19 +2147,19 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     }
                     const postAggregateSet3 = await this.postsService.aggregate(
                         [
-                            { $match: { isDraft: false, deleted: false, hidden: false,_id:{$nin:postId} , pageId: { $in: bucketT }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                            { $sort: { summationScore: -1 } },
                             {
                                 $lookup:
                                 {
                                     from: 'Page',
                                     let: { 'pageId': '$pageId' },
-                                    pipeline: [
-                                        { $match: { $expr: { $eq: ['$_id', '$$pageId'] } } }
+                                    pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                    { $project: { email: 0 } }
                                     ],
                                     as: 'page'
                                 }
                             },
+                            { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, pageId: { $in: bucketT }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            { $sort: { summationScore: -1 } },
                             {
                                 $limit: limit
                             },
@@ -2190,7 +2213,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                         bucketAll.push(postAggregateSet3);
                     }
                     const stackPage = [];
-                    if(bucketAll.length>0){
+                    if (bucketAll.length > 0) {
                         for (let i = 0; i < bucketAll[0].length; i++) {
                             for (let j = 0; j < bucketAll.length; j++) {
                                 if (bucketAll[j][i] !== undefined && bucketAll[j][i] !== null) {
@@ -2216,9 +2239,9 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
 
                         const contents: any = {};
                         contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                        if (firstImage !== undefined && firstImage.s3FilePath !== undefined && firstImage.s3FilePath !== '') {
+                        if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
                             try {
-                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3FilePath);
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
                                 contents.coverPageSignUrl = signUrl;
                             } catch (error) {
                                 console.log('PostSectionProcessor: ' + error);
@@ -2296,7 +2319,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     }
                 }
 
-                limit = (limit === undefined || limit === null) ?this.DEFAULT_SEARCH_LIMIT : this.DEFAULT_SEARCH_LIMIT;
+                limit = (limit === undefined || limit === null) ? this.DEFAULT_SEARCH_LIMIT : this.DEFAULT_SEARCH_LIMIT;
                 offset = (offset === undefined || offset === null) ? this.DEFAULT_SEARCH_OFFSET : offset;
                 const searchFilter: SearchFilter = new SearchFilter();
                 searchFilter.limit = limit;
@@ -2353,7 +2376,9 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                         {
                             from: 'Page',
                             let: { 'pageId': '$pageId' },
-                            pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } }],
+                            pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                            { $project: { email: 0 } }
+                            ],
                             as: 'page'
                         }
                     },
@@ -2425,9 +2450,9 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
 
                     const contents: any = {};
                     contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                    if (firstImage !== undefined && firstImage.s3FilePath !== undefined && firstImage.s3FilePath !== '') {
+                    if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
                         try {
-                            const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3FilePath);
+                            const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
                             contents.coverPageSignUrl = signUrl;
                         } catch (error) {
                             console.log('PostSectionProcessor: ' + error);
