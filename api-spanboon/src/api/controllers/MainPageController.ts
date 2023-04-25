@@ -1807,7 +1807,6 @@ export class MainPageController {
             return res.status(400).send(errorResponse);
         }
     }
-
     public async snapShotToday(data: any, startDateRange: Date, endDateTimeToday: Date): Promise<any> {
         // check before create
         let switchEmail = DEFAULT_SWITCH_CASE_SEND_EMAIL;
@@ -1912,6 +1911,7 @@ export class MainPageController {
             }
         }
     }
+
     public async pushNotification(user: User, email: string, content: any, subject: string, date?: Date): Promise<any> {
         const newsTitle = [];
         if (date === undefined) {
@@ -1920,7 +1920,6 @@ export class MainPageController {
         }
         // chaluck.s@absolute.co.th
         // junsuda.s@absolute.co.th
-
         let postSection = undefined;
         let linkPostSection = undefined;
         let picPostSection = undefined;
@@ -1976,7 +1975,7 @@ export class MainPageController {
                 <div
                     style="display: flex; text-align: center;font-size: 12pt;width:400px;height:340px;background: white;">
                     <img style="width: 100%;height: 100%;object-fit: cover;background: white;margin-left:15px"
-                        src=${process.env.APP_CLOUDFRONT + content.majorTrend.contents[0].coverPageSignUrl}>
+                        src=${content.majorTrend.contents[0].coverPageSignUrl}>
                 </div>
             </div>`:
                 `<div style="display: flex;gap: 5px;width:400px;height:340px">
@@ -1989,7 +1988,7 @@ export class MainPageController {
                 <div
                     style="display: flex; text-align: center;font-size: 12pt;width:400px;height:340px;background: white;">
                     <img style="width: 100%;height: 100%;object-fit: cover;background: white;margin-left:15px"
-                        src=${process.env.APP_CLOUDFRONT + content.majorTrend.contents[1].coverPageSignUrl}>
+                        src=${content.majorTrend.contents[1].coverPageSignUrl}>
                 </div>
             </div>` :
                 `            
@@ -2039,7 +2038,7 @@ export class MainPageController {
                     `
                 <div style="display: flex; text-align: center;font-size: 12pt;width:100%;height: 210px;background: white;margin-bottom: 10px;">
                     <img style="width: 100%;object-fit: cover;background: white;height:100%;"
-                        src=${process.env.APP_CLOUDFRONT + content.pageRoundRobin.contents[0].coverPageSignUrl}>
+                        src=${content.pageRoundRobin.contents[0].coverPageSignUrl}>
                 </div>`: `         
                 <div style="display: flex;gap: 5px;width:100%;height: 210px;margin-bottom:10px">
                     <span style="color:black;text-align: center;margin-top:100px;width: 100%;">${postRoundRobinF}</span> 
@@ -2063,7 +2062,7 @@ export class MainPageController {
                     `
                         <div style="display: flex; text-align: center;font-size: 12pt;width:100%;height: 210px;background: white;margin-bottom: 10px;">
                             <img style="width: 100%;object-fit: cover;background: white;height:100%;"
-                                src=${process.env.APP_CLOUDFRONT + content.pageRoundRobin.contents[1].coverPageSignUrl}>
+                                src=${content.pageRoundRobin.contents[1].coverPageSignUrl}>
                         </div>`: `         
                         <div style="display: flex;gap: 5px;width:100%;height: 210px;margin-bottom:10px">
                             <span style="color:black;text-align: center;margin-top:100px;width: 100%;">${postRoundRobinS}</span> 
@@ -2084,7 +2083,7 @@ export class MainPageController {
                     `
                 <div style="display: flex; text-align: center;font-size: 12pt;width:100%;height: 210px;background: white;margin-bottom: 10px;">
                         <img style="width: 100%;object-fit: cover;background: white;height:100%;"
-                            src=${process.env.APP_CLOUDFRONT + content.pageRoundRobin.contents[2].coverPageSignUrl}>
+                            src=${content.pageRoundRobin.contents[2].coverPageSignUrl}>
                 </div>`: `         
                 <div style="display: flex;gap: 5px;width:100%;height: 210px;margin-bottom:10px">
                         <span style="color:black;text-align: center;margin-top:100px;width: 100%;">${postRoundRobinT}</span> 
