@@ -185,6 +185,15 @@ export class HomePageV3 extends AbstractPage implements OnInit {
         if (!!res.linkAnnounceMent) {
           this.linkAnnounce = res.linkAnnounceMent;
         }
+        // for (let img of this.model.majorTrend.contents) {
+        //   if (!img.coverPageSignUrl) {
+        //     this.assetFacade.getPathFile(img.coverPageUrl).then((res: any) => {
+        //       if (res) {
+        //       }
+        //     }).catch((err: any) => {
+        //     });
+        //   }
+        // }
         for (let index = 0; index < this.model.postSectionModel.contents.length; index++) {
           if (this.model.postSectionModel.contents[index].post.type === "FULFILLMENT") {
             this.model.postSectionModel.contents.splice(index, 1);

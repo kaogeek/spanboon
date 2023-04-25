@@ -16,6 +16,7 @@ import { DialogResetForgotPassword } from '../../shares/dialog/DialogResetForgot
 import { AbstractPage } from '../AbstractPage';
 import { AssetFacade } from '../../../services/facade/AssetFacade.service';
 import { MESSAGE } from '../../../../custom/variable';
+import { SeoService } from 'src/app/services/SeoService.service';
 
 const PAGE_NAME: string = 'forgotpassword';
 declare var $: any;
@@ -36,6 +37,7 @@ export class forgotPasswordPage extends AbstractPage implements OnInit {
 
   private forgetPasswordFacade: FotgotPasswordFacade;
   private assetFacade: AssetFacade;
+  private seoService: SeoService;
 
   public isShow1: boolean;
   public isShow2: boolean;
@@ -51,16 +53,18 @@ export class forgotPasswordPage extends AbstractPage implements OnInit {
   public hide: boolean;
   public hiderepasswd: boolean;
 
-  constructor(authenManager: AuthenManager, router: Router, dialog: MatDialog, forgetPasswordFacade: FotgotPasswordFacade, assetFacade: AssetFacade) {
+  constructor(authenManager: AuthenManager, router: Router, dialog: MatDialog, forgetPasswordFacade: FotgotPasswordFacade, assetFacade: AssetFacade, seoService: SeoService) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.authenManager = authenManager;
     this.forgetPasswordFacade = forgetPasswordFacade;
     this.assetFacade = assetFacade;
     this.isEmail = true;
     this.invaildEmail = false;
+    this.seoService = seoService;
   }
 
   public ngOnInit(): void {
+    this.seoService.updateTitle("รีเซ็ตรหัสผ่าน")
     currentTab = 0;
     this.isShow1 = true;
     this.isShow2 = true;

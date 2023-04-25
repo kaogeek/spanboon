@@ -19,6 +19,7 @@ import * as $ from 'jquery';
 import { GoogleLoginProvider, SocialAuthService, SocialUser } from 'angularx-social-login';
 import { TwitterService } from "../../../../services/facade/TwitterService.service";
 import { CheckMergeUserFacade } from "src/app/services/facade/CheckMergeUserFacade.service";
+import { SeoService } from "src/app/services/SeoService.service";
 
 const PAGE_NAME: string = 'register/menu';
 
@@ -37,6 +38,7 @@ export class MenuRegister extends AbstractPage implements OnInit {
     private observManager: ObservableManager;
     private twitterService: TwitterService;
     private checkMergeUserFacade: CheckMergeUserFacade;
+    private seoService: SeoService;
 
     public authenManager: AuthenManager;
     public dialog: MatDialog;
@@ -75,7 +77,8 @@ export class MenuRegister extends AbstractPage implements OnInit {
         observManager: ObservableManager,
         twitterService: TwitterService,
         _ngZone: NgZone,
-        checkMergeUserFacade: CheckMergeUserFacade) {
+        checkMergeUserFacade: CheckMergeUserFacade,
+        seoService: SeoService) {
         super(PAGE_NAME, authenManager, dialog, router);
         this.authenManager = authenManager;
         this.activatedRoute = activatedRoute;
@@ -85,6 +88,7 @@ export class MenuRegister extends AbstractPage implements OnInit {
         this.observManager = observManager;
         this.twitterService = twitterService;
         this.checkMergeUserFacade = checkMergeUserFacade;
+        this.seoService = seoService;
 
         this.activatedRoute.params.subscribe(param => {
             this.redirection = param['redirection'];
@@ -94,6 +98,7 @@ export class MenuRegister extends AbstractPage implements OnInit {
     }
 
     ngOnInit(): void {
+        this.seoService.updateTitle("สมัครสมาชิก");
         super.ngOnInit();
         this.checkLoginAndRedirection();
 

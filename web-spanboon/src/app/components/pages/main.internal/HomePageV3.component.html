@@ -154,10 +154,10 @@
                                             </svg> เกาะทุกก้าว
                                         </div>
                                         <img class="image-background"
-                                            [src]="apiBaseURL + (model && model.emergencyEvents.contents[0].coverPageUrl) + '/image'"
+                                            [src]="model && model.emergencyEvents.contents[0].coverPageSignUrl ? model.emergencyEvents.contents[0].coverPageSignUrl : apiBaseURL + (model && model.emergencyEvents.contents[0].coverPageUrl) + '/image'"
                                             alt="">
                                         <img class="image"
-                                            [src]="apiBaseURL + (model && model.emergencyEvents.contents[0].coverPageUrl) + '/image'"
+                                            [src]="model && model.emergencyEvents.contents[0].coverPageSignUrl ? model.emergencyEvents.contents[0].coverPageSignUrl : apiBaseURL + (model && model.emergencyEvents.contents[0].coverPageUrl) + '/image'"
                                             alt="">
                                     </div>
                                 </ng-container>
@@ -934,7 +934,8 @@
                         <div class="container-content"
                             (click)="isPostNewTab ? openDilogPost(item) : clickToPost(item.post._id)">
                             <ng-container *ngIf="item.coverPageUrl; else elseImage">
-                                <img class="image-content" [src]="apiBaseURL + (item.coverPageUrl) + '/image'">
+                                <img class="image-content"
+                                    [src]="item.coverPageSignUrl ? item.coverPageSignUrl : apiBaseURL + (item.coverPageUrl) + '/image'">
                             </ng-container>
                             <ng-template #elseImage>
                                 <div class="image-content image-null">
@@ -995,7 +996,8 @@
                         <div class="container-content"
                             (click)="isPostNewTab ? openDilogPost(item) : clickToPost(item.post._id)">
                             <ng-container *ngIf="item.coverPageUrl; else elseImage">
-                                <img class="image-content" [src]="apiBaseURL + (item.coverPageUrl) + '/image'">
+                                <img class="image-content"
+                                    [src]="item.coverPageSignUrl ? item.coverPageSignUrl : apiBaseURL + (item.coverPageUrl) + '/image'">
                             </ng-container>
                             <ng-template #elseImage>
                                 <div class="image-content image-null">
@@ -1056,7 +1058,8 @@
                         <div class="container-content"
                             (click)="isPostNewTab ? openDilogPost(item) : clickToPost(item.post._id)">
                             <ng-container *ngIf="item.coverPageUrl; else elseImage">
-                                <img class="image-content" [src]="apiBaseURL + (item.coverPageUrl) + '/image'">
+                                <img class="image-content"
+                                    [src]="item.coverPageSignUrl ? item.coverPageSignUrl : apiBaseURL + (item.coverPageUrl) + '/image'">
                             </ng-container>
                             <ng-template #elseImage>
                                 <div class="image-content image-null">
@@ -1117,7 +1120,8 @@
                         <div class="container-content"
                             (click)="isPostNewTab ? openDilogPost(item) : clickToPost(item.post._id)">
                             <ng-container *ngIf="item.coverPageUrl; else elseImage">
-                                <img class="image-content" [src]="apiBaseURL + (item.coverPageUrl) + '/image'">
+                                <img class="image-content"
+                                    [src]="item.coverPageSignUrl ? item.coverPageSignUrl : apiBaseURL + (item.coverPageUrl) + '/image'">
                             </ng-container>
                             <ng-template #elseImage>
                                 <div class="image-content image-null">

@@ -19,7 +19,6 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { SwiperModule } from 'ngx-swiper-wrapper';
 import { SWIPER_CONFIG } from 'ngx-swiper-wrapper';
 import { SwiperConfigInterface } from 'ngx-swiper-wrapper';
-import { MatSelectFilterModule } from 'mat-select-filter';
 
 // material ag
 import {
@@ -175,7 +174,6 @@ const SERVICE_CLASSES: any[] = [
 
 @NgModule({
   imports: [
-    MatSelectFilterModule,
     BrowserModule,
     BrowserAnimationsModule,
     FormsModule,
