@@ -152,6 +152,16 @@ export class TodayPage extends AbstractPage implements OnInit {
                 align: "center"
             },
             {
+                name: "position",
+                label: "ตำแหน่ง",
+                width: "100pt",
+                class: "", formatColor: false, formatImage: false,
+                link: [],
+                formatDate: false,
+                formatId: false,
+                align: "center"
+            },
+            {
                 name: "type",
                 label: "ประเภท",
                 width: "100pt",

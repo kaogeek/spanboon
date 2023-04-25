@@ -154,10 +154,10 @@
                                             </svg> เกาะทุกก้าว
                                         </div>
                                         <img class="image-background"
-                                            [src]="apiBaseURL + (model && model.emergencyEvents.contents[0].coverPageUrl) + '/image'"
+                                            [src]="model && model.emergencyEvents.contents[0].coverPageSignUrl ? model.emergencyEvents.contents[0].coverPageSignUrl : apiBaseURL + (model && model.emergencyEvents.contents[0].coverPageUrl) + '/image'"
                                             alt="">
                                         <img class="image"
-                                            [src]="apiBaseURL + (model && model.emergencyEvents.contents[0].coverPageUrl) + '/image'"
+                                            [src]="model && model.emergencyEvents.contents[0].coverPageSignUrl ? model.emergencyEvents.contents[0].coverPageSignUrl : apiBaseURL + (model && model.emergencyEvents.contents[0].coverPageUrl) + '/image'"
                                             alt="">
                                     </div>
                                 </ng-container>
