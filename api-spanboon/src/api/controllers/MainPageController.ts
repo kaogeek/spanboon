@@ -1975,7 +1975,7 @@ export class MainPageController {
                 <div
                     style="display: flex; text-align: center;font-size: 12pt;width:400px;height:340px;background: white;">
                     <img style="width: 100%;height: 100%;object-fit: cover;background: white;margin-left:15px"
-                        src=${process.env.AWS_CLOUDFRONT_PREFIX + content.majorTrend.contents[0].coverPageSignUrl}>
+                        src=${content.majorTrend.contents[0].coverPageSignUrl}>
                 </div>
             </div>`:
                 `<div style="display: flex;gap: 5px;width:400px;height:340px">
@@ -1988,7 +1988,7 @@ export class MainPageController {
                 <div
                     style="display: flex; text-align: center;font-size: 12pt;width:400px;height:340px;background: white;">
                     <img style="width: 100%;height: 100%;object-fit: cover;background: white;margin-left:15px"
-                        src=${process.env.AWS_CLOUDFRONT_PREFIX + content.majorTrend.contents[1].coverPageSignUrl}>
+                        src=${content.majorTrend.contents[1].coverPageSignUrl}>
                 </div>
             </div>` :
                 `            
@@ -2038,7 +2038,7 @@ export class MainPageController {
                     `
                 <div style="display: flex; text-align: center;font-size: 12pt;width:100%;height: 210px;background: white;margin-bottom: 10px;">
                     <img style="width: 100%;object-fit: cover;background: white;height:100%;"
-                        src=${process.env.AWS_CLOUDFRONT_PREFIX + content.pageRoundRobin.contents[0].coverPageSignUrl}>
+                        src=${content.pageRoundRobin.contents[0].coverPageSignUrl}>
                 </div>`: `         
                 <div style="display: flex;gap: 5px;width:100%;height: 210px;margin-bottom:10px">
                     <span style="color:black;text-align: center;margin-top:100px;width: 100%;">${postRoundRobinF}</span> 
@@ -2062,7 +2062,7 @@ export class MainPageController {
                     `
                         <div style="display: flex; text-align: center;font-size: 12pt;width:100%;height: 210px;background: white;margin-bottom: 10px;">
                             <img style="width: 100%;object-fit: cover;background: white;height:100%;"
-                                src=${process.env.AWS_CLOUDFRONT_PREFIX + content.pageRoundRobin.contents[1].coverPageSignUrl}>
+                                src=${content.pageRoundRobin.contents[1].coverPageSignUrl}>
                         </div>`: `         
                         <div style="display: flex;gap: 5px;width:100%;height: 210px;margin-bottom:10px">
                             <span style="color:black;text-align: center;margin-top:100px;width: 100%;">${postRoundRobinS}</span> 
@@ -2083,7 +2083,7 @@ export class MainPageController {
                     `
                 <div style="display: flex; text-align: center;font-size: 12pt;width:100%;height: 210px;background: white;margin-bottom: 10px;">
                         <img style="width: 100%;object-fit: cover;background: white;height:100%;"
-                            src=${process.env.AWS_CLOUDFRONT_PREFIX + content.pageRoundRobin.contents[2].coverPageSignUrl}>
+                            src=${content.pageRoundRobin.contents[2].coverPageSignUrl}>
                 </div>`: `         
                 <div style="display: flex;gap: 5px;width:100%;height: 210px;margin-bottom:10px">
                         <span style="color:black;text-align: center;margin-top:100px;width: 100%;">${postRoundRobinT}</span> 
