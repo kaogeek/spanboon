@@ -119,7 +119,6 @@ export class TodayPage extends AbstractPage implements OnInit {
     public edit: string;
     public _id: string;
     public provinces = PROVINCE_LIST;
-    public orderBy: any = {};
 
     constructor(
         emergencyEventFacade: EmergencyEventFacade,
