@@ -84,6 +84,11 @@ export class NotificationService {
         }
     }
 
+    public async pushNotificationMessage(data: any, date: Date): Promise<any> {
+        const notification: Notification = new Notification();
+        notification.title = data.pageRoundRobin.contents[0].post.title;
+    }
+
     public async sendNotificationFCM(toUserId: string, toUserType: string, fromUserId: string, fromUserType: string, notificationType: string, title: string, link: string, data?: any, displayName?: any, image?: any, id?: any, count?: any): Promise<any> {
         const notification: Notification = new Notification();
         notification.isRead = false;
