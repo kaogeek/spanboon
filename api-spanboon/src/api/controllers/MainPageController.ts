@@ -165,7 +165,7 @@ export class MainPageController {
         pageProcessor.setData({
             userId,
             startDateTime: monthRange[0],
-            endDateTime: monthRange[1]
+            endDateTime: monthRange[1],
         });
 
         pageProcessor.setConfig({
@@ -315,18 +315,6 @@ export class MainPageController {
                 searchOfficialOnly
             });
             const majorTrendUn = await majorTrendProcessorUn.processV2();
-            const kaokaiProvinceProcessorUn: KaokaiAllProvinceModelProcessor = new KaokaiAllProvinceModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService, this.pageService);
-            kaokaiProvinceProcessorUn.setData({
-                userId,
-                startDateTime: monthRange[0],
-                endDateTime: monthRange[1],
-
-            });
-
-            kaokaiProvinceProcessorUn.setConfig({
-                searchOfficialOnly
-            });
-            const kaokaiProvinceUn = await kaokaiProvinceProcessorUn.processV2();
             const kaokaiHashTagProcessorUn: KaoKaiHashTagModelProcessor = new KaoKaiHashTagModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService, this.pageService);
             kaokaiHashTagProcessorUn.setData({
                 userId,
@@ -349,7 +337,6 @@ export class MainPageController {
             resultUn.postSectionModel = postSectionModelUn;
             resultUn.pageRoundRobin = pageRoundRobinUn;
             resultUn.majorTrend = majorTrendUn;
-            resultUn.kaokaiProvince = kaokaiProvinceUn;
             resultUn.kaokaiHashTag = kaokaiHashTagUn;
             resultUn.announcement = announcements;
             resultUn.linkAnnounceMent = linkAnnouncements;
@@ -1894,7 +1881,7 @@ export class MainPageController {
                     const users = await this.userService.find();
                     for (const user of users) {
                         if (user.subscribeEmail === true && switchEmail === true) {
-                            await this.pushNotification(user, user.email, content.data, 'ก้าวไกลวันนี้', endDateTimeToday);
+                            await this.pushNotification(user, user.email, content.data, 'ก้าวไกลหน้าหนึ่ง', endDateTimeToday);
                         } else {
                             continue;
                         }
