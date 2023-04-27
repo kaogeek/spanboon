@@ -29,7 +29,7 @@ import { EmergencyEventSectionProcessor } from '../processors/EmergencyEventSect
 import { PostSectionProcessor } from '../processors/PostSectionProcessor';
 import { PostSectionObjectiveProcessor } from '../processors/PostSectionObjectiveProcessor';
 import { PageRoundRobinProcessor } from '../processors/PageRoundRobinProcessor';
-import { MajorTrendSectionModelProcessor } from '../processors/majorTrendSectionModelProcessor';
+import { MajorTrendSectionModelProcessor } from '../processors/MajorTrendSectionModelProcessor';
 import { ObjectiveProcessor } from '../processors/ObjectiveProcessor';
 import { NeedsService } from '../services/NeedsService';
 import { EmergencyEventService } from '../services/EmergencyEventService';
