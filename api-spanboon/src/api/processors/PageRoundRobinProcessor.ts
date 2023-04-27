@@ -144,7 +144,6 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                             bucketSAll.push(IdAll.values);
                         }
                     }
-                    console.log('bucketSAll',bucketSAll);
                     if (bucketSAll.length > 0) {
                         for (let i = 0; i < bucketSAll[0].length; i++) {
                             if(bucketSAll[i] !== undefined){
