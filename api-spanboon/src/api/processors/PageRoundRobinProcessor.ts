@@ -146,8 +146,10 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     }
                     if (bucketSAll.length > 0) {
                         for (let i = 0; i < bucketSAll[0].length; i++) {
-                            if(bucketSAll[i] !== undefined){
+                            if(bucketSAll[0].length>0){
                                 chunkSizes.push(bucketSAll[i].length);
+                            }else{
+                                continue;
                             }
                         }
                     }
@@ -654,7 +656,11 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     }
                     if (bucketSAll.length > 0) {
                         for (let i = 0; i < bucketSAll[0].length; i++) {
-                            chunkSizes.push(bucketSAll[i].length);
+                            if(bucketSAll[0].length>0){
+                                chunkSizes.push(bucketSAll[i].length);
+                            }else{
+                                continue;
+                            }                        
                         }
                     }
                     const groups = [];
@@ -828,7 +834,11 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     }
                     if (bucketSAll.length > 0) {
                         for (let i = 0; i < bucketSAll[0].length; i++) {
-                            chunkSizes.push(bucketSAll[i].length);
+                            if(bucketSAll[0].length>0){
+                                chunkSizes.push(bucketSAll[i].length);
+                            }else{
+                                continue;
+                            }                        
                         }
                     }
                     const groups = [];
