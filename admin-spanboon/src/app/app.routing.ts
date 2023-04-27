@@ -30,6 +30,7 @@ import {
   PageGroup,
   NewsPaperPage
 } from './components/components';
+import { TodayPageV2 } from './components/pages/main.internal/TodayPageV2.component';
 const routes: Routes = [
   {
     path: '',
@@ -58,6 +59,10 @@ const routes: Routes = [
       {
         path: TodayPage.PAGE_NAME,
         component: TodayPage
+      },
+      {
+        path: TodayPageV2.PAGE_NAME,
+        component: TodayPageV2
       },
       {
         path: NewsPaperPage.PAGE_NAME,

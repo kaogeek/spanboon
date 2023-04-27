@@ -61,6 +61,7 @@ import {
   DialogWarningComponent,
   DialogAlert,
   TodayPage,
+  TodayPageV2,
   PageGroup,
   NewsPaperPage
 } from './components/components';
@@ -123,6 +124,7 @@ const COMPONENTS: any[] = [
   PageObjectiveCategoryPage,
   EmergencyEventPage,
   TodayPage,
+  TodayPageV2,
   PageGroup,
   testPage,
   // component 
