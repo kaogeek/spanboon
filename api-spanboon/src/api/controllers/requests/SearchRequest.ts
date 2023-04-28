@@ -9,7 +9,7 @@ import 'reflect-metadata';
 import { SearchFilter } from './SearchFilterRequest';
 
 export class SearchRequest {
-
+    public id:string;
     public keyword: string[];
     public userId: string;
     public filter: SearchFilter;
