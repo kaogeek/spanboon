@@ -134,76 +134,66 @@ export class AdminPageController {
             return res.status(200).send(successResponseGroup);
 
         } if (data.type === 'post' && data.field === 'objective') {
-            const bucketAll = [];
-            const bucketF = [];
-            const bucketS = [];
-            const bucketT = [];
+            const bucketSAll = [];
+            const chuckSize = [];
+            const bucket = [];
             // roundRobin.buckets[0] !== undefined 
-            if (data.buckets[0] !== undefined) {
-                for (const stack of data.buckets[0].values) {
-                    bucketF.push(new ObjectID(stack));
+            if (data.buckets.length >= 0) {
+                for (const IdAll of data.buckets) {
+                    bucketSAll.push(IdAll.values);
                 }
             }
-            if (data.buckets[1] !== undefined) {
-                for (const stack of data.buckets[1].values) {
-                    bucketS.push(new ObjectID(stack));
+            const groups = [];
+            if (bucketSAll.length > 0) {
+                for (let i = 0; i < bucketSAll.length; i++) {
+                    chuckSize.push(bucketSAll[i].length);
+                }
+                const flatten = bucketSAll.flat().map(id => new ObjectID(id));
+                let startIndex = 0;
+                for (let j = 0; j < chuckSize.length; j++) {
+                    const endIndex = startIndex + chuckSize[j];
+                    groups.push(flatten.slice(startIndex, endIndex));
+                    startIndex = endIndex;
                 }
             }
-            if (data.buckets[2] !== undefined) {
-                for (const stack of data.buckets[2].values) {
-                    bucketT.push(new ObjectID(stack));
+            if (groups.length > 0) {
+                for (const group of groups) {
+                    const pageF = await this.pageObjectiveService.aggregate([{ $match: { _id: { $in: group } } }]);
+                    bucket.push(pageF);
                 }
             }
-            if (bucketF.length > 0) {
-                const pageF = await this.pageObjectiveService.aggregate([{ $match: { _id: { $in: bucketF } } }]);
-                bucketAll.push(pageF);
-            }
-            if (bucketS.length > 0) {
-                const pageS = await this.pageObjectiveService.aggregate([{ $match: { _id: { $in: bucketS } } }]);
-                bucketAll.push(pageS);
-            }
-            if (bucketT.length > 0) {
-                const pageT = await this.pageObjectiveService.aggregate([{ $match: { _id: { $in: bucketT } } }]);
-                bucketAll.push(pageT);
-
-            }
-            const successResponseGroup = ResponseUtil.getSuccessResponse('Search Page Group Success.', bucketAll);
+            const successResponseGroup = ResponseUtil.getSuccessResponse('Search Page Group Success.', bucket);
             return res.status(200).send(successResponseGroup);
         } if (data.type === 'post' && data.field === 'emergencyEvent') {
-            const bucketAll = [];
-            const bucketF = [];
-            const bucketS = [];
-            const bucketT = [];
+            const bucketSAll = [];
+            const chuckSize = [];
+            const bucket = [];
             // roundRobin.buckets[0] !== undefined 
-            if (data.buckets[0] !== undefined) {
-                for (const stack of data.buckets[0].values) {
-                    bucketF.push(new ObjectID(stack));
+            if (data.buckets.length >= 0) {
+                for (const IdAll of data.buckets) {
+                    bucketSAll.push(IdAll.values);
                 }
             }
-            if (data.buckets[1] !== undefined) {
-                for (const stack of data.buckets[1].values) {
-                    bucketS.push(new ObjectID(stack));
+            const groups = [];
+            if (bucketSAll.length > 0) {
+                for (let i = 0; i < bucketSAll.length; i++) {
+                    chuckSize.push(bucketSAll[i].length);
+                }
+                const flatten = bucketSAll.flat().map(id => new ObjectID(id));
+                let startIndex = 0;
+                for (let j = 0; j < chuckSize.length; j++) {
+                    const endIndex = startIndex + chuckSize[j];
+                    groups.push(flatten.slice(startIndex, endIndex));
+                    startIndex = endIndex;
                 }
             }
-            if (data.buckets[2] !== undefined) {
-                for (const stack of data.buckets[2].values) {
-                    bucketT.push(new ObjectID(stack));
+            if (groups.length > 0) {
+                for (const group of groups) {
+                    const pageF = await this.emergencyEventService.aggregate([{ $match: { _id: { $in: group } } }]);
+                    bucket.push(pageF);
                 }
             }
-            if (bucketF.length > 0) {
-                const pageF = await this.emergencyEventService.aggregate([{ $match: { _id: { $in: bucketF } } }]);
-                bucketAll.push(pageF);
-            }
-            if (bucketS.length > 0) {
-                const pageS = await this.emergencyEventService.aggregate([{ $match: { _id: { $in: bucketS } } }]);
-                bucketAll.push(pageS);
-            }
-            if (bucketT.length > 0) {
-                const pageT = await this.emergencyEventService.aggregate([{ $match: { _id: { $in: bucketT } } }]);
-                bucketAll.push(pageT);
-
-            }
-            const successResponseGroup = ResponseUtil.getSuccessResponse('Search Page Group Success.', bucketAll);
+            const successResponseGroup = ResponseUtil.getSuccessResponse('Search Page Group Success.', bucket);
             return res.status(200).send(successResponseGroup);
         }
     }
