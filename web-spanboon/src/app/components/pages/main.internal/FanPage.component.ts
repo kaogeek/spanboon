@@ -1455,7 +1455,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
 
   public async actionComment(action: any, index: number) {
     if (action.mod === 'SHARE') {
-      this.mainPostLink = window.location.origin + '/page/' + this.resDataPage.pageUsername + '/post/';
+      this.mainPostLink = window.location.origin + '/post/';
       this.linkmain = (this.mainPostLink + this.resPost.posts[index]._id);
       this.dialogShare();
     } else {

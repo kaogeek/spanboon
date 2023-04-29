@@ -71,9 +71,11 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
     public selectedValueTitle: string;
     public isLoading: boolean;
     public autoComp: any;
+    public showComp: any = [];
     public length: number;
     public reset: FormArray;
     public isPin: boolean;
+    public isSelect: boolean = false;
 
     constructor(
         emergencyEventFacade: EmergencyEventFacade,
@@ -194,6 +196,7 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
                 this.selectedPosition = undefined;
                 this.limit = undefined;
                 this.edit = undefined;
+                this.showComp = undefined;
                 while (this.buckets().length !== 0) {
                     this.buckets().removeAt(0)
                 }
@@ -207,48 +210,42 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
         this.empForm = this.fb.group({
             buckets: this.fb.array([])
         });
-        this.value_data.valueChanges
-            .pipe(
-                debounceTime(500)
-                , takeUntil(this.unsubscriber)
-            ).subscribe((value: any) => {
-                this.debouncedValue = value;
-                if ((this.selectedValueField !== 'count') && (this.selectedValueField !== 'score') && (this.selectedValueField !== 'province')) {
-                    this.keyUpAutoComp(this.debouncedValue);
-                }
-            });
         this.searchBucket();
     }
 
-    buckets() {
+    public buckets() {
         return this.empForm.get('buckets') as FormArray;
     }
 
-    newBucket(): FormGroup {
+    public newBucket(): FormGroup {
         return this.fb.group({
             name: [''],
             values: this.fb.array([]),
         });
     }
 
-    addBucket() {
+    public addBucket() {
         this.buckets().push(this.newBucket());
     }
 
-    removeBucket(bucketIndex: number) {
+    public removeBucket(bucketIndex: number) {
         this.buckets().removeAt(bucketIndex);
     }
 
-    valueBucket(bucketIndex: number) {
+    public valueBucket(bucketIndex: number) {
         return this.buckets().at(bucketIndex).get('values') as FormArray;
     }
 
-    addValueBucket(bucketIndex: number) {
-        let c = this.buckets().at(bucketIndex).get('values') as FormArray;
-        c.push(new FormControl(''));
+    public addValueBucket(bucketIndex: number) {
+        let c = this.valueBucket(bucketIndex) as FormArray;
+        const values = this.fb.group({
+            value: [''],
+            id: ['']
+        })
+        c.push(values);
     }
 
-    removeValueBucket(bucketIndex: number, valueI: number) {
+    public removeValueBucket(bucketIndex: number, valueI: number) {
         this.valueBucket(bucketIndex).removeAt(valueI);
     }
 
@@ -304,7 +301,6 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
 
             return;
         }
-
         const result: any = {};
         result.title = this.selectedValueTitle;
         result.type = this.selectedValueType;
@@ -313,6 +309,33 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
         result.limit = this.limit;
         result.buckets = this.empForm.value.buckets;
         result.position = this.selectedPosition;
+        let buckets: any[] = [];
+        let data: any[] = [];
+        if ((this.selectedValueField === 'id') || (this.selectedValueField === 'emergencyEvent') || (this.selectedValueField === 'objective')) {
+            for (let index = 0; index < this.empForm.get('buckets').value.length; index++) {
+                let emp = this.empForm.get('buckets').value[index];
+                data.push({
+                    index: index,
+                    values: []
+                });
+                for (let emp_index = 0; emp_index < emp.values.length; emp_index++) {
+                    data[index].values.push(emp.values[emp_index].id);
+                }
+                result.buckets[index].values = data[index].values.slice(0);
+            }
+        } else {
+            for (let index = 0; index < this.empForm.get('buckets').value.length; index++) {
+                let emp = this.empForm.get('buckets').value[index];
+                data.push({
+                    index: index,
+                    values: []
+                });
+                for (let emp_index = 0; emp_index < emp.values.length; emp_index++) {
+                    data[index].values.push(emp.values[emp_index].value);
+                }
+                result.buckets[index].values = data[index].values.slice(0);
+            }
+        }
 
         if ((result.field === 'count') || (result.field === 'score')) {
             result.buckets = [];
@@ -400,14 +423,21 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
         this.isPin = data.flag;
         this.todayPageFacade.searchComp(data).then((res) => {
             if (res) {
-                if (data.buckets.length > 0) {
-                    for (let i = 0; i < data.buckets.length; i++) {
-                        this.buckets().push(this.newBucket());
-                        this.buckets().at(i).get('name').setValue(data.buckets[i].name)
-                        let c = this.buckets().at(i).get('values') as FormArray;
-                        if (data.buckets[i].values.length > 0) {
-                            for (let index = 0; index < data.buckets[i].values.length; index++) {
-                                c.push(new FormControl(data.buckets[i].values[index]))
+                if ((this.selectedValueField !== 'count') && (this.selectedValueField !== 'score')) {
+                    this.showComp = res;
+                    if (data.buckets.length > 0) {
+                        if ((this.selectedValueField === 'id') || (this.selectedValueField === 'emergencyEvent') || (this.selectedValueField === 'objective')) {
+                            for (let i = 0; i < data.buckets.length; i++) {
+                                this.buckets().push(this.newBucket());
+                                this.buckets().at(i).get('name').setValue(data.buckets[i].name)
+                                let emp = this.empForm.get('buckets').value[i];
+                                if (data.buckets[i].values.length > 0) {
+                                    for (let index = 0; index < data.buckets[i].values.length; index++) {
+                                        this.addValueBucket(i);
+                                        this.valueBucket(i).at(index).get('value').setValue(res[i][index].title ? res[i][index].title : res[i][index].name);
+                                        this.valueBucket(i).at(index).get('id').setValue(res[i][index]._id);
+                                    }
+                                }
                             }
                         }
                     }
@@ -415,14 +445,18 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
             }
         }).catch((err) => {
             if (err) {
-                if (data.buckets.length > 0) {
-                    for (let i = 0; i < data.buckets.length; i++) {
-                        this.buckets().push(this.newBucket());
-                        this.buckets().at(i).get('name').setValue(data.buckets[i].name)
-                        let c = this.buckets().at(i).get('values') as FormArray;
-                        if (data.buckets[i].values !== null && data.buckets[i].values.length > 0) {
-                            for (let index = 0; index < data.buckets[i].values.length; index++) {
-                                c.push(new FormControl(data.buckets[i].values[index]))
+                if ((this.selectedValueField !== 'count') && (this.selectedValueField !== 'score')) {
+                    if (data.buckets.length > 0) {
+                        for (let i = 0; i < data.buckets.length; i++) {
+                            this.buckets().push(this.newBucket());
+                            this.buckets().at(i).get('name').setValue(data.buckets[i].name)
+                            let emp = this.empForm.get('buckets').value[i];
+                            if (data.buckets[i].values.length > 0) {
+                                for (let index = 0; index < data.buckets[i].values.length; index++) {
+                                    this.addValueBucket(i);
+                                    this.valueBucket(i).at(index).get('value').setValue(data.buckets[i].values[index]);
+                                    this.valueBucket(i).at(index).get('id').setValue('');
+                                }
                             }
                         }
                     }
@@ -453,6 +487,14 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
         }).catch((err) => {
             this.dialogWarning(err.error.message);
         });
+    }
+
+    public selectData(BuckIndex, index, data) {
+        if ((this.selectedValueField === 'id') || (this.selectedValueField === 'emergencyEvent') || (this.selectedValueField === 'objective')) {
+            this.isSelect = true;
+            this.valueBucket(BuckIndex).at(index).get('value').setValue(data.label);
+            this.valueBucket(BuckIndex).at(index).get('id').setValue(data.value);
+        }
     }
 
     public async keyUpAutoComp(text) {
