@@ -111,6 +111,7 @@ export class AdminPageController {
                     bucketSAll.push(IdAll.values);
                 }
             }
+
             const groups = [];
             if (bucketSAll.length > 0) {
                 for (let i = 0; i < bucketSAll.length; i++) {
@@ -210,10 +211,37 @@ export class AdminPageController {
             return res.status(400).send(errorResponse);
         }
         if (data.type === 'page' && data.field === 'id') {
-            const pageQuery = [
-                { $match: { isOfficial: true, banned: false, name: exp } },
-                { $limit: 10 }
-            ];
+            const filterIds = [];
+            const objIds = [];
+            if (data.values.length > 0) {
+                for (let i = 0; i < data.values.length; i++) {
+                    filterIds.push(data.values[i].values);
+                }
+            }
+            if (filterIds.length > 0) {
+                const flatten = filterIds.flat();
+                if (flatten.length > 0) {
+                    for (let j = 0; j < flatten.length; j++) {
+                        if (flatten[j].id !== '' && flatten[j].id !== undefined && flatten[j].id !== null) {
+                            objIds.push(new ObjectID(flatten[j].id));
+                        } else {
+                            continue;
+                        }
+                    }
+                }
+            }
+            let pageQuery = undefined;
+            if (objIds.length > 0) {
+                pageQuery = [
+                    { $match: { isOfficial: true, banned: false, name: exp, _id: { $nin: objIds } } },
+                    { $limit: 10 }
+                ];
+            } else {
+                pageQuery = [
+                    { $match: { isOfficial: true, banned: false, name: exp } },
+                    { $limit: 10 }
+                ];
+            }
             const pages: any[] = await this.pageService.aggregate(pageQuery);
             let pageId = undefined;
             let pageName = undefined;

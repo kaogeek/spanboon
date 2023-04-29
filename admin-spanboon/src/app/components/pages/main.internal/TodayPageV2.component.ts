@@ -76,7 +76,6 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
     public reset: FormArray;
     public isPin: boolean;
     public isSelect: boolean = false;
-
     constructor(
         emergencyEventFacade: EmergencyEventFacade,
         todayPageFacade: TodayPageFacade,
@@ -499,9 +498,10 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
 
     public async keyUpAutoComp(text) {
         try {
+            const filterBuckets = this.empForm.value.buckets;
             this.isLoading = true;
             // await this.accountFacade.search(data);
-            this.todayPageFacade.searchObject(this.selectedValueType, this.selectedValueField, text).then((res) => {
+            this.todayPageFacade.searchObject(this.selectedValueType, this.selectedValueField, text, filterBuckets).then((res) => {
                 if (res) {
                     this.autoComp = res.result ? res.result : res;
                 }

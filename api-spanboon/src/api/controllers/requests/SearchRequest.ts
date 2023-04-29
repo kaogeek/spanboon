@@ -16,4 +16,5 @@ export class SearchRequest {
     public type:string;
     public field:string;
     public buckets:any;
+    public values:any;
 }

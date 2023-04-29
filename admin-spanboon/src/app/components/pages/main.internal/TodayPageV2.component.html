@@ -119,7 +119,7 @@
                                                                         <div
                                                                             *ngFor="
                                                                             let vBucket of valueBucket(bucketIndex).controls; let valueI = index">
-                                                                            {{ valueI }} value :
+                                                                            value :
                                                                             <ng-container
                                                                                 *ngIf="selectedValueField === 'province'; else elseTemplate">
                                                                                 <div [formArrayName]="valueI">
