@@ -16,6 +16,23 @@
                 float: right;
             }
 
+            .box-name {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .box-values {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .add-value {
+                margin-left: 10px;
+                margin-top: 4px;
+            }
+
             >.value_bucket {
                 margin-top: 10px;
                 padding: 10px;

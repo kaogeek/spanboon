@@ -22,7 +22,7 @@ import { Location } from '@angular/common';
 import { DialogWarningComponent } from '../../shares/DialogWarningComponent.component';
 import { DialogAlert } from '../../shares/DialogAlert.component';
 
-const PAGE_NAME: string = "todayV2";
+const PAGE_NAME: string = "today";
 
 const SEARCH_LIMIT: number = 10;
 const SEARCH_OFFSET: number = 0;
@@ -340,13 +340,13 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
             result.buckets = [];
         }
 
-        if (result.title === '') {
+        if (!result.title) {
             return;
-        } else if (result.type === '') {
+        } else if (!result.type) {
             return;
-        } else if (result.field === '') {
+        } else if (!result.field) {
             return;
-        } else if (result.limit === '' || result.limit === null || result.limit === undefined) {
+        } else if (!result.limit) {
             return;
         }
 
@@ -433,8 +433,14 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
                                 if (data.buckets[i].values.length > 0) {
                                     for (let index = 0; index < data.buckets[i].values.length; index++) {
                                         this.addValueBucket(i);
-                                        this.valueBucket(i).at(index).get('value').setValue(res[i][index].title ? res[i][index].title : res[i][index].name);
                                         this.valueBucket(i).at(index).get('id').setValue(res[i][index]._id);
+                                        if (this.selectedValueField === 'id') {
+                                            this.valueBucket(i).at(index).get('value').setValue(res[i][index].name);
+                                        } else if (this.selectedValueField === 'emergencyEvent') {
+                                            this.valueBucket(i).at(index).get('value').setValue(res[i][index].title);
+                                        } else if (this.selectedValueField === 'objective') {
+                                            this.valueBucket(i).at(index).get('value').setValue(res[i][index].title);
+                                        }
                                     }
                                 }
                             }
