@@ -101,6 +101,7 @@ export class AdminPageController {
 
     @Post('/edit/search')
     public async searchGet(@Body({ validate: true }) data: SearchRequest, @Res() res: any, @Req() req: any): Promise<any> {
+        console.log('data', data);
         if (data.type === 'page' && data.field === 'id') {
             const bucketSAll = [];
             const chuckSize = [];
@@ -268,13 +269,40 @@ export class AdminPageController {
                 searchResults.push({ value: pageId, label: pageName, type: SEARCH_TYPE.PAGE });
             }
         } else if (data.type === 'post' && data.field === 'emergencyEvent') {
-            const postEmergencys = await this.emergencyEventService.aggregate([
-                {
-                    $match: { title: exp },
-                },
-                { $limit: 10 }
-            ]);
-
+            const filterIds = [];
+            const objIds = [];
+            if (data.values.length > 0) {
+                for (let i = 0; i < data.values.length; i++) {
+                    filterIds.push(data.values[i].values);
+                }
+            }
+            if (filterIds.length > 0) {
+                const flatten = filterIds.flat();
+                if (flatten.length > 0) {
+                    for (let j = 0; j < flatten.length; j++) {
+                        if (flatten[j].id !== '' && flatten[j].id !== undefined && flatten[j].id !== null) {
+                            objIds.push(new ObjectID(flatten[j].id));
+                        } else {
+                            continue;
+                        }
+                    }
+                }
+            }
+            let pageQuery = undefined;
+            if (objIds.length > 0) {
+                pageQuery = [
+                    {
+                        $match: { title: exp, _id: { $nin: objIds }  }
+                    },
+                ];
+            } else {
+                pageQuery = [
+                    {
+                        $match: { title: exp }
+                    },
+                ];
+            }
+            const postEmergencys = await this.emergencyEventService.aggregate(pageQuery);
             let postId = undefined;
             let postTitle = undefined;
             for (const postStmd of postEmergencys) {
@@ -284,14 +312,40 @@ export class AdminPageController {
             }
 
         } else if (data.type === 'post' && data.field === 'objective') {
-            const postObjectiveS = await this.pageObjectiveService.aggregate([
-                {
-                    $match: { title: exp }
-                },
-                {
-                    $limit: 10
+            const filterIds = [];
+            const objIds = [];
+            if (data.values.length > 0) {
+                for (let i = 0; i < data.values.length; i++) {
+                    filterIds.push(data.values[i].values);
                 }
-            ]);
+            }
+            if (filterIds.length > 0) {
+                const flatten = filterIds.flat();
+                if (flatten.length > 0) {
+                    for (let j = 0; j < flatten.length; j++) {
+                        if (flatten[j].id !== '' && flatten[j].id !== undefined && flatten[j].id !== null) {
+                            objIds.push(new ObjectID(flatten[j].id));
+                        } else {
+                            continue;
+                        }
+                    }
+                }
+            }
+            let pageQuery = undefined;
+            if (objIds.length > 0) {
+                pageQuery = [
+                    {
+                        $match: { title: exp, _id: { $nin: objIds }  }
+                    },
+                ];
+            } else {
+                pageQuery = [
+                    {
+                        $match: { title: exp }
+                    },
+                ];
+            }
+            const postObjectiveS = await this.pageObjectiveService.aggregate(pageQuery);
 
             let postId = undefined;
             let postTitle = undefined;
