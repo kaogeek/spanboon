@@ -550,7 +550,7 @@ export class AdminPageController {
         if (kaoKaiToday.buckets.length > 0) {
             compareS.push(kaoKaiToday.buckets.length);
         }
-        if (compareF < compareS) {
+        if (createKaokaiTodayRequest.buckets.length < kaoKaiToday.buckets.length) {
             if (kaoKaiToday) {
                 const query = { _id: objId };
                 const newValues = {
