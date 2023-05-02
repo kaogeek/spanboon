@@ -246,16 +246,20 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
     }
 
     public removeBucket(bucketIndex: number) {
-        $("#divData-" + bucketIndex).addClass("disabledDiv");
-        $("#back-" + bucketIndex).removeClass("disabledBack");
-        let b = this.bucketDefault.buckets;
-        let bucket = [];
-        for (let index = 0; index < b.length; index++) {
-            bucket.push(index)
-        }
-        for (let index = 0; index < bucket.length; index++) {
-            if (bucketIndex === bucket[index]) {
-                this.deleteIndex.push(index)
+        if (this.edit === undefined) {
+            this.buckets().removeAt(bucketIndex);
+        } else {
+            $("#divData-" + bucketIndex).addClass("disabledDiv");
+            $("#back-" + bucketIndex).removeClass("disabledBack");
+            let bucketForm = this.bucketDefault.buckets;
+            let bucket = [];
+            for (let index = 0; index < bucketForm.length; index++) {
+                bucket.push(index);
+            }
+            for (let index = 0; index < bucket.length; index++) {
+                if (bucketIndex === bucket[index]) {
+                    this.deleteIndex.push(index);
+                }
             }
         }
     }
@@ -273,12 +277,12 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
     }
 
     public addValueBucket(bucketIndex: number) {
-        let c = this.valueBucket(bucketIndex) as FormArray;
+        let bucketValue = this.valueBucket(bucketIndex) as FormArray;
         const values = this.fb.group({
             value: [''],
             id: ['']
         })
-        c.push(values);
+        bucketValue.push(values);
     }
 
     public removeValueBucket(bucketIndex: number, valueI: number) {
@@ -345,7 +349,6 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
         result.limit = this.limit;
         result.buckets = this.empForm.value.buckets;
         result.position = this.selectedPosition;
-        let buckets: any[] = [];
         let data: any[] = [];
         if ((this.selectedValueField === 'id') || (this.selectedValueField === 'emergencyEvent') || (this.selectedValueField === 'objective')) {
             for (let index = 0; index < this.empForm.get('buckets').value.length; index++) {
@@ -425,6 +428,11 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
             })
         } else {
             result.deleteIndex = this.deleteIndex ? this.deleteIndex : undefined;
+            if (!!result.deleteIndex) {
+                for (let i = 0; i < result.deleteIndex.length; i++) {
+                    this.buckets().at(i).reset();
+                }
+            }
             this.todayPageFacade.edit(id, result).then((res) => {
                 this.table.searchData();
                 while (this.buckets().length !== 0) {
@@ -471,7 +479,6 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
                             for (let i = 0; i < data.buckets.length; i++) {
                                 this.buckets().push(this.newBucket());
                                 this.buckets().at(i).get('name').setValue(data.buckets[i].name)
-                                let emp = this.empForm.get('buckets').value[i];
                                 if (data.buckets[i].values.length > 0) {
                                     for (let index = 0; index < data.buckets[i].values.length; index++) {
                                         this.addValueBucket(i);
@@ -497,7 +504,6 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
                         for (let i = 0; i < data.buckets.length; i++) {
                             this.buckets().push(this.newBucket());
                             this.buckets().at(i).get('name').setValue(data.buckets[i].name)
-                            let emp = this.empForm.get('buckets').value[i];
                             if (data.buckets[i].values.length > 0) {
                                 for (let index = 0; index < data.buckets[i].values.length; index++) {
                                     this.addValueBucket(i);

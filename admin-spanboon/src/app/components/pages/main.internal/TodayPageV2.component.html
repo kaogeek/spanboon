@@ -219,10 +219,13 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="div-undo">
-                                                                    <span id="{{'back-'+bucketIndex}}"
+                                                                    <div id="{{'back-'+bucketIndex}}"
                                                                         style="pointer-events: unset !important;opacity: 1;"
-                                                                        class="disabledBack"
-                                                                        (click)="undoDelete(bucketIndex)">ย้อนกลับ</span>
+                                                                        class="disabledBack">
+                                                                        <button mat-raised-button class="btn-back"
+                                                                            (click)="undoDelete(bucketIndex)">
+                                                                            < ย้อนกลับ</button>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
