@@ -540,73 +540,76 @@ export class AdminPageController {
     @Put('/:id/processor')
     @Authorized()
     public async updateKaokaiToday(@Body({ validate: true }) createKaokaiTodayRequest: CreateKaokaiTodayRequest, @Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
-        console.log('createKaokaiTodayRequest',createKaokaiTodayRequest);
+        const compareF = [];
+        const compareS = [];
+        if (createKaokaiTodayRequest.buckets.length > 0) {
+            compareF.push(createKaokaiTodayRequest.buckets.length);
+        }
         const objId = new ObjectID(id);
         const kaoKaiToday = await this.kaokaiTodayService.findOne({ _id: objId });
-        if (createKaokaiTodayRequest.deleteIndex.length > 0) {
+        if (kaoKaiToday.buckets.length > 0) {
+            compareS.push(kaoKaiToday.buckets.length);
+        }
+        if (compareF < compareS) {
             if (kaoKaiToday) {
-              const query = { _id: objId };
-              const newValues = {
-                $set: {
-                  title: createKaokaiTodayRequest.title,
-                  type: createKaokaiTodayRequest.type,
-                  field: createKaokaiTodayRequest.field,
-                  position: createKaokaiTodayRequest.position,
-                  limit: createKaokaiTodayRequest.limit,
-                  flag: createKaokaiTodayRequest.flag,
-                },
-                $pull: {
-                  buckets: { $in: createKaokaiTodayRequest.deleteIndex },
-                },
-              };
-          
-              for (let i = 0; i < createKaokaiTodayRequest.buckets.length; i++) {
-                const bucketNameProp = `buckets.${i}.name`;
-                const bucketValuesProp = `buckets.${i}.values`;
-          
-                newValues.$set[bucketNameProp] = createKaokaiTodayRequest.buckets[i]
-                  ? createKaokaiTodayRequest.buckets[i].name
-                  : undefined;
-                newValues.$set[bucketValuesProp] = createKaokaiTodayRequest.buckets[i]
-                  ? createKaokaiTodayRequest.buckets[i].values
-                  : undefined;
-              }
-          
-              const update = await this.kaokaiTodayService.update(query, newValues);
-          
-              if (update) {
-                const kaokaiTodayNull = await this.kaokaiTodayService.findOne({ _id: objId });
-                if (kaokaiTodayNull) {
-                  const queryNull = { _id: kaokaiTodayNull.id };
-                  const newValuesNull = {
-                    $set: {
-                      title: createKaokaiTodayRequest.title,
-                      type: createKaokaiTodayRequest.type,
-                      field: createKaokaiTodayRequest.field,
-                      position: createKaokaiTodayRequest.position,
-                      limit: createKaokaiTodayRequest.limit,
-                      flag: createKaokaiTodayRequest.flag,
-                    },
-                    $pull: {
-                      buckets: null,
-                    },
-                  };
-                  const updateNull = await this.kaokaiTodayService.update(queryNull, newValuesNull);
-          
-                  if (updateNull) {
-                    const successResponse = ResponseUtil.getSuccessResponse(
-                      'Update KaokaiToday is successfully.',
-                      updateNull
-                    );
-                    return res.status(200).send(successResponse);
+                const unsetOperation = {};
+                for (let i = 0; i < createKaokaiTodayRequest.deleteIndex.length; i++) {
+                  const indexToRemove = createKaokaiTodayRequest.deleteIndex[i];
+                  unsetOperation[`buckets.${indexToRemove}`] = true;
+                }
+                const query = { _id: objId };
+                const newValues = {
+                  $set: {
+                    title: createKaokaiTodayRequest.title,
+                    type: createKaokaiTodayRequest.type,
+                    field: createKaokaiTodayRequest.field,
+                    position: createKaokaiTodayRequest.position,
+                    limit: createKaokaiTodayRequest.limit,
+                    flag: createKaokaiTodayRequest.flag,
+                  },
+                  $unset: unsetOperation,
+                };
+                for (let i = 0; i < createKaokaiTodayRequest.buckets.length; i++) {
+                  const bucketNameProp = `buckets.${i}.name`;
+                  const bucketValuesProp = `buckets.${i}.values`;
+            
+                  newValues.$set[bucketNameProp] = createKaokaiTodayRequest.buckets[i] ? createKaokaiTodayRequest.buckets[i].name : undefined;
+                  newValues.$set[bucketValuesProp] = createKaokaiTodayRequest.buckets[i] ? createKaokaiTodayRequest.buckets[i].values : undefined;
+                }
+                const update = await this.kaokaiTodayService.update(query, newValues);
+            
+                if (update) {
+                  // check if bucket is null
+                  const kaokaiTodayNull = await this.kaokaiTodayService.findOne({ _id: objId });
+                  if (kaokaiTodayNull) {
+                    const queryNull = { _id: kaokaiTodayNull.id };
+                    const newValuesNull = {
+                      $set: {
+                        title: createKaokaiTodayRequest.title,
+                        type: createKaokaiTodayRequest.type,
+                        field: createKaokaiTodayRequest.field,
+                        position: createKaokaiTodayRequest.position,
+                        limit: createKaokaiTodayRequest.limit,
+                        flag: createKaokaiTodayRequest.flag,
+                      },
+                      $pull: {
+                        buckets: null,
+                      },
+                    };
+                    const updateNull = await this.kaokaiTodayService.update(queryNull, newValuesNull);
+            
+                    if (updateNull) {
+                      const successResponse = ResponseUtil.getSuccessResponse('Update KaokaiToday is successfully.', updateNull);
+                      return res.status(200).send(successResponse);
+                    }
                   }
                 }
+              } else {
+                const errorResponse = ResponseUtil.getErrorResponse('Cannot find object ID.', undefined);
+                return res.status(400).send(errorResponse);
               }
-            } else {
-              const errorResponse = ResponseUtil.getErrorResponse('Cannot find object ID.', undefined);
-              return res.status(400).send(errorResponse);
-            }
-          }else{
+            
+        } else {
             if (kaoKaiToday) {
                 const query = { _id: objId };
                 const newValues = {
@@ -622,11 +625,11 @@ export class AdminPageController {
                 createKaokaiTodayRequest.buckets.forEach((bucket, index) => {
                     const bucketNameProp = `buckets.${index}.name`;
                     const bucketValuesProp = `buckets.${index}.values`;
-                
+
                     newValues.$set[bucketNameProp] = bucket.name;
                     newValues.$set[bucketValuesProp] = bucket.values;
                 });
-                
+
                 const update = await this.kaokaiTodayService.update(query, newValues);
 
                 if (update) {
