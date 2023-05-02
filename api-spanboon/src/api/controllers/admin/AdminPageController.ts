@@ -552,34 +552,14 @@ export class AdminPageController {
         }
         if (compareF < compareS) {
             if (kaoKaiToday) {
-                const unsetOperation = {};
-                for (let i = 0; i < createKaokaiTodayRequest.deleteIndex.length; i++) {
-                  const indexToRemove = createKaokaiTodayRequest.deleteIndex[i];
-                  unsetOperation[`buckets.${indexToRemove}`] = true;
-                }
-                const deleteIndexes = createKaokaiTodayRequest.deleteIndex.sort((a, b) => a - b);
-                for (let i = deleteIndexes.length - 1; i >= 0; i--) {
-                  const indexToRemove = deleteIndexes[i];
-                  createKaokaiTodayRequest.buckets.splice(indexToRemove, 1);
-                }
                 const query = { _id: objId };
                 const newValues = {
-                  $set: {
-                    title: createKaokaiTodayRequest.title,
-                    type: createKaokaiTodayRequest.type,
-                    field: createKaokaiTodayRequest.field,
-                    position: createKaokaiTodayRequest.position,
-                    limit: createKaokaiTodayRequest.limit,
-                    flag: createKaokaiTodayRequest.flag,
-                  },
-                  $unset: unsetOperation,
+                  $unset: {
+                  }
                 };
-                for (let i = 0; i < createKaokaiTodayRequest.buckets.length; i++) {
-                  const bucketNameProp = `buckets.${i}.name`;
-                  const bucketValuesProp = `buckets.${i}.values`;
-            
-                  newValues.$set[bucketNameProp] = createKaokaiTodayRequest.buckets[i] ? createKaokaiTodayRequest.buckets[i].name : undefined;
-                  newValues.$set[bucketValuesProp] = createKaokaiTodayRequest.buckets[i] ? createKaokaiTodayRequest.buckets[i].values : undefined;
+                for (let i = 0; i < createKaokaiTodayRequest.deleteIndex.length; i++) {
+                  const bucketNameProp = `buckets.${createKaokaiTodayRequest.deleteIndex[i]}`;
+                  newValues.$unset[bucketNameProp] = createKaokaiTodayRequest.deleteIndex[i];
                 }
                 const update = await this.kaokaiTodayService.update(query, newValues);
             
