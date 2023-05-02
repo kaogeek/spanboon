@@ -69,6 +69,7 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
     public reset: FormArray;
     public isPin: boolean;
     public isSelect: boolean = false;
+    public deleteIndex: any = [];
     constructor(
         emergencyEventFacade: EmergencyEventFacade,
         todayPageFacade: TodayPageFacade,
@@ -243,6 +244,7 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
     }
 
     public removeBucket(bucketIndex: number) {
+        this.deleteIndex.push(bucketIndex);
         this.buckets().removeAt(bucketIndex);
     }
 
@@ -402,6 +404,7 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
                 this.drawer.toggle();
             })
         } else {
+            result.deleteIndex = this.deleteIndex ? this.deleteIndex : undefined;
             this.todayPageFacade.edit(id, result).then((res) => {
                 this.table.searchData();
                 while (this.buckets().length !== 0) {
