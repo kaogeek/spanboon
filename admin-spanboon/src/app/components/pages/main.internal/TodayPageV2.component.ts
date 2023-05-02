@@ -46,10 +46,7 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
     private router: Router;
     public createdName: any;
     public dataForm: EmergencyEvent;
-    public valueBool: boolean;
-    private imageSrc: string = '';
     public value: string = '';
-    public ordering: number;
     public isSave: boolean = false;
     public position: number;
     public typeBucket: any = [{ value: 'page' }, { value: 'post' }, { value: 'hashtag' }];
@@ -57,22 +54,18 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
     public fieldBucket: any = [{ value: 'id' }, { value: 'group' }, { value: 'province' }];
     public empForm: FormGroup;
     public selectedPosition: number;
-    public stackValue: any = [];
-    public countArray: number = 1;
     public title: string;
     public limit: number = 10;
     public edit: string;
     public _id: string;
     public provinces;
     public default_province;
-    public orderBy: any = {};
     public selectedValueType: string;
     public selectedValueField: string;
     public selectedValueTitle: string;
     public isLoading: boolean;
     public autoComp: any;
     public showComp: any = [];
-    public length: number;
     public reset: FormArray;
     public isPin: boolean;
     public isSelect: boolean = false;
@@ -154,9 +147,30 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
                 formatDate: false,
                 formatId: false,
                 align: "left"
-            }, {
+            },
+            {
                 name: "bucket3",
                 label: "ถัง 3",
+                width: "180pt",
+                class: "", formatColor: false, formatImage: false,
+                link: [],
+                formatDate: false,
+                formatId: false,
+                align: "left"
+            },
+            {
+                name: "bucket4",
+                label: "ถัง 4",
+                width: "180pt",
+                class: "", formatColor: false, formatImage: false,
+                link: [],
+                formatDate: false,
+                formatId: false,
+                align: "left"
+            },
+            {
+                name: "bucket5",
+                label: "ถัง 5",
                 width: "180pt",
                 class: "", formatColor: false, formatImage: false,
                 link: [],
@@ -205,6 +219,7 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
     }
 
     public ngOnInit() {
+        this.table.isTodayPage = true;
         this.getProvince();
         this.empForm = this.fb.group({
             buckets: this.fb.array([])
@@ -377,6 +392,7 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
                 while (this.buckets().length !== 0) {
                     this.buckets().removeAt(0)
                 }
+                this.empForm.reset();
                 this.selectedValueTitle = undefined;
                 this.selectedValueType = undefined;
                 this.selectedValueField = undefined;
@@ -391,6 +407,7 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
                 while (this.buckets().length !== 0) {
                     this.buckets().removeAt(0)
                 }
+                this.empForm.reset();
                 this.selectedValueTitle = undefined;
                 this.selectedValueType = undefined;
                 this.selectedValueField = undefined;

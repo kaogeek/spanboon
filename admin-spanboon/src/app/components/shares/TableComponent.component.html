@@ -56,6 +56,9 @@
                 </mat-select>
             </mat-form-field>
         </div>
+        <div *ngIf="isTodayPage" class="note-todaypage">
+            <span>*หมายเหตุ ตารางจะแสดงสูงสุดได้เพียง 5 ถัง สามารถดูถังเพิ่มเติมได้ที่เมนูแก้ไข</span>
+        </div>
         <div #scrollEl cdk-scrollable class="table-responsive">
             <table mat-table cdkDropList class="table-container" [dataSource]="dataSource" matSort style="width: 100%;"
                 [cdkDropListData]="dataSource" (cdkDropListDropped)="dropTable($event)">

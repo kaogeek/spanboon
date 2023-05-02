@@ -135,6 +135,7 @@ export class TableComponent implements OnInit {
     public isLoading: boolean;
     public isBans: boolean;
     public isEmer: boolean = false;
+    public isTodayPage: boolean = false;
     public isNews: boolean = false;
     public isShowSelect: boolean;
     public dataSource: MatTableDataSource<any>;

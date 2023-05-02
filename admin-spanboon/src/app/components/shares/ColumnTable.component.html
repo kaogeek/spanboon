@@ -135,7 +135,7 @@
             </ng-container>
             <ng-template #elseData>
                 <ng-container
-                    *ngIf="(fieldTable.name !== 'type') && (fieldTable.name !== 'field') && (fieldTable.name !== 'bucket1') && (fieldTable.name !== 'bucket2') && (fieldTable.name !== 'bucket3'); else elseBucket">
+                    *ngIf="(fieldTable.name !== 'type') && (fieldTable.name !== 'field') && (fieldTable.name !== 'bucket1') && (fieldTable.name !== 'bucket2') && (fieldTable.name !== 'bucket3') && (fieldTable.name !== 'bucket4') && (fieldTable.name !== 'bucket5'); else elseBucket">
                     -
                 </ng-container>
                 <ng-template #elseBucket>
@@ -177,6 +177,26 @@
                                 *ngIf="data.buckets[2].name && data.buckets[2].name !== ''">หัวเรื่อง :
                                 {{data.buckets[2].name ? data.buckets[2].name : ''}}</span>
                             <div *ngFor="let item of data.buckets[2].values">
+                                {{item}}
+                            </div>
+                        </div>
+                    </div>
+                    <div *ngIf="fieldTable.name === 'bucket4'">
+                        <div *ngIf="data.buckets[3]">
+                            <span style="font-size: 16px;"
+                                *ngIf="data.buckets[3].name && data.buckets[3].name !== ''">หัวเรื่อง :
+                                {{data.buckets[3].name ? data.buckets[3].name : ''}}</span>
+                            <div *ngFor="let item of data.buckets[3].values">
+                                {{item}}
+                            </div>
+                        </div>
+                    </div>
+                    <div *ngIf="fieldTable.name === 'bucket5'">
+                        <div *ngIf="data.buckets[4]">
+                            <span style="font-size: 16px;"
+                                *ngIf="data.buckets[4].name && data.buckets[4].name !== ''">หัวเรื่อง :
+                                {{data.buckets[4].name ? data.buckets[4].name : ''}}</span>
+                            <div *ngFor="let item of data.buckets[4].values">
                                 {{item}}
                             </div>
                         </div>
