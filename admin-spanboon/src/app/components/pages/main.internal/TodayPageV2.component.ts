@@ -432,8 +432,8 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
                 for (let i = 0; i < result.deleteIndex.length; i++) {
                     this.buckets().removeAt(i);
                 }
+                result.buckets = this.empForm.value.buckets
             }
-            // return;
             this.todayPageFacade.edit(id, result).then((res) => {
                 this.table.searchData();
                 while (this.buckets().length !== 0) {
