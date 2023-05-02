@@ -82,7 +82,7 @@
                                         <ng-container
                                             *ngIf="(selectedValueField !== 'score' ) && (selectedValueField !== 'count' )">
                                             <div class="container-bucket">
-                                                <form [formGroup]="empForm" (ngSubmit)="onSubmit()">
+                                                <form [formGroup]="empForm">
                                                     <div formArrayName="buckets">
                                                         <div *ngIf="!!selectedValueField && !!selectedValueType">
                                                             <span>กลุ่มแสดงข้อมูล</span>
@@ -106,13 +106,14 @@
                                                         <div class="wrapper-bucket">
                                                             <div *ngFor="let employee of buckets().controls; let bucketIndex=index"
                                                                 class="field-data">
-                                                                <div [formGroupName]="bucketIndex">
+                                                                <div [formGroupName]="bucketIndex"
+                                                                    id="{{'divData-'+bucketIndex}}">
                                                                     <div class="box-name">
                                                                         Name :
                                                                         <input class="text" type="text" style="margin-left: 5px;
-                                                                            border: 1px solid black;
-                                                                            border-radius: 5px;
-                                                                            padding: 3px 8px;"
+                                                                                border: 1px solid black;
+                                                                                border-radius: 5px;
+                                                                                padding: 3px 8px;"
                                                                             formControlName="name" />
 
                                                                         <button mat-raised-button
@@ -125,7 +126,7 @@
                                                                     <div formArrayName="values">
                                                                         <div class="box-values"
                                                                             *ngFor="
-                                                                            let vBucket of valueBucket(bucketIndex).controls; let valueI = index">
+                                                                                let vBucket of valueBucket(bucketIndex).controls; let valueI = index">
                                                                             value :
                                                                             <ng-container
                                                                                 *ngIf="selectedValueField === 'province'; else elseTemplate">
@@ -149,9 +150,9 @@
                                                                                 <div [formArrayName]="valueI">
                                                                                     <input type="text" id="input-value"
                                                                                         style="margin-left: 5px;
-                                                                                        border: 1px solid black;
-                                                                                        border-radius: 5px;
-                                                                                        padding: 3px 8px;"
+                                                                                            border: 1px solid black;
+                                                                                            border-radius: 5px;
+                                                                                            padding: 3px 8px;"
                                                                                         formControlName="value"
                                                                                         [matAutocomplete]="autoComplete"
                                                                                         (click)="keyUpAutoComp($event.target.value !== '' ? $event.target.value : '',valueI)"
@@ -175,7 +176,8 @@
                                                                                                     class="list-autocomp">
                                                                                                     <div
                                                                                                         class="show-name">
-                                                                                                        {{user.label ?
+                                                                                                        {{user.label
+                                                                                                        ?
                                                                                                         user.label :
                                                                                                         user.detail}}
                                                                                                     </div>
@@ -215,6 +217,12 @@
                                                                             </g>
                                                                         </svg>
                                                                     </div>
+                                                                </div>
+                                                                <div class="div-undo">
+                                                                    <span id="{{'back-'+bucketIndex}}"
+                                                                        style="pointer-events: unset !important;opacity: 1;"
+                                                                        class="disabledBack"
+                                                                        (click)="undoDelete(bucketIndex)">ย้อนกลับ</span>
                                                                 </div>
                                                             </div>
                                                         </div>

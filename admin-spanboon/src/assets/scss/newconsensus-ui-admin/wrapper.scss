@@ -778,6 +778,15 @@ html {
     color: gray;
 }
 
+.disabledDiv {
+    pointer-events: none;
+    opacity: 0.4;
+}
+
+.disabledBack {
+    display: none;
+}
+
 .btn-user {
     display: flex;
     justify-content: center;

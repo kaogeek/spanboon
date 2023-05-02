@@ -79,6 +79,12 @@
             >.field-value {
                 margin-top: 10px;
             }
+
+            >.div-undo {
+                width: 100%;
+                display: flex;
+                justify-content: flex-end;
+            }
         }
     }
 }

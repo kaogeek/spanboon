@@ -70,6 +70,7 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
     public isPin: boolean;
     public isSelect: boolean = false;
     public deleteIndex: any = [];
+    public bucketDefault: any = [];
     constructor(
         emergencyEventFacade: EmergencyEventFacade,
         todayPageFacade: TodayPageFacade,
@@ -211,6 +212,7 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
                 this.limit = undefined;
                 this.edit = undefined;
                 this.showComp = undefined;
+                this.deleteIndex = [];
                 while (this.buckets().length !== 0) {
                     this.buckets().removeAt(0)
                 }
@@ -244,8 +246,26 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
     }
 
     public removeBucket(bucketIndex: number) {
-        this.deleteIndex.push(bucketIndex);
-        this.buckets().removeAt(bucketIndex);
+        $("#divData-" + bucketIndex).addClass("disabledDiv");
+        $("#back-" + bucketIndex).removeClass("disabledBack");
+        let b = this.bucketDefault.buckets;
+        let bucket = [];
+        for (let index = 0; index < b.length; index++) {
+            bucket.push(index)
+        }
+        for (let index = 0; index < bucket.length; index++) {
+            if (bucketIndex === bucket[index]) {
+                this.deleteIndex.push(index)
+            }
+        }
+    }
+
+    public undoDelete(bucketIndex: number) {
+        let d = document.getElementById('divData-' + bucketIndex).className;
+        if (d === 'ng-untouched ng-pristine ng-valid disabledDiv') {
+            $("#divData-" + bucketIndex).removeClass("disabledDiv");
+            $("#back-" + bucketIndex).addClass("disabledBack");
+        }
     }
 
     public valueBucket(bucketIndex: number) {
@@ -417,12 +437,14 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
                 this.selectedPosition = undefined;
                 this.limit = undefined;
                 this.edit = undefined;
+                this.deleteIndex = [];
                 this.drawer.toggle();
             })
         }
     }
 
     public clickEditForm(data: any): void {
+        this.bucketDefault = data;
         this.setFields();
         this.drawer.toggle();
         let clickEdit = 'edit';
