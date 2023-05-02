@@ -430,9 +430,10 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
             result.deleteIndex = this.deleteIndex ? this.deleteIndex : undefined;
             if (!!result.deleteIndex) {
                 for (let i = 0; i < result.deleteIndex.length; i++) {
-                    this.buckets().at(i).reset();
+                    this.buckets().removeAt(i);
                 }
             }
+            // return;
             this.todayPageFacade.edit(id, result).then((res) => {
                 this.table.searchData();
                 while (this.buckets().length !== 0) {
