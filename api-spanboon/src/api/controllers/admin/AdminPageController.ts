@@ -557,6 +557,11 @@ export class AdminPageController {
                   const indexToRemove = createKaokaiTodayRequest.deleteIndex[i];
                   unsetOperation[`buckets.${indexToRemove}`] = true;
                 }
+                const deleteIndexes = createKaokaiTodayRequest.deleteIndex.sort((a, b) => a - b);
+                for (let i = deleteIndexes.length - 1; i >= 0; i--) {
+                  const indexToRemove = deleteIndexes[i];
+                  createKaokaiTodayRequest.buckets.splice(indexToRemove, 1);
+                }
                 const query = { _id: objId };
                 const newValues = {
                   $set: {
