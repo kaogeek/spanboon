@@ -301,7 +301,12 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                     }
                     if (bucketSAll.length > 0) {
                         for (let i = 0; i < bucketSAll[0].length; i++) {
-                            chunkSizes.push(bucketSAll[i].length);
+                            // chunkSizes.push(bucketSAll[i].length);
+                            if (bucketSAll[i] !== undefined) {
+                                chunkSizes.push(bucketSAll[i].length);
+                            } else {
+                                continue;
+                            }
                         }
                     }
                     const groups = [];
@@ -504,7 +509,12 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                     }
                     if (bucketSAll.length > 0) {
                         for (let i = 0; i < bucketSAll[0].length; i++) {
-                            chunkSizes.push(bucketSAll[i].length);
+                            // chunkSizes.push(bucketSAll[i].length);
+                            if (bucketSAll[i] !== undefined) {
+                                chunkSizes.push(bucketSAll[i].length);
+                            } else {
+                                continue;
+                            }
                         }
                     }
                     const groups = [];
@@ -727,7 +737,12 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                     const IdshashTags = [];
                     if (stackHashTags.length > 0) {
                         for (let i = 0; i < stackHashTags.length; i++) {
-                            chunkSizes.push(stackHashTags[i].length);
+                            // chunkSizes.push(stackHashTags[i].length);
+                            if (bucketSAll[i] !== undefined) {
+                                chunkSizes.push(stackHashTags[i].length);
+                            } else {
+                                continue;
+                            }
                         }
                     }
                     if (stackHashTags.length > 0 && chunkSizes.length > 0) {
@@ -1537,7 +1552,12 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
 
                     if (bucketSAll.length > 0) {
                         for (let i = 0; i < bucketSAll[0].length; i++) {
-                            chunkSizes.push(bucketSAll[i].length);
+                            // chunkSizes.push(bucketSAll[i].length);
+                            if (bucketSAll[i] !== undefined) {
+                                chunkSizes.push(bucketSAll[i].length);
+                            } else {
+                                continue;
+                            }
                         }
                     }
                     const groups = [];

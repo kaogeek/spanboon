@@ -255,7 +255,6 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
 
                     resolve(result);
                 } else if (roundRobin.type === 'post' && roundRobin.field === 'objective') {
-
                     const bucketSAll = [];
                     const postObject = [];
                     const chunkSizes = [];
@@ -264,9 +263,14 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                             bucketSAll.push(pageGroups.values);
                         }
                     }
+                    // chunkSizes.push(bucketSAll[i].length);
                     if (bucketSAll.length > 0) {
                         for (let i = 0; i < bucketSAll[0].length; i++) {
-                            chunkSizes.push(bucketSAll[i].length);
+                            if (bucketSAll[i] !== undefined) {
+                                chunkSizes.push(bucketSAll[i].length);
+                            } else {
+                                continue;
+                            }
                         }
                     }
                     const groups = [];
@@ -467,9 +471,14 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                             bucketSAll.push(pageGroups.values);
                         }
                     }
+                    // chunkSizes.push(bucketSAll[i].length);
                     if (bucketSAll.length > 0) {
                         for (let i = 0; i < bucketSAll[0].length; i++) {
-                            chunkSizes.push(bucketSAll[i].length);
+                            if (bucketSAll[i] !== undefined) {
+                                chunkSizes.push(bucketSAll[i].length);
+                            } else {
+                                continue;
+                            }
                         }
                     }
                     const groups = [];
@@ -691,7 +700,12 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     const IdshashTags = [];
                     if (stackHashTags.length > 0) {
                         for (let i = 0; i < stackHashTags.length; i++) {
-                            chunkSizes.push(stackHashTags[i].length);
+                            // chunkSizes.push(stackHashTags[i].length);
+                            if (bucketSAll[i] !== undefined) {
+                                chunkSizes.push(stackHashTags[i].length);
+                            } else {
+                                continue;
+                            }
                         }
                     }
                     if (stackHashTags.length > 0 && chunkSizes.length > 0) {
@@ -1498,10 +1512,14 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                             bucketSAll.push(IdAll.values);
                         }
                     }
-
+                    // chunkSizes.push(bucketSAll[i].length);
                     if (bucketSAll.length > 0) {
                         for (let i = 0; i < bucketSAll[0].length; i++) {
-                            chunkSizes.push(bucketSAll[i].length);
+                            if (bucketSAll[i] !== undefined) {
+                                chunkSizes.push(bucketSAll[i].length);
+                            } else {
+                                continue;
+                            }
                         }
                     }
                     const groups = [];
