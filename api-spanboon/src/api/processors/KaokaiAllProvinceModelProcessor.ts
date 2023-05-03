@@ -285,9 +285,9 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     }
                     if (bucketSAll.length > 0) {
                         for (let i = 0; i < bucketSAll[0].length; i++) {
-                            if(bucketSAll[i] !== undefined){
+                            if (bucketSAll[i] !== undefined) {
                                 chunkSizes.push(bucketSAll[i].length);
-                            }else{
+                            } else {
                                 continue;
                             }
                         }
@@ -492,11 +492,11 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     }
                     if (bucketSAll.length > 0) {
                         for (let i = 0; i < bucketSAll[0].length; i++) {
-                            if(bucketSAll[i] !== undefined){
+                            if (bucketSAll[i] !== undefined) {
                                 chunkSizes.push(bucketSAll[i].length);
-                            }else{
+                            } else {
                                 continue;
-                            }                        
+                            }
                         }
                     }
                     const groups = [];
@@ -719,9 +719,9 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     const IdshashTags = [];
                     if (stackHashTags.length > 0) {
                         for (let i = 0; i < stackHashTags.length; i++) {
-                            if(bucketSAll[i] !== undefined){
+                            if (bucketSAll[i] !== undefined) {
                                 chunkSizes.push(stackHashTags[i].length);
-                            }else{
+                            } else {
                                 continue;
                             }
                         }
@@ -1470,6 +1470,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                             }
                         }
                     }
+                    console.log('stackPage', stackPage);
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
                     result.title = (this.config === undefined || this.config.title === undefined) ? provincePage.title : provincePage.title;

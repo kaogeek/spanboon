@@ -290,10 +290,20 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                             bucketSAll.push(pageGroups.values);
                         }
                     }
+                    /* 
                     if (bucketSAll.length > 0) {
                         for (let i = 0; i < bucketSAll[0].length; i++) {
                             // chunkSizes.push(bucketSAll[i].length);
                             if (bucketSAll[i] !== undefined) {
+                                chunkSizes.push(bucketSAll[i].length);
+                            } else {
+                                continue;
+                            }
+                        }
+                    } */
+                    if (bucketSAll.length > 0) {
+                        for (let i = 0; i < bucketSAll.length; i++) {
+                            if (bucketSAll[i].length > 0) {
                                 chunkSizes.push(bucketSAll[i].length);
                             } else {
                                 continue;
@@ -498,10 +508,20 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                             bucketSAll.push(pageGroups.values);
                         }
                     }
+                    /* 
                     if (bucketSAll.length > 0) {
                         for (let i = 0; i < bucketSAll[0].length; i++) {
                             // chunkSizes.push(bucketSAll[i].length);
                             if (bucketSAll[i] !== undefined) {
+                                chunkSizes.push(bucketSAll[i].length);
+                            } else {
+                                continue;
+                            }
+                        }
+                    } */
+                    if (bucketSAll.length > 0) {
+                        for (let i = 0; i < bucketSAll.length; i++) {
+                            if (bucketSAll[i].length > 0) {
                                 chunkSizes.push(bucketSAll[i].length);
                             } else {
                                 continue;
@@ -1540,10 +1560,19 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                             bucketSAll.push(IdAll.values);
                         }
                     }
-
+                    /* 
                     if (bucketSAll.length > 0) {
                         for (let i = 0; i < bucketSAll[0].length; i++) {
                             chunkSizes.push(bucketSAll[i].length);
+                        }
+                    } */
+                    if (bucketSAll.length > 0) {
+                        for (let i = 0; i < bucketSAll.length; i++) {
+                            if (bucketSAll[i].length > 0) {
+                                chunkSizes.push(bucketSAll[i].length);
+                            } else {
+                                continue;
+                            }
                         }
                     }
                     const groups = [];

@@ -265,8 +265,8 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     }
                     // chunkSizes.push(bucketSAll[i].length);
                     if (bucketSAll.length > 0) {
-                        for (let i = 0; i < bucketSAll[0].length; i++) {
-                            if (bucketSAll[i] !== undefined) {
+                        for (let i = 0; i < bucketSAll.length; i++) {
+                            if (bucketSAll[i].length > 0) {
                                 chunkSizes.push(bucketSAll[i].length);
                             } else {
                                 continue;
@@ -473,8 +473,8 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     }
                     // chunkSizes.push(bucketSAll[i].length);
                     if (bucketSAll.length > 0) {
-                        for (let i = 0; i < bucketSAll[0].length; i++) {
-                            if (bucketSAll[i] !== undefined) {
+                        for (let i = 0; i < bucketSAll.length; i++) {
+                            if (bucketSAll[i].length > 0) {
                                 chunkSizes.push(bucketSAll[i].length);
                             } else {
                                 continue;
@@ -701,7 +701,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     if (stackHashTags.length > 0) {
                         for (let i = 0; i < stackHashTags.length; i++) {
                             // chunkSizes.push(stackHashTags[i].length);
-                            if (bucketSAll[i] !== undefined) {
+                            if (bucketSAll[i].length > 0) {
                                 chunkSizes.push(stackHashTags[i].length);
                             } else {
                                 continue;
@@ -1514,8 +1514,8 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     }
                     // chunkSizes.push(bucketSAll[i].length);
                     if (bucketSAll.length > 0) {
-                        for (let i = 0; i < bucketSAll[0].length; i++) {
-                            if (bucketSAll[i] !== undefined) {
+                        for (let i = 0; i < bucketSAll.length; i++) {
+                            if (bucketSAll[i].length > 0) {
                                 chunkSizes.push(bucketSAll[i].length);
                             } else {
                                 continue;
