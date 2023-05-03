@@ -71,6 +71,8 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
     public isSelect: boolean = false;
     public deleteIndex: any = [];
     public bucketDefault: any = [];
+    public orderBy: any = {};
+
     constructor(
         emergencyEventFacade: EmergencyEventFacade,
         todayPageFacade: TodayPageFacade,
