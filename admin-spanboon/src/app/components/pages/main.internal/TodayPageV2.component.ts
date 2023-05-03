@@ -237,6 +237,7 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
     public newBucket(): FormGroup {
         return this.fb.group({
             name: [''],
+            delete: [false],
             values: this.fb.array([]),
         });
     }
@@ -251,6 +252,7 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
         } else {
             $("#divData-" + bucketIndex).addClass("disabledDiv");
             $("#back-" + bucketIndex).removeClass("disabledBack");
+            this.buckets().at(bucketIndex).get('delete').setValue(true);
             let bucketForm = this.bucketDefault.buckets;
             let bucket = [];
             for (let index = 0; index < bucketForm.length; index++) {
@@ -265,6 +267,12 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
     }
 
     public undoDelete(bucketIndex: number) {
+        for (let index = 0; index < this.deleteIndex.length; index++) {
+            if (bucketIndex === this.deleteIndex[index]) {
+                this.deleteIndex.splice(index, 1);
+            }
+        }
+        this.buckets().at(bucketIndex).get('delete').setValue(false);
         let d = document.getElementById('divData-' + bucketIndex).className;
         if (d === 'ng-untouched ng-pristine ng-valid disabledDiv') {
             $("#divData-" + bucketIndex).removeClass("disabledDiv");
@@ -429,8 +437,15 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
         } else {
             result.deleteIndex = this.deleteIndex ? this.deleteIndex : undefined;
             if (!!result.deleteIndex) {
-                for (let i = 0; i < result.deleteIndex.length; i++) {
-                    this.buckets().removeAt(i);
+                for (let i = 0; i < this.deleteIndex.length; i++) {
+                    if (this.buckets().at(i).get('delete').value === true) {
+                        this.buckets().removeAt(i);
+                    }
+                }
+                for (let i = 0; i < this.buckets().value.length; i++) {
+                    if (this.buckets().at(i).get('delete').value === true) {
+                        this.buckets().removeAt(i);
+                    }
                 }
                 result.buckets = this.empForm.value.buckets
             }
