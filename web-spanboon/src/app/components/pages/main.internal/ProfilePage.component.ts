@@ -9,7 +9,7 @@ import { Component, OnInit, ViewChild, EventEmitter, ElementRef, Output } from '
 import { AuthenManager, ProfileFacade, AssetFacade, ObservableManager, PageFacade, PostFacade, PostCommentFacade, RecommendFacade, Engagement, UserEngagementFacade, PostActionService, SeoService } from '../../../services/services';
 import { MatDialog } from '@angular/material';
 import * as $ from 'jquery';
-import { DomSanitizer } from '@angular/platform-browser';
+import { DomSanitizer, Meta } from '@angular/platform-browser';
 import { FileHandle } from '../../shares/directive/directives';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { AbstractPageImageLoader } from '../AbstractPageImageLoader';
@@ -63,6 +63,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
   private userEngagementFacade: UserEngagementFacade;
   private postActionService: PostActionService;
   private seoService: SeoService;
+  private meta: Meta;
   public dialog: MatDialog;
 
   public isLoading: boolean;
@@ -125,7 +126,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
 
   constructor(router: Router, authenManager: AuthenManager, profileFacade: ProfileFacade, dialog: MatDialog, pageFacade: PageFacade, postCommentFacade: PostCommentFacade,
     sanitizer: DomSanitizer, assetFacade: AssetFacade, observManager: ObservableManager, routeActivated: ActivatedRoute, postFacade: PostFacade, recommendFacade: RecommendFacade,
-    engagementService: Engagement, userEngagementFacade: UserEngagementFacade, postActionService: PostActionService, seoService: SeoService) {
+    engagementService: Engagement, userEngagementFacade: UserEngagementFacade, postActionService: PostActionService, seoService: SeoService, meta: Meta) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.dialog = dialog;
     this.sanitizer = sanitizer;
@@ -142,6 +143,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     this.userEngagementFacade = userEngagementFacade;
     this.postActionService = postActionService;
     this.seoService = seoService;
+    this.meta = meta;
     this.msgUserNotFound = false;
     this.isFiles = false;
     this.showLoading = true;
@@ -459,6 +461,10 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     this.profileFacade.getProfile(url).then((res) => {
       if (res) {
         this.seoService.updateTitle(res.data.name ? res.data.name : res.data.displayName);
+        if (this.resPost.posts.length === 1) {
+          this.meta.updateTag({ name: 'title', content: this.resPost.posts[0].title });
+          this.meta.updateTag({ name: 'description', content: this.resPost.posts[0].detail });
+        }
         if (res.status === 1 && res.data) {
           let user = {
             displayName: res.data.displayName,
