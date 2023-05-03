@@ -448,6 +448,7 @@ export class FacebookWebhookController {
                 }
             } else if (value_verb === 'add' && change_value_link !== undefined && body.entry[0].changes[0].value.photos === undefined && body.entry[0].changes[0].value.item !== 'share' && body.entry[0].changes[0].value.item === 'photo' && published === 1) {
                 const assetPic = await this.assetService.createAssetFromURL(change_value_link, pageIdFB.ownerUser);
+                console.log('assetPic', assetPic);
                 const checkPost = await this.socialPostService.find({ socialId: body.entry[0].changes[0].value.post_id });
                 const checkFeed = checkPost.shift();
                 if (checkFeed === undefined && assetPic !== undefined) {
@@ -603,22 +604,17 @@ export class FacebookWebhookController {
                     await this.postsService.update(queryTag, newValuesTag);
                     if (createPostPageData) {
                         // Asset 
-                        const photoGallery = [];
                         if (body.entry[0].changes[0].value.photos === undefined) {
-                            const assetObj = await this.assetService.findOne({ _id: assetPic.id });
-                            if (assetObj.data !== undefined && assetObj.data !== null) {
-                                photoGallery.push(assetObj.data);
-                            }
-                            for (const asset of photoGallery) {
+                            if (assetPic) {
                                 const postsGallery = new PostsGallery();
                                 postsGallery.post = createPostPageData.id;
-                                postsGallery.fileId = new ObjectID(assetObj.id);
-                                postsGallery.imageURL = ASSET_PATH + new ObjectID(assetObj.id);
-                                postsGallery.s3ImageURL = asset.s3FilePath;
-                                postsGallery.ordering = body.entry[0].changes[0].value.published;
+                                postsGallery.fileId = new ObjectID(assetPic.id);
+                                postsGallery.imageURL = ASSET_PATH + new ObjectID(assetPic.id);
+                                postsGallery.s3ImageURL = assetPic ? assetPic.s3FilePath : '';
+                                postsGallery.ordering = published;
                                 const postsGalleryCreate: PostsGallery = await this.postsGalleryService.create(postsGallery);
                                 if (postsGalleryCreate) {
-                                    await this.assetService.update({ _id: assetObj.id, userId: pageIdFB.ownerUser }, { $set: { expirationDate: null } });
+                                    await this.assetService.update({ _id: assetPic.id, userId: pageIdFB.ownerUser }, { $set: { expirationDate: null } });
                                 }
                             }
                             const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
@@ -793,7 +789,6 @@ export class FacebookWebhookController {
             // delete Post
 
             else if (value_verb === 'edited' && body.entry[0].changes[0].value.message === undefined && body.entry[0].changes[0].value.item === 'status' && body.entry[0].changes[0].value.photo_id === undefined && published === 1) {
-                console.log('delete post ????');
                 const findPost = await this.socialPostService.findOne({ socialId: body.entry[0].changes[0].value.post_id, socialType: 'FACEBOOK' });
                 if (findPost !== undefined && findPost !== null) {
                     const posted = await this.postsService.findOne({ _id: findPost.postId });

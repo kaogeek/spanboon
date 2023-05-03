@@ -82,99 +82,111 @@
                                         <ng-container
                                             *ngIf="(selectedValueField !== 'score' ) && (selectedValueField !== 'count' )">
                                             <div class="container-bucket">
-                                                <form [formGroup]="empForm" (ngSubmit)="onSubmit()">
+                                                <form [formGroup]="empForm">
                                                     <div formArrayName="buckets">
-                                                        <span>กลุ่มแสดงข้อมูล</span>
-                                                        <svg width="200px" height="200px" viewBox="0 0 24 24"
-                                                            fill="none" (click)="addBucket()"
-                                                            style="width: 18px;height: 18px;margin-left: 5px;"
-                                                            xmlns="http://www.w3.org/2000/svg">
-                                                            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                                                            <g id="SVGRepo_tracerCarrier" stroke-linecap="round"
-                                                                stroke-linejoin="round"></g>
-                                                            <g id="SVGRepo_iconCarrier">
-                                                                <path
-                                                                    d="M12 6C12.5523 6 13 6.44772 13 7V11H17C17.5523 11 18 11.4477 18 12C18 12.5523 17.5523 13 17 13H13V17C13 17.5523 12.5523 18 12 18C11.4477 18 11 17.5523 11 17V13H7C6.44772 13 6 12.5523 6 12C6 11.4477 6.44772 11 7 11H11V7C11 6.44772 11.4477 6 12 6Z"
-                                                                    fill="#000000"></path>
-                                                                <path fill-rule="evenodd" clip-rule="evenodd"
-                                                                    d="M2 4.5C2 3.11929 3.11929 2 4.5 2H19.5C20.8807 2 22 3.11929 22 4.5V19.5C22 20.8807 20.8807 22 19.5 22H4.5C3.11929 22 2 20.8807 2 19.5V4.5ZM4.5 4C4.22386 4 4 4.22386 4 4.5V19.5C4 19.7761 4.22386 20 4.5 20H19.5C19.7761 20 20 19.7761 20 19.5V4.5C20 4.22386 19.7761 4 19.5 4H4.5Z"
-                                                                    fill="#000000"></path>
-                                                            </g>
-                                                        </svg>
+                                                        <div *ngIf="!!selectedValueField && !!selectedValueType">
+                                                            <span>กลุ่มแสดงข้อมูล</span>
+                                                            <svg width="200px" height="200px" viewBox="0 0 24 24"
+                                                                fill="none" (click)="addBucket()"
+                                                                style="width: 18px;height: 18px;margin-left: 5px;"
+                                                                xmlns="http://www.w3.org/2000/svg">
+                                                                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                                                <g id="SVGRepo_tracerCarrier" stroke-linecap="round"
+                                                                    stroke-linejoin="round"></g>
+                                                                <g id="SVGRepo_iconCarrier">
+                                                                    <path
+                                                                        d="M12 6C12.5523 6 13 6.44772 13 7V11H17C17.5523 11 18 11.4477 18 12C18 12.5523 17.5523 13 17 13H13V17C13 17.5523 12.5523 18 12 18C11.4477 18 11 17.5523 11 17V13H7C6.44772 13 6 12.5523 6 12C6 11.4477 6.44772 11 7 11H11V7C11 6.44772 11.4477 6 12 6Z"
+                                                                        fill="#000000"></path>
+                                                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                                                        d="M2 4.5C2 3.11929 3.11929 2 4.5 2H19.5C20.8807 2 22 3.11929 22 4.5V19.5C22 20.8807 20.8807 22 19.5 22H4.5C3.11929 22 2 20.8807 2 19.5V4.5ZM4.5 4C4.22386 4 4 4.22386 4 4.5V19.5C4 19.7761 4.22386 20 4.5 20H19.5C19.7761 20 20 19.7761 20 19.5V4.5C20 4.22386 19.7761 4 19.5 4H4.5Z"
+                                                                        fill="#000000"></path>
+                                                                </g>
+                                                            </svg>
+                                                        </div>
                                                         <div class="wrapper-bucket">
                                                             <div *ngFor="let employee of buckets().controls; let bucketIndex=index"
                                                                 class="field-data">
-                                                                <div [formGroupName]="bucketIndex">
-                                                                    {{bucketIndex}} Name :
-                                                                    <input class="text" type="text"
-                                                                        formControlName="name" />
+                                                                <div [formGroupName]="bucketIndex"
+                                                                    id="{{'divData-'+bucketIndex}}">
+                                                                    <div class="box-name">
+                                                                        Name :
+                                                                        <input class="text" type="text" style="margin-left: 5px;
+                                                                                border: 1px solid black;
+                                                                                border-radius: 5px;
+                                                                                padding: 3px 8px;"
+                                                                            formControlName="name" />
 
-                                                                    <button mat-raised-button
-                                                                        (click)="removeBucket(bucketIndex)">
-                                                                        <img src="../../../assets/img/delete.png"
-                                                                            alt="">
-                                                                    </button>
+                                                                        <button mat-raised-button
+                                                                            (click)="removeBucket(bucketIndex)">
+                                                                            <img src="../../../assets/img/delete.png"
+                                                                                alt="">
+                                                                        </button>
+                                                                    </div>
 
                                                                     <div formArrayName="values">
-                                                                        <div *ngFor="
-                                                                            let vBucket of valueBucket(bucketIndex).controls;
-                                                                            let valueI = index
-                                                                          ">
-                                                                            {{ valueI }} value :
+                                                                        <div class="box-values"
+                                                                            *ngFor="
+                                                                                let vBucket of valueBucket(bucketIndex).controls; let valueI = index">
+                                                                            value :
                                                                             <ng-container
                                                                                 *ngIf="selectedValueField === 'province'; else elseTemplate">
-                                                                                <mat-form-field appearance="none"
-                                                                                    style="width: unset;">
-                                                                                    <mat-select name="province"
-                                                                                        [formControlName]="valueI"
-                                                                                        placeholder='จังหวัด' required>
-                                                                                        <!-- <mat-select-filter
-                                                                                            *ngIf="selectProvince1.focused"
-                                                                                            [array]="default_province"
-                                                                                            [color]="'#ffb250'"
-                                                                                            [placeholder]="'ค้นหาจังหวัดที่จะเลือก'"
-                                                                                            (filteredReturn)="provinces = $event"></mat-select-filter> -->
-                                                                                        <mat-option
-                                                                                            *ngFor="let province of provinces"
-                                                                                            [value]="province">
-                                                                                            {{province}}
-                                                                                        </mat-option>
-                                                                                    </mat-select>
-                                                                                </mat-form-field>
+                                                                                <div [formArrayName]="valueI">
+                                                                                    <mat-form-field appearance="none"
+                                                                                        style="width: unset;margin-left: 5px;">
+                                                                                        <mat-select name="province"
+                                                                                            formControlName="value"
+                                                                                            placeholder='จังหวัด'
+                                                                                            required>
+                                                                                            <mat-option
+                                                                                                *ngFor="let province of provinces"
+                                                                                                [value]="province">
+                                                                                                {{province}}
+                                                                                            </mat-option>
+                                                                                        </mat-select>
+                                                                                    </mat-form-field>
+                                                                                </div>
                                                                             </ng-container>
                                                                             <ng-template #elseTemplate>
-                                                                                <input type="text"
-                                                                                    [formControlName]="valueI"
-                                                                                    [matAutocomplete]="autoComplete"
-                                                                                    (click)="keyUpAutoComp($event.target.value !== '' ? $event.target.value : '')"
-                                                                                    (keyup)="keyUpAutoComp($event.target.value)" />
-                                                                                <mat-autocomplete
-                                                                                    #autoComplete="matAutocomplete">
-                                                                                    <mat-option
-                                                                                        class="mat-option-progress"
-                                                                                        *ngIf="isLoading">
-                                                                                        <mat-progress-bar
-                                                                                            mode="indeterminate"></mat-progress-bar>
-                                                                                    </mat-option>
-                                                                                    <ng-container *ngIf="!isLoading">
-                                                                                        <mat-option class="img-users"
-                                                                                            *ngFor="let user of autoComp"
-                                                                                            [value]="user.label ?
-                                                                                            user.label :
-                                                                                            user.detail">
-                                                                                            <div class="list-autocomp">
-                                                                                                <div class="show-name">
-                                                                                                    {{user.label ?
-                                                                                                    user.label :
-                                                                                                    user.detail}}
-                                                                                                </div>
-                                                                                            </div>
+                                                                                <div [formArrayName]="valueI">
+                                                                                    <input type="text" id="input-value"
+                                                                                        style="margin-left: 5px;
+                                                                                            border: 1px solid black;
+                                                                                            border-radius: 5px;
+                                                                                            padding: 3px 8px;"
+                                                                                        formControlName="value"
+                                                                                        [matAutocomplete]="autoComplete"
+                                                                                        (click)="keyUpAutoComp($event.target.value !== '' ? $event.target.value : '',valueI)"
+                                                                                        (keyup)="keyUpAutoComp($event.target.value)" />
+                                                                                    <mat-autocomplete
+                                                                                        #autoComplete="matAutocomplete">
+                                                                                        <mat-option
+                                                                                            class="mat-option-progress"
+                                                                                            *ngIf="isLoading">
+                                                                                            <mat-progress-bar
+                                                                                                mode="indeterminate"></mat-progress-bar>
                                                                                         </mat-option>
-                                                                                    </ng-container>
-                                                                                </mat-autocomplete>
+                                                                                        <ng-container
+                                                                                            *ngIf="!isLoading">
+                                                                                            <mat-option
+                                                                                                class="img-users"
+                                                                                                *ngFor="let user of autoComp; let i = index"
+                                                                                                [value]="user.label ? user.label : user.detail"
+                                                                                                (click)="selectData(bucketIndex,valueI,user)">
+                                                                                                <div
+                                                                                                    class="list-autocomp">
+                                                                                                    <div
+                                                                                                        class="show-name">
+                                                                                                        {{user.label
+                                                                                                        ?
+                                                                                                        user.label :
+                                                                                                        user.detail}}
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </mat-option>
+                                                                                        </ng-container>
+                                                                                    </mat-autocomplete>
+                                                                                </div>
                                                                             </ng-template>
-
-
                                                                             <button mat-raised-button
                                                                                 (click)="removeValueBucket(bucketIndex,valueI)">
                                                                                 <img src="../../../assets/img/delete.png"
@@ -182,27 +194,38 @@
                                                                             </button>
                                                                         </div>
                                                                     </div>
-                                                                    <span>เพิ่มข้อมูล {{stackBucket}}</span>
-                                                                    <svg width="200px" height="200px"
-                                                                        viewBox="0 0 24 24" fill="none"
-                                                                        (click)="addValueBucket(bucketIndex)"
-                                                                        style="width: 18px;height: 18px;margin-left: 5px;"
-                                                                        xmlns="http://www.w3.org/2000/svg">
-                                                                        <g id="SVGRepo_bgCarrier" stroke-width="0">
-                                                                        </g>
-                                                                        <g id="SVGRepo_tracerCarrier"
-                                                                            stroke-linecap="round"
-                                                                            stroke-linejoin="round"></g>
-                                                                        <g id="SVGRepo_iconCarrier">
-                                                                            <path
-                                                                                d="M12 6C12.5523 6 13 6.44772 13 7V11H17C17.5523 11 18 11.4477 18 12C18 12.5523 17.5523 13 17 13H13V17C13 17.5523 12.5523 18 12 18C11.4477 18 11 17.5523 11 17V13H7C6.44772 13 6 12.5523 6 12C6 11.4477 6.44772 11 7 11H11V7C11 6.44772 11.4477 6 12 6Z"
-                                                                                fill="#000000"></path>
-                                                                            <path fill-rule="evenodd"
-                                                                                clip-rule="evenodd"
-                                                                                d="M2 4.5C2 3.11929 3.11929 2 4.5 2H19.5C20.8807 2 22 3.11929 22 4.5V19.5C22 20.8807 20.8807 22 19.5 22H4.5C3.11929 22 2 20.8807 2 19.5V4.5ZM4.5 4C4.22386 4 4 4.22386 4 4.5V19.5C4 19.7761 4.22386 20 4.5 20H19.5C19.7761 20 20 19.7761 20 19.5V4.5C20 4.22386 19.7761 4 19.5 4H4.5Z"
-                                                                                fill="#000000"></path>
-                                                                        </g>
-                                                                    </svg>
+                                                                    <div class="add-value">
+                                                                        <span>เพิ่มข้อมูล</span>
+                                                                        <svg width="200px" height="200px"
+                                                                            viewBox="0 0 24 24" fill="none"
+                                                                            (click)="addValueBucket(bucketIndex)"
+                                                                            style="width: 18px;height: 18px;margin-left: 5px;"
+                                                                            xmlns="http://www.w3.org/2000/svg">
+                                                                            <g id="SVGRepo_bgCarrier" stroke-width="0">
+                                                                            </g>
+                                                                            <g id="SVGRepo_tracerCarrier"
+                                                                                stroke-linecap="round"
+                                                                                stroke-linejoin="round"></g>
+                                                                            <g id="SVGRepo_iconCarrier">
+                                                                                <path
+                                                                                    d="M12 6C12.5523 6 13 6.44772 13 7V11H17C17.5523 11 18 11.4477 18 12C18 12.5523 17.5523 13 17 13H13V17C13 17.5523 12.5523 18 12 18C11.4477 18 11 17.5523 11 17V13H7C6.44772 13 6 12.5523 6 12C6 11.4477 6.44772 11 7 11H11V7C11 6.44772 11.4477 6 12 6Z"
+                                                                                    fill="#000000"></path>
+                                                                                <path fill-rule="evenodd"
+                                                                                    clip-rule="evenodd"
+                                                                                    d="M2 4.5C2 3.11929 3.11929 2 4.5 2H19.5C20.8807 2 22 3.11929 22 4.5V19.5C22 20.8807 20.8807 22 19.5 22H4.5C3.11929 22 2 20.8807 2 19.5V4.5ZM4.5 4C4.22386 4 4 4.22386 4 4.5V19.5C4 19.7761 4.22386 20 4.5 20H19.5C19.7761 20 20 19.7761 20 19.5V4.5C20 4.22386 19.7761 4 19.5 4H4.5Z"
+                                                                                    fill="#000000"></path>
+                                                                            </g>
+                                                                        </svg>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="div-undo">
+                                                                    <div id="{{'back-'+bucketIndex}}"
+                                                                        style="pointer-events: unset !important;opacity: 1;"
+                                                                        class="disabledBack">
+                                                                        <button mat-raised-button class="btn-back"
+                                                                            (click)="undoDelete(bucketIndex)">
+                                                                            < ย้อนกลับ</button>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -225,7 +248,7 @@
         <mat-drawer-content>
             <div class="main-content">
                 <admin-table-component #table [orderBy]="orderBy" [facade]="todayPageFacade"
-                    [title]="'ก้าวไกลหน้าหนึ่งV2'" [fieldTable]="fieldTable" [actions]="actions"
+                    [title]="'ก้าวไกลหน้าหนึ่ง'" [fieldTable]="fieldTable" [actions]="actions"
                     (create)="clickCreateForm()" (edit)="clickEditForm($event)"
                     (delete)="clickDelete($event)"></admin-table-component>
             </div>

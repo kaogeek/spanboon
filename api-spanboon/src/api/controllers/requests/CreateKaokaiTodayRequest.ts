@@ -18,5 +18,6 @@ export class CreateKaokaiTodayRequest {
     public flag: boolean;
     public limit: number;
     public buckets: any;
+    public deleteIndex:any;
 
 }

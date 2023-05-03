@@ -56,10 +56,10 @@ const routes: Routes = [
         path: EmergencyEventPage.PAGE_NAME,
         component: EmergencyEventPage
       },
-      {
-        path: TodayPage.PAGE_NAME,
-        component: TodayPage
-      },
+      // {
+      //   path: TodayPage.PAGE_NAME,
+      //   component: TodayPage
+      // },
       {
         path: TodayPageV2.PAGE_NAME,
         component: TodayPageV2

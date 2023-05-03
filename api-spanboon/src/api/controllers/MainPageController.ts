@@ -206,6 +206,7 @@ export class MainPageController {
             userId,
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
+            filterContentsRobin,
             filterContentsMajor,
             checkPosition1,
             checkPosition2
@@ -227,6 +228,8 @@ export class MainPageController {
             userId,
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
+            filterContentsRobin,
+            filterContentsMajor,
             filterContentsProvince,
             checkPosition1,
             checkPosition2,
@@ -249,6 +252,9 @@ export class MainPageController {
             userId,
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
+            filterContentsRobin,
+            filterContentsMajor,
+            filterContentsProvince,
             filterContentsHashTag,
             checkPosition1,
             checkPosition2,
@@ -2144,7 +2150,7 @@ export class MainPageController {
                <div style="display: grid;margin: 30px 40px;
                gap: 5px;">
                    <span
-                       style="font-size: 26pt;padding-bottom: 10px;background: white;color: #ee7623;text-align: center;">ก้าวไกลวันนี้</span>
+                       style="font-size: 26pt;padding-bottom: 10px;background: white;color: #ee7623;text-align: center;">ก้าวไกลหน้าหนึ่ง</span>
                    <span style="background: white;color: #ee7623;text-align: center;">ฉบับวันที่ <span style = 'background: white;color:black;'>${thaiDate}</span></span>
                </div>
             
@@ -2204,18 +2210,15 @@ export class MainPageController {
                                     <span style="background: white;color: gray;font-size: 14px;margin-bottom: 10px;">โดย <span
                                             style="color: #ee7623;font-size: 14px;background: white;">${postMajorNameF}</span></span>
                                     <div style='display:flex; background-color:#FFFFFF'>
-                                        <span
-                                            style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
-                                            <img src=${commentIcons} style='width:20px;height:20px;background-color: #FFFFFF;'>
-                                            ${content.pageRoundRobin.contents[0].post.commentCount}</span>
-                                        <span
-                                            style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
-                                            <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
-                                            ${content.pageRoundRobin.contents[0].post.shareCount}</span>
-                                        <span
-                                            style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
-                                            <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
-                                            ${content.pageRoundRobin.contents[0].post.likeCount}</span>
+                                    ${content.majorTrend.contents[0] ? content.majorTrend.contents[0].post.commentCount : 0}</span>
+                                    <span
+                                        style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                        <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                        ${content.majorTrend.contents[0] ? content.majorTrend.contents[0].post.shareCount : 0}</span>
+                                    <span
+                                        style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                        <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                        ${content.majorTrend.contents[0] ? content.majorTrend.contents[0].post.likeCount : 0}</span>
                                     </div>
                                 </div>
                             </a>
@@ -2234,15 +2237,15 @@ export class MainPageController {
                                         <span
                                             style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
                                             <img src=${commentIcons} style='width:20px;height:20px;background-color: #FFFFFF;'>
-                                            ${content.pageRoundRobin.contents[0].post.commentCount}</span>
-                                        <span
-                                            style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
-                                            <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
-                                            ${content.pageRoundRobin.contents[0].post.shareCount}</span>
-                                        <span
-                                            style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
-                                            <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
-                                            ${content.pageRoundRobin.contents[0].post.likeCount}</span>
+                                            ${content.majorTrend.contents[1] ? content.majorTrend.contents[1].post.commentCount : 0}</span>
+                                            <span
+                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                ${content.majorTrend.contents[1] ? content.majorTrend.contents[1].post.shareCount : 0}</span>
+                                            <span
+                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                ${content.majorTrend.contents[1] ? content.majorTrend.contents[1].post.likeCount : 0}</span>
                                     </div>
                                 </div>
                             </a>
@@ -2336,7 +2339,7 @@ export class MainPageController {
                <div style="display: grid;margin: 30px 40px;
                gap: 5px;">
                    <span
-                       style="font-size: 26pt;padding-bottom: 10px;background: white;color: #ee7623;text-align: center;">ก้าวไกลวันนี้</span>
+                       style="font-size: 26pt;padding-bottom: 10px;background: white;color: #ee7623;text-align: center;">ก้าวไกลหน้าหนึ่ง</span>
                    <span style="background: white;color: #ee7623;text-align: center;">ฉบับวันที่ <span style = 'background: white;color:black;'>${thaiDate}</span></span>
                </div>
                <div style="width: 100%;background: white;border-bottom: 1px solid gray;">
@@ -2355,15 +2358,15 @@ export class MainPageController {
                                         <span
                                             style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
                                             <img src=${commentIcons} style='width:20px;height:20px;background-color: #FFFFFF;'>
-                                            ${content.pageRoundRobin.contents[0].post.commentCount}</span>
-                                        <span
-                                            style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
-                                            <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
-                                            ${content.pageRoundRobin.contents[0].post.shareCount}</span>
-                                        <span
-                                            style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
-                                            <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
-                                            ${content.pageRoundRobin.contents[0].post.likeCount}</span>
+                                            ${content.majorTrend.contents[0] ? content.majorTrend.contents[0].post.commentCount : 0}</span>
+                                            <span
+                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                ${content.majorTrend.contents[0] ? content.majorTrend.contents[0].post.shareCount : 0}</span>
+                                            <span
+                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                ${content.majorTrend.contents[0] ? content.majorTrend.contents[0].post.likeCount : 0}</span>
                                     </div>
                                 </div>
                             </a>
@@ -2382,15 +2385,15 @@ export class MainPageController {
                                         <span
                                             style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
                                             <img src=${commentIcons} style='width:20px;height:20px;background-color: #FFFFFF;'>
-                                            ${content.pageRoundRobin.contents[0].post.commentCount}</span>
-                                        <span
-                                            style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
-                                            <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
-                                            ${content.pageRoundRobin.contents[0].post.shareCount}</span>
-                                        <span
-                                            style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
-                                            <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
-                                            ${content.pageRoundRobin.contents[0].post.likeCount}</span>
+                                            ${content.majorTrend.contents[1] ? content.majorTrend.contents[1].post.commentCount : 0}</span>
+                                            <span
+                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                ${content.majorTrend.contents[1] ? content.majorTrend.contents[1].post.shareCount : 0}</span>
+                                            <span
+                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                ${content.majorTrend.contents[1] ? content.majorTrend.contents[1].post.likeCount : 0}</span>
                                     </div>
                                 </div>
                             </a>
@@ -2482,7 +2485,7 @@ export class MainPageController {
                     <div style="display: grid;margin: 30px 40px;
                     gap: 5px;">
                         <span
-                            style="font-size: 26pt;padding-bottom: 10px;background: white;color: #ee7623;text-align: center;">ก้าวไกลวันนี้</span>
+                            style="font-size: 26pt;padding-bottom: 10px;background: white;color: #ee7623;text-align: center;">ก้าวไกลหน้าหนึ่ง</span>
                         <span style="background: white;color: #ee7623;text-align: center;">ฉบับวันที่ <span style = 'background: white;color:black;'>${thaiDate}</span></span>
                     </div>
                     <div style="width: 100%;background: white;border-bottom: 1px solid gray;">
@@ -2501,15 +2504,15 @@ export class MainPageController {
                                                 <span
                                                     style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
                                                     <img src=${commentIcons} style='width:20px;height:20px;background-color: #FFFFFF;'>
-                                                    ${content.pageRoundRobin.contents[0].post.commentCount}</span>
+                                                    ${content.majorTrend.contents[0] ? content.majorTrend.contents[0].post.commentCount : 0}</span>
                                                 <span
                                                     style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
                                                     <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
-                                                    ${content.pageRoundRobin.contents[0].post.shareCount}</span>
+                                                    ${content.majorTrend.contents[0] ? content.majorTrend.contents[0].post.shareCount : 0}</span>
                                                 <span
                                                     style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
                                                     <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
-                                                    ${content.pageRoundRobin.contents[0].post.likeCount}</span>
+                                                    ${content.majorTrend.contents[0] ? content.majorTrend.contents[0].post.likeCount : 0}</span>
                                             </div>
                                         </div>
                                     </a>
@@ -2528,15 +2531,15 @@ export class MainPageController {
                                                 <span
                                                     style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
                                                     <img src=${commentIcons} style='width:20px;height:20px;background-color: #FFFFFF;'>
-                                                    ${content.pageRoundRobin.contents[0].post.commentCount}</span>
+                                                    ${content.majorTrend.contents[1] ? content.majorTrend.contents[1].post.commentCount : 0}</span>
                                                 <span
                                                     style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
                                                     <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
-                                                    ${content.pageRoundRobin.contents[0].post.shareCount}</span>
+                                                    ${content.majorTrend.contents[1] ? content.majorTrend.contents[1].post.shareCount : 0}</span>
                                                 <span
                                                     style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
                                                     <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
-                                                    ${content.pageRoundRobin.contents[0].post.likeCount}</span>
+                                                    ${content.majorTrend.contents[1] ? content.majorTrend.contents[1].post.likeCount : 0}</span>
                                             </div>
                                         </div>
                                     </a>
@@ -2591,7 +2594,7 @@ export class MainPageController {
                <div style="display: grid;margin: 30px 40px;
                gap: 5px;">
                    <span
-                       style="font-size: 26pt;padding-bottom: 10px;background: white;color: #ee7623;text-align: center;">ก้าวไกลวันนี้</span>
+                       style="font-size: 26pt;padding-bottom: 10px;background: white;color: #ee7623;text-align: center;">ก้าวไกลหน้าหนึ่ง</span>
                    <span style="background: white;color: #ee7623;text-align: center;">ฉบับวันที่ <span style = 'background: white;color:black;'>${thaiDate}</span></span>
                </div>
             
@@ -2652,15 +2655,15 @@ export class MainPageController {
                                             <span
                                                 style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
                                                 <img src=${commentIcons} style='width:20px;height:20px;background-color: #FFFFFF;'>
-                                                ${content.pageRoundRobin.contents[0].post.commentCount}</span>
-                                            <span
-                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
-                                                <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
-                                                ${content.pageRoundRobin.contents[0].post.shareCount}</span>
-                                            <span
-                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
-                                                <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
-                                                ${content.pageRoundRobin.contents[0].post.likeCount}</span>
+                                                ${content.majorTrend.contents[0] ? content.majorTrend.contents[0].post.commentCount : 0}</span>
+                                                <span
+                                                    style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                    <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                    ${content.majorTrend.contents[0] ? content.majorTrend.contents[0].post.shareCount : 0}</span>
+                                                <span
+                                                    style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                    <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                    ${content.majorTrend.contents[0] ? content.majorTrend.contents[0].post.likeCount : 0}</span>
                                         </div>
                                     </div>
                                 </a>
@@ -2679,15 +2682,15 @@ export class MainPageController {
                                             <span
                                                 style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
                                                 <img src=${commentIcons} style='width:20px;height:20px;background-color: #FFFFFF;'>
-                                                ${content.pageRoundRobin.contents[0].post.commentCount}</span>
-                                            <span
-                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
-                                                <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
-                                                ${content.pageRoundRobin.contents[0].post.shareCount}</span>
-                                            <span
-                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
-                                                <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
-                                                ${content.pageRoundRobin.contents[0].post.likeCount}</span>
+                                                ${content.majorTrend.contents[1] ? content.majorTrend.contents[1].post.commentCount : 0}</span>
+                                                <span
+                                                    style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                    <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                    ${content.majorTrend.contents[1] ? content.majorTrend.contents[1].post.shareCount : 0}</span>
+                                                <span
+                                                    style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                    <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                    ${content.majorTrend.contents[1] ? content.majorTrend.contents[1].post.likeCount : 0}</span>
                                         </div>
                                     </div>
                                 </a>
@@ -2740,7 +2743,7 @@ export class MainPageController {
                    <div style="display: grid;margin: 30px 40px;
                    gap: 5px;">
                        <span
-                           style="font-size: 26pt;padding-bottom: 10px;background: white;color: #ee7623;text-align: center;">ก้าวไกลวันนี้</span>
+                           style="font-size: 26pt;padding-bottom: 10px;background: white;color: #ee7623;text-align: center;">ก้าวไกลหน้าหนึ่ง</span>
                        <span style="background: white;color: #ee7623;text-align: center;">ฉบับวันที่ <span style = 'background: white;color:black;'>${thaiDate}</span></span>
                    </div>
                 
@@ -2803,15 +2806,15 @@ export class MainPageController {
                                             <span
                                                 style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
                                                 <img src=${commentIcons} style='width:20px;height:20px;background-color: #FFFFFF;'>
-                                                ${content.pageRoundRobin.contents[0].post.commentCount}</span>
-                                            <span
-                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
-                                                <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
-                                                ${content.pageRoundRobin.contents[0].post.shareCount}</span>
-                                            <span
-                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                ${content.majorTrend.contents[0] ? content.majorTrend.contents[0].post.commentCount : 0}</span>
+                                                <span
+                                                    style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                    <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                    ${content.majorTrend.contents[0] ? content.majorTrend.contents[0].post.shareCount : 0}</span>
+                                                <span
+                                                    style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
                                                 <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
-                                                ${content.pageRoundRobin.contents[0].post.likeCount}</span>
+                                                    ${content.majorTrend.contents[0] ? content.majorTrend.contents[0].post.likeCount : 0}</span>
                                         </div>
                                     </div>
                                 </a>
@@ -2830,15 +2833,15 @@ export class MainPageController {
                                             <span
                                                 style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
                                                 <img src=${commentIcons} style='width:20px;height:20px;background-color: #FFFFFF;'>
-                                                ${content.pageRoundRobin.contents[0].post.commentCount}</span>
-                                            <span
-                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
-                                                <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
-                                                ${content.pageRoundRobin.contents[0].post.shareCount}</span>
-                                            <span
-                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
-                                                <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
-                                                ${content.pageRoundRobin.contents[0].post.likeCount}</span>
+                                                ${content.majorTrend.contents[1] ? content.majorTrend.contents[1].post.commentCount : 0}</span>
+                                                <span
+                                                    style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                    <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                    ${content.majorTrend.contents[1] ? content.majorTrend.contents[1].post.shareCount : 0}</span>
+                                                <span
+                                                    style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                    <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                    ${content.majorTrend.contents[1] ? content.majorTrend.contents[1].post.likeCount : 0}</span>
                                         </div>
                                     </div>
                                 </a>
@@ -2919,7 +2922,7 @@ export class MainPageController {
                    <div style="display: grid;margin: 30px 40px;
                    gap: 5px;">
                        <span
-                           style="font-size: 26pt;padding-bottom: 10px;background: white;color: #ee7623;text-align: center;">ก้าวไกลวันนี้</span>
+                           style="font-size: 26pt;padding-bottom: 10px;background: white;color: #ee7623;text-align: center;">ก้าวไกลหน้าหนึ่ง</span>
                        <span style="background: white;color: #ee7623;text-align: center;">ฉบับวันที่ <span style = 'background: white;color:black;'>${thaiDate}</span></span>
                    </div>
                 
@@ -2982,15 +2985,15 @@ export class MainPageController {
                                             <span
                                                 style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
                                                 <img src=${commentIcons} style='width:20px;height:20px;background-color: #FFFFFF;'>
-                                                ${content.pageRoundRobin.contents[0].post.commentCount}</span>
-                                            <span
-                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
-                                                <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
-                                                ${content.pageRoundRobin.contents[0].post.shareCount}</span>
-                                            <span
-                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
-                                                <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
-                                                ${content.pageRoundRobin.contents[0].post.likeCount}</span>
+                                                ${content.majorTrend.contents[0] ? content.majorTrend.contents[0].post.commentCount : 0}</span>
+                                                <span
+                                                    style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                    <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                    ${content.majorTrend.contents[0] ? content.majorTrend.contents[0].post.shareCount : 0}</span>
+                                                <span
+                                                    style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                    <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                    ${content.majorTrend.contents[0] ? content.majorTrend.contents[0].post.likeCount : 0}</span>
                                         </div>
                                     </div>
                                 </a>
@@ -3009,15 +3012,15 @@ export class MainPageController {
                                             <span
                                                 style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
                                                 <img src=${commentIcons} style='width:20px;height:20px;background-color: #FFFFFF;'>
-                                                ${content.pageRoundRobin.contents[0].post.commentCount}</span>
-                                            <span
-                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
-                                                <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
-                                                ${content.pageRoundRobin.contents[0].post.shareCount}</span>
-                                            <span
-                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
-                                                <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
-                                                ${content.pageRoundRobin.contents[0].post.likeCount}</span>
+                                                ${content.majorTrend.contents[1] ? content.majorTrend.contents[1].post.commentCount : 0}</span>
+                                                <span
+                                                    style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                    <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                    ${content.majorTrend.contents[1] ? content.majorTrend.contents[1].post.shareCount : 0}</span>
+                                                <span
+                                                    style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                    <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                    ${content.majorTrend.contents[1] ? content.majorTrend.contents[1].post.likeCount : 0}</span>
                                         </div>
                                     </div>
                                 </a>
@@ -3087,7 +3090,7 @@ export class MainPageController {
                    <div style="display: grid;margin: 30px 40px;
                    gap: 5px;">
                        <span
-                           style="font-size: 26pt;padding-bottom: 10px;background: white;color: #ee7623;text-align: center;">ก้าวไกลวันนี้</span>
+                           style="font-size: 26pt;padding-bottom: 10px;background: white;color: #ee7623;text-align: center;">ก้าวไกลหน้าหนึ่ง</span>
                        <span style="background: white;color: #ee7623;text-align: center;">ฉบับวันที่ <span style = 'background: white;color:black;'>${thaiDate}</span></span>
                    </div>    
                    <div style="width: 100%;background: white;border-bottom: 1px solid gray;">
@@ -3106,15 +3109,15 @@ export class MainPageController {
                                             <span
                                                 style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
                                                 <img src=${commentIcons} style='width:20px;height:20px;background-color: #FFFFFF;'>
-                                                ${content.pageRoundRobin.contents[0].post.commentCount}</span>
-                                            <span
-                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
-                                                <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
-                                                ${content.pageRoundRobin.contents[0].post.shareCount}</span>
-                                            <span
-                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
-                                                <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
-                                                ${content.pageRoundRobin.contents[0].post.likeCount}</span>
+                                                ${content.majorTrend.contents[0] ? content.majorTrend.contents[0].post.commentCount : 0}</span>
+                                                <span
+                                                    style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                    <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                    ${content.majorTrend.contents[0] ? content.majorTrend.contents[0].post.shareCount : 0}</span>
+                                                <span
+                                                    style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                    <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                    ${content.majorTrend.contents[0] ? content.majorTrend.contents[0].post.likeCount : 0}</span>
                                         </div>
                                     </div>
                                 </a>
@@ -3133,15 +3136,15 @@ export class MainPageController {
                                             <span
                                                 style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
                                                 <img src=${commentIcons} style='width:20px;height:20px;background-color: #FFFFFF;'>
-                                                ${content.pageRoundRobin.contents[0].post.commentCount}</span>
-                                            <span
-                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
-                                                <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
-                                                ${content.pageRoundRobin.contents[0].post.shareCount}</span>
-                                            <span
-                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
-                                                <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
-                                                ${content.pageRoundRobin.contents[0].post.likeCount}</span>
+                                                ${content.majorTrend.contents[1] ? content.majorTrend.contents[1].post.commentCount : 0}</span>
+                                                <span
+                                                    style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                    <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                    ${content.majorTrend.contents[1] ? content.majorTrend.contents[1].post.shareCount : 0}</span>
+                                                <span
+                                                    style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                    <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                    ${content.majorTrend.contents[1] ? content.majorTrend.contents[1].post.likeCount : 0}</span>
                                         </div>
                                     </div>
                                 </a>
@@ -3210,7 +3213,7 @@ export class MainPageController {
                    <div style="display: grid;margin: 30px 40px;
                    gap: 5px;">
                        <span
-                           style="font-size: 26pt;padding-bottom: 10px;background: white;color: #ee7623;text-align: center;">ก้าวไกลวันนี้</span>
+                           style="font-size: 26pt;padding-bottom: 10px;background: white;color: #ee7623;text-align: center;">ก้าวไกลหน้าหนึ่ง</span>
                        <span style="background: white;color: #ee7623;text-align: center;">ฉบับวันที่ <span style = 'background: white;color:black;'>${thaiDate}</span></span>
                    </div>    
                    <div style="width: 100%;background: white;border-bottom: 1px solid gray;">
@@ -3229,15 +3232,15 @@ export class MainPageController {
                                             <span
                                                 style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
                                                 <img src=${commentIcons} style='width:20px;height:20px;background-color: #FFFFFF;'>
-                                                ${content.pageRoundRobin.contents[0].post.commentCount}</span>
-                                            <span
-                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
-                                                <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
-                                                ${content.pageRoundRobin.contents[0].post.shareCount}</span>
-                                            <span
-                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
-                                                <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
-                                                ${content.pageRoundRobin.contents[0].post.likeCount}</span>
+                                                ${content.majorTrend.contents[0] ? content.majorTrend.contents[0].post.commentCount : 0}</span>
+                                                <span
+                                                    style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                    <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                    ${content.majorTrend.contents[0] ? content.majorTrend.contents[0].post.shareCount : 0}</span>
+                                                <span
+                                                    style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                    <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                    ${content.majorTrend.contents[0] ? content.majorTrend.contents[0].post.likeCount : 0}</span>
                                         </div>
                                     </div>
                                 </a>
@@ -3256,15 +3259,15 @@ export class MainPageController {
                                             <span
                                                 style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
                                                 <img src=${commentIcons} style='width:20px;height:20px;background-color: #FFFFFF;'>
-                                                ${content.pageRoundRobin.contents[0].post.commentCount}</span>
-                                            <span
-                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
-                                                <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
-                                                ${content.pageRoundRobin.contents[0].post.shareCount}</span>
-                                            <span
-                                                style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
-                                                <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
-                                                ${content.pageRoundRobin.contents[0].post.likeCount}</span>
+                                                ${content.majorTrend.contents[1] ? content.majorTrend.contents[1].post.commentCount : 0}</span>
+                                                <span
+                                                    style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                    <img src=${shareIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                    ${content.majorTrend.contents[1] ? content.majorTrend.contents[1].post.shareCount : 0}</span>
+                                                <span
+                                                    style='text-decoration:none; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:16px; color:#657786; vertical-align:middle; padding-bottom:8px;background:#FFFFFF;margin-right:20px'>
+                                                    <img src=${loveIcons} style='width:20px;height:20px;background-color:#FFFFFF'>
+                                                    ${content.majorTrend.contents[1] ? content.majorTrend.contents[1].post.likeCount : 0}</span>
                                         </div>
                                     </div>
                                 </a>

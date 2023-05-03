@@ -102,113 +102,99 @@ export class AdminPageController {
     @Post('/edit/search')
     public async searchGet(@Body({ validate: true }) data: SearchRequest, @Res() res: any, @Req() req: any): Promise<any> {
         if (data.type === 'page' && data.field === 'id') {
-            const bucketAll = [];
-            const bucketF = [];
-            const bucketS = [];
-            const bucketT = [];
+            const bucketSAll = [];
+            const chuckSize = [];
+            const bucket = [];
             // roundRobin.buckets[0] !== undefined 
-            if (data.buckets[0] !== undefined) {
-                for (const stack of data.buckets[0].values) {
-                    bucketF.push(new ObjectID(stack));
+            if (data.buckets.length >= 0) {
+                for (const IdAll of data.buckets) {
+                    bucketSAll.push(IdAll.values);
                 }
             }
-            if (data.buckets[1] !== undefined) {
-                for (const stack of data.buckets[1].values) {
-                    bucketS.push(new ObjectID(stack));
-                }
-            }
-            if (data.buckets[2] !== undefined) {
-                for (const stack of data.buckets[2].values) {
-                    bucketT.push(new ObjectID(stack));
-                }
-            }
-            if (bucketF.length > 0) {
-                const pageF = await this.pageService.aggregate([{ $match: { _id: { $in: bucketF } } }]);
-                bucketAll.push(pageF);
-            }
-            if (bucketS.length > 0) {
-                const pageS = await this.pageService.aggregate([{ $match: { _id: { $in: bucketS } } }]);
-                bucketAll.push(pageS);
-            }
-            if (bucketT.length > 0) {
-                const pageT = await this.pageService.aggregate([{ $match: { _id: { $in: bucketT } } }]);
-                bucketAll.push(pageT);
 
+            const groups = [];
+            if (bucketSAll.length > 0) {
+                for (let i = 0; i < bucketSAll.length; i++) {
+                    chuckSize.push(bucketSAll[i].length);
+                }
+                const flatten = bucketSAll.flat().map(id => new ObjectID(id));
+                let startIndex = 0;
+                for (let j = 0; j < chuckSize.length; j++) {
+                    const endIndex = startIndex + chuckSize[j];
+                    groups.push(flatten.slice(startIndex, endIndex));
+                    startIndex = endIndex;
+                }
             }
-            const successResponseGroup = ResponseUtil.getSuccessResponse('Search Page Group Success.', bucketAll);
+            if (groups.length > 0) {
+                for (const group of groups) {
+                    const pageF = await this.pageService.aggregate([{ $match: { _id: { $in: group } } }]);
+                    bucket.push(pageF);
+                }
+            }
+            const successResponseGroup = ResponseUtil.getSuccessResponse('Search Page Group Success.', bucket);
             return res.status(200).send(successResponseGroup);
 
         } if (data.type === 'post' && data.field === 'objective') {
-            const bucketAll = [];
-            const bucketF = [];
-            const bucketS = [];
-            const bucketT = [];
+            const bucketSAll = [];
+            const chuckSize = [];
+            const bucket = [];
             // roundRobin.buckets[0] !== undefined 
-            if (data.buckets[0] !== undefined) {
-                for (const stack of data.buckets[0].values) {
-                    bucketF.push(new ObjectID(stack));
+            if (data.buckets.length >= 0) {
+                for (const IdAll of data.buckets) {
+                    bucketSAll.push(IdAll.values);
                 }
             }
-            if (data.buckets[1] !== undefined) {
-                for (const stack of data.buckets[1].values) {
-                    bucketS.push(new ObjectID(stack));
+            const groups = [];
+            if (bucketSAll.length > 0) {
+                for (let i = 0; i < bucketSAll.length; i++) {
+                    chuckSize.push(bucketSAll[i].length);
+                }
+                const flatten = bucketSAll.flat().map(id => new ObjectID(id));
+                let startIndex = 0;
+                for (let j = 0; j < chuckSize.length; j++) {
+                    const endIndex = startIndex + chuckSize[j];
+                    groups.push(flatten.slice(startIndex, endIndex));
+                    startIndex = endIndex;
                 }
             }
-            if (data.buckets[2] !== undefined) {
-                for (const stack of data.buckets[2].values) {
-                    bucketT.push(new ObjectID(stack));
+            if (groups.length > 0) {
+                for (const group of groups) {
+                    const pageF = await this.pageObjectiveService.aggregate([{ $match: { _id: { $in: group } } }]);
+                    bucket.push(pageF);
                 }
             }
-            if (bucketF.length > 0) {
-                const pageF = await this.pageObjectiveService.aggregate([{ $match: { _id: { $in: bucketF } } }]);
-                bucketAll.push(pageF);
-            }
-            if (bucketS.length > 0) {
-                const pageS = await this.pageObjectiveService.aggregate([{ $match: { _id: { $in: bucketS } } }]);
-                bucketAll.push(pageS);
-            }
-            if (bucketT.length > 0) {
-                const pageT = await this.pageObjectiveService.aggregate([{ $match: { _id: { $in: bucketT } } }]);
-                bucketAll.push(pageT);
-
-            }
-            const successResponseGroup = ResponseUtil.getSuccessResponse('Search Page Group Success.', bucketAll);
+            const successResponseGroup = ResponseUtil.getSuccessResponse('Search Page Group Success.', bucket);
             return res.status(200).send(successResponseGroup);
         } if (data.type === 'post' && data.field === 'emergencyEvent') {
-            const bucketAll = [];
-            const bucketF = [];
-            const bucketS = [];
-            const bucketT = [];
+            const bucketSAll = [];
+            const chuckSize = [];
+            const bucket = [];
             // roundRobin.buckets[0] !== undefined 
-            if (data.buckets[0] !== undefined) {
-                for (const stack of data.buckets[0].values) {
-                    bucketF.push(new ObjectID(stack));
+            if (data.buckets.length >= 0) {
+                for (const IdAll of data.buckets) {
+                    bucketSAll.push(IdAll.values);
                 }
             }
-            if (data.buckets[1] !== undefined) {
-                for (const stack of data.buckets[1].values) {
-                    bucketS.push(new ObjectID(stack));
+            const groups = [];
+            if (bucketSAll.length > 0) {
+                for (let i = 0; i < bucketSAll.length; i++) {
+                    chuckSize.push(bucketSAll[i].length);
+                }
+                const flatten = bucketSAll.flat().map(id => new ObjectID(id));
+                let startIndex = 0;
+                for (let j = 0; j < chuckSize.length; j++) {
+                    const endIndex = startIndex + chuckSize[j];
+                    groups.push(flatten.slice(startIndex, endIndex));
+                    startIndex = endIndex;
                 }
             }
-            if (data.buckets[2] !== undefined) {
-                for (const stack of data.buckets[2].values) {
-                    bucketT.push(new ObjectID(stack));
+            if (groups.length > 0) {
+                for (const group of groups) {
+                    const pageF = await this.emergencyEventService.aggregate([{ $match: { _id: { $in: group } } }]);
+                    bucket.push(pageF);
                 }
             }
-            if (bucketF.length > 0) {
-                const pageF = await this.emergencyEventService.aggregate([{ $match: { _id: { $in: bucketF } } }]);
-                bucketAll.push(pageF);
-            }
-            if (bucketS.length > 0) {
-                const pageS = await this.emergencyEventService.aggregate([{ $match: { _id: { $in: bucketS } } }]);
-                bucketAll.push(pageS);
-            }
-            if (bucketT.length > 0) {
-                const pageT = await this.emergencyEventService.aggregate([{ $match: { _id: { $in: bucketT } } }]);
-                bucketAll.push(pageT);
-
-            }
-            const successResponseGroup = ResponseUtil.getSuccessResponse('Search Page Group Success.', bucketAll);
+            const successResponseGroup = ResponseUtil.getSuccessResponse('Search Page Group Success.', bucket);
             return res.status(200).send(successResponseGroup);
         }
     }
@@ -225,10 +211,37 @@ export class AdminPageController {
             return res.status(400).send(errorResponse);
         }
         if (data.type === 'page' && data.field === 'id') {
-            const pageQuery = [
-                { $match: { isOfficial: true, banned: false, name: exp } },
-                { $limit: 10 }
-            ];
+            const filterIds = [];
+            const objIds = [];
+            if (data.values.length > 0) {
+                for (let i = 0; i < data.values.length; i++) {
+                    filterIds.push(data.values[i].values);
+                }
+            }
+            if (filterIds.length > 0) {
+                const flatten = filterIds.flat();
+                if (flatten.length > 0) {
+                    for (let j = 0; j < flatten.length; j++) {
+                        if (flatten[j].id !== '' && flatten[j].id !== undefined && flatten[j].id !== null) {
+                            objIds.push(new ObjectID(flatten[j].id));
+                        } else {
+                            continue;
+                        }
+                    }
+                }
+            }
+            let pageQuery = undefined;
+            if (objIds.length > 0) {
+                pageQuery = [
+                    { $match: { isOfficial: true, banned: false, name: exp, _id: { $nin: objIds } } },
+                    { $limit: 10 }
+                ];
+            } else {
+                pageQuery = [
+                    { $match: { isOfficial: true, banned: false, name: exp } },
+                    { $limit: 10 }
+                ];
+            }
             const pages: any[] = await this.pageService.aggregate(pageQuery);
             let pageId = undefined;
             let pageName = undefined;
@@ -255,13 +268,40 @@ export class AdminPageController {
                 searchResults.push({ value: pageId, label: pageName, type: SEARCH_TYPE.PAGE });
             }
         } else if (data.type === 'post' && data.field === 'emergencyEvent') {
-            const postEmergencys = await this.emergencyEventService.aggregate([
-                {
-                    $match: { title: exp },
-                },
-                { $limit: 10 }
-            ]);
-
+            const filterIds = [];
+            const objIds = [];
+            if (data.values.length > 0) {
+                for (let i = 0; i < data.values.length; i++) {
+                    filterIds.push(data.values[i].values);
+                }
+            }
+            if (filterIds.length > 0) {
+                const flatten = filterIds.flat();
+                if (flatten.length > 0) {
+                    for (let j = 0; j < flatten.length; j++) {
+                        if (flatten[j].id !== '' && flatten[j].id !== undefined && flatten[j].id !== null) {
+                            objIds.push(new ObjectID(flatten[j].id));
+                        } else {
+                            continue;
+                        }
+                    }
+                }
+            }
+            let pageQuery = undefined;
+            if (objIds.length > 0) {
+                pageQuery = [
+                    {
+                        $match: { title: exp, _id: { $nin: objIds } }
+                    },
+                ];
+            } else {
+                pageQuery = [
+                    {
+                        $match: { title: exp }
+                    },
+                ];
+            }
+            const postEmergencys = await this.emergencyEventService.aggregate(pageQuery);
             let postId = undefined;
             let postTitle = undefined;
             for (const postStmd of postEmergencys) {
@@ -271,14 +311,40 @@ export class AdminPageController {
             }
 
         } else if (data.type === 'post' && data.field === 'objective') {
-            const postObjectiveS = await this.pageObjectiveService.aggregate([
-                {
-                    $match: { title: exp }
-                },
-                {
-                    $limit: 10
+            const filterIds = [];
+            const objIds = [];
+            if (data.values.length > 0) {
+                for (let i = 0; i < data.values.length; i++) {
+                    filterIds.push(data.values[i].values);
                 }
-            ]);
+            }
+            if (filterIds.length > 0) {
+                const flatten = filterIds.flat();
+                if (flatten.length > 0) {
+                    for (let j = 0; j < flatten.length; j++) {
+                        if (flatten[j].id !== '' && flatten[j].id !== undefined && flatten[j].id !== null) {
+                            objIds.push(new ObjectID(flatten[j].id));
+                        } else {
+                            continue;
+                        }
+                    }
+                }
+            }
+            let pageQuery = undefined;
+            if (objIds.length > 0) {
+                pageQuery = [
+                    {
+                        $match: { title: exp, _id: { $nin: objIds } }
+                    },
+                ];
+            } else {
+                pageQuery = [
+                    {
+                        $match: { title: exp }
+                    },
+                ];
+            }
+            const postObjectiveS = await this.pageObjectiveService.aggregate(pageQuery);
 
             let postId = undefined;
             let postTitle = undefined;
@@ -474,36 +540,92 @@ export class AdminPageController {
     @Put('/:id/processor')
     @Authorized()
     public async updateKaokaiToday(@Body({ validate: true }) createKaokaiTodayRequest: CreateKaokaiTodayRequest, @Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const compareF = [];
+        const compareS = [];
+        if (createKaokaiTodayRequest.buckets.length > 0) {
+            compareF.push(createKaokaiTodayRequest.buckets.length);
+        }
         const objId = new ObjectID(id);
         const kaoKaiToday = await this.kaokaiTodayService.findOne({ _id: objId });
-        if (kaoKaiToday) {
-            const query = { _id: kaoKaiToday.id };
-            const newValues = {
-                $set: {
-                    title: createKaokaiTodayRequest.title,
-                    type: createKaokaiTodayRequest.type,
-                    field: createKaokaiTodayRequest.field,
-                    position: createKaokaiTodayRequest.position,
-                    limit: createKaokaiTodayRequest.limit,
-                    flag: createKaokaiTodayRequest.flag
+        if (kaoKaiToday.buckets.length > 0) {
+            compareS.push(kaoKaiToday.buckets.length);
+        }
+        if (createKaokaiTodayRequest.buckets.length < kaoKaiToday.buckets.length) {
+            if (kaoKaiToday) {
+                const query = { _id: objId };
+                const newValues = {
+                  $unset: {
+                  }
+                };
+                for (let i = 0; i < createKaokaiTodayRequest.deleteIndex.length; i++) {
+                  const bucketNameProp = `buckets.${createKaokaiTodayRequest.deleteIndex[i]}`;
+                  newValues.$unset[bucketNameProp] = createKaokaiTodayRequest.deleteIndex[i];
                 }
-            };
-
-            for (let i = 0; i < createKaokaiTodayRequest.buckets.length; i++) {
-                const bucketNameProp = `buckets.${i}.name`;
-                const bucketValuesProp = `buckets.${i}.values`;
-
-                newValues.$set[bucketNameProp] = createKaokaiTodayRequest.buckets[i]?.name;
-                newValues.$set[bucketValuesProp] = createKaokaiTodayRequest.buckets[i]?.values;
-            }
-            const update = await this.kaokaiTodayService.update(query, newValues);
-            if (update) {
-                const successResponse = ResponseUtil.getSuccessResponse('Update KaokaiToday is successfully.', update);
-                return res.status(200).send(successResponse);
-            }
+                const update = await this.kaokaiTodayService.update(query, newValues);
+            
+                if (update) {
+                  // check if bucket is null
+                  const kaokaiTodayNull = await this.kaokaiTodayService.findOne({ _id: objId });
+                  if (kaokaiTodayNull) {
+                    const queryNull = { _id: kaokaiTodayNull.id };
+                    const newValuesNull = {
+                      $set: {
+                        title: createKaokaiTodayRequest.title,
+                        type: createKaokaiTodayRequest.type,
+                        field: createKaokaiTodayRequest.field,
+                        position: createKaokaiTodayRequest.position,
+                        limit: createKaokaiTodayRequest.limit,
+                        flag: createKaokaiTodayRequest.flag,
+                      },
+                      $pull: {
+                        buckets: null,
+                      },
+                    };
+                    const updateNull = await this.kaokaiTodayService.update(queryNull, newValuesNull);
+            
+                    if (updateNull) {
+                      const successResponse = ResponseUtil.getSuccessResponse('Update KaokaiToday is successfully.', updateNull);
+                      return res.status(200).send(successResponse);
+                    }
+                  }
+                }
+              } else {
+                const errorResponse = ResponseUtil.getErrorResponse('Cannot find object ID.', undefined);
+                return res.status(400).send(errorResponse);
+              }
+            
         } else {
-            const errorResponse = ResponseUtil.getErrorResponse('Cannot find object ID.', undefined);
-            return res.status(400).send(errorResponse);
+            if (kaoKaiToday) {
+                const query = { _id: objId };
+                const newValues = {
+                    $set: {
+                        title: createKaokaiTodayRequest.title,
+                        type: createKaokaiTodayRequest.type,
+                        field: createKaokaiTodayRequest.field,
+                        position: createKaokaiTodayRequest.position,
+                        limit: createKaokaiTodayRequest.limit,
+                        flag: createKaokaiTodayRequest.flag
+                    }
+                };
+                createKaokaiTodayRequest.buckets.forEach((bucket, index) => {
+                    const bucketNameProp = `buckets.${index}.name`;
+                    const bucketValuesProp = `buckets.${index}.values`;
+
+                    newValues.$set[bucketNameProp] = bucket.name;
+                    newValues.$set[bucketValuesProp] = bucket.values;
+                });
+
+                const update = await this.kaokaiTodayService.update(query, newValues);
+
+                if (update) {
+                    // check if bucket is null 
+                    const successResponse = ResponseUtil.getSuccessResponse('Update KaokaiToday is successfully.', update);
+                    return res.status(200).send(successResponse);
+                }
+            } else {
+                const errorResponse = ResponseUtil.getErrorResponse('Cannot find object ID.', undefined);
+                return res.status(400).send(errorResponse);
+            }
         }
     }
 

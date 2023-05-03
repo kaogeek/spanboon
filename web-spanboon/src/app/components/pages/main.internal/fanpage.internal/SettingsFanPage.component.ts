@@ -252,10 +252,10 @@ export class SettingsFanPage extends AbstractPage implements OnInit {
 
     public getAccessPage(pageId: string) {
         this.isLoadImage = false;
-        this.seoService.updateTitle("จัดการเพจ");
         this.pageFacade.getProfilePage(pageId).then((res) => {
             if (res) {
                 this._setValue(res.data);
+                this.seoService.updateTitle("จัดการเพจ - " + res.data.pageUsername);
             }
         }).catch((err: any) => {
             console.log('err ', err)

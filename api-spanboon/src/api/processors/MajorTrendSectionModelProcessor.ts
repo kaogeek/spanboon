@@ -38,6 +38,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
             try {
                 // get config
                 const position = [];
+                let searchOfficialOnly: number = undefined;
                 const positionSequences = await this.kaokaiTodayService.find();
                 for (const sequence of positionSequences) {
                     position.push(sequence.position);
@@ -105,6 +106,9 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     if (typeof this.config.offset === 'number') {
                         offset = this.config.offset;
                     }
+                    if (typeof this.config.searchOfficialOnly === 'boolean') {
+                        searchOfficialOnly = this.config.searchOfficialOnly;
+                    }
                 }
 
                 limit = (limit === undefined || limit === null) ? majorTrend.limit : this.DEFAULT_SEARCH_LIMIT;
@@ -126,25 +130,6 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                 };
                 // const today = moment().add(month, 'month').toDate();
                 const today = moment().toDate();
-                const postMatchStmt: any = {
-                    isDraft: false,
-                    deleted: false,
-                    hidden: false
-                };
-                const dateTimeAndArray = [];
-                if (startDateTime !== undefined && startDateTime !== null) {
-                    dateTimeAndArray.push({ startDateTime: { $gte: startDateTime } });
-                }
-                if (endDateTime !== undefined && endDateTime !== null) {
-                    dateTimeAndArray.push({ startDateTime: { $lte: endDateTime } });
-                }
-
-                if (dateTimeAndArray.length > 0) {
-                    postMatchStmt['$and'] = dateTimeAndArray;
-                } else {
-                    // default if startDateTime and endDateTime is not defined.
-                    postMatchStmt.startDateTime = { $lte: today };
-                }
                 /*
                 historyQuery = [
                     { $match: { keyword: exp, userId: userObjId } },
@@ -159,19 +144,39 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     resolve(undefined);
                 }
                 if (majorTrend.type === 'post' && majorTrend.field === 'score') {
+                    const postMatchStmt: any = {
+                        isDraft: false,
+                        deleted: false,
+                        hidden: false,
+                        _id: { $nin: postId }
+                    };
+                    const dateTimeAndArray = [];
+                    if (startDateTime !== undefined && startDateTime !== null) {
+                        dateTimeAndArray.push({ startDateTime: { $gte: startDateTime } });
+                    }
+                    if (endDateTime !== undefined && endDateTime !== null) {
+                        dateTimeAndArray.push({ startDateTime: { $lte: endDateTime } });
+                    }
+
+                    if (dateTimeAndArray.length > 0) {
+                        postMatchStmt['$and'] = dateTimeAndArray;
+                    } else {
+                        // default if startDateTime and endDateTime is not defined.
+                        postMatchStmt.startDateTime = { $lte: today };
+                    }
                     const postStmt = [
+                        { $match: postMatchStmt },
                         {
                             $lookup:
                             {
                                 from: 'Page',
                                 let: { 'pageId': '$pageId' },
-                                pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] } } },
                                 { $project: { email: 0 } }
                                 ],
                                 as: 'page'
                             }
                         },
-                        { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
                         { $sort: { summationScore: -1 } },
                         {
                             $unwind: {
@@ -224,6 +229,9 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                             '$limit': limit
                         }
                     ];
+                    if (searchOfficialOnly) {
+                        postStmt.splice(3, 0, { $match: { 'page.isOfficial': true, 'page.banned': false } });
+                    }
                     const postAggregate = await this.postsService.aggregate(postStmt);
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
@@ -274,6 +282,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
 
                     resolve(result);
                 } else if (majorTrend.type === 'post' && majorTrend.field === 'objective') {
+
                     const bucketSAll = [];
                     const postObject = [];
                     const chunkSizes = [];
@@ -282,9 +291,24 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                             bucketSAll.push(pageGroups.values);
                         }
                     }
+                    /* 
                     if (bucketSAll.length > 0) {
                         for (let i = 0; i < bucketSAll[0].length; i++) {
-                            chunkSizes.push(bucketSAll[i].length);
+                            // chunkSizes.push(bucketSAll[i].length);
+                            if (bucketSAll[i] !== undefined) {
+                                chunkSizes.push(bucketSAll[i].length);
+                            } else {
+                                continue;
+                            }
+                        }
+                    } */
+                    if (bucketSAll.length > 0) {
+                        for (let i = 0; i < bucketSAll.length; i++) {
+                            if (bucketSAll[i].length > 0) {
+                                chunkSizes.push(bucketSAll[i].length);
+                            } else {
+                                continue;
+                            }
                         }
                     }
                     const groups = [];
@@ -299,19 +323,41 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     }
                     if (groups.length > 0) {
                         for (const group of groups) {
-                            const postAggregate1 = await this.postsService.aggregate([
+                            const postMatchStmt: any = {
+                                isDraft: false,
+                                deleted: false,
+                                hidden: false,
+                                _id: { $nin: postId },
+                                objective: { $ne: null, $in: group }
+                            };
+                            const dateTimeAndArray = [];
+                            if (startDateTime !== undefined && startDateTime !== null) {
+                                dateTimeAndArray.push({ startDateTime: { $gte: startDateTime } });
+                            }
+                            if (endDateTime !== undefined && endDateTime !== null) {
+                                dateTimeAndArray.push({ startDateTime: { $lte: endDateTime } });
+                            }
+
+                            if (dateTimeAndArray.length > 0) {
+                                postMatchStmt['$and'] = dateTimeAndArray;
+                            } else {
+                                // default if startDateTime and endDateTime is not defined.
+                                postMatchStmt.startDateTime = { $lte: today };
+                            }
+                            // { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, objective: { $ne: null, $in: group }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            const postStmt = [
+                                { $match: postMatchStmt },
                                 {
                                     $lookup:
                                     {
                                         from: 'Page',
                                         let: { 'pageId': '$pageId' },
-                                        pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                        pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] } } },
                                         { $project: { email: 0 } }
                                         ],
                                         as: 'page'
                                     }
                                 },
-                                { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, objective: { $ne: null, $in: group }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
                                 { $sort: { summationScore: -1 } },
                                 {
                                     $unwind: {
@@ -363,12 +409,17 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                                 {
                                     '$limit': limit
                                 }
-                            ]);
-                            if (postAggregate1.length > 0) {
-                                postObject.push(postAggregate1);
+                            ];
+                            if (searchOfficialOnly) {
+                                postStmt.splice(3, 0, { $match: { 'page.isOfficial': true, 'page.banned': false } });
+                            }
+                            const postAggregate = await this.postsService.aggregate(postStmt);
+                            if (postAggregate.length > 0) {
+                                postObject.push(postAggregate);
                             }
                         }
                     }
+
                     const stackPage = [];
                     const switchSort = majorTrend.flag;
                     let sortSummationScore = undefined;
@@ -458,9 +509,24 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                             bucketSAll.push(pageGroups.values);
                         }
                     }
+                    /* 
                     if (bucketSAll.length > 0) {
                         for (let i = 0; i < bucketSAll[0].length; i++) {
-                            chunkSizes.push(bucketSAll[i].length);
+                            // chunkSizes.push(bucketSAll[i].length);
+                            if (bucketSAll[i] !== undefined) {
+                                chunkSizes.push(bucketSAll[i].length);
+                            } else {
+                                continue;
+                            }
+                        }
+                    } */
+                    if (bucketSAll.length > 0) {
+                        for (let i = 0; i < bucketSAll.length; i++) {
+                            if (bucketSAll[i].length > 0) {
+                                chunkSizes.push(bucketSAll[i].length);
+                            } else {
+                                continue;
+                            }
                         }
                     }
                     const groups = [];
@@ -477,19 +543,43 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
 
                     if (groups.length > 0) {
                         for (const group of groups) {
-                            const postAggregate1 = await this.postsService.aggregate([
+                            const postMatchStmt: any = {
+                                isDraft: false,
+                                deleted: false,
+                                hidden: false,
+                                _id: { $nin: postId },
+                                emergencyEvent: { $ne: null, $in: group },
+                                pageId: { $ne: null },
+                            };
+                            const dateTimeAndArray = [];
+                            if (startDateTime !== undefined && startDateTime !== null) {
+                                dateTimeAndArray.push({ startDateTime: { $gte: startDateTime } });
+                            }
+                            if (endDateTime !== undefined && endDateTime !== null) {
+                                dateTimeAndArray.push({ startDateTime: { $lte: endDateTime } });
+                            }
+
+                            if (dateTimeAndArray.length > 0) {
+                                postMatchStmt['$and'] = dateTimeAndArray;
+                            } else {
+                                // default if startDateTime and endDateTime is not defined.
+                                postMatchStmt.startDateTime = { $lte: today };
+                            }
+                            // { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, pageId: { $ne: null }, emergencyEvent: { $ne: null, $in: group }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+
+                            const postStmt = [
+                                { $match: postMatchStmt },
                                 {
                                     $lookup:
                                     {
                                         from: 'Page',
                                         let: { 'pageId': '$pageId' },
-                                        pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                        pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] } } },
                                         { $project: { email: 0 } }
                                         ],
                                         as: 'page'
                                     }
                                 },
-                                { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, pageId: { $ne: null }, emergencyEvent: { $ne: null, $in: group }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
                                 { $sort: { summationScore: -1 } },
                                 {
                                     $unwind: {
@@ -539,11 +629,15 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
 
                                 },
                                 {
-                                    '$limit': majorTrend.limit
+                                    '$limit': limit
                                 }
-                            ]);
-                            if (postAggregate1.length > 0) {
-                                postObject.push(postAggregate1);
+                            ];
+                            if (searchOfficialOnly) {
+                                postStmt.splice(3, 0, { $match: { 'page.isOfficial': true, 'page.banned': false } });
+                            }
+                            const postAggregate = await this.postsService.aggregate(postStmt);
+                            if (postAggregate.length > 0) {
+                                postObject.push(postAggregate);
                             }
                         }
                     }
@@ -655,7 +749,12 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     const IdshashTags = [];
                     if (stackHashTags.length > 0) {
                         for (let i = 0; i < stackHashTags.length; i++) {
-                            chunkSizes.push(stackHashTags[i].length);
+                            // chunkSizes.push(stackHashTags[i].length);
+                            if (bucketSAll[i] !== undefined) {
+                                chunkSizes.push(stackHashTags[i].length);
+                            } else {
+                                continue;
+                            }
                         }
                     }
                     if (stackHashTags.length > 0 && chunkSizes.length > 0) {
@@ -669,74 +768,99 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     }
                     if (stackHashTags.length > 0) {
                         for (const stackHashTag of IdshashTags) {
-                            const postAggregateSet1 = await this.postsService.aggregate(
-                                [
+                            const postMatchStmt: any = {
+                                isDraft: false,
+                                deleted: false,
+                                hidden: false,
+                                _id: { $nin: postId },
+                                postsHashTags: { $in: stackHashTag },
+                            };
+                            const dateTimeAndArray = [];
+                            if (startDateTime !== undefined && startDateTime !== null) {
+                                dateTimeAndArray.push({ startDateTime: { $gte: startDateTime } });
+                            }
+                            if (endDateTime !== undefined && endDateTime !== null) {
+                                dateTimeAndArray.push({ startDateTime: { $lte: endDateTime } });
+                            }
+
+                            if (dateTimeAndArray.length > 0) {
+                                postMatchStmt['$and'] = dateTimeAndArray;
+                            } else {
+                                // default if startDateTime and endDateTime is not defined.
+                                postMatchStmt.startDateTime = { $lte: today };
+                            }
+                            // { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, postsHashTags: { $in: stackHashTag }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            const postStmt = [
+                                { $match: postMatchStmt },
+                                {
+                                    $lookup:
                                     {
-                                        $lookup:
-                                        {
-                                            from: 'Page',
-                                            let: { 'pageId': '$pageId' },
-                                            pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
-                                            { $project: { email: 0 } }
-                                            ],
-                                            as: 'page'
-                                        }
-                                    },
-                                    { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, postsHashTags: { $in: stackHashTag }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                                    { $sort: { summationScore: -1 } },
-                                    {
-                                        $limit: majorTrend.limit
-                                    },
-                                    {
-                                        $unwind: {
-                                            path: '$page',
-                                            preserveNullAndEmptyArrays: true
-                                        }
-                                    },
-                                    {
-                                        $lookup: {
-                                            from: 'SocialPost',
-                                            localField: '_id',
-                                            foreignField: 'postId',
-                                            as: 'socialPosts'
-                                        }
-                                    },
-                                    {
-                                        $project: {
-                                            'socialPosts': {
-                                                '_id': 0,
-                                                'pageId': 0,
-                                                'postId': 0,
-                                                'postBy': 0,
-                                                'postByType': 0
-                                            }
-                                        }
-                                    },
-                                    {
-                                        $lookup: {
-                                            from: 'PostsGallery',
-                                            localField: '_id',
-                                            foreignField: 'post',
-                                            as: 'gallery'
-                                        }
-                                    },
-                                    {
-                                        $lookup: {
-                                            from: 'User',
-                                            localField: 'ownerUser',
-                                            foreignField: '_id',
-                                            as: 'user'
-                                        }
-                                    },
-                                    {
-                                        $project: {
-                                            story: 0
+                                        from: 'Page',
+                                        let: { 'pageId': '$pageId' },
+                                        pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] } } },
+                                        { $project: { email: 0 } }
+                                        ],
+                                        as: 'page'
+                                    }
+                                },
+                                { $sort: { summationScore: -1 } },
+                                {
+                                    $unwind: {
+                                        path: '$page',
+                                        preserveNullAndEmptyArrays: true
+                                    }
+                                },
+                                {
+                                    $lookup: {
+                                        from: 'SocialPost',
+                                        localField: '_id',
+                                        foreignField: 'postId',
+                                        as: 'socialPosts'
+                                    }
+                                },
+                                {
+                                    $project: {
+                                        'socialPosts': {
+                                            '_id': 0,
+                                            'pageId': 0,
+                                            'postId': 0,
+                                            'postBy': 0,
+                                            'postByType': 0
                                         }
                                     }
-                                ]
-                            );
-                            if (postAggregateSet1.length > 0) {
-                                postAggregateAll.push(postAggregateSet1);
+                                },
+                                {
+                                    $lookup: {
+                                        from: 'PostsGallery',
+                                        localField: '_id',
+                                        foreignField: 'post',
+                                        as: 'gallery'
+                                    }
+                                },
+                                {
+                                    $lookup: {
+                                        from: 'User',
+                                        localField: 'ownerUser',
+                                        foreignField: '_id',
+                                        as: 'user'
+                                    }
+                                },
+                                {
+                                    $project: {
+                                        story: 0
+                                    }
+
+                                },
+                                {
+                                    '$limit': limit
+                                }
+                            ];
+                            if (searchOfficialOnly) {
+                                postStmt.splice(3, 0, { $match: { 'page.isOfficial': true, 'page.banned': false } });
+                            }
+                            const postAggregate = await this.postsService.aggregate(postStmt);
+                            if (postAggregate.length > 0) {
+                                postAggregateAll.push(postAggregate);
                             }
                         }
                     }
@@ -822,6 +946,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
 
                     resolve(result);
                 } else if (majorTrend.type === 'hashtag' && majorTrend.field === 'count') {
+
                     const bucketF = [];
                     const hashTagMost = await this.hashTagService.searchHashSec(limit);
                     if (hashTagMost.length >= 0) {
@@ -829,19 +954,41 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                             bucketF.push(new ObjectID(hashTagMostS.id));
                         }
                     }
+                    const postMatchStmt: any = {
+                        isDraft: false,
+                        deleted: false,
+                        hidden: false,
+                        _id: { $nin: postId },
+                        postsHashTags: { $in: bucketF }
+                    };
+                    const dateTimeAndArray = [];
+                    if (startDateTime !== undefined && startDateTime !== null) {
+                        dateTimeAndArray.push({ startDateTime: { $gte: startDateTime } });
+                    }
+                    if (endDateTime !== undefined && endDateTime !== null) {
+                        dateTimeAndArray.push({ startDateTime: { $lte: endDateTime } });
+                    }
+
+                    if (dateTimeAndArray.length > 0) {
+                        postMatchStmt['$and'] = dateTimeAndArray;
+                    } else {
+                        // default if startDateTime and endDateTime is not defined.
+                        postMatchStmt.startDateTime = { $lte: today };
+                    }
+                    // { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, postsHashTags: { $in: bucketF } } },
                     const postStmt = [
+                        { $match: postMatchStmt },
                         {
                             $lookup:
                             {
                                 from: 'Page',
                                 let: { 'pageId': '$pageId' },
-                                pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
+                                pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] } } },
                                 { $project: { email: 0 } }
                                 ],
                                 as: 'page'
                             }
                         },
-                        { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, postsHashTags: { $in: bucketF } } },
                         { $sort: { summationScore: -1 } },
                         {
                             $unwind: {
@@ -895,6 +1042,9 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                         }
 
                     ];
+                    if (searchOfficialOnly) {
+                        postStmt.splice(3, 0, { $match: { 'page.isOfficial': true, 'page.banned': false } });
+                    }
 
                     const postAggregate = await this.postsService.aggregate(postStmt);
                     const lastestDate = null;
@@ -994,72 +1144,99 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     }
                     if (pageIds.length > 0) {
                         for (const pageId of pageIds) {
-                            const postAggregateSet1 = await this.postsService.aggregate(
-                                [
+                            const postMatchStmt: any = {
+                                isDraft: false,
+                                deleted: false,
+                                hidden: false,
+                                _id: { $nin: postId },
+                                pageId: { $in: pageId }
+                            };
+                            const dateTimeAndArray = [];
+                            if (startDateTime !== undefined && startDateTime !== null) {
+                                dateTimeAndArray.push({ startDateTime: { $gte: startDateTime } });
+                            }
+                            if (endDateTime !== undefined && endDateTime !== null) {
+                                dateTimeAndArray.push({ startDateTime: { $lte: endDateTime } });
+                            }
+
+                            if (dateTimeAndArray.length > 0) {
+                                postMatchStmt['$and'] = dateTimeAndArray;
+                            } else {
+                                // default if startDateTime and endDateTime is not defined.
+                                postMatchStmt.startDateTime = { $lte: today };
+                            }
+                            // { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, pageId: { $in: pageId }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            const postStmt = [
+                                { $match: postMatchStmt },
+                                {
+                                    $lookup:
                                     {
-                                        $lookup:
-                                        {
-                                            from: 'Page',
-                                            let: { 'pageId': '$pageId' },
-                                            pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
-                                            { $project: { email: 0 } }
-                                            ],
-                                            as: 'page'
+                                        from: 'Page',
+                                        let: { 'pageId': '$pageId' },
+                                        pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] } } },
+                                        { $project: { email: 0 } }
+                                        ],
+                                        as: 'page'
+                                    }
+                                },
+                                { $sort: { summationScore: -1 } },
+                                {
+                                    $unwind: {
+                                        path: '$page',
+                                        preserveNullAndEmptyArrays: true
+                                    }
+                                },
+                                {
+                                    $lookup: {
+                                        from: 'SocialPost',
+                                        localField: '_id',
+                                        foreignField: 'postId',
+                                        as: 'socialPosts'
+                                    }
+                                },
+                                {
+                                    $project: {
+                                        'socialPosts': {
+                                            '_id': 0,
+                                            'pageId': 0,
+                                            'postId': 0,
+                                            'postBy': 0,
+                                            'postByType': 0
                                         }
-                                    },
-                                    { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, pageId: { $in: pageId }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                                    { $sort: { summationScore: -1 } },
-                                    {
-                                        $limit: limit
-                                    },
-                                    {
-                                        $unwind: {
-                                            path: '$page',
-                                            preserveNullAndEmptyArrays: true
-                                        }
-                                    },
-                                    {
-                                        $lookup: {
-                                            from: 'SocialPost',
-                                            localField: '_id',
-                                            foreignField: 'postId',
-                                            as: 'socialPosts'
-                                        }
-                                    },
-                                    {
-                                        $project: {
-                                            'socialPosts': {
-                                                '_id': 0,
-                                                'pageId': 0,
-                                                'postId': 0,
-                                                'postBy': 0,
-                                                'postByType': 0
-                                            }
-                                        }
-                                    },
-                                    {
-                                        $lookup: {
-                                            from: 'PostsGallery',
-                                            localField: '_id',
-                                            foreignField: 'post',
-                                            as: 'gallery'
-                                        }
-                                    },
-                                    {
-                                        $lookup: {
-                                            from: 'User',
-                                            localField: 'ownerUser',
-                                            foreignField: '_id',
-                                            as: 'user'
-                                        }
-                                    },
-                                    {
-                                        $project: { story: 0 }
-                                    },
-                                ]
-                            );
-                            if (postAggregateSet1.length > 0) {
-                                pageStacks.push(postAggregateSet1);
+                                    }
+                                },
+                                {
+                                    $lookup: {
+                                        from: 'PostsGallery',
+                                        localField: '_id',
+                                        foreignField: 'post',
+                                        as: 'gallery'
+                                    }
+                                },
+                                {
+                                    $lookup: {
+                                        from: 'User',
+                                        localField: 'ownerUser',
+                                        foreignField: '_id',
+                                        as: 'user'
+                                    }
+                                },
+                                {
+                                    $project: {
+                                        story: 0
+                                    }
+
+                                },
+                                {
+                                    '$limit': limit
+                                }
+                            ];
+                            if (searchOfficialOnly) {
+                                postStmt.splice(3, 0, { $match: { 'page.isOfficial': true, 'page.banned': false } });
+                            }
+                            const postAggregate = await this.postsService.aggregate(postStmt);
+                            if (postAggregate.length > 0) {
+                                pageStacks.push(postAggregate);
                             }
                         }
                     }
@@ -1191,73 +1368,99 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     }
                     if (pageIds.length > 0) {
                         for (const pageId of pageIds) {
-                            const postAggregateSetZ = await this.postsService.aggregate(
-                                [
-                                    {
-                                        $lookup:
-                                        {
-                                            from: 'Page',
-                                            let: { 'pageId': '$pageId' },
-                                            pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] }, isOfficial: true } },
-                                            { $project: { email: 0 } }
-                                            ],
-                                            as: 'page'
-                                        }
-                                    },
-                                    { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, pageId: { $in: pageId }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                                    { $sort: { summationScore: -1 } },
-                                    {
-                                        $limit: majorTrend.limit
-                                    },
-                                    {
-                                        $unwind: {
-                                            path: '$page',
-                                            preserveNullAndEmptyArrays: true
-                                        }
-                                    },
-                                    {
-                                        $lookup: {
-                                            from: 'SocialPost',
-                                            localField: '_id',
-                                            foreignField: 'postId',
-                                            as: 'socialPosts'
-                                        }
-                                    },
-                                    {
-                                        $project: {
-                                            'socialPosts': {
-                                                '_id': 0,
-                                                'pageId': 0,
-                                                'postId': 0,
-                                                'postBy': 0,
-                                                'postByType': 0
-                                            }
-                                        }
-                                    },
-                                    {
-                                        $lookup: {
-                                            from: 'PostsGallery',
-                                            localField: '_id',
-                                            foreignField: 'post',
-                                            as: 'gallery'
-                                        }
-                                    },
-                                    {
-                                        $lookup: {
-                                            from: 'User',
-                                            localField: 'ownerUser',
-                                            foreignField: '_id',
-                                            as: 'user'
-                                        }
-                                    },
-                                    {
-                                        $project: { story: 0 }
-                                    },
+                            const postMatchStmt: any = {
+                                isDraft: false,
+                                deleted: false,
+                                hidden: false,
+                                _id: { $nin: postId },
+                                pageId: { $in: pageId }
+                            };
+                            const dateTimeAndArray = [];
+                            if (startDateTime !== undefined && startDateTime !== null) {
+                                dateTimeAndArray.push({ startDateTime: { $gte: startDateTime } });
+                            }
+                            if (endDateTime !== undefined && endDateTime !== null) {
+                                dateTimeAndArray.push({ startDateTime: { $lte: endDateTime } });
+                            }
 
-                                ]
-                            );
-                            if (postAggregateSetZ.length > 0) {
-                                postsProvince.push(postAggregateSetZ);
+                            if (dateTimeAndArray.length > 0) {
+                                postMatchStmt['$and'] = dateTimeAndArray;
+                            } else {
+                                // default if startDateTime and endDateTime is not defined.
+                                postMatchStmt.startDateTime = { $lte: today };
+                            }
+                            // { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, pageId: { $in: pageId }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            const postStmt = [
+                                { $match: postMatchStmt },
+                                {
+                                    $lookup:
+                                    {
+                                        from: 'Page',
+                                        let: { 'pageId': '$pageId' },
+                                        pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] } } },
+                                        { $project: { email: 0 } }
+                                        ],
+                                        as: 'page'
+                                    }
+                                },
+                                { $sort: { summationScore: -1 } },
+                                {
+                                    $unwind: {
+                                        path: '$page',
+                                        preserveNullAndEmptyArrays: true
+                                    }
+                                },
+                                {
+                                    $lookup: {
+                                        from: 'SocialPost',
+                                        localField: '_id',
+                                        foreignField: 'postId',
+                                        as: 'socialPosts'
+                                    }
+                                },
+                                {
+                                    $project: {
+                                        'socialPosts': {
+                                            '_id': 0,
+                                            'pageId': 0,
+                                            'postId': 0,
+                                            'postBy': 0,
+                                            'postByType': 0
+                                        }
+                                    }
+                                },
+                                {
+                                    $lookup: {
+                                        from: 'PostsGallery',
+                                        localField: '_id',
+                                        foreignField: 'post',
+                                        as: 'gallery'
+                                    }
+                                },
+                                {
+                                    $lookup: {
+                                        from: 'User',
+                                        localField: 'ownerUser',
+                                        foreignField: '_id',
+                                        as: 'user'
+                                    }
+                                },
+                                {
+                                    $project: {
+                                        story: 0
+                                    }
+
+                                },
+                                {
+                                    '$limit': limit
+                                }
+                            ];
+                            if (searchOfficialOnly) {
+                                postStmt.splice(3, 0, { $match: { 'page.isOfficial': true, 'page.banned': false } });
+                            }
+                            const postAggregate = await this.postsService.aggregate(postStmt);
+                            if (postAggregate.length > 0) {
+                                postsProvince.push(postAggregate);
                             }
                         }
                     }
@@ -1358,10 +1561,19 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                             bucketSAll.push(IdAll.values);
                         }
                     }
-
+                    /*
                     if (bucketSAll.length > 0) {
                         for (let i = 0; i < bucketSAll[0].length; i++) {
                             chunkSizes.push(bucketSAll[i].length);
+                        }
+                    } */
+                    if (bucketSAll.length > 0) {
+                        for (let i = 0; i < bucketSAll.length; i++) {
+                            if (bucketSAll[i].length > 0) {
+                                chunkSizes.push(bucketSAll[i].length);
+                            } else {
+                                continue;
+                            }
                         }
                     }
                     const groups = [];
@@ -1377,75 +1589,99 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     // set 1
                     if (groups.length > 0) {
                         for (const group of groups) {
-                            const postAggregateSet = await this.postsService.aggregate(
-                                [
+                            const postMatchStmt: any = {
+                                isDraft: false,
+                                deleted: false,
+                                hidden: false,
+                                _id: { $nin: postId },
+                                pageId: { $in: group }
+                            };
+                            const dateTimeAndArray = [];
+                            if (startDateTime !== undefined && startDateTime !== null) {
+                                dateTimeAndArray.push({ startDateTime: { $gte: startDateTime } });
+                            }
+                            if (endDateTime !== undefined && endDateTime !== null) {
+                                dateTimeAndArray.push({ startDateTime: { $lte: endDateTime } });
+                            }
+
+                            if (dateTimeAndArray.length > 0) {
+                                postMatchStmt['$and'] = dateTimeAndArray;
+                            } else {
+                                // default if startDateTime and endDateTime is not defined.
+                                postMatchStmt.startDateTime = { $lte: today };
+                            }
+                            // { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, pageId: { $in: group }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
+                            const postStmt = [
+                                { $match: postMatchStmt },
+                                {
+                                    $lookup:
                                     {
-                                        $lookup:
-                                        {
-                                            from: 'Page',
-                                            let: { 'pageId': '$pageId' },
-                                            pipeline: [
-                                                { $match: { $expr: { $eq: ['$_id', '$$pageId'] } } },
-                                                { $project: { email: 0 } }
-                                            ],
-                                            as: 'page'
+                                        from: 'Page',
+                                        let: { 'pageId': '$pageId' },
+                                        pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] } } },
+                                        { $project: { email: 0 } }
+                                        ],
+                                        as: 'page'
+                                    }
+                                },
+                                { $sort: { summationScore: -1 } },
+                                {
+                                    $unwind: {
+                                        path: '$page',
+                                        preserveNullAndEmptyArrays: true
+                                    }
+                                },
+                                {
+                                    $lookup: {
+                                        from: 'SocialPost',
+                                        localField: '_id',
+                                        foreignField: 'postId',
+                                        as: 'socialPosts'
+                                    }
+                                },
+                                {
+                                    $project: {
+                                        'socialPosts': {
+                                            '_id': 0,
+                                            'pageId': 0,
+                                            'postId': 0,
+                                            'postBy': 0,
+                                            'postByType': 0
                                         }
-                                    },
-                                    { $match: { isDraft: false, deleted: false, hidden: false, _id: { $nin: postId }, pageId: { $in: group }, startDateTime: { $gte: this.data.startDateTime, $lte: this.data.endDateTime } } },
-                                    { $sort: { summationScore: -1 } },
-                                    {
-                                        $limit: majorTrend.limit
-                                    },
-                                    {
-                                        $unwind: {
-                                            path: '$page',
-                                            preserveNullAndEmptyArrays: true
-                                        }
-                                    },
-                                    {
-                                        $lookup: {
-                                            from: 'SocialPost',
-                                            localField: '_id',
-                                            foreignField: 'postId',
-                                            as: 'socialPosts'
-                                        }
-                                    },
-                                    {
-                                        $project: {
-                                            'socialPosts': {
-                                                '_id': 0,
-                                                'pageId': 0,
-                                                'postId': 0,
-                                                'postBy': 0,
-                                                'postByType': 0
-                                            }
-                                        }
-                                    },
-                                    {
-                                        $lookup: {
-                                            from: 'PostsGallery',
-                                            localField: '_id',
-                                            foreignField: 'post',
-                                            as: 'gallery'
-                                        }
-                                    },
-                                    {
-                                        $lookup: {
-                                            from: 'User',
-                                            localField: 'ownerUser',
-                                            foreignField: '_id',
-                                            as: 'user'
-                                        }
-                                    },
-                                    {
-                                        $project: {
-                                            story: 0
-                                        }
-                                    },
-                                ]
-                            );
-                            if (postAggregateSet.length > 0) {
-                                bucketAll.push(postAggregateSet);
+                                    }
+                                },
+                                {
+                                    $lookup: {
+                                        from: 'PostsGallery',
+                                        localField: '_id',
+                                        foreignField: 'post',
+                                        as: 'gallery'
+                                    }
+                                },
+                                {
+                                    $lookup: {
+                                        from: 'User',
+                                        localField: 'ownerUser',
+                                        foreignField: '_id',
+                                        as: 'user'
+                                    }
+                                },
+                                {
+                                    $project: {
+                                        story: 0
+                                    }
+
+                                },
+                                {
+                                    '$limit': limit
+                                }
+                            ];
+                            if (searchOfficialOnly) {
+                                postStmt.splice(3, 0, { $match: { 'page.isOfficial': true, 'page.banned': false } });
+                            }
+                            const postAggregate = await this.postsService.aggregate(postStmt);
+                            if (postAggregate.length > 0) {
+                                bucketAll.push(postAggregate);
                             }
                         }
                     }

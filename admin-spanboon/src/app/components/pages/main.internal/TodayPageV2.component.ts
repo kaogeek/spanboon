@@ -22,7 +22,7 @@ import { Location } from '@angular/common';
 import { DialogWarningComponent } from '../../shares/DialogWarningComponent.component';
 import { DialogAlert } from '../../shares/DialogAlert.component';
 
-const PAGE_NAME: string = "todayV2";
+const PAGE_NAME: string = "today";
 
 const SEARCH_LIMIT: number = 10;
 const SEARCH_OFFSET: number = 0;
@@ -46,10 +46,7 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
     private router: Router;
     public createdName: any;
     public dataForm: EmergencyEvent;
-    public valueBool: boolean;
-    private imageSrc: string = '';
     public value: string = '';
-    public ordering: number;
     public isSave: boolean = false;
     public position: number;
     public typeBucket: any = [{ value: 'page' }, { value: 'post' }, { value: 'hashtag' }];
@@ -57,24 +54,23 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
     public fieldBucket: any = [{ value: 'id' }, { value: 'group' }, { value: 'province' }];
     public empForm: FormGroup;
     public selectedPosition: number;
-    public stackValue: any = [];
-    public countArray: number = 1;
     public title: string;
     public limit: number = 10;
     public edit: string;
     public _id: string;
     public provinces;
     public default_province;
-    public orderBy: any = {};
     public selectedValueType: string;
     public selectedValueField: string;
     public selectedValueTitle: string;
     public isLoading: boolean;
     public autoComp: any;
-    public length: number;
+    public showComp: any = [];
     public reset: FormArray;
     public isPin: boolean;
-
+    public isSelect: boolean = false;
+    public deleteIndex: any = [];
+    public bucketDefault: any = [];
     constructor(
         emergencyEventFacade: EmergencyEventFacade,
         todayPageFacade: TodayPageFacade,
@@ -153,9 +149,30 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
                 formatDate: false,
                 formatId: false,
                 align: "left"
-            }, {
+            },
+            {
                 name: "bucket3",
                 label: "ถัง 3",
+                width: "180pt",
+                class: "", formatColor: false, formatImage: false,
+                link: [],
+                formatDate: false,
+                formatId: false,
+                align: "left"
+            },
+            {
+                name: "bucket4",
+                label: "ถัง 4",
+                width: "180pt",
+                class: "", formatColor: false, formatImage: false,
+                link: [],
+                formatDate: false,
+                formatId: false,
+                align: "left"
+            },
+            {
+                name: "bucket5",
+                label: "ถัง 5",
                 width: "180pt",
                 class: "", formatColor: false, formatImage: false,
                 link: [],
@@ -194,6 +211,8 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
                 this.selectedPosition = undefined;
                 this.limit = undefined;
                 this.edit = undefined;
+                this.showComp = undefined;
+                this.deleteIndex = [];
                 while (this.buckets().length !== 0) {
                     this.buckets().removeAt(0)
                 }
@@ -203,52 +222,78 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
     }
 
     public ngOnInit() {
+        this.table.isTodayPage = true;
         this.getProvince();
         this.empForm = this.fb.group({
             buckets: this.fb.array([])
         });
-        this.value_data.valueChanges
-            .pipe(
-                debounceTime(500)
-                , takeUntil(this.unsubscriber)
-            ).subscribe((value: any) => {
-                this.debouncedValue = value;
-                if ((this.selectedValueField !== 'count') && (this.selectedValueField !== 'score') && (this.selectedValueField !== 'province')) {
-                    this.keyUpAutoComp(this.debouncedValue);
-                }
-            });
         this.searchBucket();
     }
 
-    buckets() {
+    public buckets() {
         return this.empForm.get('buckets') as FormArray;
     }
 
-    newBucket(): FormGroup {
+    public newBucket(): FormGroup {
         return this.fb.group({
             name: [''],
+            delete: [false],
             values: this.fb.array([]),
         });
     }
 
-    addBucket() {
+    public addBucket() {
         this.buckets().push(this.newBucket());
     }
 
-    removeBucket(bucketIndex: number) {
-        this.buckets().removeAt(bucketIndex);
+    public removeBucket(bucketIndex: number) {
+        if (this.edit === undefined) {
+            this.buckets().removeAt(bucketIndex);
+        } else {
+            $("#divData-" + bucketIndex).addClass("disabledDiv");
+            $("#back-" + bucketIndex).removeClass("disabledBack");
+            this.buckets().at(bucketIndex).get('delete').setValue(true);
+            let bucketForm = this.bucketDefault.buckets;
+            let bucket = [];
+            for (let index = 0; index < bucketForm.length; index++) {
+                bucket.push(index);
+            }
+            for (let index = 0; index < bucket.length; index++) {
+                if (bucketIndex === bucket[index]) {
+                    this.deleteIndex.push(index);
+                }
+            }
+        }
     }
 
-    valueBucket(bucketIndex: number) {
+    public undoDelete(bucketIndex: number) {
+        for (let index = 0; index < this.deleteIndex.length; index++) {
+            if (bucketIndex === this.deleteIndex[index]) {
+                this.deleteIndex.splice(index, 1);
+            }
+        }
+        this.buckets().at(bucketIndex).get('delete').setValue(false);
+        let d = document.getElementById('divData-' + bucketIndex).className;
+        if (d === 'ng-untouched ng-pristine ng-valid disabledDiv') {
+            $("#divData-" + bucketIndex).removeClass("disabledDiv");
+            $("#back-" + bucketIndex).addClass("disabledBack");
+        }
+    }
+
+    public valueBucket(bucketIndex: number) {
         return this.buckets().at(bucketIndex).get('values') as FormArray;
     }
 
-    addValueBucket(bucketIndex: number) {
-        let c = this.buckets().at(bucketIndex).get('values') as FormArray;
-        c.push(new FormControl(''));
+    public addValueBucket(bucketIndex: number) {
+        let bucketValue = this.valueBucket(bucketIndex) as FormArray;
+        const values = this.fb.group({
+            value: [''],
+            id: ['']
+        })
+        bucketValue.push(values);
     }
 
-    removeValueBucket(bucketIndex: number, valueI: number) {
+    public removeValueBucket(bucketIndex: number, valueI: number) {
         this.valueBucket(bucketIndex).removeAt(valueI);
     }
 
@@ -304,7 +349,6 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
 
             return;
         }
-
         const result: any = {};
         result.title = this.selectedValueTitle;
         result.type = this.selectedValueType;
@@ -313,18 +357,44 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
         result.limit = this.limit;
         result.buckets = this.empForm.value.buckets;
         result.position = this.selectedPosition;
+        let data: any[] = [];
+        if ((this.selectedValueField === 'id') || (this.selectedValueField === 'emergencyEvent') || (this.selectedValueField === 'objective')) {
+            for (let index = 0; index < this.empForm.get('buckets').value.length; index++) {
+                let emp = this.empForm.get('buckets').value[index];
+                data.push({
+                    index: index,
+                    values: []
+                });
+                for (let emp_index = 0; emp_index < emp.values.length; emp_index++) {
+                    data[index].values.push(emp.values[emp_index].id);
+                }
+                result.buckets[index].values = data[index].values.slice(0);
+            }
+        } else {
+            for (let index = 0; index < this.empForm.get('buckets').value.length; index++) {
+                let emp = this.empForm.get('buckets').value[index];
+                data.push({
+                    index: index,
+                    values: []
+                });
+                for (let emp_index = 0; emp_index < emp.values.length; emp_index++) {
+                    data[index].values.push(emp.values[emp_index].value);
+                }
+                result.buckets[index].values = data[index].values.slice(0);
+            }
+        }
 
         if ((result.field === 'count') || (result.field === 'score')) {
             result.buckets = [];
         }
 
-        if (result.title === '') {
+        if (!result.title) {
             return;
-        } else if (result.type === '') {
+        } else if (!result.type) {
             return;
-        } else if (result.field === '') {
+        } else if (!result.field) {
             return;
-        } else if (result.limit === '' || result.limit === null || result.limit === undefined) {
+        } else if (!result.limit) {
             return;
         }
 
@@ -355,6 +425,7 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
                 while (this.buckets().length !== 0) {
                     this.buckets().removeAt(0)
                 }
+                this.empForm.reset();
                 this.selectedValueTitle = undefined;
                 this.selectedValueType = undefined;
                 this.selectedValueField = undefined;
@@ -364,23 +435,40 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
                 this.drawer.toggle();
             })
         } else {
+            result.deleteIndex = this.deleteIndex ? this.deleteIndex : undefined;
+            if (!!result.deleteIndex) {
+                for (let i = 0; i < this.deleteIndex.length; i++) {
+                    if (this.buckets().at(i).get('delete').value === true) {
+                        this.buckets().removeAt(i);
+                    }
+                }
+                for (let i = 0; i < this.buckets().value.length; i++) {
+                    if (this.buckets().at(i).get('delete').value === true) {
+                        this.buckets().removeAt(i);
+                    }
+                }
+                result.buckets = this.empForm.value.buckets
+            }
             this.todayPageFacade.edit(id, result).then((res) => {
                 this.table.searchData();
                 while (this.buckets().length !== 0) {
                     this.buckets().removeAt(0)
                 }
+                this.empForm.reset();
                 this.selectedValueTitle = undefined;
                 this.selectedValueType = undefined;
                 this.selectedValueField = undefined;
                 this.selectedPosition = undefined;
                 this.limit = undefined;
                 this.edit = undefined;
+                this.deleteIndex = [];
                 this.drawer.toggle();
             })
         }
     }
 
     public clickEditForm(data: any): void {
+        this.bucketDefault = data;
         this.setFields();
         this.drawer.toggle();
         let clickEdit = 'edit';
@@ -400,14 +488,26 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
         this.isPin = data.flag;
         this.todayPageFacade.searchComp(data).then((res) => {
             if (res) {
-                if (data.buckets.length > 0) {
-                    for (let i = 0; i < data.buckets.length; i++) {
-                        this.buckets().push(this.newBucket());
-                        this.buckets().at(i).get('name').setValue(data.buckets[i].name)
-                        let c = this.buckets().at(i).get('values') as FormArray;
-                        if (data.buckets[i].values.length > 0) {
-                            for (let index = 0; index < data.buckets[i].values.length; index++) {
-                                c.push(new FormControl(data.buckets[i].values[index]))
+                if ((this.selectedValueField !== 'count') && (this.selectedValueField !== 'score')) {
+                    this.showComp = res;
+                    if (data.buckets.length > 0) {
+                        if ((this.selectedValueField === 'id') || (this.selectedValueField === 'emergencyEvent') || (this.selectedValueField === 'objective')) {
+                            for (let i = 0; i < data.buckets.length; i++) {
+                                this.buckets().push(this.newBucket());
+                                this.buckets().at(i).get('name').setValue(data.buckets[i].name)
+                                if (data.buckets[i].values.length > 0) {
+                                    for (let index = 0; index < data.buckets[i].values.length; index++) {
+                                        this.addValueBucket(i);
+                                        this.valueBucket(i).at(index).get('id').setValue(res[i][index]._id);
+                                        if (this.selectedValueField === 'id') {
+                                            this.valueBucket(i).at(index).get('value').setValue(res[i][index].name);
+                                        } else if (this.selectedValueField === 'emergencyEvent') {
+                                            this.valueBucket(i).at(index).get('value').setValue(res[i][index].title);
+                                        } else if (this.selectedValueField === 'objective') {
+                                            this.valueBucket(i).at(index).get('value').setValue(res[i][index].title);
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -415,14 +515,17 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
             }
         }).catch((err) => {
             if (err) {
-                if (data.buckets.length > 0) {
-                    for (let i = 0; i < data.buckets.length; i++) {
-                        this.buckets().push(this.newBucket());
-                        this.buckets().at(i).get('name').setValue(data.buckets[i].name)
-                        let c = this.buckets().at(i).get('values') as FormArray;
-                        if (data.buckets[i].values !== null && data.buckets[i].values.length > 0) {
-                            for (let index = 0; index < data.buckets[i].values.length; index++) {
-                                c.push(new FormControl(data.buckets[i].values[index]))
+                if ((this.selectedValueField !== 'count') && (this.selectedValueField !== 'score')) {
+                    if (data.buckets.length > 0) {
+                        for (let i = 0; i < data.buckets.length; i++) {
+                            this.buckets().push(this.newBucket());
+                            this.buckets().at(i).get('name').setValue(data.buckets[i].name)
+                            if (data.buckets[i].values.length > 0) {
+                                for (let index = 0; index < data.buckets[i].values.length; index++) {
+                                    this.addValueBucket(i);
+                                    this.valueBucket(i).at(index).get('value').setValue(data.buckets[i].values[index]);
+                                    this.valueBucket(i).at(index).get('id').setValue('');
+                                }
                             }
                         }
                     }
@@ -455,11 +558,20 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
         });
     }
 
+    public selectData(BuckIndex, index, data) {
+        if ((this.selectedValueField === 'id') || (this.selectedValueField === 'emergencyEvent') || (this.selectedValueField === 'objective')) {
+            this.isSelect = true;
+            this.valueBucket(BuckIndex).at(index).get('value').setValue(data.label);
+            this.valueBucket(BuckIndex).at(index).get('id').setValue(data.value);
+        }
+    }
+
     public async keyUpAutoComp(text) {
         try {
+            const filterBuckets = this.empForm.value.buckets;
             this.isLoading = true;
             // await this.accountFacade.search(data);
-            this.todayPageFacade.searchObject(this.selectedValueType, this.selectedValueField, text).then((res) => {
+            this.todayPageFacade.searchObject(this.selectedValueType, this.selectedValueField, text, filterBuckets).then((res) => {
                 if (res) {
                     this.autoComp = res.result ? res.result : res;
                 }

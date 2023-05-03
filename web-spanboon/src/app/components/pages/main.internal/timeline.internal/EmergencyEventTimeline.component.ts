@@ -17,6 +17,7 @@ import AOS from 'aos';
 import 'aos/dist/aos.css'; // You can also use <link> for styles
 import './../../../../../assets/script/canvas';
 import { E } from '@angular/cdk/keycodes';
+import { Meta } from '@angular/platform-browser';
 
 const PAGE_NAME: string = 'emergencyevent';
 
@@ -77,7 +78,7 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
     private seoService: SeoService;
 
     constructor(router: Router, authenManager: AuthenManager, assetFacade: AssetFacade, postActionService: PostActionService, postFacade: PostFacade, private popupService: MenuContextualService, private viewContainerRef: ViewContainerRef, emergencyEventFacade: EmergencyEventFacade, hashTagFacade: HashTagFacade, observManager: ObservableManager, routeActivated: ActivatedRoute,
-        dialog: MatDialog, seoService: SeoService) {
+        dialog: MatDialog, seoService: SeoService, private meta: Meta) {
         super(PAGE_NAME, authenManager, dialog, router);
         this.router = router;
         this.authenManager = authenManager;
@@ -127,7 +128,15 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
         this.emergencyEventFacade.getEmergencyTimeline(this.objectiveId).then((res) => {
             if (res) {
                 this.objectiveData = res;
-                this.seoService.updateTitle(this.objectiveData.emergencyEvent.hashTagName);
+                let emer = this.objectiveData.emergencyEvent;
+                let hashTags = [];
+                for (let hashtag of res.relatedHashTags) {
+                    hashTags.push("#" + hashtag.name + " ")
+                }
+                this.seoService.updateTitle("#" + emer.hashTagName);
+                this.meta.updateTag({ name: 'title', content: "#" + emer.hashTagName });
+                this.meta.updateTag({ name: 'keywords', content: (res.relatedHashTags.length > 0 ? hashTags.toString() : '') });
+                this.meta.updateTag({ name: 'description', content: "#" + emer.title + (emer.detail ? (" - " + emer.detail) : '') });
                 this.objectiveData.page;
                 this.objectiveData.timelines;
                 const pageType = { type: "PAGE" };

@@ -111,13 +111,14 @@ export class TodayPageFacade extends AbstractFacade {
         });
     }
 
-    public searchObject(type: any, field: any, text: any): Promise<any> {
+    public searchObject(type: any, field: any, text: any, bucket?: object): Promise<any> {
         return new Promise((resolve, reject) => {
             let url: string = this.baseURL + '/admin/page/request/search';
             let body: any = {
                 'type': type,
                 'field': field,
-                'keyword': text
+                'keyword': text,
+                'values': bucket
             }
             this.http.post(url, body).toPromise().then((response: any) => {
                 resolve(response.data);

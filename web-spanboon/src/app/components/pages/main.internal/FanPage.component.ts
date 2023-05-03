@@ -24,6 +24,7 @@ import { DialogAlert, DialogDropdown, DialogPost, DialogShare } from '../../shar
 import { UserEngagement } from '../../../models/models';
 import { DirtyComponent } from 'src/app/dirty-component';
 import { filter } from 'rxjs/internal/operators/filter';
+import { Meta } from '@angular/platform-browser';
 
 const PAGE_NAME: string = 'page';
 const PAGE_SUB_POST: string = 'post'
@@ -89,6 +90,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   private recommendFacade: RecommendFacade;
   private aboutPageFacade: AboutPageFacade;
   private seoService: SeoService;
+  private meta: Meta;
   private profileFacade: ProfileFacade;
   private postActionService: PostActionService;
   private userAccessFacade: UserAccessFacade;
@@ -179,6 +181,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     recommendFacade: RecommendFacade,
     aboutPageFacade: AboutPageFacade,
     seoService: SeoService,
+    meta: Meta,
     profileFacade: ProfileFacade,
     postActionService: PostActionService,
     userAccessFacade: UserAccessFacade
@@ -199,6 +202,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     this.recommendFacade = recommendFacade;
     this.aboutPageFacade = aboutPageFacade;
     this.seoService = seoService;
+    this.meta = meta;
     this.profileFacade = profileFacade;
     this.isFiles = false;
     this.isPost = false;
@@ -594,6 +598,10 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
             this.isMaxLoadingPost = true;
             let postIndex: number = 0
             let galleryIndex = 0;
+            if (this.resDataPost.length === 1) {
+              this.meta.updateTag({ name: 'title', content: this.resDataPost[0].title });
+              this.meta.updateTag({ name: 'description', content: this.resDataPost[0].detail });
+            }
             for (let post of this.resDataPost) {
               let arrayHashTag = [];
               if (post.hashTags.length > 0) {
@@ -1455,7 +1463,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
 
   public async actionComment(action: any, index: number) {
     if (action.mod === 'SHARE') {
-      this.mainPostLink = window.location.origin + '/page/' + this.resDataPage.pageUsername + '/post/';
+      this.mainPostLink = window.location.origin + '/post/';
       this.linkmain = (this.mainPostLink + this.resPost.posts[index]._id);
       this.dialogShare();
     } else {
