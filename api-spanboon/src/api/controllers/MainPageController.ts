@@ -16,6 +16,7 @@ import { UserService } from '../services/UserService';
 import { SearchHistoryService } from '../services/SearchHistoryService';
 import { SearchRequest } from './requests/SearchRequest';
 import { ContentSearchRequest } from './requests/ContentSearchRequest';
+import { IsRead } from './requests/IsRead';
 import { SearchContentResponse } from './responses/SearchContentResponse';
 import { PostsService } from '../services/PostsService';
 import { UserFollowService } from '../services/UserFollowService';
@@ -60,8 +61,10 @@ import { AssetService } from '../services/AssetService';
 import { ImageUtil } from '../../utils/ImageUtil';
 import { KaoKaiHashTagModelProcessor } from '../processors/KaoKaiHashTagModelProcessor';
 import { KaokaiAllProvinceModelProcessor } from '../processors/KaokaiAllProvinceModelProcessor';
+import { IsReadPostService } from '../services/IsReadPostService';
 // import { TrendForYouProcessor } from '../processors/TrendForYouProcessor';
 import { KaokaiTodayService } from '../services/KaokaiTodayService';
+import { IsReadSectionProcessor } from '../processors/IsReadSectionProcessor';
 import {
     TODAY_DATETIME_GAP,
     DEFAULT_TODAY_DATETIME_GAP,
@@ -75,7 +78,9 @@ import {
     KAOKAITODAY_ANNOUNCEMENT,
     KAOKAITODAY_LINK_ANNOUNCEMENT,
     DEFAULT_KAOKAITODAY_ANNOUNCEMENT,
-    DEFAULT_KAOKAITODAY_LINK_ANNOUNCEMENT
+    DEFAULT_KAOKAITODAY_LINK_ANNOUNCEMENT,
+    KAOKAITODAY_RANGE_OF_POPULAR_HASHTAGS,
+    DEFAULT_KAOKAITODAY_RANGE_OF_POPULAR_HASHTAGS
 } from '../../constants/SystemConfig';
 import { ConfigService } from '../services/ConfigService';
 import { KaokaiTodaySnapShotService } from '../services/KaokaiTodaySnapShot';
@@ -100,6 +105,7 @@ export class MainPageController {
         private kaokaiTodayService: KaokaiTodayService,
         private configService: ConfigService,
         private kaokaiTodaySnapShotService: KaokaiTodaySnapShotService,
+        private isReadPostService: IsReadPostService
     ) { }
     // Home page content V2
     @Get('/content/v3')
@@ -115,10 +121,12 @@ export class MainPageController {
         const assetTodayRangeDate = await this.configService.getConfig(KAOKAITODAY_RANGE_DATE_EMERGENCY);
         const announcement = await this.configService.getConfig(KAOKAITODAY_ANNOUNCEMENT);
         const linkAnnounceMent = await this.configService.getConfig(KAOKAITODAY_LINK_ANNOUNCEMENT);
+        const rangeHashtag = await this.configService.getConfig(KAOKAITODAY_RANGE_OF_POPULAR_HASHTAGS);
         let announcements = DEFAULT_KAOKAITODAY_ANNOUNCEMENT;
         let linkAnnouncements = DEFAULT_KAOKAITODAY_LINK_ANNOUNCEMENT;
         let assetEmergenDays = DEFAULT_KAOKAITODAY_RANGE_DATE_EMERGENY;
         let assetTodayDate = DEFAULT_TODAY_DATETIME_GAP;
+        let rangeHashtags = DEFAULT_KAOKAITODAY_RANGE_OF_POPULAR_HASHTAGS;
         if (assetTodayDateGap) {
             assetTodayDate = parseInt(assetTodayDateGap.value, 10);
         }
@@ -132,6 +140,9 @@ export class MainPageController {
         if (linkAnnounceMent) {
             linkAnnouncements = linkAnnounceMent.value;
         }
+        if (rangeHashtag) {
+            rangeHashtags = rangeHashtag.value;
+        }
         const emergencyCheckEndDate = assetTodayRangeDate.endDateTime;
         const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), assetTodayDate);
         if (toDate) {
@@ -141,10 +152,18 @@ export class MainPageController {
                 return res.status(200).send(successResponseS);
             }
         }
+        /* 
+        const checkCreate = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: monthRange[1] });
+        if (checkCreate !== undefined && checkCreate !== null) {
+            return checkCreate;
+        } */
         // ordering
-        const emerProcessor: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service);
+        const emerProcessor: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service, this.hashTagService);
         emerProcessor.setData({
-            emergencyCheckEndDate
+            userId,
+            emergencyCheckEndDate,
+            rangeHashtags,
+            endDateTime: monthRange[1]
         });
 
         const emerSectionModel = await emerProcessor.process2();
@@ -265,9 +284,7 @@ export class MainPageController {
         kaokaiContentProcessor.setConfig({
             searchOfficialOnly
         });
-
         const kaokaiContent = await kaokaiContentProcessor.process();
-
         // pipeline: [{ $match: { $expr: { $in: ['$_id', bucketF] }, isOfficial: true } }],
         // hashTag
         const hashTagSumma = await this.hashTagService.aggregate([{ $sort: { count: -1 } }, { $limit: 3 }]);
@@ -278,7 +295,7 @@ export class MainPageController {
             kaokaiHashTag.contents.length === 0 &&
             kaokaiContent.contents.length === 0
         ) {
-            const emerProcessorUn: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service);
+            const emerProcessorUn: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service, this.hashTagService);
             emerProcessorUn.setData({
                 assetEmergenDays,
                 emergencyCheckEndDate
@@ -380,6 +397,69 @@ export class MainPageController {
         }
     }
 
+    @Get('/botton/trend')
+    public async mirrorTrends(@QueryParam('offset') offset: number, @QueryParam('section') section: string, @QueryParam('date') date: any, @Res() res: any, @Req() req: any): Promise<any> {
+        const userId = req.headers.userid;
+        const mainPageSearchConfig = await this.pageService.searchPageOfficialConfig();
+        const searchOfficialOnly = mainPageSearchConfig.searchOfficialOnly;
+        const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 7);
+        const isReadSectionProcessor: IsReadSectionProcessor = new IsReadSectionProcessor(this.postsService, this.s3Service, this.userLikeService, this.isReadPostService);
+        isReadSectionProcessor.setData({
+            userId,
+            startDateTime: monthRange[0],
+            endDateTime: monthRange[1],
+        });
+
+        isReadSectionProcessor.setConfig({
+            searchOfficialOnly
+        });
+        const isReadPosts = await isReadSectionProcessor.process();
+        const successResponse = ResponseUtil.getSuccessResponse('Successfully create isRead.', isReadPosts);
+        return res.status(200).send(successResponse);
+
+    }
+
+    @Post('/is/read')
+    public async isRead(@Body({ validate: true }) data: IsRead, @Res() res: any, @Req() req: any): Promise<any> {
+        const userId = req.headers.userid;
+        const objIds = new ObjectID(userId);
+        const user = await this.userService.findOne({ _id: objIds });
+        // check is read
+        const checkIsRead = await this.isReadPostService.aggregate
+            (
+                [
+                    {
+                        $match:
+                        {
+                            userId: objIds,
+                            postId: { $in: data.postId }
+                        }
+                    },
+                    {
+                        $limit: 1
+                    }
+                ]
+            );
+        if (checkIsRead.length > 0) {
+            const successResponse = ResponseUtil.getSuccessResponse('The content has already been read.', undefined);
+            return res.status(200).send(successResponse);
+        }
+        if (user) {
+            // check is read
+            const isRead: IsRead = new IsRead();
+            isRead.userId = objIds;
+            isRead.postId = data.postId;
+            isRead.isRead = data.isRead;
+            const isReadPost = await this.isReadPostService.create(isRead);
+            if (isReadPost) {
+                const successResponse = ResponseUtil.getSuccessResponse('Successfully create isRead.', undefined);
+                return res.status(200).send(successResponse);
+            }
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot find User.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
     @Post('/days/check')
     public async daysCheck(@Res() res: any, @Req() req: any): Promise<any> {
         const now = new Date();
@@ -440,7 +520,7 @@ export class MainPageController {
         if (section !== undefined && section !== '') {
             // ordering 
             if (section === 'EMERGENCYEVENT') {
-                const emerProcessorSec: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service);
+                const emerProcessorSec: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service, this.hashTagService);
                 emerProcessorSec.setConfig({
                     showUserAction: true,
                     offset,
@@ -521,7 +601,7 @@ export class MainPageController {
 
         let processorList: any[] = [];
         const weekRanges: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 7);
-        const emerProcessor: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service);
+        const emerProcessor: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service, this.hashTagService);
         emerProcessor.setConfig({
             showUserAction: true,
             offset,

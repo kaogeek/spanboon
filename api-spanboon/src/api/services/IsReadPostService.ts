@@ -8,7 +8,7 @@
 import { Service } from 'typedi';
 import { OrmRepository } from 'typeorm-typedi-extensions';
 import { Logger, LoggerInterface } from '../../decorators/Logger';
-import { IsReadPostRepository } from '../repositories/IsReadPostRepository';
+import { IsReadPostRepository } from '../repositories/IsReadRepository';
 @Service()
 export class IsReadPostService {
 
@@ -18,7 +18,7 @@ export class IsReadPostService {
     }
 
     // create Device token and find the user who is login !!!!!
-    public async createOtp(data: any): Promise<any> {
+    public async create(data: any): Promise<any> {
         this.log.info('Send OTP.');
         return await this.isReadPostRepository.save(data);
     }
@@ -40,5 +40,9 @@ export class IsReadPostService {
         this.log.info('Update a token');
 
         return await this.isReadPostRepository.updateOne(query, newValue);
+    }
+
+    public async aggregate(query: any, options?: any): Promise<any[]> {
+        return await this.isReadPostRepository.aggregate(query, options).toArray();
     }
 }

@@ -16,7 +16,7 @@ export class IsReadPost extends BaseModel {
     public userId: ObjectID;
 
     @Column({ name: 'postId' })
-    public postId: ObjectID;
+    public postId: any;
 
     @Column({ name: 'isRead' })
     public isRead: boolean;

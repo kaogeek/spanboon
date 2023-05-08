@@ -57,6 +57,23 @@ export class PostFacade extends AbstractFacade {
     });
   }
 
+  public isReadPost(id:string,data:any,isReadPost:boolean):Promise<any>{
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/main/is/read';
+      let body: any = {
+        'userId':id,
+        'postId':data,
+        'isRead':isReadPost
+      };
+      let options = this.authMgr.getDefaultOptions();
+      let httpOptions = this.authMgr.getDefaultOptions();
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response.data);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
 
   public getAaaPost(id: string, aspage?: any): Promise<any[]> {
     return new Promise((resolve, reject) => {

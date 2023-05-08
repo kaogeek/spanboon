@@ -85,7 +85,8 @@
             </div>
             <div class="wrapper-1">
                 <ng-container *ngIf="model && model!.emergencyEvents!.contents[0]">
-                    <div class="wrapper-1-left" *ngIf="model && model.emergencyEvents.contents.length > 0"
+                    <div class="wrapper-1-left"
+                        *ngIf="model && model.emergencyEvents.contents.length > 0 && model.emergencyEvents.type === 'EMERGENCYEVENT'"
                         [ngStyle]="{'width': !isRes && (model && model.postSectionModel.contents.length > 0) && (model && model.pageRoundRobin.contents.length > 0) ? '100%' : '100%'}">
                         <div>
                             <ng-container
@@ -204,6 +205,77 @@
                                         [innerHTML]="model && model.emergencyEvents.contents[2].title"></a>
                                     <a class="banner-count-header tag-link" href=""
                                         [innerHTML]="(model && model.emergencyEvents.contents[2].postCount | shortNumber) + ' ครั้ง'"></a>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </div>
+                    <div class="wrapper-1-left"
+                        *ngIf="model && model.emergencyEvents.contents.length > 0 && model.emergencyEvents.type === 'RangeOfHashTags'"
+                        [ngStyle]="{'width': !isRes && (model && model.postSectionModel.contents.length > 0) && (model && model.pageRoundRobin.contents.length > 0) ? '100%' : '100%'}">
+                        <div class="wrapper-hastags"
+                            *ngIf="(model && model.emergencyEvents.contents.length > 0) && ((model && model.postSectionModel.contents.length > 0) || (model && model.pageRoundRobin.contents.length > 0))"
+                            [class.active]="model && model.postSectionModel.contents.length > 0 && model.postSectionModel.contents[0].post.objectiveTag === null">
+                            <a class="tag-link"
+                                (click)="clickToPage(model && model.emergencyEvents.mirrorTrends[0].name,'hashTagSumma')">#{{model
+                                &&
+                                model.emergencyEvents.mirrorTrends[0].name}}</a>
+                            <span> | </span>
+                            <a class="tag-link"
+                                (click)="clickToPage(model && model.emergencyEvents.mirrorTrends[1].name,'hashTagSumma')">#{{model
+                                &&
+                                model.emergencyEvents.mirrorTrends[1].name}}</a>
+                            <span> | </span>
+                            <a class=" tag-link"
+                                (click)="clickToPage(model && model.emergencyEvents.mirrorTrends[2].name,'hashTagSumma')">#{{model
+                                &&
+                                model.emergencyEvents.mirrorTrends[2].name}}</a>
+                        </div>
+                        <a class="wrapper-box">
+                            <ng-container *ngIf="model && model.emergencyEvents.contents[0]">
+                                <div class="wrapper-copper-img">
+                                    <img class="image-background"
+                                        src="model && model.emergencyEvents.contents[0].coverPageSignUrl ? model.emergencyEvents.contents[0].coverPageSignUrl : apiBaseURL + (model && model.emergencyEvents.contents[0].coverPageUrl) + '/image'"
+                                        alt="">
+                                    <img class="image"
+                                        src="https://d1evz9svx3lh53.cloudfront.net/63d91345670ef42f7be2c50b/mm70387wvm1683521600828jgt6yflzq0m.jpg?AWSAccessKeyId=AKIATCMHTO4YJZYKAD7U&Expires=1683528406&Signature=l8jS4M%2BhXJ4S4qwqPjzZwwSCFjE%3D">
+                                </div>
+                            </ng-container>
+                            <ng-container *ngIf="model && model.emergencyEvents.contents[0]">
+                                <div class="detail">
+                                    <p class="title"
+                                        [innerHTML]="model && model.emergencyEvents.majorTrendHashTags[0].name">
+                                    </p>
+                                    <p class="content-detail"
+                                        [innerHTML]="model && model.emergencyEvents.contents[0].post.detail | highlight">
+                                    </p>
+                                    <p class="amount-social">
+                                        <span>{{model && model.emergencyEvents.contents[0].commentCount |
+                                            shortNumber}}
+                                            ความคิดเห็น</span>
+                                        <span>•</span>
+                                        <span>{{model && model.emergencyEvents.contents[0].shareCount |
+                                            shortNumber}}
+                                            บอกต่อ</span>
+                                        <span>•</span>
+                                        <span>{{model && model.emergencyEvents.contents[0].likeCount | shortNumber}}
+                                            ถูกใจ</span>
+                                        <span>•</span>
+                                        <span>{{model && model.emergencyEvents.contents[0].repostCount |
+                                            shortNumber}}
+                                            แชร์</span>
+                                    </p>
+                                </div>
+                            </ng-container>
+                        </a>
+                        <ng-container *ngIf="model && model.emergencyEvents.majorTrendHashTags.length >0">
+                            <div>
+                                <div class="wrapper-banner-header"
+                                    *ngFor="let item of model && model.emergencyEvents.majorTrendHashTags | slice:0:4; let i=index">
+                                    <a class="banner-text-header tag-link"
+                                        (click)="clickToPage(model && model.emergencyEvents.majorTrendHashTags[i+1].name)">#{{model
+                                        &&
+                                        model.emergencyEvents.majorTrendHashTags[i+1].name}}
+                                    </a>
                                 </div>
                             </div>
                         </ng-container>
