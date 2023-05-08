@@ -234,10 +234,11 @@
                             <ng-container *ngIf="model && model.emergencyEvents.contents[0]">
                                 <div class="wrapper-copper-img">
                                     <img class="image-background"
-                                        src="model && model.emergencyEvents.contents[0].coverPageSignUrl ? model.emergencyEvents.contents[0].coverPageSignUrl : apiBaseURL + (model && model.emergencyEvents.contents[0].coverPageUrl) + '/image'"
+                                        [src]="model && model.emergencyEvents.contents[0].coverPageSignUrl ? model.emergencyEvents.contents[0].coverPageSignUrl : apiBaseURL + (model && model.emergencyEvents.contents[0].coverPageUrl) + '/image'"
                                         alt="">
                                     <img class="image"
-                                        src="https://d1evz9svx3lh53.cloudfront.net/63d91345670ef42f7be2c50b/mm70387wvm1683521600828jgt6yflzq0m.jpg?AWSAccessKeyId=AKIATCMHTO4YJZYKAD7U&Expires=1683528406&Signature=l8jS4M%2BhXJ4S4qwqPjzZwwSCFjE%3D">
+                                        [src]="model && model.emergencyEvents.contents[0].coverPageSignUrl ? model.emergencyEvents.contents[0].coverPageSignUrl : apiBaseURL + (model && model.emergencyEvents.contents[0].coverPageUrl) + '/image'"
+                                        alt="">
                                 </div>
                             </ng-container>
                             <ng-container *ngIf="model && model.emergencyEvents.contents[0]">
@@ -270,7 +271,7 @@
                         <ng-container *ngIf="model && model.emergencyEvents.majorTrendHashTags.length >0">
                             <div>
                                 <div class="wrapper-banner-header"
-                                    *ngFor="let item of model && model.emergencyEvents.majorTrendHashTags | slice:0:4; let i=index">
+                                    *ngFor="let item of model && model.emergencyEvents.majorTrendHashTags | slice:0:3; let i=index">
                                     <a class="banner-text-header tag-link"
                                         (click)="clickToPage(model && model.emergencyEvents.majorTrendHashTags[i+1].name)">#{{model
                                         &&
