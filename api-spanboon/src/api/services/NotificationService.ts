@@ -84,24 +84,24 @@ export class NotificationService {
         }
     }
 
-    public async pushNotificationMessage(data: any,token:any, date: any): Promise<any> {
+    public async pushNotificationMessage(data: any, token: any, date: any): Promise<any> {
         const notification: Notification = new Notification();
-        const title= 'ก้าวไกลหน้าหนึ่ง';
-        const body = String(data.pageRoundRobin.contents[0].post.title);
-        const image = data.papageRoundRobin.contents[0].coverPageSignUrl ? data.papageRoundRobin.contents[0].coverPageSignUrl : null;
+        const title = 'ก้าวไกลหน้าหนึ่ง';
+        const body = String(data.majorTrend.contents[0].post.title);
+        const image = data.majorTrend.contents[0].coverPageSignUrl ? data.majorTrend.contents[0].coverPageSignUrl : null;
         const thaiDate = String(date);
         const toUser = String(token);
         const notificationType = 'TODAY_NEWS';
         const link = process.env.APP_HOME + `?date=${thaiDate}`;
         const payload =
         {
-            to:toUser,
+            to: toUser,
             notification: {
                 title,
                 body,
                 image,
             },
-            data:{
+            data: {
                 notificationType,
                 link
             }

@@ -1945,6 +1945,7 @@ export class MainPageController {
                                 continue;
                             }
                         }
+
                     }
                     return snapshot;
                 }
@@ -1977,6 +1978,7 @@ export class MainPageController {
                             continue;
                         }
                     }
+
                 }
             } else {
                 const maxDate = await this.kaokaiTodaySnapShotService.aggregate([{ $sort: { endDateTime: -1 } }, { $limit: 1 }]);
@@ -2025,18 +2027,13 @@ export class MainPageController {
         const split = assetTimer.split(':');
         const hourSplit = split[0];
         const minuteSpit = split[1];
-
-        const checkCreate = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: endDateTimeToday });
-        if (checkCreate !== undefined && checkCreate !== null) {
-            return checkCreate.data;
-        }
         if (sendNotification === true) {
             if (hours === parseInt(hourSplit, 10) && minutes === parseInt(minuteSpit, 10)) {
                 for (const userEmail of emailStack) {
                     const user = await this.userService.findOne({ email: userEmail.toString() });
                     const deviceToken = await this.deviceTokenService.findOne({ userId: user.id });
-                    if (deviceToken.userId !== undefined && deviceToken.tokenFCM !== undefined && user.subscribeNoti === true) {
-                        await this.notificationService.pushNotificationMessage(content, deviceToken.tokenFCM, formattedDate);
+                    if (deviceToken.userId !== undefined && deviceToken.Tokens !== undefined && user.subscribeNoti === true) {
+                        await this.notificationService.pushNotificationMessage(content, deviceToken.Tokens, formattedDate);
                     } else {
                         continue;
                     }
