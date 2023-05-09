@@ -129,6 +129,9 @@ export class User extends BaseModel {
     @Column({ name: 'subscribeEmail'})
     public subscribeEmail: boolean;
 
+    @Column({ name: 'subscribeNoti'})
+    public subscribeNoti: boolean;
+
     @Column({ name: 'ua' })
     public ua: Date;
 

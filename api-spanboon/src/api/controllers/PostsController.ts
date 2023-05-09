@@ -1571,7 +1571,7 @@ export class PostsController {
             offset,
             limit
         };
-        const emerProcessor: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service);
+        const emerProcessor: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service, this.hashTagService);
         emerProcessor.setData(data);
         emerProcessor.setConfig(config);
         result = await emerProcessor.process();

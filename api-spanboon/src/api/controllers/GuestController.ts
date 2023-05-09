@@ -148,6 +148,7 @@ export class GuestController {
                 user.tos = undefined;
                 user.tosVersion = undefined;
                 user.subscribeEmail = true;
+                user.subscribeNoti = true;
                 if (gender !== null || gender !== undefined) {
                     user.gender = gender;
                 } else {
@@ -306,6 +307,7 @@ export class GuestController {
                 user.tos = undefined;
                 user.tosVersion = undefined;
                 user.subscribeEmail = true;
+                user.subscribeNoti = true;
 
                 if (gender !== null || gender !== undefined) {
                     user.gender = gender;
@@ -456,6 +458,7 @@ export class GuestController {
                 user.tos = undefined;
                 user.tosVersion = undefined;
                 user.subscribeEmail = true;
+                user.subscribeNoti = true;
 
                 if (gender !== null || gender !== undefined) {
                     user.gender = gender;
@@ -628,6 +631,7 @@ export class GuestController {
                 user.tos = undefined;
                 user.tosVersion = undefined;
                 user.subscribeEmail = true;
+                user.subscribeNoti = true;
 
                 if (gender !== null || gender !== undefined) {
                     user.gender = gender;
@@ -795,6 +799,7 @@ export class GuestController {
                 user.tos = undefined;
                 user.tosVersion = undefined;
                 user.subscribeEmail = true;
+                user.subscribeNoti = true;
 
                 if (gender !== null || gender !== undefined) {
                     user.gender = gender;

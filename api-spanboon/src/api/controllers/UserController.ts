@@ -157,6 +157,7 @@ export class UserController {
                 $set:
                 {
                     subscribeEmail: req.body.sendEmail,
+                    subscribeNoti: req.body.subscribeNoti
 
                 }
             };
