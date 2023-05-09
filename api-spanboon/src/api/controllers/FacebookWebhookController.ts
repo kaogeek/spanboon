@@ -448,7 +448,6 @@ export class FacebookWebhookController {
                 }
             } else if (value_verb === 'add' && change_value_link !== undefined && body.entry[0].changes[0].value.photos === undefined && body.entry[0].changes[0].value.item !== 'share' && body.entry[0].changes[0].value.item === 'photo' && published === 1) {
                 const assetPic = await this.assetService.createAssetFromURL(change_value_link, pageIdFB.ownerUser);
-                console.log('assetPic', assetPic);
                 const checkPost = await this.socialPostService.find({ socialId: body.entry[0].changes[0].value.post_id });
                 const checkFeed = checkPost.shift();
                 if (checkFeed === undefined && assetPic !== undefined) {
@@ -825,7 +824,6 @@ export class FacebookWebhookController {
                 }
             } */
             else if (value_verb === 'edited' && change_value_link === undefined && body.entry[0].changes[0].value.photos === undefined && body.entry[0].changes[0].value.item === 'status' && published === 1) {
-                console.log('edit post with picture');
                 const findPost = await this.socialPostService.findOne({ socialId: body.entry[0].changes[0].value.post_id, socialType: 'FACEBOOK' });
                 if (findPost !== undefined && findPost !== null) {
                     const posted = await this.postsService.findOne({ _id: findPost.postId });
@@ -844,7 +842,11 @@ export class FacebookWebhookController {
                 }
 
             } else if (value_verb === 'edited' && change_value_link !== undefined && body.entry[0].changes[0].value.photos === undefined && body.entry[0].changes[0].value.item === 'photo' && published === 1) {
-                console.log('edit with photo');
+                // message_webhooks = body.entry[0].changes[0].value.message
+                if (body.entry[0].changes[0].value.message === undefined) {
+                    const successResponseError = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                    return res.status(200).send(successResponseError);
+                }
                 const findPost = await this.socialPostService.findOne({ socialId: body.entry[0].changes[0].value.post_id, socialType: 'FACEBOOK' });
                 if (findPost !== undefined && findPost !== null) {
                     const posted = await this.postsService.findOne({ _id: findPost.postId });
@@ -863,7 +865,11 @@ export class FacebookWebhookController {
                 }
 
             } else if (value_verb === 'edited' && change_value_link === undefined && body.entry[0].changes[0].value.photos.length > 0 && body.entry[0].changes[0].value.item === 'status' && published === 1) {
-                console.log('edit with photos');
+                // message_webhooks = body.entry[0].changes[0].value.message
+                if (body.entry[0].changes[0].value.message === undefined) {
+                    const successResponseError = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                    return res.status(200).send(successResponseError);
+                }
                 const findPost = await this.socialPostService.findOne({ socialId: body.entry[0].changes[0].value.post_id, socialType: 'FACEBOOK' });
                 if (findPost !== undefined && findPost !== null) {
                     const posted = await this.postsService.findOne({ _id: findPost.postId });

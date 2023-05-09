@@ -152,11 +152,11 @@ export class MainPageController {
                 return res.status(200).send(successResponseS);
             }
         }
-        /* 
+        
         const checkCreate = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: monthRange[1] });
         if (checkCreate !== undefined && checkCreate !== null) {
             return checkCreate;
-        } */
+        } 
         // ordering
         const emerProcessor: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service, this.hashTagService);
         emerProcessor.setData({
