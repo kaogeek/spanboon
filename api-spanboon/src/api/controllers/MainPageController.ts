@@ -2027,7 +2027,7 @@ export class MainPageController {
         const split = assetTimer.split(':');
         const hourSplit = split[0];
         const minuteSpit = split[1];
-        if (sendNotification === true) {
+        if (Boolean(sendNotification) === true) {
             if (hours === parseInt(hourSplit, 10) && minutes === parseInt(minuteSpit, 10)) {
                 for (const userEmail of emailStack) {
                     const user = await this.userService.findOne({ email: userEmail.toString() });
