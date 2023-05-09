@@ -152,10 +152,15 @@ export class MainPageController {
                 return res.status(200).send(successResponseS);
             }
         }
-        
+        // convert object to string then json !!!!
+        let convert = undefined;
         const checkCreate = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: monthRange[1] });
+        if(typeof(JSON.stringify(checkCreate)) === 'string'){
+            const stringObj = JSON.stringify(checkCreate);
+            convert = JSON.parse(stringObj);
+        }
         if (checkCreate !== undefined && checkCreate !== null) {
-            return checkCreate;
+            return convert;
         } 
         // ordering
         const emerProcessor: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service, this.hashTagService);
