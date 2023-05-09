@@ -271,11 +271,9 @@
                         <ng-container *ngIf="model && model.emergencyEvents.majorTrendHashTags.length >0">
                             <div>
                                 <div class="wrapper-banner-header"
-                                    *ngFor="let item of model && model.emergencyEvents.majorTrendHashTags | slice:0:3; let i=index">
+                                    *ngFor="let item of model && model.emergencyEvents.majorTrendHashTags | slice:1:4; let i=index">
                                     <a class="banner-text-header tag-link"
-                                        (click)="clickToPage(model && model.emergencyEvents.majorTrendHashTags[i+1].name)">#{{model
-                                        &&
-                                        model.emergencyEvents.majorTrendHashTags[i+1].name}}
+                                        (click)="clickToPage(item.name,'trendTags')">#{{item.name}}
                                     </a>
                                 </div>
                             </div>
@@ -986,7 +984,7 @@
                 </div>
             </div>
             <div class="wrapper-content">
-                <ng-container *ngFor="let item of model && model.majorTrend.contents | slice:0:4; let i=index">
+                <ng-container *ngFor="let item of model && model.majorTrend.contents; let i=index">
                     <div class="card-content">
                         <div class="wrapper-bar">
                             <span class="news-post-bar-left">
@@ -1048,7 +1046,7 @@
                 </div>
             </div>
             <div class="wrapper-content">
-                <ng-container *ngFor="let item of model && model.kaokaiProvince.contents | slice:0:4; let i=index">
+                <ng-container *ngFor="let item of model && model.kaokaiProvince.contents; let i=index">
                     <div class="card-content">
                         <div class="wrapper-bar">
                             <span class="news-post-bar-left">
@@ -1110,7 +1108,7 @@
                 </div>
             </div>
             <div class="wrapper-content">
-                <ng-container *ngFor="let item of model && model.kaokaiHashTag.contents | slice:0:4; let i=index">
+                <ng-container *ngFor="let item of model && model.kaokaiHashTag.contents; let i=index">
                     <div class="card-content">
                         <div class="wrapper-bar">
                             <span class="news-post-bar-left">
@@ -1172,7 +1170,7 @@
                 </div>
             </div>
             <div class="wrapper-content">
-                <ng-container *ngFor="let item of model && model.kaokaiContent.contents | slice:0:4; let i=index">
+                <ng-container *ngFor="let item of model && model.kaokaiContent.contents; let i=index">
                     <div class="card-content">
                         <div class="wrapper-bar">
                             <span class="news-post-bar-left">
@@ -1249,7 +1247,7 @@
                 </div>
             </div>
             <div class="wrapper-content">
-                <ng-container *ngFor="let item of model && model.kaokaiContent.contents | slice:0:4; let i=index">
+                <ng-container *ngFor="let item of model && model.kaokaiContent.contents; let i=index">
                     <div class="card-content">
                         <div class="wrapper-bar">
                             <span class="news-post-bar-left">
