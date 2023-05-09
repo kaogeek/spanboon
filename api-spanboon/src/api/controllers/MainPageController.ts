@@ -25,7 +25,6 @@ import { SUBJECT_TYPE } from '../../constants/FollowType';
 import { SEARCH_TYPE, SORT_SEARCH_TYPE } from '../../constants/SearchType';
 import { SearchFilter } from './requests/SearchFilterRequest';
 import { LastestLookingSectionProcessor } from '../processors/LastestLookingSectionProcessor';
-// import { StillLookingSectionProcessor } from '../processors/StillLookingSectionProcessor';
 import { EmergencyEventSectionProcessor } from '../processors/EmergencyEventSectionProcessor';
 import { PostSectionProcessor } from '../processors/PostSectionProcessor';
 import { PostSectionObjectiveProcessor } from '../processors/PostSectionObjectiveProcessor';
@@ -40,11 +39,6 @@ import { UserFollowSectionProcessor } from '../processors/UserFollowSectionProce
 import { UserPageLookingSectionProcessor } from '../processors/UserPageLookingSectionProcessor';
 import { LastestObjectiveProcessor } from '../processors/LastestObjectiveProcessor';
 import { EmergencyEventPinProcessor } from '../processors/EmergencyEventPinProcessor';
-// import { TEMPLATE_TYPE } from '../../constants/TemplateType';
-// import { SearchFilter } from './requests/SearchFilterRequest';
-// import { SearchHistory } from '../models/SearchHistory';
-// import { MAX_SEARCH_ROWS } from '../../constants/Constants';
-// import { SectionModel } from '../models/SectionModel';
 import { User } from '../models/User';
 import { Page } from '../models/Page';
 import { HashTag } from '../models/HashTag';
@@ -62,8 +56,8 @@ import { ImageUtil } from '../../utils/ImageUtil';
 import { KaoKaiHashTagModelProcessor } from '../processors/KaoKaiHashTagModelProcessor';
 import { KaokaiAllProvinceModelProcessor } from '../processors/KaokaiAllProvinceModelProcessor';
 import { IsReadPostService } from '../services/IsReadPostService';
-// import { TrendForYouProcessor } from '../processors/TrendForYouProcessor';
 import { KaokaiTodayService } from '../services/KaokaiTodayService';
+import { NotificationService } from '../services/NotificationService';
 import { IsReadSectionProcessor } from '../processors/IsReadSectionProcessor';
 import {
     TODAY_DATETIME_GAP,
@@ -89,6 +83,7 @@ import { KaokaiTodaySnapShotService } from '../services/KaokaiTodaySnapShot';
 import { KaokaiContentModelProcessor } from '../processors/KaokaiContentModelProcessor';
 import { MAILService } from '../../auth/mail.services';
 import { DeviceTokenService } from '../services/DeviceToken';
+
 @JsonController('/main')
 export class MainPageController {
     constructor(
@@ -109,7 +104,8 @@ export class MainPageController {
         private configService: ConfigService,
         private kaokaiTodaySnapShotService: KaokaiTodaySnapShotService,
         private isReadPostService: IsReadPostService,
-        private deviceTokenService:DeviceTokenService
+        private deviceTokenService: DeviceTokenService,
+        private notificationService: NotificationService
     ) { }
     // Home page content V2
     @Get('/content/v3')
@@ -157,14 +153,15 @@ export class MainPageController {
             }
         }
         // convert object to string then json !!!!
+
         let convert = undefined;
         const checkCreate = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: monthRange[1] });
-        if (typeof (JSON.stringify(checkCreate)) === 'string') {
-            const stringObj = JSON.stringify(checkCreate);
-            convert = JSON.parse(stringObj);
-        }
         if (checkCreate !== undefined && checkCreate !== null) {
-            return convert;
+            if (typeof (JSON.stringify(checkCreate)) === 'string') {
+                const stringObj = JSON.stringify(checkCreate);
+                convert = JSON.parse(stringObj);
+                return convert;
+            }
         }
         // ordering
         const emerProcessor: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service, this.hashTagService);
@@ -2018,28 +2015,40 @@ export class MainPageController {
                 }
             }
         }
+        const dateFormat = new Date(endDateTimeToday);
+        const dateReal = dateFormat.setDate(dateFormat.getDate() - 1);
+        const toDate = new Date(dateReal);
+        const year = toDate.getFullYear();
+        const month = (toDate.getMonth() + 1).toString().padStart(2, '0');
+        const day = toDate.getDate().toString().padStart(2, '0');
+        const formattedDate = `${day}-${month}-${year}`;
         const split = assetTimer.split(':');
         const hourSplit = split[0];
         const minuteSpit = split[1];
+
         const checkCreate = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: endDateTimeToday });
         if (checkCreate !== undefined && checkCreate !== null) {
             return checkCreate.data;
         }
-        if(sendNotification === true){
-            for (const userEmail of emailStack) {
-                const user = await this.userService.findOne({ email: userEmail.toString()});
-                const deviceToken = await this.deviceTokenService.findOne({userId:user.id});
-                console.log('deviceToken',deviceToken);
-                return deviceToken;
+        if (sendNotification === true) {
+            if (hours === parseInt(hourSplit, 10) && minutes === parseInt(minuteSpit, 10)) {
+                for (const userEmail of emailStack) {
+                    const user = await this.userService.findOne({ email: userEmail.toString() });
+                    const deviceToken = await this.deviceTokenService.findOne({ userId: user.id });
+                    if (deviceToken.userId !== undefined && deviceToken.tokenFCM !== undefined && user.subscribeNoti === true) {
+                        await this.notificationService.pushNotificationMessage(content, deviceToken.tokenFCM, formattedDate);
+                    } else {
+                        continue;
+                    }
+                }
             }
-
-        }else{
+        } else {
             if (hours === parseInt(hourSplit, 10) && minutes === parseInt(minuteSpit, 10)) {
                 const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
                 return errorResponse;
             }
         }
-        
+
     }
 
     public async sendEmail(user: User, email: string, content: any, subject: string, date?: Date): Promise<any> {

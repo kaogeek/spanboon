@@ -84,9 +84,33 @@ export class NotificationService {
         }
     }
 
-    public async pushNotificationMessage(data: any, date: Date): Promise<any> {
+    public async pushNotificationMessage(data: any,token:any, date: any): Promise<any> {
         const notification: Notification = new Notification();
-        notification.title = data.pageRoundRobin.contents[0].post.title;
+        const title= 'ก้าวไกลหน้าหนึ่ง';
+        const body = String(data.pageRoundRobin.contents[0].post.title);
+        const image = data.papageRoundRobin.contents[0].coverPageSignUrl ? data.papageRoundRobin.contents[0].coverPageSignUrl : data.papageRoundRobin.contents[0].coverPageUrl;
+        const thaiDate = String(date);
+        const toUser = String(token);
+        const notificationType = 'TODAY_NEWS';
+        const link = process.env.APP_HOME + `?date=${thaiDate}`;
+        const payload =
+        {
+            to:toUser,
+            notification: {
+                title,
+                body,
+                image,
+            },
+            data:{
+                notificationType,
+                link
+            }
+        };
+        if (String(notification.toUser) !== undefined) {
+            Promise.all([await admin.messaging().sendToDevice(token, payload)]);
+        } else {
+            return;
+        }
     }
 
     public async sendNotificationFCM(toUserId: string, toUserType: string, fromUserId: string, fromUserType: string, notificationType: string, title: string, link: string, data?: any, displayName?: any, image?: any, id?: any, count?: any): Promise<any> {

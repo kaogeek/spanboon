@@ -481,7 +481,6 @@ export class EmergencyEventSectionProcessor extends AbstractSectionModelProcesso
                         postStmt.splice(3, 0, { $match: { 'page.isOfficial': true, 'page.banned': false } });
                     }
                     let filterIds = undefined;
-                    const mirrorIds = [];
                     const postAggregate = await this.postsService.aggregate(postStmt);
                     if (postAggregate.length > 0) {
                         for (let i = 0; i < postAggregate.length; i++) {
