@@ -413,6 +413,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                             }
                         }
                     }
+                    const slice = stackPage.slice(0,limit);
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
                     result.title = (this.config === undefined || this.config.title === undefined) ? roundRobin.title : roundRobin.title;
@@ -422,7 +423,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
                     result.position = roundRobin.position;
-                    for (const row of stackPage) {
+                    for (const row of slice) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
 
@@ -623,6 +624,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                             }
                         }
                     }
+                    const slice = stackPage.slice(0,limit);
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
                     result.title = (this.config === undefined || this.config.title === undefined) ? roundRobin.title : this.config.title;
@@ -632,7 +634,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
                     result.position = roundRobin.position;
-                    for (const row of stackPage) {
+                    for (const row of slice) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
 
@@ -846,6 +848,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                             }
                         }
                     }
+                    const slice = stackPage.slice(0,limit);
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
                     result.title = (this.config === undefined || this.config.title === undefined) ? roundRobin.title : roundRobin.title;
@@ -855,7 +858,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
                     result.position = roundRobin.position;
-                    for (const row of stackPage) {
+                    for (const row of slice) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
 
@@ -1223,6 +1226,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                             }
                         }
                     }
+                    const slice = stackPage.slice(0,limit);
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
                     result.title = (this.config === undefined || this.config.title === undefined) ? roundRobin.title : roundRobin.title;
@@ -1231,7 +1235,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
                     result.position = roundRobin.position;
-                    for (const row of stackPage) {
+                    for (const row of slice) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
 
@@ -1455,6 +1459,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                             }
                         }
                     }
+                    const slice = stackPage.slice(0,limit);
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
                     result.title = (this.config === undefined || this.config.title === undefined) ? roundRobin.title : roundRobin.title;
@@ -1463,7 +1468,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
                     result.position = roundRobin.position;
-                    for (const row of stackPage) {
+                    for (const row of slice) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
 
@@ -1662,6 +1667,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                             }
                         }
                     }
+                    const slice = stackPage.slice(0,limit);
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
                     result.title = (this.config === undefined || this.config.title === undefined) ? roundRobin.title : roundRobin.title;
@@ -1671,7 +1677,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
                     result.position = roundRobin.position;
-                    for (const row of stackPage) {
+                    for (const row of slice) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
 

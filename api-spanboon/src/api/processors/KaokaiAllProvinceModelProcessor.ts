@@ -432,6 +432,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                             }
                         }
                     }
+                    const slice = stackPage.slice(0,limit);
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
                     result.title = (this.config === undefined || this.config.title === undefined) ? provincePage.title : provincePage.title;
@@ -441,7 +442,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
                     result.position = provincePage.position;
-                    for (const row of stackPage) {
+                    for (const row of slice) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
 
@@ -642,6 +643,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                             }
                         }
                     }
+                    const slice = stackPage.slice(0,limit);
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
                     result.title = (this.config === undefined || this.config.title === undefined) ? provincePage.title : this.config.title;
@@ -651,7 +653,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
                     result.position = provincePage.position;
-                    for (const row of stackPage) {
+                    for (const row of slice) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
 
@@ -864,6 +866,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                             }
                         }
                     }
+                    const slice = stackPage.slice(0,limit);
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
                     result.title = (this.config === undefined || this.config.title === undefined) ? provincePage.title : provincePage.title;
@@ -873,7 +876,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
                     result.position = provincePage.position;
-                    for (const row of stackPage) {
+                    for (const row of slice) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
 
@@ -1239,6 +1242,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                             }
                         }
                     }
+                    const slice = stackPage.slice(0,limit);
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
                     result.title = (this.config === undefined || this.config.title === undefined) ? provincePage.title : provincePage.title;
@@ -1247,7 +1251,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
                     result.position = provincePage.position;
-                    for (const row of stackPage) {
+                    for (const row of slice) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
 
@@ -1470,7 +1474,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                             }
                         }
                     }
-                    console.log('stackPage', stackPage);
+                    const slice = stackPage.slice(0,limit);
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
                     result.title = (this.config === undefined || this.config.title === undefined) ? provincePage.title : provincePage.title;
@@ -1479,7 +1483,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
                     result.position = provincePage.position;
-                    for (const row of stackPage) {
+                    for (const row of slice) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
 
@@ -1679,6 +1683,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                             }
                         }
                     }
+                    const slice = stackPage.slice(0,limit);
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
                     result.title = (this.config === undefined || this.config.title === undefined) ? provincePage.title : provincePage.title;
@@ -1688,7 +1693,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
                     result.position = provincePage.position;
-                    for (const row of stackPage) {
+                    for (const row of slice) {
                         const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
 
