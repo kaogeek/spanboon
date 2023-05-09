@@ -73,6 +73,9 @@ export const DEFAULT_KAOKAITODAY_RANGE_DATE_EMERGENY =365;
 export const SWITCH_CASE_SEND_EMAIL = 'kaokaiToday.case.send.email.available';
 export const DEFAULT_SWITCH_CASE_SEND_EMAIL = true;
 
+export const SWITCH_CASE_SEND_NOTI = 'kaokaiToday.case.send.noti.available';
+export const DEFAULT_SWITCH_CASE_SEND_NOTI = true;
+
 export const SEND_EMAIL_TO_USER = 'send.email.to.user';
 
 export const KAOKAITODAY_ANNOUNCEMENT = 'kaokaiToday.announcement';
