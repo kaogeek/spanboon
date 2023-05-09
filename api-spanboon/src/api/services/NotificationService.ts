@@ -88,7 +88,7 @@ export class NotificationService {
         const notification: Notification = new Notification();
         const title= 'ก้าวไกลหน้าหนึ่ง';
         const body = String(data.pageRoundRobin.contents[0].post.title);
-        const image = data.papageRoundRobin.contents[0].coverPageSignUrl ? data.papageRoundRobin.contents[0].coverPageSignUrl : data.papageRoundRobin.contents[0].coverPageUrl;
+        const image = data.papageRoundRobin.contents[0].coverPageSignUrl ? data.papageRoundRobin.contents[0].coverPageSignUrl : null;
         const thaiDate = String(date);
         const toUser = String(token);
         const notificationType = 'TODAY_NEWS';
