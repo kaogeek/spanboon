@@ -384,9 +384,9 @@ export class MainPageController {
         result.announcement = announcements;
         result.linkAnnounceMent = linkAnnouncements;
         content = await this.snapShotToday(result, monthRange[0], monthRange[1]);
-        const sendNoti = await this.pushNotification(result, monthRange[0], monthRange[1]);
+        await this.pushNotification(result, monthRange[0], monthRange[1]);
         if (date !== undefined && date !== null) {
-            if (content && sendNoti) {
+            if (content) {
                 const successResponseF = ResponseUtil.getSuccessResponse('Successfully Main Page Data', content.data);
                 return res.status(200).send(successResponseF);
             } else {
@@ -394,7 +394,7 @@ export class MainPageController {
                 return res.status(400).send(errorResponse);
             }
         }
-        if (content && sendNoti) {
+        if (content) {
             const successResponse = ResponseUtil.getSuccessResponse('Successfully Main Page Data', content);
             return res.status(200).send(successResponse);
         }
@@ -1993,10 +1993,10 @@ export class MainPageController {
     }
 
     public async pushNotification(content: any, startDateRange: Date, endDateTimeToday: Date): Promise<any> {
-        let sendNotification = DEFAULT_SWITCH_CASE_SEND_NOTI;
         const switchSendNoti = await this.configService.getConfig(SWITCH_CASE_SEND_NOTI);
+        let sendNotification = DEFAULT_SWITCH_CASE_SEND_NOTI;
         if (switchSendNoti) {
-            sendNotification = Boolean(switchSendNoti.value);
+            sendNotification = switchSendNoti.value;
         }
         const now = new Date(); // Get the current time
         const hours = now.getHours(); // Get the hours of the current time

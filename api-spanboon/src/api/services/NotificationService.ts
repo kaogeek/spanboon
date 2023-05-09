@@ -87,7 +87,10 @@ export class NotificationService {
     public async pushNotificationMessage(data: any, token: any, date: any): Promise<any> {
         const notification: Notification = new Notification();
         const title = 'ก้าวไกลหน้าหนึ่ง';
-        const body = String(data.majorTrend.contents[0].post.title);
+        let body = String(data.majorTrend.contents[0].post.title);
+        if (body.length > 60) {
+            body = body.substring(0, 60) + '...';
+        }
         const image = data.majorTrend.contents[0].coverPageSignUrl ? data.majorTrend.contents[0].coverPageSignUrl : null;
         const thaiDate = String(date);
         const toUser = String(token);
