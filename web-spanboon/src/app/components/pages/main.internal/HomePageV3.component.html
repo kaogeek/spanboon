@@ -234,7 +234,7 @@
                                 model.emergencyEvents.mirrorTrends[2].name}}</a>
                         </div>
                         <a class="wrapper-box"
-                            (click)="clickToPageUser(model && model!.emergencyEvents!.contents[0].post._id,'post')">
+                            (click)="isPostNewTab ? openDilogPost(model && model.emergencyEvents.contents[1]) : clickToPage(model && model!.emergencyEvents!.contents[0].data.emergencyEventId)">
                             <ng-container *ngIf="model && model.emergencyEvents.contents[0]">
                                 <div class="wrapper-copper-img">
                                     <img class="image-background"
@@ -247,8 +247,8 @@
                             </ng-container>
                             <ng-container *ngIf="model && model.emergencyEvents.contents[0]">
                                 <div class="detail">
-                                    <p class="title"
-                                        [innerHTML]="'#'+model && model.emergencyEvents.majorTrendHashTags[0].name">
+                                    <p class="title tag-link"
+                                        [innerHTML]="'#'+(model && model.emergencyEvents.majorTrendHashTags[0].name)">
                                     </p>
                                     <p class="content-detail"
                                         [innerHTML]="model && model.emergencyEvents.contents[0].post.detail | highlight">
