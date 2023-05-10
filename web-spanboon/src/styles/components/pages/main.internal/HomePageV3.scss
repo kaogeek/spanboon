@@ -8,16 +8,21 @@
 
       >.container {
         max-width: unset;
+        background-color: #fafafa;
 
         >.header-announcement {
           height: 50px;
           display: flex;
 
+          @media (max-width: $small) {
+            padding: 0 15px;
+          }
+
           >.announce {
-            background-color: #0c3455;
             display: flex;
             align-items: center;
             width: 75%;
+            background-color: #0c3455;
 
             @media (max-width: $xxlarge) {
               width: 70%;
@@ -57,39 +62,12 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: #fafafa;
             cursor: pointer;
-            width: 25%;
+            width: 30%;
 
             &.label-date-2 {
               width: 100%;
               justify-content: end;
-
-            }
-
-            >span:first-child {
-              display: flex;
-              width: 100%;
-              justify-content: center;
-              @include font-size-8($font-head-400);
-              color: $brandcolor2;
-              flex: 1 1 0%;
-
-              @media (max-width: 320px) {
-                @include font-size-9($font-head-400);
-              }
-            }
-
-            >svg {
-              width: 30pt;
-              height: 30pt;
-              margin: 0 10px;
-              flex: 0 0 auto;
-              opacity: 0.4;
-
-              @media (max-width: 610px) {
-                display: none;
-              }
             }
 
             @media (max-width: $xxlarge) {
@@ -104,70 +82,113 @@
               width: 40%;
             }
 
-            >.newspaper_title {
-              text-align: center;
+            >span:first-child {
+              display: flex;
+              width: 100%;
               @include font-size-8($font-head-400);
               color: $brandcolor2;
-              margin: 0 10px;
-              flex: 0 0 auto;
-              user-select: none;
+              flex: 1 1 0%;
 
-              @media (max-width: $large) {
+              @media (max-width: 320px) {
                 @include font-size-9($font-head-400);
               }
             }
 
-            >.Newspaper_SelectDate {
-              >.mat-form-field-hide-placeholder {
-                >.mat-form-field-wrapper {
-                  >.mat-form-field-flex {
-                    >.mat-form-field-infix {
-                      margin-top: 7px;
-                      @include font-size-8($font-head-100);
-                      color: black;
-                      width: 110px;
+            >.label-date-right {
+              display: flex;
+              align-items: center;
+              justify-content: end;
 
-                      @media (max-width: $large) {
-                        @include font-size-9($font-head-100);
-                        width: 90px;
+              >svg {
+                width: 30pt;
+                height: 30pt;
+                margin: 0 10px;
+                flex: 0 0 auto;
+                opacity: 0.4;
+
+                @media (max-width: 610px) {
+                  display: none;
+                }
+              }
+
+              >.newspaper_title {
+                text-align: center;
+                @include font-size-8($font-head-400);
+                color: $brandcolor2;
+                margin: 0 10px;
+                flex: 0 0 auto;
+                user-select: none;
+
+                @media (max-width: $large) {
+                  @include font-size-9($font-head-400);
+                }
+
+                @media (max-width: 350px) {
+                  @include font-size-10($font-head-400);
+                }
+
+                @media (max-width: 340px) {
+                  display: none;
+                }
+              }
+
+              >.Newspaper_SelectDate {
+                >.mat-form-field-hide-placeholder {
+                  >.mat-form-field-wrapper {
+                    >.mat-form-field-flex {
+                      >.mat-form-field-infix {
+                        margin-top: 7px;
+                        @include font-size-8($font-head-100);
+                        color: black;
+                        width: 110px;
+
+                        @media (max-width: $large) {
+                          @include font-size-9($font-head-100);
+                          width: 90px;
+                        }
+
+                        @media (max-width: 320px) {
+                          @include font-size-10($font-head-100);
+                          width: 80px;
+                        }
+
+                        >input {
+                          cursor: pointer;
+                        }
                       }
 
-                      >input {
-                        cursor: pointer;
-                      }
-                    }
-
-                    >.mat-form-field-suffix {
-                      >.mat-datepicker-toggle {
-                        >.mat-icon-button {
-                          >.mat-button-wrapper {
-                            svg {
-                              width: 100%;
-                              margin-bottom: 4px;
+                      >.mat-form-field-suffix {
+                        >.mat-datepicker-toggle {
+                          >.mat-icon-button {
+                            >.mat-button-wrapper {
+                              svg {
+                                width: 100%;
+                                margin-bottom: 4px;
+                              }
                             }
                           }
                         }
                       }
                     }
-                  }
 
-                  >.mat-form-field-underline {
-                    display: none;
+                    >.mat-form-field-underline {
+                      display: none;
+                    }
                   }
                 }
-              }
 
-              .datepickerOne {
-                background: lightgreen;
-              }
+                .datepickerOne {
+                  background: lightgreen;
+                }
 
-              .datepickerOne .mat-calendar-body-today:not(.mat-calendar-body-selected) {
-                border-color: darkgreen;
-              }
+                .datepickerOne .mat-calendar-body-today:not(.mat-calendar-body-selected) {
+                  border-color: darkgreen;
+                }
 
-              .mat-datepicker-content .datepickerOne.mat-calendar {
-                width: 500px;
-                height: auto;
+                .mat-datepicker-content .datepickerOne.mat-calendar {
+                  width: 500px;
+                  height: auto;
+                }
               }
             }
           }
@@ -564,6 +585,9 @@
       grid-template-columns: auto 1fr;
       gap: 15px;
       height: 50px;
+      position: sticky;
+      top: 60px;
+      background: white;
 
       >.wrapper-title {
         display: flex;

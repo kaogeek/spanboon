@@ -315,9 +315,9 @@ export class HomePageV3 extends AbstractPage implements OnInit {
           postIds.push(PostSection.kaokaiContent.contents[b].post._id);
         }
       }
-      if (postIds.length > 0) {
-        await this.postFacade.isReadPost(objIds, postIds, isReadPost);
-      }
+      // if (postIds.length > 0) {
+      //   await this.postFacade.isReadPost(objIds, postIds, isReadPost);
+      // }
     }
   }
 
@@ -463,6 +463,8 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     this.router.navigate([]).then(() => {
       if (owner === 'objective') {
         window.open('/objective/' + pageId);
+      } else if (owner === 'post') {
+        window.open('/post/' + pageId);
       } else {
         window.open('/page/' + pageId);
       }
