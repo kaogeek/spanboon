@@ -92,7 +92,7 @@ export class NotificationService {
         }
         const image = data.majorTrend.contents[0].coverPageSignUrl ? data.majorTrend.contents[0].coverPageSignUrl : null;
         const thaiDate = String(date);
-        const token = tokenId;
+        const token = String(tokenId);
         const notificationType = 'TODAY_NEWS';
         const link = process.env.APP_HOME + `?date=${thaiDate}`;
         const payload =
