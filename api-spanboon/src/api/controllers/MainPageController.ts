@@ -1892,7 +1892,7 @@ export class MainPageController {
         let switchEmail = DEFAULT_SWITCH_CASE_SEND_EMAIL;
         const switchSendEmail = await this.configService.getConfig(SWITCH_CASE_SEND_EMAIL);
         if (switchSendEmail) {
-            switchEmail = Boolean(switchSendEmail.value);
+            switchEmail = switchSendEmail.value;
         }
 
         let splitComma = undefined;
@@ -1906,6 +1906,7 @@ export class MainPageController {
                 }
             }
         }
+        const switchSendEm = switchEmail;
         const now = new Date(); // Get the current time
         const hours = now.getHours(); // Get the hours of the current time
         const minutes = now.getMinutes(); // Get the minutes of the current time
@@ -1923,7 +1924,7 @@ export class MainPageController {
         }
         // Check Date time === 06:00 morning
         let content = undefined;
-        if (listEmail !== undefined) {
+        if (String(switchSendEm) === 'true') {
             if (hours === parseInt(hourSplit, 10) && minutes === parseInt(minuteSpit, 10)) {
                 const contents = data;
                 const startDate = startDateRange;
@@ -1936,16 +1937,13 @@ export class MainPageController {
                 if (snapshot) {
                     content = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: endDateTimeToday });
                     let user = undefined;
-                    if (switchEmail === true) {
-                        for (const userEmail of emailStack) {
-                            user = await this.userService.findOne({ email: userEmail.toString() });
-                            if (user.subscribeEmail === true) {
-                                await this.sendEmail(user, user.email, content.data, 'ก้าวไกลวันนี้', endDateTimeToday);
-                            } else {
-                                continue;
-                            }
+                    for (const userEmail of emailStack) {
+                        user = await this.userService.findOne({ email: userEmail.toString() });
+                        if (user.subscribeEmail === true) {
+                            await this.sendEmail(user, user.email, content.data, 'ก้าวไกลวันนี้', endDateTimeToday);
+                        } else {
+                            continue;
                         }
-
                     }
                     return snapshot;
                 }
@@ -1972,7 +1970,7 @@ export class MainPageController {
                     content = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: endDateTimeToday });
                     const users = await this.userService.find();
                     for (const user of users) {
-                        if (user.subscribeEmail === true && switchEmail === true) {
+                        if (user.subscribeEmail === true) {
                             await this.sendEmail(user, user.email, content.data, 'ก้าวไกลหน้าหนึ่ง', endDateTimeToday);
                         } else {
                             continue;
@@ -2027,22 +2025,79 @@ export class MainPageController {
         const split = assetTimer.split(':');
         const hourSplit = split[0];
         const minuteSpit = split[1];
-        if (Boolean(sendNotification) === true) {
+        if (String(sendNotification) === 'true') {
             if (hours === parseInt(hourSplit, 10) && minutes === parseInt(minuteSpit, 10)) {
                 for (const userEmail of emailStack) {
                     const user = await this.userService.findOne({ email: userEmail.toString() });
-                    const deviceToken = await this.deviceTokenService.findOne({ userId: user.id });
-                    if (deviceToken.userId !== undefined && deviceToken.Tokens !== undefined && user.subscribeNoti === true) {
-                        await this.notificationService.pushNotificationMessage(content, deviceToken.Tokens, formattedDate);
-                    } else {
-                        continue;
+                    const deviceToken = await this.deviceTokenService.aggregate(
+                        [
+                            {
+                                $match: {
+                                    userId: user.id,
+                                    token: { $ne: null }
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'User',
+                                    localField: 'userId',
+                                    foreignField: '_id',
+                                    as: 'User'
+                                }
+                            },
+                            {
+                                $unwind: {
+                                    path: '$User',
+                                    preserveNullAndEmptyArrays: true
+                                }
+                            }
+                        ]
+                    );
+                    if (deviceToken.length > 0) {
+                        for (let j = 0; j < deviceToken.length; j++) {
+                            if (deviceToken[j].User.subscribeNoti === true) {
+                                await this.notificationService.pushNotificationMessage(content, deviceToken[j].token, formattedDate);
+                            } else {
+                                continue;
+                            }
+                        }
                     }
                 }
             }
         } else {
             if (hours === parseInt(hourSplit, 10) && minutes === parseInt(minuteSpit, 10)) {
-                const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
-                return errorResponse;
+                const deviceToken = await this.deviceTokenService.aggregate(
+                    [
+                        {
+                            $match: {
+                                token: { $ne: null }
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'User',
+                                localField: 'userId',
+                                foreignField: '_id',
+                                as: 'User'
+                            }
+                        },
+                        {
+                            $unwind: {
+                                path: '$User',
+                                preserveNullAndEmptyArrays: true
+                            }
+                        }
+                    ]
+                );
+                if (deviceToken.length > 0) {
+                    for (let j = 0; j < deviceToken.length; j++) {
+                        if (deviceToken[j].User.subscribeNoti === true) {
+                            await this.notificationService.pushNotificationMessage(content, deviceToken[j].token, formattedDate);
+                        } else {
+                            continue;
+                        }
+                    }
+                }
             }
         }
 
