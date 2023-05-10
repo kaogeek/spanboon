@@ -54,7 +54,8 @@ export class DialogEditProfile implements OnInit {
     }
 
     public ngOnInit(): void {
-        this.checkSendEmail();
+        this._checkSendEmail();
+        this._checkSubNoti();
     }
 
     public onClose(): void {
@@ -71,26 +72,25 @@ export class DialogEditProfile implements OnInit {
         }
     }
 
-    public emailNoti($event) {
-        this.profileFacade.setEmailPushNotification($event.checked).then((res) => {
-            if (res) {
-            }
-        })
-    }
-
-    public checkSendEmail() {
+    private _checkSendEmail() {
         let subscribe = JSON.parse(localStorage.getItem('pageUser'));
         if (subscribe.subscribeEmail) {
             if (subscribe.subscribeEmail === true) {
-                this.isSend = true;
                 return true;
             } else {
-                this.isSend = false;
                 return false;
             }
-        } else {
-            this.isSend = false;
-            return false;
+        }
+    }
+
+    private _checkSubNoti() {
+        let noti = JSON.parse(localStorage.getItem('pageUser'));
+        if (noti.subscribeNoti) {
+            if (noti.subscribeNoti === true) {
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 

@@ -50,7 +50,17 @@
                 <div class="form-group">
                     <div class="slide-email">
                         <ng-container>
-                            <mat-slide-toggle formControlName="subscribeEmail" (change)="emailNoti($event)">
+                            <mat-slide-toggle formControlName="subscribeEmail" (change)="subEmail($event)">
+                            </mat-slide-toggle>
+                        </ng-container>
+                    </div>
+                </div>
+
+                <label class="form-label" style="margin-bottom: 5px;">รับข่าวสารจาก Notification</label>
+                <div class="form-group">
+                    <div class="slide-email">
+                        <ng-container>
+                            <mat-slide-toggle formControlName="subscribeNoti" (change)="subNoti($event)">
                             </mat-slide-toggle>
                         </ng-container>
                     </div>
