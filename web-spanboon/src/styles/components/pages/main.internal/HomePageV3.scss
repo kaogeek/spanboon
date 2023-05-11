@@ -1,3 +1,43 @@
+.loding {
+  width: 100vw;
+  height: 100vh;
+  background-color: white;
+  color: black;
+  position: fixed;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+
+  >.top {
+    width: 80%;
+    display: flex;
+    margin-top: 80px;
+    align-content: flex-start;
+    justify-content: center;
+
+    >.top_for_loding {
+      width: 50%;
+      padding: 15px;
+    }
+  }
+
+  >.buttom {
+    width: 80%;
+    display: flex;
+    align-content: flex-start;
+    justify-content: center;
+
+    >.buttom_for_loding {
+      padding: 15px;
+      width: calc(25% - 30px);
+    }
+  }
+}
+
 .home-page {
 
   section {
