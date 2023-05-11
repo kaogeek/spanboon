@@ -5,7 +5,7 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
  */
 
-import { Component, EventEmitter, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, OnInit, ViewChild } from '@angular/core';
 import { MatDialog, MatMenuTrigger } from '@angular/material';
 import { Router } from '@angular/router';
 import { AuthenManager, ObservableManager } from 'src/app/services/services';
@@ -19,7 +19,7 @@ declare var $: any;
   selector: 'Preload-card',
   templateUrl: './PreloadCard.component.html',
 })
-export class PreloadCard  implements OnInit {
+export class PreloadCard implements OnInit {
   @Input()
   public class: string | [string];
   @Input()
@@ -34,8 +34,11 @@ export class PreloadCard  implements OnInit {
   public isShowCard5: boolean = false;
   @Input()
   public isShow: boolean = false;
+  public windowWidth: any;
+  public isRes: boolean = false;
+  public isRes1: boolean = false;
 
-  constructor() { 
+  constructor() {
   }
 
   public static readonly PAGE_NAME: string = PAGE_NAME;
@@ -43,6 +46,22 @@ export class PreloadCard  implements OnInit {
   public ngOnInit(): void {
 
   }
-  public ngOnDestroy(): void { 
-  } 
+  public ngOnDestroy(): void {
+  }
+
+  @HostListener('window:resize', ['$event'])
+  public getScreenSize(event?) {
+    this.windowWidth = window.innerWidth;
+    if (this.windowWidth <= 1280) {
+      this.isRes = true;
+    } else {
+      this.isRes = false;
+    }
+
+    if (this.windowWidth <= 1024) {
+      this.isRes1 = true;
+    } else {
+      this.isRes1 = false;
+    }
+  }
 }

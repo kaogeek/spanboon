@@ -1,16 +1,6 @@
 <div *ngIf="model === undefined" class="loding">
-    <div class="top">
-        <div class="top_for_loding" *ngFor="let number of [0,1 ]">
-            <Preload-card [isShowCard1]="true" [isShowCard2]="false">
-            </Preload-card>
-        </div>
-    </div>
-    <div class="buttom">
-        <div class="buttom_for_loding" *ngFor="let number of [0,1,2,3 ]">
-            <Preload-card [isShowCard1]="true" [isShowCard2]="false">
-            </Preload-card>
-        </div>
-    </div>
+    <Preload-card [isShowCard4]="true" [isShowCard2]="false">
+    </Preload-card>
 </div>
 
 <div class="home-page">

@@ -4,7 +4,7 @@
     License: MIT. https://opensource.org/licenses/MIT
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
-<div class="dialog_post_card" [class.setheight]="showLoading">
+<div class="dialog_post_card">
 
     <span mat-dialog-title class="onClose" (click)="onClose($event)">
         <svg version="1.1" width="20px" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
@@ -20,11 +20,11 @@
     </span>
 
     <mat-dialog-content [class.hide]="isRepost">
-        <post-data *ngIf="!showLoading" [itemPost]="data.post" [ownerPost]="data.user" [isComments]="isLogin()" [isUserPage]="false"
-            [isShowUser]="true" [isNotAccess]="data.isNotAccess" [isPage]="data.isNotAccess"
+        <post-data *ngIf="!showLoading" [itemPost]="data.post" [ownerPost]="data.user" [isComments]="isLogin()"
+            [isUserPage]="false" [isShowUser]="true" [isNotAccess]="data.isNotAccess" [isPage]="data.isNotAccess"
             (action)="actionComment($event)" [pageUser]="data.pageUser" (comment)="createComment($event)">
         </post-data>
-        <Preload-card *ngIf="showLoading" [isShowCard1]="true" [isShowCard2]="false" [class]="'preload-profile'">
+        <Preload-card *ngIf="showLoading" [isShowCard4]="true" [class]="'preload-profile'">
         </Preload-card>
     </mat-dialog-content>
 </div>
