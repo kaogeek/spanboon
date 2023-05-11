@@ -16,6 +16,7 @@ import { UserService } from '../services/UserService';
 import { SearchHistoryService } from '../services/SearchHistoryService';
 import { SearchRequest } from './requests/SearchRequest';
 import { ContentSearchRequest } from './requests/ContentSearchRequest';
+import { IsRead } from './requests/IsRead';
 import { SearchContentResponse } from './responses/SearchContentResponse';
 import { PostsService } from '../services/PostsService';
 import { UserFollowService } from '../services/UserFollowService';
@@ -24,7 +25,6 @@ import { SUBJECT_TYPE } from '../../constants/FollowType';
 import { SEARCH_TYPE, SORT_SEARCH_TYPE } from '../../constants/SearchType';
 import { SearchFilter } from './requests/SearchFilterRequest';
 import { LastestLookingSectionProcessor } from '../processors/LastestLookingSectionProcessor';
-// import { StillLookingSectionProcessor } from '../processors/StillLookingSectionProcessor';
 import { EmergencyEventSectionProcessor } from '../processors/EmergencyEventSectionProcessor';
 import { PostSectionProcessor } from '../processors/PostSectionProcessor';
 import { PostSectionObjectiveProcessor } from '../processors/PostSectionObjectiveProcessor';
@@ -39,11 +39,6 @@ import { UserFollowSectionProcessor } from '../processors/UserFollowSectionProce
 import { UserPageLookingSectionProcessor } from '../processors/UserPageLookingSectionProcessor';
 import { LastestObjectiveProcessor } from '../processors/LastestObjectiveProcessor';
 import { EmergencyEventPinProcessor } from '../processors/EmergencyEventPinProcessor';
-// import { TEMPLATE_TYPE } from '../../constants/TemplateType';
-// import { SearchFilter } from './requests/SearchFilterRequest';
-// import { SearchHistory } from '../models/SearchHistory';
-// import { MAX_SEARCH_ROWS } from '../../constants/Constants';
-// import { SectionModel } from '../models/SectionModel';
 import { User } from '../models/User';
 import { Page } from '../models/Page';
 import { HashTag } from '../models/HashTag';
@@ -60,8 +55,10 @@ import { AssetService } from '../services/AssetService';
 import { ImageUtil } from '../../utils/ImageUtil';
 import { KaoKaiHashTagModelProcessor } from '../processors/KaoKaiHashTagModelProcessor';
 import { KaokaiAllProvinceModelProcessor } from '../processors/KaokaiAllProvinceModelProcessor';
-// import { TrendForYouProcessor } from '../processors/TrendForYouProcessor';
+import { IsReadPostService } from '../services/IsReadPostService';
 import { KaokaiTodayService } from '../services/KaokaiTodayService';
+import { NotificationService } from '../services/NotificationService';
+import { IsReadSectionProcessor } from '../processors/IsReadSectionProcessor';
 import {
     TODAY_DATETIME_GAP,
     DEFAULT_TODAY_DATETIME_GAP,
@@ -75,12 +72,18 @@ import {
     KAOKAITODAY_ANNOUNCEMENT,
     KAOKAITODAY_LINK_ANNOUNCEMENT,
     DEFAULT_KAOKAITODAY_ANNOUNCEMENT,
-    DEFAULT_KAOKAITODAY_LINK_ANNOUNCEMENT
+    DEFAULT_KAOKAITODAY_LINK_ANNOUNCEMENT,
+    KAOKAITODAY_RANGE_OF_POPULAR_HASHTAGS,
+    DEFAULT_KAOKAITODAY_RANGE_OF_POPULAR_HASHTAGS,
+    SWITCH_CASE_SEND_NOTI,
+    DEFAULT_SWITCH_CASE_SEND_NOTI
 } from '../../constants/SystemConfig';
 import { ConfigService } from '../services/ConfigService';
 import { KaokaiTodaySnapShotService } from '../services/KaokaiTodaySnapShot';
 import { KaokaiContentModelProcessor } from '../processors/KaokaiContentModelProcessor';
 import { MAILService } from '../../auth/mail.services';
+import { DeviceTokenService } from '../services/DeviceToken';
+
 @JsonController('/main')
 export class MainPageController {
     constructor(
@@ -100,6 +103,9 @@ export class MainPageController {
         private kaokaiTodayService: KaokaiTodayService,
         private configService: ConfigService,
         private kaokaiTodaySnapShotService: KaokaiTodaySnapShotService,
+        private isReadPostService: IsReadPostService,
+        private deviceTokenService: DeviceTokenService,
+        private notificationService: NotificationService
     ) { }
     // Home page content V2
     @Get('/content/v3')
@@ -115,10 +121,12 @@ export class MainPageController {
         const assetTodayRangeDate = await this.configService.getConfig(KAOKAITODAY_RANGE_DATE_EMERGENCY);
         const announcement = await this.configService.getConfig(KAOKAITODAY_ANNOUNCEMENT);
         const linkAnnounceMent = await this.configService.getConfig(KAOKAITODAY_LINK_ANNOUNCEMENT);
+        const rangeHashtag = await this.configService.getConfig(KAOKAITODAY_RANGE_OF_POPULAR_HASHTAGS);
         let announcements = DEFAULT_KAOKAITODAY_ANNOUNCEMENT;
         let linkAnnouncements = DEFAULT_KAOKAITODAY_LINK_ANNOUNCEMENT;
         let assetEmergenDays = DEFAULT_KAOKAITODAY_RANGE_DATE_EMERGENY;
         let assetTodayDate = DEFAULT_TODAY_DATETIME_GAP;
+        let rangeHashtags = DEFAULT_KAOKAITODAY_RANGE_OF_POPULAR_HASHTAGS;
         if (assetTodayDateGap) {
             assetTodayDate = parseInt(assetTodayDateGap.value, 10);
         }
@@ -132,6 +140,9 @@ export class MainPageController {
         if (linkAnnounceMent) {
             linkAnnouncements = linkAnnounceMent.value;
         }
+        if (rangeHashtag) {
+            rangeHashtags = rangeHashtag.value;
+        }
         const emergencyCheckEndDate = assetTodayRangeDate.endDateTime;
         const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), assetTodayDate);
         if (toDate) {
@@ -141,10 +152,24 @@ export class MainPageController {
                 return res.status(200).send(successResponseS);
             }
         }
+        // convert object to string then json !!!!
+
+        let convert = undefined;
+        const checkCreate = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: monthRange[1] });
+        if (checkCreate !== undefined && checkCreate !== null) {
+            if (typeof (JSON.stringify(checkCreate)) === 'string') {
+                const stringObj = JSON.stringify(checkCreate);
+                convert = JSON.parse(stringObj);
+                return convert;
+            }
+        }
         // ordering
-        const emerProcessor: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service);
+        const emerProcessor: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service, this.hashTagService);
         emerProcessor.setData({
-            emergencyCheckEndDate
+            userId,
+            emergencyCheckEndDate,
+            rangeHashtags,
+            endDateTime: monthRange[1]
         });
 
         const emerSectionModel = await emerProcessor.process2();
@@ -265,9 +290,7 @@ export class MainPageController {
         kaokaiContentProcessor.setConfig({
             searchOfficialOnly
         });
-
         const kaokaiContent = await kaokaiContentProcessor.process();
-
         // pipeline: [{ $match: { $expr: { $in: ['$_id', bucketF] }, isOfficial: true } }],
         // hashTag
         const hashTagSumma = await this.hashTagService.aggregate([{ $sort: { count: -1 } }, { $limit: 3 }]);
@@ -278,7 +301,7 @@ export class MainPageController {
             kaokaiHashTag.contents.length === 0 &&
             kaokaiContent.contents.length === 0
         ) {
-            const emerProcessorUn: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service);
+            const emerProcessorUn: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service, this.hashTagService);
             emerProcessorUn.setData({
                 assetEmergenDays,
                 emergencyCheckEndDate
@@ -361,6 +384,7 @@ export class MainPageController {
         result.announcement = announcements;
         result.linkAnnounceMent = linkAnnouncements;
         content = await this.snapShotToday(result, monthRange[0], monthRange[1]);
+        await this.pushNotification(result, monthRange[0], monthRange[1]);
         if (date !== undefined && date !== null) {
             if (content) {
                 const successResponseF = ResponseUtil.getSuccessResponse('Successfully Main Page Data', content.data);
@@ -380,6 +404,69 @@ export class MainPageController {
         }
     }
 
+    @Get('/botton/trend')
+    public async mirrorTrends(@QueryParam('offset') offset: number, @QueryParam('section') section: string, @QueryParam('date') date: any, @Res() res: any, @Req() req: any): Promise<any> {
+        const userId = req.headers.userid;
+        const mainPageSearchConfig = await this.pageService.searchPageOfficialConfig();
+        const searchOfficialOnly = mainPageSearchConfig.searchOfficialOnly;
+        const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 7);
+        const isReadSectionProcessor: IsReadSectionProcessor = new IsReadSectionProcessor(this.postsService, this.s3Service, this.userLikeService, this.isReadPostService);
+        isReadSectionProcessor.setData({
+            userId,
+            startDateTime: monthRange[0],
+            endDateTime: monthRange[1],
+        });
+
+        isReadSectionProcessor.setConfig({
+            searchOfficialOnly
+        });
+        const isReadPosts = await isReadSectionProcessor.process();
+        const successResponse = ResponseUtil.getSuccessResponse('Successfully create isRead.', isReadPosts);
+        return res.status(200).send(successResponse);
+
+    }
+
+    @Post('/is/read')
+    public async isRead(@Body({ validate: true }) data: IsRead, @Res() res: any, @Req() req: any): Promise<any> {
+        const userId = req.headers.userid;
+        const objIds = new ObjectID(userId);
+        const user = await this.userService.findOne({ _id: objIds });
+        // check is read
+        const checkIsRead = await this.isReadPostService.aggregate
+            (
+                [
+                    {
+                        $match:
+                        {
+                            userId: objIds,
+                            postId: { $in: data.postId }
+                        }
+                    },
+                    {
+                        $limit: 1
+                    }
+                ]
+            );
+        if (checkIsRead.length > 0) {
+            const successResponse = ResponseUtil.getSuccessResponse('The content has already been read.', undefined);
+            return res.status(200).send(successResponse);
+        }
+        if (user) {
+            // check is read
+            const isRead: IsRead = new IsRead();
+            isRead.userId = objIds;
+            isRead.postId = data.postId;
+            isRead.isRead = data.isRead;
+            const isReadPost = await this.isReadPostService.create(isRead);
+            if (isReadPost) {
+                const successResponse = ResponseUtil.getSuccessResponse('Successfully create isRead.', undefined);
+                return res.status(200).send(successResponse);
+            }
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot find User.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
     @Post('/days/check')
     public async daysCheck(@Res() res: any, @Req() req: any): Promise<any> {
         const now = new Date();
@@ -440,7 +527,7 @@ export class MainPageController {
         if (section !== undefined && section !== '') {
             // ordering 
             if (section === 'EMERGENCYEVENT') {
-                const emerProcessorSec: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service);
+                const emerProcessorSec: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service, this.hashTagService);
                 emerProcessorSec.setConfig({
                     showUserAction: true,
                     offset,
@@ -521,7 +608,7 @@ export class MainPageController {
 
         let processorList: any[] = [];
         const weekRanges: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 7);
-        const emerProcessor: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service);
+        const emerProcessor: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service, this.hashTagService);
         emerProcessor.setConfig({
             showUserAction: true,
             offset,
@@ -1805,11 +1892,9 @@ export class MainPageController {
         let switchEmail = DEFAULT_SWITCH_CASE_SEND_EMAIL;
         const switchSendEmail = await this.configService.getConfig(SWITCH_CASE_SEND_EMAIL);
         if (switchSendEmail) {
-            switchEmail = Boolean(switchSendEmail.value);
+            switchEmail = switchSendEmail.value;
         }
-        /*
-            tarawut.c@absolute.co.th,chaluck.s@absolute.co.th,junsuda.s@absolute.co.th,panupap.s@absolute.co.th
-        */
+
         let splitComma = undefined;
         const emailStack = [];
         const listEmail = await this.configService.getConfig(SEND_EMAIL_TO_USER);
@@ -1821,6 +1906,7 @@ export class MainPageController {
                 }
             }
         }
+        const switchSendEm = switchEmail;
         const now = new Date(); // Get the current time
         const hours = now.getHours(); // Get the hours of the current time
         const minutes = now.getMinutes(); // Get the minutes of the current time
@@ -1838,7 +1924,7 @@ export class MainPageController {
         }
         // Check Date time === 06:00 morning
         let content = undefined;
-        if (listEmail !== undefined) {
+        if (String(switchSendEm) === 'true') {
             if (hours === parseInt(hourSplit, 10) && minutes === parseInt(minuteSpit, 10)) {
                 const contents = data;
                 const startDate = startDateRange;
@@ -1851,14 +1937,12 @@ export class MainPageController {
                 if (snapshot) {
                     content = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: endDateTimeToday });
                     let user = undefined;
-                    if (switchEmail === true) {
-                        for (const userEmail of emailStack) {
-                            user = await this.userService.findOne({ email: userEmail.toString() });
-                            if (user.subscribeEmail === true) {
-                                await this.pushNotification(user, user.email, content.data, 'ก้าวไกลวันนี้', endDateTimeToday);
-                            } else {
-                                continue;
-                            }
+                    for (const userEmail of emailStack) {
+                        user = await this.userService.findOne({ email: userEmail.toString() });
+                        if (user.subscribeEmail === true) {
+                            await this.sendEmail(user, user.email, content.data, 'ก้าวไกลวันนี้', endDateTimeToday);
+                        } else {
+                            continue;
                         }
                     }
                     return snapshot;
@@ -1886,12 +1970,13 @@ export class MainPageController {
                     content = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: endDateTimeToday });
                     const users = await this.userService.find();
                     for (const user of users) {
-                        if (user.subscribeEmail === true && switchEmail === true) {
-                            await this.pushNotification(user, user.email, content.data, 'ก้าวไกลหน้าหนึ่ง', endDateTimeToday);
+                        if (user.subscribeEmail === true) {
+                            await this.sendEmail(user, user.email, content.data, 'ก้าวไกลหน้าหนึ่ง', endDateTimeToday);
                         } else {
                             continue;
                         }
                     }
+
                 }
             } else {
                 const maxDate = await this.kaokaiTodaySnapShotService.aggregate([{ $sort: { endDateTime: -1 } }, { $limit: 1 }]);
@@ -1905,7 +1990,120 @@ export class MainPageController {
         }
     }
 
-    public async pushNotification(user: User, email: string, content: any, subject: string, date?: Date): Promise<any> {
+    public async pushNotification(content: any, startDateRange: Date, endDateTimeToday: Date): Promise<any> {
+        const switchSendNoti = await this.configService.getConfig(SWITCH_CASE_SEND_NOTI);
+        let sendNotification = DEFAULT_SWITCH_CASE_SEND_NOTI;
+        if (switchSendNoti) {
+            sendNotification = switchSendNoti.value;
+        }
+        const now = new Date(); // Get the current time
+        const hours = now.getHours(); // Get the hours of the current time
+        const minutes = now.getMinutes(); // Get the minutes of the current time
+        const assetTimerCheck = await this.configService.getConfig(KAOKAITODAY_TIMER_CHECK_DATE);
+        let assetTimer = DEFAULT_KAOKAITODAY_TIMER_CHECK_DAY;
+        if (assetTimerCheck) {
+            assetTimer = assetTimerCheck.value;
+        }
+        let splitComma = undefined;
+        const emailStack = [];
+        const listEmail = await this.configService.getConfig(SEND_EMAIL_TO_USER);
+        if (listEmail !== undefined) {
+            splitComma = listEmail.value.split(',');
+            if (splitComma.length > 0) {
+                for (const email of splitComma) {
+                    emailStack.push(String(email));
+                }
+            }
+        }
+        const dateFormat = new Date(endDateTimeToday);
+        const dateReal = dateFormat.setDate(dateFormat.getDate() - 1);
+        const toDate = new Date(dateReal);
+        const year = toDate.getFullYear();
+        const month = (toDate.getMonth() + 1).toString().padStart(2, '0');
+        const day = toDate.getDate().toString().padStart(2, '0');
+        const formattedDate = `${day}-${month}-${year}`;
+        const split = assetTimer.split(':');
+        const hourSplit = split[0];
+        const minuteSpit = split[1];
+        if (String(sendNotification) === 'true') {
+            if (hours === parseInt(hourSplit, 10) && minutes === parseInt(minuteSpit, 10)) {
+                for (const userEmail of emailStack) {
+                    const user = await this.userService.findOne({ email: userEmail.toString() });
+                    const deviceToken = await this.deviceTokenService.aggregate(
+                        [
+                            {
+                                $match: {
+                                    userId: user.id,
+                                    token: { $ne: null }
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'User',
+                                    localField: 'userId',
+                                    foreignField: '_id',
+                                    as: 'User'
+                                }
+                            },
+                            {
+                                $unwind: {
+                                    path: '$User',
+                                    preserveNullAndEmptyArrays: true
+                                }
+                            }
+                        ]
+                    );
+                    if (deviceToken.length > 0) {
+                        for (let j = 0; j < deviceToken.length; j++) {
+                            if (deviceToken[j].User.subscribeNoti === true) {
+                                await this.notificationService.pushNotificationMessage(content, deviceToken[j].token, formattedDate);
+                            } else {
+                                continue;
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            if (hours === parseInt(hourSplit, 10) && minutes === parseInt(minuteSpit, 10)) {
+                const deviceToken = await this.deviceTokenService.aggregate(
+                    [
+                        {
+                            $match: {
+                                token: { $ne: null }
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'User',
+                                localField: 'userId',
+                                foreignField: '_id',
+                                as: 'User'
+                            }
+                        },
+                        {
+                            $unwind: {
+                                path: '$User',
+                                preserveNullAndEmptyArrays: true
+                            }
+                        }
+                    ]
+                );
+                if (deviceToken.length > 0) {
+                    for (let j = 0; j < deviceToken.length; j++) {
+                        if (deviceToken[j].User.subscribeNoti === true) {
+                            await this.notificationService.pushNotificationMessage(content, deviceToken[j].token, formattedDate);
+                        } else {
+                            continue;
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
+    public async sendEmail(user: User, email: string, content: any, subject: string, date?: Date): Promise<any> {
         const newsTitle = [];
         if (date === undefined) {
             const errorResponse = ResponseUtil.getErrorResponse('Date time undefined.', undefined);

@@ -22,4 +22,6 @@ export class SectionModel extends BaseModel {
     public isList = false;
     public isHighlight = false;
     public position: number;
+    public majorTrendHashTags:any;
+    public mirrorTrends:any;
 }

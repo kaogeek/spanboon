@@ -27,6 +27,7 @@ const REFRESH_DATA: string = 'refresh_page';
 export class EditProfileCard extends AbstractPage implements OnInit {
   private dateAdapter: DateAdapter<Date>
   public isSend: boolean;
+  public isSubNoti: boolean;
   public isCheck: boolean;
   protected router: Router;
   private profileFacade: ProfileFacade;
@@ -84,9 +85,23 @@ export class EditProfileCard extends AbstractPage implements OnInit {
     this._setDataFormEditProfile();
   }
 
-  public emailNoti($event) {
-    this.profileFacade.setEmailPushNotification($event.checked).then((res) => {
+  public subEmail($event) {
+    this.subscribeNotiEmail();
+  }
+
+  public subNoti($event) {
+    this.subscribeNotiEmail();
+  }
+
+  private subscribeNotiEmail() {
+    let email = this.formProfile.get('subscribeEmail').value;
+    let noti = this.formProfile.get('subscribeNoti').value;
+    this.profileFacade.setEmailPushNotification(email, noti).then((res) => {
       if (res) {
+        let pageUser = JSON.parse(localStorage.getItem('pageUser'));
+        pageUser.subscribeEmail = email;
+        pageUser.subscribeNoti = noti;
+        localStorage.setItem('pageUser', JSON.stringify(pageUser));
       }
     })
   }
@@ -110,7 +125,8 @@ export class EditProfileCard extends AbstractPage implements OnInit {
       profile.get('lastName').value !== this.data.lastName ||
       profile.get('birthDate').value !== this.data.birthdate ||
       profile.get('gender').value !== this.data.gender ||
-      profile.get('subscribeEmail').value !== this._checkSendEmail()
+      profile.get('subscribeEmail').value !== this._checkSendEmail() ||
+      profile.get('subscribeNoti').value !== this._checkSubNoti()
     ) {
       this.success.emit(true);
       let data = {
@@ -164,6 +180,7 @@ export class EditProfileCard extends AbstractPage implements OnInit {
       birthDate: ['', [Validators.required]],
       gender: [''],
       subscribeEmail: false,
+      subscribeNoti: true,
     })
   }
 
@@ -171,15 +188,21 @@ export class EditProfileCard extends AbstractPage implements OnInit {
     let subscribe = JSON.parse(localStorage.getItem('pageUser'));
     if (subscribe.subscribeEmail) {
       if (subscribe.subscribeEmail === true) {
-        this.isSend = true;
         return true;
       } else {
-        this.isSend = false;
         return false;
       }
-    } else {
-      this.isSend = false;
-      return false;
+    }
+  }
+
+  private _checkSubNoti() {
+    let noti = JSON.parse(localStorage.getItem('pageUser'));
+    if (noti.subscribeNoti) {
+      if (noti.subscribeNoti === true) {
+        return true;
+      } else {
+        return false;
+      }
     }
   }
 
@@ -191,6 +214,7 @@ export class EditProfileCard extends AbstractPage implements OnInit {
     profile.get('birthDate').setValue(this.data.birthdate ? this.data.birthdate : '');
     profile.get('gender').setValue(this.data.gender ? this.data.gender : '');
     profile.get('subscribeEmail').setValue(this._checkSendEmail());
+    profile.get('subscribeNoti').setValue(this._checkSubNoti());
   }
 
   public keyupGetData() {
@@ -201,7 +225,8 @@ export class EditProfileCard extends AbstractPage implements OnInit {
       profile.get('lastName').value !== this.data.lastName ||
       profile.get('birthDate').value !== this.data.birthdate ||
       profile.get('gender').value !== this.data.gender ||
-      profile.get('subscribeEmail').value !== this._checkSendEmail()
+      profile.get('subscribeEmail').value !== this._checkSendEmail() ||
+      profile.get('subscribeNoti').value !== this._checkSubNoti()
     ) {
       this.success.emit(true);
     } else {

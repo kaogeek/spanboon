@@ -45,4 +45,8 @@ export class DeviceTokenService {
 
         return await this.deviceTokenRepository.updateOne(query, newValue);
     }
+
+    public async aggregate(query: any, options?: any): Promise<any[]> {
+        return await this.deviceTokenRepository.aggregate(query, options).toArray();
+    }
 }

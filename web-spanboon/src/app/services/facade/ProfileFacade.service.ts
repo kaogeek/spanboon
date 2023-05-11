@@ -46,11 +46,12 @@ export class ProfileFacade extends AbstractFacade {
     return httpOptions;
   }
 
-  public setEmailPushNotification(data: boolean): Promise<any> {
+  public setEmailPushNotification(email: boolean, noti: boolean): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/user/notification/settings';
       let body = {
-        "sendEmail": data
+        "sendEmail": email,
+        "subscribeNoti": noti
       }
 
       let options = this.getDefaultOptions();

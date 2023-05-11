@@ -7,10 +7,12 @@
 
 import 'reflect-metadata';
 import { IsNotEmpty } from 'class-validator';
+import { ObjectID } from 'typeorm';
 
-export class IsReadPost {
-
+export class IsRead {
     @IsNotEmpty({ message: 'isRead is required' })
+    public userId: ObjectID;
+    public postId: any;
     public isRead: boolean;
 
 }

@@ -145,10 +145,26 @@ export class AdminConfigController {
             const errorResponse = ResponseUtil.getErrorResponse('Invalid config name "' + cfgName + '"', cfgName);
             return res.status(400).send(errorResponse);
         }
-
         const userObjId = new ObjectID(req.user.id);
+        let configSave = undefined;
+        if(editConfig.name === 'kaokaiToday.emergency.range.date'){
+            const dateFormat = new Date();
+            const dateReal = dateFormat.setDate(dateFormat.getDate() + parseInt(configReq.value,10));
+            const toDate = new Date(dateReal);
+            configSave = await this.configService.update(
+                { name: cfgName }, 
+                { $set: 
+                    {
+                         value: configReq.value, 
+                         type: configReq.type, 
+                         endDateTime:toDate,
+                         updateByUsername: req.user.username, 
+                         modifiedBy: userObjId 
+                    } 
+                });
+        }
 
-        const configSave = await this.configService.update({ name: cfgName }, { $set: { value: configReq.value, type: configReq.type, updateByUsername: req.user.username, modifiedBy: userObjId } });
+        configSave = await this.configService.update({ name: cfgName }, { $set: { value: configReq.value, type: configReq.type, updateByUsername: req.user.username, modifiedBy: userObjId } });
 
         if (configSave) {
             const configEdited: Config = await this.configService.findOne({ where: { name: cfgName } });

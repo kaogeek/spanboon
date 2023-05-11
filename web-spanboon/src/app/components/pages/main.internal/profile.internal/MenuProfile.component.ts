@@ -203,7 +203,7 @@ export class MenuProfile extends AbstractPage implements OnInit {
     public getScreenSize(event?) {
         this.windowWidth = window.innerWidth;
 
-        if (this.windowWidth <= 340) {
+        if (this.windowWidth <= 479) {
             this.isShowButton = true;
         } else {
             this.isShowButton = false;

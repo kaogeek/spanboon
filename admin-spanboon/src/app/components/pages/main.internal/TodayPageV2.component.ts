@@ -487,6 +487,7 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
         this.selectedValueType = data.type;
         this.selectedValueField = data.field;
         this.selectedPosition = data.position;
+        this.limit = data.limit;
         this.isPin = data.flag;
         this.todayPageFacade.searchComp(data).then((res) => {
             if (res) {
