@@ -487,7 +487,11 @@ export class EmergencyEventSectionProcessor extends AbstractSectionModelProcesso
                             const mapIds = postAggregate[i].postsHashTags.flat().map(ids => String(ids));
                             if (mapIds.length > 0) {
                                 for (let j = 0; j < mapIds.length; j++) {
-                                    hashTagsIds.push(mapIds[j]);
+                                    if (mapIds.length > 0) {
+                                        hashTagsIds.push(mapIds[j]);
+                                    } else {
+                                        continue;
+                                    }
                                 }
                             }
                         }
@@ -496,43 +500,45 @@ export class EmergencyEventSectionProcessor extends AbstractSectionModelProcesso
                         filterIds = hashTagsIds.filter((element, index) => {
                             return hashTagsIds.indexOf(element) === index;
                         });
-                    }
-                    if (filterIds.length > 0) {
                         const objIds = filterIds.flat().map(ids => new ObjectID(ids));
-                        hashTagsNames = await this.hashTagService.aggregate(
-                            [
-                                {
-                                    $match: {
-                                        _id: { $in: objIds }
+                        if (objIds.length > 0) {
+                            hashTagsNames = await this.hashTagService.aggregate(
+                                [
+                                    {
+                                        $match: {
+                                            _id: { $in: objIds }
+                                        }
+                                    },
+                                    {
+                                        $sort: {
+                                            count: -1
+                                        }
+                                    },
+                                    {
+                                        $project: {
+                                            _id: 1,
+                                            name: 1
+                                        }
                                     }
-                                },
+                                ]
+                            );
+                        }
+                    }
+                    if (hashTagsNames !== undefined) {
+                        const objIds = hashTagsNames.flat().map(ids => new ObjectID(ids._id));
+                        if (objIds.length > 0) {
+                            mirrorHashTags = await this.hashTagService.aggregate([
                                 {
-                                    $sort: {
-                                        count: -1
-                                    }
+                                    $match: { _id: { $nin: objIds } }
                                 },
                                 {
                                     $project: {
-                                        _id: 1,
+                                        _id: 0,
                                         name: 1
                                     }
                                 }
-                            ]
-                        );
-                    }
-                    if (hashTagsNames.length > 0) {
-                        const objIds = hashTagsNames.flat().map(ids => new ObjectID(ids._id));
-                        mirrorHashTags = await this.hashTagService.aggregate([
-                            {
-                                $match: { _id: { $nin: objIds } }
-                            },
-                            {
-                                $project: {
-                                    _id: 0,
-                                    name: 1
-                                }
-                            }
-                        ]);
+                            ]);
+                        }
                     }
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
