@@ -614,6 +614,7 @@ export class UserProfileController {
             let userBirthdate = users.birthdate;
             let userGender = users.gender;
             let userCustomGender = users.customGender;
+            let userProvince = users.province;
 
             if (userDisplayName === null || userDisplayName === undefined) {
                 userDisplayName = findUser.displayName;
@@ -638,6 +639,9 @@ export class UserProfileController {
             if (userCustomGender === null || userCustomGender === undefined) {
                 userCustomGender = findUser.customGender;
             }
+            if (userProvince === null || userProvince === undefined) {
+                userProvince = findUser.province;
+            }
 
             const updateQuery = { _id: userObjId };
             const newValue = {
@@ -647,7 +651,8 @@ export class UserProfileController {
                     lastName: userLastName,
                     birthdate: userBirthdate,
                     gender: userGender,
-                    customGender: userCustomGender
+                    customGender: userCustomGender,
+                    province: userProvince
                 }
             };
 
