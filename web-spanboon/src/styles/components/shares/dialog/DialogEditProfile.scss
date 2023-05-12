@@ -263,6 +263,34 @@
                     color: $black;
                     margin-top: 10pt;
                 }
+
+                >.dropdown-province {
+                    height: 50px;
+
+                    >mat-form-field {
+                        >.mat-form-field-wrapper {
+                            >.mat-form-field-flex {
+                                background-color: white;
+
+                                >.mat-form-field-infix {
+                                    border: 0.7px solid rgb($black, 0.3);
+                                    border-radius: 30px;
+                                    padding: 10px 0;
+
+                                    .mat-select {
+                                        >.mat-select-trigger {
+                                            >.mat-select-value {
+                                                >span {
+                                                    margin-left: 10px;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }

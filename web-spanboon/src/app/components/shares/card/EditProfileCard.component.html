@@ -46,6 +46,17 @@
                     </div>
                 </div>
 
+                <label class="form-label" style="margin-bottom: 5px;">จังหวัด</label>
+                <div class="dropdown-province">
+                    <mat-form-field appearance="none">
+                        <mat-select name="province" placeholder='จังหวัด' formControlName="province">
+                            <mat-option *ngFor="let province of provinces" [value]="province.value">
+                                {{province.value}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+
                 <label class="form-label" style="margin-bottom: 5px;">รับข่าวสารจาก Email</label>
                 <div class="form-group">
                     <div class="slide-email">

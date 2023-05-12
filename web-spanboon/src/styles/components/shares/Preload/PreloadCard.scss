@@ -194,12 +194,12 @@
     }
 
     >.postcard-home {
-        width: 1024px;
+        width: 1280px;
         padding: 15px;
+        margin-top: 85px;
 
         >.post-card-top {
             margin: 0 auto;
-            max-width: 1024px;
 
             @media (max-width: $xxlarge) {
                 max-width: 1024px;
@@ -249,13 +249,21 @@
 
         >.post-card-bottom {
             margin: 0 auto;
-            max-width: 1024px;
-            margin-top: 50px;
+            margin-top: 165px;
 
             >.box-bottom {
                 display: grid;
                 grid-template-columns: 1fr 1fr 1fr 1fr;
                 gap: 10px;
+                margin: 0 auto;
+
+                @media (max-width: $xxlarge) {
+                    max-width: 1024px;
+                }
+
+                @media (max-width: $large) {
+                    max-width: 768px;
+                }
 
                 >.box {}
             }
