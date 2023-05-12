@@ -2057,10 +2057,8 @@ export class MainPageController {
         if (String(sendNotification) === 'true') {
             console.log('pass1 notification ??');
             if (hours === parseInt(hourSplit, 10) && minutes === parseInt(minuteSpit, 10)) {
-                console.log('emailStack',emailStack);
                 for (const userEmail of emailStack) {
                     const user = await this.userService.findOne({ email: userEmail.toString() });
-                    console.log('user',user);
                     const deviceToken = await this.deviceTokenService.aggregate(
                         [
                             {
@@ -2085,11 +2083,10 @@ export class MainPageController {
                             }
                         ]
                     );
-                    console.log('deviceToken',deviceToken);
                     if (deviceToken.length > 0) {
                         for (let j = 0; j < deviceToken.length; j++) {
                             if (deviceToken[j].User.subscribeNoti === true) {
-                                console.log('deviceToken[j]',deviceToken[j]);
+                                console.log('deviceToken[j]',deviceToken[j].token);
                                 await this.notificationService.pushNotificationMessage(content, deviceToken[j].token, formattedDate);
                             } else {
                                 continue;
