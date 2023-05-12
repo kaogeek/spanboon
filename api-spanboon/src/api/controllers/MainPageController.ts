@@ -58,7 +58,10 @@ import { KaokaiAllProvinceModelProcessor } from '../processors/KaokaiAllProvince
 import { IsReadPostService } from '../services/IsReadPostService';
 import { KaokaiTodayService } from '../services/KaokaiTodayService';
 import { NotificationService } from '../services/NotificationService';
+/* 
 import { IsReadSectionProcessor } from '../processors/IsReadSectionProcessor';
+import { FollowingPostSectionModelProcessor } from '../processors/FollowingPostSectionModelProcessor';
+import { FollowingProvinceSectionModelProcessor } from '../processors/FollowingProvinceSectionModelProcessor'; */
 import {
     TODAY_DATETIME_GAP,
     DEFAULT_TODAY_DATETIME_GAP,
@@ -403,7 +406,7 @@ export class MainPageController {
             return res.status(400).send(errorResponse);
         }
     }
-
+    /* 
     @Get('/botton/trend')
     public async mirrorTrends(@QueryParam('offset') offset: number, @QueryParam('section') section: string, @QueryParam('date') date: any, @Res() res: any, @Req() req: any): Promise<any> {
         const userId = req.headers.userid;
@@ -421,11 +424,37 @@ export class MainPageController {
             searchOfficialOnly
         });
         const isReadPosts = await isReadSectionProcessor.process();
-        const successResponse = ResponseUtil.getSuccessResponse('Successfully create isRead.', isReadPosts);
+        const followingPostSectionModelProcessor: FollowingPostSectionModelProcessor = new FollowingPostSectionModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.userFollowService);
+        followingPostSectionModelProcessor.setData({
+            userId,
+            startDateTime: monthRange[0],
+            endDateTime: monthRange[1],
+        });
+
+        followingPostSectionModelProcessor.setConfig({
+            searchOfficialOnly
+        });
+        const isFollowing = await followingPostSectionModelProcessor.process();
+        const followingProvinceSectionModelProcessor: FollowingProvinceSectionModelProcessor = new FollowingProvinceSectionModelProcessor(this.postsService, this.s3Service, this.userLikeService,this.userService ,this.pageService);
+        followingProvinceSectionModelProcessor.setData({
+            userId,
+            startDateTime: monthRange[0],
+            endDateTime: monthRange[1],
+        });
+
+        followingProvinceSectionModelProcessor.setConfig({
+            searchOfficialOnly
+        });
+        const followingProvince = await followingProvinceSectionModelProcessor.process();
+        const result: any = {};
+        result.isReadPosts = isReadPosts;
+        result.isFollowing = isFollowing;
+        result.followingProvince = followingProvince;
+        const successResponse = ResponseUtil.getSuccessResponse('Successfully create isRead.', result);
         return res.status(200).send(successResponse);
 
     }
-
+    */
     @Post('/is/read')
     public async isRead(@Body({ validate: true }) data: IsRead, @Res() res: any, @Req() req: any): Promise<any> {
         const userId = req.headers.userid;
@@ -2026,9 +2055,12 @@ export class MainPageController {
         const hourSplit = split[0];
         const minuteSpit = split[1];
         if (String(sendNotification) === 'true') {
+            console.log('pass1 notification ??');
             if (hours === parseInt(hourSplit, 10) && minutes === parseInt(minuteSpit, 10)) {
+                console.log('emailStack',emailStack);
                 for (const userEmail of emailStack) {
                     const user = await this.userService.findOne({ email: userEmail.toString() });
+                    console.log('user',user);
                     const deviceToken = await this.deviceTokenService.aggregate(
                         [
                             {
@@ -2053,9 +2085,11 @@ export class MainPageController {
                             }
                         ]
                     );
+                    console.log('deviceToken',deviceToken);
                     if (deviceToken.length > 0) {
                         for (let j = 0; j < deviceToken.length; j++) {
                             if (deviceToken[j].User.subscribeNoti === true) {
+                                console.log('deviceToken[j]',deviceToken[j]);
                                 await this.notificationService.pushNotificationMessage(content, deviceToken[j].token, formattedDate);
                             } else {
                                 continue;
@@ -2065,6 +2099,7 @@ export class MainPageController {
                 }
             }
         } else {
+            console.log('pass2 notification ??');
             if (hours === parseInt(hourSplit, 10) && minutes === parseInt(minuteSpit, 10)) {
                 const deviceToken = await this.deviceTokenService.aggregate(
                     [
