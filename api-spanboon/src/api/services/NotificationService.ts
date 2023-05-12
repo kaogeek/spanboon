@@ -90,7 +90,7 @@ export class NotificationService {
         if (body.length > 60) {
             body = body.substring(0, 60) + '...';
         }
-        const image = data.majorTrend.contents[0].coverPageSignUrl ? data.majorTrend.contents[0].coverPageSignUrl : null;
+        const image = data.majorTrend.contents[0].coverPageSignUrl ? data.majorTrend.contents[0].coverPageSignUrl : 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png';
         const thaiDate = String(date);
         const token = String(tokenId);
         const notificationType = 'TODAY_NEWS';
