@@ -107,6 +107,7 @@ export class NotificationService {
                 link
             }
         };
+        console.log('payload',payload);
         if (String(token) !== undefined) {
             Promise.all([await admin.messaging().sendToDevice(token, payload)]);
         } else {

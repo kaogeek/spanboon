@@ -196,7 +196,8 @@ export class UserService {
                 isAdmin: user.isAdmin,
                 isSubAdmin: user.isSubAdmin,
                 createdDate: user.createdDate,
-                updateDate: user.updateDate
+                updateDate: user.updateDate,
+                province:user.province
             };
             user = clearItem;
         }
