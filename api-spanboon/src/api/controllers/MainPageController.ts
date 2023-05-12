@@ -387,8 +387,8 @@ export class MainPageController {
         result.announcement = announcements;
         result.linkAnnounceMent = linkAnnouncements;
         content = await this.snapShotToday(result, monthRange[0], monthRange[1]);
-        await this.pushNotification(result, monthRange[0], monthRange[1]);
-        if (date !== undefined && date !== null) {
+        const noti = await this.pushNotification(result, monthRange[0], monthRange[1]);
+        if (date !== undefined && date !== null && noti) {
             if (content) {
                 const successResponseF = ResponseUtil.getSuccessResponse('Successfully Main Page Data', content.data);
                 return res.status(200).send(successResponseF);
@@ -397,7 +397,7 @@ export class MainPageController {
                 return res.status(400).send(errorResponse);
             }
         }
-        if (content) {
+        if (content && noti) {
             const successResponse = ResponseUtil.getSuccessResponse('Successfully Main Page Data', content);
             return res.status(200).send(successResponse);
         }
@@ -2086,12 +2086,14 @@ export class MainPageController {
                     if (deviceToken.length > 0) {
                         for (let j = 0; j < deviceToken.length; j++) {
                             if (deviceToken[j].User.subscribeNoti === true) {
-                                console.log('deviceToken[j]',deviceToken[j].token);
+                                console.log('deviceToken[j]', deviceToken[j].token);
                                 await this.notificationService.pushNotificationMessage(content, deviceToken[j].token, formattedDate);
                             } else {
                                 continue;
                             }
                         }
+                        const successResponse = 'done';
+                        return successResponse;
                     }
                 }
             }
@@ -2129,6 +2131,8 @@ export class MainPageController {
                             continue;
                         }
                     }
+                    const successResponse = 'done';
+                    return successResponse;
                 }
             }
         }
