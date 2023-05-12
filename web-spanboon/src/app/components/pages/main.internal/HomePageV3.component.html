@@ -241,7 +241,7 @@
                                         [innerHTML]="'#'+(model && model.emergencyEvents.majorTrendHashTags[0].name)">
                                     </p>
                                     <p class="content-detail"
-                                        [innerHTML]="model && model.emergencyEvents.contents[0].post.detail | highlight">
+                                        [innerHTML]="model && model.emergencyEvents.contents[0].post.detail ? (model && model.emergencyEvents.contents[0].post.detail | highlight) : model && model.emergencyEvents.contents[0].post.title | highlight">
                                     </p>
                                     <p class="amount-social">
                                         <span>{{model && model.emergencyEvents.contents[0].commentCount |

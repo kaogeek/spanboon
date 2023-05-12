@@ -11,6 +11,7 @@ import { MatDialog, MAT_DIALOG_DATA } from '@angular/material';
 import { Router } from '@angular/router';
 import * as moment from 'moment';
 import { DateAdapter } from 'saturn-datepicker';
+import { PROVINCE_LIST } from 'src/app/constants/Province';
 import { AuthenManager } from 'src/app/services/AuthenManager.service';
 import { ProfileFacade } from 'src/app/services/facade/ProfileFacade.service';
 import { ObservableManager } from 'src/app/services/ObservableManager.service';
@@ -35,7 +36,7 @@ export class EditProfileCard extends AbstractPage implements OnInit {
   public dataUser: any;
   public formProfile: FormGroup;
   public authenManager: AuthenManager;
-
+  public provinces = PROVINCE_LIST;
 
   @Input()
   public dataProfile: any;
@@ -113,6 +114,7 @@ export class EditProfileCard extends AbstractPage implements OnInit {
     this.data.lastName = user.lastName;
     this.data.birthdate = user.birthdate;
     this.data.gender = user.gender;
+    this.data.province = user.province;
   }
 
   public editProfile() {
@@ -121,10 +123,9 @@ export class EditProfileCard extends AbstractPage implements OnInit {
     userId = this.getCurrentUserId();
     if (
       profile.get('displayName').value !== this.data.displayName ||
-      profile.get('firstName').value !== this.data.firstName ||
-      profile.get('lastName').value !== this.data.lastName ||
       profile.get('birthDate').value !== this.data.birthdate ||
       profile.get('gender').value !== this.data.gender ||
+      profile.get('province').value !== this.data.province ||
       profile.get('subscribeEmail').value !== this._checkSendEmail() ||
       profile.get('subscribeNoti').value !== this._checkSubNoti()
     ) {
@@ -134,7 +135,8 @@ export class EditProfileCard extends AbstractPage implements OnInit {
         firstName: profile.get('firstName').value,
         lastName: profile.get('lastName').value,
         birthdate: moment(profile.get('birthDate').value).format('YYYY-MM-DD'),
-        gender: profile.get('gender').value
+        gender: profile.get('gender').value,
+        province: profile.get('province').value
       }
       this.profileFacade.edit(userId, data).then((res: any) => {
         if (res) {
@@ -144,6 +146,7 @@ export class EditProfileCard extends AbstractPage implements OnInit {
           pageUser.lastName = res.lastName;
           pageUser.birthdate = res.birthdate;
           pageUser.gender = res.gender;
+          pageUser.province = res.province;
           localStorage.setItem('pageUser', JSON.stringify(pageUser));
           this.data = res;
           this.observManager.publish(REFRESH_DATA, res);
@@ -175,10 +178,11 @@ export class EditProfileCard extends AbstractPage implements OnInit {
   private _formEditProfile() {
     this.formProfile = this.formBuilder.group({
       displayName: ['', [Validators.required]],
-      firstName: ['', [Validators.required]],
-      lastName: ['', [Validators.required]],
+      firstName: [''],
+      lastName: [''],
       birthDate: ['', [Validators.required]],
       gender: [''],
+      province: [''],
       subscribeEmail: false,
       subscribeNoti: true,
     })
@@ -213,6 +217,7 @@ export class EditProfileCard extends AbstractPage implements OnInit {
     profile.get('lastName').setValue(this.data.lastName ? this.data.lastName : '');
     profile.get('birthDate').setValue(this.data.birthdate ? this.data.birthdate : '');
     profile.get('gender').setValue(this.data.gender ? this.data.gender : '');
+    profile.get('province').setValue(this.data.province ? this.data.province : '');
     profile.get('subscribeEmail').setValue(this._checkSendEmail());
     profile.get('subscribeNoti').setValue(this._checkSubNoti());
   }
@@ -225,6 +230,7 @@ export class EditProfileCard extends AbstractPage implements OnInit {
       profile.get('lastName').value !== this.data.lastName ||
       profile.get('birthDate').value !== this.data.birthdate ||
       profile.get('gender').value !== this.data.gender ||
+      profile.get('province').value !== this.data.province ||
       profile.get('subscribeEmail').value !== this._checkSendEmail() ||
       profile.get('subscribeNoti').value !== this._checkSubNoti()
     ) {
