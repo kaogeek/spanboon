@@ -51,6 +51,28 @@ export class MainPageSlideFacade extends AbstractFacade {
     });
   }
 
+  public bottomContent(userId: string,offset?: string): Promise<any>{
+    return new Promise((resolve,reject) =>{
+      let url: string = this.baseURL + '/main/bottom/trend';
+      if (offset !== undefined) {
+        url += `?offset=${offset}`;
+      }
+      let httpOptions: any = {
+        headers: this.authMgr.getDefaultOptions()
+      };
+      if (userId) {
+        httpOptions.headers = new HttpHeaders({
+          'userid': userId
+        });
+      }
+      this.http.get(url, httpOptions).toPromise().then((response: any) => {
+        resolve(response.data);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
   public getDate(): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/main/days/check';

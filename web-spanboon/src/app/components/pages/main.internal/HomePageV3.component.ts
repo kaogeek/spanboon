@@ -5,8 +5,8 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-import { Component, OnInit, EventEmitter, HostListener, Output } from '@angular/core';
-import { MatDatepickerInputEvent, MatDialog } from '@angular/material';
+import { Component, OnInit, EventEmitter, HostListener,Input } from '@angular/core';
+import { MatDialog } from '@angular/material';
 import { Gallery } from '@ngx-gallery/core';
 import { AbstractPage } from '../AbstractPage';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -36,6 +36,7 @@ const ANNOUNCE_DEFAULT: string = 'ต้องก้าวไกลให้ไ�
   templateUrl: './HomePageV3.component.html',
 })
 export class HomePageV3 extends AbstractPage implements OnInit {
+  currentSlide = 0;
   startDate: Date;
   public static readonly PAGE_NAME: string = PAGE_NAME;
   public userCloneDatas: any;
@@ -66,16 +67,16 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   public filterMonth: any = [];
   public announcement = ANNOUNCE_DEFAULT;
   public linkAnnounce = undefined;
-
+  public isRead = undefined;
+  public following = undefined;
+  public followingProvince = undefined;
   maxDate = new Date();
 
   constructor(
-    private gallery: Gallery,
     router: Router,
     authenManager: AuthenManager,
     postFacade: PostFacade,
     dialog: MatDialog,
-    cacheConfigInfo: CacheConfigInfo,
     mainPageModelFacade: MainPageSlideFacade,
     pageFacade: PageFacade,
     hashTagFacade: HashTagFacade,
@@ -110,6 +111,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     this.userCloneDatas = JSON.parse(JSON.stringify(user));
     if (this.userCloneDatas !== undefined && this.userCloneDatas !== null) {
       this.getMainPageModelV3(this.userCloneDatas.id);
+      this.contentsBottom(this.userCloneDatas.id);
       this.searchPageInUser(this.userCloneDatas.id);
     } else {
       this.getMainPageModelV3();
@@ -258,8 +260,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
         })
       }
     }
-
-
+    
     // if (this.isLogin) {
     //   this.getSubject();
     // }
@@ -281,6 +282,21 @@ export class HomePageV3 extends AbstractPage implements OnInit {
       console.log(error);
     });
   }
+  public async contentsBottom(userId){
+    console.log('userId', userId);
+    const contents = await this.mainPageModelFacade.bottomContent(userId);
+    if (contents.isReadPosts.contents.length > 0) {
+      this.isRead = contents.isReadPosts;
+    } if (contents.isFollowing.contents.length > 0) {
+      this.following = contents.isFollowing;
+    } if (contents.followingProvince.contents.length > 0) {
+      this.followingProvince = contents.followingProvince;
+    }
+    console.log('this.isRead', this.isRead);
+    console.log('this.following',this.following);
+    console.log('this.followingProvince',this.followingProvince);
+  }
+
 
   public async isReadPost(userId, data) {
     if (userId) {

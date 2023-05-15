@@ -58,10 +58,10 @@ import { KaokaiAllProvinceModelProcessor } from '../processors/KaokaiAllProvince
 import { IsReadPostService } from '../services/IsReadPostService';
 import { KaokaiTodayService } from '../services/KaokaiTodayService';
 import { NotificationService } from '../services/NotificationService';
-/* 
+
 import { IsReadSectionProcessor } from '../processors/IsReadSectionProcessor';
 import { FollowingPostSectionModelProcessor } from '../processors/FollowingPostSectionModelProcessor';
-import { FollowingProvinceSectionModelProcessor } from '../processors/FollowingProvinceSectionModelProcessor'; */
+import { FollowingProvinceSectionModelProcessor } from '../processors/FollowingProvinceSectionModelProcessor';
 import {
     TODAY_DATETIME_GAP,
     DEFAULT_TODAY_DATETIME_GAP,
@@ -156,7 +156,7 @@ export class MainPageController {
             }
         }
         // convert object to string then json !!!!
-
+        // {endDateTime:-1};
         let convert = undefined;
         const checkCreate = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: monthRange[1] });
         if (checkCreate !== undefined && checkCreate !== null) {
@@ -387,8 +387,8 @@ export class MainPageController {
         result.announcement = announcements;
         result.linkAnnounceMent = linkAnnouncements;
         content = await this.snapShotToday(result, monthRange[0], monthRange[1]);
-        const noti = await this.pushNotification(result, monthRange[0], monthRange[1]);
-        if (date !== undefined && date !== null && noti) {
+        // const noti = await this.pushNotification(result, monthRange[0], monthRange[1]);
+        if (date !== undefined && date !== null) {
             if (content) {
                 const successResponseF = ResponseUtil.getSuccessResponse('Successfully Main Page Data', content.data);
                 return res.status(200).send(successResponseF);
@@ -397,7 +397,7 @@ export class MainPageController {
                 return res.status(400).send(errorResponse);
             }
         }
-        if (content && noti) {
+        if (content) {
             const successResponse = ResponseUtil.getSuccessResponse('Successfully Main Page Data', content);
             return res.status(200).send(successResponse);
         }
@@ -406,8 +406,8 @@ export class MainPageController {
             return res.status(400).send(errorResponse);
         }
     }
-    /* 
-    @Get('/botton/trend')
+
+    @Get('/bottom/trend')
     public async mirrorTrends(@QueryParam('offset') offset: number, @QueryParam('section') section: string, @QueryParam('date') date: any, @Res() res: any, @Req() req: any): Promise<any> {
         const userId = req.headers.userid;
         const mainPageSearchConfig = await this.pageService.searchPageOfficialConfig();
@@ -435,7 +435,7 @@ export class MainPageController {
             searchOfficialOnly
         });
         const isFollowing = await followingPostSectionModelProcessor.process();
-        const followingProvinceSectionModelProcessor: FollowingProvinceSectionModelProcessor = new FollowingProvinceSectionModelProcessor(this.postsService, this.s3Service, this.userLikeService,this.userService ,this.pageService);
+        const followingProvinceSectionModelProcessor: FollowingProvinceSectionModelProcessor = new FollowingProvinceSectionModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.userService, this.pageService);
         followingProvinceSectionModelProcessor.setData({
             userId,
             startDateTime: monthRange[0],
@@ -454,7 +454,7 @@ export class MainPageController {
         return res.status(200).send(successResponse);
 
     }
-    */
+
     @Post('/is/read')
     public async isRead(@Body({ validate: true }) data: IsRead, @Res() res: any, @Req() req: any): Promise<any> {
         const userId = req.headers.userid;
@@ -477,7 +477,7 @@ export class MainPageController {
                 ]
             );
         if (checkIsRead.length > 0) {
-            const successResponse = ResponseUtil.getSuccessResponse('The content has already been read.', undefined);
+            const successResponse = ResponseUtil.getSuccessResponse('The content has already been read.', checkIsRead);
             return res.status(200).send(successResponse);
         }
         if (user) {
@@ -488,7 +488,7 @@ export class MainPageController {
             isRead.isRead = data.isRead;
             const isReadPost = await this.isReadPostService.create(isRead);
             if (isReadPost) {
-                const successResponse = ResponseUtil.getSuccessResponse('Successfully create isRead.', undefined);
+                const successResponse = ResponseUtil.getSuccessResponse('Successfully create isRead.', isReadPost);
                 return res.status(200).send(successResponse);
             }
         } else {
@@ -1923,7 +1923,11 @@ export class MainPageController {
         if (switchSendEmail) {
             switchEmail = switchSendEmail.value;
         }
-
+        const switchSendNoti = await this.configService.getConfig(SWITCH_CASE_SEND_NOTI);
+        let sendNotification = DEFAULT_SWITCH_CASE_SEND_NOTI;
+        if (switchSendNoti) {
+            sendNotification = switchSendNoti.value;
+        }
         let splitComma = undefined;
         const emailStack = [];
         const listEmail = await this.configService.getConfig(SEND_EMAIL_TO_USER);
@@ -1951,19 +1955,22 @@ export class MainPageController {
         if (checkCreate !== undefined && checkCreate !== null) {
             return checkCreate.data;
         }
+        const contents = data;
+        const startDate = startDateRange;
+        const endDate = endDateTimeToday;
+        const result: any = {};
+        result.data = contents;
+        result.startDateTime = startDate;
+        result.endDateTime = endDate;
+        const snapshot = await this.kaokaiTodaySnapShotService.create(result);
         // Check Date time === 06:00 morning
         let content = undefined;
-        if (String(switchSendEm) === 'true') {
+        const fireBaseToken = [];
+        // String(switchSendEm) === 'true'
+        if (snapshot) {
             if (hours === parseInt(hourSplit, 10) && minutes === parseInt(minuteSpit, 10)) {
-                const contents = data;
-                const startDate = startDateRange;
-                const endDate = endDateTimeToday;
-                const result: any = {};
-                result.data = contents;
-                result.startDateTime = startDate;
-                result.endDateTime = endDate;
-                const snapshot = await this.kaokaiTodaySnapShotService.create(result);
-                if (snapshot) {
+                if (String(switchSendEm) === 'true') {
+                    console.log('send email 1');
                     content = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: endDateTimeToday });
                     let user = undefined;
                     for (const userEmail of emailStack) {
@@ -1974,28 +1981,8 @@ export class MainPageController {
                             continue;
                         }
                     }
-                    return snapshot;
-                }
-            } else {
-                const maxDate = await this.kaokaiTodaySnapShotService.aggregate([{ $sort: { endDateTime: -1 } }, { $limit: 1 }]);
-                if (maxDate.length > 0) {
-                    return maxDate[0];
                 } else {
-                    const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
-                    return errorResponse;
-                }
-            }
-        } else {
-            if (hours === parseInt(hourSplit, 10) && minutes === parseInt(minuteSpit, 10)) {
-                const contents = data;
-                const startDate = startDateRange;
-                const endDate = endDateTimeToday;
-                const result: any = {};
-                result.data = contents;
-                result.startDateTime = startDate;
-                result.endDateTime = endDate;
-                const snapshot = await this.kaokaiTodaySnapShotService.create(result);
-                if (snapshot) {
+                    console.log('send email 2');
                     content = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: endDateTimeToday });
                     const users = await this.userService.find();
                     for (const user of users) {
@@ -2005,65 +1992,66 @@ export class MainPageController {
                             continue;
                         }
                     }
-
                 }
-            } else {
-                const maxDate = await this.kaokaiTodaySnapShotService.aggregate([{ $sort: { endDateTime: -1 } }, { $limit: 1 }]);
-                if (maxDate.length > 0) {
-                    return maxDate[0];
+                if (String(sendNotification) === 'true') {
+                    console.log('pass1 notification ??');
+                    for (const userEmail of emailStack) {
+                        if (snapshot) {
+                            const user = await this.userService.findOne({ email: userEmail.toString() });
+                            const deviceToken = await this.deviceTokenService.aggregate(
+                                [
+                                    {
+                                        $match: {
+                                            userId: user.id,
+                                            token: { $ne: null }
+                                        }
+                                    },
+                                    {
+                                        $lookup: {
+                                            from: 'User',
+                                            localField: 'userId',
+                                            foreignField: '_id',
+                                            as: 'User'
+                                        }
+                                    },
+                                    {
+                                        $unwind: {
+                                            path: '$User',
+                                            preserveNullAndEmptyArrays: true
+                                        }
+                                    }
+                                ]
+                            );
+                            if (deviceToken.length > 0) {
+                                for (let j = 0; j < deviceToken.length; j++) {
+                                    if (user.subscribeNoti === true && deviceToken[j].token !== undefined && deviceToken[j].token !== null && deviceToken[j].token !== '') {
+                                        fireBaseToken.push(deviceToken[j].token);
+                                    } else {
+                                        continue;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (fireBaseToken.length > 0) {
+                        const token = fireBaseToken.filter((element, index) => {
+                            return fireBaseToken.indexOf(element) === index;
+                        });
+                        if (token.length > 0) {
+                            for (let z = 0; z < token.length; z++) {
+                                if (token[z] !== undefined) {
+                                    await this.notificationService.pushNotificationMessage(content.data, token[z], endDateTimeToday);
+                                } else {
+                                    continue;
+                                }
+                            }
+                        }
+                    }
                 } else {
-                    const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
-                    return errorResponse;
-                }
-            }
-        }
-    }
-
-    public async pushNotification(content: any, startDateRange: Date, endDateTimeToday: Date): Promise<any> {
-        const switchSendNoti = await this.configService.getConfig(SWITCH_CASE_SEND_NOTI);
-        let sendNotification = DEFAULT_SWITCH_CASE_SEND_NOTI;
-        if (switchSendNoti) {
-            sendNotification = switchSendNoti.value;
-        }
-        const now = new Date(); // Get the current time
-        const hours = now.getHours(); // Get the hours of the current time
-        const minutes = now.getMinutes(); // Get the minutes of the current time
-        const assetTimerCheck = await this.configService.getConfig(KAOKAITODAY_TIMER_CHECK_DATE);
-        let assetTimer = DEFAULT_KAOKAITODAY_TIMER_CHECK_DAY;
-        if (assetTimerCheck) {
-            assetTimer = assetTimerCheck.value;
-        }
-        let splitComma = undefined;
-        const emailStack = [];
-        const listEmail = await this.configService.getConfig(SEND_EMAIL_TO_USER);
-        if (listEmail !== undefined) {
-            splitComma = listEmail.value.split(',');
-            if (splitComma.length > 0) {
-                for (const email of splitComma) {
-                    emailStack.push(String(email));
-                }
-            }
-        }
-        const dateFormat = new Date(endDateTimeToday);
-        const dateReal = dateFormat.setDate(dateFormat.getDate() - 1);
-        const toDate = new Date(dateReal);
-        const year = toDate.getFullYear();
-        const month = (toDate.getMonth() + 1).toString().padStart(2, '0');
-        const day = toDate.getDate().toString().padStart(2, '0');
-        const formattedDate = `${day}-${month}-${year}`;
-        const split = assetTimer.split(':');
-        const hourSplit = split[0];
-        const minuteSpit = split[1];
-        if (String(sendNotification) === 'true') {
-            console.log('pass1 notification ??');
-            if (hours === parseInt(hourSplit, 10) && minutes === parseInt(minuteSpit, 10)) {
-                for (const userEmail of emailStack) {
-                    const user = await this.userService.findOne({ email: userEmail.toString() });
                     const deviceToken = await this.deviceTokenService.aggregate(
                         [
                             {
                                 $match: {
-                                    userId: user.id,
                                     token: { $ne: null }
                                 }
                             },
@@ -2085,58 +2073,47 @@ export class MainPageController {
                     );
                     if (deviceToken.length > 0) {
                         for (let j = 0; j < deviceToken.length; j++) {
-                            if (deviceToken[j].User.subscribeNoti === true) {
-                                console.log('deviceToken[j]', deviceToken[j].token);
-                                await this.notificationService.pushNotificationMessage(content, deviceToken[j].token, formattedDate);
-                            } else {
+                            if(deviceToken[0].User.subscribeNoti === true && deviceToken[0].User !== undefined && deviceToken[j].token !== undefined && deviceToken[j].token !== null && deviceToken[j].token !== ''){
+                                fireBaseToken.push(deviceToken[j].token);
+                            }else{
                                 continue;
                             }
                         }
-                        const successResponse = 'done';
-                        return successResponse;
                     }
+                    if (fireBaseToken.length > 0) {
+                        const token = fireBaseToken.filter((element, index) => {
+                            return fireBaseToken.indexOf(element) === index;
+                        });
+                        if (token.length > 0) {
+                            for (let z = 0; z < token.length; z++) {
+                                if (token[z] !== undefined) {
+                                    // await this.notificationService.pushNotificationMessage(content.data, token[z], endDateTimeToday);
+                                } else {
+                                    continue;
+                                }
+                            }
+                        }
+                    }
+                }
+                return snapshot;
+            } else {
+                const maxDate = await this.kaokaiTodaySnapShotService.aggregate([{ $sort: { endDateTime: -1 } }, { $limit: 1 }]);
+                if (maxDate.length > 0) {
+                    return maxDate[0];
+                } else {
+                    const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
+                    return errorResponse;
                 }
             }
         } else {
-            console.log('pass2 notification ??');
-            if (hours === parseInt(hourSplit, 10) && minutes === parseInt(minuteSpit, 10)) {
-                const deviceToken = await this.deviceTokenService.aggregate(
-                    [
-                        {
-                            $match: {
-                                token: { $ne: null }
-                            }
-                        },
-                        {
-                            $lookup: {
-                                from: 'User',
-                                localField: 'userId',
-                                foreignField: '_id',
-                                as: 'User'
-                            }
-                        },
-                        {
-                            $unwind: {
-                                path: '$User',
-                                preserveNullAndEmptyArrays: true
-                            }
-                        }
-                    ]
-                );
-                if (deviceToken.length > 0) {
-                    for (let j = 0; j < deviceToken.length; j++) {
-                        if (deviceToken[j].User.subscribeNoti === true) {
-                            await this.notificationService.pushNotificationMessage(content, deviceToken[j].token, formattedDate);
-                        } else {
-                            continue;
-                        }
-                    }
-                    const successResponse = 'done';
-                    return successResponse;
-                }
+            const maxDate = await this.kaokaiTodaySnapShotService.aggregate([{ $sort: { endDateTime: -1 } }, { $limit: 1 }]);
+            if (maxDate.length > 0) {
+                return maxDate[0];
+            } else {
+                const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
+                return errorResponse;
             }
         }
-
     }
 
     public async sendEmail(user: User, email: string, content: any, subject: string, date?: Date): Promise<any> {
