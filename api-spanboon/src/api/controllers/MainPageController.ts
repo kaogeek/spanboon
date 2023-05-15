@@ -477,7 +477,7 @@ export class MainPageController {
                 ]
             );
         if (checkIsRead.length > 0) {
-            const successResponse = ResponseUtil.getSuccessResponse('The content has already been read.', undefined);
+            const successResponse = ResponseUtil.getSuccessResponse('The content has already been read.', checkIsRead);
             return res.status(200).send(successResponse);
         }
         if (user) {
@@ -488,7 +488,7 @@ export class MainPageController {
             isRead.isRead = data.isRead;
             const isReadPost = await this.isReadPostService.create(isRead);
             if (isReadPost) {
-                const successResponse = ResponseUtil.getSuccessResponse('Successfully create isRead.', undefined);
+                const successResponse = ResponseUtil.getSuccessResponse('Successfully create isRead.', isReadPost);
                 return res.status(200).send(successResponse);
             }
         } else {
