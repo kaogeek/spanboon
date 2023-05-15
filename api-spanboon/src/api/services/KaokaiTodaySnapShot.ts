@@ -29,7 +29,6 @@ export class KaokaiTodaySnapShotService {
     }
     public search(limit: number, offset: number, select: any = [], relation: any[], whereConditions: any = [], orderBy: any, count: boolean): Promise<any> {
         const condition: any = SearchUtil.createFindCondition(limit, offset, select, relation, whereConditions, orderBy);
-
         if (count) {
             return this.kaokaiTodaySnapShotRepository.count();
         } else {

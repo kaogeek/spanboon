@@ -11,20 +11,22 @@ import { PostsService } from '../services/PostsService';
 import { SearchFilter } from '../controllers/requests/SearchFilterRequest';
 import { S3Service } from '../services/S3Service';
 import { UserLikeService } from '../services/UserLikeService';
-import { IsReadPostService } from '../services/IsReadPostService';
+import { PageService } from '../services/PageService';
+import { UserService } from '../services/UserService';
 import { UserLike } from '../models/UserLike';
 import { LIKE_TYPE } from '../../constants/LikeType';
 import { ObjectID } from 'mongodb';
 import moment from 'moment';
 
-export class IsReadSectionProcessor extends AbstractSeparateSectionProcessor {
+export class FollowingProvinceSectionModelProcessor extends AbstractSeparateSectionProcessor {
     private DEFAULT_SEARCH_LIMIT = 10;
     private DEFAULT_SEARCH_OFFSET = 0;
     constructor(
         private postsService: PostsService,
         private s3Service: S3Service,
         private userLikeService: UserLikeService,
-        private isReadPostService: IsReadPostService
+        private userService:UserService,
+        private pageService: PageService
     ) {
         super();
     }
@@ -78,29 +80,47 @@ export class IsReadSectionProcessor extends AbstractSeparateSectionProcessor {
                 };
                 // const today = moment().add(month, 'month').toDate();
                 const today = moment().toDate();
-                let postIds = undefined;
-                const checkIsRead = await this.isReadPostService.aggregate
-                    (
-                        [
-                            {
-                                $match:
-                                {
-                                    userId: objIds
-                                }
+                const pageId = [];
+                const userProvince = await this.userService.aggregate(
+                    [
+                        {
+                            $match:{
+                                _id:objIds,
                             }
-                        ]
-                    );
-                if (checkIsRead.length > 0) {
-                    for (let i = 0; i < checkIsRead.length; i++) {
-                        const mapIds = checkIsRead[i].postId.map(ids => new ObjectID(ids));
-                        postIds = mapIds;
+                        },
+                        {
+                            $project:{
+                                province:1,
+                                _id:0
+                            }
+                        }
+                    ]
+                );
+                let pageProvince = undefined;
+                if(userProvince.length>0){
+                    pageProvince = await this.pageService.aggregate([
+                        {
+                            $match:{
+                                isOfficial:true,
+                                province:userProvince[0].province
+                            }
+                        },
+                    ]);
+                    if(pageProvince.length>0){
+                        for(let i = 0;i<pageProvince.length;i++){
+                            pageId.push(new ObjectID(pageProvince[i]._id));
+                        }
                     }
                 }
+                // USER
+                // PAGE
+                // EMERGENCY_EVENT
+                // OBJECTIVE
                 const postMatchStmt: any = {
                     isDraft: false,
                     deleted: false,
                     hidden: false,
-                    _id: { $nin: postIds }
+                    pageId: { $in: pageId }
                 };
                 const dateTimeAndArray = [];
                 if (startDateTime !== undefined && startDateTime !== null) {
@@ -187,12 +207,12 @@ export class IsReadSectionProcessor extends AbstractSeparateSectionProcessor {
                 const postAggregate = await this.postsService.aggregate(postStmt);
                 const lastestDate = null;
                 const result: SectionModel = new SectionModel();
-                result.title = (this.config === undefined || this.config.title === undefined) ? 'เรื่องราวที่คุณอาจพลาดไป' : this.config.title;
+                result.title = (this.config === undefined || this.config.title === undefined) ? 'ก้าวไกล'+userProvince[0].province : this.config.title;
                 result.subtitle = '';
                 result.description = '';
                 result.iconUrl = '';
                 result.contents = [];
-                result.type = 'IsRead'; // set type by processor type
+                result.type = 'FollowingProvince'; // set type by processor type
                 for (const row of postAggregate) {
                     const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                     const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
