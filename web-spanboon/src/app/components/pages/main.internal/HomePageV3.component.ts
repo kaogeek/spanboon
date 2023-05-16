@@ -561,7 +561,6 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     let userId = this.userCloneDatas.id;
     this.mainPageModelFacade.readContent(userId, this.readContent).then((res => {
       if (res) {
-        console.log("res", res)
       }
     })).catch((err) => {
       if (err) {

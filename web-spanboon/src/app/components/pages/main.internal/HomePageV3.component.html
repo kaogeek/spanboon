@@ -223,10 +223,10 @@
                                 &&
                                 model.emergencyEvents.mirrorTrends[2].name}}</a>
                         </div>
-                        <a class="wrapper-box"
-                            (click)="isPostNewTab ? openDilogPost(model && model.emergencyEvents.contents[0]) : clickToPageUser(model && model!.emergencyEvents!.contents[0].post._id,'post')">
+                        <a class="wrapper-box">
                             <ng-container *ngIf="model && model.emergencyEvents.contents[0]">
-                                <div class="wrapper-copper-img">
+                                <div class="wrapper-copper-img"
+                                    (click)="isPostNewTab ? openDilogPost(model && model.emergencyEvents.contents[0]) : clickToPageUser(model && model!.emergencyEvents!.contents[0].post._id,'post')">
                                     <img class="image-background"
                                         [src]="model && model.emergencyEvents.contents[0].coverPageSignUrl ? model.emergencyEvents.contents[0].coverPageSignUrl : apiBaseURL + (model && model.emergencyEvents.contents[0].coverPageUrl) + '/image'"
                                         alt="">
@@ -238,12 +238,15 @@
                             <ng-container *ngIf="model && model.emergencyEvents.contents[0]">
                                 <div class="detail">
                                     <p class="title tag-link"
-                                        [innerHTML]="'#'+(model && model.emergencyEvents.majorTrendHashTags[0].name)">
+                                        [innerHTML]="'#'+(model && model.emergencyEvents.majorTrendHashTags[0].name | highlight)"
+                                        (click)="clickToPage(model && model.emergencyEvents.majorTrendHashTags[0].name,'trendTags')">
                                     </p>
                                     <p class="content-detail"
+                                        (click)="isPostNewTab ? openDilogPost(model && model.emergencyEvents.contents[0]) : clickToPageUser(model && model!.emergencyEvents!.contents[0].post._id,'post')"
                                         [innerHTML]="model && model.emergencyEvents.contents[0].post.detail ? (model && model.emergencyEvents.contents[0].post.detail | highlight) : model && model.emergencyEvents.contents[0].post.title | highlight">
                                     </p>
-                                    <p class="amount-social">
+                                    <p class="amount-social"
+                                        (click)="isPostNewTab ? openDilogPost(model && model.emergencyEvents.contents[0]) : clickToPageUser(model && model!.emergencyEvents!.contents[0].post._id,'post')">
                                         <span>{{model && model.emergencyEvents.contents[0].commentCount |
                                             shortNumber}}
                                             ความคิดเห็น</span>

@@ -53,6 +53,11 @@
   animation: AnimationLoad 5s ease infinite;
 }
 
+//id post homepage
+.idpost {
+  display: none;
+}
+
 //test page spanboon
 .createpage-temporary {
   width: 100%;
@@ -60,6 +65,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+
   span {
     // width: 150pt;
     // color: white;
@@ -74,10 +80,12 @@
     box-shadow: 0px 4px 4px -7px rgb(99 99 99 / 20%), 0px 24px 38px 3px rgb(152 152 152 / 14%),
       0px 4px 10px 5px rgb(197 197 197 / 12%);
     @include font-size-10($font-head-500);
+
     .box-icon {
       width: 500pt;
       height: 200pt;
       display: flex;
+
       .box-icon-svg {
         height: 100%;
         width: 200pt;
@@ -89,29 +97,34 @@
         text-align: center;
         justify-content: center;
       }
+
       .box-from {
         height: 100%;
         width: 300pt;
         display: flex;
         align-items: center;
         justify-content: center;
+
         .test-login {
           display: flex;
           width: 80%;
           flex-direction: column;
           align-items: flex-end;
+
           .box-from-text {
             color: #ff0000;
             @include font-size-10($font-head-400);
             width: 105%;
             text-align: initial;
           }
+
           .input-test {
             padding: 6px;
             width: 100%;
             margin-bottom: 20px;
             @include font-size-9($font-head-400);
           }
+
           .test-login-bt {
             transition: 0.2s;
             width: 80pt;
@@ -123,6 +136,7 @@
             display: flex;
             align-items: center;
             cursor: pointer;
+
             &:hover {
               transition: 0.2s;
               background-color: #ff4248;
@@ -138,12 +152,15 @@
   .createpage-temporary .createpage-temporary-box .box-icon .box-icon-svg {
     display: none;
   }
+
   .createpage-temporary .createpage-temporary-box .box-icon .box-from {
     width: 100%;
   }
+
   .createpage-temporary .createpage-temporary-box .box-icon {
     width: 90vw;
   }
+
   .createpage-temporary {
     height: unset;
   }
@@ -157,6 +174,7 @@ $circle-size: 60px;
   height: $circle-size;
   border-radius: 50%;
 }
+
 .circle {
   z-index: 1;
   position: relative;
@@ -165,6 +183,7 @@ $circle-size: 60px;
   animation: success-anim 700ms ease;
   margin: 0px 20px;
 }
+
 .circle-border {
   z-index: 0;
   position: absolute;
@@ -178,9 +197,11 @@ $circle-size: 60px;
   0% {
     transform: scale(0);
   }
+
   30% {
     transform: scale(0);
   }
+
   100% {
     transform: scale(1);
   }
@@ -190,6 +211,7 @@ $circle-size: 60px;
   from {
     transform: scale(0);
   }
+
   to {
     transform: scale(1.1);
   }
@@ -342,6 +364,7 @@ a {
 .svg-home-color {
   fill: $svg-clock-icon-color;
 }
+
 .svg-home-crown-color {
   fill: $svg-crown-icon-color;
 }
@@ -349,12 +372,15 @@ a {
 .svg-icon-color {
   fill: $svg-icon;
 }
+
 .svg-icon-color-black {
   fill: $svg-icon-black;
 }
+
 .svg-icon-color-activate {
   fill: $svg-icon-activate;
 }
+
 .svg-icon-home-color {
   fill: $home-page-activate-color;
   color: $home-page-activate-color;
