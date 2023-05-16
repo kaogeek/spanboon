@@ -1007,6 +1007,7 @@
                                     <span [innerHTML]="item.post.title"></span>
                                 </div>
                             </ng-template>
+                            <span class="idpost" [innerHTML]="item.post._id" *ngIf="!item.post.isRead"></span>
                             <p class="title-post" [innerHTML]="item.coverPageUrl ? item.post.title : item.post.detail">
                             </p>
                         </div>
@@ -1069,6 +1070,7 @@
                                     <span [innerHTML]="item.post.title"></span>
                                 </div>
                             </ng-template>
+                            <span class="idpost" [innerHTML]="item.post._id" *ngIf="!item.post.isRead"></span>
                             <p class="title-post" [innerHTML]="item.coverPageUrl ? item.post.title : item.post.detail">
                             </p>
                         </div>
@@ -1131,6 +1133,7 @@
                                     <span [innerHTML]="item.post.title"></span>
                                 </div>
                             </ng-template>
+                            <span class="idpost" [innerHTML]="item.post._id" *ngIf="!item.post.isRead"></span>
                             <p class="title-post" [innerHTML]="item.coverPageUrl ? item.post.title : item.post.detail">
                             </p>
                         </div>
@@ -1193,6 +1196,7 @@
                                     <span [innerHTML]="item.post.title"></span>
                                 </div>
                             </ng-template>
+                            <span class="idpost" [innerHTML]="item.post._id" *ngIf="!item.post.isRead"></span>
                             <p class="title-post" [innerHTML]="item.coverPageUrl ? item.post.title : item.post.detail">
                             </p>
                         </div>

@@ -720,6 +720,10 @@
               color: rgba($brandcolor2, 0.95);
             }
           }
+
+          >.idpost {
+            display: none;
+          }
         }
 
         .owner-post {

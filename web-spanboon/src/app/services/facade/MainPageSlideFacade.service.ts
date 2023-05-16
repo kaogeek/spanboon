@@ -83,6 +83,25 @@ export class MainPageSlideFacade extends AbstractFacade {
     });
   }
 
+  public readContent(userId: string, postId: any[]): Promise<any[]> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/main/is/read';
+      let body: any = {
+        userId: userId,
+        postId: postId,
+        isRead: true
+      };
+
+      let option = this.authMgr.getDefaultOptions();
+
+      this.http.post(url, body, option).toPromise().then((response: any) => {
+        resolve(response.data);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
   // search obj pattern
   /*
   * {

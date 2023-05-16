@@ -25,6 +25,7 @@ import { AuthenManager } from 'src/app/services/AuthenManager.service';
 import { DialogAlert } from '../../shares/dialog/DialogAlert.component';
 import { DialogCheckBox } from '../../shares/dialog/DialogCheckBox.component';
 import { DialogPostCrad } from '../../shares/dialog/DialogPostCrad.component';
+import { debounce } from '../../shares/directive/DebounceScroll.directive';
 
 declare var $: any;
 
@@ -66,6 +67,8 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   public filterMonth: any = [];
   public announcement = ANNOUNCE_DEFAULT;
   public linkAnnounce = undefined;
+  public listContent: any = [];
+  public readContent: any[] = [];
 
   maxDate = new Date();
 
@@ -241,6 +244,17 @@ export class HomePageV3 extends AbstractPage implements OnInit {
             if (!!res.linkAnnounceMent || !!res.data.linkAnnounceMent) {
               this.linkAnnounce = res.linkAnnounceMent ? res.linkAnnounceMent : res.data.linkAnnounceMent;
             }
+            setTimeout(() => {
+              let list = document.getElementsByClassName("card-content");
+              let leng = list.length;
+              let div = document.getElementsByClassName("idpost");
+              for (let index = 0; index < leng; index++) {
+                if (div[index]) {
+                  let doc = div[index].innerHTML;
+                  this.listContent.push(doc)
+                }
+              }
+            }, 2000);
             const dateFormat = new Date();
             const dateReal = dateFormat.setDate(dateFormat.getDate());
             this.dateValues = new Date(dateReal).toISOString(); // convert to ISO string
@@ -518,6 +532,43 @@ export class HomePageV3 extends AbstractPage implements OnInit {
       this.isRes = false;
     }
   }
+
+  @HostListener('window:scroll', ['$event'])
+  @debounce(1000)
+  scroll(event) {
+    this._readHomeContent();
+    window.addEventListener('scroll', (event) => {
+      this._scrollIsRead();
+    });
+  }
+
+  private _scrollIsRead() {
+    const winH = window.innerHeight;
+    const classCard: any = document.getElementsByClassName('card-content');
+    if (!!classCard) {
+      for (let index = 0; index < classCard.length; index++) {
+        if (classCard[index].getBoundingClientRect().top <= winH) {
+          const result = this.readContent.filter(res => res === this.listContent[index]);
+          if (result.length <= 0) {
+            this.readContent.push(this.listContent[index]);
+          }
+        }
+      }
+    }
+  }
+
+  private _readHomeContent() {
+    let userId = this.userCloneDatas.id;
+    this.mainPageModelFacade.readContent(userId, this.readContent).then((res => {
+      if (res) {
+        console.log("res", res)
+      }
+    })).catch((err) => {
+      if (err) {
+      }
+    })
+  }
+
   public stopIsloading() {
     setTimeout(() => {
       this.isLoading = false;
