@@ -69,6 +69,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   public linkAnnounce = undefined;
   public listContent: any = [];
   public readContent: any[] = [];
+  public hidebar: boolean = true;
 
   maxDate = new Date();
 
@@ -121,6 +122,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     this.stopIsloading();
     this.getScreenSize();
     this.getDateFilter();
+    this.hidebar = this.authenManager.getHidebar();
     super.ngOnInit();
   }
 

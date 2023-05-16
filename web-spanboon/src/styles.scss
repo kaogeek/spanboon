@@ -44,8 +44,7 @@ body {
 
 body {
     margin: 0;
-    overflow-y: auto;
-    overflow-x: auto;
+    overflow-x: hidden;
     scrollbar-color: $brandcolor $white;
     scrollbar-width: thin;
     scroll-behavior: smooth;
@@ -95,7 +94,7 @@ p {
 //     }
 // }
 .cdk-global-overlay-wrapper {
-    > .cdk-overlay-pane {
+    >.cdk-overlay-pane {
         .mat-dialog-container {
             padding: unset;
         }
@@ -359,15 +358,15 @@ input:focus {
         flex-direction: column;
         padding: 0 15pt;
 
-        > .text {
+        >.text {
             @include font-size-8($font-head-500);
         }
 
-        > .select-noti-list {
+        >.select-noti-list {
             @include font-size-10($font-head-400);
             padding: 10pt 0pt;
 
-            > .list {
+            >.list {
                 cursor: pointer;
                 color: black;
                 background: #eeeeee 0% 0% no-repeat padding-box;
@@ -376,23 +375,23 @@ input:focus {
                 margin-right: 10px;
             }
 
-            > .select {
+            >.select {
                 color: #ee7623 !important;
                 background: #ee762329 0% 0% no-repeat padding-box !important;
             }
         }
     }
 
-    > .test {
+    >.test {
         padding: 20px;
         @include font-size-6($font-head-500);
     }
 
-    > .select-noti-list {
+    >.select-noti-list {
         @include font-size-10($font-head-400);
         padding: 10pt 0pt;
 
-        > .list {
+        >.list {
             cursor: pointer;
             color: black;
             background: #eeeeee 0% 0% no-repeat padding-box;
@@ -401,7 +400,7 @@ input:focus {
             margin-right: 10px;
         }
 
-        > .select {
+        >.select {
             color: #ee7623 !important;
             background: #ee762329 0% 0% no-repeat padding-box !important;
         }
@@ -429,10 +428,9 @@ input:focus {
         border-bottom: $width-border solid $border-separator;
         @include font-size-10($font-head-500);
 
-        > .wrapper-noti {
-        }
+        >.wrapper-noti {}
 
-        > .wrapper-setting {
+        >.wrapper-setting {
             cursor: pointer;
         }
     }
@@ -473,27 +471,27 @@ input:focus {
                 display: none;
             }
 
-            > div {
+            >div {
                 display: flex;
                 width: 100%;
                 justify-content: space-between;
                 align-items: center;
 
-                > .wrapper-list-div {
+                >.wrapper-list-div {
                     display: flex;
                     align-items: center;
 
-                    > .user-noti {
+                    >.user-noti {
                         padding: 5pt 10pt;
 
-                        > .img {
+                        >.img {
                             width: 34pt;
                             height: 34pt;
                             border-radius: 50%;
                             object-fit: cover;
                         }
 
-                        > .none-image {
+                        >.none-image {
                             display: flex;
                             align-items: center;
                             justify-content: center;
@@ -503,19 +501,19 @@ input:focus {
                         }
                     }
 
-                    > .wrapper-message {
+                    >.wrapper-message {
                         @include font-size-10($font-head-500);
 
-                        > .top {
+                        >.top {
                             color: $black;
 
-                            > .name {
+                            >.name {
                                 display: contents;
                                 font-weight: bold;
                             }
                         }
 
-                        > .wrapper-time {
+                        >.wrapper-time {
                             display: flex;
                             align-items: center;
                             color: $color-gray;
@@ -534,8 +532,7 @@ input:focus {
                     }
                 }
 
-                > .wrapper-setting {
-                }
+                >.wrapper-setting {}
             }
         }
 

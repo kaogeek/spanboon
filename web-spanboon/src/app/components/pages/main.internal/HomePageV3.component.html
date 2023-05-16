@@ -972,7 +972,7 @@
     <section class="section-2"
         *ngIf="!showLoading && (model && !!model.majorTrend && model.majorTrend.contents.length !== 0)">
         <div class="container">
-            <div class="header-title" [ngStyle]="{'top': !isRes ? '60px' : '0'}">
+            <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '60px' : '0'}">
                 <div class="wrapper-title">
                     <span>เกาะกระแส</span>
                 </div>
@@ -1035,7 +1035,7 @@
     <section class="section-3"
         *ngIf="!showLoading && (model && !!model.kaokaiProvince && model.kaokaiProvince.contents.length !== 0)">
         <div class="container">
-            <div class="header-title" [ngStyle]="{'top': !isRes ? '60px' : '0'}">
+            <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '60px' : '0'}">
                 <div class="wrapper-title">
                     <span [innerHTML]="model && model.kaokaiProvince.title"></span>
                 </div>
@@ -1098,7 +1098,7 @@
     <section class="section-4"
         *ngIf="!showLoading && (model && !!model.kaokaiHashTag && model.kaokaiHashTag.contents.length !== 0)">
         <div class="container">
-            <div class="header-title" [ngStyle]="{'top': !isRes ? '60px' : '0'}">
+            <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '60px' : '0'}">
                 <div class="wrapper-title">
                     <span [innerHTML]="model && model.kaokaiHashTag.title"></span>
                 </div>
@@ -1161,7 +1161,7 @@
     <section class="section-4"
         *ngIf="!showLoading && (model && !!model.kaokaiContent && model.kaokaiContent.contents.length !== 0)">
         <div class="container">
-            <div class="header-title" [ngStyle]="{'top': !isRes ? '60px' : '0'}">
+            <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '60px' : '0'}">
                 <div class="wrapper-title">
                     <span [innerHTML]="model && model.kaokaiContent.title"></span>
                 </div>
