@@ -94,7 +94,8 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                     },
                 ]);
                 // USER
-                // PAGE
+                // PAGE 
+                // db.Page.aggregate([{$match:{'isOfficial':true}},{'$lookup':{from:'Posts','let':{'id':'$_id'},'pipeline':[{'$match':{'$expr':{'$eq':['$$id','$pageId']}}},{$limit:1}],as:'Posts'}},{$unwind: { path: '$Posts', preserveNullAndEmptyArrays: true }}])
                 // EMERGENCY_EVENT
                 // OBJECTIVE
                 const contentsFollowing = [];
@@ -115,6 +116,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                         }
                     }
                 }
+                console.log('postIds',postIds);
                 if(postIds.length >0){
                     for(let j = 0 ;j<postIds.length;j++){
                         if(postIds[j].pageId !== undefined){
@@ -308,6 +310,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                 result.subtitle = '';
                 result.description = '';
                 result.iconUrl = '';
+                result.isFollowing = [];
                 result.contents = [];
                 result.type = 'Following'; // set type by processor type
                 for (const row of contentsFollowing.flat()) {
@@ -347,7 +350,13 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                     result.contents.push(contents);
                 }
                 result.dateTime = lastestDate;
-
+                if(postIds.length >0 && result.contents.length>0){
+                    for(let i = 0 ;i<postIds.length;i++){
+                        if(postIds[i].pageId !== undefined){
+                            console.log('postIds -> pageId',postIds[i].pageId);
+                        }
+                    }
+                }
                 resolve(result);
             } catch (error) {
                 reject(error);
@@ -356,7 +365,6 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
     }
     private parsePageField(page: any): any {
         const pageResult: any = {};
-
         if (page !== undefined) {
             pageResult.id = page._id;
             pageResult.name = page.name;

@@ -19,7 +19,7 @@ export class IsReadPostService {
 
     // create Device token and find the user who is login !!!!!
     public async create(data: any): Promise<any> {
-        this.log.info('Send OTP.');
+        this.log.info('Create is Read.');
         return await this.isReadPostRepository.save(data);
     }
 

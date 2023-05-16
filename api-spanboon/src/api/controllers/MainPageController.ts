@@ -58,7 +58,7 @@ import { KaokaiAllProvinceModelProcessor } from '../processors/KaokaiAllProvince
 import { IsReadPostService } from '../services/IsReadPostService';
 import { KaokaiTodayService } from '../services/KaokaiTodayService';
 import { NotificationService } from '../services/NotificationService';
-
+import * as fs from 'fs';
 import { IsReadSectionProcessor } from '../processors/IsReadSectionProcessor';
 import { FollowingPostSectionModelProcessor } from '../processors/FollowingPostSectionModelProcessor';
 import { FollowingProvinceSectionModelProcessor } from '../processors/FollowingProvinceSectionModelProcessor';
@@ -86,7 +86,6 @@ import { KaokaiTodaySnapShotService } from '../services/KaokaiTodaySnapShot';
 import { KaokaiContentModelProcessor } from '../processors/KaokaiContentModelProcessor';
 import { MAILService } from '../../auth/mail.services';
 import { DeviceTokenService } from '../services/DeviceToken';
-
 @JsonController('/main')
 export class MainPageController {
     constructor(
@@ -412,7 +411,7 @@ export class MainPageController {
         const userId = req.headers.userid;
         const mainPageSearchConfig = await this.pageService.searchPageOfficialConfig();
         const searchOfficialOnly = mainPageSearchConfig.searchOfficialOnly;
-        const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 7);
+        const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 15);
         const isReadSectionProcessor: IsReadSectionProcessor = new IsReadSectionProcessor(this.postsService, this.s3Service, this.userLikeService, this.isReadPostService);
         isReadSectionProcessor.setData({
             userId,
@@ -462,34 +461,62 @@ export class MainPageController {
         const user = await this.userService.findOne({ _id: objIds });
         // check is read
         const checkIsRead = await this.isReadPostService.aggregate
-            (
-                [
+        (
+            [
+                {
+                    $match:
                     {
-                        $match:
-                        {
-                            userId: objIds,
-                            postId: { $in: data.postId }
-                        }
-                    },
-                    {
-                        $limit: 1
+                        userId: objIds,
+                        postId: { $in: data.postId }
                     }
-                ]
-            );
-        if (checkIsRead.length > 0) {
-            const successResponse = ResponseUtil.getSuccessResponse('The content has already been read.', checkIsRead);
-            return res.status(200).send(successResponse);
-        }
+                },
+                {
+                    $limit: 1
+                }
+            ]
+        );
+    if (checkIsRead.length > 0) {
+        const postIds = data.postId.map(ids => new ObjectID(ids));
+        const isRead = await this.postsService.aggregate(
+            [
+                {
+                    $match:{
+                        _id:{$in:postIds}
+                    }
+                }
+            ]
+        );
+        const result:any = {};
+        result.isReadPost = isRead;
+        result.userIds = objIds;
+        const successResponse = ResponseUtil.getSuccessResponse('The content has already been read.', result);
+        return res.status(200).send(successResponse);
+    }
         if (user) {
             // check is read
-            const isRead: IsRead = new IsRead();
-            isRead.userId = objIds;
-            isRead.postId = data.postId;
-            isRead.isRead = data.isRead;
-            const isReadPost = await this.isReadPostService.create(isRead);
-            if (isReadPost) {
-                const successResponse = ResponseUtil.getSuccessResponse('Successfully create isRead.', isReadPost);
-                return res.status(200).send(successResponse);
+            if(data.postId.length>0){
+                const isRead: IsRead = new IsRead();
+                isRead.userId = objIds;
+                isRead.postId = data.postId;
+                isRead.isRead = data.isRead;
+                const isReadPost = await this.isReadPostService.create(isRead);
+                if(isReadPost){
+                    const postIds = data.postId.map(ids => new ObjectID(ids));
+                    const isRead = await this.postsService.aggregate(
+                        [
+                            {
+                                $match:{
+                                    _id:{$in:postIds}
+                                }
+                            }
+                        ]
+                    );
+                    const result:any = {};
+                    result.isReadPost = isRead;
+                    result.userIds = objIds;
+                    const successResponse = ResponseUtil.getSuccessResponse('The content has already been read.', result);
+                    return res.status(200).send(successResponse);
+                }
             }
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find User.', undefined);
@@ -1955,14 +1982,28 @@ export class MainPageController {
         if (checkCreate !== undefined && checkCreate !== null) {
             return checkCreate.data;
         }
+        if (fs.existsSync('snapshot-lock.txt')) {
+            // Lock file exists, another snapshot creation is in progress
+            console.log('Snapshot creation is already in progress. Please wait.');
+            return;
+        }
+        fs.writeFileSync('snapshot-lock.txt', '');
+        let snapshot = undefined;
         const contents = data;
-        const startDate = startDateRange;
-        const endDate = endDateTimeToday;
-        const result: any = {};
-        result.data = contents;
-        result.startDateTime = startDate;
-        result.endDateTime = endDate;
-        const snapshot = await this.kaokaiTodaySnapShotService.create(result);
+        try {
+            const startDate = startDateRange;
+            const endDate = endDateTimeToday;
+            const result: any = {};
+            result.data = contents;
+            result.startDateTime = startDate;
+            result.endDateTime = endDate;
+            snapshot = await this.kaokaiTodaySnapShotService.create(result);
+        } catch (error) {
+            console.log('Error occurred during snapshot creation:', error);
+        } finally {
+            // Remove the lock file to release the lock
+            fs.unlinkSync('snapshot-lock.txt');
+        }
         // Check Date time === 06:00 morning
         let content = undefined;
         const fireBaseToken = [];
@@ -2022,6 +2063,7 @@ export class MainPageController {
                                     }
                                 ]
                             );
+                            console.log('deviceToken', deviceToken);
                             if (deviceToken.length > 0) {
                                 for (let j = 0; j < deviceToken.length; j++) {
                                     if (user.subscribeNoti === true && deviceToken[j].token !== undefined && deviceToken[j].token !== null && deviceToken[j].token !== '') {
@@ -2033,13 +2075,16 @@ export class MainPageController {
                             }
                         }
                     }
+                    console.log('fireBaseToken', fireBaseToken);
                     if (fireBaseToken.length > 0) {
                         const token = fireBaseToken.filter((element, index) => {
                             return fireBaseToken.indexOf(element) === index;
                         });
+                        console.log('token -> outside', token);
                         if (token.length > 0) {
                             for (let z = 0; z < token.length; z++) {
                                 if (token[z] !== undefined) {
+                                    console.log('pass 1?????');
                                     await this.notificationService.pushNotificationMessage(content.data, token[z], endDateTimeToday);
                                 } else {
                                     continue;
@@ -2073,9 +2118,9 @@ export class MainPageController {
                     );
                     if (deviceToken.length > 0) {
                         for (let j = 0; j < deviceToken.length; j++) {
-                            if(deviceToken[0].User.subscribeNoti === true && deviceToken[0].User !== undefined && deviceToken[j].token !== undefined && deviceToken[j].token !== null && deviceToken[j].token !== ''){
+                            if (deviceToken[0].User.subscribeNoti === true && deviceToken[0].User !== undefined && deviceToken[j].token !== undefined && deviceToken[j].token !== null && deviceToken[j].token !== '') {
                                 fireBaseToken.push(deviceToken[j].token);
-                            }else{
+                            } else {
                                 continue;
                             }
                         }
@@ -2087,7 +2132,7 @@ export class MainPageController {
                         if (token.length > 0) {
                             for (let z = 0; z < token.length; z++) {
                                 if (token[z] !== undefined) {
-                                    // await this.notificationService.pushNotificationMessage(content.data, token[z], endDateTimeToday);
+                                    await this.notificationService.pushNotificationMessage(content.data, token[z], endDateTimeToday);
                                 } else {
                                     continue;
                                 }
