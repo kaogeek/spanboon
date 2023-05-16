@@ -24,4 +24,5 @@ export class SectionModel extends BaseModel {
     public position: number;
     public majorTrendHashTags:any;
     public mirrorTrends:any;
+    public isFollowing:any;
 }
