@@ -697,7 +697,7 @@ export class MainPageController {
         const emergencyPinModel = await emergencyPinProcessor.process();
         let postSectionModel = undefined;
         let objectiveSectionModel = undefined;
-        if(emergency !== true){
+        if (emergency !== true) {
             const postProcessor: PostSectionProcessor = new PostSectionProcessor(this.postsService, this.s3Service, this.userLikeService);
             postProcessor.setData({
                 userId,
@@ -747,7 +747,6 @@ export class MainPageController {
                 searchOfficialOnly
             });
             processorList.push(userRecProcessor);
-
 
             const userFollowProcessor: UserFollowSectionProcessor = new UserFollowSectionProcessor(this.postsService, this.userFollowService, this.pageService, this.s3Service);
             userFollowProcessor.setData({
@@ -1997,95 +1996,39 @@ export class MainPageController {
         const snapshot = await this.kaokaiTodaySnapShotService.create(result);
         // Check Date time === 06:00 morning
         let content = undefined;
-        const fireBaseToken = [];
+        const fireBaseToken = []; 
         // String(switchSendEm) === 'true'
-        if (snapshot) {
-            if (hours === parseInt(hourSplit, 10) && minutes === parseInt(minuteSpit, 10)) {
-                if (String(switchSendEm) === 'true') {
-                    console.log('send email 1');
-                    content = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: endDateTimeToday });
-                    let user = undefined;
-                    for (const userEmail of emailStack) {
-                        user = await this.userService.findOne({ email: userEmail.toString() });
-                        if (user.subscribeEmail === true) {
-                            await this.sendEmail(user, user.email, content.data, 'ก้าวไกลวันนี้', endDateTimeToday);
-                        } else {
-                            continue;
-                        }
-                    }
-                } else {
-                    console.log('send email 2');
-                    content = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: endDateTimeToday });
-                    const users = await this.userService.find();
-                    for (const user of users) {
-                        if (user.subscribeEmail === true) {
-                            await this.sendEmail(user, user.email, content.data, 'ก้าวไกลหน้าหนึ่ง', endDateTimeToday);
-                        } else {
-                            continue;
-                        }
+        if (snapshot && hours === parseInt(hourSplit, 10) && minutes === parseInt(minuteSpit, 10)) {
+            if (String(switchSendEm) === 'true') { 
+                content = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: endDateTimeToday });
+                let user = undefined;
+                for (const userEmail of emailStack) {
+                    user = await this.userService.findOne({ email: userEmail.toString() });
+                    if (user.subscribeEmail === true) {
+                        await this.sendEmail(user, user.email, content.data, 'ก้าวไกลวันนี้', endDateTimeToday);
+                    } else {
+                        continue;
                     }
                 }
-                if (String(sendNotification) === 'true') {
-                    console.log('pass1 notification ??');
-                    for (const userEmail of emailStack) {
-                        const user = await this.userService.findOne({ email: userEmail.toString() });
-                        const deviceToken = await this.deviceTokenService.aggregate(
-                            [
-                                {
-                                    $match: {
-                                        userId: user.id,
-                                        token: { $ne: null }
-                                    }
-                                },
-                                {
-                                    $lookup: {
-                                        from: 'User',
-                                        localField: 'userId',
-                                        foreignField: '_id',
-                                        as: 'User'
-                                    }
-                                },
-                                {
-                                    $unwind: {
-                                        path: '$User',
-                                        preserveNullAndEmptyArrays: true
-                                    }
-                                }
-                            ]
-                        );
-                        console.log('deviceToken', deviceToken);
-                        if (deviceToken.length > 0) {
-                            for (let j = 0; j < deviceToken.length; j++) {
-                                if (user.subscribeNoti === true && deviceToken[j].token !== undefined && deviceToken[j].token !== null && deviceToken[j].token !== '') {
-                                    fireBaseToken.push(deviceToken[j].token);
-                                } else {
-                                    continue;
-                                }
-                            }
-                        }
+            } else {
+                content = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: endDateTimeToday });
+                const users = await this.userService.find();
+                for (const user of users) {
+                    if (user.subscribeEmail === true) {
+                        await this.sendEmail(user, user.email, content.data, 'ก้าวไกลหน้าหนึ่ง', endDateTimeToday);
+                    } else {
+                        continue;
                     }
-                    console.log('fireBaseToken', fireBaseToken);
-                    if (fireBaseToken.length > 0) {
-                        const token = fireBaseToken.filter((element, index) => {
-                            return fireBaseToken.indexOf(element) === index;
-                        });
-                        console.log('token -> outside', token);
-                        if (token.length > 0) {
-                            for (let z = 0; z < token.length; z++) {
-                                if (token[z] !== undefined) {
-                                    console.log('pass 1?????');
-                                    await this.notificationService.pushNotificationMessage(content.data, token[z], endDateTimeToday);
-                                } else {
-                                    continue;
-                                }
-                            }
-                        }
-                    }
-                } else {
+                }
+            }
+            if (String(sendNotification) === 'true') {
+                for (const userEmail of emailStack) {
+                    const user = await this.userService.findOne({ email: userEmail.toString() });
                     const deviceToken = await this.deviceTokenService.aggregate(
                         [
                             {
                                 $match: {
+                                    userId: user.id,
                                     token: { $ne: null }
                                 }
                             },
@@ -2107,38 +2050,79 @@ export class MainPageController {
                     );
                     if (deviceToken.length > 0) {
                         for (let j = 0; j < deviceToken.length; j++) {
-                            if (deviceToken[0].User.subscribeNoti === true && deviceToken[0].User !== undefined && deviceToken[j].token !== undefined && deviceToken[j].token !== null && deviceToken[j].token !== '') {
+                            if (user.subscribeNoti === true && deviceToken[j].token !== undefined && deviceToken[j].token !== null && deviceToken[j].token !== '') {
                                 fireBaseToken.push(deviceToken[j].token);
                             } else {
                                 continue;
                             }
                         }
                     }
-                    if (fireBaseToken.length > 0) {
-                        const token = fireBaseToken.filter((element, index) => {
-                            return fireBaseToken.indexOf(element) === index;
-                        });
-                        if (token.length > 0) {
-                            for (let z = 0; z < token.length; z++) {
-                                if (token[z] !== undefined) {
-                                    await this.notificationService.pushNotificationMessage(content.data, token[z], endDateTimeToday);
-                                } else {
-                                    continue;
-                                }
+                }
+                if (fireBaseToken.length > 0) {
+                    const token = fireBaseToken.filter((element, index) => {
+                        return fireBaseToken.indexOf(element) === index;
+                    });
+                    console.log('token -> outside', token);
+                    if (token.length > 0) {
+                        for (let z = 0; z < token.length; z++) {
+                            if (token[z] !== undefined) {
+                                console.log('pass 1?????');
+                                await this.notificationService.pushNotificationMessage(content.data, token[z], endDateTimeToday);
+                            } else {
+                                continue;
                             }
                         }
                     }
                 }
-                return snapshot;
             } else {
-                const maxDate = await this.kaokaiTodaySnapShotService.aggregate([{ $sort: { endDateTime: -1 } }, { $limit: 1 }]);
-                if (maxDate.length > 0) {
-                    return maxDate[0];
-                } else {
-                    const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
-                    return errorResponse;
+                const deviceToken = await this.deviceTokenService.aggregate(
+                    [
+                        {
+                            $match: {
+                                token: { $ne: null }
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'User',
+                                localField: 'userId',
+                                foreignField: '_id',
+                                as: 'User'
+                            }
+                        },
+                        {
+                            $unwind: {
+                                path: '$User',
+                                preserveNullAndEmptyArrays: true
+                            }
+                        }
+                    ]
+                );
+                if (deviceToken.length > 0) {
+                    for (let j = 0; j < deviceToken.length; j++) {
+                        if (deviceToken[0].User.subscribeNoti === true && deviceToken[0].User !== undefined && deviceToken[j].token !== undefined && deviceToken[j].token !== null && deviceToken[j].token !== '') {
+                            fireBaseToken.push(deviceToken[j].token);
+                        } else {
+                            continue;
+                        }
+                    }
+                }
+                if (fireBaseToken.length > 0) {
+                    const token = fireBaseToken.filter((element, index) => {
+                        return fireBaseToken.indexOf(element) === index;
+                    });
+                    if (token.length > 0) {
+                        for (let z = 0; z < token.length; z++) {
+                            if (token[z] !== undefined) {
+                                await this.notificationService.pushNotificationMessage(content.data, token[z], endDateTimeToday);
+                            } else {
+                                continue;
+                            }
+                        }
+                    }
                 }
             }
+            return snapshot;
         } else {
             const maxDate = await this.kaokaiTodaySnapShotService.aggregate([{ $sort: { endDateTime: -1 } }, { $limit: 1 }]);
             if (maxDate.length > 0) {

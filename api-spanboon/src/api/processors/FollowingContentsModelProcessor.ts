@@ -17,7 +17,7 @@ import { LIKE_TYPE } from '../../constants/LikeType';
 import { ObjectID } from 'mongodb';
 import moment from 'moment';
 
-export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionProcessor {
+export class FollowingContentsModelProcessor extends AbstractSeparateSectionProcessor {
     private DEFAULT_SEARCH_LIMIT = 10;
     private DEFAULT_SEARCH_OFFSET = 0;
     constructor(
@@ -117,7 +117,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                     }
                 }
                 const result: SectionModel = new SectionModel();
-                result.title = (this.config === undefined || this.config.title === undefined) ? 'เพราะคุณติดตาม' : this.config.title;
+                result.title = (this.config === undefined || this.config.title === undefined) ? 'ข่าวสารก่อนหน้านี้' : this.config.title;
                 result.subtitle = '';
                 result.description = '';
                 result.iconUrl = '';
@@ -159,7 +159,12 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                         as: 'page'
                                     }
                                 },
-                                { $sort: { summationScore: -1 } },
+                                { $sort: 
+                                    {
+                                        createdDate:-1,
+                                        summationScore: -1 
+                                    } 
+                                },
                                 {
                                     $unwind: {
                                         path: '$page',
@@ -217,9 +222,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                             const postPageIdAggregate = await this.postsService.aggregate(postStmtPage);
 
                             contentsFollowing.push(postPageIdAggregate);
-
-                        }
-                        /* else if(postIds[j].userId !== undefined){
+                        }else if(postIds[j].userId !== undefined){
                             const postMatchStmtUser: any = {
                                 isDraft: false,
                                 deleted: false,
@@ -310,7 +313,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                             }
                             const postUserIdAggregate = await this.postsService.aggregate(postStmtUser);
                             contentsFollowing.push(postUserIdAggregate);
-                        } */
+                        }
                     }
                 }
                 const lastestDate = null;
