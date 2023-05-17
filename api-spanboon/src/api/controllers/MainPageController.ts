@@ -590,7 +590,6 @@ export class MainPageController {
      */
     @Get('/content')
     public async getContentList(@QueryParam('offset') offset: number, @QueryParam('emergency') emergency: boolean, @QueryParam('section') section: string, @QueryParam('date') date: string, @Res() res: any, @Req() req: any): Promise<any> {
-        console.log('emergency', emergency);
         const userId = req.headers.userid;
         const mainPageSearchConfig = await this.pageService.searchPageOfficialConfig();
         const searchOfficialOnly = mainPageSearchConfig.searchOfficialOnly;
