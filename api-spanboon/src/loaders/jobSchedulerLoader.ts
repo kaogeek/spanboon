@@ -8,9 +8,6 @@
 import { MicroframeworkLoader, MicroframeworkSettings } from 'microframework-w3tec';
 import * as schedule from 'node-schedule';
 import axios from 'axios';
-import * as fs from 'fs';
-
-let isProcessing = false;
 /* 
 * This will set job schedule for Clear Temp File
 */
@@ -39,43 +36,25 @@ export const jobSchedulerLoader: MicroframeworkLoader = (settings: Microframewor
 
     schedule.scheduleJob('*/1 * * * *', async () => {
         // Check if snapshot creation is already in progress
-        if (fs.existsSync('snapshot-lock.txt')) {
-            console.log('Snapshot creation is already in progress. Please wait.');
-            return;
-        }
+        axios.get(process.env.APP_API_PROCESSV3)
+            .then((res) => {
+                console.log(`Main Contents : ${res.status}`);
 
-        fs.writeFileSync('snapshot-lock.txt', ''); // Create lock file to prevent concurrent execution
+                // Your existing code for snapshot creation goes here
 
-        try {
-            if (!isProcessing) {
-                isProcessing = true; // Set the flag to indicate task is running
-
-                axios.get(process.env.APP_API_PROCESSV3)
-                    .then((res) => {
-                        console.log(`Main Contents : ${res.status}`);
-
-                        // Your existing code for snapshot creation goes here
-
-                        // Your existing code for sending emails and notifications goes here
-                    })
-                    .catch((err) => {
-                        console.log('err:' + err);
-                    });
-            }
-        } catch (error) {
-            console.log('Error occurred during snapshot creation:', error);
-        } finally {
-            fs.unlinkSync('snapshot-lock.txt'); // Remove the lock file to release the lock
-            isProcessing = false; // Reset the flag to indicate task has completed
-        }
+                // Your existing code for sending emails and notifications goes here
+            })
+            .catch((err) => {
+                console.log('err:' + err);
+            });
     });
 
     // fetch feed twitter
-    schedule.scheduleJob('*/30 * * * *', () => {
-        axios.get(process.env.APP_TWITTER).then((res) => {
-            console.log(`Fetch Twitter : ${res.status}`);
-        }).catch((err) => {
-            console.log('err: ' + err);
-        });
-    });
+    // schedule.scheduleJob('*/30 * * * *', () => {
+        // axios.get(process.env.APP_TWITTER).then((res) => {
+            // console.log(`Fetch Twitter : ${res.status}`);
+        // }).catch((err) => {
+            // console.log('err: ' + err);
+        // });
+    // });
 };

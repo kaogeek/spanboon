@@ -5,11 +5,12 @@
  * Author:  shiorin <junsuda.s@absolute.co.th>
  */
 
-import { JsonController, Res, Post, QueryParam, Get, Body, Req } from 'routing-controllers';
+import { JsonController, Res, Post, QueryParam, Get, Body } from 'routing-controllers';
 import { ResponseUtil } from '../../utils/ResponseUtil';
 import { TwitterService } from '../services/TwitterService';
 import { TwitterVerifyRequest } from './requests/TwitterVerifyRequest';
 // socialPostLogsService
+/* 
 import { SocialPostLogsService } from '../services/SocialPostLogsService';
 // pageService 
 // socialPostService
@@ -25,19 +26,20 @@ import { ObjectID } from 'typeorm';
 import { HashTagService } from '../services/HashTagService';
 import { PageObjectiveCategoryService } from '../services/PageObjectiveCategoryService';
 import { EmergencyEventService } from '../services/EmergencyEventService';
-import { PageObjectiveService } from '../services/PageObjectiveService';
+import { PageObjectiveService } from '../services/PageObjectiveService'; */
 @JsonController('/twitter')
 export class TwitterController {
 
     constructor(
         private twitterService: TwitterService,
+        /* 
         private socialPostLogsService: SocialPostLogsService,
         private socialPostService: SocialPostService,
         private postsService: PostsService,
         private hashTagService: HashTagService,
         private pageObjectiveCategoryService: PageObjectiveCategoryService,
         private emergencyEventService: EmergencyEventService,
-        private pageObjectiveService: PageObjectiveService
+        private pageObjectiveService: PageObjectiveService */
     ) { }
 
     /**
@@ -126,6 +128,7 @@ export class TwitterController {
             return res.status(400).send(errorResponse);
         }
     }
+    /* 
     @Get('/feed_tw')
     public async FeedTwitter(@Req() request: any, @Res() response: any): Promise<any> {
         let title = undefined;
@@ -285,8 +288,9 @@ export class TwitterController {
         }
         const successResponse = ResponseUtil.getSuccessResponse('Feed Twitter is Successfully', undefined);
         return response.status(200).send(successResponse);
-    }
+    } 
+
     private async findMasterHashTag(hashTagNameList: string[]): Promise<HashTag[]> {
         return await this.hashTagService.find({ name: { $in: hashTagNameList } });
-    }
+    } */
 }
