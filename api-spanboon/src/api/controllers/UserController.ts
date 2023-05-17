@@ -83,6 +83,7 @@ export class UserController {
     @Authorized('user')
     public async logout(@QueryParam('mode') mode: string, @Res() res: any, @Req() req: any): Promise<any> {
         const uid = new ObjectID(req.user.id);
+        const tokenFCM = String(req.body.tokenFCM);
         let logoutAll = false;
         if (mode !== undefined) {
             mode = mode.toLocaleLowerCase();
@@ -115,9 +116,21 @@ export class UserController {
             }
         } else {
             const authenId: AuthenticationId = await this.authenticationIdService.findOne({ where: { user: uid } });
+            const deleteFCM = await this.deviceTokenService.find({ userId: uid, token: tokenFCM });
             if (!authenId) {
                 const errorResponse: any = { status: 0, message: 'Invalid token' };
                 return res.status(400).send(errorResponse);
+            }
+            else if (deleteFCM !== null) {
+                for (let i = 0; i < deleteFCM.length; i++) {
+                    await this.deviceTokenService.delete({ userId: uid, token: deleteFCM[i].Tokens });
+                }
+            }
+            else if (deleteFCM === null) {
+                const deleteNull = await this.deviceTokenService.find({ userId: uid });
+                for (let i = 0; i < deleteNull.length; i++) {
+                    await this.deviceTokenService.delete({ userId: deleteNull[i].id });
+                }
             }
             const currentDateTime = moment().toDate();
             const updateExpireToken = await this.authenticationIdService.update({ _id: authenId.id }, { $set: { lastAuthenTime: currentDateTime } });

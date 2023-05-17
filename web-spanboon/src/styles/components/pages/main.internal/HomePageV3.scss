@@ -517,6 +517,7 @@
             justify-content: center;
             position: relative;
             overflow: hidden;
+            min-height: 300px;
 
             >.teg_event {
               background-color: black;
@@ -534,6 +535,7 @@
               background-size: cover;
               filter: blur(5px);
               width: 100%;
+              min-height: 300px;
             }
 
             >.image {
@@ -541,6 +543,7 @@
               height: auto;
               position: relative;
               z-index: 1;
+              min-height: 300px;
             }
           }
 
@@ -655,12 +658,14 @@
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 15px;
-      > .profile-pages{
-        > .profile-page{
+
+      >.profile-pages {
+        >.profile-page {
           display: flex;
           align-items: center;
           justify-content: center;
-          > .image-profile-fan-page {
+
+          >.image-profile-fan-page {
             width: calc(50% - 8px);
             height: calc(50% - 8px);
             border-radius: 50%;
@@ -670,7 +675,8 @@
             margin-top: 30px;
           }
         }
-        > .fan-page-name {
+
+        >.fan-page-name {
           display: flex;
           align-items: center;
           color: $brandcolor2;
@@ -679,6 +685,7 @@
           text-align: center;
         }
       }
+
       @media (max-width: $xlarge) {
         grid-template-columns: repeat(2, 1fr);
         row-gap: 40px;
@@ -763,16 +770,19 @@
         }
       }
     }
+
     >.wrapper-content-following {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 15px;
-      > .profile-pages{
-        > .profile-page{
+
+      >.profile-pages {
+        >.profile-page {
           display: flex;
           align-items: center;
           justify-content: center;
-          > .image-profile-fan-page {
+
+          >.image-profile-fan-page {
             width: calc(50% - 8px);
             height: calc(50% - 8px);
             border-radius: 50%;
@@ -782,7 +792,8 @@
             margin-top: 30px;
           }
         }
-        > .fan-page-name {
+
+        >.fan-page-name {
           display: flex;
           align-items: center;
           color: $brandcolor2;
@@ -791,6 +802,7 @@
           text-align: center;
         }
       }
+
       @media (max-width: $xlarge) {
         grid-template-columns: repeat(2, 1fr);
         row-gap: 40px;
@@ -854,6 +866,10 @@
             &:hover {
               color: rgba($brandcolor2, 0.95);
             }
+          }
+
+          >.idpost {
+            display: none;
           }
         }
 

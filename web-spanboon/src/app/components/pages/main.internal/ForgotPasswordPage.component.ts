@@ -52,6 +52,8 @@ export class forgotPasswordPage extends AbstractPage implements OnInit {
   public centered: string;
   public hide: boolean;
   public hiderepasswd: boolean;
+  public isDisable1: boolean = false;
+  public isDisable2: boolean = false;
 
   constructor(authenManager: AuthenManager, router: Router, dialog: MatDialog, forgetPasswordFacade: FotgotPasswordFacade, assetFacade: AssetFacade, seoService: SeoService) {
     super(PAGE_NAME, authenManager, dialog, router);
@@ -91,6 +93,7 @@ export class forgotPasswordPage extends AbstractPage implements OnInit {
   }
 
   public forgetPassword(n) {
+    this.isDisable1 = true;
     const email = this.email.nativeElement.value;
     var x, y, i, valid = true;
     x = document.getElementsByClassName("box-forgot");
@@ -102,6 +105,7 @@ export class forgotPasswordPage extends AbstractPage implements OnInit {
     if (!email.match(emailPattern)) {
       this.invaildEmail = true;
       y[0].classList.add("invalid");
+      this.isDisable1 = false;
       return document.getElementById("email").focus();
     }
 
@@ -111,17 +115,20 @@ export class forgotPasswordPage extends AbstractPage implements OnInit {
     this.forgetPasswordFacade.forgot(data).then((res) => {
       if (res.message === 'Your Activation Code has been sent to your email inbox.') {
         this.isEmail = false;
+        this.isDisable1 = false;
         this.nextPrev(n);
       }
     }).catch((err) => {
       if (err.error.message === "Invalid Username") {
         this.invaildEmail = true;
+        this.isDisable1 = false;
         y[0].classList.add("invalid");
       }
     });
   }
 
   public changePassword(n) {
+    this.isDisable2 = true;
     var x, y, i, valid = true;
     x = document.getElementsByClassName("box-forgot");
     y = x[currentTab].getElementsByClassName("input-forgot");
@@ -155,6 +162,7 @@ export class forgotPasswordPage extends AbstractPage implements OnInit {
     if (!uuid.match(pattern)) {
       this.invaildPattern = true;
       y[0].classList.add("invalid");
+      this.isDisable2 = false;
       return document.getElementById("uuid").focus();
     } else {
       this.invaildPattern = false;
@@ -164,6 +172,7 @@ export class forgotPasswordPage extends AbstractPage implements OnInit {
     if (passwd.length < 6) {
       this.invaildPasswd = true;
       y[1].classList.add("invalid");
+      this.isDisable2 = false;
       return document.getElementById("passwd").focus();
     } else {
       this.invaildPasswd = false;
@@ -173,6 +182,7 @@ export class forgotPasswordPage extends AbstractPage implements OnInit {
     if (repasswd.length < 6) {
       this.invaildRePasswd = true;
       y[2].classList.add("invalid");
+      this.isDisable2 = false;
       return document.getElementById("repasswd").focus();
     } else {
       this.invaildRePasswd = false;
@@ -182,6 +192,7 @@ export class forgotPasswordPage extends AbstractPage implements OnInit {
     if (passwd !== repasswd) {
       this.invaildRePasswd = true;
       y[2].classList.add("invalid");
+      this.isDisable2 = false;
       return document.getElementById("repasswd").focus();
     } else {
       this.invaildRePasswd = false;
@@ -201,11 +212,13 @@ export class forgotPasswordPage extends AbstractPage implements OnInit {
           this.getDataIcon(this.resUser.imageURL)
         }
         this.isLastButton = true;
+        this.isDisable2 = false;
         this.nextPrev(n);
       }
     }).catch((err) => {
       if (err.error.message === 'Cannot Change Password') {
         this.invaildPattern = true;
+        this.isDisable2 = false;
         y[0].classList.add("invalid");
         return document.getElementById("uuid").focus();
       }

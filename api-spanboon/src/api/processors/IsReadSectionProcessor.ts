@@ -96,12 +96,21 @@ export class IsReadSectionProcessor extends AbstractSeparateSectionProcessor {
                         postIds = mapIds;
                     }
                 }
-                const postMatchStmt: any = {
-                    isDraft: false,
-                    deleted: false,
-                    hidden: false,
-                    _id: { $nin: postIds }
-                };
+                let postMatchStmt: any = undefined;
+                if(postIds !== undefined){
+                    postMatchStmt = {
+                        isDraft: false,
+                        deleted: false,
+                        hidden: false,
+                        _id: { $nin: postIds }
+                    };
+                }else{
+                    postMatchStmt = {
+                        isDraft: false,
+                        deleted: false,
+                        hidden: false,
+                    };
+                }
                 const dateTimeAndArray = [];
                 if (startDateTime !== undefined && startDateTime !== null) {
                     dateTimeAndArray.push({ startDateTime: { $gte: startDateTime } });

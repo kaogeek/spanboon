@@ -223,10 +223,10 @@
                                 &&
                                 model.emergencyEvents.mirrorTrends[2].name}}</a>
                         </div>
-                        <a class="wrapper-box"
-                            (click)="isPostNewTab ? openDilogPost(model && model.emergencyEvents.contents[0]) : clickToPageUser(model && model!.emergencyEvents!.contents[0].post._id,'post')">
+                        <a class="wrapper-box">
                             <ng-container *ngIf="model && model.emergencyEvents.contents[0]">
-                                <div class="wrapper-copper-img">
+                                <div class="wrapper-copper-img"
+                                    (click)="isPostNewTab ? openDilogPost(model && model.emergencyEvents.contents[0]) : clickToPageUser(model && model!.emergencyEvents!.contents[0].post._id,'post')">
                                     <img class="image-background"
                                         [src]="model && model.emergencyEvents.contents[0].coverPageSignUrl ? model.emergencyEvents.contents[0].coverPageSignUrl : apiBaseURL + (model && model.emergencyEvents.contents[0].coverPageUrl) + '/image'"
                                         alt="">
@@ -238,12 +238,15 @@
                             <ng-container *ngIf="model && model.emergencyEvents.contents[0]">
                                 <div class="detail">
                                     <p class="title tag-link"
-                                        [innerHTML]="'#'+(model && model.emergencyEvents.majorTrendHashTags[0].name)">
+                                        [innerHTML]="'#'+(model && model.emergencyEvents.majorTrendHashTags[0].name | highlight)"
+                                        (click)="clickToPage(model && model.emergencyEvents.majorTrendHashTags[0].name,'trendTags')">
                                     </p>
                                     <p class="content-detail"
+                                        (click)="isPostNewTab ? openDilogPost(model && model.emergencyEvents.contents[0]) : clickToPageUser(model && model!.emergencyEvents!.contents[0].post._id,'post')"
                                         [innerHTML]="model && model.emergencyEvents.contents[0].post.detail ? (model && model.emergencyEvents.contents[0].post.detail | highlight) : model && model.emergencyEvents.contents[0].post.title | highlight">
                                     </p>
-                                    <p class="amount-social">
+                                    <p class="amount-social"
+                                        (click)="isPostNewTab ? openDilogPost(model && model.emergencyEvents.contents[0]) : clickToPageUser(model && model!.emergencyEvents!.contents[0].post._id,'post')">
                                         <span>{{model && model.emergencyEvents.contents[0].commentCount |
                                             shortNumber}}
                                             ความคิดเห็น</span>
@@ -969,7 +972,7 @@
     <section class="section-2"
         *ngIf="!showLoading && (model && !!model.majorTrend && model.majorTrend.contents.length !== 0)">
         <div class="container">
-            <div class="header-title" [ngStyle]="{'top': !isRes ? '60px' : '0'}">
+            <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '60px' : '0'}">
                 <div class="wrapper-title">
                     <span>เกาะกระแส</span>
                 </div>
@@ -1007,6 +1010,7 @@
                                     <span [innerHTML]="item.post.title"></span>
                                 </div>
                             </ng-template>
+                            <span class="idpost" [innerHTML]="item.post._id" *ngIf="!item.post.isRead"></span>
                             <p class="title-post" [innerHTML]="item.coverPageUrl ? item.post.title : item.post.detail">
                             </p>
                         </div>
@@ -1031,7 +1035,7 @@
     <section class="section-3"
         *ngIf="!showLoading && (model && !!model.kaokaiProvince && model.kaokaiProvince.contents.length !== 0)">
         <div class="container">
-            <div class="header-title" [ngStyle]="{'top': !isRes ? '60px' : '0'}">
+            <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '60px' : '0'}">
                 <div class="wrapper-title">
                     <span [innerHTML]="model && model.kaokaiProvince.title"></span>
                 </div>
@@ -1069,6 +1073,7 @@
                                     <span [innerHTML]="item.post.title"></span>
                                 </div>
                             </ng-template>
+                            <span class="idpost" [innerHTML]="item.post._id" *ngIf="!item.post.isRead"></span>
                             <p class="title-post" [innerHTML]="item.coverPageUrl ? item.post.title : item.post.detail">
                             </p>
                         </div>
@@ -1093,7 +1098,7 @@
     <section class="section-4"
         *ngIf="!showLoading && (model && !!model.kaokaiHashTag && model.kaokaiHashTag.contents.length !== 0)">
         <div class="container">
-            <div class="header-title" [ngStyle]="{'top': !isRes ? '60px' : '0'}">
+            <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '60px' : '0'}">
                 <div class="wrapper-title">
                     <span [innerHTML]="model && model.kaokaiHashTag.title"></span>
                 </div>
@@ -1131,6 +1136,7 @@
                                     <span [innerHTML]="item.post.title"></span>
                                 </div>
                             </ng-template>
+                            <span class="idpost" [innerHTML]="item.post._id" *ngIf="!item.post.isRead"></span>
                             <p class="title-post" [innerHTML]="item.coverPageUrl ? item.post.title : item.post.detail">
                             </p>
                         </div>
@@ -1155,7 +1161,7 @@
     <section class="section-4"
         *ngIf="!showLoading && (model && !!model.kaokaiContent && model.kaokaiContent.contents.length !== 0)">
         <div class="container">
-            <div class="header-title" [ngStyle]="{'top': !isRes ? '60px' : '0'}">
+            <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '60px' : '0'}">
                 <div class="wrapper-title">
                     <span [innerHTML]="model && model.kaokaiContent.title"></span>
                 </div>
@@ -1193,6 +1199,7 @@
                                     <span [innerHTML]="item.post.title"></span>
                                 </div>
                             </ng-template>
+                            <span class="idpost" [innerHTML]="item.post._id" *ngIf="!item.post.isRead"></span>
                             <p class="title-post" [innerHTML]="item.coverPageUrl ? item.post.title : item.post.detail">
                             </p>
                         </div>

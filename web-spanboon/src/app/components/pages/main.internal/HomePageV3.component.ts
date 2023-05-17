@@ -5,8 +5,8 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-import { Component, OnInit, EventEmitter, HostListener,Input } from '@angular/core';
-import { MatDialog } from '@angular/material';
+import { Component, OnInit, EventEmitter, HostListener, Output } from '@angular/core';
+import { MatDatepickerInputEvent, MatDialog } from '@angular/material';
 import { Gallery } from '@ngx-gallery/core';
 import { AbstractPage } from '../AbstractPage';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -25,6 +25,7 @@ import { AuthenManager } from 'src/app/services/AuthenManager.service';
 import { DialogAlert } from '../../shares/dialog/DialogAlert.component';
 import { DialogCheckBox } from '../../shares/dialog/DialogCheckBox.component';
 import { DialogPostCrad } from '../../shares/dialog/DialogPostCrad.component';
+import { debounce } from '../../shares/directive/DebounceScroll.directive';
 
 declare var $: any;
 
@@ -36,7 +37,6 @@ const ANNOUNCE_DEFAULT: string = 'ต้องก้าวไกลให้ไ�
   templateUrl: './HomePageV3.component.html',
 })
 export class HomePageV3 extends AbstractPage implements OnInit {
-  currentSlide = 0;
   startDate: Date;
   public static readonly PAGE_NAME: string = PAGE_NAME;
   public userCloneDatas: any;
@@ -67,16 +67,19 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   public filterMonth: any = [];
   public announcement = ANNOUNCE_DEFAULT;
   public linkAnnounce = undefined;
-  public isRead = undefined;
-  public following = undefined;
-  public followingProvince = undefined;
+  public listContent: any = [];
+  public readContent: any[] = [];
+  public hidebar: boolean = true;
+
   maxDate = new Date();
 
   constructor(
+    private gallery: Gallery,
     router: Router,
     authenManager: AuthenManager,
     postFacade: PostFacade,
     dialog: MatDialog,
+    cacheConfigInfo: CacheConfigInfo,
     mainPageModelFacade: MainPageSlideFacade,
     pageFacade: PageFacade,
     hashTagFacade: HashTagFacade,
@@ -111,7 +114,6 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     this.userCloneDatas = JSON.parse(JSON.stringify(user));
     if (this.userCloneDatas !== undefined && this.userCloneDatas !== null) {
       this.getMainPageModelV3(this.userCloneDatas.id);
-      this.contentsBottom(this.userCloneDatas.id);
       this.searchPageInUser(this.userCloneDatas.id);
     } else {
       this.getMainPageModelV3();
@@ -120,6 +122,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     this.stopIsloading();
     this.getScreenSize();
     this.getDateFilter();
+    this.hidebar = this.authenManager.getHidebar();
     super.ngOnInit();
   }
 
@@ -243,6 +246,17 @@ export class HomePageV3 extends AbstractPage implements OnInit {
             if (!!res.linkAnnounceMent || !!res.data.linkAnnounceMent) {
               this.linkAnnounce = res.linkAnnounceMent ? res.linkAnnounceMent : res.data.linkAnnounceMent;
             }
+            setTimeout(() => {
+              let list = document.getElementsByClassName("card-content");
+              let leng = list.length;
+              let div = document.getElementsByClassName("idpost");
+              for (let index = 0; index < leng; index++) {
+                if (div[index]) {
+                  let doc = div[index].innerHTML;
+                  this.listContent.push(doc)
+                }
+              }
+            }, 2000);
             const dateFormat = new Date();
             const dateReal = dateFormat.setDate(dateFormat.getDate());
             this.dateValues = new Date(dateReal).toISOString(); // convert to ISO string
@@ -260,7 +274,8 @@ export class HomePageV3 extends AbstractPage implements OnInit {
         })
       }
     }
-    
+
+
     // if (this.isLogin) {
     //   this.getSubject();
     // }
@@ -282,21 +297,6 @@ export class HomePageV3 extends AbstractPage implements OnInit {
       console.log(error);
     });
   }
-  public async contentsBottom(userId){
-    console.log('userId', userId);
-    const contents = await this.mainPageModelFacade.bottomContent(userId);
-    if (contents.isReadPosts.contents.length > 0) {
-      this.isRead = contents.isReadPosts;
-    } if (contents.isFollowing.contents.length > 0) {
-      this.following = contents.isFollowing;
-    } if (contents.followingProvince.contents.length > 0) {
-      this.followingProvince = contents.followingProvince;
-    }
-    console.log('this.isRead', this.isRead);
-    console.log('this.following',this.following);
-    console.log('this.followingProvince',this.followingProvince);
-  }
-
 
   public async isReadPost(userId, data) {
     if (userId) {
@@ -534,6 +534,42 @@ export class HomePageV3 extends AbstractPage implements OnInit {
       this.isRes = false;
     }
   }
+
+  @HostListener('window:scroll', ['$event'])
+  @debounce(1000)
+  scroll(event) {
+    this._readHomeContent();
+    window.addEventListener('scroll', (event) => {
+      this._scrollIsRead();
+    });
+  }
+
+  private _scrollIsRead() {
+    const winH = window.innerHeight;
+    const classCard: any = document.getElementsByClassName('card-content');
+    if (!!classCard) {
+      for (let index = 0; index < classCard.length; index++) {
+        if (classCard[index].getBoundingClientRect().top <= winH) {
+          const result = this.readContent.filter(res => res === this.listContent[index]);
+          if (result.length <= 0) {
+            this.readContent.push(this.listContent[index]);
+          }
+        }
+      }
+    }
+  }
+
+  private _readHomeContent() {
+    let userId = this.userCloneDatas.id;
+    this.mainPageModelFacade.readContent(userId, this.readContent).then((res => {
+      if (res) {
+      }
+    })).catch((err) => {
+      if (err) {
+      }
+    })
+  }
+
   public stopIsloading() {
     setTimeout(() => {
       this.isLoading = false;
