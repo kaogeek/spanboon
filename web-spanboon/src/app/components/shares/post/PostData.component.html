@@ -349,7 +349,9 @@
         <display-gallery [gallery]="itemPost.gallery" (clickShowImage)="showDialogGallery($event)"></display-gallery>
         <!-- <display-gallery [gallery]="itemPost.gallery" (clickShowImage)="showDialogGallery($event)"></display-gallery> -->
     </ng-container>
-    <div class="topic-name" [class.active]="itemPost.referencePostObject" *ngIf="!!itemPost!.title">
+
+    <div class="topic-name" [class.active]="itemPost.referencePostObject"
+        *ngIf="!!itemPost!.title && !!itemPost!.requester && !!itemPost!.fulfillmentPage">
         <div class="name" *ngIf="itemPost.requester">
             {{itemPost.requester && itemPost.requester.displayName}} เต็มเติมให้กับ
             {{itemPost.fulfillmentPage && itemPost.fulfillmentPage.name}}
