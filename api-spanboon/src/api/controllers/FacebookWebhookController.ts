@@ -87,28 +87,27 @@ export class FacebookWebhookController {
         const yFacebook = DEFAULT_POST_WEIGHT_SCORE.Y;
         const xToday = DEFAULT_POST_WEIGHT_SCORE.X;
         const likeFacebook = DEFAULT_POST_WEIGHT_SCORE.Lof;
-        const commnetFacebook = DEFAULT_POST_WEIGHT_SCORE.Cof;
-        const shareFacebook = DEFAULT_POST_WEIGHT_SCORE.Sof;
+        // const commnetFacebook = DEFAULT_POST_WEIGHT_SCORE.Cof;
+        // const shareFacebook = DEFAULT_POST_WEIGHT_SCORE.Sof;
         const likeToday = DEFAULT_POST_WEIGHT_SCORE.Lot;
-        const commentToday = DEFAULT_POST_WEIGHT_SCORE.Cot;
-        const shareToday = DEFAULT_POST_WEIGHT_SCORE.Sot;
-
+        // const commentToday = DEFAULT_POST_WEIGHT_SCORE.Cot;
+        // const shareToday = DEFAULT_POST_WEIGHT_SCORE.Sot;
         const xTodayScore = await this.configService.getConfig(POST_WEIGHT_SCORE.X);
         const yFacebookScore = await this.configService.getConfig(POST_WEIGHT_SCORE.Y);
         const scorelikeToday = await this.configService.getConfig(POST_WEIGHT_SCORE.Lot);
-        const scorecommentToday = await this.configService.getConfig(POST_WEIGHT_SCORE.Cot);
-        const scoreShareToday = await this.configService.getConfig(POST_WEIGHT_SCORE.Sot);
+        // const scorecommentToday = await this.configService.getConfig(POST_WEIGHT_SCORE.Cot);
+        // const scoreShareToday = await this.configService.getConfig(POST_WEIGHT_SCORE.Sot);
         const scorelikeFacebook = await this.configService.getConfig(POST_WEIGHT_SCORE.Lof);
-        const scoreCommentFacebook = await this.configService.getConfig(POST_WEIGHT_SCORE.Cof);
-        const scoreShareFacebook = await this.configService.getConfig(POST_WEIGHT_SCORE.Sof);
+        // const scoreCommentFacebook = await this.configService.getConfig(POST_WEIGHT_SCORE.Cof);
+        // const scoreShareFacebook = await this.configService.getConfig(POST_WEIGHT_SCORE.Sof);
         let xTodayxScore = xToday;
         let yFacebookyScore = yFacebook;
         let sTodayLike = likeToday;
-        let sTodayComment = commentToday;
-        let sTodayShare = shareToday;
+        // let sTodayComment = commentToday;
+        // let sTodayShare = shareToday;
         let sFacebookLike = likeFacebook;
-        let sFacebookComment = commnetFacebook;
-        let sShareFacebook = shareFacebook;
+        // let sFacebookComment = commnetFacebook;
+        // let sShareFacebook = shareFacebook;
 
         if (xTodayScore) {
             xTodayxScore = parseFloat(xTodayScore.value);
@@ -116,12 +115,13 @@ export class FacebookWebhookController {
         if (scorelikeToday) {
             sTodayLike = parseFloat(scorelikeToday.value);
         }
+        /* 
         if (scorecommentToday) {
             sTodayComment = parseFloat(scorecommentToday.value);
         }
         if (scoreShareToday) {
             sTodayShare = parseFloat(scoreShareToday.value);
-        }
+        } */
 
         if (yFacebookScore) {
             yFacebookyScore = parseFloat(yFacebookScore.value);
@@ -129,13 +129,14 @@ export class FacebookWebhookController {
         if (scorelikeFacebook) {
             sFacebookLike = parseFloat(scorelikeFacebook.value);
         }
+        /* 
         if (scoreCommentFacebook) {
             sFacebookComment = parseFloat(scoreCommentFacebook.value);
         }
         if (scoreShareFacebook) {
             sShareFacebook = parseFloat(scoreShareFacebook.value);
         }
-
+        */
         if (mode && token) {
             // Checks the mode and token sent is correct
             if (mode === 'subscribe' && token === VERIFY_TOKEN) {
