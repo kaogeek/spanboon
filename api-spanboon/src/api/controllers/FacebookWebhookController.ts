@@ -27,8 +27,8 @@ import { HashTagService } from '../services/HashTagService';
 import { PageObjectiveService } from '../services/PageObjectiveService';
 import { EmergencyEventService } from '../services/EmergencyEventService';
 import { ResponseUtil } from '../../utils/ResponseUtil';
-import { POST_WEIGHT_SCORE, DEFAULT_POST_WEIGHT_SCORE } from '../../constants/SystemConfig';
-import { ConfigService } from '../services/ConfigService';
+// import { POST_WEIGHT_SCORE, DEFAULT_POST_WEIGHT_SCORE } from '../../constants/SystemConfig';
+// import { ConfigService } from '../services/ConfigService';
 @JsonController('/fb_webhook')
 export class FacebookWebhookController {
     constructor(
@@ -38,7 +38,7 @@ export class FacebookWebhookController {
         private hashTagService: HashTagService,
         private pageObjectiveService: PageObjectiveService,
         private emergencyEventService: EmergencyEventService,
-        private configService: ConfigService,
+        // private configService: ConfigService,
     ) { }
 
     /**
@@ -84,31 +84,31 @@ export class FacebookWebhookController {
         const postMasterHashTagList = [];
         const masterHashTagMap = {};
         const today = moment().toDate();
-        const yFacebook = DEFAULT_POST_WEIGHT_SCORE.Y;
-        const xToday = DEFAULT_POST_WEIGHT_SCORE.X;
-        const likeFacebook = DEFAULT_POST_WEIGHT_SCORE.Lof;
+        // const yFacebook = DEFAULT_POST_WEIGHT_SCORE.Y;
+        // const xToday = DEFAULT_POST_WEIGHT_SCORE.X;
+        // const likeFacebook = DEFAULT_POST_WEIGHT_SCORE.Lof;
         // const commnetFacebook = DEFAULT_POST_WEIGHT_SCORE.Cof;
         // const shareFacebook = DEFAULT_POST_WEIGHT_SCORE.Sof;
-        const likeToday = DEFAULT_POST_WEIGHT_SCORE.Lot;
+        // const likeToday = DEFAULT_POST_WEIGHT_SCORE.Lot;
         // const commentToday = DEFAULT_POST_WEIGHT_SCORE.Cot;
         // const shareToday = DEFAULT_POST_WEIGHT_SCORE.Sot;
-        const xTodayScore = await this.configService.getConfig(POST_WEIGHT_SCORE.X);
-        const yFacebookScore = await this.configService.getConfig(POST_WEIGHT_SCORE.Y);
-        const scorelikeToday = await this.configService.getConfig(POST_WEIGHT_SCORE.Lot);
+        // const xTodayScore = await this.configService.getConfig(POST_WEIGHT_SCORE.X);
+        // const yFacebookScore = await this.configService.getConfig(POST_WEIGHT_SCORE.Y);
+        // const scorelikeToday = await this.configService.getConfig(POST_WEIGHT_SCORE.Lot);
         // const scorecommentToday = await this.configService.getConfig(POST_WEIGHT_SCORE.Cot);
         // const scoreShareToday = await this.configService.getConfig(POST_WEIGHT_SCORE.Sot);
-        const scorelikeFacebook = await this.configService.getConfig(POST_WEIGHT_SCORE.Lof);
+        // const scorelikeFacebook = await this.configService.getConfig(POST_WEIGHT_SCORE.Lof);
         // const scoreCommentFacebook = await this.configService.getConfig(POST_WEIGHT_SCORE.Cof);
         // const scoreShareFacebook = await this.configService.getConfig(POST_WEIGHT_SCORE.Sof);
-        let xTodayxScore = xToday;
-        let yFacebookyScore = yFacebook;
-        let sTodayLike = likeToday;
+        // let xTodayxScore = xToday;
+        // let yFacebookyScore = yFacebook;
+        // let sTodayLike = likeToday;
         // let sTodayComment = commentToday;
         // let sTodayShare = shareToday;
-        let sFacebookLike = likeFacebook;
+        // let sFacebookLike = likeFacebook;
         // let sFacebookComment = commnetFacebook;
         // let sShareFacebook = shareFacebook;
-
+        /*
         if (xTodayScore) {
             xTodayxScore = parseFloat(xTodayScore.value);
         }
@@ -121,7 +121,7 @@ export class FacebookWebhookController {
         }
         if (scoreShareToday) {
             sTodayShare = parseFloat(scoreShareToday.value);
-        } */
+        } 
 
         if (yFacebookScore) {
             yFacebookyScore = parseFloat(yFacebookScore.value);
@@ -226,6 +226,7 @@ export class FacebookWebhookController {
                 TrimText = msg;
                 console.log('DETAIL: ', TrimText);
             } else if (message_webhooks === undefined && value_verb === 'add' && value_reaction_like === 'like' && value_item === 'reaction' && value_parent_id !== undefined && change_value_link === undefined) {
+                /*
                 const likeConstance = 1;
                 const findSocialPost = await this.socialPostService.findOne({ socialId: body.entry[0].changes[0].value.post_id });
                 if (findSocialPost === undefined) {
@@ -248,7 +249,9 @@ export class FacebookWebhookController {
                 } else {
                     const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
                     return res.status(200).send(successResponse);
-                }
+                } */
+                const UpdatesuccessResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                return res.status(200).send(UpdatesuccessResponse);
             } else if (value_verb === 'add' && value_item === 'comment' && value_comment_id !== undefined && value_post !== undefined && value_parent_id !== undefined && change_value_link === undefined) {
                 /* 
                 const commentConstance = 1;
