@@ -309,6 +309,10 @@ export class FacebookWebhookController {
             }
         }
         const pageIdFB = await this.pageService.findOne({ _id: pageSubscribe.pageId });
+        if(pageIdFB.isOfficial === false){
+            const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+            return res.status(200).send(successResponse);
+        }
         if (pageIdFB === undefined) {
             const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
             return res.status(200).send(successResponse);
