@@ -58,7 +58,6 @@ import { KaokaiAllProvinceModelProcessor } from '../processors/KaokaiAllProvince
 import { IsReadPostService } from '../services/IsReadPostService';
 import { KaokaiTodayService } from '../services/KaokaiTodayService';
 import { NotificationService } from '../services/NotificationService';
-import * as fs from 'fs';
 import { IsReadSectionProcessor } from '../processors/IsReadSectionProcessor';
 import { FollowingPostSectionModelProcessor } from '../processors/FollowingPostSectionModelProcessor';
 import { FollowingProvinceSectionModelProcessor } from '../processors/FollowingProvinceSectionModelProcessor';

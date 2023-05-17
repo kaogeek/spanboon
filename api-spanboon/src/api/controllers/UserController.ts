@@ -398,10 +398,10 @@ export class UserController {
                 userEngagement.userId = userObjId;
                 userEngagement.action = ENGAGEMENT_ACTION.FOLLOW;
                 const whoFollowYou = await this.userService.findOne({ _id: userFollow.userId });
-                const tokenFCMId = await this.deviceTokenService.find({ userId: userFollow.subjectId });
+                // const tokenFCMId = await this.deviceTokenService.find({ userId: userFollow.subjectId });
                 const notification_follower = whoFollowYou.displayName + space + 'กดติดตามคุณ';
                 const link = `/profile/${whoFollowYou.id}`;
-                const notificationId = await this.notificationService.createNotificationFCM(
+                await this.notificationService.createNotificationFCM(
                     followCreate.subjectId,
                     USER_TYPE.USER,
                     req.user.id + '',
@@ -412,6 +412,7 @@ export class UserController {
                     whoFollowYou.displayName,
                     whoFollowYou.imageURL
                 );
+                /* 
                 for (const tokenFCM of tokenFCMId) {
                     if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
                         await this.notificationService.sendNotificationFCM(
@@ -431,7 +432,7 @@ export class UserController {
                     else {
                         continue;
                     }
-                }
+                } */
                 // USER TO USER
                 const engagement: UserEngagement = await this.userEngagementService.findOne({ where: { contentId: followUserObjId, userId: userObjId, contentType: ENGAGEMENT_CONTENT_TYPE.USER, action: ENGAGEMENT_ACTION.FOLLOW } });
                 if (engagement) {
