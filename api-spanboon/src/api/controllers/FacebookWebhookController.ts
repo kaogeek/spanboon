@@ -249,6 +249,7 @@ export class FacebookWebhookController {
                     return res.status(200).send(successResponse);
                 }
             } else if (value_verb === 'add' && value_item === 'comment' && value_comment_id !== undefined && value_post !== undefined && value_parent_id !== undefined && change_value_link === undefined) {
+                /* 
                 const commentConstance = 1;
                 const findSocialPost = await this.socialPostService.findOne({ socialId: body.entry[0].changes[0].value.post_id });
                 if (findSocialPost === undefined) {
@@ -271,8 +272,11 @@ export class FacebookWebhookController {
                 } else {
                     const ErrorsuccessResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
                     return res.status(200).send(ErrorsuccessResponse);
-                }
+                } */
+                const UpdatesuccessResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                return res.status(200).send(UpdatesuccessResponse);
             } else if (message_webhooks === undefined && value_verb === 'add' && body.entry[0].changes[0].value.item === 'share' && change_value_link !== undefined && body.entry[0].changes[0].value.share_id !== undefined && body.entry[0].changes[0].value.post_id !== undefined) {
+                /* 
                 const shareConstance = 1;
                 const findSocialPost = await this.socialPostService.findOne({ socialId: body.entry[0].changes[0].value.post_id });
                 if (findSocialPost === undefined) {
@@ -295,7 +299,9 @@ export class FacebookWebhookController {
                 } else {
                     const ErrorsuccessResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
                     return res.status(200).send(ErrorsuccessResponse);
-                }
+                } */
+                const UpdatesuccessResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                return res.status(200).send(UpdatesuccessResponse);
             }
         }
         const pageIdFB = await this.pageService.findOne({ _id: pageSubscribe.pageId });
