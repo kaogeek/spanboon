@@ -49,8 +49,15 @@ export class PreloadCard implements OnInit {
   public ngOnDestroy(): void {
   }
 
-  @HostListener('window:resize', ['$event'])
-  public getScreenSize(event?) {
+  ngAfterViewInit() {
+    // timeout is needed when you are using `thewidth` or `theheight` inside your template
+    setTimeout(() => {
+      this.getScreenSize();
+    });
+  }
+
+  @HostListener('window:resize')
+  public getScreenSize() {
     this.windowWidth = window.innerWidth;
     if (this.windowWidth <= 1280) {
       this.isRes = true;
