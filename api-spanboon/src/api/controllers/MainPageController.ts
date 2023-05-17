@@ -62,6 +62,7 @@ import * as fs from 'fs';
 import { IsReadSectionProcessor } from '../processors/IsReadSectionProcessor';
 import { FollowingPostSectionModelProcessor } from '../processors/FollowingPostSectionModelProcessor';
 import { FollowingProvinceSectionModelProcessor } from '../processors/FollowingProvinceSectionModelProcessor';
+import { FollowingContentsModelProcessor } from '../processors/FollowingContentsModelProcessor';
 import {
     TODAY_DATETIME_GAP,
     DEFAULT_TODAY_DATETIME_GAP,
@@ -445,10 +446,22 @@ export class MainPageController {
             searchOfficialOnly
         });
         const followingProvince = await followingProvinceSectionModelProcessor.process();
+        const followingContentsModelProcessor: FollowingContentsModelProcessor = new FollowingContentsModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.userFollowService);
+        followingContentsModelProcessor.setData({
+            userId,
+            startDateTime: monthRange[0],
+            endDateTime: monthRange[1],
+        });
+
+        followingContentsModelProcessor.setConfig({
+            searchOfficialOnly
+        });
+        const followingContents = await followingContentsModelProcessor.process();
         const result: any = {};
         result.isReadPosts = isReadPosts;
         result.isFollowing = isFollowing;
         result.followingProvince = followingProvince;
+        result.followingContents = followingContents;
         const successResponse = ResponseUtil.getSuccessResponse('Successfully create isRead.', result);
         return res.status(200).send(successResponse);
 
@@ -461,58 +474,58 @@ export class MainPageController {
         const user = await this.userService.findOne({ _id: objIds });
         // check is read
         const checkIsRead = await this.isReadPostService.aggregate
-        (
-            [
-                {
-                    $match:
+            (
+                [
                     {
-                        userId: objIds,
-                        postId: { $in: data.postId }
+                        $match:
+                        {
+                            userId: objIds,
+                            postId: { $in: data.postId }
+                        }
+                    },
+                    {
+                        $limit: 1
                     }
-                },
-                {
-                    $limit: 1
-                }
-            ]
-        );
-    if (checkIsRead.length > 0) {
-        const postIds = data.postId.map(ids => new ObjectID(ids));
-        const isRead = await this.postsService.aggregate(
-            [
-                {
-                    $match:{
-                        _id:{$in:postIds}
+                ]
+            );
+        if (checkIsRead.length > 0) {
+            const postIds = data.postId.map(ids => new ObjectID(ids));
+            const isRead = await this.postsService.aggregate(
+                [
+                    {
+                        $match: {
+                            _id: { $in: postIds }
+                        }
                     }
-                }
-            ]
-        );
-        const result:any = {};
-        result.isReadPost = isRead;
-        result.userIds = objIds;
-        const successResponse = ResponseUtil.getSuccessResponse('The content has already been read.', result);
-        return res.status(200).send(successResponse);
-    }
+                ]
+            );
+            const result: any = {};
+            result.isReadPost = isRead;
+            result.userIds = objIds;
+            const successResponse = ResponseUtil.getSuccessResponse('The content has already been read.', result);
+            return res.status(200).send(successResponse);
+        }
         if (user) {
             // check is read
-            if(data.postId.length>0){
+            if (data.postId.length > 0) {
                 const isRead: IsRead = new IsRead();
                 isRead.userId = objIds;
                 isRead.postId = data.postId;
                 isRead.isRead = data.isRead;
                 const isReadPost = await this.isReadPostService.create(isRead);
-                if(isReadPost){
+                if (isReadPost) {
                     const postIds = data.postId.map(ids => new ObjectID(ids));
-                    const isRead = await this.postsService.aggregate(
+                    const isReaded = await this.postsService.aggregate(
                         [
                             {
-                                $match:{
-                                    _id:{$in:postIds}
+                                $match: {
+                                    _id: { $in: postIds }
                                 }
                             }
                         ]
                     );
-                    const result:any = {};
-                    result.isReadPost = isRead;
+                    const result: any = {};
+                    result.isReadPost = isReaded;
                     result.userIds = objIds;
                     const successResponse = ResponseUtil.getSuccessResponse('The content has already been read.', result);
                     return res.status(200).send(successResponse);
@@ -576,7 +589,8 @@ export class MainPageController {
      * HTTP/1.1 500 Internal Server Error
      */
     @Get('/content')
-    public async getContentList(@QueryParam('offset') offset: number, @QueryParam('section') section: string, @QueryParam('date') date: string, @Res() res: any, @Req() req: any): Promise<any> {
+    public async getContentList(@QueryParam('offset') offset: number, @QueryParam('emergency') emergency: boolean, @QueryParam('section') section: string, @QueryParam('date') date: string, @Res() res: any, @Req() req: any): Promise<any> {
+        console.log('emergency', emergency);
         const userId = req.headers.userid;
         const mainPageSearchConfig = await this.pageService.searchPageOfficialConfig();
         const searchOfficialOnly = mainPageSearchConfig.searchOfficialOnly;
@@ -664,6 +678,10 @@ export class MainPageController {
 
         let processorList: any[] = [];
         const weekRanges: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 7);
+
+        // setup search date range for lastest post
+        const monthRanges: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 365);
+
         const emerProcessor: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service, this.hashTagService);
         emerProcessor.setConfig({
             showUserAction: true,
@@ -672,133 +690,121 @@ export class MainPageController {
             searchOfficialOnly
         });
         const emerSectionModel = await emerProcessor.process();
-        // setup search date range for lastest post
-        const monthRanges: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 365);
-        const postProcessor: PostSectionProcessor = new PostSectionProcessor(this.postsService, this.s3Service, this.userLikeService);
-        postProcessor.setData({
-            userId,
-            startDateTime: monthRanges[0],
-            endDateTime: monthRanges[1]
-        });
-        postProcessor.setConfig({
-            searchOfficialOnly
-        });
-        const postSectionModel = await postProcessor.process();
-
-        const lastestLKProcessor: LastestLookingSectionProcessor = new LastestLookingSectionProcessor(this.postsService, this.needsService, this.userFollowService, this.s3Service);
-        lastestLKProcessor.setData({
-            userId,
-            startDateTime: weekRanges[0],
-            endDateTime: weekRanges[1]
-        });
-        lastestLKProcessor.setConfig({
-            showUserAction: true,
-            offset,
-            date,
-            searchOfficialOnly
-        });
-        processorList.push(lastestLKProcessor);
-
-        // const stillLKProcessor: StillLookingSectionProcessor = new StillLookingSectionProcessor(this.postsService, this.needsService, this.userFollowService);
-        // if (userId !== undefined) {
-        //     stillLKProcessor.setData({
-        //         userId
-        //     });
-        // }
-        // stillLKProcessor.setConfig({
-        //     showUserAction: true,
-        //     offset,
-        //     date,
-        //     searchOfficialOnly
-        // });
-        // processorList.push(stillLKProcessor);
-
-        const userRecProcessor: UserRecommendSectionProcessor = new UserRecommendSectionProcessor(this.postsService, this.userFollowService, this.s3Service);
-        userRecProcessor.setData({
-            userId,
-            startDateTime: weekRanges[0],
-            endDateTime: weekRanges[1]
-        });
-        userRecProcessor.setConfig({
-            showUserAction: true,
-            offset,
-            date,
-            searchOfficialOnly
-        });
-        processorList.push(userRecProcessor);
 
         const emergencyPinProcessor: EmergencyEventPinProcessor = new EmergencyEventPinProcessor(this.emergencyEventService, this.postsService, this.s3Service);
         emergencyPinProcessor.setConfig({
             searchOfficialOnly
         });
         const emergencyPinModel = await emergencyPinProcessor.process();
+        let postSectionModel = undefined;
+        let objectiveSectionModel = undefined;
+        if(emergency !== true){
+            const postProcessor: PostSectionProcessor = new PostSectionProcessor(this.postsService, this.s3Service, this.userLikeService);
+            postProcessor.setData({
+                userId,
+                startDateTime: monthRanges[0],
+                endDateTime: monthRanges[1]
+            });
+            postProcessor.setConfig({
+                searchOfficialOnly
+            });
+            postSectionModel = await postProcessor.process();
+            const objectiveProcessor: ObjectiveProcessor = new ObjectiveProcessor(this.pageObjectiveService, this.postsService, this.s3Service, this.userLikeService, this.assetService);
+            objectiveProcessor.setData({
+                userId,
+                startDateTime: weekRanges[0],
+                endDateTime: weekRanges[1]
+            });
+            objectiveProcessor.setConfig({
+                showUserAction: true,
+                searchOfficialOnly
+            });
+            objectiveSectionModel = await objectiveProcessor.process();
 
-        const objectiveProcessor: ObjectiveProcessor = new ObjectiveProcessor(this.pageObjectiveService, this.postsService, this.s3Service, this.userLikeService, this.assetService);
-        objectiveProcessor.setData({
-            userId,
-            startDateTime: weekRanges[0],
-            endDateTime: weekRanges[1]
-        });
-        objectiveProcessor.setConfig({
-            showUserAction: true,
-            searchOfficialOnly
-        });
-        const objectiveSectionModel = await objectiveProcessor.process();
+            const lastestLKProcessor: LastestLookingSectionProcessor = new LastestLookingSectionProcessor(this.postsService, this.needsService, this.userFollowService, this.s3Service);
+            lastestLKProcessor.setData({
+                userId,
+                startDateTime: weekRanges[0],
+                endDateTime: weekRanges[1]
+            });
+            lastestLKProcessor.setConfig({
+                showUserAction: true,
+                offset,
+                date,
+                searchOfficialOnly
+            });
+            processorList.push(lastestLKProcessor);
 
-        const userFollowProcessor: UserFollowSectionProcessor = new UserFollowSectionProcessor(this.postsService, this.userFollowService, this.pageService, this.s3Service);
-        userFollowProcessor.setData({
-            userId,
-            startDateTime: weekRanges[0],
-            endDateTime: weekRanges[1]
-        });
-        userFollowProcessor.setConfig({
-            limit: 6,
-            showUserAction: true,
-            searchOfficialOnly
-        });
-        processorList.push(userFollowProcessor);
+            const userRecProcessor: UserRecommendSectionProcessor = new UserRecommendSectionProcessor(this.postsService, this.userFollowService, this.s3Service);
+            userRecProcessor.setData({
+                userId,
+                startDateTime: weekRanges[0],
+                endDateTime: weekRanges[1]
+            });
+            userRecProcessor.setConfig({
+                showUserAction: true,
+                offset,
+                date,
+                searchOfficialOnly
+            });
+            processorList.push(userRecProcessor);
 
-        const userPageLookingProcessor: UserPageLookingSectionProcessor = new UserPageLookingSectionProcessor(this.postsService, this.userFollowService, this.s3Service);
-        userPageLookingProcessor.setData({
-            userId,
-            startDateTime: weekRanges[0],
-            endDateTime: weekRanges[1]
-        });
-        userPageLookingProcessor.setConfig({
-            limit: 2,
-            showUserAction: true,
-            searchOfficialOnly
-        });
-        processorList.push(userPageLookingProcessor);
 
-        const followingRecommendProcessor: FollowingRecommendProcessor = new FollowingRecommendProcessor(this.postsService, this.userFollowService, this.assetService);
-        followingRecommendProcessor.setData({
-            userId,
-            startDateTime: weekRanges[0],
-            endDateTime: weekRanges[1]
-        });
-        followingRecommendProcessor.setConfig({
-            limit: 6,
-            searchOfficialOnly,
-            showPage: true,
-            showUserAction: true
-        });
-        processorList.push(followingRecommendProcessor);
+            const userFollowProcessor: UserFollowSectionProcessor = new UserFollowSectionProcessor(this.postsService, this.userFollowService, this.pageService, this.s3Service);
+            userFollowProcessor.setData({
+                userId,
+                startDateTime: weekRanges[0],
+                endDateTime: weekRanges[1]
+            });
+            userFollowProcessor.setConfig({
+                limit: 6,
+                showUserAction: true,
+                searchOfficialOnly
+            });
+            processorList.push(userFollowProcessor);
 
-        // open when main icon template show
-        const lastestObjProcessor = new LastestObjectiveProcessor(this.pageObjectiveService, this.userFollowService, this.postsService, this.assetService);
-        lastestObjProcessor.setData({
-            userId,
-            startDateTime: weekRanges[0],
-            endDateTime: weekRanges[1]
-        });
-        lastestObjProcessor.setConfig({
-            limit: 6,
-            showUserAction: true,
-            searchOfficialOnly
-        });
-        processorList.push(lastestObjProcessor);
+            const userPageLookingProcessor: UserPageLookingSectionProcessor = new UserPageLookingSectionProcessor(this.postsService, this.userFollowService, this.s3Service);
+            userPageLookingProcessor.setData({
+                userId,
+                startDateTime: weekRanges[0],
+                endDateTime: weekRanges[1]
+            });
+            userPageLookingProcessor.setConfig({
+                limit: 2,
+                showUserAction: true,
+                searchOfficialOnly
+            });
+            processorList.push(userPageLookingProcessor);
 
+            const followingRecommendProcessor: FollowingRecommendProcessor = new FollowingRecommendProcessor(this.postsService, this.userFollowService, this.assetService);
+            followingRecommendProcessor.setData({
+                userId,
+                startDateTime: weekRanges[0],
+                endDateTime: weekRanges[1]
+            });
+            followingRecommendProcessor.setConfig({
+                limit: 6,
+                searchOfficialOnly,
+                showPage: true,
+                showUserAction: true
+            });
+            processorList.push(followingRecommendProcessor);
+
+            // open when main icon template show
+            const lastestObjProcessor = new LastestObjectiveProcessor(this.pageObjectiveService, this.userFollowService, this.postsService, this.assetService);
+            lastestObjProcessor.setData({
+                userId,
+                startDateTime: weekRanges[0],
+                endDateTime: weekRanges[1]
+            });
+            lastestObjProcessor.setConfig({
+                limit: 6,
+                showUserAction: true,
+                searchOfficialOnly
+            });
+            processorList.push(lastestObjProcessor);
+            processorList = ProcessorUtil.randomProcessorOrdering(processorList);
+        }
         const result: any = {};
         result.emergencyEvents = emerSectionModel;
         result.emergencyPin = emergencyPinModel;
@@ -808,7 +814,6 @@ export class MainPageController {
         // result.looking = stillLKSectionModel;
         // result.viewSection = userRecSectionModel;
         result.sectionModels = [];
-        processorList = ProcessorUtil.randomProcessorOrdering(processorList);
         // ! remove random function when fishished testing
         const randIdx = Math.floor(Math.random() * processorList.length);
         for (let i = 0; i < processorList.length; i++) {
@@ -1982,28 +1987,15 @@ export class MainPageController {
         if (checkCreate !== undefined && checkCreate !== null) {
             return checkCreate.data;
         }
-        if (fs.existsSync('snapshot-lock.txt')) {
-            // Lock file exists, another snapshot creation is in progress
-            console.log('Snapshot creation is already in progress. Please wait.');
-            return;
-        }
-        fs.writeFileSync('snapshot-lock.txt', '');
-        let snapshot = undefined;
+
         const contents = data;
-        try {
-            const startDate = startDateRange;
-            const endDate = endDateTimeToday;
-            const result: any = {};
-            result.data = contents;
-            result.startDateTime = startDate;
-            result.endDateTime = endDate;
-            snapshot = await this.kaokaiTodaySnapShotService.create(result);
-        } catch (error) {
-            console.log('Error occurred during snapshot creation:', error);
-        } finally {
-            // Remove the lock file to release the lock
-            fs.unlinkSync('snapshot-lock.txt');
-        }
+        const startDate = startDateRange;
+        const endDate = endDateTimeToday;
+        const result: any = {};
+        result.data = contents;
+        result.startDateTime = startDate;
+        result.endDateTime = endDate;
+        const snapshot = await this.kaokaiTodaySnapShotService.create(result);
         // Check Date time === 06:00 morning
         let content = undefined;
         const fireBaseToken = [];
@@ -2037,40 +2029,38 @@ export class MainPageController {
                 if (String(sendNotification) === 'true') {
                     console.log('pass1 notification ??');
                     for (const userEmail of emailStack) {
-                        if (snapshot) {
-                            const user = await this.userService.findOne({ email: userEmail.toString() });
-                            const deviceToken = await this.deviceTokenService.aggregate(
-                                [
-                                    {
-                                        $match: {
-                                            userId: user.id,
-                                            token: { $ne: null }
-                                        }
-                                    },
-                                    {
-                                        $lookup: {
-                                            from: 'User',
-                                            localField: 'userId',
-                                            foreignField: '_id',
-                                            as: 'User'
-                                        }
-                                    },
-                                    {
-                                        $unwind: {
-                                            path: '$User',
-                                            preserveNullAndEmptyArrays: true
-                                        }
+                        const user = await this.userService.findOne({ email: userEmail.toString() });
+                        const deviceToken = await this.deviceTokenService.aggregate(
+                            [
+                                {
+                                    $match: {
+                                        userId: user.id,
+                                        token: { $ne: null }
                                     }
-                                ]
-                            );
-                            console.log('deviceToken', deviceToken);
-                            if (deviceToken.length > 0) {
-                                for (let j = 0; j < deviceToken.length; j++) {
-                                    if (user.subscribeNoti === true && deviceToken[j].token !== undefined && deviceToken[j].token !== null && deviceToken[j].token !== '') {
-                                        fireBaseToken.push(deviceToken[j].token);
-                                    } else {
-                                        continue;
+                                },
+                                {
+                                    $lookup: {
+                                        from: 'User',
+                                        localField: 'userId',
+                                        foreignField: '_id',
+                                        as: 'User'
                                     }
+                                },
+                                {
+                                    $unwind: {
+                                        path: '$User',
+                                        preserveNullAndEmptyArrays: true
+                                    }
+                                }
+                            ]
+                        );
+                        console.log('deviceToken', deviceToken);
+                        if (deviceToken.length > 0) {
+                            for (let j = 0; j < deviceToken.length; j++) {
+                                if (user.subscribeNoti === true && deviceToken[j].token !== undefined && deviceToken[j].token !== null && deviceToken[j].token !== '') {
+                                    fireBaseToken.push(deviceToken[j].token);
+                                } else {
+                                    continue;
                                 }
                             }
                         }
