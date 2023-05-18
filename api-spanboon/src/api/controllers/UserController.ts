@@ -28,7 +28,7 @@ import { UserTagRequest } from './requests/UserTagRequest';
 import { AuthenticationId } from '../models/AuthenticationId';
 import { CheckUniqueIdUserRequest } from './requests/CheckUniqueIdUserRequest';
 import { GetUserLoginDataResponse } from './responses/getUserLoginDataResponse';
-import { CheckUserUniqueIdRequest } from './requests/checkUserUniqueIdRequest';
+import { CheckUserUniqueIdRequest } from './requests/CheckUserUniqueIdRequest';
 import { UNIQUEID_LOG_ACTION, UNIQUEID_LOG_TYPE } from '../../constants/UniqueIdHistoryAction';
 import { UniqueIdHistory } from '../models/UniqueIdHistory';
 import { UniqueIdHistoryService } from '../services/UniqueIdHistoryService';
@@ -871,9 +871,15 @@ export class UserController {
             return res.status(400).send(errorResponse);
         }
     }
-
     @Post('/uniqueid/check')
-    public async checkUniqueIdUser(@Body({ validate: true }) user: CheckUniqueIdUserRequest, @Res() res: any): Promise<any> {
+    public async checkUniqueIdUser(@Body({ validate: true }) user: CheckUniqueIdUserRequest,@Res() res: any, @Req() req: any): Promise<any> {
+        /* 
+        const limit = req.header('X-RateLimit-Limit');
+        const remaining = req.header('X-RateLimit-Remaining');
+        const resetTime = req.header('X-RateLimit-Reset');
+        console.log('limit',limit);
+        console.log('remaining',remaining);
+        console.log('resetTime',resetTime);
         const uniqueId = user.uniqueId;
 
         const checkValid = await this.checkUniqueIdValid(uniqueId);
@@ -882,8 +888,11 @@ export class UserController {
         } else {
             return res.status(200).send(checkValid);
         }
+        // ResponseUtil.getErrorResponse('uniqueId can not use',
+        // ('uniqueId can not use', false);
+        return res.status(200).send('uniqueId can not use', false); */
+        return res.status(200).send(ResponseUtil.getErrorResponse('uniqueId can not use', false));
     }
-
     @Get('/:id')
     @Authorized('user')
     public async getLoginUser(@Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
