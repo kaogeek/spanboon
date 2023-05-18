@@ -14,22 +14,43 @@ import { MicroframeworkLoader, MicroframeworkSettings } from 'microframework-w3t
 import { useExpressServer } from 'routing-controllers';
 import { authorizationChecker } from '../auth/authorizationChecker';
 import { currentUserChecker } from '../auth/currentUserChecker';
-import {env}  from '../env';
+import { env } from '../env';
 import cors from 'cors';
 import compression from 'compression';
+import { rateLimiterMiddleware } from '../api/middlewares/RateLimitPersecMiddleware';
 
-export const expressLoader: MicroframeworkLoader = async(settings: MicroframeworkSettings | undefined) => {
+export const expressLoader: MicroframeworkLoader = async (settings: MicroframeworkSettings | undefined) => {
     if (settings) {
         const connection = settings.getData('connection');
         /**
          * We create a new express server instance.
          * We could have also use useExpressServer here to attach controllers to an existing express instance.
          */
+        const whitelist = [
+            process.env.BUGTIV,
+            process.env.FACEBOOK_CALLBACK_URL,
+            process.env.AWS_CLOUDFRONT_PREFIX,
+            process.env.APP_API_PROCESSV3
+        ];
+        const corsOptions = {
+            origin: (origin, callback) => {
+                if (whitelist.indexOf(origin) !== -1) {
+                    callback(null, true);
+                } else {
+                    callback(new Error());
+                }
+            }
+        };
         const app = express();
-        app.use(cors());
+        app.use(cors(corsOptions));
         app.use(compression());
         app.use(bodyParser.urlencoded({ extended: true }));
         app.use(bodyParser.json({ limit: '50mb' }));
+        app.use(process.env.BUGTIV_2, rateLimiterMiddleware);
+        app.use(process.env.BUGTIV_3, rateLimiterMiddleware);
+        app.use(process.env.BUGTIV_4, rateLimiterMiddleware);
+        // Rate limiting 
+        app.set('trust proxy', 1);
         app.listen(env.app.port);
         const expressApp: Application = useExpressServer(app, {
             cors: true,

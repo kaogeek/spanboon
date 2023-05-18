@@ -38,7 +38,6 @@
             align-items: center;
             position: absolute;
             right: 10pt;
-            top: 15pt;
 
             >.material-icons {
                 cursor: pointer;
@@ -293,31 +292,31 @@
                 }
             }
         }
-    }
 
-    >.wrapper-footer {
-        display: flex;
-        justify-content: flex-end;
-        padding: 7pt 5pt;
-        border-top: $width-border solid $bg-fog-gray;
-        overflow: hidden;
+        .wrapper-footer {
+            display: flex;
+            justify-content: flex-end;
+            padding: 7pt 5pt;
+            border-top: $width-border solid $bg-fog-gray;
+            overflow: hidden;
 
-        .mat-button {
-            width: 70pt;
-            margin: 0 6pt;
-            border: $width-border solid $bg-fog-gray !important;
-            @include font-size-10($font-head-500);
-            background-color: $brandcolor2;
-            color: $brandcolor;
-            // transition: 0.5s;
+            .mat-button {
+                width: 70pt;
+                margin: 0 6pt;
+                border: $width-border solid $bg-fog-gray !important;
+                @include font-size-10($font-head-500);
+                background-color: $brandcolor2;
+                color: $brandcolor;
+                // transition: 0.5s;
 
-            &:hover {
-                // transform: scale(1.01);
+                &:hover {
+                    // transform: scale(1.01);
+                }
             }
-        }
 
-        .mat-button-focus-overlay {
-            opacity: 0 !important;
+            .mat-button-focus-overlay {
+                opacity: 0 !important;
+            }
         }
     }
 }
@@ -347,7 +346,8 @@
 
 @media (max-width: $small) {
     .wrapper-dialog-edit-profile {
-        height: 100vh;
+        height: 100dvh;
+        overflow-y: auto;
 
         >.wrapper-body-edit-profile {
             form {
@@ -356,6 +356,8 @@
                         flex-direction: column;
                         align-items: flex-start;
                         height: auto;
+                        margin-bottom: 0;
+                        gap: 0;
 
                         >.form-col {
                             margin-bottom: 7pt;

@@ -95,6 +95,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
   public checkedCon: boolean = false;
   public isRegister: boolean = false;
   public isInputEmail: boolean;
+  public isPassUUID: boolean = true;
 
   constructor(authenManager: AuthenManager,
     private authService: SocialAuthService,
@@ -178,7 +179,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
 
   public ngAfterViewInit(): void {
     fromEvent(this.username && this.username.nativeElement, 'keyup').pipe(
-      debounceTime(500)
+      debounceTime(800)
       , distinctUntilChanged()
     ).subscribe((text: any) => {
       this.checkUUID(this.username.nativeElement.value);
@@ -270,6 +271,11 @@ export class RegisterPage extends AbstractPage implements OnInit {
       } else {
         register.uniqueId = formData.username;
       }
+      if (!this.isPassUUID) {
+        this.isRegister = false;
+        this.showAlertDialogWarming("กรุณารอ 15นาที เพื่อสมัครสมาชิก", "none");
+        return;
+      }
       register.birthdate = new Date(moment(formData.birthday).format('YYYY-MM-DD'));
       register.birthdate.setHours(0);
       register.birthdate.setMinutes(0);
@@ -329,6 +335,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
         this.isRegister = false;
         return;
       }
+
       let passwordPattern = " ";
       if (this.mode === "normal") {
         if (formData.password === "" && formData.repassword === "") {
@@ -387,6 +394,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
       let image = {
         asset
       }
+
       let body = Object.assign(register, image)
 
       if (this.mode === "normal") {
@@ -577,6 +585,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
         this.uuid = true;
         this.userFacade.checkUniqueId({ uniqueId: event }).then((res) => {
           if (res) {
+            this.isPassUUID = true;
             this.isLoading = false;
             if (res && res.data) {
               this.uuid = res.data;
@@ -588,6 +597,9 @@ export class RegisterPage extends AbstractPage implements OnInit {
         }).catch((err) => {
           this.uuid = false;
           this.isLoading = false;
+          if (err.error.message === 'Too many requests') {
+            this.isPassUUID = false;
+          }
           document.getElementById('username').focus();
         })
       } else {

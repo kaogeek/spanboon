@@ -1168,25 +1168,6 @@ export class GuestController {
     }
 
     // Forgot Password API
-    /**
-     * @api {post} /api/forgot Forgot Password
-     * @apiGroup Guest API
-     * @apiParam (Request body) {String} username Username
-     * @apiParamExample {json} Input
-     * {
-     *      "username" : ""
-     * }
-     * @apiSuccessExample {json} Success
-     * HTTP/1.1 200 OK
-     * {
-     *      "message": "Thank you. Your password send to your email",
-     *      "status": "1"
-     * }
-     * @apiSampleRequest /api/forgot
-     * @apiErrorExample {json} Error
-     * HTTP/1.1 500 Internal Server Error
-     */
-    // check email
     @Post('/check_email_user')
     public async checkEmail(@Body({ validate: true }) users: CheckUser, @Res() res: any, @Req() req: any): Promise<any> {
         const mode = req.headers.mode;

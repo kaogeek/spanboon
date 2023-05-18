@@ -872,26 +872,14 @@ export class UserController {
         }
     }
     @Post('/uniqueid/check')
-    public async checkUniqueIdUser(@Body({ validate: true }) user: CheckUniqueIdUserRequest,@Res() res: any, @Req() req: any): Promise<any> {
-        /* 
-        const limit = req.header('X-RateLimit-Limit');
-        const remaining = req.header('X-RateLimit-Remaining');
-        const resetTime = req.header('X-RateLimit-Reset');
-        console.log('limit',limit);
-        console.log('remaining',remaining);
-        console.log('resetTime',resetTime);
+    public async checkUniqueIdUser(@Body({ validate: true }) user: CheckUniqueIdUserRequest, @Res() res: any, @Req() req: any): Promise<any> {
         const uniqueId = user.uniqueId;
-
         const checkValid = await this.checkUniqueIdValid(uniqueId);
         if (checkValid.status === 1) {
             return res.status(200).send(checkValid);
         } else {
             return res.status(200).send(checkValid);
         }
-        // ResponseUtil.getErrorResponse('uniqueId can not use',
-        // ('uniqueId can not use', false);
-        return res.status(200).send('uniqueId can not use', false); */
-        return res.status(200).send(ResponseUtil.getErrorResponse('uniqueId can not use', false));
     }
     @Get('/:id')
     @Authorized('user')
