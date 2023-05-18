@@ -2,7 +2,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { IRateLimiterOptions, RateLimiterMemory } from 'rate-limiter-flexible';
 
-const MAX_REQUEST_LIMIT = 100;
+const MAX_REQUEST_LIMIT = 500;
 const MAX_REQUEST_WINDOW = 10 * 60; // Per 15 minutes by IP
 const TOO_MANY_REQUESTS_MESSAGE = 'Too many requests';
 
