@@ -17,17 +17,11 @@ import { currentUserChecker } from '../auth/currentUserChecker';
 import { env } from '../env';
 import cors from 'cors';
 import compression from 'compression';
-import rateLimit from 'express-rate-limit';
+import { rateLimiterMiddleware } from '../api/middlewares/RateLimitPersecMiddleware';
 
 export const expressLoader: MicroframeworkLoader = async (settings: MicroframeworkSettings | undefined) => {
     if (settings) {
         const connection = settings.getData('connection');
-        const limiter = rateLimit({
-            windowMs: 1 * 60 * 1000, // 15 minutes
-            max: 5, // Limit each IP to 5 create account requests per `window` (here, per hour)
-            message: 'Too many accounts created from this IP, please try again after an hour',
-            headers: true,
-        });
         /**
          * We create a new express server instance.
          * We could have also use useExpressServer here to attach controllers to an existing express instance.
@@ -37,8 +31,8 @@ export const expressLoader: MicroframeworkLoader = async (settings: Microframewo
         app.use(compression());
         app.use(bodyParser.urlencoded({ extended: true }));
         app.use(bodyParser.json({ limit: '50mb' }));
+        app.use('/api/user/uniqueid/check/', rateLimiterMiddleware);
         // Rate limiting 
-        app.use('/api/user/uniqueid/check/', limiter);
         app.set('trust proxy', 1);
         app.listen(env.app.port);
         const expressApp: Application = useExpressServer(app, {
