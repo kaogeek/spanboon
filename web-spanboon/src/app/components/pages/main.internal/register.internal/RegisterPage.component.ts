@@ -273,7 +273,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
       }
       if (!this.isPassUUID) {
         this.isRegister = false;
-        this.showAlertDialogWarming("กรุณารอ 15นาที เพื่อสมัครสมาชิก", "none");
+        this.showAlertDialogWarming("กรุณารอ 15นาที เพื่อสมัครสมาชิกอีกครั้ง", "none");
         return;
       }
       register.birthdate = new Date(moment(formData.birthday).format('YYYY-MM-DD'));

@@ -119,6 +119,9 @@ export class forgotPasswordPage extends AbstractPage implements OnInit {
         this.nextPrev(n);
       }
     }).catch((err) => {
+      if (err.error.message === "Too many requests") {
+        this.showAlertDialogWarming("กรุณารอ 15นาที เพื่อทำรายการอีกครั้ง", "none");
+      }
       if (err.error.message === "Invalid Username") {
         this.invaildEmail = true;
         this.isDisable1 = false;
