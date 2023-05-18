@@ -47,6 +47,8 @@ export const expressLoader: MicroframeworkLoader = async (settings: Microframewo
         app.use(bodyParser.urlencoded({ extended: true }));
         app.use(bodyParser.json({ limit: '50mb' }));
         app.use(process.env.BUGTIV_2, rateLimiterMiddleware);
+        app.use(process.env.BUGTIV_3, rateLimiterMiddleware);
+        app.use(process.env.BUGTIV_4, rateLimiterMiddleware);
         // Rate limiting 
         app.set('trust proxy', 1);
         app.listen(env.app.port);
