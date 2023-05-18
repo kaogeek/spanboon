@@ -26,7 +26,12 @@ export const expressLoader: MicroframeworkLoader = async (settings: Microframewo
          * We create a new express server instance.
          * We could have also use useExpressServer here to attach controllers to an existing express instance.
          */
-        const whitelist = [process.env.BUGTIV, process.env.FACEBOOK_CALLBACK_URL];
+        const whitelist = [
+            process.env.BUGTIV, 
+            process.env.FACEBOOK_CALLBACK_URL,
+            process.env.AWS_CLOUDFRONT_PREFIX,
+            process.env.APP_API_PROCESSV3
+        ];
         const corsOptions = {
             origin: (origin, callback) => {
                 if (whitelist.indexOf(origin) !== -1) {
