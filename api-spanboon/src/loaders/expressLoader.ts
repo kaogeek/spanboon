@@ -26,8 +26,9 @@ export const expressLoader: MicroframeworkLoader = async (settings: Microframewo
          * We create a new express server instance.
          * We could have also use useExpressServer here to attach controllers to an existing express instance.
          */
+
         const app = express();
-        app.use(cors());
+        app.use(cors({ origin: [process.env.BUGTIV, process.env.FACEBOOK_CALLBACK_URL] }));
         app.use(compression());
         app.use(bodyParser.urlencoded({ extended: true }));
         app.use(bodyParser.json({ limit: '50mb' }));
