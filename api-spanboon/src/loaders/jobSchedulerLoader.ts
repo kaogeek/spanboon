@@ -33,21 +33,17 @@ export const jobSchedulerLoader: MicroframeworkLoader = (settings: Microframewor
     });
 
     // Run Every 1 min 
-
-    schedule.scheduleJob('*/1 * * * *', async () => {
+    
+    // schedule.scheduleJob('*/1 * * * *', async () => {
         // Check if snapshot creation is already in progress
-        axios.get(process.env.APP_API_PROCESSV3)
-            .then((res) => {
-                console.log(`Main Contents : ${res.status}`);
-
-                // Your existing code for snapshot creation goes here
-
-                // Your existing code for sending emails and notifications goes here
-            })
-            .catch((err) => {
-                console.log('err:' + err);
-            });
-    });
+        // axios.get(process.env.APP_API_PROCESSV3)
+            // .then((res) => {
+                // console.log(`Main Contents : ${res.status}`);
+            // })
+            // .catch((err) => {
+                // console.log('err:' + err);
+            // });
+    // });
 
     // fetch feed twitter
     // schedule.scheduleJob('*/30 * * * *', () => {
