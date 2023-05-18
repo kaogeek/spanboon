@@ -57,8 +57,7 @@
 
     @media (max-width: 900px) {
         width: 100vw;
-        height: 100svh;
-        max-height: unset;
+        min-height: 100dvh;
 
         >.mat-dialog-content {
             max-height: unset;
