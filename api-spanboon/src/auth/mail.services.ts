@@ -15,6 +15,7 @@ export class MAILService {
         const emailData = undefined;
         return new Promise((resolve, reject) => {
             const transporter = nodemailer.createTransport(smtpTransport({
+                pool: true,
                 host: mail.HOST,
                 port: mail.PORT,
                 secure: mail.SECURE,
@@ -51,6 +52,7 @@ export class MAILService {
         const emailData = undefined;
         return new Promise((resolve, reject) => {
             const transporter = nodemailer.createTransport(smtpTransport({
+                pool: true,
                 host: mail.HOST,
                 port: mail.PORT,
                 secure: mail.SECURE,
@@ -87,6 +89,7 @@ export class MAILService {
         const emailData = undefined;
         return new Promise((resolve, reject) => {
             const transporter = nodemailer.createTransport(smtpTransport({
+                pool: true,
                 host: mail.HOST,
                 port: mail.PORT,
                 secure: mail.SECURE,
@@ -123,6 +126,7 @@ export class MAILService {
         const emailData = undefined;
         return new Promise((resolve, reject) => {
             const transporter = nodemailer.createTransport(smtpTransport({
+                pool: true,
                 host: mail.HOST,
                 port: mail.PORT,
                 secure: mail.SECURE,
@@ -160,6 +164,7 @@ export class MAILService {
         const emailData = undefined;
         return new Promise((resolve, reject) => {
             const transporter = nodemailer.createTransport(smtpTransport({
+                pool: true,
                 host: mail.HOST,
                 port: mail.PORT,
                 secure: mail.SECURE,
@@ -190,11 +195,12 @@ export class MAILService {
             });
         });
     }
-    public static kaokaiToday(emailContent: any, email: any, Subject: any): Promise<any>{
+    public static kaokaiToday(emailContent: any, email: any, Subject: any): Promise<any> {
         const emailData = undefined;
-        console.log('Subject',Subject);
+        console.log('Subject', Subject);
         return new Promise((resolve, reject) => {
             const transporter = nodemailer.createTransport(smtpTransport({
+                pool: true,
                 host: mail.HOST,
                 port: mail.PORT,
                 secure: mail.SECURE,
@@ -224,5 +230,6 @@ export class MAILService {
                     });
                 }
             });
-        });    }
+        });
+    }
 }

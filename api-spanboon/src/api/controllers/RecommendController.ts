@@ -20,7 +20,7 @@ import { PageService } from '../services/PageService';
 import { AssetService } from '../services/AssetService';
 import { S3Service } from '../services/S3Service';
 import { ImageUtil } from '../../utils/ImageUtil';
-
+import { IpAddressEvent } from '../middlewares/IpAddressesMiddleware';
 @JsonController('/recommend')
 export class RecommendController {
 
@@ -51,6 +51,8 @@ export class RecommendController {
      */
     @Get()
     public async getRecommend(@QueryParam('limit') limit: number, @QueryParam('offset') offset: number, @QueryParams() options: any, @Req() req: any, @Res() res: any): Promise<any> {
+        const ipAddress = req.clientIp;
+        IpAddressEvent.emit(process.env.EVENT_LISTENNER, {ipAddress});
         // const result: RecommendResponse[] = [];
         const result: any = [];
         // const randomData: RecommendResponse = new RecommendResponse();

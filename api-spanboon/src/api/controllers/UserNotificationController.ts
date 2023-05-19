@@ -16,7 +16,7 @@ import { SearchFilter } from './requests/SearchFilterRequest';
 import { Notification } from '../models/Notification';
 import { NotificationResponse } from './responses/NotificationResponse';
 import { USER_TYPE } from '../../constants/NotificationType';
-
+import { IpAddressEvent } from '../middlewares/IpAddressesMiddleware';
 @JsonController('/notification')
 export class UserNotificationController {
     constructor(private notificationService: NotificationService, private userService: UserService, private pageService: PageService) { }
@@ -173,6 +173,8 @@ export class UserNotificationController {
     @Post('/search')
     @Authorized('user')
     public async searchUserNotifications(@Body({ validate: true }) filter: SearchFilter, @Res() res: any, @Req() req: any): Promise<any> {
+        const ipAddress = req.clientIp;
+        IpAddressEvent.emit(process.env.EVENT_LISTENNER, {ipAddress});
         let findAllCountNotification = undefined;
         if (filter === undefined) {
             filter = new SearchFilter();
