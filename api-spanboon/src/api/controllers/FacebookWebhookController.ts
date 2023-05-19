@@ -32,14 +32,19 @@ import { ConfigService } from '../services/ConfigService';
 @JsonController('/fb_webhook')
 export class FacebookWebhookController {
     constructor(
-        private pageService: PageService, private postsService: PostsService, private socialPostService: SocialPostService,
-        private assetService: AssetService, private postsGalleryService: PostsGalleryService,
+        private pageService: PageService,
+        private postsService: PostsService,
+        private socialPostService: SocialPostService,
+        private assetService: AssetService,
+        private postsGalleryService: PostsGalleryService,
         private socialPostLogsService: SocialPostLogsService,
         private hashTagService: HashTagService,
         private pageObjectiveService: PageObjectiveService,
         private emergencyEventService: EmergencyEventService,
         private configService: ConfigService,
-    ) { }
+
+    ) {
+    }
 
     /**
      * @api {get} /api/fb_webhook/page_feeds WebHook for page feed

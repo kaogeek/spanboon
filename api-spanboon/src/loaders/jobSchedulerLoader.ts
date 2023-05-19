@@ -57,13 +57,4 @@ export const jobSchedulerLoader: MicroframeworkLoader = (settings: Microframewor
                 console.log('err:' + err);
             });
     });
-
-    // fetch feed twitter
-    // schedule.scheduleJob('*/30 * * * *', () => {
-    // axios.get(process.env.APP_TWITTER).then((res) => {
-    // console.log(`Fetch Twitter : ${res.status}`);
-    // }).catch((err) => {
-    // console.log('err: ' + err);
-    // });
-    // });
 };
