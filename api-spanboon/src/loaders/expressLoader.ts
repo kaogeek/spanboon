@@ -18,23 +18,21 @@ import { env } from '../env';
 import cors from 'cors';
 import compression from 'compression';
 import { rateLimiterMiddleware } from '../api/middlewares/RateLimitPersecMiddleware';
-
+import requestIp from 'request-ip';
 export const expressLoader: MicroframeworkLoader = async (settings: MicroframeworkSettings | undefined) => {
     if (settings) {
         const connection = settings.getData('connection');
-        /**
-         * We create a new express server instance.
-         * We could have also use useExpressServer here to attach controllers to an existing express instance.
-         */
-
         const app = express();
         app.use(cors());
+        app.use(requestIp.mw());
         app.use(compression());
         app.use(bodyParser.urlencoded({ extended: true }));
         app.use(bodyParser.json({ limit: '50mb' }));
-        app.use(process.env.BUGTIV_2, rateLimiterMiddleware);
-        app.use(process.env.BUGTIV_3, rateLimiterMiddleware);
-        app.use(process.env.BUGTIV_4, rateLimiterMiddleware);
+        app.use(process.env.API_PATH_UNIQUEID_CHECK, rateLimiterMiddleware);
+        app.use(process.env.API_PATH_FORGET, rateLimiterMiddleware);
+        app.use(process.env.API_PATH_REGISTER, rateLimiterMiddleware);
+        app.use(process.env.API_PATH_HISTORY_SEARCH, rateLimiterMiddleware);
+        app.use(process.env.API_PATH_HASHTAG_TREND, rateLimiterMiddleware);
         // Rate limiting 
         app.set('trust proxy', 1);
         app.listen(env.app.port);

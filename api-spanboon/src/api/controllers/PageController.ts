@@ -79,6 +79,7 @@ import { NotificationService } from '../services/NotificationService';
 import { DeletePageService } from '../services/DeletePageService';
 import axios from 'axios';
 import { PageGroupService } from '../services/PageGroupService';
+import { IpAddressEvent } from '../middlewares/IpAddressesMiddleware';
 @JsonController('/page')
 export class PageController {
     private PAGE_ACCESS_LEVEL_GUEST = 'GUEST';
@@ -129,6 +130,8 @@ export class PageController {
      */
     @Get('/:id')
     public async findPage(@QueryParam('limit') limit: number, @Param('id') pId: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const ipAddress = req.clientIp;
+        IpAddressEvent.emit(process.env.EVENT_LISTENNER, {ipAddress});
         let pageStmt: any;
         let pageObjId;
         let result: any;
@@ -1142,7 +1145,9 @@ export class PageController {
      * HTTP/1.1 500 Internal Server Error
      */
     @Get('/:id/objective')
-    public async getPageObjective(@Param('id') pageId: string, @Res() res: any): Promise<any> {
+    public async getPageObjective(@Param('id') pageId: string,@Req() req:any ,@Res() res: any): Promise<any> {
+        const ipAddress = req.clientIp;
+        IpAddressEvent.emit(process.env.EVENT_LISTENNER, {ipAddress});
         const pageObjId = new ObjectID(pageId);
         const pageData: Page = await this.pageService.findOne({ where: { _id: pageObjId } });
 
