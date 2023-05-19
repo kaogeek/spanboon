@@ -47,7 +47,6 @@ import { ObjectivePostLikedProcessor } from '../processors/objective/ObjectivePo
 import { DateTimeUtil } from '../../utils/DateTimeUtil';
 import { SearchFilter } from './requests/SearchFilterRequest';
 import { S3Service } from '../services/S3Service';
-import { IpAddressEvent } from '../middlewares/IpAddressesMiddleware';
 @JsonController('/objective')
 export class ObjectiveController {
     constructor(
@@ -234,8 +233,6 @@ export class ObjectiveController {
      */
     @Post('/search')
     public async searchObjective(@Body({ validate: true }) search: FindHashTagRequest, @QueryParam('sample') sample: number,@Req() req:any ,@Res() res: any): Promise<any> {
-        const ipAddress = req.clientIp;
-        IpAddressEvent.emit(process.env.EVENT_LISTENNER, {ipAddress});
         if (ObjectUtil.isObjectEmpty(search)) {
             return res.status(200).send([]);
         }

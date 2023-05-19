@@ -43,7 +43,6 @@ import { DeviceTokenService } from '../services/DeviceToken';
 import { CheckUser } from './requests/CheckUser';
 import { AutoSynz } from './requests/AutoSynz';
 import { OtpService } from '../services/OtpService';
-import { IpAddressEvent } from '../middlewares/IpAddressesMiddleware';
 @JsonController()
 export class GuestController {
     constructor(
@@ -93,8 +92,8 @@ export class GuestController {
      */
     @Post('/register')
     public async register(@Body({ validate: true }) users: CreateUserRequest, @Res() res: any, @Req() req: any): Promise<any> {
-        const ipAddress = req.clientIp;
-        IpAddressEvent.emit(process.env.EVENT_LISTENNER, {ipAddress});
+        // const ipAddress = req.clientIp;
+        // IpAddressEvent.emit(process.env.EVENT_LISTENNER, {ipAddress});
         const mode = req.headers.mode;
         const registerEmail = users.email.toLowerCase();
         const gender = users.gender;
@@ -910,8 +909,8 @@ export class GuestController {
 
     @Post('/login')
     public async login(@Body({ validate: true }) loginParam: UserLoginRequest, @Res() res: any, @Req() req: any): Promise<any> {
-        const ipAddress = req.clientIp;
-        IpAddressEvent.emit(process.env.EVENT_LISTENNER, {ipAddress});
+        // const ipAddress = req.clientIp;
+        // IpAddressEvent.emit(process.env.EVENT_LISTENNER, {ipAddress});
         const mode = req.headers.mode;
         const modHeaders = req.headers.mod_headers;
         const loginUsername = loginParam.username;
@@ -1175,8 +1174,8 @@ export class GuestController {
     // Forgot Password API
     @Post('/check_email_user')
     public async checkEmail(@Body({ validate: true }) users: CheckUser, @Res() res: any, @Req() req: any): Promise<any> {
-        const ipAddress = req.clientIp;
-        IpAddressEvent.emit(process.env.EVENT_LISTENNER, {ipAddress});
+        // const ipAddress = req.clientIp;
+        // IpAddressEvent.emit(process.env.EVENT_LISTENNER, {ipAddress});
         const mode = req.headers.mode;
         const modHeaders = req.headers.mod_headers;
         const loginPassword = users.password;
@@ -1768,8 +1767,8 @@ export class GuestController {
     // send otp
     @Post('/send_otp')
     public async sendOTP(@Body({ validate: true }) otpRequest: OtpRequest,@Res() res: any, @Req() req: any): Promise<any> {
-        const ipAddress = req.clientIp;
-        IpAddressEvent.emit(process.env.EVENT_LISTENNER, {ipAddress});
+        // const ipAddress = req.clientIp;
+        // IpAddressEvent.emit(process.env.EVENT_LISTENNER, {ipAddress});
         const username = otpRequest.email;
         let saveOtp = undefined;
         const emailRes: string = username;
@@ -2139,8 +2138,8 @@ export class GuestController {
 
     @Post('/forgot')
     public async forgotPassword(@Body({ validate: true }) forgotPassword: ForgotPasswordRequest, @Res() res: any, @Req() req: any): Promise<any> {
-        const ipAddress = req.clientIp;
-        IpAddressEvent.emit(process.env.EVENT_LISTENNER, {ipAddress});
+        // const ipAddress = req.clientIp;
+        // IpAddressEvent.emit(process.env.EVENT_LISTENNER, {ipAddress});
         const username = forgotPassword.username;
         const emailRes: string = username.toLowerCase();
         const user: User = await this.userService.findOne({ username: emailRes });
@@ -2271,8 +2270,6 @@ export class GuestController {
     // Check Account Status Function
     @Get('/check_status')
     public async checkAccountStatus(@QueryParam('token') tokenParam: string, @Req() request: any, @Res() response: any): Promise<any> {
-        const ipAddress = request.clientIp;
-        IpAddressEvent.emit(process.env.EVENT_LISTENNER, {ipAddress});
         const isMode = request.header('mode');
         let user;
         if (isMode !== undefined && isMode === 'FB') {

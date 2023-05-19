@@ -46,7 +46,6 @@ import { SocialPostLogs } from '../models/SocialPostLogs';
 import { NotificationService } from '../services/NotificationService';
 import { USER_TYPE, NOTIFICATION_TYPE } from '../../constants/NotificationType';
 import { DeviceTokenService } from '../services/DeviceToken';
-import { IpAddressEvent } from '../middlewares/IpAddressesMiddleware';
 @JsonController('/user')
 export class UserController {
     constructor(
@@ -874,8 +873,6 @@ export class UserController {
     }
     @Post('/uniqueid/check')
     public async checkUniqueIdUser(@Body({ validate: true }) user: CheckUniqueIdUserRequest, @Res() res: any, @Req() req: any): Promise<any> {
-        const ipAddress = req.clientIp;
-        IpAddressEvent.emit(process.env.EVENT_LISTENNER, {ipAddress});
         const uniqueId = user.uniqueId;
         const checkValid = await this.checkUniqueIdValid(uniqueId);
         if (checkValid.status === 1) {
@@ -887,8 +884,6 @@ export class UserController {
     @Get('/:id')
     @Authorized('user')
     public async getLoginUser(@Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
-        const ipAddress = req.clientIp;
-        IpAddressEvent.emit(process.env.EVENT_LISTENNER, {ipAddress});
         if (id !== null && id !== undefined && id !== '') {
             const userId = new ObjectID(id);
             const userIdFindQuery = { where: { _id: userId } };
@@ -916,8 +911,6 @@ export class UserController {
     @Post('/:id/uniqueid')
     @Authorized('user')
     public async bindingId(@Param('id') id: string, @Body({ validate: true }) pages: CheckUserUniqueIdRequest, @Res() res: any, @Req() req: any): Promise<any> {
-        const ipAddress = req.clientIp;
-        IpAddressEvent.emit(process.env.EVENT_LISTENNER, {ipAddress});
         const uniqueId = pages.userName;
         const checkValid = await this.checkUniqueIdValid(id);
         const objectId = new ObjectID(id);

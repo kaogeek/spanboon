@@ -16,7 +16,6 @@ import { ASSET_CONFIG_NAME, DEFAULT_ASSET_CONFIG_VALUE } from '../../constants/S
 import { ASSET_SCOPE } from '../../constants/AssetScope';
 import moment from 'moment';
 import { AssetRequest } from './requests/AssetRequest';
-import { IpAddressEvent } from '../middlewares/IpAddressesMiddleware';
 @JsonController('/file')
 export class AssetController {
 
@@ -42,8 +41,6 @@ export class AssetController {
      */
     @Get('/:id')
     public async findAsset(@Param('id') id: string,  @Res() res: any, @Req() req: any): Promise<any> {
-        const ipAddress = req.clientIp;
-        IpAddressEvent.emit(process.env.EVENT_LISTENNER, {ipAddress});
         const objId = new ObjectID(id);
         const asset: Asset = await this.assetService.findOne({ where: { _id: objId } });
 
@@ -79,8 +76,6 @@ export class AssetController {
     @Post('/temp')
     @Authorized('user')
     public async createTempFiles(@Body({ validate: true }) tempFile: AssetRequest, @Res() res: any, @Req() req: any): Promise<any> {
-        const ipAddress = req.clientIp;
-        IpAddressEvent.emit(process.env.EVENT_LISTENNER, {ipAddress});
         if (tempFile !== null && tempFile !== undefined) {
             const assetExpTimeCfg = await this.configService.getConfig(ASSET_CONFIG_NAME.EXPIRE_MINUTE);
             let assetExpTime = DEFAULT_ASSET_CONFIG_VALUE.EXPIRE_MINUTE;
