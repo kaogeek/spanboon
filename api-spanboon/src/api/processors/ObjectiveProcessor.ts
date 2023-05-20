@@ -59,12 +59,29 @@ export class ObjectiveProcessor extends AbstractSectionModelProcessor {
                 }
 
                 let userId = undefined;
+                let startDateTime: Date = undefined;
+                let endDateTime: Date = undefined;
                 if (this.data !== undefined && this.data !== null) {
                     userId = this.data.userId;
+                    startDateTime = this.data.startDateTime;
+                    endDateTime = this.data.endDateTime;
                 }
-
+                const today = moment().toDate();
                 const matchStmt: any = {
                 };
+                const dateTimeAndArray = [];
+                if (startDateTime !== undefined && startDateTime !== null) {
+                    dateTimeAndArray.push({ startDateTime: { $gte: startDateTime } });
+                }
+                if (endDateTime !== undefined && endDateTime !== null) {
+                    dateTimeAndArray.push({ startDateTime: { $lte: endDateTime } });
+                }
+                if (dateTimeAndArray.length > 0) {
+                    matchStmt['$and'] = dateTimeAndArray;
+                } else {
+                    // default if startDateTime and endDateTime is not defined.
+                    matchStmt.startDateTime = { $lte: today };
+                }
 
                 const result: SectionModel = new SectionModel();
                 result.title = 'สิ่งที่กำลังเกิดขึ้นรอบตัวคุณ';
@@ -175,7 +192,6 @@ export class ObjectiveProcessor extends AbstractSectionModelProcessor {
                         if (row.hashTagObj.length > 0) {
                             // saerch all post with objective hashtag
                             if (hashtagNames.length > 0) {
-                                const today = moment().toDate();
                                 const postMatchStmt: any = {
                                     isDraft: false,
                                     deleted: false,

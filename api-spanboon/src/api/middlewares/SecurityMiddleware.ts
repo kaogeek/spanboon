@@ -13,6 +13,7 @@ import { ExpressMiddlewareInterface, Middleware } from 'routing-controllers';
 export class SecurityMiddleware implements ExpressMiddlewareInterface {
 
     public use(req: express.Request, res: express.Response, next: express.NextFunction): any {
+        console.log('Ip addresses -> ',req.ip);
         return helmet()(req, res, next);
     }
 

@@ -22,7 +22,6 @@ import moment from 'moment';
 import { ConfigService } from '../services/ConfigService';
 import { SEARCH_ENGAGEMENT_ACCESSIBLE_DATE, DEFAULT_SEARCH_ENGAGEMENT_ACCESSIBLE_DATE } from '../../constants/SystemConfig';
 import { Config } from '../models/Config';
-import { IpAddressEvent } from '../middlewares/IpAddressesMiddleware';
 @JsonController('/hashtag')
 export class HashTagController {
     constructor(
@@ -49,8 +48,7 @@ export class HashTagController {
      */
     @Get('/:id')
     public async findHashTag(@Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
-        const ipAddress = req.clientIp;
-        IpAddressEvent.emit(process.env.EVENT_LISTENNER, {ipAddress});
+
         const objId = new ObjectID(id);
 
         const hashTag: HashTag = await this.hashTagService.findOne({ where: { _id: objId } });
@@ -90,8 +88,7 @@ export class HashTagController {
      */
     @Post('/search')
     public async searchHashTag(@Body({ validate: true }) filter: SearchFilter, @Res() res: any, @Req() req: any): Promise<any> {
-        const ipAddress = req.clientIp;
-        IpAddressEvent.emit(process.env.EVENT_LISTENNER, {ipAddress});
+
         if (ObjectUtil.isObjectEmpty(filter)) {
             return res.status(200).send([]);
         }
@@ -144,8 +141,7 @@ export class HashTagController {
      */
     @Post('/:id/post/search')
     public async searchHashTagInPost(@Body({ validate: true }) filter: SearchFilter, @Param('id') hashTagId: string, @Res() res: any, @Req() req: any): Promise<any> {
-        const ipAddress = req.clientIp;
-        IpAddressEvent.emit(process.env.EVENT_LISTENNER, {ipAddress});
+
         const tagNames = [];
         let hashTagInPosts: HashTag;
 
@@ -198,8 +194,7 @@ export class HashTagController {
      */
     @Post('/trend')
     public async searchTrendHashTag(@Body({ validate: true }) search: SearchHashTagRequest, @Res() res: any, @Req() req: any): Promise<any> {
-        const ipAddress = req.clientIp;
-        IpAddressEvent.emit(process.env.EVENT_LISTENNER, {ipAddress});
+
         let name;
         let limit;
         let offset;

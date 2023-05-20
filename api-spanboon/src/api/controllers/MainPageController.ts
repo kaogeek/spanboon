@@ -86,7 +86,6 @@ import { KaokaiTodaySnapShotService } from '../services/KaokaiTodaySnapShot';
 import { KaokaiContentModelProcessor } from '../processors/KaokaiContentModelProcessor';
 import { MAILService } from '../../auth/mail.services';
 import { DeviceTokenService } from '../services/DeviceToken';
-import { IpAddressEvent } from '../middlewares/IpAddressesMiddleware';
 @JsonController('/main')
 export class MainPageController {
     constructor(
@@ -113,8 +112,7 @@ export class MainPageController {
     // Home page content V2
     @Get('/content/v3')
     public async getContentListV2(@QueryParam('offset') offset: number, @QueryParam('section') section: string, @QueryParam('date') date: any, @Res() res: any, @Req() req: any): Promise<any> {
-        const ipAddress = req.clientIp;
-        IpAddressEvent.emit(process.env.EVENT_LISTENNER, {ipAddress});
+
         const dateFormat = new Date(date);
         const dateReal = dateFormat.setDate(dateFormat.getDate() + 1);
         const toDate = new Date(dateReal);
@@ -411,8 +409,7 @@ export class MainPageController {
 
     @Get('/bottom/trend')
     public async mirrorTrends(@QueryParam('offset') offset: number, @QueryParam('section') section: string, @QueryParam('date') date: any, @Res() res: any, @Req() req: any): Promise<any> {
-        const ipAddress = req.clientIp;
-        IpAddressEvent.emit(process.env.EVENT_LISTENNER, {ipAddress});
+
         const userId = req.headers.userid;
         const mainPageSearchConfig = await this.pageService.searchPageOfficialConfig();
         const searchOfficialOnly = mainPageSearchConfig.searchOfficialOnly;
@@ -473,8 +470,7 @@ export class MainPageController {
 
     @Post('/is/read')
     public async isRead(@Body({ validate: true }) data: IsRead, @Res() res: any, @Req() req: any): Promise<any> {
-        const ipAddress = req.clientIp;
-        IpAddressEvent.emit(process.env.EVENT_LISTENNER, {ipAddress});
+
         const userId = req.headers.userid;
         const objIds = new ObjectID(userId);
         const user = await this.userService.findOne({ _id: objIds });
@@ -544,8 +540,7 @@ export class MainPageController {
     }
     @Post('/days/check')
     public async daysCheck(@Res() res: any, @Req() req: any): Promise<any> {
-        const ipAddress = req.clientIp;
-        IpAddressEvent.emit(process.env.EVENT_LISTENNER, {ipAddress});
+
         const now = new Date();
         const year = now.getFullYear(); // Get the current year
         let startDate = new Date(year, 0, 1);
@@ -598,8 +593,7 @@ export class MainPageController {
      */
     @Get('/content')
     public async getContentList(@QueryParam('offset') offset: number, @QueryParam('emergency') emergency: boolean, @QueryParam('section') section: string, @QueryParam('date') date: string, @Res() res: any, @Req() req: any): Promise<any> {
-        const ipAddress = req.clientIp;
-        IpAddressEvent.emit(process.env.EVENT_LISTENNER, {ipAddress});
+
         const userId = req.headers.userid;
         const mainPageSearchConfig = await this.pageService.searchPageOfficialConfig();
         const searchOfficialOnly = mainPageSearchConfig.searchOfficialOnly;
@@ -689,7 +683,7 @@ export class MainPageController {
         const weekRanges: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 7);
 
         // setup search date range for lastest post
-        const monthRanges: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 365);
+        const monthRanges: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 30);
 
         const emerProcessor: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service, this.hashTagService);
         emerProcessor.setConfig({
@@ -866,8 +860,7 @@ export class MainPageController {
      */
     @Get('/account')
     public async getUserAndPageAccount(@QueryParam('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
-        const ipAddress = req.clientIp;
-        IpAddressEvent.emit(process.env.EVENT_LISTENNER, {ipAddress});
+
         let pageObjId: ObjectID;
         let userObjId: ObjectID;
         let pageStmt: any;
@@ -2009,10 +2002,10 @@ export class MainPageController {
         const snapshot = await this.kaokaiTodaySnapShotService.create(result);
         // Check Date time === 06:00 morning
         let content = undefined;
-        const fireBaseToken = []; 
+        const fireBaseToken = [];
         // String(switchSendEm) === 'true'
         if (snapshot && hours === parseInt(hourSplit, 10) && minutes === parseInt(minuteSpit, 10)) {
-            if (String(switchSendEm) === 'true') { 
+            if (String(switchSendEm) === 'true') {
                 content = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: endDateTimeToday });
                 let user = undefined;
                 for (const userEmail of emailStack) {
