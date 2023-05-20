@@ -61,7 +61,6 @@ export class PostSectionProcessor extends AbstractSeparateSectionProcessor {
                     endDateTime = this.data.endDateTime;
                     userId = this.data.userId;
                 }
-
                 const searchFilter: SearchFilter = new SearchFilter();
                 searchFilter.limit = limit;
                 searchFilter.offset = offset;
@@ -93,14 +92,12 @@ export class PostSectionProcessor extends AbstractSeparateSectionProcessor {
                 if (endDateTime !== undefined && endDateTime !== null) {
                     dateTimeAndArray.push({ startDateTime: { $lte: endDateTime } });
                 }
-
                 if (dateTimeAndArray.length > 0) {
                     postMatchStmt['$and'] = dateTimeAndArray;
                 } else {
                     // default if startDateTime and endDateTime is not defined.
                     postMatchStmt.startDateTime = { $lte: today };
                 }
-
                 const postStmt = [
                     { $match: postMatchStmt },
                     {

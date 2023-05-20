@@ -683,7 +683,7 @@ export class MainPageController {
         const weekRanges: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 7);
 
         // setup search date range for lastest post
-        const monthRanges: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 365);
+        const monthRanges: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 30);
 
         const emerProcessor: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service, this.hashTagService);
         emerProcessor.setConfig({
@@ -2002,10 +2002,10 @@ export class MainPageController {
         const snapshot = await this.kaokaiTodaySnapShotService.create(result);
         // Check Date time === 06:00 morning
         let content = undefined;
-        const fireBaseToken = []; 
+        const fireBaseToken = [];
         // String(switchSendEm) === 'true'
         if (snapshot && hours === parseInt(hourSplit, 10) && minutes === parseInt(minuteSpit, 10)) {
-            if (String(switchSendEm) === 'true') { 
+            if (String(switchSendEm) === 'true') {
                 content = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: endDateTimeToday });
                 let user = undefined;
                 for (const userEmail of emailStack) {
