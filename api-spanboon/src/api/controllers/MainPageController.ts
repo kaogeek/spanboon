@@ -159,6 +159,7 @@ export class MainPageController {
         // convert object to string then json !!!!
         // {endDateTime:-1};
         let convert = undefined;
+
         const checkCreate = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: monthRange[1] });
         if (checkCreate !== undefined && checkCreate !== null) {
             if (typeof (JSON.stringify(checkCreate)) === 'string') {
@@ -1992,7 +1993,7 @@ export class MainPageController {
         if (checkCreate !== undefined && checkCreate !== null) {
             return checkCreate.data;
         }
-        console.log('cluster.isMaster',cluster.isMaster);
+        console.log('cluster.isMaster', cluster.isMaster);
         const contents = data;
         const startDate = startDateRange;
         const result: any = {};
@@ -2140,6 +2141,26 @@ export class MainPageController {
     }
 
     public async sendEmail(user: User, email: string, content: any, subject: string, date?: Date): Promise<any> {
+        const majorContents = [];
+        const pageRoundRobin = [];
+        if (content.majorTrend.contents.length > 0) {
+            for (let i = 0; i < content.majorTrend.contents.length; i++) {
+                if (content.majorTrend.contents[i].coverPageUrl !== undefined && i < 3) {
+                    majorContents.push(content.majorTrend.contents[i]);
+                } else {
+                    continue;
+                }
+            }
+        }
+        if (content.pageRoundRobin.contents.length > 0) {
+            for (let j = 0; j < content.pageRoundRobin.contents.length; j++) {
+                if (content.pageRoundRobin.contents[j].coverPageUrl !== undefined && j < 4) {
+                    pageRoundRobin.push(content.pageRoundRobin.contents[j]);
+                } else {
+                    continue;
+                }
+            }
+        }
         const newsTitle = [];
         if (date === undefined) {
             const errorResponse = ResponseUtil.getErrorResponse('Date time undefined.', undefined);
@@ -2179,43 +2200,43 @@ export class MainPageController {
         let postMajorTitleS = undefined;
         let postMajorNameF = undefined;
         let postMajorNameS = undefined;
-        if (content.majorTrend.contents[0] !== undefined) {
-            postMajorTitleF = content.majorTrend.contents[0].post.title;
+        if (majorContents[0].post !== undefined) {
+            postMajorTitleF = majorContents[0].post.title;
             if (postMajorTitleF.length > 100) {
-                postMajorTitleF = content.majorTrend.contents[0].post.title.slice(0, 100) + '...';
+                postMajorTitleF = majorContents[0].post.title.slice(0, 100) + '...';
             }
             newsTitle.push(postMajorTitleF);
-        } if (content.majorTrend.contents[1] !== undefined) {
-            postMajorTitleS = content.majorTrend.contents[1].post.title;
+        } if (majorContents[1].post !== undefined) {
+            postMajorTitleS = majorContents[1].post.title;
             if (postMajorTitleS.length > 100) {
-                postMajorTitleS = content.majorTrend.contents[1].post.title.slice(0, 100) + '...';
+                postMajorTitleS = majorContents[1].post.title.slice(0, 100) + '...';
             }
             newsTitle.push(postMajorTitleS);
-        } if (content.majorTrend.contents[0] !== undefined) {
-            postMajorNameF = content.majorTrend.contents[0].owner.name ? content.majorTrend.contents[0].owner.name : content.majorTrend.contents[0].owner.displayName;
-        } if (content.majorTrend.contents[1] !== undefined) {
-            postMajorNameS = content.majorTrend.contents[1].owner.name ? content.majorTrend.contents[1].owner.name : content.majorTrend.contents[1].owner.displayName;
+        } if (majorContents[0] !== undefined) {
+            postMajorNameF = majorContents[0].owner.name ? majorContents[0].owner.name : majorContents[0].owner.displayName;
+        } if (majorContents[1] !== undefined) {
+            postMajorNameS = majorContents[1].owner.name ? majorContents[1].owner.name : majorContents[1].owner.displayName;
         }
-        if (content.majorTrend.contents[0] !== undefined) {
-            picPostMajorF = content.majorTrend.contents[0].coverPageSignUrl ? `
+        if (majorContents[0] !== undefined) {
+            picPostMajorF = majorContents[0].coverPageSignUrl ? `
             <div style="display: flex;gap: 5px;background: white;">
                 <div
                     style="display: flex; text-align: center;font-size: 12pt;width:400px;height:340px;background: white;">
                     <img style="width: 100%;height: 100%;object-fit: cover;background: white;margin-left:15px"
-                        src=${content.majorTrend.contents[0].coverPageSignUrl}>
+                        src=${majorContents[0].coverPageSignUrl}>
                 </div>
             </div>`:
                 `<div style="display: flex;gap: 5px;width:400px;height:340px">
                 <span style="color:black;text-align: center;margin-top:160px;margin-bottom:133px;width: 100%;">${postMajorTitleF}</span> 
             </div>`;
         }
-        if (content.majorTrend.contents[1] !== undefined) {
-            picPostMajorS = content.majorTrend.contents[1].coverPageSignUrl ? `
+        if (majorContents[1] !== undefined) {
+            picPostMajorS = majorContents[1].coverPageSignUrl ? `
             <div style="display: flex;gap: 5px;background: white;">
                 <div
                     style="display: flex; text-align: center;font-size: 12pt;width:400px;height:340px;background: white;">
                     <img style="width: 100%;height: 100%;object-fit: cover;background: white;margin-left:15px"
-                        src=${content.majorTrend.contents[1].coverPageSignUrl}>
+                        src=${majorContents[1].coverPageSignUrl}>
                 </div>
             </div>` :
                 `            
@@ -2246,50 +2267,50 @@ export class MainPageController {
         const day = toDate.getDate().toString().padStart(2, '0');
         const formattedDate = `${day}-${month}-${year}`;
         const homePage = process.env.APP_HOME + `?date=${formattedDate}`;
-        if (content.pageRoundRobin.contents.length > 0) {
-            if (content.pageRoundRobin.contents[0] !== undefined) {
-                nameRoundRobinF = content.pageRoundRobin.contents[0].owner.name ? content.pageRoundRobin.contents[0].owner.name : content.pageRoundRobin.contents[0].owner.displayName;
+        if (pageRoundRobin.length > 0) {
+            if (pageRoundRobin[0] !== undefined) {
+                nameRoundRobinF = pageRoundRobin[0].owner.name ? pageRoundRobin[0].owner.name : pageRoundRobin[0].owner.displayName;
             }
-            if (content.pageRoundRobin.contents[0] !== undefined) {
-                linkPostRoundRobinF = process.env.APP_POST + '/' + content.pageRoundRobin.contents[0].post._id;
+            if (pageRoundRobin[0] !== undefined) {
+                linkPostRoundRobinF = process.env.APP_POST + '/' +pageRoundRobin[0].post._id;
             }
-            if (content.pageRoundRobin.contents[0] !== undefined) {
-                postRoundRobinF = content.pageRoundRobin.contents[0].post.title;
+            if (pageRoundRobin[0] !== undefined) {
+                postRoundRobinF = pageRoundRobin[0].post.title;
                 if (postRoundRobinF.length > 38) {
-                    postRoundRobinF = content.pageRoundRobin.contents[0].post.title.slice(0, 38) + '...';
+                    postRoundRobinF = pageRoundRobin[0].post.title.slice(0, 38) + '...';
                 }
                 newsTitle.push(postRoundRobinF);
             }
-            if (content.pageRoundRobin.contents[0] !== undefined) {
-                picPostRoundRobinF = content.pageRoundRobin.contents[0].coverPageSignUrl ?
+            if (pageRoundRobin[0] !== undefined) {
+                picPostRoundRobinF = pageRoundRobin[0].coverPageSignUrl ?
                     `
                 <div style="display: flex; text-align: center;font-size: 12pt;width:100%;height: 210px;background: white;margin-bottom: 10px;">
                     <img style="width: 100%;object-fit: cover;background: white;height:100%;"
-                        src=${content.pageRoundRobin.contents[0].coverPageSignUrl}>
+                        src=${pageRoundRobin[0].coverPageSignUrl}>
                 </div>`: `         
                 <div style="display: flex;gap: 5px;width:100%;height: 210px;margin-bottom:10px">
                     <span style="color:black;text-align: center;margin-top:100px;width: 100%;">${postRoundRobinF}</span> 
                 </div>`;
             }
-            if (content.pageRoundRobin.contents[1] !== undefined) {
-                postRoundRobinS = content.pageRoundRobin.contents[1].post.title;
+            if (pageRoundRobin[1] !== undefined) {
+                postRoundRobinS = pageRoundRobin[1].post.title;
                 if (postRoundRobinS.length > 38) {
-                    postRoundRobinS = content.pageRoundRobin.contents[1].post.title.slice(0, 38) + '...';
+                    postRoundRobinS = pageRoundRobin[1].post.title.slice(0, 38) + '...';
                 }
                 newsTitle.push(postRoundRobinS);
             }
-            if (content.pageRoundRobin.contents[1] !== undefined) {
-                nameRoundRobinS = content.pageRoundRobin.contents[1].owner.name ? content.pageRoundRobin.contents[1].owner.name : content.pageRoundRobin.contents[1].owner.displayName;
+            if (pageRoundRobin[1] !== undefined) {
+                nameRoundRobinS = pageRoundRobin[1].owner.name ? pageRoundRobin[1].owner.name : pageRoundRobin[1].owner.displayName;
             }
-            if (content.pageRoundRobin.contents[1] !== undefined) {
-                linkPostRoundRobinS = process.env.APP_POST + '/' + content.pageRoundRobin.contents[1].post._id;
+            if (pageRoundRobin[1] !== undefined) {
+                linkPostRoundRobinS = process.env.APP_POST + '/' + pageRoundRobin[1].post._id;
             }
-            if (content.pageRoundRobin.contents[1] !== undefined) {
-                picPostRoundRobinS = content.pageRoundRobin.contents[1].coverPageSignUrl ?
+            if (pageRoundRobin[1] !== undefined) {
+                picPostRoundRobinS = pageRoundRobin[1].coverPageSignUrl ?
                     `
                         <div style="display: flex; text-align: center;font-size: 12pt;width:100%;height: 210px;background: white;margin-bottom: 10px;">
                             <img style="width: 100%;object-fit: cover;background: white;height:100%;"
-                                src=${content.pageRoundRobin.contents[1].coverPageSignUrl}>
+                                src=${pageRoundRobin[1].coverPageSignUrl}>
                         </div>`: `         
                         <div style="display: flex;gap: 5px;width:100%;height: 210px;margin-bottom:10px">
                             <span style="color:black;text-align: center;margin-top:100px;width: 100%;">${postRoundRobinS}</span> 
@@ -2297,31 +2318,31 @@ export class MainPageController {
                     ;
             }
 
-            if (content.pageRoundRobin.contents[2] !== undefined) {
-                postRoundRobinT = content.pageRoundRobin.contents[2].post.title;
+            if (pageRoundRobin[2] !== undefined) {
+                postRoundRobinT = pageRoundRobin[2].post.title;
                 if (postRoundRobinT.length > 38) {
-                    postRoundRobinT = content.pageRoundRobin.contents[2].post.title.slice(0, 38) + '...';
+                    postRoundRobinT = pageRoundRobin[2].post.title.slice(0, 38) + '...';
                 }
                 newsTitle.push(postRoundRobinT);
             }
 
-            if (content.pageRoundRobin.contents[2] !== undefined) {
-                picPostRoundRobinT = content.pageRoundRobin.contents[2].coverPageSignUrl ?
+            if (pageRoundRobin[2] !== undefined) {
+                picPostRoundRobinT = pageRoundRobin[2].coverPageSignUrl ?
                     `
                 <div style="display: flex; text-align: center;font-size: 12pt;width:100%;height: 210px;background: white;margin-bottom: 10px;">
                         <img style="width: 100%;object-fit: cover;background: white;height:100%;"
-                            src=${content.pageRoundRobin.contents[2].coverPageSignUrl}>
+                            src=${pageRoundRobin[2].coverPageSignUrl}>
                 </div>`: `         
                 <div style="display: flex;gap: 5px;width:100%;height: 210px;margin-bottom:10px">
                         <span style="color:black;text-align: center;margin-top:100px;width: 100%;">${postRoundRobinT}</span> 
                 </div>`
                     ;
             }
-            if (content.pageRoundRobin.contents[2] !== undefined) {
-                nameRoundRobinT = content.pageRoundRobin.contents[2].owner.name ? content.pageRoundRobin.contents[2].owner.name : content.pageRoundRobin.contents[2].owner.displayName;
+            if (pageRoundRobin[2] !== undefined) {
+                nameRoundRobinT = pageRoundRobin[2].owner.name ? pageRoundRobin[2].owner.name : pageRoundRobin[2].owner.displayName;
             }
-            if (content.pageRoundRobin.contents[2] !== undefined) {
-                linkPostRoundRobinT = process.env.APP_POST + '/' + content.pageRoundRobin.contents[2].post._id;
+            if (pageRoundRobin[2] !== undefined) {
+                linkPostRoundRobinT = process.env.APP_POST + '/' + pageRoundRobin[2].post._id;
             }
 
         }
