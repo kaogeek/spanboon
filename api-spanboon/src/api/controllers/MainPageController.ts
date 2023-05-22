@@ -86,6 +86,7 @@ import { KaokaiTodaySnapShotService } from '../services/KaokaiTodaySnapShot';
 import { KaokaiContentModelProcessor } from '../processors/KaokaiContentModelProcessor';
 import { MAILService } from '../../auth/mail.services';
 import { DeviceTokenService } from '../services/DeviceToken';
+import cluster from 'cluster';
 @JsonController('/main')
 export class MainPageController {
     constructor(
@@ -1991,6 +1992,7 @@ export class MainPageController {
         if (checkCreate !== undefined && checkCreate !== null) {
             return checkCreate.data;
         }
+        console.log('cluster.isMaster',cluster.isMaster);
         const contents = data;
         const startDate = startDateRange;
         const result: any = {};
@@ -2000,7 +2002,7 @@ export class MainPageController {
         // Check Date time === 06:00 morning
         const fireBaseToken = [];
         // String(switchSendEm) === 'true'
-        if (hours === parseInt(hourSplit, 10) && minutes === parseInt(minuteSpit, 10)) {
+        if (cluster.isMaster && hours === parseInt(hourSplit, 10) && minutes === parseInt(minuteSpit, 10)) {
             const snapshot = await this.kaokaiTodaySnapShotService.create(result);
             if (String(switchSendEm) === 'true' && snapshot) {
                 let user = undefined;
