@@ -1991,43 +1991,40 @@ export class MainPageController {
         if (checkCreate !== undefined && checkCreate !== null) {
             return checkCreate.data;
         }
-
         const contents = data;
         const startDate = startDateRange;
-        const endDate = endDateTimeToday;
         const result: any = {};
         result.data = contents;
         result.startDateTime = startDate;
-        result.endDateTime = endDate;
-        const snapshot = await this.kaokaiTodaySnapShotService.create(result);
+        result.endDateTime = endDateTimeToday;
         // Check Date time === 06:00 morning
-        let content = undefined;
         const fireBaseToken = [];
         // String(switchSendEm) === 'true'
-        if (snapshot && hours === parseInt(hourSplit, 10) && minutes === parseInt(minuteSpit, 10)) {
-            if (String(switchSendEm) === 'true') {
-                content = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: endDateTimeToday });
+        if (hours === parseInt(hourSplit, 10) && minutes === parseInt(minuteSpit, 10)) {
+            const snapshot = await this.kaokaiTodaySnapShotService.create(result);
+            if (String(switchSendEm) === 'true' && snapshot) {
                 let user = undefined;
                 for (const userEmail of emailStack) {
                     user = await this.userService.findOne({ email: userEmail.toString() });
                     if (user.subscribeEmail === true) {
-                        await this.sendEmail(user, user.email, content.data, 'ก้าวไกลวันนี้', endDateTimeToday);
+                        await this.sendEmail(user, user.email, snapshot.data, 'ก้าวไกลวันนี้', endDateTimeToday);
                     } else {
                         continue;
                     }
                 }
             } else {
-                content = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: endDateTimeToday });
                 const users = await this.userService.find();
-                for (const user of users) {
-                    if (user.subscribeEmail === true) {
-                        await this.sendEmail(user, user.email, content.data, 'ก้าวไกลหน้าหนึ่ง', endDateTimeToday);
-                    } else {
-                        continue;
+                if (snapshot) {
+                    for (const user of users) {
+                        if (user.subscribeEmail === true) {
+                            await this.sendEmail(user, user.email, snapshot.data, 'ก้าวไกลหน้าหนึ่ง', endDateTimeToday);
+                        } else {
+                            continue;
+                        }
                     }
                 }
             }
-            if (String(sendNotification) === 'true') {
+            if (String(sendNotification) === 'true' && snapshot) {
                 for (const userEmail of emailStack) {
                     const user = await this.userService.findOne({ email: userEmail.toString() });
                     const deviceToken = await this.deviceTokenService.aggregate(
@@ -2073,7 +2070,7 @@ export class MainPageController {
                         for (let z = 0; z < token.length; z++) {
                             if (token[z] !== undefined) {
                                 console.log('pass 1?????');
-                                await this.notificationService.pushNotificationMessage(content.data, token[z], endDateTimeToday);
+                                await this.notificationService.pushNotificationMessage(snapshot.data, token[z], endDateTimeToday);
                             } else {
                                 continue;
                             }
@@ -2117,10 +2114,10 @@ export class MainPageController {
                     const token = fireBaseToken.filter((element, index) => {
                         return fireBaseToken.indexOf(element) === index;
                     });
-                    if (token.length > 0) {
+                    if (token.length > 0 && snapshot) {
                         for (let z = 0; z < token.length; z++) {
                             if (token[z] !== undefined) {
-                                await this.notificationService.pushNotificationMessage(content.data, token[z], endDateTimeToday);
+                                await this.notificationService.pushNotificationMessage(snapshot.data, token[z], endDateTimeToday);
                             } else {
                                 continue;
                             }
