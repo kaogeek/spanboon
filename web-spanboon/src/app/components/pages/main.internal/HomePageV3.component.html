@@ -147,7 +147,7 @@
                                                 </g>
                                             </svg> เกาะทุกก้าว
                                         </div>
-                                        <img class="image-background"
+                                        <img class="image-background" *ngIf="!isRes1"
                                             [src]="model && model.emergencyEvents.contents[0].coverPageSignUrl ? model.emergencyEvents.contents[0].coverPageSignUrl : apiBaseURL + (model && model.emergencyEvents.contents[0].coverPageUrl) + '/image'"
                                             alt="">
                                         <img class="image"
@@ -1346,7 +1346,7 @@
                         </ng-template>
                     </div>
                 </div>
-                <ng-container *ngFor="let item of owner.owner.post | slice:0:3; let i=index">
+                <ng-container *ngFor="let item of owner.owner.posts | slice:0:3; let i=index">
                     <div class="card-content">
                         <div class="wrapper-bar">
                             <span class="news-post-bar-left">

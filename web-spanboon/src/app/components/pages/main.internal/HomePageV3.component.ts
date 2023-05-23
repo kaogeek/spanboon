@@ -44,6 +44,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   public showLoading: boolean;
   public isPostNewTab: boolean = false;
   public isRes: boolean = false;
+  public isRes1: boolean = false;
   public isAnnounce: boolean = false;
   public isKaokai: boolean = false;
   public isOldContent: boolean = false;
@@ -535,10 +536,12 @@ export class HomePageV3 extends AbstractPage implements OnInit {
       this.isPostNewTab = true;
       this.isAnnounce = true;
       this.isKaokai = true;
+      this.isRes1 = true;
     } else {
       this.isPostNewTab = false;
       this.isAnnounce = false;
       this.isKaokai = false;
+      this.isRes1 = false;
     }
 
     if (this.windowWidth <= 1024) {
