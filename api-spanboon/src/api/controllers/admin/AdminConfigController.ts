@@ -147,7 +147,7 @@ export class AdminConfigController {
         }
         const userObjId = new ObjectID(req.user.id);
         let configSave = undefined;
-        if (editConfig.name === 'kaokaiToday.emergency.range.date') {
+        if (editConfig.name === 'kaokaiToday.time.emergencyEvent.date') {
             const dateFormat = new Date();
             const dateReal = dateFormat.setDate(dateFormat.getDate() + parseInt(configReq.value, 10));
             const toDate = new Date(dateReal);
