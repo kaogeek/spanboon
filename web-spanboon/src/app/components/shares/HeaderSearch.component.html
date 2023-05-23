@@ -49,7 +49,7 @@
                     <ng-template #elseIsloading>
                         <ng-container *ngIf="resSearch.length > 0; else elseNotFound">
                             <div class="item-search" *ngFor="let item of resSearch; let index = index">
-                                <ng-container *ngIf="item.historyId; else elseHistory">
+                                <ng-container *ngIf="item.historyId && isLogin(); else elseHistory">
                                     <div class="search-name" (click)="clickOpenLink(item)">
                                         <svg class="icon-history" xmlns="http://www.w3.org/2000/svg" width="18.412"
                                             height="20.418" viewBox="0 0 18.412 20.418">
@@ -71,12 +71,13 @@
                                                     transform="translate(0)" fill="#474747" />
                                             </g>
                                         </svg>
-                                       <div class="description">
-                                        <span class="history-name">
-                                            {{item.label}}
-                                        </span>
-                                        <span class="description-color"> {{item.type === "PAGE" ? "เพจ" : item.type === "USER" ? "ผู้ใข้" : "แฮชแท็ก" }} </span>
-                                       </div>
+                                        <div class="description">
+                                            <span class="history-name">
+                                                {{item.label}}
+                                            </span>
+                                            <span class="description-color"> {{item.type === "PAGE" ? "เพจ" : item.type
+                                                === "USER" ? "ผู้ใช้" : "แฮชแท็ก" }} </span>
+                                        </div>
                                     </div>
                                     <div class="list-right">
                                         <i class="material-icons" (click)="onDeleteHistory(item,index)">
@@ -98,8 +99,9 @@
                                             <span class="history-name">
                                                 {{item.label}}
                                             </span>
-                                            <span class="description-color"> {{item.type === "PAGE" ? "เพจ" : item.type === "USER" ? "ผู้ใข้" : "แฮชแท็ก" }}  </span>
-                                           </div>
+                                            <span class="description-color"> {{item.type === "PAGE" ? "เพจ" : item.type
+                                                === "USER" ? "ผู้ใช้" : "แฮชแท็ก" }} </span>
+                                        </div>
                                     </div>
 
                                 </ng-template>
@@ -140,16 +142,17 @@
                         <div class="list-popular">
                             <div class="item-popular" *ngFor="let trend of dataTrend; let index = index"
                                 (click)="searchHashTag(trend,index);clickOpenLink(trend)">
-                                <ng-container *ngIf="trend.label !== '' && trend.label !== undefined && trend.label !== null">
+                                <ng-container *ngIf="!!trend!.label">
                                     <div class="tag-popular">
                                         {{trend.label}}
                                     </div>
                                     <div class="count-participate">
                                         {{trend.count | shortNumber }} ครั้ง
                                     </div>
-                                </ng-container> 
+                                </ng-container>
                             </div>
-                            <div class="wrapper-allPost" (click)="loadMoreHashTag()">
+                            <div class="wrapper-allPost" [ngStyle]="{'display': isHideButton ? 'none' : 'flex' }"
+                                (click)="loadMoreHashTag()">
                                 ดูเพิ่มเติม
                             </div>
                         </div>
@@ -196,7 +199,7 @@
                         <ng-template #elseisMsgHistory>
                             <div class="list-fanpage">
                                 <div (click)="clickOpenLink(data)" class="wrapper-profile"
-                                    *ngFor="let data of searchRecent"> 
+                                    *ngFor="let data of searchRecent">
                                     <ng-container *ngIf="isLoading || data.isLoadingImage; else elseIsLoadIng">
                                         <span class="loading-image">
                                             <div class="linear-background">
@@ -204,15 +207,19 @@
                                         </span>
                                     </ng-container>
                                     <ng-template #elseIsLoadIng>
-                                        <ng-container
-                                            *ngIf="data.imageBase64 && data.imageBase64 !== null; else elseBase64">
-                                            <img class="avatar" src="{{data.imageBase64}}">
+                                        <ng-container *ngIf="!!data!.signURL; else elseImgUrl">
+                                            <img class="avatar" src="{{data.signURL}}">
                                         </ng-container>
-                                        <ng-template #elseBase64>
-                                            <div class="avatar image-file-waste">
-                                                <img src="../../../../assets/img/photo.png" alt=""
-                                                    style="width: 40%; height: auto;">
-                                            </div>
+                                        <ng-template #elseImgUrl>
+                                            <ng-container *ngIf="!!data!.imageURL; else elseBase64">
+                                                <img class="avatar" src="{{apiBaseURL + data.imageURL + '/image'}}">
+                                            </ng-container>
+                                            <ng-template #elseBase64>
+                                                <div class="avatar image-file-waste">
+                                                    <img src="../../../../assets/img/photo.png" alt=""
+                                                        style="width: 40%; height: auto;">
+                                                </div>
+                                            </ng-template>
                                         </ng-template>
                                     </ng-template>
                                     <div class="bottom-offical">
@@ -285,9 +292,9 @@
                                 <div class="date-time">{{item.createdDate | dateFormat}}</div>
                             </div>
                         </div>
-                        <div class="list-footer" (click)="loadHistory()">
+                        <!-- <div class="list-footer" (click)="loadHistory()">
                             ดูเพิ่มเติม
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </ng-template>

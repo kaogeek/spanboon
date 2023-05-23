@@ -14,7 +14,6 @@ import { MatDialog } from '@angular/material';
 import { DialogPost } from '../shares/shares';
 import { AuthenManager } from '../../services/AuthenManager.service';
 import { UserAccessFacade } from '../../services/facade/UserAccessFacade.service';
-import { Observable } from 'rxjs';
 import { filter } from 'rxjs/internal/operators/filter';
 
 declare var $: any;
@@ -42,7 +41,8 @@ export class MainPage extends AbstractPage implements OnInit {
   public data: any;
   public isDev: boolean = true;
   public isDirty: boolean = false;
-  public hidebar: boolean = false;
+  public hidebar: boolean = true;
+  public isLock: boolean = false;
 
   public redirection: string;
 
@@ -100,25 +100,20 @@ export class MainPage extends AbstractPage implements OnInit {
   }
 
   public ngOnInit(): void {
-    this.isLogin();
-    this.searchAccessPage();
+    this.hidebar = this.authenManager.getHidebar();
+    const isLogin: boolean = this.isLogin();
 
-    this.route.queryParams.subscribe(params => {
-      var hidebars = params['hidebar'];
-      if (hidebars !== undefined && hidebars !== null) {
-        this.hidebar = false;
-      } else {
-        this.hidebar = true;
-      }
-    });
+    // if (isLogin) {
+    //   this.searchAccessPage();
+    // }
 
 
-    const dev = sessionStorage.getItem('isDev');
-    if (dev) {
-      this.isDev = false;
-    } else {
-      this.isDev = true;
-    }
+    // const dev = sessionStorage.getItem('isDev');
+    // if (dev) {
+    //   this.isDev = false;
+    // } else {
+    //   this.isDev = true;
+    // }
   }
 
   ngAfterViewInit(): void {
@@ -182,6 +177,7 @@ export class MainPage extends AbstractPage implements OnInit {
     //   this.observManager.publish('scroll.buttom', null);
     // }
     // var scrolltotop = document.getElementById("menubottom"); 
+
     if ($(window).scrollTop() + $(window).height() > ($(document).height() - 250)) {
       this.observManager.publish('scroll.buttom', null);
     }
@@ -196,7 +192,7 @@ export class MainPage extends AbstractPage implements OnInit {
       this.isPost = false;
     } else {
       this.isPost = true;
-      if ($(window).scrollTop() + $(window).height() == $(document).height()) {
+      if ($(window).scrollTop() > 1) {
         if (window.innerWidth > 1024) {
           postBottom.addClass("active");
           this.isdivtop = true;
@@ -269,9 +265,9 @@ export class MainPage extends AbstractPage implements OnInit {
   }
 
   public clicktotop() {
-    // var scrolltotop = document.getElementById("menubottom");
-    var scrolltotop = this.mainpage.nativeElement;
-    scrolltotop.scrollTop = 0
+    if ($(window).scrollTop() > 1) {
+      $(window).scrollTop(0);
+    }
   }
 
   public isLogin(): boolean {
@@ -280,48 +276,58 @@ export class MainPage extends AbstractPage implements OnInit {
   }
 
   public async dialogPost() {
-    if (this.isLogin()) {
-      let dataName;
-      if (this.user && this.user.name) {
-        dataName = this.user.name
-      } else if (this.user && this.user.uniqueId) {
-        dataName = this.user.uniqueId
-      } else if (this.user.displayName) {
-        dataName = this.user.displayName
-      }
-      this.data.isListPage = true;
-      this.data.isHeaderPage = true;
-      this.data.isEdit = false;
-      this.data.isFulfill = false;
-      this.data.isMobileButton = true;
-      this.data.id = this.user.id;
-      this.data.accessDataPage = await this.searchAccessPage();
-      if (this.router.url.split('/')[1] === 'page') {
-        this.data.name = this.router.url.split('/')[2];
-        this.data.isSharePost = true;
-        this.data.modeDoIng = true;
-      } else {
-        this.data.name = dataName;
-        this.data.isSharePost = false;
-        this.data.modeDoIng = false;
-      }
-      const dialogRef = this.dialog.open(DialogPost, {
-        width: 'auto',
-        data: this.data,
-        panelClass: 'customize-dialog',
-        disableClose: false,
-      });
+    if (!this.isLock) {
+      if (this.isLogin()) {
+        let dataName;
+        if (this.user && this.user.name) {
+          dataName = this.user.name
+        } else if (this.user && this.user.uniqueId) {
+          dataName = this.user.displayName
+        } else if (this.user.displayName) {
+          dataName = this.user.displayName
+        }
+        this.isLock = true;
+        this.data.isListPage = true;
+        this.data.isHeaderPage = true;
+        this.data.isEdit = false;
+        this.data.isFulfill = false;
+        this.data.isMobileButton = true;
+        this.data.id = this.user.id;
+        // this.data.accessDataPage = await this.searchAccessPage();
+        if (this.router.url.split('/')[1] === 'page') {
+          this.data.name = this.router.url.split('/')[2];
+          this.data.isSharePost = true;
+          this.data.modeDoIng = true;
+        } else {
+          this.data.name = dataName;
+          this.data.isSharePost = false;
+          this.data.modeDoIng = false;
+        }
+        const dialogRef = this.dialog.open(DialogPost, {
+          width: 'auto',
+          data: this.data,
+          panelClass: 'customize-dialog',
+          disableClose: false,
+        });
 
-      dialogRef.afterClosed().subscribe(result => {
-        this.stopLoading();
-      });
-    } else {
-      this.router.navigateByUrl('/login')
+        dialogRef.afterClosed().subscribe(result => {
+          this.stopLoading();
+        });
+      } else {
+        this.router.navigateByUrl('/login')
+      }
+      setTimeout(() => {
+        this.isLock = false;
+      }, 1000);
     }
   }
 
   public async searchAccessPage() {
     return await this.userAccessFacade.getPageAccess();
+  }
+
+  private openLoading() {
+    this.isLoading = true;
   }
 
   private stopLoading(): void {
@@ -334,10 +340,9 @@ export class MainPage extends AbstractPage implements OnInit {
 
 
 export * from './main.internal/HomePage.component';
-export * from './main.internal/HomePageV2.component';
+export * from './main.internal/HomePageV3.component';
 export * from './main.internal/Redirect.component';
 export * from './main.internal/LoginPage.component';
-export * from './main.internal/LoginPageTest.component';
 export * from './main.internal/ForgotPasswordPage.component';
 export * from './main.internal/ProfilePage.component';
 export * from './main.internal/FanPage.component';
@@ -353,3 +358,4 @@ export * from './main.internal/fanpage.internal/fanpage';
 export * from './main.internal/fulfill.internal/fulfill';
 export * from './main.internal/timeline.internal/timeline';
 export * from './main.internal/NotificationAllPage.component';
+export * from './main.internal/TOS.component';

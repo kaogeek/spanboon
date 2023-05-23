@@ -23,7 +23,7 @@ export class UserEngagementService {
     }
 
     // find userEngagement
-    public findOne(findCondition: any): Promise<any> {  
+    public findOne(findCondition: any): Promise<any> {
         return this.userEngagementRepository.findOne(findCondition);
     }
 
@@ -40,6 +40,11 @@ export class UserEngagementService {
     // delete userEngagement
     public async delete(query: any, options?: any): Promise<any> {
         return await this.userEngagementRepository.deleteOne(query, options);
+    }
+
+    // deleteMany
+    public async deleteMany(query: any, options?: any): Promise<any> {
+        return await this.userEngagementRepository.deleteMany(query, options);
     }
 
     // find userEngagement

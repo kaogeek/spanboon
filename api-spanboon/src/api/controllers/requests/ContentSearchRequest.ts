@@ -12,10 +12,12 @@ import { SORT_SEARCH_TYPE } from '../../../constants/SearchType';
 export class ContentSearchRequest extends SearchRequest {
     public hashtag: string[];
     public onlyFollowed: boolean;
+    public isOfficial: boolean;
     public type: string;
     public createBy: any[]; // {id,type}
     public objective: string; // hashTag
     public emergencyEvent: string; // id
+    public emergencyEventTag:string;
     public startDate: string;
     public endDate: string;
     public startViewCount: number;

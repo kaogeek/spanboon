@@ -44,17 +44,19 @@
                 </svg>
             </ng-template>
         </div>
-        <div class="wrapper-action" *ngIf="isReboon"
+        <!-- <div class="wrapper-action" *ngIf="isReboon"
             [ngStyle]="{'margin-right': marginPerAction,  'color': isRed ? '#FD545A' : isBlack ? '#212721' : '#F8F7F2'}">
             <span class="label-count" [class.activate]="userReboon">{{reboon | shortNumber}}</span>
             <ng-container *ngIf="userReboon; else elseNotReboon">
-                <!-- <svg class="img-action" [matMenuTriggerFor]="menu"
+
+                <svg class="img-action" [matMenuTriggerFor]="menu" *ngIf="TEST"
                     [ngStyle]="{'width' : widthBtnAction , 'height' : widthBtnAction }"
                     xmlns="http://www.w3.org/2000/svg" width="56.098" height="47.868" viewBox="0 0 56.098 47.868">
                     <path class="svg-icon-color-activate" id="Path_3668" data-name="Path 3668"
                         d="M127.39,105.96h-3.1l6.35-6.4a15,15,0,0,0-.14-21.16l.01-.01a14.974,14.974,0,0,0-21.15.11l-2.56,2.58-2.6-2.57a14.869,14.869,0,0,0-10.36-4.18h-.3A14.956,14.956,0,0,0,83.16,99.77l21.38,21.16a3.476,3.476,0,0,0,4.91-.01l2.37-2.39L88.05,94.87A8.012,8.012,0,0,1,99.32,83.48l7.52,7.45,7.41-7.48a8.039,8.039,0,0,1,11.44,11.24l-6.17,6.23.02-2.81a3.59,3.59,0,1,0-7.18,0v11.45a3.71,3.71,0,0,0,.53,1.9c.08.11.15.22.33.45l.17.17a2.066,2.066,0,0,0,.33.3,2.8,2.8,0,0,0,.36.26,3.558,3.558,0,0,0,1.84.52h11.49a3.6,3.6,0,1,0-.02-7.2Z"
                         transform="translate(-78.841 -74.072)" fill="#F8F7F2" />
-                </svg> -->
+                </svg>
+                
                 <svg class="img-action" [matMenuTriggerFor]="menu"
                     [ngStyle]="{'width' : widthBtnAction , 'height' : widthBtnAction }"
                     xmlns="http://www.w3.org/2000/svg" width="14.591" height="12.385" viewBox="0 0 14.591 12.385">
@@ -81,13 +83,14 @@
                         transform="translate(-671.485 -704.848)" fill="#F8F7F2" />
                 </svg>
 
-                <!-- <svg class="img-action" [matMenuTriggerFor]="menu"
+                <svg class="img-action" [matMenuTriggerFor]="menu" *ngIf="TEST"
                     [ngStyle]="{'width' : widthBtnAction , 'height' : widthBtnAction }"
                     xmlns="http://www.w3.org/2000/svg" width="56.098" height="47.868" viewBox="0 0 56.098 47.868">
                     <path [ngClass]="{'svg-icon-color-black': isBlack}" id="Path_3662" data-name="Path 3662"
                         d="M127.39,31.89h-3.1l6.35-6.4a15,15,0,0,0-.14-21.16l.01-.01a14.974,14.974,0,0,0-21.15.11L106.8,7.01l-2.6-2.57A14.869,14.869,0,0,0,93.84.26h-.3A14.956,14.956,0,0,0,83.16,25.7l21.38,21.16a3.476,3.476,0,0,0,4.91-.01l2.37-2.39L88.05,20.8A8.012,8.012,0,0,1,99.32,9.41l7.52,7.45,7.41-7.48a8.039,8.039,0,0,1,11.44,11.24l-6.17,6.23.02-2.81a3.59,3.59,0,1,0-7.18,0V35.49a3.71,3.71,0,0,0,.53,1.9c.08.11.15.22.33.45l.17.17a2.066,2.066,0,0,0,.33.3,2.8,2.8,0,0,0,.36.26,3.558,3.558,0,0,0,1.84.52h11.49a3.6,3.6,0,1,0-.02-7.2Z"
                         transform="translate(-78.841 -0.002)" fill="#F8F7F2" />
-                </svg> -->
+                </svg>
+
                 <mat-menu #menu="matMenu" xPosition="before">
                     <button mat-menu-item [disableRipple]="'true'" class="list-dropdown"
                         (click)="postReboon('NOTOPIC');">
@@ -99,7 +102,7 @@
                     </button>
                 </mat-menu>
             </ng-template>
-        </div>
+        </div> -->
         <div class="wrapper-action" *ngIf="isLike" (click)="postLike();"
             [ngStyle]="{'margin-right': marginPerAction, 'color': isRed ? '#FD545A' : isBlack ? '#212721' : '#F8F7F2'}">
             <span class="label-count" [class.activate]="userLike"> {{like | shortNumber}} </span>
@@ -133,7 +136,7 @@
                 </svg> -->
             </ng-template>
         </div>
-        <div class="wrapper-action" *ngIf="isShare"
+        <div class="wrapper-action" *ngIf="isShare" (click)="postShare()"
             [ngStyle]="{'margin-right': marginPerAction, 'color': isRed ? '#FD545A' : isBlack ? '#212721' : '#F8F7F2'}">
             <span class="label-count"> {{share | shortNumber }}</span>
 
@@ -158,7 +161,8 @@
         <mat-form-field *ngIf="isPage && isShowUser && accessPage" appearance="none" class="field-profile">
             <div class="div-profile">
                 <img *ngIf="isImges" class="icon-images"
-                    src="{{selectedAccessPageimges && selectedAccessPageimges.img64 }}" alt="">
+                    src="{{selectedAccessPageimges.signURL ? selectedAccessPageimges.signURL : apiBaseURL + selectedAccessPageimges.imageURL + '/image'}}"
+                    alt="">
                 <div *ngIf="isDis" class="donator-contro">
                     <span>{{selectedAccessPageimges | slice: 0:1 }}</span>
                 </div>
@@ -168,12 +172,15 @@
                     <mat-option [value]="data.pageUsername || data.name " (click)="selectAccessPage(data)">
                         <div class="wrapper-img-access">
                             <div class="img-access">
-                                <ng-container
-                                    *ngIf="data.imageURL !== '' && data.imageURL !== undefined && data.imageURL !== null; else elseImageProfile">
-                                    <img class="icon-image" [src]="data.signURL?data.signURL:data.imageSignURL?data.imageSignURL:apiBaseURL+data.imageURL+'/image'"
-                                    alt="">
+                                <ng-container *ngIf="!!data!.signURL; else elseImageProfile">
+                                    <img class="icon-image" [src]="data.signURL" alt="">
                                 </ng-container>
                                 <ng-template #elseImageProfile>
+                                    <ng-container *ngIf="!!data!.imageURL; else elseNameUser">
+                                        <img class="icon-image" [src]="apiBaseURL + data.imageURL + '/image'" alt="">
+                                    </ng-container>
+                                </ng-template>
+                                <ng-template #elseNameUser>
                                     <div class="donator-contro">
                                         <span>{{data.Username || data.name || data.displayName || data.firstName |
                                             slice:

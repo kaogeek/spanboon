@@ -109,7 +109,7 @@
     </div>
     <div class="body-social">
         <div class="label-connect">
-            การตั้งค่าเริ่มต้นสำหรับการเผยแพร่โพสต์ไปยังแฟลตฟอร์มอื่น ๆ
+            ตั้งค่าสำหรับเผยแพร่โพสต์ไปยังแพลตฟอร์มอื่นๆ
         </div>
         <div class="box-social">
             <div class="left">
@@ -133,7 +133,8 @@
             </div>
             <div class="link-connect" [class.active]="autoPostFacebook">
                 <mat-slide-toggle *ngIf="!isLoading" [ngModelOptions]="{standalone: true}" [checked]="autoPostFacebook"
-                    [(ngModel)]="autoPostFacebook" (change)="onChangeSlideFB_POST($event , 'facebook')"></mat-slide-toggle>
+                    [(ngModel)]="autoPostFacebook"
+                    (change)="onChangeSlideFB_POST($event , 'facebook')"></mat-slide-toggle>
             </div>
             <mat-spinner *ngIf="isLoading" [diameter]="25" class="preload-spinner"></mat-spinner>
         </div>
@@ -160,11 +161,11 @@
         </div>
     </div>
     <div class="label-info">
-        ตั้งค่าโพสต์อัตโนมัติ
+        ดึงข้อมูลโพสต์อัตโนมัติ
     </div>
     <div class="body-social">
         <div class="label-connect">
-            การตั้งค่าเริ่มต้นสำหรับการโพสต์อัติโนมัติไปยังหน้าฟีดจากแฟลตฟอร์มอื่น ๆ
+            ตั้งค่าสำหรับดึงโพสต์จากแพลตฟอร์มอื่นๆ
         </div>
         <div class="box-social">
             <div class="left">
@@ -183,7 +184,7 @@
 
                 </div>
                 <div class="lost-connect">
-                    {{autoFetchPostFacebook ? 'เผยแพร่โพสต์จาก Facebook' : 'ไม่เผยแพร่โพสต์จาก Facebook'}}
+                    {{autoFetchPostFacebook ? 'ดึงโพสต์จาก Facebook' : 'ไม่ดึงโพสต์จาก Facebook'}}
                 </div>
             </div>
             <div class="link-connect" [class.active]="autoFetchPostFacebook">
@@ -204,7 +205,7 @@
                     </svg>
                 </div>
                 <div class="lost-connect">
-                    {{autoFetchPostTwitter ? 'เผยแพร่โพสต์จาก Twitter' : 'ไม่เผยแพร่โพสต์จาก Twitter'}}
+                    {{autoFetchPostTwitter ? 'ดึงโพสต์จาก Twitter' : 'ไม่ดึงโพสต์จาก Twitter'}}
                 </div>
             </div>
 

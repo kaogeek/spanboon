@@ -28,7 +28,7 @@ export class MAILService {
                     console.log(err);
                 } else {
                     const mailOptions = {
-                        from: mail.FROM,
+                        from: '"' + process.env.MAIL_FROM_NAME + '" <' + mail.FROM + '>',
                         to: email,
                         subject: Subject,
                         html: data,
@@ -64,7 +64,7 @@ export class MAILService {
                     console.log(err);
                 } else {
                     const mailOptions = {
-                        from: mail.FROM,
+                        from: '"' + process.env.MAIL_FROM_NAME + '" <' + mail.FROM + '>',
                         to: email,
                         subject: Subject,
                         html: data,
@@ -100,7 +100,7 @@ export class MAILService {
                     console.log(err);
                 } else {
                     const mailOptions = {
-                        from: mail.FROM,
+                        from: '"' + process.env.MAIL_FROM_NAME + '" <' + mail.FROM + '>',
                         to: email,
                         subject: Subject,
                         html: data,

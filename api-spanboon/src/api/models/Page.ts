@@ -6,7 +6,7 @@
  */
 
 import { IsNotEmpty, IsMongoId } from 'class-validator';
-import { BeforeInsert, BeforeUpdate, Column, Entity, ObjectIdColumn } from 'typeorm';
+import { BeforeInsert, BeforeUpdate, Column, Entity, Index, ObjectIdColumn } from 'typeorm';
 import { ObjectID } from 'mongodb';
 import { BaseModel } from './BaseModel';
 import moment from 'moment';
@@ -18,7 +18,8 @@ export class Page extends BaseModel {
     @IsNotEmpty()
     @IsMongoId()
     public id: ObjectID;
-
+    
+    @Index({ unique: true })
     @Column({ name: 'name' })
     public name: string;
 

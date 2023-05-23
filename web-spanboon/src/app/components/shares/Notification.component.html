@@ -4,17 +4,17 @@
     License: MIT. https://opensource.org/licenses/MIT
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
-
-<div [class.active]="isActive()" class="btn-notfication" [matMenuTriggerFor]="beforeMenu" (menuOpened)="isOpened()">
-    <div class="notiAlert" [class.active-plus]="notiisRead.length > 9" *ngIf="notiisRead.length > 0">
-        <ng-container *ngIf="notiisRead.length > 9; else elseTemplateNoti">
+<div [class.active]="isActive()" class="btn-notfication" [matMenuTriggerFor]="beforeMenu"
+    (menuOpened)="isNotiAll = false; clickReadAll();">
+    <div class="notiAlert" [class.active-plus]="noti!.countUnread > 9" *ngIf="noti!.countUnread > 0">
+        <ng-container *ngIf="noti!.countUnread > 9; else elseTemplateNoti">
             <span>9+</span>
         </ng-container>
         <ng-template #elseTemplateNoti>
-            <span>{{notiisRead.length}}</span>
+            <span>{{noti.countUnread}}</span>
         </ng-template>
     </div>
-    <ng-container *ngIf="notiisRead.length > 0; else elseTemplateIcons">
+    <ng-container>
         <svg xmlns="http://www.w3.org/2000/svg" width="48.435" height="55.402" viewBox="0 0 48.435 55.402">
             <g id="Group_2390" data-name="Group 2390" transform="translate(1622.165 -3303.088)">
                 <path id="Path_3517" data-name="Path 3517"
@@ -33,7 +33,7 @@
         </svg>
     </ng-container>
     <ng-template #elseTemplateIcons>
-        <ng-container *ngIf="isActive(); else elseTemplateOpen">
+        <ng-container>
             <svg xmlns="http://www.w3.org/2000/svg" width="47.06" height="55.402" viewBox="0 0 47.06 55.402">
                 <g id="Group_493" data-name="Group 493" transform="translate(-407.878 -248.869)">
                     <g id="Path_263" data-name="Path 263">
@@ -47,7 +47,7 @@
                 </g>
             </svg>
         </ng-container>
-        <ng-template #elseTemplateOpen>
+        <ng-template>
             <svg xmlns="http://www.w3.org/2000/svg" width="47.06" height="55.402" viewBox="0 0 47.06 55.402">
                 <g id="Group_2389" data-name="Group 2389" transform="translate(1680.568 -3303.088)">
                     <path id="Path_3521" data-name="Path 3521"
@@ -66,26 +66,37 @@
     <div class="mat-menu-title" (click)="$event.stopPropagation();">
         <div class="text">การแจ้งเตือน</div>
         <div class="select-noti-list">
-            <span class="list" (click)="switeNotiType();" [ngClass]="{'select': isNotiAll }">ทั้งหมด
-                ({{notiisAll.length}})</span>
-            <span class="list" (click)="switeNotiType();" [ngClass]="{'select': !isNotiAll }">ยังไม่ได้อ่าน
-                ({{notiisRead.length}})</span>
+            <span class="list" (click)="isNotiAll && noti!.all.length >= 0 ? clickNotification() : null;"
+                [ngClass]="{'select': !isNotiAll }">
+                ยังไม่ได้อ่าน ({{noti!.countUnread < 1000 ? noti!.countUnread : '999+' }}) </span>
+                    <span class="list" (click)="!isNotiAll && noti!.unread.length >= 0 ? clickNotification() : null"
+                        [ngClass]="{'select': isNotiAll }">
+                        ทั้งหมด ({{noti!.countAll < 1000 ? noti!.countAll : '999+' }}) </span>
         </div>
-    </div> 
-    <div *ngIf="notiisAll.length !== 0" class="wrapper-header" (click)="$event.stopPropagation();">
+    </div>
+    <div *ngIf="noti.length !== 0" class="wrapper-header" (click)="$event.stopPropagation();">
         <div class="wrapper-noti" style="border-bottom: unset !important;">
             ใหม่
         </div>
-        <div class="wrapper-setting">
+        <!-- <div class="wrapper-setting">
             ดูทั้งหมด
-        </div>
+        </div> -->
     </div>
-    <div class="noti-sc" (click)="$event.stopPropagation();" (scroll)="scroll($event)">
-        <notification-card *ngFor="let i of notiisTable" [message]="i" (click)="redirectNotification(i);markReadNoti(i)"
-            [fullPage]="true" [slide]="true">
-        </notification-card>
-        <div style="height: 60px;" *ngIf="isScrollNoti">
-            <spinners></spinners>
-        </div>
+    <div #notiScroll class="noti-sc" (scroll)="scroll($event)">
+        <ng-container *ngIf="isNotiAll; else elseTemplateNotiAll">
+            <notification-card *ngFor="let item of noti!.all; let i = index" [message]="item" [fullPage]="true"
+                [slide]="true" (click)="clickIsRead(i)">
+            </notification-card>
+        </ng-container>
+        <ng-template #elseTemplateNotiAll>
+            <notification-card *ngFor="let item of noti!.unread; let i = index" [message]="item" [fullPage]="true"
+                [slide]="true" (click)="clickIsRead(i)">
+            </notification-card>
+        </ng-template>
+        <ng-container *ngIf="isNotiAll ? (noti!.countAll >= notiOffsetAll) : (noti!.countUnread >= notiOffsetUnread)">
+            <div style="height: 60px;" *ngIf="isLoading">
+                <spinners></spinners>
+            </div>
+        </ng-container>
     </div>
 </mat-menu>

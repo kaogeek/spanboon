@@ -137,6 +137,25 @@ export class LastestLookingSectionProcessor extends AbstractSectionModelProcesso
                     { $sort: { startDateTime: -1 } },
                     {
                         $lookup: {
+                            from: 'SocialPost',
+                            localField: '_id',
+                            foreignField: 'postId',
+                            as: 'socialPosts'
+                        }
+                    },
+                    {
+                        $project: {
+                            'socialPosts': {
+                                '_id': 0,
+                                'pageId': 0,
+                                'postId': 0,
+                                'postBy': 0,
+                                'postByType': 0
+                            }
+                        }
+                    },
+                    {
+                        $lookup: {
                             from: 'User',
                             localField: 'ownerUser',
                             foreignField: '_id',

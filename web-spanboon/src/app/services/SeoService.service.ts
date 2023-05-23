@@ -34,7 +34,7 @@ export class SeoService {
     private keywordMeta: string = "keyword";
     private titleMeta: string = "title";
     private descriptionMeta: string = "description";
-    private imageMeta: string = "image"; 
+    private imageMeta: string = "image";
 
     private urlMetaFacebook: string = "og:url";
     private titleMetaFacebook: string = "og:title";
@@ -55,20 +55,20 @@ export class SeoService {
     public updateTitle(title: string) {
         this.title.setTitle(title);
     }
-    public setMetaInfo(url: string, title: string, description: string, image: string , keywords? :string): void {
+    public setMetaInfo(url: string, title: string, description: string, image: string, keywords?: string): void {
         var tags = [
             new MetaTag(this.keywordMeta, keywords),
             new MetaTag(this.titleMeta, title),
             new MetaTag(this.descriptionMeta, description),
-            new MetaTag(this.imageMetaFacebook, this.webBaseURL+image),
-            new MetaTag(this.imageMeta, this.webBaseURL+image),
+            new MetaTag(this.imageMetaFacebook, this.webBaseURL + image),
+            new MetaTag(this.imageMeta, this.webBaseURL + image),
 
-            new MetaTag(this.urlMetaFacebook, this.webBaseURL+url),
+            new MetaTag(this.urlMetaFacebook, this.webBaseURL + url),
             new MetaTag(this.titleMetaFacebook, title),
             new MetaTag(this.descriptionMetaFacebook, description),
-            new MetaTag(this.imageMetaFacebook, this.webBaseURL+image),
-            new MetaTag(this.secureImageMetaFacebook, this.webBaseURL+image)
-            
+            new MetaTag(this.imageMetaFacebook, this.webBaseURL + image),
+            new MetaTag(this.secureImageMetaFacebook, this.webBaseURL + image)
+
         ];
         this.updateMetaInfo(tags);
     }
@@ -76,7 +76,7 @@ export class SeoService {
     private updateMetaInfo(tags: MetaTag[]): void {
         tags.forEach(siteTag => {
             this.meta.updateTag({ property: siteTag.name, content: siteTag.value });
-        }); 
+        });
     }
 
 
@@ -116,5 +116,5 @@ export class SeoService {
         this.meta.removeTag("name='keywords'");
         this.meta.removeTag("name='description'");
         this.meta.removeTag("name='og:url'");
-    } 
+    }
 }

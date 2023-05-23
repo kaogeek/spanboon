@@ -8,9 +8,9 @@
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthenManager } from '../AuthenManager.service';
-import { AbstractFacade } from "./AbstractFacade"; 
-import { SearchFilter } from "../../models/SearchFilter"; 
-import { SearchHistory } from '../../models/models'; 
+import { AbstractFacade } from "./AbstractFacade";
+import { SearchFilter } from "../../models/SearchFilter";
+import { SearchHistory } from '../../models/models';
 
 @Injectable()
 export class SearchHistoryFacade extends AbstractFacade {
@@ -26,7 +26,7 @@ export class SearchHistoryFacade extends AbstractFacade {
             if (filter !== null && filter !== undefined) {
                 body = Object.assign(filter)
             }
-            let option = this.getDefaultOptions();
+            let option = this.authMgr.getDefaultOptions();
             this.http.post(url, body, option).toPromise().then((response: any) => {
                 resolve(response.data);
             }).catch((error: any) => {
@@ -42,7 +42,7 @@ export class SearchHistoryFacade extends AbstractFacade {
             if (data !== null && data !== undefined) {
                 body = Object.assign(data)
             }
-            let option = this.getDefaultOptions(); 
+            let option = this.authMgr.getDefaultOptions();
             this.http.post(url, body, option).toPromise().then((response: any) => {
                 resolve(response.data);
             }).catch((error: any) => {
@@ -52,13 +52,13 @@ export class SearchHistoryFacade extends AbstractFacade {
     }
 
     public getDefaultOptions(): any {
-        let header = this.getDefaultHeader();
-        let userId = this.authMgr.getCurrentUser(); 
+        let header = this.authMgr.getDefaultHeader();
+        let userId = this.authMgr.getCurrentUser();
         header = header.append('userid', userId ? userId.id : '')
 
         let httpOptions = {
             headers: header
-        }; 
+        };
 
         return httpOptions;
     }

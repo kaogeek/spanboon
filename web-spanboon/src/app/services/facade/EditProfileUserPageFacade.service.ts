@@ -21,8 +21,8 @@ export class EditProfileUserPageFacade extends AbstractFacade {
   public getProfile(): Promise<EditProfileUserPages> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/pageuser/get-profile';
-      let options = this.getDefaultOptions() ;
-      
+      let options = this.authMgr.getDefaultOptions();
+
       this.http.get(url, options).toPromise().then((response: any) => {
         resolve(response.data as EditProfileUserPages);
       }).catch((error: any) => {
@@ -37,7 +37,7 @@ export class EditProfileUserPageFacade extends AbstractFacade {
       if (data !== null && data !== undefined) {
         body = Object.assign(data)
       }
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
 
       this.http.post(url, data, options).toPromise().then((response: any) => {
         resolve(response);
@@ -49,7 +49,7 @@ export class EditProfileUserPageFacade extends AbstractFacade {
   // public findCountPageUser(): Promise<any> {
   //   return new Promise((resolve, reject) => {
   //     let url: string = this.baseURL + '/pageuser/count';
-   
+
   //     this.http.get(url).toPromise().then((response: any) => {
   //       resolve(response.data);
   //     }).catch((error: any) => {

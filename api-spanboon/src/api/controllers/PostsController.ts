@@ -956,15 +956,26 @@ export class PostsController {
                 const pageLike = await this.pageService.findOne({ _id: likeCreate.likeAsPage });
                 const page = await this.pageService.findOne({ ownerUser: post_who.ownerUser });
                 const userOwnerPage = await this.userService.findOne({ _id: likeCreate.userId });
-                if (likeCreate.likeAsPage !== null ) {
+                if (likeCreate.likeAsPage !== null) {
                     // page to page
-                    if (post_who.pageId !== null && post_who.pageId !== undefined ) {
+                    if (post_who.pageId !== null && post_who.pageId !== undefined) {
                         const tokenFCMId = await this.deviceTokenService.find({ userId: post_who.ownerUser });
-                        const notificationText = pageLike.name + space +'กดถูกใจโพสต์ของเพจ'+ space + page.name;
+                        const notificationText = pageLike.name + space + 'กดถูกใจโพสต์ของเพจ' + space + page.name;
                         const link = `/page/${page.id}/post/` + post_who.id;
+                        await this.pageNotificationService.notifyToPageUserFcm(
+                            page.id,
+                            undefined,
+                            req.user.id + '',
+                            USER_TYPE.PAGE,
+                            NOTIFICATION_TYPE.LIKE,
+                            notificationText,
+                            link,
+                            pageLike.name,
+                            pageLike.imageURL,
+                        );
                         for (const tokenFCM of tokenFCMId) {
                             if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined) {
-                                await this.pageNotificationService.notifyToPageUserFcm(
+                                await this.notificationService.sendNotificationFCM(
                                     page.id,
                                     undefined,
                                     req.user.id + '',
@@ -978,26 +989,29 @@ export class PostsController {
                                 );
                             }
                             else {
-                                await this.pageNotificationService.notifyToPageUser(
-                                    page.id,
-                                    undefined,
-                                    req.user.id + '',
-                                    USER_TYPE.PAGE,
-                                    NOTIFICATION_TYPE.LIKE,
-                                    notificationText,
-                                    link,
-                                );
+                                continue;
                             }
                         }
                     }
                     // page to user
                     else {
                         const tokenFCMId = await this.deviceTokenService.find({ userId: post_who.ownerUser });
-                        const notificationText = pageLike.name + space +'กดถูกใจโพสต์ของคุณ';
-                        const link = `/profile/${userOwnerPage.uniqueId}/post/` + post_who.id;
+                        const notificationText = pageLike.name + space + 'กดถูกใจโพสต์ของคุณ';
+                        const link = `/profile/${userOwnerPage.id}/post/` + post_who.id;
+                        await this.notificationService.createNotificationFCM(
+                            post_who.ownerUser,
+                            USER_TYPE.PAGE,
+                            req.user.id + '',
+                            USER_TYPE.USER,
+                            NOTIFICATION_TYPE.COMMENT,
+                            notificationText,
+                            link,
+                            pageLike.name,
+                            pageLike.imageURL
+                        );
                         for (const tokenFCM of tokenFCMId) {
                             if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined) {
-                                await this.notificationService.createNotificationFCM(
+                                await this.notificationService.sendNotificationFCM(
                                     post_who.ownerUser,
                                     USER_TYPE.PAGE,
                                     req.user.id + '',
@@ -1011,28 +1025,33 @@ export class PostsController {
                                 );
                             }
                             else {
-                                await this.notificationService.createNotification(
-                                    post_who.ownerUser,
-                                    USER_TYPE.PAGE,
-                                    req.user.id + '',
-                                    USER_TYPE.USER,
-                                    NOTIFICATION_TYPE.COMMENT,
-                                    notificationText,
-                                );
+                                continue;
                             }
                         }
                     }
                 }
                 else {
                     // user to page
-                    if (post_who.pageId !== null && post_who.pageId !== undefined ) {
+                    if (post_who.pageId !== null && post_who.pageId !== undefined) {
                         // const user_ownerPage = await this.userService.findOne({_id:page.ownerUser});
                         const tokenFCMId = await this.deviceTokenService.find({ userId: post_who.ownerUser });
-                        const notificationText = userLikeId.displayName + space + 'กดถูกใจโพสต์ของเพจ'+ space + page.name;
+                        const notificationText = userLikeId.displayName + space + 'กดถูกใจโพสต์ของเพจ' + space + page.name;
                         const link = `/page/${page.id}/post/` + post_who.id;
+                        await this.pageNotificationService.notifyToPageUserFcm
+                            (
+                                post_who.pageId + '',
+                                undefined,
+                                req.user.id + '',
+                                USER_TYPE.PAGE,
+                                NOTIFICATION_TYPE.LIKE,
+                                notificationText,
+                                link,
+                                userLikeId.displayName,
+                                userLikeId.imageURL
+                            );
                         for (const tokenFCM of tokenFCMId) {
                             if (tokenFCM.Tokens !== null) {
-                                await this.pageNotificationService.notifyToPageUserFcm
+                                await this.notificationService.sendNotificationFCM
                                     (
                                         post_who.pageId + '',
                                         undefined,
@@ -1047,28 +1066,32 @@ export class PostsController {
                                     );
                             }
                             else {
-                                await this.pageNotificationService.notifyToPageUser(
-                                    post_who.pageId + '',
-                                    undefined,
-                                    req.user.id + '',
-                                    USER_TYPE.PAGE,
-                                    NOTIFICATION_TYPE.LIKE,
-                                    notificationText,
-                                    link,
-                                );
+                                continue;
                             }
                         }
                     }
                     // user to user 
-                    else{
+                    else {
                         // owner post 
                         // FCM device token owner post
                         const tokenFCMId = await this.deviceTokenService.find({ userId: ownerPost.ownerUser });
                         const notificationText = userLikeId.displayName + space + 'กดถูกใจโพสต์ของคุณ';
-                        const link = `/profile/${userLikeId.uniqueId}/post/` + post_who.id;
+                        const link = `/profile/${userLikeId.id}/post/` + post_who.id;
+                        await this.notificationService.createNotificationFCM
+                            (
+                                ownerPost.ownerUser + '',
+                                USER_TYPE.USER,
+                                req.user.id + '',
+                                USER_TYPE.USER,
+                                NOTIFICATION_TYPE.LIKE,
+                                notificationText,
+                                link,
+                                userLikeId.displayName,
+                                userLikeId.imageURL
+                            );
                         for (const tokenFCM of tokenFCMId) {
                             if (tokenFCM.Tokens !== null) {
-                                await this.notificationService.createNotificationFCM
+                                await this.notificationService.sendNotificationFCM
                                     (
                                         tokenFCM.userId + '',
                                         USER_TYPE.USER,
@@ -1082,15 +1105,7 @@ export class PostsController {
                                         userLikeId.imageURL
                                     );
                             } else {
-                                await this.notificationService.createNotificationFCM(
-                                    ownerPost.ownerUser + '',
-                                    USER_TYPE.USER,
-                                    req.user.id + '',
-                                    USER_TYPE.USER,
-                                    NOTIFICATION_TYPE.LIKE,
-                                    notificationText,
-                                    link,
-                                );
+                                continue;
                             }
                         }
                     }
@@ -1478,13 +1493,17 @@ export class PostsController {
             return res.status(200).send(ResponseUtil.getErrorResponse('Post Not Found', []));
         }
 
+        const mainPageSearchConfig = await this.pageService.searchPageOfficialConfig();
+        const searchOfficialOnly = mainPageSearchConfig.searchOfficialOnly;
+
         let result: any = undefined;
         const data: any = {
             postId
         };
         const config: any = {
             offset,
-            limit
+            limit,
+            searchOfficialOnly
         };
         const processor: StorySectionProcessor = new StorySectionProcessor(this.postsService, this.hashTagService, this.s3Service);
         processor.setData(data);

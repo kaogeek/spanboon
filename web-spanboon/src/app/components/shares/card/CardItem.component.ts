@@ -190,7 +190,7 @@ export class CardItem extends AbstractPage implements OnInit {
         this.checkResp();
     }
 
-    public test(data) {
+    public clickObjective(data) {
         this.router.navigate([]).then(() => {
             window.open('/objective/' + data.id);
         });

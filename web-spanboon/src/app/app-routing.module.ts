@@ -10,7 +10,7 @@ import { Routes, RouterModule } from '@angular/router';
 
 import {
   // Pages
-  LoginPage, MainPage, HomePage, HomePageV2, ProfilePage,
+  LoginPage, MainPage, HomePage, ProfilePage,
   FanPage,
   StoryPage,
   PostPage,
@@ -18,15 +18,13 @@ import {
   MenuRegister,
   PageHashTag,
   PageRecommended,
-  SettingsFanPage, forgotPasswordPage, FulfillPage, ObjectiveTimeline,
-  EmergencyEventTimeline, Redirect, SettingAccount, AboutPage, SettingsAdminRoles, SecurityInfo, Policy,
-  NotificationAllPage,
+  SettingsFanPage, forgotPasswordPage, ObjectiveTimeline,
+  EmergencyEventTimeline, Redirect, SettingAccount, AboutPage, SettingsAdminRoles, SecurityInfo, Policy, TOS, HomePageV3,
 } from './components/components';
 
 import { TestComponent } from './components/TestComponent.component';
 import { RegisterPageTestComponent } from './components/RegisterPageTestComponent.component';
 import { DirtyCheckGuard } from './dirty-check.guard';
-import { LoginPageTest } from './components/pages/main.internal/LoginPageTest.component';
 
 export const APP_ROUTES: Routes = [
   {
@@ -47,8 +45,8 @@ export const APP_ROUTES: Routes = [
         component: HomePage,
       },
       {
-        path: HomePageV2.PAGE_NAME,
-        component: HomePageV2,
+        path: HomePageV3.PAGE_NAME,
+        component: HomePageV3,
       },
       {
         path: ProfilePage.PAGE_NAME + "/:id",
@@ -66,10 +64,10 @@ export const APP_ROUTES: Routes = [
             path: 'general',
             component: ProfilePage,
           },
-          {
-            path: 'fulfillment',
-            component: ProfilePage,
-          },
+          // {
+          //   path: 'fulfillment',
+          //   component: ProfilePage,
+          // },
         ]
       },
       {
@@ -96,11 +94,11 @@ export const APP_ROUTES: Routes = [
             component: FanPage,
             // canDeactivate : [DirtyCheckGuard],
           },
-          {
-            path: 'fulfillment',
-            component: FanPage,
-            // canDeactivate : [DirtyCheckGuard],
-          },
+          // {
+          //   path: 'fulfillment',
+          //   component: FanPage,
+          //   // canDeactivate : [DirtyCheckGuard],
+          // },
         ]
       },
       // {
@@ -188,10 +186,7 @@ export const APP_ROUTES: Routes = [
         path: LoginPage.PAGE_NAME,
         component: LoginPage,
       },
-      {
-        path: LoginPageTest.PAGE_NAME,
-        component: LoginPageTest,
-      },
+
       {
         path: forgotPasswordPage.PAGE_NAME,
         component: forgotPasswordPage,
@@ -227,19 +222,23 @@ export const APP_ROUTES: Routes = [
         component: Policy,
       },
       {
-        path: NotificationAllPage.PAGE_NAME,
-        component: NotificationAllPage,
+        path: TOS.PAGE_NAME,
+        component: TOS,
       },
-      {
-        path: FulfillPage.PAGE_NAME,
-        component: FulfillPage,
-        children: [
-          {
-            path: ':fulfillId',
-            component: FulfillPage
-          }
-        ]
-      },
+      // {
+      //   path: NotificationAllPage.PAGE_NAME,
+      //   component: NotificationAllPage,
+      // },
+      // {
+      //   path: FulfillPage.PAGE_NAME,
+      //   component: FulfillPage,
+      //   children: [
+      //     {
+      //       path: ':fulfillId',
+      //       component: FulfillPage
+      //     }
+      //   ]
+      // },
       // {
       //   path: FulfillPage.PAGE_NAME + "/:fulfillId",
       //   component: FulfillPage

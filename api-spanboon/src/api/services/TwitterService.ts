@@ -128,7 +128,6 @@ export class TwitterService {
                 const { statusCode, statusMessage } = res;
 
                 if (statusCode !== 200) {
-                    console.log('statusMessage: ' + statusMessage);
                     reject('statusCode ' + statusCode + ' ' + statusMessage);
                     return;
                 }
@@ -163,15 +162,12 @@ export class TwitterService {
                 }
                 let url: string = 'https://api.twitter.com/2/users/' + twitterUserId + '/tweets?tweet.fields=created_at&max_results=5';
                 if (paramsOption !== undefined && paramsOption !== null && paramsOption !== '') {
-                    console.log('paramsOption_1');
                     let appendString = '';
                     for (const key of Object.keys(paramsOption)) {
-                        console.log('paramsOption_2');
                         appendString += '&' + key + '=' + paramsOption[key];
                     }
 
                     if (appendString !== '') {
-                        console.log('paramsOption_3');
                         url = url + '&' + appendString;
                     }
                 }
@@ -194,7 +190,6 @@ export class TwitterService {
                             const parsedData = JSON.parse(rawData);
                             resolve(parsedData);
                         } catch (e: any) {
-                            console.log('error_e = e',e);
                             reject(e.message);
                         }
                     });
@@ -211,7 +206,6 @@ export class TwitterService {
                 });
                 req.end();
             }).catch((error) => {
-                console.log('error',error);
                 reject(error);
             });
         });
@@ -603,7 +597,7 @@ export class TwitterService {
 
                             mediaIds.push(mediaId);
                         } catch (err) {
-                            console.log(err);
+                            // console.log(err);
                         }
                     }
                 }
@@ -652,8 +646,8 @@ export class TwitterService {
         const result = {
             postCount: 0,
             enable: false,
-            NewPostId:{},
-            dataFeedTwi:{}
+            NewPostId: {},
+            dataFeedTwi: {}
         };
 
         if (twitterUserId === undefined || twitterUserId === null || twitterUserId === '') {
@@ -662,9 +656,9 @@ export class TwitterService {
 
         // find log
         const socialPostLog = await this.socialPostLogsService.findOne({ providerName: PROVIDER.TWITTER, providerUserId: twitterUserId });
-        
+
         let params = undefined;
-        if(socialPostLog.enable === true){
+        if (socialPostLog.enable === true) {
             if (socialPostLog !== undefined && socialPostLog !== null) {
                 if (!socialPostLog.enable) {
                     return result;
@@ -676,7 +670,7 @@ export class TwitterService {
                 return result;
             }
 
-            const twitterResults: any = await this.getTwitterUserTimeLine(twitterUserId,params);
+            const twitterResults: any = await this.getTwitterUserTimeLine(twitterUserId, params);
             result.dataFeedTwi = twitterResults;
             if (twitterResults !== undefined && twitterResults.errors === undefined) {
                 const data = (twitterResults.data === undefined) ? [] : twitterResults.data;
@@ -687,7 +681,7 @@ export class TwitterService {
                 if (data.length > 0) {
                     // update logs if logs found, if not exist create one.
                     await this.socialPostLogsService.update({ _id: socialPostLog.id }, { $set: { properties: meta, lastSocialPostId: newestId, lastUpdated: moment().toDate() } });
-                    result.NewPostId = { _id: socialPostLog.id , properties: meta, lastSocialPostId: newestId, lastUpdated: moment().toDate() };
+                    result.NewPostId = { _id: socialPostLog.id, properties: meta, lastSocialPostId: newestId, lastUpdated: moment().toDate() };
 
                 } else {
                     // update last update
@@ -697,92 +691,92 @@ export class TwitterService {
             } else {
                 await this.socialPostLogsService.update({ _id: socialPostLog.id }, { $set: { lastUpdated: moment().toDate() } });
             }
-        }else{
+        } else {
             const errorResponse = ResponseUtil.getErrorResponse('Fetch Twitter Failed.', undefined);
             return errorResponse;
         }
         return result;
     }
-    public async getOauth2AppAccessTokenTest(): Promise<any>{
-        try{
-            const {data} = await axios.post(
+    public async getOauth2AppAccessTokenTest(): Promise<any> {
+        try {
+            const { data } = await axios.post(
                 'https://api.twitter.com/oauth2/token',
                 '',
                 {
-                    params:{
-                        'grant_type':'client_credentials'
+                    params: {
+                        'grant_type': 'client_credentials'
                     },
-                    auth:{
+                    auth: {
                         username: process.env.TWITTER_API_KEY,
                         password: process.env.TWITER_API_SECRET_KEY
                     }
                 }
             );
             return data;
-        }catch(err){
-            console.log('error_getOauth2',err);
+        } catch (err) {
+            // console.log('error_getOauth2',err);
         }
     }
-    
-    public async getTimeLineUser(twitterUserId: string,access_token:any): Promise<any>{
-        try{
+
+    public async getTimeLineUser(twitterUserId: string, access_token: any): Promise<any> {
+        try {
             const { data } = await axios.get(
-                'https://api.twitter.com/2/users/'+ twitterUserId +'/tweets?tweet.fields=created_at&max_results=5',
+                'https://api.twitter.com/2/users/' + twitterUserId + '/tweets?tweet.fields=created_at&max_results=5',
                 {
-                    headers:{
-                        Authorization:`Bearer ${access_token.access_token}`
-                    }                
+                    headers: {
+                        Authorization: `Bearer ${access_token.access_token}`
+                    }
                 }
             );
             return data;
-        }catch(err){
-            console.log('error_getTimeLineUser',err);
+        } catch (err) {
+            return err;
         }
     }
 
     // private getOauth2AppAccessToken(): Promise<any> {
-        
-        // return new Promise((resolve, reject) => {
-            // const url: string = 'https://api.twitter.com/oauth2/token?grant_type=client_credentials';
-            // console.log('check_type',typeof(url));
 
-            // const httpOptions: any = {
-                // method: 'POST',
-                // json: true
-            // };
+    // return new Promise((resolve, reject) => {
+    // const url: string = 'https://api.twitter.com/oauth2/token?grant_type=client_credentials';
+    // console.log('check_type',typeof(url));
 
-            // const req = https.request('https://api.twitter.com/oauth2/token?grant_type=client_credentials', httpOptions, (res) => {
-                // const { statusCode, statusMessage } = res;
-                // console.log('statusCode',statusCode);
-                // console.log('statusMessage',statusMessage);
-                // if (statusCode !== 200) {
-                    // reject('statusCode ' + statusCode + ' ' + statusMessage);
-                    // return;
-                // }
+    // const httpOptions: any = {
+    // method: 'POST',
+    // json: true
+    // };
 
-                // let rawData = '';
-                // res.on('data', (chunk) => { rawData += chunk; });
-                // res.on('end', () => {
-                    // try {
-                        // const parsedData = JSON.parse(rawData);
-                        // resolve(parsedData);
-                    // } catch (e: any) {
-                        // reject(e.message);
-                    // }
-                // });
-            // });
-            // const base64 = Buffer.from(twitter_setup.TWITTER_API_KEY + ':' + twitter_setup.TWITER_API_SECRET_KEY).toString('base64');
-            // const auth = 'Basic ' + base64;
+    // const req = https.request('https://api.twitter.com/oauth2/token?grant_type=client_credentials', httpOptions, (res) => {
+    // const { statusCode, statusMessage } = res;
+    // console.log('statusCode',statusCode);
+    // console.log('statusMessage',statusMessage);
+    // if (statusCode !== 200) {
+    // reject('statusCode ' + statusCode + ' ' + statusMessage);
+    // return;
+    // }
 
-            // req.setHeader('Content-Type', 'application/json');
-            // req.setHeader('Accept', '*/*');
-            // req.setHeader('Authorization', auth);
-            // req.flushHeaders();
-            // req.on('error', (e) => {
-                // console.log('error = getOauth2AppAccessToken = e', e);
-                // reject(e);
-            // });
-            // req.end();
-        // });
+    // let rawData = '';
+    // res.on('data', (chunk) => { rawData += chunk; });
+    // res.on('end', () => {
+    // try {
+    // const parsedData = JSON.parse(rawData);
+    // resolve(parsedData);
+    // } catch (e: any) {
+    // reject(e.message);
+    // }
+    // });
+    // });
+    // const base64 = Buffer.from(twitter_setup.TWITTER_API_KEY + ':' + twitter_setup.TWITER_API_SECRET_KEY).toString('base64');
+    // const auth = 'Basic ' + base64;
+
+    // req.setHeader('Content-Type', 'application/json');
+    // req.setHeader('Accept', '*/*');
+    // req.setHeader('Authorization', auth);
+    // req.flushHeaders();
+    // req.on('error', (e) => {
+    // console.log('error = getOauth2AppAccessToken = e', e);
+    // reject(e);
+    // });
+    // req.end();
+    // });
     // }
 }

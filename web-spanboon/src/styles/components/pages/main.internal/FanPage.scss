@@ -274,6 +274,7 @@
                 width: 20px;
                 height: 20px;
                 margin-right: 5pt;
+                flex: 0 0 auto;
               }
 
               > .official-name {
@@ -312,14 +313,14 @@
             > .btn-follow-about {
               display: flex;
               align-self: stretch;
-              width: 33.33%;
+              width: 25%;
               justify-content: center;
               align-items: center;
               @include font-size-9($font-head-500);
 
               &:nth-child(1) {
                 margin: 0 8pt;
-                width: calc(33.33% - 16pt);
+                width: calc(38% - 16pt);
               }
 
               &:nth-child(2) {
@@ -434,6 +435,7 @@
                 padding: 10pt 15pt 10pt;
                 margin: 0;
                 @include font-size-10($font-head-100);
+
                 &:hover {
                   border-radius: 0;
                 }
@@ -484,6 +486,7 @@
               flex-direction: row;
               align-items: center;
               width: 100%;
+
               > .contact-social {
                 flex: 1 1 0%;
                 padding: 5pt;
@@ -498,14 +501,18 @@
                 &:last-of-type {
                   border-right: none;
                 }
+
                 &:hover {
                   background-color: $background-hover;
                 }
+
                 &.none {
                   pointer-events: none;
                 }
+
                 &.active {
                   cursor: pointer;
+
                   > .facebook {
                     > svg,
                     g,
@@ -513,6 +520,7 @@
                       fill: #3b5999;
                     }
                   }
+
                   > .twitter {
                     > svg,
                     g,
@@ -520,6 +528,7 @@
                       fill: #03a9f4;
                     }
                   }
+
                   > .line {
                     > svg,
                     g,
@@ -527,6 +536,7 @@
                       fill: #6fc32e;
                     }
                   }
+
                   > .location {
                     > svg,
                     g,
@@ -534,6 +544,7 @@
                       fill: #fd5454;
                     }
                   }
+
                   > .phone {
                     > svg,
                     g,
@@ -541,6 +552,7 @@
                       fill: #6fc32e;
                     }
                   }
+
                   > .message {
                     > svg,
                     g,
@@ -548,6 +560,7 @@
                       fill: #fcd12a;
                     }
                   }
+
                   > .web {
                     > svg,
                     g,
@@ -678,7 +691,6 @@
               > .title-feed {
                 text-align: center;
                 padding: 10pt 0 5pt 0;
-                @include pointer();
                 @include font-size-8($font-head-500);
               }
 
@@ -936,7 +948,8 @@
                     height: 50pt;
                     justify-content: space-between;
                     align-items: center;
-                    border-top: 0.7px solid rgba($color: $border-color, $alpha: 0.7);
+                    border-top: 0.7px solid
+                      rgba($color: $border-color, $alpha: 0.7);
 
                     > .left {
                       display: flex;
@@ -1106,6 +1119,7 @@
                   margin-top: 5pt;
                 }
               }
+
               recommend-card {
                 > .recommend-card {
                   margin-top: 5pt;
@@ -1119,7 +1133,28 @@
   }
 }
 
+.cdk-overlay-container {
+  > .backdrop-tag {
+  }
+
+  > .cdk-overlay-connected-position-bounding-box {
+    > .cdk-overlay-pane {
+      > .mat-menu-panel {
+        min-height: unset;
+      }
+    }
+  }
+}
+
 .list-dropdown {
+  > svg {
+    margin-right: 16px;
+    display: inline-block;
+    height: 20px;
+    width: 20px;
+    vertical-align: middle;
+  }
+
   > .mat-icon {
   }
 
@@ -1252,6 +1287,7 @@
   .fanpage {
     .container {
       max-width: 991px;
+
       .spanboon-fan-page {
         > .fan-page-background {
           > .wrapper-cover-image {
@@ -1358,11 +1394,7 @@
         }
 
         > .wrapper-fan-page {
-          justify-content: center;
-
           > .wrapper-feed-fan-page {
-            max-width: 600px;
-
             > .wrapper-feed-menu {
               height: 48pt;
 
@@ -1579,7 +1611,7 @@
                 }
 
                 &.btn_fa {
-                  width: 50% !important;
+                  width: 33% !important;
                   height: 36pt;
                   margin-top: 5pt;
                 }
@@ -1589,6 +1621,10 @@
                     width: 280px !important;
                   }
                 }
+              }
+
+              > .dropdown {
+                width: 33.33%;
               }
             }
           }

@@ -34,18 +34,33 @@ export class CommentPost {
   public submit: EventEmitter<any> = new EventEmitter();
 
   public commentEdit: any
+  public editPost: boolean = false;
 
   constructor(postCommentFacade: PostCommentFacade) {
     this.postCommentFacade = postCommentFacade;
   }
 
   public commentAction(action: any, comment: any, index: number) {
-    this.commentEdit = comment.comment;
-    this.submit.emit({ action: action, commentdata: comment.id, index: index, commentEdit: this.commentEdit });
-    if (action === 'EDIT') {
-      setTimeout(() => {
-        document.getElementById('textcomment').focus();
-      }, 200);
+    if (!this.editPost) {
+      this.editPost = true;
+      this.commentEdit = comment.comment;
+      this.submit.emit({ action: action, commentdata: comment.id, index: index, commentEdit: this.commentEdit });
+      if (action === 'EDIT') {
+        setTimeout(() => {
+          document.getElementById('textcomment').focus();
+        }, 200);
+      }
+    }
+    if (action === 'CANCEL') {
+      this.submit.emit({ action: action, commentdata: comment.id, index: index, commentEdit: this.commentEdit });
+      this.editPost = false;
+    }
+    if (action === 'LIKE') {
+      // this.submit.emit({ action: action, commentdata: comment.id, index: index, commentEdit: this.commentEdit });
+      this.editPost = false;
+    }
+    if (action === 'DELETE') {
+      this.editPost = false;
     }
   }
 

@@ -6,23 +6,23 @@
  */
 
 import { Component, OnInit, Output, EventEmitter, Input, ViewChild, ElementRef, SimpleChanges } from '@angular/core';
-import { DialogManageImage, DialogImage, DialogDoIng, DialogCreateStory, DialogSettingDateTime, DialogPost, DialogPreview } from './dialog/dialog';
-import { MatDialog, MatSelect, MatAutocompleteTrigger, MatSlideToggleChange, MatTableDataSource, MatMenuTrigger, MatSelectChange, MatSnackBar } from '@angular/material';
+import { DialogManageImage, DialogImage, DialogDoIng, DialogSettingDateTime, DialogPost, DialogPreview, DialogCreateStory } from './dialog/dialog';
+import { MatDialog, MatSelect, MatAutocompleteTrigger, MatSlideToggleChange, MatTableDataSource, MatMenuTrigger, MatSnackBar } from '@angular/material';
 import { FormControl } from '@angular/forms';
 import { AbstractPage } from '../pages/AbstractPage';
 import { PostFacade, HashTagFacade, EmergencyEventFacade, ObjectiveFacade, AssetFacade, UserFacade, ObservableManager, UserAccessFacade, AuthenManager, NeedsFacade, PageFacade, TwitterService, CacheConfigInfo } from '../../services/services';
 import { Asset } from '../../models/Asset';
-import { Config, PageSocialTW, SearchFilter } from '../../models/models';
+import { SearchFilter } from '../../models/models';
 import { POST_TYPE } from '../../TypePost';
 import * as $ from 'jquery';
-import { Observable, fromEvent, of } from 'rxjs';
+import { Observable, fromEvent, Subject } from 'rxjs';
 import { map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { ValidBase64ImageUtil } from '../../utils/ValidBase64ImageUtil';
 import { environment } from '../../../environments/environment';
 import { NeedsCard } from './card/card';
 import { TwitterUtils } from '../../utils/TwitterUtils';
 import { Router } from '@angular/router';
-import { FACEBOOK_AUTO_POST, MAX_FILE_SIZE, TWITTER_AUTO_POST } from '../../Config';
+import { FACEBOOK_AUTO_POST, TWITTER_AUTO_POST } from '../../Config';
 import { ValidateFileSizeImageUtils } from '../../utils/ValidateFileSizeImageUtils';
 
 declare var $: any;
@@ -37,7 +37,7 @@ const TEXT_LIMIT: number = 230;
   templateUrl: './BoxPost.component.html'
 })
 export class BoxPost extends AbstractPage implements OnInit {
-
+  private destroy = new Subject<void>();
   @ViewChild('topic', { static: false }) topic: ElementRef;
   @ViewChild('storyPost', { static: false }) storyPost: ElementRef;
   @ViewChild('matSelect', { static: false }) matSelect: MatSelect;
@@ -45,23 +45,22 @@ export class BoxPost extends AbstractPage implements OnInit {
   @ViewChild('objectiveDoing', { static: false }) objectiveDoing: ElementRef;
   @ViewChild('objectiveDoingName', { static: false }) objectiveDoingName: ElementRef;
   @ViewChild('objectCategory', { static: false }) objectCategory: MatSelect;
-  @ViewChild('autoCompleteTag', { static: false }) autoCompleteTag: ElementRef;
   @ViewChild('menuTag', { static: false }) menu: MatMenuTrigger;
-
   @ViewChild('headerTop', { static: false }) headerTop: ElementRef;
   @ViewChild('tagEvent', { static: false }) tagEvent: ElementRef;
   @ViewChild('toolBar', { static: false }) toolBar: ElementRef;
   @ViewChild('middle', { static: false }) middle: ElementRef;
   @ViewChild('needsCard', { static: false }) needsElement: NeedsCard;
-
-  @ViewChild('autoCompleteTag', { static: true, read: MatAutocompleteTrigger })
-  updatePosition: MatAutocompleteTrigger;
-
   @ViewChild('autocompleteEmergency', { static: false })
   autocompleteEmergency: ElementRef;
+  @ViewChild('autocompleteField', { static: false })
+  autocompleteField: ElementRef;
+  @ViewChild('searchInputObjective', { static: false })
+  searchInputObjective: ElementRef;
 
   public links = [{ label: 'แท็กทั้งหมด', keyword: 'tab1' }, { label: 'แท็กที่ถูกเลือก', keyword: 'tab2' }];
   public activeLink = this.links[0].keyword;
+  public isLock: boolean = false;
 
   @Input()
   public dataPage: any;
@@ -252,7 +251,7 @@ export class BoxPost extends AbstractPage implements OnInit {
 
   chooseStory: any[] = [
     { value: this.PLATFORM_GENERAL_TEXT, viewValue: this.PLATFORM_GENERAL_TEXT, class: 'icon-feed' },
-    { value: this.PLATFORM_NEEDS_TEXT, viewValue: this.PLATFORM_NEEDS_TEXT, class: 'icon-feed looking' },
+    // { value: this.PLATFORM_NEEDS_TEXT, viewValue: this.PLATFORM_NEEDS_TEXT, class: 'icon-feed looking' },
   ];
   chooseStorys: any[] = [
     { value: this.PLATFORM_GENERAL_TEXT, viewValue: this.PLATFORM_GENERAL_TEXT, class: 'icon-feed' },
@@ -309,15 +308,6 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.isSelectOption = true;
     this.router = router;
     this.data = {};
-
-
-    // this.cacheConfigInfo.getConfig(TWITTER_AUTO_POST).then((config: any) => { 
-    //   if (config.value !== undefined) {
-    //     // this.isShowFacebook = (config.value.toLowerCase() === 'true');
-    //   }
-    // }).catch((error: any) => {
-    //   // console.log(error) 
-    // }); 
   }
 
   public ngOnInit(): void {
@@ -342,13 +332,28 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public ngOnChanges(changes: SimpleChanges): void {
-    this.socialGetBindingTwitter();
-    this.socialGetBindingFacebook();
-    this.getConfigTwitter();
-    this.getConfigFacebook();
+    // this.socialGetBindingTwitter();
+    // this.socialGetBindingFacebook();
+    // this.getConfigTwitter();
+    // this.getConfigFacebook();
   }
 
   public ngAfterViewInit(): void {
+    fromEvent(this.autocompleteEmergency && this.autocompleteEmergency.nativeElement, 'keyup').pipe(
+      debounceTime(500)
+      , distinctUntilChanged()
+    ).subscribe((text: any) => {
+      this.keyUpSearchEmergencyEvent(this.autocompleteEmergency.nativeElement.value, true);
+    });
+    if (this.modeShowDoing) {
+      fromEvent(this.searchInputObjective && this.searchInputObjective.nativeElement, 'keyup').pipe(
+        debounceTime(500)
+        , distinctUntilChanged()
+      ).subscribe((text: any) => {
+        this.keyUpSearchObjective(this.searchInputObjective.nativeElement.value);
+      });
+    }
+
     setTimeout(() => {
       if (this.isListPage) {
         this.prefix_button = 'box-file-input1';
@@ -490,8 +495,8 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.onResize();
 
     $(() => {
-      $.fn.atwho.debug = true
-      var at_config = {
+      $.fn.atwho.debug = true;
+      let at_config = {
         at: "@",
         insertTpl: '<span class="tribute-container">${displayName}</span>',
         displayTpl: '<li >${displayName}</li>',
@@ -518,7 +523,7 @@ export class BoxPost extends AbstractPage implements OnInit {
           }
         }
       }
-      var hashTag_config = {
+      let hashTag_config = {
         at: "#",
         searchKey: 'value',
         insertTpl: '<span class="tribute-container-hashtag">#${value}</span>&nbsp',
@@ -561,6 +566,7 @@ export class BoxPost extends AbstractPage implements OnInit {
         $('#topic').atwho(at_config).atwho(at_config);
       }
     });
+
     this.updateText();
 
     // contenteditable
@@ -579,15 +585,17 @@ export class BoxPost extends AbstractPage implements OnInit {
         const cloneData = JSON.parse(JSON.stringify(this.accessDataPage))
         this.cloneDataCheck(cloneData);
       }
-      this.socialGetBindingTwitter();
-      this.socialGetBindingFacebook();
-      this.getConfigTwitter();
-      this.getConfigFacebook();
+      // this.socialGetBindingTwitter();
+      // this.socialGetBindingFacebook();
+      // this.getConfigTwitter();
+      // this.getConfigFacebook();
     }, 0);
   }
 
   public ngOnDestroy(): void {
     super.ngOnDestroy();
+    this.destroy.next();
+    this.destroy.complete();
   }
 
   isPageDirty(): boolean {
@@ -613,7 +621,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public replaceContenteditable(element) {
-    element.addEventListener('paste', (evt: any) => {
+    element!.addEventListener('paste', (evt: any) => {
       evt.preventDefault();
       if (evt.srcElement.className) {
         let clipdata = evt.clipboardData || (<any>window).clipboardData;
@@ -646,35 +654,36 @@ export class BoxPost extends AbstractPage implements OnInit {
         for (let data of res) {
           if (index === 0) {
             Object.assign(data.user, { type: 'user' });
-            if (data.user && data.user.imageURL !== '' && data.user.imageURL !== null && data.user.imageURL !== undefined) {
+            if (data.user && !data.user.signURL) {
               this.assetFacade.getPathFile(data.user.imageURL).then((image: any) => {
                 if (image.status === 1) {
                   if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
-                    data.user.imageURL = null
+                    data.user.imageURL = null;
                   } else {
-                    data.user.imageURL = image.data
+                    data.user.imageURL = image.data;
                   }
                   this.accessPage = res;
                 }
               }).catch((err: any) => {
                 if (err.error.message === "Unable got Asset") {
-                  data.user.imageURL = ''
+                  data.user.imageURL = '';
                 }
               })
             }
           }
-          if (data.page && data.page.imageURL !== '' && data.page.imageURL !== null && data.page.imageURL !== undefined) {
+
+          if (data.page && !data.page.signURL) {
             this.assetFacade.getPathFile(data.page.imageURL).then((image: any) => {
               if (image.status === 1) {
                 if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
-                  data.page.imageURL = null
+                  data.page.imageURL = null;
                 } else {
-                  data.page.imageURL = image.data
+                  data.page.imageURL = image.data;
                 }
               }
             }).catch((err: any) => {
               if (err.error.message === "Unable got Asset") {
-                data.page.imageURL = ''
+                data.page.imageURL = '';
               }
             })
           } else {
@@ -695,20 +704,20 @@ export class BoxPost extends AbstractPage implements OnInit {
           if (data.page.pageUsername === this.dataPage || data.page.id === this.dataPage) {
             const cloneDataPage = data.page;
             this.modeShowDoing = true;
-            if (cloneDataPage.imageURL !== '' && cloneDataPage.imageURL !== undefined && cloneDataPage.imageURL !== null) {
+            if (!cloneDataPage.signURL) {
               this.assetFacade.getPathFile(cloneDataPage.imageURL).then((image: any) => {
                 if (image.status === 1) {
                   if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
-                    cloneDataPage.imageURL = null
+                    cloneDataPage.imageURL = null;
                   } else {
-                    cloneDataPage.imageURL = image.data
+                    cloneDataPage.imageURL = image.data;
                   }
                   this.accessPageImage = cloneDataPage;
                   this.isSelectOption = false;
                 }
               }).catch((err: any) => {
                 if (err.error.message === "Unable got Asset") {
-                  cloneDataPage.imageURL = ''
+                  cloneDataPage.imageURL = '';
                 }
               });
             } else {
@@ -739,20 +748,20 @@ export class BoxPost extends AbstractPage implements OnInit {
   public userCheck(data: any) {
     const cloneDataUser = data.user;
     this.dataPageId = data.user;
-    if (cloneDataUser.imageURL !== undefined && cloneDataUser.imageURL !== '' && cloneDataUser.imageURL !== null) {
+    if (!cloneDataUser.signURL) {
       this.assetFacade.getPathFile(cloneDataUser.imageURL).then((image: any) => {
         if (image.status === 1) {
           if (!ValidBase64ImageUtil.validBase64Image(image.data)) {
-            cloneDataUser.imageURL = null
+            cloneDataUser.imageURL = null;
           } else {
-            cloneDataUser.imageURL = image.data
+            cloneDataUser.imageURL = image.data;
           }
           this.accessPageImage = cloneDataUser;
           this.isSelectOption = false;
         }
       }).catch((err: any) => {
         if (err.error.message === "Unable got Asset") {
-          cloneDataUser.imageURL = ''
+          cloneDataUser.imageURL = '';
         }
       });
     } else {
@@ -780,9 +789,9 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   private setAutoComp() {
-    if (this.autoCompleteTag !== undefined) {
+    if (this.autocompleteField !== undefined) {
       clearTimeout(this.setTimeoutAutocomp);
-      fromEvent(this.autoCompleteTag.nativeElement, 'keyup').pipe(
+      fromEvent(this.autocompleteField.nativeElement, 'keyup').pipe(
         // get value
         map((event: any) => {
           return event.target.value;
@@ -937,7 +946,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     }
     let cloneStory = this.dataStroy ? this.dataStroy : '';
     this.dataStroy = this.content && this.content.story ? this.content.story : {};
-    const storyPost = this.storyPost.nativeElement.innerText
+    const storyPost = this.storyPost.nativeElement.innerText;
     this.dataClone = {
       topic,
       cloneStory,
@@ -947,71 +956,71 @@ export class BoxPost extends AbstractPage implements OnInit {
       imagesTimeline: this.imagesTimeline,
       dataStroy: this.dataStroy
     }
-    const dialogRef = this.dialog.open(DialogCreateStory, {
-      width: '100vw',
-      height: '100vh',
-      data: this.dataClone,
-      disableClose: false,
-    });
+    // const dialogRef = this.dialog.open(DialogCreateStory, {
+    //   width: '100vw',
+    //   height: '100vh',
+    //   data: this.dataClone,
+    //   disableClose: false,
+    // });
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (storyPostShort.trim() === "") {
-        this.isMsgError = true
-        var contentAlert;
-        if (this.isListPage) {
-          contentAlert = document.getElementById(this.prefix.header + 'editableStoryPost');
-          document.getElementById(this.prefix.detail + "editableStoryPost").focus();
-        } else {
-          contentAlert = document.getElementById('editableStoryPost');
-          document.getElementById("editableStoryPost").focus();
-        }
-        contentAlert.classList.add('msg-error-shake');
+    // dialogRef.afterClosed().subscribe(result => {
+    //   if (storyPostShort.trim() === "") {
+    //     this.isMsgError = true
+    //     var contentAlert;
+    //     if (this.isListPage) {
+    //       contentAlert = document.getElementById(this.prefix.header + 'editableStoryPost');
+    //       document.getElementById(this.prefix.detail + "editableStoryPost").focus();
+    //     } else {
+    //       contentAlert = document.getElementById('editableStoryPost');
+    //       document.getElementById("editableStoryPost").focus();
+    //     }
+    //     contentAlert.classList.add('msg-error-shake');
 
-        // remove the class after the animation completes
-        setTimeout(function () {
-          contentAlert.classList.remove('msg-error-shake');
-        }, 1000);
+    //     // remove the class after the animation completes
+    //     setTimeout(function () {
+    //       contentAlert.classList.remove('msg-error-shake');
+    //     }, 1000);
 
-        event.preventDefault();
-        return;
-      }
-      if (result) {
-        this.isStoryResultData = false
-        this.dataStroy = { story: result.story, storyAry: result.storyAry }
-        // delete this.dataStroy.item;
-        // delete this.dataStroy.cloneStory;
-        if (result.coverImages.asset !== undefined && result.coverImages.asset !== null) {
-          const asset = new Asset();
-          asset.mimeType = result.coverImages.asset.type;
-          asset.fileName = result.coverImages.asset.name;
-          asset.size = result.coverImages.asset.size;
-          asset.data = result.coverImages.asset.data;
-          this.coverImage = asset;
-        }
-        let data = {
-          title: topic,
-          detail: storyPostShort,
-          story: this.dataStroy,
-          needs: this.arrListItem ? this.arrListItem : [],
-          emergencyEvent: this.isEmptyObject(this.dataAutoComp) ? this.dataAutoComp.id : "",
-          emergencyEventTag: this.isEmptyObject(this.dataAutoComp) ? this.dataAutoComp.hashtag : "",
-          userTags: this.userTag,
-          postsHashTags: this.hashTag,
-          postGallery: this.dataImage,
-          coverImage: this.coverImage,
-          postSocialTW: this.twitterConection && this.isAutoPostTwitter ? true : false,
-          postSocialFB: this.facebookConection && this.isAutoPostFacebook ? true : false
-        }
-        if (this.modeShowDoing) {
-          Object.assign(data, { objective: this.isEmptyObject(this.dataObjective) ? this.dataObjective.id : "" });
-          Object.assign(data, { objectiveTag: this.isEmptyObject(this.dataObjective) ? this.dataObjective.hashTag : "" });
-        }
-        this.isClickPostPreLoad = true;
-        return this.createPost.emit(data);
-      }
-      this.stopLoading();
-      this.onResize();
-    });
+    //     event.preventDefault();
+    //     return;
+    //   }
+    //   if (result) {
+    //     this.isStoryResultData = false
+    //     this.dataStroy = { story: result.story, storyAry: result.storyAry }
+    //     // delete this.dataStroy.item;
+    //     // delete this.dataStroy.cloneStory;
+    //     if (result.coverImages.asset !== undefined && result.coverImages.asset !== null) {
+    //       const asset = new Asset();
+    //       asset.mimeType = result.coverImages.asset.type;
+    //       asset.fileName = result.coverImages.asset.name;
+    //       asset.size = result.coverImages.asset.size;
+    //       asset.data = result.coverImages.asset.data;
+    //       this.coverImage = asset;
+    //     }
+    //     let data = {
+    //       title: topic,
+    //       detail: storyPostShort,
+    //       story: this.dataStroy,
+    //       needs: this.arrListItem ? this.arrListItem : [],
+    //       emergencyEvent: this.isEmptyObject(this.dataAutoComp) ? this.dataAutoComp.id : "",
+    //       emergencyEventTag: this.isEmptyObject(this.dataAutoComp) ? this.dataAutoComp.hashtag : "",
+    //       userTags: this.userTag,
+    //       postsHashTags: this.hashTag,
+    //       postGallery: this.dataImage,
+    //       coverImage: this.coverImage,
+    //       postSocialTW: this.twitterConection && this.isAutoPostTwitter ? true : false,
+    //       postSocialFB: this.facebookConection && this.isAutoPostFacebook ? true : false
+    //     }
+    //     if (this.modeShowDoing) {
+    //       Object.assign(data, { objective: this.isEmptyObject(this.dataObjective) ? this.dataObjective.id : "" });
+    //       Object.assign(data, { objectiveTag: this.isEmptyObject(this.dataObjective) ? this.dataObjective.hashTag : "" });
+    //     }
+    //     this.isClickPostPreLoad = true;
+    //     return this.createPost.emit(data);
+    //   }
+    //   this.stopLoading();
+    //   this.onResize();
+    // });
   }
 
   public onLostFocus(data, isTopic: boolean) {
@@ -1337,11 +1346,6 @@ export class BoxPost extends AbstractPage implements OnInit {
     })
   }
 
-  optionClicked(event, item: any) {
-    event.stopPropagation();
-    this.checkCheckBoxvalue(event, item);
-  }
-
   private stopLoading(): void {
     setTimeout(() => {
       this.isLoading = false;
@@ -1392,6 +1396,8 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public eventClick() {
+    this.autocompleteEmergency.nativeElement.focus();
+    this.keyUpSearchEmergencyEvent("", true);
     if (this.isShowEmergency === true) {
       this.closeSearchAutocomp();
     } else {
@@ -1411,6 +1417,7 @@ export class BoxPost extends AbstractPage implements OnInit {
       this.accessPageImage.name = event.name;
       this.accessPageImage.imageURL = event.imageURL;
       this.accessPageImage.id = event.id;
+      this.clickToSocial();
     } else {
       this.modeDoIng = true;
       this.isSharePost = false;
@@ -1419,12 +1426,15 @@ export class BoxPost extends AbstractPage implements OnInit {
       this.accessPageImage.imageURL = event.imageURL;
       this.accessPageImage.id = event.id
     }
+
+    this.selectedInformation.emit(event);
+  }
+
+  public clickToSocial() {
     this.socialGetBindingTwitter();
     this.socialGetBindingFacebook();
     this.getConfigTwitter();
     this.getConfigFacebook();
-
-    this.selectedInformation.emit(event);
   }
 
   public onClickGetDataPost(isDraft?: boolean, isEdit?: boolean) {
@@ -1535,7 +1545,7 @@ export class BoxPost extends AbstractPage implements OnInit {
             asset,
           });
         } else {
-          if (image.imageURL !== undefined && image.imageURL !== '' && image.imageURL !== null) {
+          if (!!image.imageURL) {
             image.ordering = index + 1;
             asset.ordering = image.ordering;
             this.dataImage.push({
@@ -1580,7 +1590,6 @@ export class BoxPost extends AbstractPage implements OnInit {
         Object.assign(data, { objective: this.isEmptyObject(this.dataObjective) ? this.dataObjective.id : "" });
         Object.assign(data, { objectiveTag: this.isEmptyObject(this.dataObjective) ? this.dataObjective.hashTag : "" });
       }
-
       if (this.isRepost) {
         delete data.pageId
       }
@@ -1597,7 +1606,6 @@ export class BoxPost extends AbstractPage implements OnInit {
           Object.assign(data, { id: undefined });
         }
       }
-
       if (this.isFulfill) {
         Object.assign(data, { asPage: this.content.asPage, fulfillCaseId: this.content.fulfillCaseId });
         return this.createFullfillPost.emit(data);
@@ -1651,7 +1659,10 @@ export class BoxPost extends AbstractPage implements OnInit {
     if (this.objectiveDoing !== undefined) {
       this.objectiveDoing.nativeElement.value = "";
     }
-    this.autoCompleteTag = undefined;
+    if (this.autocompleteField !== undefined) {
+      this.autocompleteField.nativeElement.value = "";
+    }
+
     this.selectedObjectiveId = undefined;
     this.resPageCategory = []
     this.dataAutoComp = {};
@@ -1676,7 +1687,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public keyUpSearchObjective(value: string) {
-    this.resObjective = []
+    this.resObjective = [];
     const keywordFilter: any = {
       filter: {
         limit: SEARCH_LIMIT,
@@ -1691,29 +1702,32 @@ export class BoxPost extends AbstractPage implements OnInit {
         }
       },
     };
-    Object.assign(keywordFilter, { hashTag: value })
-
+    Object.assign(keywordFilter, { hashTag: value });
     this.objectiveFacade.searchObjective(keywordFilter).then((result: any) => {
       if (result.status === 1) {
         this.resObjective = result.data;
         let index = 0;
         this.isLoading = true;
         for (let data of this.resObjective) {
-          if (data.iconURL !== '' && data.iconURL !== undefined && data.iconURL !== null) {
-            Object.assign(this.resObjective[index], { isLoadImageIcon: true });
-            this.getDataIcon(data.iconURL, index);
-          } else {
-            Object.assign(this.resObjective[index], { isLoadImageIcon: false });
-            this.isLoading = false;
+          if (!data.iconSignURL) {
+            if (!!data.iconURL) {
+              Object.assign(this.resObjective[index], { isLoadImageIcon: true });
+              this.getDataIcon(data.iconURL, index);
+            } else {
+              Object.assign(this.resObjective[index], { isLoadImageIcon: false });
+              this.isLoading = false;
+            }
           }
+
           index++;
         }
+
         this.isLoading = false;
       }
     }).catch((err: any) => {
       console.log(err)
       if (err.error.message === 'Cannot Search PageObjective') {
-        this.resObjective = []
+        this.resObjective = [];
       }
     });
   }
@@ -1740,6 +1754,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     if (this.isLoading) {
       return;
     }
+
     let filter = new SearchFilter();
     filter.limit = SEARCH_LIMIT;
     filter.offset = SEARCH_OFFSET;
@@ -1747,9 +1762,11 @@ export class BoxPost extends AbstractPage implements OnInit {
     filter.whereConditions = {
       name: data
     };
+
     if (typeof data !== "string" || data.trim() === "") {
       delete filter.whereConditions.name;
     }
+
     filter.count = false;
     filter.orderBy = {}
     this.resHashTag = [];
@@ -1757,9 +1774,9 @@ export class BoxPost extends AbstractPage implements OnInit {
     let result = {
       filter
     }
+
     this.hashTagFacade.searchTrend(result).then((res: any) => {
       if (res) {
-
         this.resHashTag = res;
         this.checkHashTag();
       }
@@ -1854,7 +1871,8 @@ export class BoxPost extends AbstractPage implements OnInit {
 
   public removeEmergency() {
     this.dataAutoComp = {};
-    document.querySelector('.mat-selected').classList.remove('mat-selected');
+    // document.querySelector('.mat-selected').classList.remove('mat-selected');
+    this.autocompleteEmergency.nativeElement.value = "";
   }
 
   public unCheckboxAll() {
@@ -1934,11 +1952,26 @@ export class BoxPost extends AbstractPage implements OnInit {
         tagId: item.id,
         tag: item.value
       });
-      this.listTag.push(Object.assign({}, { name: item.value, selected: true, count: item.count, isSelectData: true }));
 
+      this.listTag.push(Object.assign({}, { name: item.value, selected: true, count: item.count, isSelectData: true }));
     } else {
+      let hash_index = this.resHashTag.findIndex(tag => (tag.value === item.name || tag.value === item.value) && tag.count === item.count);
+      let tag_index = this.listTag.findIndex(tag => (tag.name === item.name || tag.name === item.value) && tag.count === item.count);
+      let select_index = this.selectValueTag.findIndex(tag => (tag.tag === item.name || tag.tag === item.value));
+      if (hash_index !== -1) {
+        this.resHashTag[hash_index].selected = false;
+      }
+
+      if (tag_index !== -1) {
+        this.listTag.splice(tag_index, 1);
+      }
+
+      if (select_index !== -1) {
+        this.selectValueTag.splice(tag_index, 1);
+      }
+
       this.selectValueTag = this.selectValueTag.filter(d => {
-        return d.tag !== item.value
+        return d.tag !== item.value;
       });
 
       this.listHashTagNew = this.listHashTagNew.filter(newTag => {
@@ -1991,52 +2024,64 @@ export class BoxPost extends AbstractPage implements OnInit {
             }
           });
         }
-
       }
     }
     this.getTextLength();
   }
 
   public clickCardObjective(index: number, item: any) {
-    if (this.elementCheck) {
-      if (this.dataObjective && this.dataObjective.id === item.id) {
-        this.dataObjective = {};
-        this.selectedObjectiveId = undefined;
-        document.querySelector('.active-click-doing').classList.remove('active-click-doing');
-      } else {
-        this.selectedObjectiveId = item.id;
-        this.dataObjective.id = item.id;
-        this.dataObjective.hashTag = item.hashTag;
-        this.dataObjective.status = 2;
-      }
+    if (this.dataObjective && this.dataObjective.id === item.id) {
+      this.dataObjective = {};
+      this.selectedObjectiveId = undefined;
+      // document.querySelector('.active-click-doing').classList.remove('active-click-doing');
     } else {
       this.selectedObjectiveId = item.id;
       this.dataObjective.id = item.id;
       this.dataObjective.hashTag = item.hashTag;
       this.dataObjective.status = 2;
-      let objectClone = JSON.parse(JSON.stringify(this.dataObjective));
-
-      const isPass = this.objectArray.find(objective => {
-        return objective.hashTag === this.dataObjective.hashTag
-      });
-
-      if (!isPass) {
-        this.objectArray.push({
-          id: this.dataObjective.id,
-          name: this.dataObjective.hashTag,
-          isText: true,
-          isTopic: false
-        });
-      }
-      let indexData = this.objectArray.map(function (e) { return e.name; }).indexOf(objectClone.title);
-      if (indexData != 0) {
-        this.objectArray = this.objectArray.splice(index, 1);
-      }
     }
-    this.closeDialog();
-    $("#menubottom").css({
-      'overflow-y': "auto"
-    });
+    // if (this.elementCheck) {
+    //   if (this.dataObjective && this.dataObjective.id === item.id) {
+    //     this.dataObjective = {};
+    //     this.selectedObjectiveId = undefined;
+    //     document.querySelector('.active-click-doing').classList.remove('active-click-doing');
+    //   } else {
+    //     this.selectedObjectiveId = item.id;
+    //     this.dataObjective.id = item.id;
+    //     this.dataObjective.hashTag = item.hashTag;
+    //     this.dataObjective.status = 2;
+    //   }
+    // } else {
+    //   this.selectedObjectiveId = item.id;
+    //   this.dataObjective.id = item.id;
+    //   this.dataObjective.hashTag = item.hashTag;
+    //   this.dataObjective.status = 2;
+    //   let objectClone = JSON.parse(JSON.stringify(this.dataObjective));
+
+    // const isPass = this.objectArray.find(objective => {
+    // return objective.hashTag === this.dataObjective.hashTag
+    // console.log(objective.hashTag, 'sdfsdf', this.dataObjective.hashTag);
+    // });
+
+    //   if (!isPass) {
+    //     this.objectArray.push({
+    //       id: this.dataObjective.id,
+    //       name: this.dataObjective.hashTag,
+    //       isText: true,
+    //       isTopic: false
+    //     });
+    //   }
+
+    //   let indexData = this.objectArray.map(function (e) { return e.name; }).indexOf(objectClone.title);
+    //   if (indexData != 0) {
+    //     this.objectArray = this.objectArray.splice(index, 1);
+    //   }
+    // }
+
+    // this.closeDialog();
+    // // $("#menubottom").css({
+    // //   'overflow-y': "auto"
+    // // });
   }
   public isEmptyObject(obj) {
     return (obj && (Object.keys(obj).length > 0));
@@ -2147,11 +2192,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.isUpload = false;
     this.isShowObjective = true;
     this.keyUpSearchObjective("");
-    setTimeout(() => {
-      const element = document.querySelector('.active-click-doing');
-      this.elementCheck = element && element.classList && element.classList.contains('active-click-doing');
-    }, 500);
-
+    this.elementCheck = true;
     setTimeout(() => {
       this.setTopobj();
     }, 0);
@@ -2224,97 +2265,109 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public createImageObjective(): void {
-    this.isLoading = true;
-    let pageId = this.dataPageId.id;
-    const dataDoing = this.objectiveDoing.nativeElement.value;
-    const tagName = this.objectiveDoingName.nativeElement.value;
-    const category = this.objectCategory.value;
+    if (!this.isLock) {
+      this.isLoading = true;
+      let pageId = this.dataPageId.id;
+      const dataDoing = this.objectiveDoing.nativeElement.value;
+      const tagName = this.objectiveDoingName.nativeElement.value;
+      const category = this.objectCategory.value;
 
-    if (category === undefined) {
-      return this.showAlertDialog("เลือกหมวดหมู่");
-    }
-
-    if (tagName === "") {
-      document.getElementById('objective-doing-name').focus();
-      return this.showAlertDialog("กรุณาใส่แฮชแท็ก");
-    }
-
-    if (dataDoing === "") {
-      document.getElementById('objective-doing').focus();
-      return this.showAlertDialog("กรุณากรอกสิ่งที่คุณกำลังทำ");
-    }
-
-    if (!this.isEmptyObject(this.imageIcon)) {
-      return this.showAlertDialog("กรุณาอัพโหลดรูปภาพ");
-    }
-
-    const asset = new Asset();
-    if (this.isEmptyObject(this.imageIcon)) {
-      let data = this.imageIcon.image.split(',')[0];
-      const typeImage = data.split(':')[1];
-      asset.mimeType = typeImage.split(';')[0];
-      asset.data = this.imageIcon.image.split(',')[1];
-      asset.size = this.imageIcon.size;
-    }
-    if (dataDoing !== '' && tagName !== '' && category !== undefined) {
-      let objectiveImage = {
-        asset,
-        hashTag: tagName,
-        title: dataDoing,
-        category: category,
-        pageId: pageId
+      if (category === undefined) {
+        return this.showAlertDialog("เลือกหมวดหมู่");
       }
-      this.objectiveFacade.uploadImageObjective(objectiveImage).then((res: any) => {
-        let index = 0;
-        if (res.status === 1) {
-          this.getDataIcon(res.data.iconURL, index);
-          index++;
-          let object = {
-            id: res.data.id,
-            title: res.data.title,
-            hashTag: res.data.hashTag,
-          }
-          this.dataObjective = object
-          this.clickCardObjective(0, this.dataObjective);
-          this.keyUpSearchObjective("");
-          this.closeDialog();
-          this.imageIcon = {};
-          this.selectedValue = 'เลือกหมวดหมู่';
-          this.searchObjectivePageCategory();
-          this.isMsgError = false
+
+      if (tagName === "") {
+        document.getElementById('objective-doing-name').focus();
+        return this.showAlertDialog("กรุณาใส่แฮชแท็ก");
+      }
+
+      if (dataDoing === "") {
+        document.getElementById('objective-doing').focus();
+        return this.showAlertDialog("กรุณากรอกสิ่งที่คุณกำลังทำ");
+      }
+
+      if (!this.isEmptyObject(this.imageIcon)) {
+        return this.showAlertDialog("กรุณาอัพโหลดรูปภาพ");
+      }
+
+      this.isLock = true;
+      const asset = new Asset();
+      if (this.isEmptyObject(this.imageIcon)) {
+        let data = this.imageIcon.image.split(',')[0];
+        const typeImage = data.split(':')[1];
+        asset.mimeType = typeImage.split(';')[0];
+        asset.data = this.imageIcon.image.split(',')[1];
+        asset.size = this.imageIcon.size;
+      }
+
+      if (!!dataDoing) {
+        let objectiveImage = {
+          asset,
+          hashTag: tagName,
+          title: dataDoing,
+          category: category,
+          pageId: pageId
         }
-      }).catch((err: any) => {
-        console.log(err);
-        let alertMessages: string;
-        if (err.error.message === 'PageObjective is Exists') {
-          alertMessages = 'สิ่งที่คุณกำลังถูกสร้างแล้ว'
-        } else if (err.error.message === 'PageObjective HashTag is Exists') {
-          alertMessages = 'แฮชแท็กถูกสร้างไว้แล้ว'
-        }
-        let dialog = this.showAlertDialogWarming(alertMessages, "none");
-        dialog.afterClosed().subscribe((res) => {
-          if (res) {
-            // this.observManager.publish('authen.check', null);
-            // if (this.redirection) {
-            //   this.router.navigateByUrl(this.redirection);
-            // } else {
-            //   this.router.navigate(['/login']);
-            // }
+
+        this.objectiveFacade.uploadImageObjective(objectiveImage).then((res: any) => {
+          if (res.status === 1) {
+            let object = {
+              id: res.data.id,
+              title: res.data.title,
+              hashTag: res.data.hashTag,
+            }
+
+            this.dataObjective = object;
+            this.clickCardObjective(0, this.dataObjective);
+            this.closeDialog();
+            this.imageIcon = {};
+            this.selectedValue = 'เลือกหมวดหมู่';
+            this.resObjective.push(res.data);
+            if (!res.data.iconSignURL) {
+              let index_data = this.resObjective.findIndex((obj) => obj.id === res.data.id);
+              if (index_data !== -1) {
+                this.getDataIcon(res.data.iconURL, index_data);
+              }
+            }
+            this.isMsgError = false;
+            this.isLock = false;
           }
-        });
-      })
+        }).catch((err: any) => {
+          console.log(err);
+          this.isLock = false;
+          let alertMessages: string;
+          if (err.error.message === 'PageObjective is Exists') {
+            alertMessages = 'สิ่งที่คุณกำลังถูกสร้างแล้ว'
+          } else if (err.error.message === 'PageObjective HashTag is Exists') {
+            alertMessages = 'แฮชแท็กถูกสร้างไว้แล้ว'
+          }
+
+          let dialog = this.showAlertDialogWarming(alertMessages, "none");
+          dialog.afterClosed().subscribe((res) => {
+            if (res) {
+              // this.observManager.publish('authen.check', null);
+              // if (this.redirection) {
+              //   this.router.navigateByUrl(this.redirection);
+              // } else {
+              //   this.router.navigate(['/login']);
+              // }
+            }
+          });
+        })
+      }
+
+      // $("#menubottom").css({
+      //   'overflow-y': "auto"
+      // });
     }
-    $("#menubottom").css({
-      'overflow-y': "auto"
-    });
   }
 
   public canCelImageObject() {
     this.isUpload = false;
     this.isShowObjective = false;
-    $("#menubottom").css({
-      'overflow-y': "auto"
-    });
+    // $("#menubottom").css({
+    //   'overflow-y': "auto"
+    // });
   }
 
   public onFileMultiSelectedImage(event) {
@@ -2407,10 +2460,9 @@ export class BoxPost extends AbstractPage implements OnInit {
     } else {
       this.closeDialog();
     }
-    $("#menubottom").css({
-      'overflow-y': "auto"
-    });
-
+    // $("#menubottom").css({
+    //   'overflow-y': "auto"
+    // });
   }
   public focusOutTag() {
     this.isShowCheckboxTag = false;
@@ -2556,10 +2608,10 @@ export class BoxPost extends AbstractPage implements OnInit {
 
   public onResize() {
     this.checkTabs();
-    this.socialGetBindingTwitter();
-    this.socialGetBindingFacebook();
-    this.getConfigTwitter();
-    this.getConfigFacebook();
+    // this.socialGetBindingTwitter();
+    // this.socialGetBindingFacebook();
+    // this.getConfigTwitter();
+    // this.getConfigFacebook();
 
     if (window.innerWidth <= 479) {
       this.isMobilePost = true;
@@ -2577,6 +2629,7 @@ export class BoxPost extends AbstractPage implements OnInit {
 
       var postion3 = $('.box-right');
       postion3.addClass("m-right");
+
     } else if (window.innerWidth > 1024) {
       this.isMobilePost = false;
       this.isMobileText = false;

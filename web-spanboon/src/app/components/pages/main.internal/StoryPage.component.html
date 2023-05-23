@@ -48,6 +48,7 @@
             </div>
         </div>
     </div>
+    
     <div class="col-contianer" *ngIf="STORY">
         <div class="col-stoey-contianer" [class.max]="!recommendedHashtag && STORY[0].hashTags.length === 0">
             <div class="col-user">
@@ -69,7 +70,6 @@
             </div>
             <div class="col-stoey-body" [innerHTML]='STORY[0].story.story | highlight'>
             </div>
-
             <div class="col-body">
                 <div class="head">
                     <control-action [isAction]="'true'" [comment]="STORY[0].commentCount ? STORY[0].commentCount : 0 "

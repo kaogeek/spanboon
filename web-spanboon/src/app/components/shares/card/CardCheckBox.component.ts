@@ -58,6 +58,8 @@ export class CardCheckBox {
     public isLoadMoreObjective: boolean = false;
     @Input()
     public isLoadMoreHashTag: boolean = false;
+    @Input()
+    public isHideMoreObjective: boolean = false;
     @Output()
     public submit: EventEmitter<any> = new EventEmitter();
     @Output()
@@ -75,7 +77,7 @@ export class CardCheckBox {
 
     }
 
-    ngOnInit(): void { 
+    ngOnInit(): void {
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -135,7 +137,7 @@ export class CardCheckBox {
         this.checkBoxMutiple(event, item, i)
     }
 
-    public checkBoxvalue(event, item, i) { 
+    public checkBoxvalue(event, item, i) {
         let data = {
             event,
             item
@@ -163,8 +165,18 @@ export class CardCheckBox {
         this.submit.emit();
     }
 
+    public checkDivided() {
+        let dataLength = this.data.length;
+        if (dataLength % 5 != 0) {
+            this.isHideMoreObjective = true;
+        } else {
+            this.isHideMoreObjective = false;
+        }
+    }
+
     public loadMoreData($event) {
         this.loadMore.emit(this.title);
+        this.checkDivided();
     }
 
 

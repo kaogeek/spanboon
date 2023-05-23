@@ -75,7 +75,8 @@ import { SocialPostLogs } from '../models/SocialPostLogs';
 import { USER_TYPE, NOTIFICATION_TYPE } from '../../constants/NotificationType';
 import { DeviceTokenService } from '../services/DeviceToken';
 import { PageNotificationService } from '../services/PageNotificationService';
-
+import { NotificationService } from '../services/NotificationService';
+import axios from 'axios';
 @JsonController('/page')
 export class PageController {
     private PAGE_ACCESS_LEVEL_GUEST = 'GUEST';
@@ -104,6 +105,7 @@ export class PageController {
         private socialPostLogsService: SocialPostLogsService,
         private deviceTokenService: DeviceTokenService,
         private pageNotificationService: PageNotificationService,
+        private notificationService:NotificationService
     ) { }
 
     // Find Page API
@@ -325,7 +327,396 @@ export class PageController {
             return res.status(400).send(errorResponse);
         }
     }
+    // autoSyncPageTW
+    @Post('/sync/tw')
+    @Authorized('user')
+    public async autoSyncPageTW(@Body({ validate: true }) socialBinding: PageSocialTWBindingRequest, @Res() res: any, @Req() req: any): Promise<any> {
+        const userId = new ObjectID(req.user.id);
+        const getUser = await this.userService.findOne({ _id: userId });
+        const verifyObject = await this.twitterService.verifyCredentials(socialBinding.twitterOauthToken, socialBinding.twitterTokenSecret);
+        const regex = /[ก-ฮ]/g;
+        const found =  verifyObject.screen_name.match(regex);
+        if(found){
+            const errorResponse = ResponseUtil.getErrorResponse('Please fill in the box with english lanauage.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+        const ipAddress = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress).split(',')[0];
+        const clientId = req.headers['client-id'];
+        const query = { _id: userId };
+        const newValue = { $set: { isSyncPage: true } };
+        await this.userService.update(query, newValue);
 
+        const pageSocialFb = await this.pageSocialAccountService.findOne({ where: { providerName: PROVIDER.TWITTER, providerPageId: socialBinding.twitterUserId } });
+
+        if (pageSocialFb !== undefined && pageSocialFb !== null) {
+            const errorResponse = ResponseUtil.getErrorResponse('Unable create Page', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        const assetPic = await this.assetService.createAssetFromURL(verifyObject.profile_image_url_https, userId);
+        if (verifyObject && assetPic) {
+            const checkPageCate = await this.pageCategoryService.findOne({ name: 'อื่นๆ' });
+            const pageCreate: Page = new Page();
+            pageCreate.name = verifyObject.name;
+            pageCreate.pageUsername = verifyObject ? verifyObject.screen_name : '';
+            pageCreate.subTitle = null;
+            pageCreate.backgroundStory = null;
+            pageCreate.detail = null;
+            pageCreate.ownerUser = userId;
+            pageCreate.imageURL = ASSET_PATH + assetPic.id;
+            pageCreate.s3ImageURL = assetPic ? assetPic.s3FilePath : '';
+            pageCreate.coverURL = '';
+            pageCreate.coverPosition = null;
+            pageCreate.color = null;
+            pageCreate.backgroundStory = pageCreate.backgroundStory;
+            pageCreate.email = getUser.email;
+            pageCreate.category = checkPageCate ? checkPageCate.id : '';
+            pageCreate.isOfficial = false;
+            pageCreate.banned = false;
+            const result: Page = await this.pageService.create(pageCreate);
+            if (result) {
+                const properties = {
+                    oauthToken: socialBinding.twitterOauthToken,
+                    oauthTokenSecret: socialBinding.twitterTokenSecret,
+                    pageId: socialBinding.twitterUserId
+                };
+                const currentDateTime = moment().toDate();
+                const authTime = currentDateTime;
+                const pageSocialAccount = new PageSocialAccount();
+                pageSocialAccount.page = result.id;
+                pageSocialAccount.properties = properties;
+                pageSocialAccount.providerName = PROVIDER.TWITTER;
+                pageSocialAccount.providerPageId = socialBinding.twitterUserId;
+                pageSocialAccount.storedCredentials = socialBinding.twitterOauthToken;
+                pageSocialAccount.providerPageName = socialBinding.twitterPageName;
+                pageSocialAccount.ownerPage = userId;
+                const page = await this.pageSocialAccountService.create(pageSocialAccount);
+                if (page) {
+                    const config = new PageConfig();
+                    config.page = result.id;
+                    config.name = 'page.social.twitter.autopost';
+                    config.type = 'boolean';
+                    config.value = true;
+                    await this.pageConfigService.create(config);
+
+                    const socialPostLogs = new SocialPostLogs();
+                    socialPostLogs.user = userId;
+                    socialPostLogs.pageId = result.id;
+                    socialPostLogs.providerName = PROVIDER.TWITTER;
+                    socialPostLogs.providerUserId = page.providerPageId;
+                    socialPostLogs.lastSocialPostId = null;
+                    socialPostLogs.properties = page.properties;
+                    socialPostLogs.enable = true;
+                    socialPostLogs.lastUpdated = authTime;
+                    await this.socialPostLogsService.create(socialPostLogs);
+                    const pageObjId = new ObjectID(result.id);
+                    const pageAcceessLevel = new PageAccessLevel();
+                    pageAcceessLevel.page = result.id;
+                    pageAcceessLevel.user = userId;
+                    pageAcceessLevel.level = PAGE_ACCESS_LEVEL.OWNER;
+                    const pageAccessLevelCreated: PageAccessLevel = await this.pageAccessLevelService.create(pageAcceessLevel);
+                    if (pageAccessLevelCreated) {
+                        const engagement = new UserEngagement();
+                        engagement.clientId = clientId;
+                        engagement.contentId = pageObjId;
+                        engagement.contentType = ENGAGEMENT_CONTENT_TYPE.PAGE;
+                        engagement.ip = ipAddress;
+                        engagement.userId = userId;
+                        engagement.action = ENGAGEMENT_ACTION.CREATE;
+
+                        const engagements: UserEngagement = await this.userEngagementService.findOne({ where: { contentId: pageObjId, userId: ObjectID(userId), contentType: ENGAGEMENT_CONTENT_TYPE.PAGE, action: ENGAGEMENT_ACTION.CREATE } });
+                        if (engagements) {
+                            engagement.isFirst = false;
+                        } else {
+                            engagement.isFirst = true;
+                        }
+
+                        await this.userEngagementService.create(engagement);
+                        const successResponse = ResponseUtil.getSuccessResponse('Successfully create Page', result);
+                        return res.status(200).send(successResponse);
+                    }
+                } else {
+                    const errorResponse = ResponseUtil.getErrorResponse('Unable create Page', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+            }
+        }
+    }
+    // autoSyncPageFB
+    @Post('/sync/fb')
+    @Authorized('user')
+    public async autoSyncPageFB(@Body({ validate: true }) socialBinding: PageSocialFBBindingRequest, @Res() res: any, @Req() req: any): Promise<any> {
+        const userId = new ObjectID(req.user.id);
+        const getUser = await this.userService.findOne({ _id: userId });
+        const query = { _id: userId };
+        const newValue = { $set: { isSyncPage: true } };
+        const regex = /[ก-ฮ]/g;
+        let assetCover: any;
+        const pagePicture = await this.facebookService.getPagePicture(socialBinding.facebookPageId, socialBinding.pageAccessToken);
+        const { data } = await axios.get('https://graph.facebook.com/v14.0/' + socialBinding.facebookPageId + '?fields=cover&access_token=' + socialBinding.pageAccessToken);
+        const pageDetail = await this.facebookService.getPageFb(socialBinding.facebookPageId, socialBinding.pageAccessToken);
+        const found =  pageDetail.username.match(regex);
+        if(found){
+            const errorResponse = ResponseUtil.getErrorResponse('Please fill in the box with english lanauage.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+        const ipAddress = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress).split(',')[0];
+        const clientId = req.headers['client-id'];
+        let createCate = undefined;
+        const pageName = await this.pageService.findOne({ where: { name: socialBinding.facebookPageName } });
+        const refreshToken = await this.facebookService.getRefreshToken(socialBinding.pageAccessToken);
+        if (!refreshToken) {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Cannot get refresh token.', undefined));
+        }
+        if (pageName !== undefined && pageName !== null) {
+            const errorResponse = ResponseUtil.getErrorResponse('Pagename already exists', undefined);
+            return res.status(400).send(errorResponse);
+        }
+        const pageSocialFb = await this.pageSocialAccountService.findOne({ where: { providerName: PROVIDER.FACEBOOK, providerPageId: socialBinding.facebookPageId } });
+        if (pageSocialFb !== undefined && pageSocialFb !== null) {
+            const errorResponse = ResponseUtil.getErrorResponse('Unable create Page', undefined);
+            return res.status(400).send(errorResponse);
+        }
+        const assetPic = await this.assetService.createAssetFromURL(pagePicture.data.url, userId);
+        if (data.cover !== undefined) {
+            assetCover = await this.assetService.createAssetFromURL(data.cover.source, userId);
+        }
+        // create category 
+
+        const findPageEnable = await this.socialPostLogsService.findOne({ providerUserId: socialBinding.facebookPageId });
+        if (findPageEnable !== undefined && findPageEnable !== null) {
+            const errorResponse = ResponseUtil.getErrorResponse('Unable create Page', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        await this.userService.update(query, newValue);
+
+        const checkPageCate = await this.pageCategoryService.findOne({ name: socialBinding.facebookCategory });
+        if (checkPageCate === undefined) {
+            const cate: PageCategory = new PageCategory();
+            cate.name = socialBinding.facebookCategory;
+            cate.description = null;
+            cate.iconURL = null;
+            createCate = await this.pageCategoryService.create(cate);
+        }
+        if (assetPic) {
+
+            const pageCreate: Page = new Page();
+            pageCreate.name = socialBinding.facebookPageName;
+            pageCreate.pageUsername = pageDetail ? pageDetail.username : '';
+            pageCreate.subTitle = null;
+            pageCreate.backgroundStory = null;
+            pageCreate.detail = null;
+            pageCreate.ownerUser = userId;
+            pageCreate.imageURL = ASSET_PATH + assetPic.id;
+            pageCreate.s3ImageURL = assetPic ? assetPic.s3FilePath : '';
+            pageCreate.coverURL = '';
+            pageCreate.coverPosition = null;
+            pageCreate.color = null;
+            pageCreate.backgroundStory = pageCreate.backgroundStory;
+            pageCreate.email = getUser.email;
+            pageCreate.category = checkPageCate ? checkPageCate.id : createCate.id;
+            pageCreate.isOfficial = false;
+            pageCreate.banned = false;
+            pageCreate.facebookURL = pageDetail ? pageDetail.link : '';
+            pageCreate.mobileNo = pageDetail ? pageDetail.phone : '';
+            const result: Page = await this.pageService.create(pageCreate);
+            // if page created then auto fetch and webhook
+            if (result) {
+                const properties = {
+                    pageId: socialBinding.facebookPageId,
+                    ownerPage: userId
+                };
+                const currentDateTime = moment().toDate();
+                const authTime = currentDateTime;
+                const pageSocialAccount = new PageSocialAccount();
+                pageSocialAccount.page = result.id;
+                pageSocialAccount.properties = properties;
+                pageSocialAccount.providerName = PROVIDER.FACEBOOK;
+                pageSocialAccount.providerPageId = socialBinding.facebookPageId;
+                pageSocialAccount.storedCredentials = refreshToken.access_token;
+                pageSocialAccount.providerPageName = socialBinding.facebookPageName;
+                pageSocialAccount.ownerPage = userId;
+                const page = await this.pageSocialAccountService.create(pageSocialAccount);
+                // subscribe webhook
+                if (page) {
+                    const webHooks = await this.facebookService.subScribeWebhook(socialBinding.facebookPageId, refreshToken.access_token);
+                    console.log('webhook', webHooks);
+                    const config = new PageConfig();
+                    config.page = result.id;
+                    config.name = 'page.social.facebook.autopost';
+                    config.type = 'boolean';
+                    config.value = true;
+                    await this.pageConfigService.create(config);
+
+                    const socialPostLogs = new SocialPostLogs();
+                    socialPostLogs.user = userId;
+                    socialPostLogs.pageId = result.id;
+                    socialPostLogs.providerName = PROVIDER.FACEBOOK;
+                    socialPostLogs.providerUserId = page.providerPageId;
+                    socialPostLogs.lastSocialPostId = null;
+                    socialPostLogs.properties = page.properties;
+                    socialPostLogs.enable = true;
+                    socialPostLogs.lastUpdated = authTime;
+                    await this.socialPostLogsService.create(socialPostLogs);
+
+                    const pageObjId = new ObjectID(result.id);
+                    const pageAcceessLevel = new PageAccessLevel();
+                    pageAcceessLevel.page = result.id;
+                    pageAcceessLevel.user = userId;
+                    pageAcceessLevel.level = PAGE_ACCESS_LEVEL.OWNER;
+                    const pageAccessLevelCreated: PageAccessLevel = await this.pageAccessLevelService.create(pageAcceessLevel);
+
+                    if (pageAccessLevelCreated) {
+                        const engagement = new UserEngagement();
+                        engagement.clientId = clientId;
+                        engagement.contentId = pageObjId;
+                        engagement.contentType = ENGAGEMENT_CONTENT_TYPE.PAGE;
+                        engagement.ip = ipAddress;
+                        engagement.userId = userId;
+                        engagement.action = ENGAGEMENT_ACTION.CREATE;
+
+                        const engagements: UserEngagement = await this.userEngagementService.findOne({ where: { contentId: pageObjId, userId: ObjectID(userId), contentType: ENGAGEMENT_CONTENT_TYPE.PAGE, action: ENGAGEMENT_ACTION.CREATE } });
+                        if (engagements) {
+                            engagement.isFirst = false;
+                        } else {
+                            engagement.isFirst = true;
+                        }
+                        if (assetCover) {
+                            const queryPic = { _id: result.id };
+                            const newValuePic = { $set: { coverURL: ASSET_PATH + assetCover.id, s3CoverURL: assetCover.s3FilePath } };
+                            const updatePageCoverPic = await this.pageService.update(queryPic, newValuePic);
+                            if (updatePageCoverPic) {
+                                await this.userEngagementService.create(engagement);
+                                const successResponse = ResponseUtil.getSuccessResponse('Successfully create Page', result);
+                                return res.status(200).send(successResponse);
+                            }
+                        } else {
+                            await this.userEngagementService.create(engagement);
+                            const successResponse = ResponseUtil.getSuccessResponse('Successfully create Page', result);
+                            return res.status(200).send(successResponse);
+                        }
+                    }
+                } else {
+                    const errorResponse = ResponseUtil.getErrorResponse('Unable create Page', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+            } else {
+                const errorResponse = ResponseUtil.getErrorResponse('Unable create Page', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Unable create Page', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+    @Get('/check/fb_token')
+    @Authorized('user')
+    public async checkRefreshToken(@QueryParam('limit') limit: number, @QueryParam('offset') offset: number, @Req() req: any, @Res() res: any): Promise<any> {
+        const result: PageAccessLevelResponse[] = [];
+        const userObjId = req.user.id;
+        const accSearchFilter = new SearchFilter();
+        accSearchFilter.whereConditions = { user: new ObjectID(userObjId) };
+        accSearchFilter.limit = limit;
+        accSearchFilter.offset = offset;
+        const pageAccessResult: any[] = await this.pageAccessLevelService.search(accSearchFilter);
+        const issued_fb = [];
+        for (const pg of pageAccessResult) {
+            const userAccLV: PageAccessLevelResponse = new PageAccessLevelResponse();
+
+            const pgObjId = new ObjectID(pg.page);
+            const pageStmt = { where: { _id: pgObjId } };
+            const page: any = await this.pageService.findOne(pageStmt, { signURL: true });
+            if (page !== undefined) {
+                userAccLV.page = {
+                    id: page.id,
+                    name: page.name,
+                    pageUsername: page.pageUsername,
+                    imageURL: page.imageURL,
+                    signURL: page.signURL,
+                    isOfficial: page.isOfficial
+                };
+            }
+
+            const pguserObjId = new ObjectID(pg.user);
+            const userStmt = { where: { _id: pguserObjId } };
+            const pguser: any = await this.userService.findOne(userStmt, { signURL: true });
+
+            if (pguser !== undefined) {
+                userAccLV.user = {
+                    id: pg.user,
+                    displayName: pguser.displayName,
+                    imageURL: pguser.imageURL,
+                    signURL: pguser.signURL
+                };
+                userAccLV.level = pg.level;
+            }
+
+            result.push(userAccLV);
+        }
+        for (const pageFbSocial of result) {
+            if (pageFbSocial.page !== undefined) {
+                const pageFb = await this.pageSocialAccountService.find({ page: pageFbSocial.page.id, providerName: PROVIDER.FACEBOOK });
+                const access_token = process.env.FACEBOOK_APP_ID + '|' + process.env.FACEBOOK_APP_SECRET;
+                for (const expireFb of pageFb) {
+                    const issued_Token = await this.facebookService.expireToken(expireFb.storedCredentials, access_token);
+                    const objectPageFb = {
+                        pageId: expireFb.page,
+                        facebookPageId: expireFb.providerPageId,
+                        facebookPageName: expireFb.providerPageName,
+                        facebookTokenExpired: !issued_Token.data.is_valid
+                    };
+                    issued_fb.push(objectPageFb);
+                }
+            } else {
+                continue;
+            }
+        }
+        const successResponse = ResponseUtil.getSuccessResponse('Successfully get page Token Access', issued_fb);
+        return res.status(200).send(successResponse);
+
+    }
+    @Post('/get/fb_token')
+    @Authorized('user')
+    public async getRefreshToken(@Res() res: any, @Req() req: any): Promise<any> {
+        for (let i = 0; i < req.body.length; i++) {
+            const shiftOut = req.body[i];
+            const refreshToken = await this.facebookService.getRefreshToken(shiftOut.pageAccessToken);
+            if (!refreshToken) {
+                continue;
+            }
+            const queryToken = { providerName: 'FACEBOOK', providerPageName: shiftOut.facebookPageName, providerPageId: shiftOut.facebookPageId };
+            const newValues = { $set: { storedCredentials: refreshToken.access_token } };
+            const update = await this.pageSocialAccountService.update(queryToken, newValues);
+            const webHooks = await this.facebookService.subScribeWebhook(shiftOut.facebookPageId, refreshToken.access_token);
+            console.log('webHooks', webHooks);
+            if (update && webHooks.success === true) {
+                continue;
+            } else {
+                const errorResponse = ResponseUtil.getErrorResponse('Unable to get refresh token', undefined);
+                return res.status(400).send(errorResponse);
+            }
+
+        }
+        const successResponse = ResponseUtil.getSuccessResponse('Successfully create refreshToken', undefined);
+        return res.status(200).send(successResponse);
+    }
+    @Post('/user/sync')
+    @Authorized('user')
+    public async getUserSyncPage(@Res() res: any, @Req() req: any): Promise<any> {
+        const userId = new ObjectID(req.user.id);
+        const syncFlag: boolean = req.body.isSyncpage;
+        const query = { _id: userId };
+        const newValue = { $set: { isSyncPage: syncFlag } };
+        const updateUser = await this.userService.update(query, newValue);
+        if (updateUser) {
+            const successResponse = ResponseUtil.getSuccessResponse('Skip successful.', userId);
+            return res.status(200).send(successResponse);
+        } else {
+            const errorResponse: any = { status: 0, message: 'undefined' };
+            return res.status(400).send(errorResponse);
+        }
+    }
     /**
      * @api {get} /api/page/:id/needs Get Page Needs API
      * @apiGroup Page
@@ -382,6 +773,7 @@ export class PageController {
      * @apiErrorExample {json} Unable Binding Page Social
      * HTTP/1.1 500 Internal Server Error
      */
+
     @Post('/:id/social/facebook')
     @Authorized('user')
     public async bindingPageFacebook(@Param('id') pageId: string, @Body({ validate: true }) socialBinding: PageSocialFBBindingRequest, @Res() res: any, @Req() req: any): Promise<any> {
@@ -441,7 +833,6 @@ export class PageController {
                 expires: pageAccessToken.expires,
                 pageId: socialBinding.facebookPageId
             };
-            console.log('properties',properties);
             const pageSocialAccount = new PageSocialAccount();
             pageSocialAccount.page = pageObjId;
             pageSocialAccount.properties = properties;
@@ -449,6 +840,7 @@ export class PageController {
             pageSocialAccount.providerPageId = socialBinding.facebookPageId;
             pageSocialAccount.storedCredentials = pageAccessToken.token;
             pageSocialAccount.providerPageName = socialBinding.facebookPageName;
+            pageSocialAccount.ownerPage = userId;
             await this.pageSocialAccountService.create(pageSocialAccount);
 
             return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Binding Page Facebook Social.', true));
@@ -523,7 +915,7 @@ export class PageController {
             pageSocialAccount.providerPageId = socialBinding.twitterUserId;
             pageSocialAccount.storedCredentials = storedCredentials;
             pageSocialAccount.providerPageName = socialBinding.twitterPageName;
-
+            pageSocialAccount.ownerPage = userId;
             await this.pageSocialAccountService.create(pageSocialAccount);
 
             return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully Binding Page Social.', true));
@@ -754,15 +1146,21 @@ export class PageController {
         let pageObjId: ObjectID;
         let result: PageAccessLevelResponse;
         let idStmt: any;
-        let page: any;
 
         try {
             pageObjId = new ObjectID(id);
             idStmt = { where: { _id: pageObjId } };
-            page = await this.pageService.findOne(idStmt);
         } catch (ex) {
-            page = await this.pageService.findOne({ where: { pageUsername: id } });
+            idStmt = { where: { pageUsername: id } };
+        } finally {
+            if (pageObjId === undefined || pageObjId === 'undefined') {
+                pageObjId = null;
+            }
+
+            idStmt = { $or: [{ _id: pageObjId }, { pageUsername: id }] };
         }
+
+        const page: any = await this.pageService.findOne(idStmt);
 
         if (page) {
             const userObjId = req.user.id;
@@ -788,7 +1186,7 @@ export class PageController {
             }
 
             const searchFilter = new SearchFilter();
-            searchFilter.whereConditions = { user: new ObjectID(userObjId), page: new ObjectID(id) };
+            searchFilter.whereConditions = { user: new ObjectID(userObjId), page: new ObjectID(page.id) };
 
             const pageAccessResult: any[] = await this.pageAccessLevelService.search(searchFilter);
 
@@ -826,15 +1224,21 @@ export class PageController {
         let pageObjId: ObjectID;
         const result: PageAccessLevelResponse[] = [];
         let idStmt: any;
-        let page: any;
 
         try {
             pageObjId = new ObjectID(id);
             idStmt = { where: { _id: pageObjId } };
-            page = await this.pageService.findOne(idStmt);
         } catch (ex) {
-            page = await this.pageService.findOne({ where: { pageUsername: id } });
+            idStmt = { where: { pageUsername: id } };
+        } finally {
+            if (pageObjId === undefined || pageObjId === 'undefined') {
+                pageObjId = null;
+            }
+
+            idStmt = { $or: [{ _id: pageObjId }, { pageUsername: id }] };
         }
+
+        const page: any = await this.pageService.findOne(idStmt);
 
         if (page) {
             const userObjId = req.user.id;
@@ -847,7 +1251,7 @@ export class PageController {
             }
 
             const searchFilter = new SearchFilter();
-            searchFilter.whereConditions = { user: new ObjectID(userObjId), page: new ObjectID(id) };
+            searchFilter.whereConditions = { user: new ObjectID(userObjId), page: new ObjectID(page.id) };
             const userPageAccessResult: any[] = await this.pageAccessLevelService.search(searchFilter);
             if (userPageAccessResult.length >= 1) {
                 if (userPageAccessResult[0].level === PAGE_ACCESS_LEVEL.ADMIN ||
@@ -927,7 +1331,6 @@ export class PageController {
         let pageObjId: ObjectID;
         let result: PageAccessLevelResponse;
         let idStmt: any;
-        let page: any;
 
         // check user
         let user: User = undefined;
@@ -981,10 +1384,17 @@ export class PageController {
         try {
             pageObjId = new ObjectID(id);
             idStmt = { where: { _id: pageObjId } };
-            page = await this.pageService.findOne(idStmt);
         } catch (ex) {
-            page = await this.pageService.findOne({ where: { pageUsername: id } });
+            idStmt = { where: { pageUsername: id } };
+        } finally {
+            if (pageObjId === undefined || pageObjId === 'undefined') {
+                pageObjId = null;
+            }
+
+            idStmt = { $or: [{ _id: pageObjId }, { pageUsername: id }] };
         }
+
+        const page: any = await this.pageService.findOne(idStmt);
 
         if (page) {
             const userObjId = req.user.id;
@@ -997,7 +1407,7 @@ export class PageController {
 
             if (!canDoAction) {
                 const searchFilter = new SearchFilter();
-                searchFilter.whereConditions = { user: new ObjectID(userObjId), page: new ObjectID(id) };
+                searchFilter.whereConditions = { user: new ObjectID(userObjId), page: new ObjectID(page.id) };
 
                 const pageAccessResult: any[] = await this.pageAccessLevelService.search(searchFilter);
                 if (pageAccessResult.length > 0) {
@@ -1023,7 +1433,7 @@ export class PageController {
 
             // check if user access exist
             const usrAccessSearchFilter = new SearchFilter();
-            usrAccessSearchFilter.whereConditions = { user: new ObjectID(user.id), page: new ObjectID(id) };
+            usrAccessSearchFilter.whereConditions = { user: new ObjectID(user.id), page: new ObjectID(page.id) };
 
             const userAccessResult: any[] = await this.pageAccessLevelService.search(usrAccessSearchFilter);
 
@@ -1067,13 +1477,13 @@ export class PageController {
             pgLV.user = user.id;
             pgLV.level = access.level;
 
-            const query = {page:pgLV.page,user:pgLV.user,level:pgLV.level};
+            const query = { page: pgLV.page, user: pgLV.user, level: pgLV.level };
             const findPageAccessLv = await this.pageAccessLevelService.findOne(query);
-            if(findPageAccessLv !== undefined && findPageAccessLv !== null){
+            if (findPageAccessLv !== undefined && findPageAccessLv !== null) {
                 const successResponse = ResponseUtil.getSuccessResponse('User Already had roles', result);
                 return res.status(200).send(successResponse);
             }
-            else{
+            else {
                 const pageAccessLV = await this.pageAccessLevelService.create(pgLV);
                 const userAccLV: PageAccessLevelResponse = new PageAccessLevelResponse();
                 result = userAccLV;
@@ -1089,9 +1499,9 @@ export class PageController {
                 };
                 result.level = pageAccessLV.level;
                 result.id = pageAccessLV.id;
-    
+
                 const successResponse = ResponseUtil.getSuccessResponse('Successfully adding User Page Access', result);
-                return res.status(200).send(successResponse); 
+                return res.status(200).send(successResponse);
             }
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Unable to get Page', undefined);
@@ -1118,7 +1528,6 @@ export class PageController {
     public async deleteUserPageAccess(@Param('id') id: string, @Body({ validate: true }) access: CreatePageAccessLevelRequest, @Res() res: any, @Req() req: any): Promise<any> {
         let pageObjId: ObjectID;
         let idStmt: any;
-        let page: any;
 
         // check user
         let user: User = undefined;
@@ -1169,10 +1578,17 @@ export class PageController {
         try {
             pageObjId = new ObjectID(id);
             idStmt = { where: { _id: pageObjId } };
-            page = await this.pageService.findOne(idStmt);
         } catch (ex) {
-            page = await this.pageService.findOne({ where: { pageUsername: id } });
+            idStmt = { where: { pageUsername: id } };
+        } finally {
+            if (pageObjId === undefined || pageObjId === 'undefined') {
+                pageObjId = null;
+            }
+
+            idStmt = { $or: [{ _id: pageObjId }, { pageUsername: id }] };
         }
+
+        const page: any = await this.pageService.findOne(idStmt);
 
         if (page) {
             const userObjId = req.user.id;
@@ -1185,7 +1601,7 @@ export class PageController {
 
             if (!canDoAction) {
                 const searchFilter = new SearchFilter();
-                searchFilter.whereConditions = { user: new ObjectID(userObjId), page: new ObjectID(id) };
+                searchFilter.whereConditions = { user: new ObjectID(userObjId), page: new ObjectID(page.id) };
 
                 const pageAccessResult: any[] = await this.pageAccessLevelService.search(searchFilter);
                 if (pageAccessResult.length > 0) {
@@ -1205,7 +1621,7 @@ export class PageController {
 
             // check if user access exist
             const usrAccessSearchFilter = new SearchFilter();
-            usrAccessSearchFilter.whereConditions = { user: new ObjectID(user.id), page: new ObjectID(id) };
+            usrAccessSearchFilter.whereConditions = { user: new ObjectID(user.id), page: new ObjectID(page.id) };
 
             const userAccessResult: any[] = await this.pageAccessLevelService.search(usrAccessSearchFilter);
 
@@ -1251,15 +1667,21 @@ export class PageController {
         let pageObjId: ObjectID;
         let result: PageAccessLevelResponse;
         let idStmt: any;
-        let page: any;
 
         try {
             pageObjId = new ObjectID(id);
             idStmt = { where: { _id: pageObjId } };
-            page = await this.pageService.findOne(idStmt);
         } catch (ex) {
-            page = await this.pageService.findOne({ where: { pageUsername: id } });
+            idStmt = { where: { pageUsername: id } };
+        } finally {
+            if (pageObjId === undefined || pageObjId === 'undefined') {
+                pageObjId = null;
+            }
+
+            idStmt = { $or: [{ _id: pageObjId }, { pageUsername: id }] };
         }
+
+        const page: any = await this.pageService.findOne(idStmt);
 
         if (page) {
             const userObjId = req.user.id;
@@ -1272,7 +1694,7 @@ export class PageController {
 
             if (!canDoAction) {
                 const searchFilter = new SearchFilter();
-                searchFilter.whereConditions = { user: new ObjectID(userObjId), page: new ObjectID(id) };
+                searchFilter.whereConditions = { user: new ObjectID(userObjId), page: new ObjectID(page.id) };
 
                 const pageAccessResult: any[] = await this.pageAccessLevelService.search(searchFilter);
                 if (pageAccessResult.length > 0) {
@@ -1290,7 +1712,7 @@ export class PageController {
                 return res.status(401).send(errorResponse);
             }
 
-            const deleteUserAccessLV = await this.pageAccessLevelService.findOne({ _id: new ObjectID(accessid), page: new ObjectID(id) });
+            const deleteUserAccessLV = await this.pageAccessLevelService.findOne({ _id: new ObjectID(accessid), page: new ObjectID(page.id) });
 
             if (deleteUserAccessLV) {
                 if (deleteUserAccessLV.level === PAGE_ACCESS_LEVEL.OWNER) {
@@ -1346,7 +1768,6 @@ export class PageController {
         let pageObjId: ObjectID;
         let result: PageAccessLevelResponse;
         let idStmt: any;
-        let page: any;
 
         // check user
         let user: User = undefined;
@@ -1401,10 +1822,17 @@ export class PageController {
         try {
             pageObjId = new ObjectID(id);
             idStmt = { where: { _id: pageObjId } };
-            page = await this.pageService.findOne(idStmt);
         } catch (ex) {
-            page = await this.pageService.findOne({ where: { pageUsername: id } });
+            idStmt = { where: { pageUsername: id } };
+        } finally {
+            if (pageObjId === undefined || pageObjId === 'undefined') {
+                pageObjId = null;
+            }
+
+            idStmt = { $or: [{ _id: pageObjId }, { pageUsername: id }] };
         }
+
+        const page: any = await this.pageService.findOne(idStmt);
 
         if (page) {
             const userObjId = req.user.id;
@@ -1417,7 +1845,7 @@ export class PageController {
 
             if (!canDoAction) {
                 const searchFilter = new SearchFilter();
-                searchFilter.whereConditions = { user: new ObjectID(userObjId), page: new ObjectID(id) };
+                searchFilter.whereConditions = { user: new ObjectID(userObjId), page: new ObjectID(page.id) };
 
                 const pageAccessResult: any[] = await this.pageAccessLevelService.search(searchFilter);
                 if (pageAccessResult.length > 0) {
@@ -1444,7 +1872,7 @@ export class PageController {
             // check if user access exist
             const newLevel = access.level.toUpperCase();
             const usrAccessSearchFilter = new SearchFilter();
-            usrAccessSearchFilter.whereConditions = { user: new ObjectID(user.id), page: new ObjectID(id), level: newLevel };
+            usrAccessSearchFilter.whereConditions = { user: new ObjectID(user.id), page: new ObjectID(page.id), level: newLevel };
 
             const userAccessResult: any[] = await this.pageAccessLevelService.search(usrAccessSearchFilter);
 
@@ -1927,11 +2355,22 @@ export class PageController {
                 const pageOwnerNoti = await this.userService.findOne({ _id: page.ownerUser });
                 // user to page 
                 const tokenFCMId = await this.deviceTokenService.find({ userId: pageOwnerNoti.id });
-                const notificationFollower = whoFollowYou.displayName + space + 'กดติดตามเพจ'+ space + page.pageUsername;
-                const link = `/profile/${whoFollowYou.uniqueId}`;
+                const notificationFollower = whoFollowYou.displayName + space + 'กดติดตามเพจ' + space + page.name;
+                const link = `/profile/${whoFollowYou.id}`;
+                await this.pageNotificationService.notifyToPageUserFcm(
+                    followCreate.subjectId,
+                    undefined,
+                    req.user.id + '',
+                    USER_TYPE.PAGE,
+                    NOTIFICATION_TYPE.FOLLOW,
+                    notificationFollower,
+                    link,
+                    whoFollowYou.displayName,
+                    whoFollowYou.imageURL
+                );
                 for (const tokenFCM of tokenFCMId) {
-                    if(tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined){
-                        await this.pageNotificationService.notifyToPageUserFcm(
+                    if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined) {
+                        await this.notificationService.sendNotificationFCM(
                             followCreate.subjectId,
                             undefined,
                             req.user.id + '',
@@ -1943,16 +2382,8 @@ export class PageController {
                             whoFollowYou.displayName,
                             whoFollowYou.imageURL
                         );
-                    }else{
-                        await this.pageNotificationService.notifyToPageUser(
-                            followCreate.subjectId,
-                            undefined,
-                            req.user.id + '',
-                            USER_TYPE.PAGE,
-                            NOTIFICATION_TYPE.FOLLOW,
-                            notificationFollower,
-                            link,
-                        );
+                    } else {
+                        continue;
                     }
                 }
                 if (engagement) {
@@ -2472,7 +2903,7 @@ export class PageController {
             return res.status(401).send(ResponseUtil.getErrorResponse('You cannot access the page.', undefined));
         }
 
-        const config = await this.socialPostLogsService.findOne({ pageId: pageObjId,providerName:'TWITTER' });
+        const config = await this.socialPostLogsService.findOne({ pageId: pageObjId, providerName: 'TWITTER' });
         if (config) {
             return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully to Get Page Config', config.enable));
         } else {
@@ -2485,7 +2916,7 @@ export class PageController {
     // get 
     @Get('/:id/facebook_fetch_enable')
     @Authorized('user')
-    public async getFacebookFetch(@Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any>{
+    public async getFacebookFetch(@Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
         const userId = new ObjectID(req.user.id);
         const pageObjId = new ObjectID(id);
         const page: Page = await this.pageService.findOne({ where: { _id: pageObjId } });
@@ -2500,7 +2931,7 @@ export class PageController {
             return res.status(401).send(ResponseUtil.getErrorResponse('You cannot access the page.', undefined));
         }
 
-        const config = await this.socialPostLogsService.findOne({ pageId: pageObjId,providerName:'FACEBOOK' });
+        const config = await this.socialPostLogsService.findOne({ pageId: pageObjId, providerName: 'FACEBOOK' });
         if (config) {
             return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully to Get Page Config', config.enable));
         } else {
@@ -2516,25 +2947,29 @@ export class PageController {
         const currentDateTime = moment().toDate();
         const authTime = currentDateTime;
         const page = await this.pageSocialAccountService.findOne({ where: { page: pageObjId } });
+        const refreshToken = await this.facebookService.getRefreshToken(page.storedCredentials);
+        if (!refreshToken) {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Cannot get refresh token.', undefined));
+        }
         if (!page) {
             return res.status(400).send(ResponseUtil.getErrorResponse('Page was not found', undefined));
         }
+
         // check access
         const isUserCanAccess = await this.isUserCanAccessPage(userId, pageObjId);
         if (!isUserCanAccess) {
             return res.status(401).send(ResponseUtil.getErrorResponse('You cannot access the page.', undefined));
         }
-        console.log('configValue',configValue);
+        // subscribe webhook
         if (page) {
+            const webHooks = await this.facebookService.subScribeWebhook(page.providerPageId, refreshToken.access_token);
+            console.log('webHooks', webHooks);
             const socialPostLogsService = await this.socialPostLogsService.findOne({ pageId: pageObjId });
             if (socialPostLogsService) {
-                console.log('binding1');
                 const query = { pageId: pageObjId };
-                const newValue = { $set: { enable: configValue.value,properties:page.properties } };
-                console.log('newValue',newValue);
+                const newValue = { $set: { enable: configValue.value, properties: page.properties } };
                 await this.socialPostLogsService.update(query, newValue);
             } else {
-                console.log('binding2');
                 const socialPostLogs = new SocialPostLogs();
                 socialPostLogs.user = userId;
                 socialPostLogs.pageId = pageObjId;

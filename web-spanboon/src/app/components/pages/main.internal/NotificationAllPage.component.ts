@@ -60,13 +60,13 @@ export class NotificationAllPage extends AbstractPage implements OnInit {
                 var todaysDate = new Date();
                 var date = new Date(noti.notification.createdDate);
                 if (!noti.notification.isRead) {
-                    this.notiisRead.push({ notification: { title: 'การแจ้งเตือนใหม่', body: noti.notification.title, image: (this.apiBaseURL + noti.sender.imageURL + '/image'), status: noti.notification.type, isRred: noti.notification.isRead, id: noti.notification.id, link: noti.notification.link, createdDate: noti.notification.createdDate } });
+                    this.notiisRead.push({ notification: { title: 'การแจ้งเตือนใหม่', body: noti.notification.title, image: (this.apiBaseURL + noti.sender.imageURL + '/image'), status: noti.notification.type, isRead: noti.notification.isRead, id: noti.notification.id, link: noti.notification.link, createdDate: noti.notification.createdDate } });
                 }
                 noti.notification.linkPath = (this.mainPostLink + noti.notification.link)
                 if (date.setHours(0, 0, 0, 0) == todaysDate.setHours(0, 0, 0, 0)) {
-                    this.notiisAll.push({ notification: { title: 'การแจ้งเตือนใหม่', body: noti.notification.title, image: (this.apiBaseURL + noti.sender.imageURL + '/image'), status: noti.notification.type, isRred: noti.notification.isRead, id: noti.notification.id, link: noti.notification.link, createdDate: noti.notification.createdDate } });
+                    this.notiisAll.push({ notification: { title: 'การแจ้งเตือนใหม่', body: noti.notification.title, image: (this.apiBaseURL + noti.sender.imageURL + '/image'), status: noti.notification.type, isRead: noti.notification.isRead, id: noti.notification.id, link: noti.notification.link, createdDate: noti.notification.createdDate } });
                 } else {
-                    this.notiisAllPast.push({ notification: { title: 'การแจ้งเตือนใหม่', body: noti.notification.title, image: (this.apiBaseURL + noti.sender.imageURL + '/image'), status: noti.notification.type, isRred: noti.notification.isRead, id: noti.notification.id, link: noti.notification.link, createdDate: noti.notification.createdDate } });
+                    this.notiisAllPast.push({ notification: { title: 'การแจ้งเตือนใหม่', body: noti.notification.title, image: (this.apiBaseURL + noti.sender.imageURL + '/image'), status: noti.notification.type, isRead: noti.notification.isRead, id: noti.notification.id, link: noti.notification.link, createdDate: noti.notification.createdDate } });
                 }
                 this.notiOffset++;
             }

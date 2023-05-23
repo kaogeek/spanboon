@@ -16,10 +16,10 @@ export class UserProvideItems {
     @IsNotEmpty()
     @IsMongoId()
     public id: ObjectID;
-    
+
     @Column({ name: 'standardItemId' })
     public standardItemId: ObjectID;
-    
+
     @Column({ name: 'customItemId' })
     public customItemId: ObjectID;
 

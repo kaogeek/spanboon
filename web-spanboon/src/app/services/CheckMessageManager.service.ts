@@ -27,7 +27,7 @@ export class CheckMessageManager extends AbstractFacade {
     protected baseURL: string;
     protected http: HttpClient;
     protected user: any;
-    protected observManager: ObservableManager; 
+    protected observManager: ObservableManager;
 
     public time: number = 4;
     public interval;
@@ -43,10 +43,10 @@ export class CheckMessageManager extends AbstractFacade {
 
         // create obsvr subject
         this.observManager.createSubject(MESSAGE_SUBJECT);
-        this.observManager.subscribe('selected.page', (page: any) => { 
+        this.observManager.subscribe('selected.page', (page: any) => {
             this.pageId = page;
         });
-        this.observManager.subscribe('chatroom.id', (room: any) => { 
+        this.observManager.subscribe('chatroom.id', (room: any) => {
             this.roomId = room;
         });
         this.startTimer();
@@ -62,39 +62,39 @@ export class CheckMessageManager extends AbstractFacade {
                     const id = this.authMgr.getCurrentUser() && this.authMgr.getCurrentUser().id;
                     let data = {
                         userId: id,
-                        fetchUserRoom: true, 
+                        fetchUserRoom: true,
                         fetchPageRoom: true,
                     }
-                    if(this.pageId !== '' && this.pageId !== undefined){ 
-                        Object.assign(data , { asPage: this.pageId})
+                    if (this.pageId !== '' && this.pageId !== undefined) {
+                        Object.assign(data, { asPage: this.pageId })
                     }
-                    if(this.roomId !== '' && this.roomId !== undefined){ 
-                        Object.assign(data , { roomId: this.roomId})
+                    if (this.roomId !== '' && this.roomId !== undefined) {
+                        Object.assign(data, { roomId: this.roomId })
                     }
-                     this.checkUnreadMessage(data);
+                    this.checkUnreadMessage(data);
                 }
                 this.time = 4;
-            }  
+            }
         }, 1000);
     }
 
     public checkUnreadMessage(data: any): Promise<any> {
         return new Promise((resolve, reject) => {
             let url: string = this.baseURL + '/chatroom/check_unread';
-            let body: any = {}; 
+            let body: any = {};
             if (data !== null && data !== undefined) {
                 body = Object.assign(data);
             }
 
-            let options = this.getDefaultOptions();
+            let options = this.authMgr.getDefaultOptions();
 
-            this.http.post(url, body, options).toPromise().then((response: any) => { 
-                this.observManager.publish(MESSAGE_SUBJECT, response.data); 
+            this.http.post(url, body, options).toPromise().then((response: any) => {
+                this.observManager.publish(MESSAGE_SUBJECT, response.data);
                 resolve(response);
-            }).catch((error: any) => {   
+            }).catch((error: any) => {
                 if (error.error.name === 'AccessDeniedError') {
                     this.authMgr.clearStorage();
-                }  
+                }
                 reject(error);
             });
         });

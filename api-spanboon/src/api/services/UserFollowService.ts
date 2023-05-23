@@ -12,11 +12,15 @@ import { UserFollowRepository } from '../repositories/UserFollowRepository';
 import { SearchUtil } from '../../utils/SearchUtil';
 import { SUBJECT_TYPE } from '../../constants/FollowType';
 import { ObjectID } from 'mongodb';
+import { S3Service } from './S3Service';
 
 @Service()
 export class UserFollowService {
 
-    constructor(@OrmRepository() private userFollowRepository: UserFollowRepository) { }
+    constructor(
+        @OrmRepository() private userFollowRepository: UserFollowRepository,
+        private s3Service: S3Service
+    ) { }
 
     // find userFollow
     public async find(findCondition: any): Promise<UserFollow[]> {
@@ -89,6 +93,18 @@ export class UserFollowService {
                 ];
                 const folFive = await this.aggregate(folFiveStmt);
                 for (const fol of folFive) {
+                    if (!!fol.s3ImageURL) {
+                        const signUrl = await this.s3Service.getConfigedSignedUrl(fol.s3ImageURL);
+                        Object.assign(fol, { imageSignURL: (signUrl ? signUrl : '') });
+                        delete fol.s3ImageURL;
+                    }
+
+                    if (!!fol.s3CoverURL) {
+                        const signUrl = await this.s3Service.getConfigedSignedUrl(fol.s3CoverURL);
+                        Object.assign(fol, { coverSignURL: (signUrl ? signUrl : '') });
+                        delete fol.s3CoverURL;
+                    }
+
                     result.followers.push(this.parseUserField(fol.user[0]));
                 }
 
@@ -136,6 +152,22 @@ export class UserFollowService {
                 ];
 
                 const result = await this.aggregate(aggregateStmt);
+
+                for (const res of result) {
+                    if (!!res.user) {
+                        if (!!res.user.s3ImageURL) {
+                            const signUrl = await this.s3Service.getConfigedSignedUrl(res.user.s3ImageURL);
+                            Object.assign(res.user, { imageSignURL: (signUrl ? signUrl : '') });
+                            delete res.user.s3ImageURL;
+                        }
+
+                        if (!!res.user.s3CoverURL) {
+                            const signUrl = await this.s3Service.getConfigedSignedUrl(res.user.s3CoverURL);
+                            Object.assign(res.user, { coverSignURL: (signUrl ? signUrl : '') });
+                            delete res.user.s3CoverURL;
+                        }
+                    }
+                }
 
                 resolve(result);
             } catch (error) {
@@ -187,6 +219,22 @@ export class UserFollowService {
 
                 const result = await this.aggregate(aggregateStmt);
 
+                for (const res of result) {
+                    if (!!res.user) {
+                        if (!!res.user.s3ImageURL) {
+                            const signUrl = await this.s3Service.getConfigedSignedUrl(res.user.s3ImageURL);
+                            Object.assign(res.user, { imageSignURL: (signUrl ? signUrl : '') });
+                            delete res.user.s3ImageURL;
+                        }
+
+                        if (!!res.user.s3CoverURL) {
+                            const signUrl = await this.s3Service.getConfigedSignedUrl(res.user.s3CoverURL);
+                            Object.assign(res.user, { coverSignURL: (signUrl ? signUrl : '') });
+                            delete res.user.s3CoverURL;
+                        }
+                    }
+                }
+
                 resolve(result);
             } catch (error) {
                 reject(error);
@@ -237,6 +285,22 @@ export class UserFollowService {
 
                 const result = await this.aggregate(aggregateStmt);
 
+                for (const res of result) {
+                    if (!!res.user) {
+                        if (!!res.user.s3ImageURL) {
+                            const signUrl = await this.s3Service.getConfigedSignedUrl(res.user.s3ImageURL);
+                            Object.assign(res.user, { imageSignURL: (signUrl ? signUrl : '') });
+                            delete res.user.s3ImageURL;
+                        }
+
+                        if (!!res.user.s3CoverURL) {
+                            const signUrl = await this.s3Service.getConfigedSignedUrl(res.user.s3CoverURL);
+                            Object.assign(res.user, { coverSignURL: (signUrl ? signUrl : '') });
+                            delete res.user.s3CoverURL;
+                        }
+                    }
+                }
+
                 resolve(result);
             } catch (error) {
                 reject(error);
@@ -279,6 +343,22 @@ export class UserFollowService {
 
                 const result = await this.aggregate(aggregateStmt);
 
+                for (const res of result) {
+                    if (!!res.page) {
+                        if (!!res.page.s3ImageURL) {
+                            const signUrl = await this.s3Service.getConfigedSignedUrl(res.page.s3ImageURL);
+                            Object.assign(res.page, { imageSignURL: (signUrl ? signUrl : '') });
+                            delete res.page.s3ImageURL;
+                        }
+
+                        if (!!res.page.s3CoverURL) {
+                            const signUrl = await this.s3Service.getConfigedSignedUrl(res.page.s3CoverURL);
+                            Object.assign(res.page, { coverSignURL: (signUrl ? signUrl : '') });
+                            delete res.page.s3CoverURL;
+                        }
+                    }
+                }
+
                 resolve(result);
             } catch (error) {
                 reject(error);
@@ -286,13 +366,27 @@ export class UserFollowService {
         });
     }
 
-    private parseUserField(user: any): any {
+    private async parseUserField(user: any): Promise<any> {
         const userResult: any = {};
 
-        if (user !== undefined) {
+        if (!!user) {
+            let imageSignURL;
+            let coverSignURL;
+
+            if (!!user.s3ImageURL) {
+                imageSignURL = await this.s3Service.getConfigedSignedUrl(user.s3ImageURL);
+            }
+
+            if (!!user.s3CoverURL) {
+                coverSignURL = await this.s3Service.getConfigedSignedUrl(user.s3CoverURL);
+            }
+
             userResult.id = user._id;
             userResult.displayName = user.displayName;
             userResult.imageURL = user.imageURL;
+            userResult.coverURL = user.coverURL;
+            userResult.imageSignURL = imageSignURL;
+            userResult.coverURL = coverSignURL;
             userResult.email = user.email;
             userResult.isAdmin = user.isAdmin;
             userResult.uniqueId = user.uniqueId;

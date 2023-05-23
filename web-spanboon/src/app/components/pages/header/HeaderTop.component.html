@@ -7,7 +7,7 @@
 
 <div class="header-top" #headerTop>
     <a class="wrapper-logo" href="[routerLink]" [routerLink]="'/home'" #menuLeft>
-        <img src="../../../../assets/img/logo/logo.svg" alt="">
+        <img src="../../../../assets/img/logo/mfp.svg" alt="">
         <!-- <img src="../../../../assets/img/pgs.png" width="40"> -->
         <span class="name-spanboon">{{PLATFORM_NAME_TH}}</span>
     </a>
@@ -74,9 +74,17 @@
             </a>
         </div>
     </div>
+    <!-- FB         <svg class="icon-social"
+            [class.active]="menuTrigger.menuOpen || isAutoPostTwitter || isAutoPostFacebook"
+            xmlns="http://www.w3.org/2000/svg" width="17.474" height="17.474"
+            viewBox="0 0 17.474 17.474">
+            <path id="social-media"
+                d="M15.426,7.2a2.045,2.045,0,0,0-1.851,1.185l-2.29-.564c0-.037.011-.072.011-.11a2.534,2.534,0,0,0-.569-1.589l2.6-3.152a1.519,1.519,0,0,0,.53.1A1.536,1.536,0,1,0,12.32,1.536a1.519,1.519,0,0,0,.22.779l-2.6,3.153a2.459,2.459,0,0,0-2.408,0L5.746,3.29a2.028,2.028,0,0,0,.431-1.242A2.053,2.053,0,1,0,4.942,3.925l1.8,2.2A2.506,2.506,0,0,0,6.4,8.752L3.45,10.836A2.042,2.042,0,1,0,4.1,12.32a2.022,2.022,0,0,0-.1-.613L7,9.582a2.543,2.543,0,0,0,1.736.69c.066,0,.128-.015.193-.02l1.029,3.635a2,2,0,1,0,.931-.469L9.915,9.972a2.561,2.561,0,0,0,1.122-1.156l2.356.58A2.043,2.043,0,1,0,15.426,7.2Zm0,0"
+                fill="#343434" />
+    </svg> ????????-->
     <div class="wrapper-menu" #menuRight>
         <header-search class="menu-search list-right-menu" [color]="'#f47732'"></header-search>
-        <a class="menu-chat list-right-menu" (click)="showAlertDevelopDialog()" *ngIf="isLogin()">
+        <!-- <a class="menu-chat list-right-menu" (click)="showAlertDevelopDialog()" *ngIf="isLogin()">
             <svg xmlns="http://www.w3.org/2000/svg" width="68.545" height="69.657" viewBox="0 0 68.545 69.657">
                 <g id="Group_2387" data-name="Group 2387" transform="translate(1788.491 -3310.346)">
                     <path id="Path_3510" data-name="Path 3510"
@@ -90,8 +98,8 @@
                         transform="translate(-1905 3200)" fill="#474747" />
                 </g>
             </svg>
-        </a>
-        <a class="menu-fulfill list-right-menu" [routerLink]="'/fulfill'" [routerLinkActive]="['active-link']"
+        </a> -->
+        <!-- <a class="menu-fulfill list-right-menu" [routerLink]="'/fulfill'" [routerLinkActive]="['active-link']"
             *ngIf="isLogin()">
             <svg xmlns="http://www.w3.org/2000/svg" width="80.662" height="70.194" viewBox="0 0 80.662 70.194">
                 <g id="Group_2388" data-name="Group 2388" transform="translate(1705.345 -3207.5)">
@@ -112,10 +120,10 @@
                         transform="translate(-1905 3200)" fill="#474747" />
                 </g>
             </svg>
-        </a>
-        <btn-notification *ngIf="isLogin()" [noti]="noti.noti" class="menu-nofitication list-right-menu">
+        </a> -->
+        <btn-notification class="menu-nofitication list-right-menu" [noti]="notificationList" *ngIf="isLogin()">
         </btn-notification>
-        <notification-check-page (noti)="Notification($event)"></notification-check-page>
+        <!-- <notification-check-page (noti)="Notification($event)"></notification-check-page> -->
         <btn-menu-profile class="menu-profile list-right-menu"></btn-menu-profile>
         <btn-list-page *ngIf="isLogin()" class="menu-page list-right-menu" [link]="'/page'"></btn-list-page>
     </div>

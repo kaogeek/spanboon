@@ -8,7 +8,7 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from '@angular/common/http';
 import { AuthenManager } from '../AuthenManager.service';
-import { AbstractFacade } from "./AbstractFacade"; 
+import { AbstractFacade } from "./AbstractFacade";
 import { Observable, of } from 'rxjs';
 
 @Injectable()
@@ -28,7 +28,7 @@ export class UserFacade extends AbstractFacade {
       body = Object.assign(filter);
       // }
 
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
 
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response.data);
@@ -38,14 +38,14 @@ export class UserFacade extends AbstractFacade {
     });
   }
 
-  public checkUniqueId(uuid : any): Promise<any> { 
+  public checkUniqueId(uuid: any): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/user/uniqueid/check';
 
-      let body: any = {}; 
-      body = Object.assign(uuid); 
+      let body: any = {};
+      body = Object.assign(uuid);
 
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
 
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response);
@@ -64,7 +64,7 @@ export class UserFacade extends AbstractFacade {
 
     let body: any = { name: filter };
 
-    
+
     // return of([
     //   {
     //     displayName: "ploy",
@@ -91,7 +91,7 @@ export class UserFacade extends AbstractFacade {
     //     lastName: ""
     //   }
     // ])
-    return this.http.post<any[]>(url, body, { headers: this.getDefaultHeader() });
+    return this.http.post<any[]>(url, body, { headers: this.authMgr.getDefaultHeader() });
     // this.http.post<any[]>(url, body, { headers: this.getDefaultHeader() }).subscribe((res: any) => {
     //   let data = Object.keys(res.data);
     //   if (data && data.length) {
@@ -101,6 +101,6 @@ export class UserFacade extends AbstractFacade {
     //     return of([]);
     //   }
     // }); 
-  }  
+  }
 
 }

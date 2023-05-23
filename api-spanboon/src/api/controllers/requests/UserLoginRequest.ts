@@ -17,4 +17,5 @@ export class UserLoginRequest {
     public twitterOauthToken: string;
     public twitterOauthTokenSecret: string;
     public twitterUserId: string; // ! remove when fix a bug when verify
+    public apple: string;
 }

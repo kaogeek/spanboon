@@ -34,6 +34,11 @@ export class AssetService {
         return this.assetRepository.findOne(findCondition);
     }
 
+    // deleteMany
+    public async deleteMany(query:any,options?:any): Promise<any>{
+        return this.assetRepository.deleteMany(query,options);
+    }
+
     // create asset
     public async create(asset: Asset): Promise<Asset> {
         // s3 upload by cofig

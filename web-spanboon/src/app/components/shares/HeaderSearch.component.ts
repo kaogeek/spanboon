@@ -12,11 +12,11 @@ import { ObjectiveFacade, MainPageSlideFacade, AuthenManager, SearchHistoryFacad
 import { SearchFilter } from '../../models/SearchFilter';
 import { AbstractPage } from '../pages/AbstractPage';
 import { MatDialog } from '@angular/material';
-import { fromEvent } from 'rxjs';
-import { map, distinctUntilChanged } from 'rxjs/operators';
+import { fromEvent, Subject } from 'rxjs';
+import { map, distinctUntilChanged, debounceTime, takeUntil } from 'rxjs/operators';
 import { CookieUtil } from '../../utils/CookieUtil';
 import { ValidBase64ImageUtil } from '../../utils/ValidBase64ImageUtil';
-import { SimpleChanges } from '@angular/core';
+import { environment } from 'src/environments/environment';
 
 declare var $: any;
 const SEARCH_LIMIT: number = 10;
@@ -28,7 +28,7 @@ const UUID: string = 'UUID'
   templateUrl: './HeaderSearch.component.html'
 })
 export class HeaderSearch extends AbstractPage implements OnInit {
-
+  private destroy = new Subject<void>();
   @Input()
   public text: string = "ข้อความ";
   @Input()
@@ -44,10 +44,9 @@ export class HeaderSearch extends AbstractPage implements OnInit {
   @Input()
   public link: string = "#";
 
-  @ViewChild('search', { static: false }) public search: ElementRef
+  @ViewChild('search', { static: false }) public search: ElementRef;
 
   public router: Router;
-  private objectiveFacade: ObjectiveFacade;
   private mainPageFacade: MainPageSlideFacade;
   private searchHistoryFacade: SearchHistoryFacade;
   private searchHashTagFacade: HashTagFacade;
@@ -67,19 +66,19 @@ export class HeaderSearch extends AbstractPage implements OnInit {
   public resSearch: any[] = [];
   public SearchShow: boolean = false;
   public heightSearch: boolean = false;
-
+  @Input()
+  public isHideButton: boolean = false;
+  public apiBaseURL = environment.apiBaseURL;
   public isTabClick: string;
 
-  @ViewChild('search', { static: false }) private searchData: ElementRef;
   @ViewChild('tabs', { static: false }) private tabs: ElementRef;
   @ViewChild('wrapperBodyTag', { static: false }) private wrapperBodyTag: ElementRef;
 
-  constructor(router: Router, objectiveFacade: ObjectiveFacade, mainPageFacade: MainPageSlideFacade, searchHashTagFacade: HashTagFacade,
+  constructor(router: Router, mainPageFacade: MainPageSlideFacade, searchHashTagFacade: HashTagFacade,
     authenManager: AuthenManager, dialog: MatDialog, searchHistoryFacade: SearchHistoryFacade, assetFacade: AssetFacade) {
     super(null, authenManager, dialog, router);
     this.router = router;
     this.authenManager = authenManager;
-    this.objectiveFacade = objectiveFacade;
     this.mainPageFacade = mainPageFacade;
     this.searchHistoryFacade = searchHistoryFacade;
     this.searchHashTagFacade = searchHashTagFacade;
@@ -95,31 +94,23 @@ export class HeaderSearch extends AbstractPage implements OnInit {
         document.getElementById("defaultOpen1").click();
       }, 0);
     }
+    this.checkDivided();
     // }, 10);
   }
 
   public ngAfterViewInit(): void {
-    fromEvent(this.searchData.nativeElement, 'keyup').pipe(
-      // get value
-      map((event: any) => {
-        return event.target.value;
-      })
-      // if character length greater then 2
-      // , filter(res => res.length > 2)
-      // Time in milliseconds between key events
-      // , debounceTime(1000)
-      // If previous query is diffent from current
+    fromEvent(this.search && this.search.nativeElement, 'keyup').pipe(
+      debounceTime(500)
       , distinctUntilChanged()
-      // subscription for response
-    ).subscribe((text: string) => {
-      this.isLoading = true;
-      this.keyUpAutoComp(text);
+    ).subscribe((text: any) => {
+      this.keyUpAutoComp(this.search.nativeElement.value);
     });
-
   }
 
   public ngOnDestroy(): void {
     super.ngOnDestroy();
+    this.destroy.next();
+    this.destroy.complete();
   }
 
   isPageDirty(): boolean {
@@ -142,9 +133,9 @@ export class HeaderSearch extends AbstractPage implements OnInit {
   }
 
   public clickShowSearch() {
-    $("#menubottom").css({
-      'overflow-y': "hidden"
-    });
+    // $("#menubottom").css({
+    //   'overflow-y': "hidden"
+    // });
 
     this.SearchShow = true;
     this.filled = true;
@@ -198,7 +189,7 @@ export class HeaderSearch extends AbstractPage implements OnInit {
     } else {
       this.heightSearch = true;
 
-      if (this.heightSearch === true) { 
+      if (this.heightSearch === true) {
         setTimeout(() => {
           if (this.isTabClick === 'popular') {
             if (document.getElementById("defaultOpen1") !== null && document.getElementById("defaultOpen1") !== undefined) {
@@ -209,7 +200,7 @@ export class HeaderSearch extends AbstractPage implements OnInit {
               document.getElementById("defaultOpen2").click();
             }
           }
-        }, 50); 
+        }, 50);
       }
     }
 
@@ -225,9 +216,9 @@ export class HeaderSearch extends AbstractPage implements OnInit {
   }
 
   public clickHideSearch() {
-    $("#menubottom").css({
-      'overflow-y': "auto"
-    });
+    // $("#menubottom").css({
+    //   'overflow-y': "auto"
+    // });
 
     this.SearchShow = false;
     this.filled = false;
@@ -261,12 +252,12 @@ export class HeaderSearch extends AbstractPage implements OnInit {
       if (this.searchRecent.length > 0) {
         let index = 0;
         for (let dataImage of res) {
-          if(dataImage.imageURL !== "" && dataImage.imageURL !== undefined && dataImage.imageURL !== null){
+          if (dataImage.imageURL !== "" && dataImage.imageURL !== undefined && dataImage.imageURL !== null) {
             this.getDataIcon(dataImage.imageURL, "image", index)
           } else {
             this.searchRecent[index].isLoadingImage = false;
           }
-          
+
           index++;
         }
       }
@@ -279,7 +270,7 @@ export class HeaderSearch extends AbstractPage implements OnInit {
     })
   }
 
-  public loadHistory(){
+  public loadHistory() {
     let filter = new SearchFilter();
     filter.limit = SEARCH_LIMIT;
     filter.offset = SEARCH_OFFSET + (this.searchRecentName && this.searchRecentName.length > 0 ? this.searchRecent.length : 0);;
@@ -291,17 +282,17 @@ export class HeaderSearch extends AbstractPage implements OnInit {
       delete filter.whereConditions.userId
     }
     filter.count = false;
-    filter.orderBy = {} 
+    filter.orderBy = {}
     this.isLoading = true;
     let originalRecentName: any[] = this.searchRecentName;
-    this.searchHistoryFacade.search(filter).then((res: any) => {  
-      this.isLoadingMore = false; 
+    this.searchHistoryFacade.search(filter).then((res: any) => {
+      this.isLoadingMore = false;
       if (originalRecentName.length > 0) {
         for (let history of res) {
-          const isHistory = this.searchRecentName.find(h =>{
+          const isHistory = this.searchRecentName.find(h => {
             return h.label === history.label
           });
-          if(isHistory){  
+          if (isHistory) {
             continue;
           } else {
             originalRecentName.push(history);
@@ -394,7 +385,7 @@ export class HeaderSearch extends AbstractPage implements OnInit {
     }
     this.isLoading = true;
     this.mainPageFacade.getSearchAll(search).then((res: any) => {
-      this.resSearch = res.result; 
+      this.resSearch = res.result;
       event.stopPropagation();
       this.stopIsloading();
       this.checkMenu(event);
@@ -417,20 +408,20 @@ export class HeaderSearch extends AbstractPage implements OnInit {
           return keyword.label === data
         });
         if (isData) {
-          if(isData.type === "PAGE"){
+          if (isData.type === "PAGE") {
             isPass = isData.type;
             dataList = isData.value;
-          } else if(isData.type === "USER"){
+          } else if (isData.type === "USER") {
             isPass = isData.type;
             data = isData;
-          } else if(isData.type === "KEYWORD"){
+          } else if (isData.type === "KEYWORD") {
             isPass = isData.type;
             data = isData;
             dataList = isData.value;
           } else {
             isPass = isData.type;
             dataList = isData.value;
-          } 
+          }
         } else {
           isPass = "KEYWORD";
           dataList = data;
@@ -440,7 +431,7 @@ export class HeaderSearch extends AbstractPage implements OnInit {
           resultId: '',
           keyword: isData === undefined ? data : data.label
         }
-      } 
+      }
     } else {
       isPass = data.type;
       dataList = data.value;
@@ -449,7 +440,7 @@ export class HeaderSearch extends AbstractPage implements OnInit {
         resultId: data.value,
         keyword: data.label
       }
-    }  
+    }
     if (isPass === 'USER') {
       if (data.uniqueId !== '' && data.uniqueId !== undefined && data.uniqueId !== null) {
         this.router.navigateByUrl('/profile/' + data.uniqueId);
@@ -464,15 +455,15 @@ export class HeaderSearch extends AbstractPage implements OnInit {
       this.router.navigateByUrl('/page/' + dataList);
     } else if (isPass === 'KEYWORD') {
       this.router.navigateByUrl('/search?keyword=' + dataList);
-    } else  if (isPass === 'HASHTAG') {
-      this.router.navigateByUrl('/search?hashtag=' + dataList); 
+    } else if (isPass === 'HASHTAG') {
+      this.router.navigateByUrl('/search?hashtag=' + dataList);
     } else {
       this.router.navigateByUrl('/search');
     }
     this.clickHideSearch();
     this.search.nativeElement.value = ''
     this.filled = false;
-  
+
     this.searchHistoryFacade.create(result).then((res: any) => {
       // this.filled = false;
       this.clickHideSearch();
@@ -490,9 +481,9 @@ export class HeaderSearch extends AbstractPage implements OnInit {
     filter.count = false;
     filter.orderBy = {}
 
-    $("#menubottom").css({
-      'overflow-y': "auto"
-    });
+    // $("#menubottom").css({
+    //   'overflow-y': "auto"
+    // });
 
     this.searchHashTagFacade.search(filter, dataHashTag.value).then((res: any) => {
     }).catch((err: any) => {
@@ -521,7 +512,8 @@ export class HeaderSearch extends AbstractPage implements OnInit {
       console.log(err)
     })
   }
-  public loadMoreHashTag(): void {  
+  public loadMoreHashTag(): void {
+    this.checkDivided();
     let filter = new SearchFilter();
     filter.limit = SEARCH_LIMIT;
     filter.offset = SEARCH_OFFSET + (this.dataTrend && this.dataTrend.length > 0 ? this.dataTrend.length : 0);;
@@ -541,15 +533,15 @@ export class HeaderSearch extends AbstractPage implements OnInit {
       this.isLoadingMore = false;
       if (originalTrend.length > 0) {
         for (let hashtag of res) {
-          const isHashtag = this.dataTrend.find(h =>{
+          const isHashtag = this.dataTrend.find(h => {
             return h.value === hashtag.value
           });
-          if(isHashtag){  
+          if (isHashtag) {
             continue;
           } else {
             originalTrend.push(hashtag);
           }
-         
+
         }
       }
     }).catch((err: any) => {
@@ -582,5 +574,14 @@ export class HeaderSearch extends AbstractPage implements OnInit {
 
     document.getElementById(items).style.display = "flex";
     $event.currentTarget.className += " active";
+  }
+
+  public checkDivided() {
+    let dataLength = this.dataTrend.length;
+    if (dataLength % 5 != 0) {
+      this.isHideButton = true;
+    } else {
+      this.isHideButton = false;
+    }
   }
 }

@@ -8,7 +8,7 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from '@angular/common/http';
 import { AuthenManager } from '../AuthenManager.service';
-import { AbstractFacade } from "./AbstractFacade"; 
+import { AbstractFacade } from "./AbstractFacade";
 import { SearchFilter } from "../../models/SearchFilter";
 import { EmergencyEvent } from 'src/app/models/models';
 
@@ -16,8 +16,8 @@ import { EmergencyEvent } from 'src/app/models/models';
 export class EmergencyEventFacade extends AbstractFacade {
 
   constructor(http: HttpClient, authMgr: AuthenManager) {
-    super(http, authMgr); 
-  } 
+    super(http, authMgr);
+  }
 
   public searchEmergency(searchFilter: SearchFilter): Promise<any[]> {
     return new Promise((resolve, reject) => {
@@ -40,7 +40,7 @@ export class EmergencyEventFacade extends AbstractFacade {
     return new Promise((resolve, reject) => {
 
       let url: string = this.baseURL + '/emergency/' + emergencyId + '/timeline';
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
 
       this.http.get(url, options).toPromise().then((response: any) => {
         resolve(response.data);
@@ -55,7 +55,7 @@ export class EmergencyEventFacade extends AbstractFacade {
 
       let url: string = this.baseURL + '/emergency/' + emergencyId + '/follow';
       let body: any = {};
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response.data);
       }).catch((error: any) => {

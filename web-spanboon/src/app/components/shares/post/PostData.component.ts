@@ -12,7 +12,6 @@ import { NeedsFacade } from '../../../services/facade/NeedsFacade.service';
 import { AssetFacade } from '../../../services/facade/AssetFacade.service';
 import { PageFacade } from '../../../services/facade/PageFacade.service';
 import { SearchFilter } from '../../../models/SearchFilter';
-import { DialogMedia } from '../dialog/DialogMedia.component';
 import { MatDialog } from '@angular/material';
 import { ValidBase64ImageUtil } from '../../../utils/ValidBase64ImageUtil';
 import { DialogAlert } from '../dialog/DialogAlert.component';
@@ -21,6 +20,7 @@ import { PLATFORM_FULFILL_TEXT, PLATFORM_NEEDS_TEXT, PLATFORM_GENERAL_TEXT, PLAT
 import { MESSAGE } from '../../../../custom/variable';
 import { Router } from '@angular/router';
 import Glightbox from 'glightbox';
+import { DialogShare } from '../dialog/DialogShare.component';
 
 @Component({
   selector: 'post-data',
@@ -58,6 +58,14 @@ export class PostData {
   @Input()
   public isComments: boolean;
   @Input()
+  public isShowComment: boolean = true;
+  @Input()
+  public isShare: boolean = true;
+  @Input()
+  public isLike: boolean = true;
+  @Input()
+  public isReboon: boolean = true;
+  @Input()
   public isUserPage: boolean;
   @Input()
   public isShowUser: boolean;
@@ -89,12 +97,15 @@ export class PostData {
   public userpage: EventEmitter<any> = new EventEmitter();
   @Output()
   public engagement: EventEmitter<any> = new EventEmitter();
+  @Output()
+  public hide: EventEmitter<any> = new EventEmitter();
 
   public value: any
   public isLoading: Boolean;
   public linkPost: string;
   public isFulfill: boolean = false;
   public isPendingFulfill: boolean = false;
+  public isHide: boolean = true;
 
   // private mainPostLink: string = window.location.origin + '/profile/aaa/post/'
   // private mainPostLink: string = window.location.origin + '/post/'
@@ -254,6 +265,9 @@ export class PostData {
   }
 
   public onClickComment(data: any) {
+    if (!this.isLogin()) {
+      this.showAlertDialog();
+    }
     this.comment.emit({ value: this.value, pageId: this.itemPost._id, userAsPage: this.user });
     setTimeout(() => {
       this.isComment = true
@@ -262,7 +276,14 @@ export class PostData {
     }, 500);
   }
 
+  public isLogin(): boolean {
+    return this.authenManager.getCurrentUser() !== undefined && this.authenManager.getCurrentUser() !== null ? true : false;
+  }
+
   public postAction(action: any) {
+    if (!this.isLogin()) {
+      // this.showAlertDialog();
+    }
     if (action.mod === 'COMMENT') {
       this.getComment();
       this.isComment = !this.isComment
@@ -272,9 +293,21 @@ export class PostData {
     } else if (action.mod === 'REBOON') {
       this.action.emit({ mod: action.mod, postData: this.itemPost._id, type: action.type, post: this.itemPost, userAsPage: this.user });
     } else if (action.mod === 'SHARE') {
-      this.showAlertDialog();
-      this.action.emit({ mod: action.mod });
+      // this.showAlertDialog();
+      // this.dialogShare();
+      this.action.emit({ mod: action.mod, linkPost: this.linkPost });
     }
+  }
+
+  public dialogShare() {
+    let dialog = this.dialog.open(DialogShare, {
+      disableClose: true,
+      autoFocus: false,
+      data: {
+        title: "แชร์",
+        text: this.linkPost
+      }
+    });
   }
 
   public pageAction(action: any) {
@@ -305,36 +338,20 @@ export class PostData {
         window.open('/objective/' + text.objective._id);
       });
     }
-    // let url = '';
-    // let type = '';
-    // let eventId = '';
-    // if (data.index === 1) {
-    //   url += "emergency=#" + text.emergencyEventTag
-    //   type = "emergency";
-    //   eventId = text.emergencyEvent.hashTag;
-    // } else if (data.index === 2) {
-    //   url += "objective=" + text.objectiveTag;
-    //   type = "objective";
-    //   eventId = text.objective.hashTag;
-    // }
-    // let click = this.engagementService.getEngagement(data.event, eventId, type);
-    // this.engagement.emit(click)
-
-    // let dialog = this.dialog.open(DialogAlert, {
-    //   disableClose: true,
-    //   data: {
-    //     text: MESSAGE.TEXT_TITLE_DEVERLOP_SEAECH,
-    //     bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-    //     bottomText1: MESSAGE.TEXT_BUTTON_CANCEL,
-    //     bottomColorText2: "black",
-    //     // btDisplay1: "none"
-    //   }
-    // });
-    // dialog.afterClosed().subscribe((res) => {
-    //   if (res) {
-    //     this.router.navigateByUrl('/search?' + url);
-    //   }
-    // });
+    let url = '';
+    let type = '';
+    let eventId = '';
+    if (data.index === 1) {
+      url += "emergency=#" + text.emergencyEventTag
+      type = "emergency";
+      eventId = text.emergencyEvent.hashTag;
+    } else if (data.index === 2) {
+      url += "objective=" + text.objectiveTag;
+      type = "objective";
+      eventId = text.objective.hashTag;
+    }
+    let click = this.engagementService.getEngagement(data.event, eventId, type);
+    this.engagement.emit(click)
   }
 
   private getComment(limit?) {
@@ -394,6 +411,9 @@ export class PostData {
   }
 
   public commentAction(data: any) {
+    if (!this.isLogin()) {
+      this.showAlertDialog();
+    }
     if (data.action === "LIKE") {
       if (this.user.id !== undefined && this.user.id !== null) {
         this.postCommentFacade.like(this.itemPost._id, data.commentdata, this.user.id).then((res: any) => {
@@ -468,12 +488,12 @@ export class PostData {
     }
   }
 
-  public showDialogGallery(imageGallery) {
-    var lightbox = Glightbox();
-    let arrayImage = []
-    for (let galleryImage of imageGallery.gallerys) {
+  public async showDialogGallery(imageGallery) {
+    let lightbox = Glightbox();
+    let arrayImage = [];
+    for await (let galleryImage of imageGallery.gallerys) {
       arrayImage.push({
-        href: galleryImage.galleryBase64,
+        href: this.apiBaseURL + galleryImage.imageURL + '/image',
         type: 'image' // Type is only required if GlIghtbox fails to know what kind of content should display
       })
     }
@@ -517,6 +537,38 @@ export class PostData {
   public fulfillEngagement(event, postId: string) {
     let data = this.engagementService.getEngagement(event, postId, "fulfillment");
     this.engagement.emit(data);
+  }
+
+  public hidePost(post) {
+    this.hide.emit(post);
+  }
+
+  public reportPost() {
+    let dialog = this.dialog.open(DialogAlert, {
+      disableClose: true,
+      data: {
+        text: 'คุณต้องการรายงานโพสต์นี้ใช่หรือไม่',
+      },
+    });
+    dialog.afterClosed().subscribe((res) => {
+      if (res) {
+        this.showAlertDialog();
+      }
+    });
+  }
+
+  public blockUser() {
+    let dialog = this.dialog.open(DialogAlert, {
+      disableClose: true,
+      data: {
+        text: 'คุณต้องการบล็อกผู้ใช้นี้ใช่หรือไม่',
+      },
+    });
+    dialog.afterClosed().subscribe((res) => {
+      if (res) {
+        this.showAlertDialog();
+      }
+    });
   }
 
 }

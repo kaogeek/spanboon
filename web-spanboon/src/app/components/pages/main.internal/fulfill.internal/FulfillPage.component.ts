@@ -308,7 +308,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
     ngOnInit(): void {
         this.checkLoginAndRedirection();
 
-        if (this.authenManager.getUserToken() !== null && this.authenManager.getUserToken() !== undefined) {
+        if (!!this.authenManager.getToken()) {
             this.searchAccessPage();
             this.getImage();
             this.listFulfillmentCase(this.listByStatus, this.asPage, this.sortByType, this.groupByType, this.filterType, SEARCH_LIMIT, SEARCH_OFFSET).then((result) => {
@@ -656,7 +656,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
                                             }
                                         }
                                     }).catch((error) => {
-                                        console.log('error >>>> ', error);
+                                        console.log('error', error);
                                     });
                                 }
 
@@ -705,7 +705,7 @@ export class FulfillPage extends AbstractPage implements OnInit {
                     }).catch((error) => {
                         this.canAccessCase = false;
                         this.canAccessChatRoom = false;
-                        console.log(error.message);
+                        console.log(error);
                     });
                 } else {
                     setTimeout(() => {

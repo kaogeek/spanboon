@@ -56,7 +56,7 @@ export class ObjectiveFacade extends AbstractFacade {
       if (data !== null && data !== undefined) {
         body = Object.assign(data)
       }
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
 
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response);
@@ -74,7 +74,7 @@ export class ObjectiveFacade extends AbstractFacade {
       if (searchFilter !== null && searchFilter !== undefined) {
         body = Object.assign(searchFilter)
       }
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
 
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response);
@@ -88,7 +88,7 @@ export class ObjectiveFacade extends AbstractFacade {
     return new Promise((resolve, reject) => {
 
       let url: string = this.baseURL + '/objective/' + objectiveId + '/timeline';
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
 
       this.http.get(url, options).toPromise().then((response: any) => {
         resolve(response.data);
@@ -103,7 +103,7 @@ export class ObjectiveFacade extends AbstractFacade {
 
       let url: string = this.baseURL + '/objective/' + objectiveId + '/follow';
       let body: any = {};
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response.data);
       }).catch((error: any) => {

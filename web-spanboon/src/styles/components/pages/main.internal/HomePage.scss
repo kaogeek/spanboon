@@ -12,68 +12,82 @@
   justify-content: center;
   align-items: stretch;
   overflow-x: clip;
+
   > .container {
     width: calc(1200px);
     height: 100%;
-    background-color: white;
+
     > .secsione-list {
       width: calc(100%);
-      background-color: white;
+
       @media (max-width: 600px) {
         margin: 20px 15px;
         width: calc(100% - 30px);
       }
+
       .div-wrapper {
         width: calc(100%);
+
         > .container {
           width: calc(100%);
           max-width: 1200px;
           height: auto;
           display: flex;
+
           > .col1 {
             width: calc(50% - 30px);
             height: auto;
             padding: 15px;
             display: flex;
+
             > .spans {
               @include font-size-10($font-head-500);
               color: $brandcolor2;
             }
+
             > .hastags {
               @include font-size-10($font-head-500);
               display: flex;
+
               > .hastag {
                 > span {
                   padding: 0px 12px;
                   border-right: solid 1px #5e5e5e;
                   cursor: pointer;
+
                   &:hover {
                     color: rgba($brandcolor2, 0.95);
                   }
                 }
               }
             }
+
             @media (max-width: 1200px) {
               display: none;
             }
           }
+
           > .col2 {
             width: calc(50% - 30px);
             height: auto;
             padding: 15px;
             display: flex;
+
             > .spans {
               @include font-size-10($font-head-500);
               color: $brandcolor2;
             }
+
             > .hastags {
               @include font-size-10($font-head-500);
               display: flex;
+
               > .hastag {
                 > span {
                   padding: 0px 12px;
                   border-right: solid 1px #5e5e5e;
                   cursor: pointer;
+
                   &:hover {
                     color: rgba($brandcolor2, 0.95);
                   }
@@ -81,24 +95,31 @@
               }
             }
           }
+
           @media (max-width: 1900px) {
             width: 1600px;
           }
+
           @media (max-width: 1600px) {
             width: 1200px;
           }
+
           @media (max-width: 1200px) {
             width: 900px;
             flex-direction: column;
+
             > .col1 {
               width: calc(100% - 30px);
             }
+
             > .col2 {
               width: calc(100% - 30px);
             }
           }
+
           @media (max-width: 900px) {
             width: 100%;
+
             > .col2 > .col2-col1 > {
               .posts {
                 width: 100%;
@@ -106,13 +127,16 @@
                 flex-direction: column;
               }
             }
+
             > .col2 > .col2-col1 > .posts > .sub-post {
               width: calc(100% - 20px);
             }
+
             > .col2 > .col2-col1 > .posts > .main-post {
               width: calc(100% - 20px);
               margin: 15px 0px;
             }
+
             > .col2 > .col2-col2 > {
               .posts {
                 width: 100%;
@@ -120,16 +144,20 @@
                 flex-direction: column;
               }
             }
+
             > .col2 > .col2-col2 > .posts > .sub-post {
               width: calc(100% - 20px);
             }
+
             > .col2 > .col2-col2 > .posts > .main-post {
               width: calc(100% - 20px);
               margin: 15px 0px;
             }
           }
+
           @media (max-width: 620px) {
             flex-direction: column;
+
             > .col1 {
               width: 320px;
               padding: unset;
@@ -146,6 +174,7 @@
                 color: $brandcolor2;
               }
             }
+
             > .col2 {
               width: 320px;
               padding: unset;
@@ -166,34 +195,43 @@
         }
       }
     }
+
     > .secsione-emer {
       width: calc(100%);
+
       .div-wrapper {
         width: calc(100%);
+
         > .container {
           width: calc(100%);
           max-width: 1600px;
           height: auto;
           display: flex;
+          margin: 0 auto;
+
           @media (max-width: 900px) {
-            background-color: white;
           }
+
           > .col1 {
             width: calc(50% - 30px);
             height: auto;
             padding: 15px;
+
             > .col1-col1 {
               width: 100%;
               height: auto;
               cursor: pointer;
+
               @media (max-width: 1200px) {
                 height: 600px;
               }
+
               @media (max-width: 620px) {
                 height: auto;
                 padding-bottom: 15px;
                 border-bottom: solid 1px #d9d9d9;
               }
+
               > .col-img {
                 width: 100%;
                 height: auto;
@@ -201,8 +239,10 @@
                 justify-content: center;
                 position: relative;
                 overflow: hidden;
+
                 @media (max-width: 1200px) {
                 }
+
                 > .teg_event {
                   background-color: black;
                   position: absolute;
@@ -213,6 +253,7 @@
                   @include font-size-9($font-head-500);
                   z-index: 5;
                 }
+
                 > .image-back {
                   z-index: 1;
                   position: absolute;
@@ -223,21 +264,25 @@
                   filter: blur(5px);
                   -webkit-filter: blur(5px);
                 }
+
                 > .image {
                   width: auto;
                   width: 50%;
                   z-index: 2;
                   position: relative;
+
                   @media (max-width: 900px) {
                     width: 70%;
                   }
                 }
               }
+
               > .col-detail {
                 width: calc(100% - 30px);
                 // height: calc(200px);
                 height: auto;
                 padding: 0px 15px;
+
                 > .title {
                   margin-top: 10pt;
                   @include font-size-7($font-head-500);
@@ -246,35 +291,42 @@
                   overflow: hidden;
                   line-height: 30px;
                   -webkit-box-orient: vertical;
+
                   &.post {
                     @include font-size-8($font-head-500);
                   }
+
                   > h3 {
                     margin: 0;
+
                     &:hover {
                       color: rgba($brandcolor2, 0.95);
                     }
                   }
                 }
+
                 > .content {
                   @include font-size-9($font-content-light);
-                  height: 104px;
                   color: black;
+                  line-height: 1.5;
+                  margin: 8pt 0px;
                   display: -webkit-box;
                   -webkit-line-clamp: 4;
-                  line-height: 26px;
                   -webkit-box-orient: vertical;
                   overflow: hidden;
-                  margin: 8pt 0px;
+                  word-break: break-word;
                 }
+
                 > .participation {
                   > .social_control {
                     display: flex;
                     align-items: flex-end;
+
                     > .amount_social {
                       color: #000000;
                       margin-top: 5px;
                       @include font-size-11($font-head-400);
+
                       > .count-aontrol {
                       }
 
@@ -290,13 +342,16 @@
                 }
               }
             }
+
             > .col1-col2 {
               width: 100%;
               height: 200px;
+
               @media (max-width: 620px) {
                 width: calc(100%);
                 height: auto;
               }
+
               > .col-colum-detail {
                 width: calc(100% - 20px);
                 // height: calc(90px - 4px);
@@ -307,11 +362,14 @@
                 justify-content: space-between;
                 align-items: center;
                 padding: 10px;
+
                 > .colum-detail-1 {
                   display: flex;
                   width: 80%;
+
                   > .image {
                     margin-right: 20px;
+
                     > img {
                       width: 60px;
                       height: 60px;
@@ -319,6 +377,7 @@
                       border-radius: 50%;
                     }
                   }
+
                   > .detail {
                     > .title {
                       @include font-size-8($font-head-400);
@@ -329,13 +388,16 @@
                       line-height: 26px;
                       -webkit-box-orient: vertical;
                       overflow: hidden;
+
                       &:hover {
                         color: rgba($brandcolor2, 0.95);
                       }
                     }
+
                     > .content {
                       margin-top: 0px;
                       @include font-size-11($font-head-400);
+
                       > .count-aontrol {
                       }
 
@@ -349,23 +411,28 @@
                     }
                   }
                 }
+
                 > .colum-detail-2 {
                   display: flex;
                   flex-direction: column;
                   justify-content: center;
                   align-content: space-around;
                   align-items: flex-end;
+
                   > .title {
                     @include font-size-9($font-head-500);
                     cursor: pointer;
+
                     &:hover {
                       color: rgba($brandcolor2, 0.95);
                     }
                   }
+
                   > .content {
                     margin-top: 0px;
                     @include font-size-11($font-head-400);
                   }
+
                   @media (max-width: 480px) {
                     display: none;
                   }
@@ -373,21 +440,26 @@
               }
             }
           }
+
           > .max {
             width: calc(100% - 30px);
+
             @media (max-width: 900px) {
               > .col1-col1 > .col-img {
                 height: auto !important;
               }
             }
           }
+
           > .col2 {
             width: calc(50% - 30px);
             height: auto;
             padding: 15px;
+
             > .col2-col1 {
               width: 100%;
               height: auto;
+
               @media (max-width: 900px) {
                 height: auto;
                 border-top: 1px solid #00000024;
@@ -398,24 +470,28 @@
                 width: calc(100% 30px);
                 height: 50px;
                 display: flex;
-                background-color: #fcfcfc;
                 border-bottom: 1px solid #00000024;
                 border: solid 1px #f7f7f7;
+                background-color: #f8f8f8;
                 align-content: center;
                 align-items: center;
                 padding: 0px 15px;
                 position: sticky;
                 top: 0px;
+
                 @media (max-width: 620px) {
                   border-bottom: 1px solid #00000024;
                 }
+
                 > .text {
                   @include font-size-9($font-head-500);
                 }
               }
+
               > .posts {
                 width: 100%;
                 display: flex;
+
                 > .sub-post {
                   width: calc(50% - 20px);
                   padding: 0px 10px;
@@ -431,6 +507,7 @@
                     line-height: 26px;
                     width: 100%;
                     cursor: pointer;
+
                     > .top {
                       width: calc(100%);
                       height: 30px;
@@ -440,45 +517,54 @@
                       justify-content: space-between;
                       align-items: center;
                       display: none;
+
                       // padding: 0px 10px;
                       > .status {
                         display: flex;
                         align-content: center;
                         align-items: center;
+
                         > .status-g {
                           width: 10px;
                           height: 10px;
                           border-radius: 50px;
                           background-color: $status-post-general;
                         }
+
                         > .status-n {
                           width: 10px;
                           height: 10px;
                           border-radius: 50px;
                           background-color: $status-post-need;
                         }
+
                         > span {
                           @include font-size-11($font-head-500);
                           margin-left: 6px;
                         }
                       }
+
                       > .date-time {
                         > span {
                           cursor: pointer;
                           @include font-size-11($font-head-500);
                           color: gray;
+
                           &:hover {
                             color: rgba($brandcolor2, 0.95);
                           }
                         }
                       }
+
                       @media (max-width: 900px) {
                         display: flex;
                       }
                     }
+
                     > .body {
                       width: 100%;
                       display: none;
+
                       > .image-post {
                         cursor: pointer;
                         width: 100%;
@@ -488,14 +574,17 @@
                         text-align: center;
                         background-color: #f8f8f8;
                         align-items: center;
+
                         @media (max-width: 900px) {
                           height: 300px;
                         }
+
                         > span {
                           cursor: pointer;
                           @include font-size-9($font-head-500);
                           padding: 20px 0px;
                         }
+
                         > .image {
                           width: 100%;
                           height: 100%;
@@ -508,24 +597,29 @@
                         @include font-size-9($font-head-500);
                         padding: 20px 0px;
                       }
+
                       @media (max-width: 900px) {
                         display: unset;
                       }
                     }
+
                     > .text {
                       display: -webkit-box;
                       -webkit-line-clamp: 3;
                       line-height: 26px;
                       -webkit-box-orient: vertical;
                       overflow: hidden;
+
                       @media (max-width: 900px) {
                         display: none;
                       }
                     }
+
                     > .date {
                       @include font-size-11($font-head-500);
                       color: gray;
                       margin-top: 10px;
+
                       &:hover {
                         color: rgba($brandcolor2, 0.95);
                       }
@@ -535,6 +629,7 @@
                       }
                     }
                   }
+
                   > .post-col2 {
                     @include font-size-10($font-head-500);
                     border-bottom: solid 1px #d9d9d9;
@@ -546,6 +641,7 @@
                     flex-direction: column;
                     line-height: 26px;
                     cursor: pointer;
+
                     > .top {
                       width: calc(100%);
                       height: 30px;
@@ -555,45 +651,54 @@
                       justify-content: space-between;
                       align-items: center;
                       display: none;
+
                       // padding: 0px 10px;
                       > .status {
                         display: flex;
                         align-content: center;
                         align-items: center;
+
                         > .status-g {
                           width: 10px;
                           height: 10px;
                           border-radius: 50px;
                           background-color: $status-post-general;
                         }
+
                         > .status-n {
                           width: 10px;
                           height: 10px;
                           border-radius: 50px;
                           background-color: $status-post-need;
                         }
+
                         > span {
                           @include font-size-11($font-head-500);
                           margin-left: 6px;
                         }
                       }
+
                       > .date-time {
                         > span {
                           cursor: pointer;
                           @include font-size-11($font-head-500);
                           color: gray;
+
                           &:hover {
                             color: rgba($brandcolor2, 0.95);
                           }
                         }
                       }
+
                       @media (max-width: 900px) {
                         display: flex;
                       }
                     }
+
                     > .body {
                       width: 100%;
                       display: none;
+
                       > .image-post {
                         cursor: pointer;
                         width: 100%;
@@ -603,55 +708,67 @@
                         text-align: center;
                         background-color: #f8f8f8;
                         align-items: center;
+
                         @media (max-width: 900px) {
                           height: 300px;
                         }
+
                         > span {
                           cursor: pointer;
                           @include font-size-9($font-head-500);
                           padding: 20px 0px;
                         }
+
                         > .image {
                           width: 100%;
                           height: 100%;
                           object-fit: cover;
                         }
                       }
+
                       > .detail {
                         cursor: pointer;
                         @include font-size-9($font-head-500);
                         padding: 20px 0px;
                       }
+
                       @media (max-width: 900px) {
                         display: unset;
                       }
                     }
+
                     > .text {
                       display: -webkit-box;
                       -webkit-line-clamp: 3;
                       line-height: 26px;
                       -webkit-box-orient: vertical;
                       overflow: hidden;
+
                       @media (max-width: 900px) {
                         display: none;
                       }
                     }
+
                     > .date {
                       @include font-size-11($font-head-500);
                       color: gray;
                       margin-top: 10px;
+
                       &:hover {
                         color: rgba($brandcolor2, 0.95);
                       }
+
                       @media (max-width: 900px) {
                         display: none;
                       }
                     }
                   }
                 }
+
                 > .main-post {
                   width: calc(50% - 20px);
                   padding: 0px 10px;
+
                   > .top {
                     width: calc(100%);
                     height: 30px;
@@ -660,34 +777,42 @@
                     align-content: center;
                     justify-content: space-between;
                     align-items: center;
+
                     > .status {
                       display: flex;
                       align-content: center;
                       align-items: center;
+
                       > .status-g {
                         width: 10px;
                         height: 10px;
                         border-radius: 50px;
                         background-color: gray;
                       }
+
                       > span {
                         @include font-size-11($font-head-500);
                         margin-left: 6px;
                       }
                     }
+
                     > .date-time {
                       > span {
                         cursor: pointer;
                         @include font-size-11($font-head-500);
+                        font-weight: lighter;
                         color: gray;
+
                         &:hover {
                           color: rgba($brandcolor2, 0.95);
                         }
                       }
                     }
                   }
+
                   > .body {
                     width: 100%;
+
                     > .image-post {
                       cursor: pointer;
                       width: 100%;
@@ -698,19 +823,23 @@
                       text-align: center;
                       justify-content: center;
                       @include font-size-9($font-head-500);
+
                       @media (max-width: 900px) {
                         height: 300px;
                       }
+
                       > .image {
                         width: 100%;
                         height: 100%;
                         object-fit: cover;
                       }
                     }
+
                     > .detail {
                       cursor: pointer;
                       @include font-size-9($font-head-500);
                       padding: 20px 0px;
+
                       > span {
                         line-height: 26px;
                         display: -webkit-box;
@@ -724,34 +853,40 @@
                 }
               }
             }
+
             > .col2-col2 {
               width: 100%;
               height: auto;
+
               @media (max-width: 900px) {
                 // margin-top: 30px;
                 height: auto;
                 border-top: 1px solid #00000024;
                 border-bottom: 1px solid #00000024;
               }
+
               > .title {
                 width: calc(100% 30px);
                 height: 50px;
                 display: flex;
-                background-color: #fcfcfc;
                 border: solid 1px #f7f7f7;
                 align-content: center;
                 align-items: center;
                 padding: 0px 15px;
+
                 > .text {
                   @include font-size-9($font-head-500);
                 }
               }
+
               > .posts {
                 width: 100%;
                 display: flex;
+
                 > .sub-post {
                   width: calc(50% - 20px);
                   padding: 0px 10px;
+
                   > .post-col1 {
                     @include font-size-10($font-head-500);
                     border-bottom: solid 1px #d9d9d9;
@@ -761,10 +896,11 @@
                     display: flex;
                     flex-direction: column;
                     line-height: 26px;
-                    width: calc(100%);
+                    width: 100%;
                     cursor: pointer;
+
                     > .top {
-                      width: calc(100%);
+                      width: 100%;
                       height: 30px;
                       display: flex;
                       flex-direction: row;
@@ -772,45 +908,54 @@
                       justify-content: space-between;
                       align-items: center;
                       display: none;
+
                       // padding: 0px 10px;
                       > .status {
                         display: flex;
                         align-content: center;
                         align-items: center;
+
                         > .status-g {
                           width: 10px;
                           height: 10px;
                           border-radius: 50px;
                           background-color: $status-post-general;
                         }
+
                         > .status-n {
                           width: 10px;
                           height: 10px;
                           border-radius: 50px;
                           background-color: $status-post-need;
                         }
+
                         > span {
                           @include font-size-11($font-head-500);
                           margin-left: 6px;
                         }
                       }
+
                       > .date-time {
                         > span {
                           cursor: pointer;
                           @include font-size-11($font-head-500);
                           color: gray;
+
                           &:hover {
                             color: rgba($brandcolor2, 0.95);
                           }
                         }
                       }
+
                       @media (max-width: 900px) {
                         display: flex;
                       }
                     }
+
                     > .body {
                       width: 100%;
                       display: none;
+
                       > .image-post {
                         cursor: pointer;
                         width: 100%;
@@ -820,51 +965,61 @@
                         text-align: center;
                         background-color: #f8f8f8;
                         align-items: center;
+
                         @media (max-width: 900px) {
                           height: 300px;
                         }
+
                         > span {
                           cursor: pointer;
                           @include font-size-9($font-head-500);
-                          padding: 20px 0px;
                         }
+
                         > .image {
                           width: 100%;
                           height: 100%;
                           object-fit: cover;
                         }
                       }
+
                       > .detail {
                         cursor: pointer;
                         @include font-size-9($font-head-500);
                         padding: 20px 0px;
                       }
+
                       @media (max-width: 900px) {
                         display: unset;
                       }
                     }
+
                     > .text {
                       display: -webkit-box;
                       -webkit-line-clamp: 3;
                       line-height: 26px;
                       -webkit-box-orient: vertical;
                       overflow: hidden;
+
                       @media (max-width: 900px) {
                         display: none;
                       }
                     }
+
                     > .date {
                       @include font-size-11($font-head-500);
                       color: gray;
                       margin-top: 10px;
+
                       &:hover {
                         color: rgba($brandcolor2, 0.95);
                       }
+
                       @media (max-width: 900px) {
                         display: none;
                       }
                     }
                   }
+
                   > .post-col2 {
                     @include font-size-10($font-head-500);
                     border-bottom: solid 1px #d9d9d9;
@@ -876,6 +1031,7 @@
                     flex-direction: column;
                     line-height: 26px;
                     cursor: pointer;
+
                     > .top {
                       width: calc(100%);
                       height: 30px;
@@ -885,45 +1041,54 @@
                       justify-content: space-between;
                       align-items: center;
                       display: none;
+
                       // padding: 0px 10px;
                       > .status {
                         display: flex;
                         align-content: center;
                         align-items: center;
+
                         > .status-g {
                           width: 10px;
                           height: 10px;
                           border-radius: 50px;
                           background-color: $status-post-general;
                         }
+
                         > .status-n {
                           width: 10px;
                           height: 10px;
                           border-radius: 50px;
                           background-color: $status-post-need;
                         }
+
                         > span {
                           @include font-size-11($font-head-500);
                           margin-left: 6px;
                         }
                       }
+
                       > .date-time {
                         > span {
                           cursor: pointer;
                           @include font-size-11($font-head-500);
                           color: gray;
+
                           &:hover {
                             color: rgba($brandcolor2, 0.95);
                           }
                         }
                       }
+
                       @media (max-width: 900px) {
                         display: flex;
                       }
                     }
+
                     > .body {
                       width: 100%;
                       display: none;
+
                       > .image-post {
                         cursor: pointer;
                         width: 100%;
@@ -933,9 +1098,11 @@
                         text-align: center;
                         background-color: #f8f8f8;
                         align-items: center;
+
                         @media (max-width: 900px) {
                           height: 300px;
                         }
+
                         > .detail {
                           > span {
                             cursor: pointer;
@@ -943,47 +1110,57 @@
                             padding: 20px 0px;
                           }
                         }
+
                         > .image {
                           width: 100%;
                           height: 100%;
                           object-fit: cover;
                         }
                       }
+
                       > .detail {
                         cursor: pointer;
                         @include font-size-9($font-head-500);
                         padding: 20px 0px;
                       }
+
                       @media (max-width: 900px) {
                         display: unset;
                       }
                     }
+
                     > .text {
                       display: -webkit-box;
                       -webkit-line-clamp: 3;
                       line-height: 26px;
                       -webkit-box-orient: vertical;
                       overflow: hidden;
+
                       @media (max-width: 900px) {
                         display: none;
                       }
                     }
+
                     > .date {
                       @include font-size-11($font-head-500);
                       color: gray;
                       margin-top: 10px;
+
                       &:hover {
                         color: rgba($brandcolor2, 0.95);
                       }
+
                       @media (max-width: 900px) {
                         display: none;
                       }
                     }
                   }
                 }
+
                 > .main-post {
                   width: calc(50% - 20px);
                   padding: 0px 10px;
+
                   > .top {
                     width: calc(100%);
                     height: 30px;
@@ -992,35 +1169,42 @@
                     align-content: center;
                     justify-content: space-between;
                     align-items: center;
+
                     // padding: 0px 10px;
                     > .status {
                       display: flex;
                       align-content: center;
                       align-items: center;
+
                       > .status-g {
                         width: 12px;
                         height: 12px;
                         border-radius: 50px;
                         background-color: gray;
                       }
+
                       > span {
                         @include font-size-11($font-head-500);
                         margin-left: 6px;
                       }
                     }
+
                     > .date-time {
                       > span {
                         @include font-size-11($font-head-500);
                         color: gray;
                         cursor: pointer;
+
                         &:hover {
                           color: rgba($brandcolor2, 0.95);
                         }
                       }
                     }
                   }
+
                   > .body {
                     width: 100%;
+
                     > .image-post {
                       cursor: pointer;
                       width: 100%;
@@ -1030,18 +1214,22 @@
                       text-align: center;
                       background-color: #f8f8f8;
                       align-items: center;
+
                       @media (max-width: 900px) {
                         height: 300px;
                       }
+
                       > span {
                         @include font-size-9($font-head-500);
                       }
+
                       > .image {
                         width: 100%;
                         height: 100%;
                         object-fit: cover;
                       }
                     }
+
                     > .detail {
                       cursor: pointer;
                       @include font-size-9($font-head-500);
@@ -1051,6 +1239,7 @@
                       line-height: 26px;
                       -webkit-box-orient: vertical;
                       overflow: hidden;
+
                       > span {
                         line-height: 26px;
                       }
@@ -1060,21 +1249,27 @@
               }
             }
           }
+
           @media (max-width: 1600px) {
             width: 1200px;
           }
+
           @media (max-width: 1200px) {
             width: 900px;
             flex-direction: column;
+
             > .col1 {
               width: calc(100% - 30px);
             }
+
             > .col2 {
               width: calc(100% - 30px);
             }
           }
+
           @media (max-width: 900px) {
             width: 100%;
+
             > .col2 > .col2-col1 > {
               .posts {
                 width: 100%;
@@ -1082,17 +1277,21 @@
                 flex-direction: column;
               }
             }
+
             > .col2 > .col2-col1 > .posts > .sub-post {
               width: calc(100% - 20px);
               border-top: 1px solid #00000024;
+
               @media (max-width: 620px) {
                 border-top: unset;
               }
             }
+
             > .col2 > .col2-col1 > .posts > .main-post {
               width: calc(100% - 20px);
               margin: 15px 0px;
             }
+
             > .col2 > .col2-col2 > {
               .posts {
                 width: 100%;
@@ -1100,21 +1299,26 @@
                 flex-direction: column;
               }
             }
+
             > .col2 > .col2-col2 > .posts > .sub-post {
               width: calc(100% - 20px);
               border-top: 1px solid #00000024;
             }
+
             > .col2 > .col2-col2 > .posts > .main-post {
               width: calc(100% - 20px);
               margin: 15px 0px;
             }
           }
+
           @media (max-width: 620px) {
             flex-direction: column;
+
             > .col1 {
               width: calc(100%);
               padding: unset;
             }
+
             > .col2 {
               width: calc(100%);
               padding: unset;
@@ -1123,43 +1327,51 @@
         }
       }
     }
+
     > .other_section {
       width: calc(100%);
+
       .div-wrapper {
         width: calc(100%);
+
         > .container {
           width: calc(100%);
           max-width: 1600px;
           height: auto;
           display: flex;
           flex-direction: column;
+
           @media (max-width: 900px) {
-            background-color: #fafafa;
           }
+
           > .section {
             width: calc(100% - 30px);
             padding: 15px;
             display: flex;
             flex-direction: column;
-            background-color: white;
+
             &.disable {
               display: none;
             }
+
             @media (max-width: 900px) {
               margin: 15px 0px;
               border-bottom: 1px solid #00000024;
               border-top: 1px solid #00000024;
             }
+
             @media (max-width: 620px) {
               width: calc(100%);
               padding: 0px;
             }
+
             > .title {
               @include font-size-6($font-head-500);
               color: $brandcolor2;
               position: relative;
               width: 100%;
               display: flex;
+
               > .text {
                 background-color: white;
                 position: relative;
@@ -1168,24 +1380,29 @@
                 padding: 0px 10px 0px 0px;
                 display: flex;
                 flex-direction: column;
+
                 > .subtitle {
                   @include font-size-10($font-head-500);
                   color: rgb(121, 121, 121);
                 }
+
                 &.small {
                   @include font-size-8($font-head-500);
                 }
               }
+
               > .line {
                 width: 100%;
                 height: 1px;
                 background-color: black;
                 position: absolute;
                 top: 50%;
+
                 @media (max-width: 800px) {
                   display: none;
                 }
               }
+
               @media (max-width: 620px) {
                 width: calc(100% - 20px);
                 padding: 10px;
@@ -1195,12 +1412,15 @@
                 border-bottom: 1px solid #00000024;
               }
             }
+
             > .cards {
               margin: 15pt 0pt;
+
               > .card-small-type {
                 width: calc(100%);
                 display: flex;
                 overflow: auto;
+
                 > .card {
                   cursor: pointer;
                   transition: 0.1s;
@@ -1211,34 +1431,39 @@
                   margin: 15px;
                   border: 1px solid #f7f7f7;
                   flex-direction: column;
-                  justify-content: center;
                   align-items: center;
                   border-radius: 10px;
+
                   &:hover {
                     transition: 0.1s;
                     border: 1px solid #cdcdcd;
+
                     > .text {
                       > span {
                         color: rgba($brandcolor2, 0.95);
                       }
                     }
                   }
+
                   > img {
                     width: 120px;
                     object-fit: cover;
                     border-radius: 50%;
                   }
+
                   > .text {
                     width: 150px;
                     @include font-size-9($font-head-500);
                     text-align: center;
                     margin: 10pt 0pt;
+
                     > span {
                       display: -webkit-box;
                       -webkit-line-clamp: 2;
                       line-height: 26px;
                       -webkit-box-orient: vertical;
                       overflow: hidden;
+
                       &:hover {
                         color: rgba($brandcolor2, 0.95);
                       }
@@ -1246,12 +1471,15 @@
                   }
                 }
               }
+
               > .card-me-type {
                 width: calc(100%);
                 display: flex;
+
                 @media (max-width: 900px) {
                   flex-direction: column;
                 }
+
                 > .card {
                   cursor: pointer;
                   transition: 0.1s;
@@ -1262,9 +1490,11 @@
                   margin: 5px;
                   flex-direction: column;
                   border-radius: 10px;
+
                   @media (max-width: 900px) {
                     width: calc(580px - 10px);
                   }
+
                   @media (max-width: 620px) {
                     width: calc(100% - 22px);
                     margin-top: 10pt;
@@ -1273,6 +1503,7 @@
                     border-bottom: solid 1px #d9d9d9;
                     border-radius: unset;
                   }
+
                   > .top {
                     width: calc(100%);
                     height: 30px;
@@ -1281,44 +1512,52 @@
                     align-content: center;
                     justify-content: space-between;
                     align-items: center;
+
                     // padding: 0px 10px;
                     > .status {
                       display: flex;
                       align-content: center;
                       align-items: center;
+
                       > .status-g {
                         width: 10px;
                         height: 10px;
                         border-radius: 50px;
                         background-color: $status-post-general;
                       }
+
                       > .status-n {
                         width: 10px;
                         height: 10px;
                         border-radius: 50px;
                         background-color: $status-post-need;
                       }
+
                       > span {
                         @include font-size-11($font-head-500);
                         margin-left: 6px;
                       }
                     }
+
                     > .date-time {
                       > span {
                         cursor: pointer;
                         @include font-size-11($font-head-500);
                         color: gray;
+
                         &:hover {
                           color: rgba($brandcolor2, 0.95);
                         }
                       }
                     }
                   }
+
                   > img {
                     width: 100%;
                     height: 260px;
                     object-fit: cover;
                   }
+
                   > .content-post-img {
                     @include font-size-9($font-head-500);
                     height: 130px;
@@ -1327,11 +1566,13 @@
                     padding: 130px 40px 0px 40px;
                     background-color: #00000008;
                     transition: 0.3s;
+
                     &:hover {
                       transition: 0.3s;
                       background-color: #0000001c;
                     }
                   }
+
                   > .text {
                     width: 100%;
                     @include font-size-8($font-head-500);
@@ -1340,6 +1581,7 @@
                     display: flex;
                     flex-direction: column;
                     justify-content: space-between;
+
                     > .col-text {
                       > span {
                         display: -webkit-box;
@@ -1347,22 +1589,27 @@
                         line-height: 26px;
                         -webkit-box-orient: vertical;
                         overflow: hidden;
+
                         &:hover {
                           color: rgba($brandcolor2, 0.95);
                         }
                       }
                     }
+
                     > .more {
                       fill: slategray;
                       @include font-size-11($font-head-500);
                     }
+
                     > .bottom {
                       width: 100%;
+
                       > .owner-offical {
                         display: flex;
                         align-content: center;
                         align-items: stretch;
                         justify-content: flex-start;
+
                         > .new-cards-offical {
                           display: flex;
                           width: 14px;
@@ -1371,21 +1618,25 @@
                           margin: 3pt 3pt 0 0;
                           flex: 0 0 auto;
                         }
+
                         > .owner {
                           @include font-size-11($font-head-500);
                           color: slategray;
                           cursor: pointer;
+
                           &:hover {
                             color: rgba($brandcolor2, 0.95);
                           }
                         }
                       }
+
                       > .count {
                         display: flex;
                         align-items: flex-end;
                         color: slategray;
                         margin-top: 5px;
                         @include font-size-11($font-head-400);
+
                         > .count-aontrol {
                         }
 
@@ -1400,6 +1651,7 @@
                     }
                   }
                 }
+
                 > .card:nth-child(3) {
                   border-bottom: unset;
                 }
@@ -1409,21 +1661,34 @@
         }
       }
     }
+
     @media (max-width: 1200px) {
       width: calc(1000px);
     }
+
     @media (max-width: 1000px) {
       width: calc(900px);
     }
+
     @media (max-width: 900px) {
       width: calc(620px);
     }
+
     @media (max-width: 620px) {
       width: calc(100%);
     }
   }
+
   @media (max-width: 620px) {
     width: 100%;
+  }
+}
+
+@media (max-width: $small) {
+  .cdk-global-overlay-wrapper {
+    .cdk-overlay-pane {
+      max-width: 100vw !important;
+    }
   }
 }
 
@@ -1447,16 +1712,19 @@
     margin-top: 80px;
     align-content: flex-start;
     justify-content: center;
+
     > .top_for_loding {
       width: 50%;
       padding: 15px;
     }
   }
+
   > .buttom {
     width: 80%;
     display: flex;
     align-content: flex-start;
     justify-content: center;
+
     > .buttom_for_loding {
       padding: 15px;
       width: calc(25% - 30px);

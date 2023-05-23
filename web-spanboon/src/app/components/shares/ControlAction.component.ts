@@ -9,6 +9,9 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { PLATFORM_STORY_TALE } from '../../../custom/variable';
 import { AssetFacade } from 'src/app/services/services';
+import { DialogAlert } from './dialog/DialogAlert.component';
+import { MatDialog } from '@angular/material';
+import { MESSAGE } from 'src/app/AlertMessage';
 
 @Component({
   selector: 'control-action',
@@ -32,6 +35,8 @@ export class ControlAction {
   public like: number = 10;
   @Input()
   public share: number = 10;
+  @Input()
+  public isShowComment: boolean = true;
   @Input()
   public isComment: boolean = true;
   @Input()
@@ -78,6 +83,8 @@ export class ControlAction {
   public isShowtextPlusAll: boolean = false;
   @Input()
   public isPostShareData: any;
+  @Input()
+  public linkPost: any;
 
   public Allcount: number;
 
@@ -87,6 +94,7 @@ export class ControlAction {
   public isDis: boolean
   public apiBaseURL = environment.apiBaseURL;
   public PLATFORM_STORY_TALE: string = PLATFORM_STORY_TALE;
+  public dialog: MatDialog;
 
   constructor(private assetFacade: AssetFacade) {
     setTimeout(() => {
@@ -111,7 +119,12 @@ export class ControlAction {
   }
 
   public selectAccessPage(page: any) {
-    if (page.img64 !== undefined && page.img64 !== null && page.img64 !== '') {
+    if (!!page.signURL) {
+      this.selectedAccessPageimges = page
+      this.isImges = true
+      this.isDis = false
+      this.emitpage.emit(page);
+    } else if (!!page.imageURL) {
       this.selectedAccessPageimges = page
       this.isImges = true
       this.isDis = false
@@ -120,7 +133,7 @@ export class ControlAction {
       this.selectedAccessPageimges = page.displayName || page.name;
       this.isImges = false
       this.isDis = true
-      this.emitpage.emit(page);
+      this.emitpage.emit(page)
     }
   }
 
@@ -144,4 +157,6 @@ export class ControlAction {
     var Sh = Number(this.share);
     this.Allcount = Cm + Rb + Li + Sh;
   }
+
+
 }

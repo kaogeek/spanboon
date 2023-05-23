@@ -20,6 +20,7 @@ import { DialogPostCrad } from '../../shares/dialog/DialogPostCrad.component';
 import { SearchFilter } from 'src/app/models/SearchFilter';
 import { environment } from '../../../../environments/environment';
 import { CommentPosts } from 'src/app/models/CommentPosts';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 const PAGE_NAME: string = 'story';
 
@@ -29,7 +30,7 @@ declare var $: any;
   templateUrl: './StoryPage.component.html',
 })
 export class StoryPage extends AbstractPage implements OnInit {
-
+  safeSrc: SafeResourceUrl;
   public static readonly PAGE_NAME: string = PAGE_NAME;
 
   @Input()
@@ -72,11 +73,11 @@ export class StoryPage extends AbstractPage implements OnInit {
   public url: string;
   public isComments: boolean = false;
   public isShowUser: boolean = true;
-
   public apiBaseURL = environment.apiBaseURL;
 
   constructor(router: Router, postCommentFacade: PostCommentFacade, private renderer: Renderer2, postFacade: PostFacade, postActionService: PostActionService, dialog: MatDialog, myElement: ElementRef, authenManager: AuthenManager, pageFacade: PageFacade, cacheConfigInfo: CacheConfigInfo, objectiveFacade: ObjectiveFacade, needsFacade: NeedsFacade, assetFacade: AssetFacade,
-    observManager: ObservableManager, routeActivated: ActivatedRoute) {
+    observManager: ObservableManager, routeActivated: ActivatedRoute,
+    private sanitizer: DomSanitizer) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.observManager = observManager;
     this.assetFacade = assetFacade;
@@ -105,6 +106,7 @@ export class StoryPage extends AbstractPage implements OnInit {
     search.whereConditions = { _id: this.url };
     this.postFacade.searchPostStory(search).then(async (res: any) => {
       this.STORY = res;
+      this.safeSrc = this.sanitizer.bypassSecurityTrustResourceUrl(res[0].story.storyAry[0].videoUrl);
       this.TimeoutRuntimeSet();
       this.getRecommendedHashtag(this.STORY[0]._id);
       this.getRecommendedStory(this.STORY[0]._id);
@@ -238,13 +240,17 @@ export class StoryPage extends AbstractPage implements OnInit {
         this.pageUser.push(this.userCloneDatas)
         this.pageUser.reverse();
       }).catch((err: any) => {
+        console.log("err", err);
       });
       if (this.pageUser.length > 0) {
         for (let p of this.pageUser) {
-          var aw = await this.assetFacade.getPathFile(p.imageURL).then((res: any) => {
-            p.img64 = res.data
-          }).catch((err: any) => {
-          });
+          if (!p.signURL) {
+            await this.assetFacade.getPathFile(p.imageURL).then((res: any) => {
+              p.img64 = res.data
+            }).catch((err: any) => {
+              console.log("err", err);
+            });
+          }
         }
       }
     }

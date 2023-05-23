@@ -206,9 +206,11 @@ export class DialogPost extends AbstractPage {
             if (res.message === 'Update PagePost Successful') {
               alertMessages = 'แก้ไขโพสต์สำเร็จ'
               this.showAlertDialogWarming(alertMessages, "none");
-              this.observManager.publish(REFRESH_DATA, data.type);
+              this.observManager.publish(REFRESH_DATA, res);
               this.boxPost.clearDataAll();
-              this.dialogRef.close();
+              delete res.data.id;
+              res.data._id = this.data._id;
+              this.dialogRef.close(res.data);
             }
           }
         }).catch((err: any) => {
@@ -225,25 +227,26 @@ export class DialogPost extends AbstractPage {
       }
     } else {
       if (data.title) {
-        let pageId = data.id;
         this.isPostLoading = true;
-        this.pageFacade.createPost(pageId, data).then((res) => {
-          let alertMessages: string;
-          if (res.status === 1) {
-            if (res.message === 'Create PagePost Success') {
-              if (data.isDraft || data.settingsPost) {
-                if (data.isDraft) {
-                  alertMessages = 'สร้างโพสต์ฉบับร่างสำเร็จ'
-                } else {
-                  alertMessages = 'โพสต์ของคุณจะแสดงเมื่อถึงเวลาที่คุณตั้งไว้'
+        this.pageFacade.createPost(data.id, data).then((res) => {
+          if (res) {
+            let alertMessages: string;
+            if (res.status === 1) {
+              if (res.message === 'Create PagePost Success') {
+                if (data.isDraft || data.settingsPost) {
+                  if (data.isDraft) {
+                    alertMessages = 'สร้างโพสต์ฉบับร่างสำเร็จ'
+                  } else {
+                    alertMessages = 'โพสต์ของคุณจะแสดงเมื่อถึงเวลาที่คุณตั้งไว้'
+                  }
+                  this.showAlertDialogWarming(alertMessages, "none");
                 }
-                this.showAlertDialogWarming(alertMessages, "none");
+                this.dialogRef.close(res.data);
+                this.postFacade.nextMessageTopic('');
+                this.postFacade.nextMessage('');
+                this.boxPost.clearDataAll();
+                this.observManager.publish(REFRESH_DATA, res.data.posts);
               }
-              this.postFacade.nextMessageTopic('');
-              this.postFacade.nextMessage('');
-              this.boxPost.clearDataAll();
-              this.observManager.publish(REFRESH_DATA, data.type);
-              this.dialogRef.close();
             }
           }
         }).catch((err: any) => {

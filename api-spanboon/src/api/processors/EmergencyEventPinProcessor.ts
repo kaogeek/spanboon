@@ -63,6 +63,7 @@ export class EmergencyEventPinProcessor extends AbstractSectionModelProcessor {
                 };
                 const emergencyAggregateArray = [
                     { $match: searchFilter.whereConditions },
+                    { $sort: { createdDate: -1 } },
                     // open if u want to search only emergency event that has post
                     { // sample post for one
                         $lookup: {
@@ -92,7 +93,6 @@ export class EmergencyEventPinProcessor extends AbstractSectionModelProcessor {
                     }
                 ];
                 const searchResult = await this.emergencyEvent.aggregate(emergencyAggregateArray);
-
                 // search count all from post of emergency
                 const emerEventIds = [];
                 for (const row of searchResult) {
@@ -193,7 +193,6 @@ export class EmergencyEventPinProcessor extends AbstractSectionModelProcessor {
                     result.contents.push(contentModel);
                 }
                 result.dateTime = lastestDate;
-
                 resolve(result);
             } catch (error) {
                 reject(error);

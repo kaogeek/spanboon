@@ -50,7 +50,7 @@ export class RecommendController {
      * HTTP/1.1 500 Internal Server Error
      */
     @Get()
-    public async getRecomend(@QueryParam('limit') limit: number, @QueryParam('offset') offset: number, @QueryParams() options: any, @Req() req: any, @Res() res: any): Promise<any> {
+    public async getRecommend(@QueryParam('limit') limit: number, @QueryParam('offset') offset: number, @QueryParams() options: any, @Req() req: any, @Res() res: any): Promise<any> {
         // const result: RecommendResponse[] = [];
         const result: any = [];
         // const randomData: RecommendResponse = new RecommendResponse();
@@ -62,6 +62,26 @@ export class RecommendController {
         if (userId !== null && userId !== undefined && userId !== '') {
             userObjId = new ObjectID(userId);
         }
+
+        let isRandomUser = false;
+        let isRandomPage = false;
+
+        const searchPageOfficialConfig = await this.pageService.searchPageOfficialConfig();
+        const isOfficial = searchPageOfficialConfig.searchOfficialOnly;
+
+        if (options !== undefined) {
+            if (options.isRandomUser !== undefined && typeof options.isRandomUser === 'string') {
+                if ('TRUE' === options.isRandomUser.toUpperCase()) {
+                    isRandomUser = true;
+                }
+            }
+            if (options.isRandomPage !== undefined && typeof options.isRandomPage === 'string') {
+                if ('TRUE' === options.isRandomPage.toUpperCase()) {
+                    isRandomPage = true;
+                }
+            }
+        }
+
         // Recommend can be Page or User
         // 1. Score from UserEngagement which is not followed user
 
@@ -94,27 +114,11 @@ export class RecommendController {
                 }
             }
 
-            let isRandomUser = false;
-            let isRandomPage = false;
-
-            if (options !== undefined) {
-                if (options.isRandomUser !== undefined && typeof options.isRandomUser === 'string') {
-                    if ('TRUE' === options.isRandomUser.toUpperCase()) {
-                        isRandomUser = true;
-                    }
-                }
-                if (options.isRandomPage !== undefined && typeof options.isRandomPage === 'string') {
-                    if ('TRUE' === options.isRandomPage.toUpperCase()) {
-                        isRandomPage = true;
-                    }
-                }
-            }
-
             // random limit  
             const limitData = limit ? limit : 3;
             const randomLimitUser = Math.floor(Math.random() * limitData) + 1;
             const randomLimitPage = limitData - randomLimitUser;
-            if (isRandomUser) {
+            if (isRandomUser && !isOfficial) {
                 const stmt = [];
                 stmt.push({ $match: { _id: { $nin: orUserConditions } } },
                     { $sample: { size: randomLimitUser } },
@@ -135,13 +139,24 @@ export class RecommendController {
             if (isRandomPage) {
                 const stmt = [];
                 // stmt.push({ $match: { $or: [{ _id: { $nin: orUserConditions } }, { _id: { $nin: orPageConditions } }] } },
-                stmt.push({ $match: { _id: { $nin: orPageConditions } } },
-                    { $sample: { size: randomLimitPage } },
-                    { $skip: offset ? offset : 0 },
-                    {
-                        $project: { _id: 1, name: 1, imageURL: 1, email: 1, isOfficial: 1, pageUsername: 1, uniqueId: 1 },
-                    }
-                );
+                if (isOfficial) {
+                    stmt.push({ $match: { _id: { $nin: orPageConditions }, isOfficial } },
+                        { $sample: { size: limitData } },
+                        { $skip: offset ? offset : 0 },
+                        {
+                            $project: { _id: 1, name: 1, imageURL: 1, email: 1, isOfficial: 1, pageUsername: 1, uniqueId: 1 },
+                        }
+                    );
+                } else {
+                    stmt.push({ $match: { _id: { $nin: orPageConditions } } },
+                        { $sample: { size: randomLimitPage } },
+                        { $skip: offset ? offset : 0 },
+                        {
+                            $project: { _id: 1, name: 1, imageURL: 1, email: 1, isOfficial: 1, pageUsername: 1, uniqueId: 1 },
+                        }
+                    );
+                }
+
                 const pageFollow = await this.pageService.aggregate(stmt);
                 for (const page of pageFollow) {
                     const signURL = await ImageUtil.generateAssetSignURL(this.assetService, page.imageURL, { prefix: '/file/' });
@@ -152,36 +167,56 @@ export class RecommendController {
             }
 
             if (!isRandomPage && !isRandomUser) {
-                const stmt = [
-                    { $match: { $or: [{ $and: [{ _id: { $nin: orUserConditions } }, { _id: { $nin: orPageConditions } }, { isAdmin: false }, { banned: false }] }] } },
-                    { $sample: { size: randomLimitUser } },
-                    { $skip: offset ? offset : 0 },
-                    { $project: { _id: 1, displayName: 1, imageURL: 1, email: 1, username: 1, uniqueId: 1 } }
-                ];
-                const userFollow = await this.userService.aggregate(stmt);
-                for (const data of userFollow) {
-                    const signURL = await ImageUtil.generateAssetSignURL(this.assetService, data.imageURL, { prefix: '/file/' });
-                    let isFollowed = false;
-                    if (userObjId !== null && userObjId !== undefined) {
-                        const follow = await this.userFollowService.find({ userId: userObjId, subjectType: SUBJECT_TYPE.USER, subjectId: data._id });
-                        isFollowed = (follow !== undefined && follow.length > 0) ? true : false;
+                let stmtPage: any[] = [];
+
+                if (isOfficial) {
+                    stmtPage = [
+                        { $match: { banned: false, isOfficial } },
+                        { $sample: { size: limitData } },
+                        { $skip: offset ? offset : 0 },
+                        {
+                            $project: { _id: 1, name: 1, imageURL: 1, email: 1, isOfficial: 1, pageUsername: 1 },
+                        }
+                    ];
+                } else {
+                    const stmt = [
+                        { $match: { $or: [{ $and: [{ _id: { $nin: orUserConditions } }, { _id: { $nin: orPageConditions } }, { isAdmin: false }, { banned: false }] }] } },
+                        { $sample: { size: randomLimitUser } },
+                        { $skip: offset ? offset : 0 },
+                        { $project: { _id: 1, displayName: 1, imageURL: 1, email: 1, username: 1, uniqueId: 1 } }
+                    ];
+
+                    const userFollow = await this.userService.aggregate(stmt);
+
+                    for (const data of userFollow) {
+                        const signURL = await ImageUtil.generateAssetSignURL(this.assetService, data.imageURL, { prefix: '/file/' });
+                        let isFollowed = false;
+                        if (userObjId !== null && userObjId !== undefined) {
+                            const follow = await this.userFollowService.find({ userId: userObjId, subjectType: SUBJECT_TYPE.USER, subjectId: data._id });
+                            isFollowed = (follow !== undefined && follow.length > 0) ? true : false;
+                        }
+
+                        Object.assign(data, { signURL: (signURL ? signURL : '') });
+                        Object.assign(data, { type: 'USER' });
+                        Object.assign(data, { isFollowed });
+
+                        if (!isFollowed) {
+                            result.push(data);
+                        }
                     }
 
-                    Object.assign(data, { signURL: (signURL ? signURL : '') });
-                    Object.assign(data, { type: 'USER' });
-                    Object.assign(data, { isFollowed });
-                    result.push(data);
+                    stmtPage = [
+                        { $match: { banned: false } },
+                        { $sample: { size: randomLimitPage } },
+                        { $skip: offset ? offset : 0 },
+                        {
+                            $project: { _id: 1, name: 1, imageURL: 1, email: 1, isOfficial: 1, pageUsername: 1 },
+                        }
+                    ];
                 }
 
-                const stmtPage = [
-                    { $match: { banned: false } },
-                    { $sample: { size: randomLimitPage } },
-                    { $skip: offset ? offset : 0 },
-                    {
-                        $project: { _id: 1, name: 1, imageURL: 1, email: 1, isOfficial: 1, pageUsername: 1 },
-                    }
-                ];
                 const pageFollow = await this.pageService.aggregate(stmtPage);
+
                 for (const data of pageFollow) {
                     const signURL = await ImageUtil.generateAssetSignURL(this.assetService, data.imageURL, { prefix: '/file/' });
                     let isFollowed = false;
@@ -194,7 +229,10 @@ export class RecommendController {
                     Object.assign(data, { signURL: (signURL ? signURL : '') });
                     Object.assign(data, { type: 'PAGE' });
                     Object.assign(data, { isFollowed });
-                    result.push(data);
+
+                    if (!isFollowed) {
+                        result.push(data);
+                    }
                 }
             }
 
@@ -228,30 +266,45 @@ export class RecommendController {
             const randomLimitUser = Math.floor(Math.random() * limitData) + 1;
             const randomLimitPage = limitData - randomLimitUser;
 
-            const stmt = [
-                { $match: { $and: [{ isAdmin: false }, { banned: false }, { isAdmin: false }] } },
-                { $sample: { size: randomLimitUser } },
-                { $skip: offset ? offset : 0 },
-                {
-                    $project: { _id: 1, displayName: 1, imageURL: 1, email: 1, username: 1, uniqueId: 1 },
+            let stmtPage: any[] = [];
+
+            if (isOfficial) {
+                stmtPage = [
+                    { $match: { banned: false, isOfficial } },
+                    { $sample: { size: limitData } },
+                    { $skip: offset ? offset : 0 },
+                    {
+                        $project: { _id: 1, name: 1, imageURL: 1, email: 1, isOfficial: 1, pageUsername: 1 },
+                    }
+                ];
+            } else {
+                const stmt = [
+                    { $match: { $and: [{ isAdmin: false }, { banned: false }, { isAdmin: false }] } },
+                    { $sample: { size: randomLimitUser } },
+                    { $skip: offset ? offset : 0 },
+                    {
+                        $project: { _id: 1, displayName: 1, imageURL: 1, email: 1, username: 1, uniqueId: 1 },
+                    }
+                ];
+
+                const userFollow = await this.userService.aggregate(stmt);
+                for (const data of userFollow) {
+                    const signURL = await ImageUtil.generateAssetSignURL(this.assetService, data.imageURL, { prefix: '/file/' });
+                    Object.assign(data, { signURL: (signURL ? signURL : '') });
+                    Object.assign(data, { type: 'USER' });
+                    result.push(data);
                 }
-            ];
-            const userFollow = await this.userService.aggregate(stmt);
-            for (const data of userFollow) {
-                const signURL = await ImageUtil.generateAssetSignURL(this.assetService, data.imageURL, { prefix: '/file/' });
-                Object.assign(data, { signURL: (signURL ? signURL : '') });
-                Object.assign(data, { type: 'USER' });
-                result.push(data);
+
+                stmtPage = [
+                    { $match: { banned: false } },
+                    { $sample: { size: randomLimitPage } },
+                    { $skip: offset ? offset : 0 },
+                    {
+                        $project: { _id: 1, name: 1, imageURL: 1, email: 1, isOfficial: 1, pageUsername: 1 },
+                    }
+                ];
             }
 
-            const stmtPage = [
-                { $match: { banned: false } },
-                { $sample: { size: randomLimitPage } },
-                { $skip: offset ? offset : 0 },
-                {
-                    $project: { _id: 1, name: 1, imageURL: 1, email: 1, isOfficial: 1, pageUsername: 1 },
-                }
-            ];
             const pageFollow = await this.pageService.aggregate(stmtPage);
             for (const data of pageFollow) {
                 const signURL = await ImageUtil.generateAssetSignURL(this.assetService, data.imageURL, { prefix: '/file/' });
@@ -259,7 +312,6 @@ export class RecommendController {
                 Object.assign(data, { type: 'PAGE' });
                 result.push(data);
             }
-
         }
 
         const successResponse = ResponseUtil.getSuccessResponse('Successfully get User Page Access', result);
@@ -310,9 +362,13 @@ export class RecommendController {
             }
         }
 
+        const searchPageOfficialConfig = await this.pageService.searchPageOfficialConfig();
+        const searchOfficialOnly = searchPageOfficialConfig.searchOfficialOnly;
+
         const config: any = {
             limit,
-            offset
+            offset,
+            searchOfficialOnly
         };
 
         const processor: StorySectionProcessor = new StorySectionProcessor(this.postsService, this.hashTagService, this.s3Service);

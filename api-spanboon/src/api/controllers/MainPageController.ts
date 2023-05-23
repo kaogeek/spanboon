@@ -20,7 +20,6 @@ import { SearchContentResponse } from './responses/SearchContentResponse';
 import { PostsService } from '../services/PostsService';
 import { UserFollowService } from '../services/UserFollowService';
 import { PageObjectiveService } from '../services/PageObjectiveService';
-import { ConfigService } from '../services/ConfigService';
 import { SUBJECT_TYPE } from '../../constants/FollowType';
 import { SEARCH_TYPE, SORT_SEARCH_TYPE } from '../../constants/SearchType';
 import { SearchFilter } from './requests/SearchFilterRequest';
@@ -44,12 +43,10 @@ import { EmergencyEventPinProcessor } from '../processors/EmergencyEventPinProce
 // import { SectionModel } from '../models/SectionModel';
 import { User } from '../models/User';
 import { Page } from '../models/Page';
-import { MAX_SEARCH_ROWS } from '../../constants/Constants';
 import { HashTag } from '../models/HashTag';
 import { PageObjective } from '../models/PageObjective';
 import { EmergencyEvent } from '../models/EmergencyEvent';
 import { DateTimeUtil } from '../../utils/DateTimeUtil';
-import { MAIN_PAGE_SEARCH_OFFICIAL_POST_ONLY, DEFAULT_MAIN_PAGE_SEARCH_OFFICIAL_POST_ONLY } from '../../constants/SystemConfig';
 import { FollowingRecommendProcessor } from '../processors/FollowingRecommendProcessor';
 import { LIKE_TYPE } from '../../constants/LikeType';
 import { UserLikeService } from '../services/UserLikeService';
@@ -71,7 +68,6 @@ export class MainPageController {
         private needsService: NeedsService,
         private userFollowService: UserFollowService,
         private pageObjectiveService: PageObjectiveService,
-        private configService: ConfigService,
         private s3Service: S3Service,
         private userLikeService: UserLikeService,
         private postsCommentService: PostsCommentService,
@@ -96,7 +92,7 @@ export class MainPageController {
     @Get('/content')
     public async getContentList(@QueryParam('offset') offset: number, @QueryParam('section') section: string, @QueryParam('date') date: string, @Res() res: any, @Req() req: any): Promise<any> {
         const userId = req.headers.userid;
-        const mainPageSearchConfig = await this.getMainPageSearchConfig();
+        const mainPageSearchConfig = await this.pageService.searchPageOfficialConfig();
         const searchOfficialOnly = mainPageSearchConfig.searchOfficialOnly;
         if (section !== undefined && section !== '') {
             if (section === 'EMERGENCYEVENT') {
@@ -136,7 +132,6 @@ export class MainPageController {
 
                 const lKresult: any = {};
                 lKresult.contents = lastestLookSectionModelSec.contents;
-
                 if (lKresult) {
                     const successResponse = ResponseUtil.getSuccessResponse('Successfully Main Page Data', lKresult);
                     return res.status(200).send(successResponse);
@@ -272,7 +267,7 @@ export class MainPageController {
         });
         const emergencyPinModel = await emergencyPinProcessor.process();
 
-        const objectiveProcessor: ObjectiveProcessor = new ObjectiveProcessor(this.pageObjectiveService, this.postsService, this.s3Service, this.userLikeService);
+        const objectiveProcessor: ObjectiveProcessor = new ObjectiveProcessor(this.pageObjectiveService, this.postsService, this.s3Service, this.userLikeService, this.assetService);
         objectiveProcessor.setData({
             userId,
             startDateTime: weekRanges[0],
@@ -310,7 +305,7 @@ export class MainPageController {
         });
         processorList.push(userPageLookingProcessor);
 
-        const followingRecommendProcessor: FollowingRecommendProcessor = new FollowingRecommendProcessor(this.postsService, this.userFollowService);
+        const followingRecommendProcessor: FollowingRecommendProcessor = new FollowingRecommendProcessor(this.postsService, this.userFollowService, this.assetService);
         followingRecommendProcessor.setData({
             userId,
             startDateTime: weekRanges[0],
@@ -325,7 +320,7 @@ export class MainPageController {
         processorList.push(followingRecommendProcessor);
 
         // open when main icon template show
-        const lastestObjProcessor = new LastestObjectiveProcessor(this.pageObjectiveService, this.userFollowService, this.postsService);
+        const lastestObjProcessor = new LastestObjectiveProcessor(this.pageObjectiveService, this.userFollowService, this.postsService, this.assetService);
         lastestObjProcessor.setData({
             userId,
             startDateTime: weekRanges[0],
@@ -333,7 +328,8 @@ export class MainPageController {
         });
         lastestObjProcessor.setConfig({
             limit: 5,
-            showUserAction: true
+            showUserAction: true,
+            searchOfficialOnly
         });
         processorList.push(lastestObjProcessor);
 
@@ -346,9 +342,7 @@ export class MainPageController {
         // result.looking = stillLKSectionModel;
         // result.viewSection = userRecSectionModel;
         result.sectionModels = [];
-
         processorList = ProcessorUtil.randomProcessorOrdering(processorList);
-
         // ! remove random function when fishished testing
         const randIdx = Math.floor(Math.random() * processorList.length);
         for (let i = 0; i < processorList.length; i++) {
@@ -577,7 +571,7 @@ export class MainPageController {
             if (pageLimit !== null && pageLimit !== undefined && pageLimit > 0) {
                 // const pageQuery = { $and: [{ _id: { $not: { $in: pageResultStmt } } }, { $or: [{ name: exp }, { pageUsername: exp }] }] };
                 const pageQuery = [
-                    { $match: { $and: [{ _id: { $not: { $in: pageResultStmt } } }, { $or: [{ name: exp }, { pageUsername: exp }] }] } },
+                    { $match: { $and: [{ _id: { $not: { $in: pageResultStmt } }, banned: false }, { $or: [{ name: exp }, { pageUsername: exp }] }] } },
                     { $limit: pageLimit }
                 ];
                 const pages: any[] = await this.pageService.aggregate(pageQuery);
@@ -633,7 +627,6 @@ export class MainPageController {
                     }
                 }
             }
-
             search.result = searchResults;
 
             if (search !== null && search !== undefined && Object.keys(search).length > 0) {
@@ -682,9 +675,11 @@ export class MainPageController {
             let hashTag: string[];
             let type: string;
             let onlyFollowed: boolean;
+            let isOfficial: boolean;
             let createBy: any; // {id,type}
             let objective: string;
             let emergencyEvent: string;
+            // let emergencyEventTag:string;
             let startDate: string;
             let endDate: string;
             let startViewCount: number;
@@ -709,16 +704,17 @@ export class MainPageController {
             // Page Catgory
             let pageCategories: string[];
             let sortBy: string;
-
             if (data !== undefined) {
                 // search all post by keyword or hashTag
                 keyword = data.keyword;
                 hashTag = data.hashtag;
                 onlyFollowed = data.onlyFollowed;
+                isOfficial = data.isOfficial;
                 type = data.type;
                 createBy = data.createBy;
                 objective = data.objective;
                 emergencyEvent = data.emergencyEvent;
+                // emergencyEventTag = data.emergencyEventTag;
                 startDate = data.startDate;
                 endDate = data.endDate;
                 startViewCount = data.startViewCount;
@@ -739,7 +735,7 @@ export class MainPageController {
             }
 
             postStmt.push({ $match: { deleted: false } });
-
+            postStmt.push({ $match: { pageId: { $ne: null } } });
             if (keyword !== undefined && keyword !== null && keyword.length > 0) {
                 let matchKeywordTitleStmt: any = {};
                 let matchKeywordTitleStmtResult: any = {};
@@ -894,8 +890,7 @@ export class MainPageController {
             }
 
             if (emergencyEvent !== null && emergencyEvent !== undefined && emergencyEvent !== '') {
-                const postsEmergencyEvent: EmergencyEvent = await this.emergencyEventService.findOne({ _id: new ObjectID(emergencyEvent) });
-
+                const postsEmergencyEvent: EmergencyEvent = await this.emergencyEventService.findOne({ hashTag: new ObjectID(emergencyEvent) });
                 if (postsEmergencyEvent !== null && postsEmergencyEvent !== undefined) {
                     postStmt.push({ $match: { emergencyEvent: new ObjectID(postsEmergencyEvent.id) } });
                 } else {
@@ -976,7 +971,17 @@ export class MainPageController {
             }
 
             // if (locations !== null && locations !== undefined && locations.length > 0) { }
-
+            if (sortBy !== null && sortBy !== undefined && sortBy !== '') {
+                if (sortBy === SORT_SEARCH_TYPE.LASTEST_DATE) {
+                    postStmt.push({ $sort: { startDateTime: -1 } });
+                } else if (sortBy === SORT_SEARCH_TYPE.POPULAR) {
+                    postStmt.push({ $sort: { viewCount: -1 } });
+                } else if (sortBy === SORT_SEARCH_TYPE.RELATED) {
+                    postStmt.push({ $sort: { startDateTime: -1 } });
+                }
+            } else {
+                postStmt.push({ $sort: { startDateTime: -1 } });
+            }
             if (pageCategories !== null && pageCategories !== undefined && pageCategories.length > 0) {
                 const categoryIdList = [];
 
@@ -997,36 +1002,28 @@ export class MainPageController {
                     return res.status(200).send(ResponseUtil.getSuccessResponse('Search Success', []));
                 }
             }
-            postStmt.push({$match:{'pageId':{$ne:null}}});
-            if (sortBy !== null && sortBy !== undefined && sortBy !== '') {
-                if (sortBy === SORT_SEARCH_TYPE.LASTEST_DATE) {
-                    postStmt.push({ $sort: { startDateTime: -1 } });
-                } else if (sortBy === SORT_SEARCH_TYPE.POPULAR) {
-                    postStmt.push({ $sort: { viewCount: -1 } });
-                } else if (sortBy === SORT_SEARCH_TYPE.RELATED) {
-                    postStmt.push({ $sort: { startDateTime: -1 } });
-                }
-            } else {
-                postStmt.push({ $sort: { startDateTime: -1 } });
-            }
-            postStmt.push({ $limit: MAX_SEARCH_ROWS });
             // const queryDb = [{$match:{"pageId":{$ne:null}}},{$lookup:{from:"Page",as:"page",let:{pageId:"$pageId"},pipeline:[{$match:{$expr:{$and:[{$eq:["$$pageId","$_id"]}]}}}]}},{$match:{"page.isOfficial" : false}}]
-            const postsLookupStmt = [
+            const postsLookupStmt: any[] = [
                 {
-                    $lookup:{
-                        from:'Page',
-                        as:'page',
-                        let:{
-                            pageId:'$pageId'
+                    $lookup: {
+                        from: 'Page',
+                        as: 'page',
+                        let: {
+                            pageId: '$pageId'
                         },
-                        pipeline:[{
-                            $match:{$expr:{$and:[{$eq:['$$pageId','$_id']}]}}
-                        }],
+                        pipeline: [
+                            {
+                                $match: {
+                                    $expr: { $and: [{ $eq: ['$$pageId', '$_id'] }] }
+                                }
+                            }
+                        ],
                     },
                 },
                 {
-                    $match:{
-                        'page.isOfficial': filter.isOfficial
+                    $unwind: {
+                        path: '$page',
+                        preserveNullAndEmptyArrays: true
                     }
                 },
                 {
@@ -1160,7 +1157,21 @@ export class MainPageController {
                             'postByType': 0
                         }
                     }
-                },
+                },/* 
+                $lookup: {
+                    from: 'Page',
+                    as: 'page',
+                    let: {
+                        pageId: '$pageId'
+                    },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: { $and: [{ $eq: ['$$pageId', '$_id'] }] }
+                            }
+                        }
+                    ],
+                }, */
                 {
                     $lookup: {
                         from: 'EmergencyEvent',
@@ -1237,21 +1248,29 @@ export class MainPageController {
                         }
                     }
                 },
-                { 
-                    $project: 
-                        { 
-                            postsHashTags: 0,
-                        },
+                {
+                    $project:
+                    {
+                        postsHashTags: 0,
+                    },
                 },
                 {
-                    $facet:{
-                        data:[{$skip:filter.offset},{$limit:filter.limit}]
-                    }
+                    $limit: filter.limit + filter.offset
+                },
+                {
+                    $skip: filter.offset
                 }
             ];
+
+            if (isOfficial !== null && isOfficial !== undefined) {
+                postsLookupStmt.splice(2, 0, { $match: { 'page.isOfficial': isOfficial, 'page.banned': false } });
+            } else {
+                postsLookupStmt.splice(2, 0, { $match: { 'page.banned': false } });
+            }
+
             searchPostStmt = postStmt.concat(postsLookupStmt);
             const userMap = {};
-            const postResult = await this.postsService.aggregate(searchPostStmt, { allowDiskUse: true}); // allowDiskUse: true to fix an Exceeded memory limit for $group.
+            const postResult = await this.postsService.aggregate(searchPostStmt, { allowDiskUse: true }); // allowDiskUse: true to fix an Exceeded memory limit for $group.
             if (postResult !== null && postResult !== undefined && postResult.length > 0) {
                 const postIdList = [];
                 const postMap = {};
@@ -1260,6 +1279,21 @@ export class MainPageController {
                     result.post = post;
                     postIdList.push(post._id);
                     postMap[post._id + ''] = post;
+
+                    const postPage = post.page;
+
+                    if (!!postPage) {
+                        const pageImageURL = postPage.imageURL;
+                        const pageCoverURL = postPage.coverURL;
+
+                        const pageImageSignURL = await ImageUtil.generateAssetSignURL(this.assetService, pageImageURL, { prefix: '/file/' });
+                        const pageCoverSignURL = await ImageUtil.generateAssetSignURL(this.assetService, pageCoverURL, { prefix: '/file/' });
+
+                        Object.assign(postPage, { signURL: (pageImageSignURL ? pageImageSignURL : '') });
+                        Object.assign(postPage, { coverSignURL: (pageCoverSignURL ? pageCoverSignURL : '') });
+                        delete postPage.s3ImageURL;
+                        delete postPage.s3CoverURL;
+                    }
 
                     // inject sign URL
                     const covImageSignURL = await ImageUtil.generateAssetSignURL(this.assetService, post.coverImage, { prefix: '/file/' });
@@ -1272,6 +1306,7 @@ export class MainPageController {
                             delete galImage.s3ImageURL;
                         }
                     }
+
                     // end inject sign URL
                     if (userMap[post.ownerUser] === undefined) {
                         const user = await this.userService.findOne({ _id: new ObjectID(post.ownerUser) });
@@ -1362,22 +1397,5 @@ export class MainPageController {
         }
 
         return userResult;
-    }
-
-    private async getMainPageSearchConfig(): Promise<any> {
-        const result: any = {
-            searchOfficialOnly: DEFAULT_MAIN_PAGE_SEARCH_OFFICIAL_POST_ONLY
-        };
-
-        const config = await this.configService.getConfig(MAIN_PAGE_SEARCH_OFFICIAL_POST_ONLY);
-        if (config !== undefined) {
-            if (typeof config.value === 'boolean') {
-                result.searchOfficialOnly = config.value;
-            } else if (typeof config.value === 'string') {
-                result.searchOfficialOnly = (config.value.toUpperCase() === 'TRUE');
-            }
-        }
-
-        return result;
     }
 }

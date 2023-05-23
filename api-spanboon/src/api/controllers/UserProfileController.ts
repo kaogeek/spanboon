@@ -29,10 +29,13 @@ import { UserLikeService } from '../services/UserLikeService';
 import { PostsComment } from '../models/PostsComment';
 import { SUBJECT_TYPE } from '../../constants/FollowType';
 import { PostsCommentService } from '../services/PostsCommentService';
+import { AuthenticationId } from '../models/AuthenticationId';
+import { AuthenticationIdService } from '../services/AuthenticationIdService';
 
 @JsonController('/profile')
 export class UserProfileController {
     constructor(
+        private authenIdService: AuthenticationIdService,
         private userService: UserService,
         private userLikeService: UserLikeService,
         private userFollowService: UserFollowService,
@@ -57,53 +60,41 @@ export class UserProfileController {
      */
     @Get('/:id')
     public async getUserPageProfile(@Param('id') userId: string, @Req() req: any, @Res() res: any): Promise<any> {
-        let user: User[];
         let result: any;
+        let userObjId: ObjectID;
+        let userStmt: any;
 
         try {
-            const uid = new ObjectID(userId);
-            user = await this.userService.aggregate(
-                [
-                    {
-                        $match: {
-                            _id: uid,
-                        }
-                    },
-                    {
-                        $lookup: {
-                            from: 'UserProvideItems',
-                            localField: '_id',
-                            foreignField: 'user',
-                            as: 'provideItems'
-                        }
-                    },
-                    {
-                        $project: { uniqueId: 1, username: 1, email: 1, firstName: 1, lastName: 1, displayName: 1, birthdate: 1, customGender: 1, gender: 1, imageURL: 1, coverURL: 1, coverPosition: 1, provideItems: 1 }
-                    }
-                ]
-            );
+            userObjId = new ObjectID(userId);
+            userStmt = { _id: userObjId };
         } catch (ex) {
-            user = await this.userService.aggregate(
-                [
-                    {
-                        $match: {
-                            uniqueId: userId,
-                        }
-                    },
-                    {
-                        $lookup: {
-                            from: 'UserProvideItems',
-                            localField: '_id',
-                            foreignField: 'user',
-                            as: 'provideItems'
-                        }
-                    },
-                    {
-                        $project: { uniqueId: 1, username: 1, email: 1, firstName: 1, lastName: 1, displayName: 1, birthdate: 1, customGender: 1, gender: 1, imageURL: 1, coverURL: 1, coverPosition: 1, provideItems: 1 }
-                    }
-                ]
-            );
+            userStmt = { uniqueId: userId };
+        } finally {
+            if (userObjId === undefined || userObjId === 'undefined') {
+                userObjId = null;
+            }
+
+            userStmt = { $or: [{ _id: userObjId }, { uniqueId: userId }] };
         }
+
+        const user: User[] = await this.userService.aggregate(
+            [
+                {
+                    $match: userStmt
+                },
+                {
+                    $lookup: {
+                        from: 'UserProvideItems',
+                        localField: '_id',
+                        foreignField: 'user',
+                        as: 'provideItems'
+                    }
+                },
+                {
+                    $project: { uniqueId: 1, username: 1, email: 1, firstName: 1, lastName: 1, displayName: 1, birthdate: 1, customGender: 1, gender: 1, imageURL: 1, coverURL: 1, coverPosition: 1, provideItems: 1 }
+                }
+            ]
+        );
 
         if (user !== null && user !== undefined && user.length > 0) {
             result = await this.userService.cleanAdminUserField(user[0]);
@@ -123,9 +114,18 @@ export class UserProfileController {
                 isUserFollow = await this.userFollowService.findOne(isUserFollowStmt);
             }
 
+            const userAuthList: AuthenticationId[] = await this.authenIdService.find({ where: { user: usrObjId } });
             const userFollowing = await this.userFollowService.find({ where: { userId: usrObjId, subjectType: SUBJECT_TYPE.USER } });
             const userFollower = await this.userFollowService.find({ where: { subjectId: usrObjId, subjectType: SUBJECT_TYPE.USER } });
+            const authProviderList: string[] = [];
 
+            if (userAuthList !== null && userAuthList !== undefined && userAuthList.length > 0) {
+                for (const userAuth of userAuthList) {
+                    authProviderList.push(userAuth.providerName);
+                }
+            }
+
+            result.authUser = authProviderList;
             result.following = userFollowing.length;
             result.followers = userFollower.length;
 
@@ -145,7 +145,7 @@ export class UserProfileController {
 
     // Search PagePost
     /**
-     * @api {post} /api/user/:id/post/search Search PagePost API
+     * @api {post} /api/profile/:id/post/search Search PagePost API
      * @apiGroup Page
      * @apiParam (Request body) {number} limit limit
      * @apiParam (Request body) {number} offset offset
@@ -173,7 +173,6 @@ export class UserProfileController {
             if (isHideStory === null || isHideStory === undefined) {
                 isHideStory = true;
             }
-
             const postType = search.type;
             let userObjId;
             const result: any = {};
@@ -222,6 +221,20 @@ export class UserProfileController {
                                 foreignField: 'post',
                                 as: 'gallery'
                             }
+                        },
+                        {
+                            $lookup: {
+                                from: 'EmergencyEvent',
+                                localField: 'emergencyEvent',
+                                foreignField: '_id',
+                                as: 'emergencyEvent'
+                            },
+                        },
+                        {
+                            $unwind: {
+                                path: '$emergencyEvent',
+                                preserveNullAndEmptyArrays: true
+                            }
                         }
                     ];
                 } else {
@@ -236,6 +249,19 @@ export class UserProfileController {
                                 localField: '_id',
                                 foreignField: 'post',
                                 as: 'gallery'
+                            }
+                        }, {
+                            $lookup: {
+                                from: 'EmergencyEvent',
+                                localField: 'emergencyEvent',
+                                foreignField: '_id',
+                                as: 'emergencyEvent'
+                            },
+                        },
+                        {
+                            $unwind: {
+                                path: '$emergencyEvent',
+                                preserveNullAndEmptyArrays: true
                             }
                         }
                     ];
@@ -452,7 +478,7 @@ export class UserProfileController {
             const coverURLUpdate = await this.userService.update({ _id: userObjId }, { $set: { coverURL: ASSET_PATH + newAssetId, coverPosition: userCoverPosition, s3CoverURL: newS3CoverURL } });
             if (coverURLUpdate) {
                 let users = await this.userService.findOne({ _id: userObjId });
-                users = this.userService.cleanAdminUserField(users);
+                users = await this.userService.cleanAdminUserField(users);
                 const successResponse = ResponseUtil.getSuccessResponse('Edit CoverURL Success', users);
                 return res.status(200).send(successResponse);
             } else {
@@ -526,7 +552,7 @@ export class UserProfileController {
             const imageURLUpdate = await this.userService.update({ _id: userObjId }, { $set: { imageURL: ASSET_PATH + newAssetId, s3ImageURL: newS3ImageURL } });
             if (imageURLUpdate) {
                 let users = await this.userService.findOne({ _id: userObjId });
-                users = this.userService.cleanAdminUserField(users);
+                users = await this.userService.cleanAdminUserField(users);
                 const successResponse = ResponseUtil.getSuccessResponse('Edit ImageURL Success', users);
                 return res.status(200).send(successResponse);
             } else {

@@ -44,7 +44,7 @@ import { SocialPostLogsService } from '../services/SocialPostLogsService';
 import { PROVIDER } from '../../constants/LoginProvider';
 import { SocialPostLogs } from '../models/SocialPostLogs';
 import { NotificationService } from '../services/NotificationService';
-import { USER_TYPE,NOTIFICATION_TYPE } from '../../constants/NotificationType';
+import { USER_TYPE, NOTIFICATION_TYPE } from '../../constants/NotificationType';
 import { DeviceTokenService } from '../services/DeviceToken';
 @JsonController('/user')
 export class UserController {
@@ -58,10 +58,10 @@ export class UserController {
         private userProvideItemsService: UserProvideItemsService,
         private customItemService: CustomItemService,
         private uniqueIdHistoryService: UniqueIdHistoryService,
-        private userConfigService: UserConfigService, 
+        private userConfigService: UserConfigService,
         private socialPostLogsService: SocialPostLogsService,
         private notificationService: NotificationService,
-        private deviceTokenService:DeviceTokenService,
+        private deviceTokenService: DeviceTokenService,
     ) { }
 
     // Logout API
@@ -118,20 +118,20 @@ export class UserController {
             }
         } else {
             const authenId: AuthenticationId = await this.authenticationIdService.findOne({ where: { user: uid } });
-            const deleteFCM = await this.deviceTokenService.find({userId:uid,token:tokenFCM});
+            const deleteFCM = await this.deviceTokenService.find({ userId: uid, token: tokenFCM });
             if (!authenId) {
                 const errorResponse: any = { status: 0, message: 'Invalid token' };
                 return res.status(400).send(errorResponse);
             }
-            else if(deleteFCM !== null){
-                for(let i = 0 ; i<deleteFCM.length; i++){
-                    await this.deviceTokenService.delete({userId:uid,token:deleteFCM[i].Tokens});
+            else if (deleteFCM !== null) {
+                for (let i = 0; i < deleteFCM.length; i++) {
+                    await this.deviceTokenService.delete({ userId: uid, token: deleteFCM[i].Tokens });
                 }
             }
-            else if(deleteFCM === null){
-                const deleteNull = await this.deviceTokenService.find({userId:uid});
-                for(let i = 0; i<deleteNull.length; i++){
-                    await this.deviceTokenService.delete({userId:deleteNull[i].id});
+            else if (deleteFCM === null) {
+                const deleteNull = await this.deviceTokenService.find({ userId: uid });
+                for (let i = 0; i < deleteNull.length; i++) {
+                    await this.deviceTokenService.delete({ userId: deleteNull[i].id });
                 }
             }
             const currentDateTime = moment().toDate();
@@ -282,35 +282,39 @@ export class UserController {
                 userEngagement.ip = ipAddress;
                 userEngagement.userId = userObjId;
                 userEngagement.action = ENGAGEMENT_ACTION.FOLLOW;
-                const whoFollowYou = await this.userService.findOne({_id:userFollow.userId});
-                const tokenFCMId = await this.deviceTokenService.find({userId:userFollow.subjectId});
+                const whoFollowYou = await this.userService.findOne({ _id: userFollow.userId });
+                const tokenFCMId = await this.deviceTokenService.find({ userId: userFollow.subjectId });
                 const notification_follower = whoFollowYou.displayName + space + 'กดติดตามคุณ';
-                const link = `/profile/${whoFollowYou.displayName}`;
-                for(const tokenFCM of tokenFCMId){
-                    if(tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined){
-                        await this.notificationService.createNotificationFCM(
+                const link = `/profile/${whoFollowYou.id}`;
+                const notificationId = await this.notificationService.createNotificationFCM(
+                    followCreate.subjectId,
+                    USER_TYPE.USER,
+                    req.user.id + '',
+                    USER_TYPE.USER,
+                    NOTIFICATION_TYPE.FOLLOW,
+                    notification_follower,
+                    link,
+                    whoFollowYou.displayName,
+                    whoFollowYou.imageURL
+                );
+                for (const tokenFCM of tokenFCMId) {
+                    if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined) {
+                        await this.notificationService.sendNotificationFCM(
                             followCreate.subjectId,
                             USER_TYPE.USER,
-                            req.user.id+ '',
+                            req.user.id + '',
                             USER_TYPE.USER,
                             NOTIFICATION_TYPE.FOLLOW,
                             notification_follower,
                             link,
                             tokenFCM.Tokens,
                             whoFollowYou.displayName,
-                            whoFollowYou.imageURL
+                            whoFollowYou.imageURL,
+                            notificationId.id
                         );
                     }
                     else {
-                        await this.notificationService.createNotification(
-                            followCreate.subjectId,
-                            USER_TYPE.USER,
-                            req.user.id+ '',
-                            USER_TYPE.USER,
-                            NOTIFICATION_TYPE.FOLLOW,
-                            notification_follower,
-                            link,
-                        );
+                        continue;
                     }
                 }
                 // USER TO USER
@@ -850,41 +854,41 @@ export class UserController {
     @Post('/enable_fetch_twitter')
     @Authorized('user')
     public async fetchTwitterEnable(@Body({ validate: true }) twitterParam: FetchSocialPostEnableRequest, @Res() res: any, @Req() req: any): Promise<any> {
-            try {
-                const userId = req.user.id;
-                // find authen with twitter
-                const twitterAccount = await this.authenticationIdService.findOne({ providerName: PROVIDER.TWITTER, user: userId });
-    
-                if (twitterAccount === undefined) {
-                    const errorResponse = ResponseUtil.getSuccessResponse('Twitter account was not binding', undefined);
-                    return res.status(400).send(errorResponse);
-                }
-    
-                // find log
-                const socialPostLog = await this.socialPostLogsService.findOne({ providerName: PROVIDER.TWITTER, providerUserId: twitterAccount.providerUserId });
-                if (socialPostLog !== undefined) {
-                    // update old
-                    await this.socialPostLogsService.update({ _id: socialPostLog.id }, { $set: { enable: twitterParam.enable } });
-                } else {
-                    // create new
-                    const newSocialPostLog = new SocialPostLogs();
-                    newSocialPostLog.user = userId; // log by user
-                    newSocialPostLog.lastSocialPostId = undefined;
-                    newSocialPostLog.providerName = PROVIDER.TWITTER;
-                    newSocialPostLog.providerUserId = twitterAccount.providerUserId;
-                    newSocialPostLog.properties = undefined;
-                    newSocialPostLog.enable = twitterParam.enable;
-                    newSocialPostLog.lastUpdated = undefined;
-    
-                    await this.socialPostLogsService.create(newSocialPostLog);
-                }
-    
-                return res.status(200).send(twitterParam);
-            } catch (err) {
-                const errorResponse = ResponseUtil.getSuccessResponse('Cannot enable twitter fetch post', err);
+        try {
+            const userId = req.user.id;
+            // find authen with twitter
+            const twitterAccount = await this.authenticationIdService.findOne({ providerName: PROVIDER.TWITTER, user: userId });
+
+            if (twitterAccount === undefined) {
+                const errorResponse = ResponseUtil.getSuccessResponse('Twitter account was not binding', undefined);
                 return res.status(400).send(errorResponse);
             }
+
+            // find log
+            const socialPostLog = await this.socialPostLogsService.findOne({ providerName: PROVIDER.TWITTER, providerUserId: twitterAccount.providerUserId });
+            if (socialPostLog !== undefined) {
+                // update old
+                await this.socialPostLogsService.update({ _id: socialPostLog.id }, { $set: { enable: twitterParam.enable } });
+            } else {
+                // create new
+                const newSocialPostLog = new SocialPostLogs();
+                newSocialPostLog.user = userId; // log by user
+                newSocialPostLog.lastSocialPostId = undefined;
+                newSocialPostLog.providerName = PROVIDER.TWITTER;
+                newSocialPostLog.providerUserId = twitterAccount.providerUserId;
+                newSocialPostLog.properties = undefined;
+                newSocialPostLog.enable = twitterParam.enable;
+                newSocialPostLog.lastUpdated = undefined;
+
+                await this.socialPostLogsService.create(newSocialPostLog);
+            }
+
+            return res.status(200).send(twitterParam);
+        } catch (err) {
+            const errorResponse = ResponseUtil.getSuccessResponse('Cannot enable twitter fetch post', err);
+            return res.status(400).send(errorResponse);
         }
+    }
 
     private async checkPageAccess(objectId: ObjectID, userId: ObjectID): Promise<any> {
         // const pageAccessLevelCheckQuery = { where: { page: pageId, user: userId } };

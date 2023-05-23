@@ -12,13 +12,6 @@ import { ObjectID } from 'mongodb';
 import { BaseModel } from './BaseModel';
 import moment from 'moment';
 import * as bcrypt from 'bcrypt';
-import { AuthenticationId } from './AuthenticationId';
-import { Posts } from './Posts';
-import { Page } from './Page';
-import { PageFollower } from './PageFollower';
-import { Fulfillment } from './Fulfillment';
-import { PageAccessLevel } from './PageAccessLevel';
-
 @Entity('User', { name: 'User' })
 export class User extends BaseModel {
 
@@ -112,31 +105,50 @@ export class User extends BaseModel {
     @Column({ name: 'banned' })
     public banned: boolean;
 
-    @Column(type => AuthenticationId)
-    public authenticationId: AuthenticationId;
+    @Column({ name: 'mergeEM'})
+    public mergeEM: boolean;
 
-    @Column(type => PageAccessLevel)
-    public pageAccessLevel: PageAccessLevel;
+    @Column({ name: 'mergeFB' })
+    public mergeFB: boolean;
 
-    @Column(type => Posts)
-    public posts: Posts[];
+    @Column({ name: 'mergeTW' })
+    public mergeTW: boolean;
 
-    @Column(type => Page)
-    public pages: Page[];
+    @Column({ name: 'mergeGG' })
+    public mergeGG: boolean;
 
-    @Column(type => PageFollower)
-    public pageFollowers: PageFollower[];
+    @Column({ name: 'mergeAP' })
+    public mergeAP: boolean;
 
-    @Column(type => Fulfillment)
-    public Fulfillments: Fulfillment[];
+    @Column({ name: 'isSyncPage' })
+    public isSyncPage: boolean;
+
+    // @Column(type => AuthenticationId)
+    // public authenticationId: AuthenticationId;
+
+    // @Column(type => PageAccessLevel)
+    // public pageAccessLevel: PageAccessLevel;
+
+    // @Column(type => Posts)
+    // public posts: Posts[];
+
+    // @Column(type => Page)
+    // public pages: Page[];
+
+    // @Column(type => PageFollower)
+    // public pageFollowers: PageFollower[];
+
+    // @Column(type => Fulfillment)
+    // public Fulfillments: Fulfillment[];
 
     @BeforeInsert()
-    public async createDetails(): Promise<void> {
+    public createDetails(): any {
         this.createdDate = moment().toDate();
+        this.createdTime = moment().toDate();
     }
 
     @BeforeUpdate()
-    public async updateDetails(): Promise<void> {
+    public updateDetails(): any {
         this.updateDate = moment().toDate();
     }
 }

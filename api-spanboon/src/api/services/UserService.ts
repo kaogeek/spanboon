@@ -12,16 +12,20 @@ import { UserRepository } from '../repositories/UserRepository';
 import { PageRepository } from '../repositories/PageRepository';
 import { SearchUtil } from '../../utils/SearchUtil';
 import { S3Service } from '../services/S3Service';
+import { CreateUserRequest } from '../controllers/requests/CreateUserRequest';
+import { ImageUtil } from '../../utils/ImageUtil';
+import { AssetService } from './AssetService';
 @Service()
 export class UserService {
 
     constructor(
-        @OrmRepository() private userLoginRepository: UserRepository, 
-        @OrmRepository() private pageRepository: PageRepository, 
+        @OrmRepository() private userLoginRepository: UserRepository,
+        @OrmRepository() private pageRepository: PageRepository,
+        private assetService: AssetService,
         private s3Service: S3Service) { }
 
     // find user
-    public find(findCondition?: any): Promise<any>  {
+    public find(findCondition?: any): Promise<any> {
         return this.userLoginRepository.find(findCondition);
     }
 
@@ -129,82 +133,80 @@ export class UserService {
         });
     }
 
-    public cleanUserField(user: any): any {
+    public async cleanUserField(user: any): Promise<any> {
         if (user !== undefined && user !== null) {
-            if (user !== undefined && user !== null) {
-                const clearItem = {
-                    id: user.id,
-                    username: user.username,
-                    uniqueId: user.uniqueId,
-                    email: user.email,
-                    displayName: user.displayName,
-                    firstName: user.firstName,
-                    lastName: user.lastName,
-                    birthdate: user.birthdate,
-                    gender: user.gender,
-                    customGender: user.customGender,
-                    imageURL: user.imageURL,
-                    coverURL: user.coverURL,
-                    coverPosition: user.coverPosition,
-                    banned: user.banned,
-                    isAdmin: user.isAdmin,
-                    isSubAdmin: user.isSubAdmin
-                };
-                user = clearItem;
-            }
+            const imageURL = user.imageURL;
+            const coverURL = user.coverURL;
+
+            const signURL = await ImageUtil.generateAssetSignURL(this.assetService, imageURL, { prefix: '/file/' });
+            const coverSignURL = await ImageUtil.generateAssetSignURL(this.assetService, coverURL, { prefix: '/file/' });
+
+            const clearItem = {
+                id: user.id,
+                username: user.username,
+                uniqueId: user.uniqueId,
+                email: user.email,
+                displayName: user.displayName,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                birthdate: user.birthdate,
+                gender: user.gender,
+                customGender: user.customGender,
+                imageURL: user.imageURL,
+                coverURL: user.coverURL,
+                coverPosition: user.coverPosition,
+                signURL,
+                coverSignURL,
+                banned: user.banned,
+                isAdmin: user.isAdmin,
+                isSubAdmin: user.isSubAdmin
+            };
+            user = clearItem;
         }
         return user;
     }
 
-    public cleanAdminUserField(user: any): any {
+    public async cleanAdminUserField(user: any): Promise<any> {
         if (user !== undefined && user !== null) {
-            if (user !== undefined && user !== null) {
-                const clearItem = {
-                    id: user._id,
-                    username: user.username,
-                    uniqueId: user.uniqueId,
-                    email: user.email,
-                    displayName: user.displayName,
-                    firstName: user.firstName,
-                    lastName: user.lastName,
-                    birthdate: user.birthdate,
-                    gender: user.gender,
-                    customGender: user.customGender,
-                    imageURL: user.imageURL,
-                    coverURL: user.coverURL,
-                    coverPosition: user.coverPosition,
-                    banned: user.banned,
-                    isAdmin: user.isAdmin,
-                    isSubAdmin: user.isSubAdmin
-                };
-                user = clearItem;
-            }
+            const imageURL = user.imageURL;
+            const coverURL = user.coverURL;
+
+            const signURL = await ImageUtil.generateAssetSignURL(this.assetService, imageURL, { prefix: '/file/' });
+            const coverSignURL = await ImageUtil.generateAssetSignURL(this.assetService, coverURL, { prefix: '/file/' });
+
+            console.log('signURL >>>> ', signURL);
+            console.log('coverSignURL >>>> ', coverSignURL);
+
+            const clearItem = {
+                id: user._id,
+                username: user.username,
+                uniqueId: user.uniqueId,
+                email: user.email,
+                displayName: user.displayName,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                birthdate: user.birthdate,
+                gender: user.gender,
+                customGender: user.customGender,
+                imageURL: user.imageURL,
+                coverURL: user.coverURL,
+                signURL,
+                coverSignURL,
+                coverPosition: user.coverPosition,
+                banned: user.banned,
+                isAdmin: user.isAdmin,
+                isSubAdmin: user.isSubAdmin
+            };
+            user = clearItem;
         }
         return user;
     }
 
-    public cleanUsersField(users: any): any {
+    public async cleanUsersField(users: any): Promise<any> {
         const userList = [];
         for (let user of users) {
             if (user !== undefined && user !== null) {
-                if (user !== undefined && user !== null) {
-                    const clearItem = {
-                        id: user._id,
-                        username: user.username,
-                        uniqueId: user.uniqueId,
-                        email: user.email,
-                        displayName: user.displayName,
-                        firstName: user.firstName,
-                        lastName: user.lastName,
-                        gender: user.gender,
-                        customGender: user.customGender,
-                        birthdate: user.birthdate,
-                        imageURL: user.imageURL,
-                        coverURL: user.coverURL,
-                        coverPosition: user.coverPosition
-                    };
-                    user = clearItem;
-                }
+                user = await this.cleanUserField(user);
             }
             userList.push(user);
         }
@@ -218,7 +220,7 @@ export class UserService {
             if (user !== undefined && user !== null) {
                 if (user !== undefined && user !== null) {
                     const clearItem = {
-                        id: user._id,
+                        id: user.id,
                         username: user.username,
                         uniqueId: user.uniqueId,
                         email: user.email,
@@ -262,5 +264,34 @@ export class UserService {
         }
 
         return userTagList;
+    }
+
+    public async createUser(users: CreateUserRequest): Promise<void> {
+        const userPassword = await User.hashPassword(users.password);
+
+        const user: User = new User();
+        user.username = users.email;
+        user.password = userPassword;
+        user.email = users.email;
+        user.displayName = users.displayName;
+        user.firstName = users.firstName;
+        user.lastName = users.lastName;
+        user.citizenId = users.citizenId;
+        user.gender = users.gender;
+        user.imageURL = '';
+        user.coverURL = '';
+        user.coverPosition = 0;
+        user.banned = false;
+        user.isAdmin = users.isAdmin;
+
+        const data = await this.findOne({ where: { username: users.email } });
+
+        if (data) {
+            return;
+        }
+
+        this.create(user);
+
+        return;
     }
 }

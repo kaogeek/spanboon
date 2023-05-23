@@ -6,14 +6,14 @@
 -->
 
 <div class="card-feed-post">
-    <ng-container *ngIf="isNotAccess">
-        <ng-container *ngIf="itemPost">
-            <button mat-icon-button [matMenuTriggerFor]="menu" [disableRipple]="'false'" class="dropdown">
-                <span class="material-icons">
-                    more_horiz
-                </span>
-            </button>
-            <mat-menu #menu="matMenu" xPosition="before">
+    <ng-container *ngIf="itemPost">
+        <button mat-icon-button [matMenuTriggerFor]="menu" [disableRipple]="'false'" class="dropdown">
+            <span class="material-icons">
+                more_horiz
+            </span>
+        </button>
+        <mat-menu #menu="matMenu" xPosition="before">
+            <ng-container *ngIf="isNotAccess; else elseTemplateIsNotAccess">
                 <button mat-menu-item [disableRipple]="'true'" class="list-dropdown" (click)="editPost(itemPost)">
                     <mat-icon>edit</mat-icon>
                     <span>แก้ไข</span>
@@ -22,47 +22,72 @@
                     <mat-icon>delete</mat-icon>
                     <span>ลบ</span>
                 </button>
-            </mat-menu>
-        </ng-container>
+            </ng-container>
+            <ng-template #elseTemplateIsNotAccess>
+                <button mat-menu-item [disableRipple]="'true'" class="list-dropdown" (click)="hidePost(itemPost)">
+                    <mat-icon>close</mat-icon>
+                    <span>ซ่อนโพสต์นี้</span>
+                </button>
+                <button mat-menu-item [disableRipple]="'true'" class="list-dropdown" (click)="reportPost()">
+                    <mat-icon>warning</mat-icon>
+                    <span>รายงานโพสต์นี้</span>
+                </button>
+                <button mat-menu-item [disableRipple]="'true'" class="list-dropdown" (click)="blockUser()">
+                    <mat-icon>block</mat-icon>
+                    <span>บล็อกผู้ใช้นี้</span>
+                </button>
+            </ng-template>
+        </mat-menu>
     </ng-container>
 
+    <!-- *ngIf="isNotAccess" -->
+
     <div class="header-post" [class.active]="itemPost.referencePostObject && itemPost.referencePostObject.ownerUser">
-        <div class="left"
-            [ngStyle]="{'margin-right': itemPost.referencePostObject !== '' && itemPost.referencePostObject !== undefined && itemPost.referencePostObject !== null ? '15pt' : 'unset'}">
+        <div class="left" [ngStyle]="{'margin-right': !!itemPost.referencePostObject ? '15pt' : 'unset'}">
             <ng-container *ngIf="isShowProfile">
                 <div class="wrapper-profile-page" *ngIf="itemPost.type === 'NEEDS' || itemPost.type === 'GENERAL' ">
                     <div class="page-img">
                         <ng-container *ngIf="itemPost.page; else elseImage">
-                            <ng-container
-                                *ngIf="itemPost.page.imageURL !== '' && itemPost.page.imageURL !== null && itemPost.page.imageURL !== undefined; else elseTemplateFileImage">
-                                <img class="post-data-profile"
-                                    [src]="itemPost.page.signURL?itemPost.page.signURL:itemPost.page.imageSignURL?itemPost.page.imageSignURL:apiBaseURL+itemPost.page.imageURL+'/image'"
-                                    alt="">
-                            </ng-container>
-                            <ng-template #elseTemplateFileImage>
-                                <img class="post-data-profile" src="../../../../../../assets/img/profile1.svg" alt="">
-                            </ng-template>
+                            <a target="_blank"
+                                [href]="!!itemPost.page.pageUsername ? 'page/' + itemPost.page.pageUsername: (!!itemPost.page._id ? 'page/' + itemPost.page._id: 'page/' + itemPost.page._id)">
+                                <ng-container *ngIf="!!itemPost.page.imageURL; else elseTemplateFileImage">
+                                    <img class="post-data-profile"
+                                        [src]="itemPost.page.signURL ? itemPost.page.signURL : (itemPost.page.imageSignURL ? itemPost.page.imageSignURL:apiBaseURL + itemPost.page.imageURL + '/image')">
+                                </ng-container>
+                                <ng-template #elseTemplateFileImage>
+                                    <img class="post-data-profile" src="../../../../../../assets/img/profile1.svg"
+                                        alt="">
+                                </ng-template>
+                            </a>
                         </ng-container>
                         <ng-template #elseImage>
-                            <ng-container
-                                *ngIf="itemPost.user && itemPost.user.imageURL !== '' && itemPost.user.imageURL !== undefined && itemPost.user.imageURL !== null; else elseTemplateProfile">
-                                <img class="post-data-profile"
-                                    [src]="itemPost.user.signURL?itemPost.user.signURL:itemPost.user.imageSignURL?itemPost.user.imageSignURL:apiBaseURL+itemPost.user.imageURL+'/image'"
-                                    alt="">
-                            </ng-container>
-                            <ng-template #elseTemplateProfile>
-                                <img class="post-data-profile" src="../../../../../../assets/img/profile1.svg" alt="">
-                            </ng-template>
+                            <a target="_blank"
+                                [href]="!!itemPost.user.uniqueId ? itemPost.user.uniqueId: (!!itemPost.page._id ? itemPost.user._id: itemPost.user._id)">
+                                <ng-container *ngIf="!!itemPost!.user!.imageURL; else elseTemplateProfile">
+                                    <img class="post-data-profile"
+                                        [src]="itemPost.user.signURL ? itemPost.user.signURL : (itemPost.user.imageSignURL ? itemPost.user.imageSignURL : apiBaseURL + itemPost.user.imageURL + '/image')"
+                                        alt="">
+                                </ng-container>
+                                <ng-template #elseTemplateProfile>
+                                    <img class="post-data-profile" src="../../../../../../assets/img/profile1.svg"
+                                        alt="">
+                                </ng-template>
+                            </a>
                         </ng-template>
 
                         <div class="post-data-name">
                             <ng-container *ngIf="itemPost.page; else elseName">
-                                {{itemPost.page.name}}
+                                <a target="_blank"
+                                    [href]="!!itemPost.page.pageUsername ? 'page/' + itemPost.page.pageUsername : (itemPost.page._id ? 'page/' + itemPost.page._id: 'page/' + itemPost.page._id)">
+                                    {{itemPost.page.name}}
+                                </a>
                             </ng-container>
                             <ng-template #elseName>
-                                <ng-container
-                                    *ngIf="itemPost.user && itemPost.user.displayName !== '' && itemPost.user.displayName !== undefined && itemPost.user.displayName !== null">
-                                    {{itemPost.user.displayName}}
+                                <ng-container *ngIf="!!itemPost!.user!.displayName">
+                                    <a target="_blank"
+                                        [href]="!!itemPost.user.uniqueId ? 'profile/' + itemPost.user.uniqueId : (!!itemPost.page._id ? 'profile/' + itemPost.user._id : 'profile/' + itemPost.user._id)">
+                                        {{itemPost.user.displayName}}
+                                    </a>
                                 </ng-container>
                             </ng-template>
 
@@ -162,14 +187,16 @@
                             <span>{{itemPost && itemPost.createdDate | dateFormat}}</span>
                         </div>
                     </a>
+
                     <ng-container *ngIf="isUserPage">
                         <a class="post-name" target="_blank"
-                            (click)="onClickEngagement($event, itemPost._id, 'profile')"
-                            href="{{itemPost && itemPost.ownerUser && itemPost.ownerUser.uniqueId !== undefined && itemPost.ownerUser.uniqueId !== null && itemPost.ownerUser.uniqueId !== '' ? '/profile/'+itemPost.ownerUser.uniqueId : '/profile/'+itemPost.ownerUser._id }}">
+                            (click)="onClickEngagement($event, (itemPost._id || itemPost.id), 'profile')"
+                            [href]="!!itemPost!.ownerUser!.uniqueId ? '/profile/' + itemPost.ownerUser.uniqueId : '/profile/' + itemPost.ownerUser._id">
                             <span>เผยแพร่โดย :
-                                {{itemPost.ownerUser.displayName?itemPost.ownerUser.displayName:itemPost.ownerUser.name?itemPost.ownerUser.name:itemPost.page.name}}</span>
+                                {{itemPost.ownerUser.displayName}}</span>
                         </a>
                     </ng-container>
+
                     <!-- <ng-container *ngIf="isUserPage; else UserPages">
                         {{2}}
                         <span *ngIf="itemPost.ownerUser">{{itemPost.ownerUser.displayName || itemPost.ownerUser.name}}
@@ -186,8 +213,7 @@
                 </div>
             </ng-container>
         </div>
-        <div class="repost-re"
-            *ngIf="itemPost.referencePostObject !== '' && itemPost.referencePostObject !== undefined && itemPost.referencePostObject !== null">
+        <div class="repost-re" *ngIf="!!itemPost.referencePostObject">
 
             <ng-container *ngIf="isUserPage; else UserPage">
                 <svg class="img-action" xmlns="http://www.w3.org/2000/svg" width="56.105" height="47.887"
@@ -227,13 +253,12 @@
         [class.active]="itemPost.gallery && itemPost.gallery.length === 0 && itemPost.title === '' ">
         <div class="fufill-name">
             <div class="left">
-                <a href="/profile/{{itemPost.requester && itemPost.requester.uniqueId !== '' && itemPost.requester.uniqueId !== undefined && itemPost.requester.uniqueId !== null ? itemPost.requester.uniqueId : itemPost.requester && itemPost.requester._id}}"
+                <a href="/profile/{{!!itemPost!.requester!.uniqueId ? itemPost.requester.uniqueId : (itemPost.requester._id || itemPost.requester.id)}}"
                     target="_blank" (click)="onClickEngagement($event , itemPost._id , 'profile')">
                     <div class="profile-left">
-                        <ng-container
-                            *ngIf="itemPost.requester && itemPost.requester.imageURL && itemPost.requester.imageURL !== undefined && itemPost.requester.imageURL !== '' && itemPost.requester.imageURL !== null; else elseTemplateImage">
+                        <ng-container *ngIf="!!itemPost.requester.imageURL; else elseTemplateImage">
                             <img class="post-data-profile"
-                                [src]="itemPost.requester.signURL?itemPost.requester.signURL:itemPost.requester.imageSignURL?itemPost.requester.imageSignURL:apiBaseURL+itemPost.requester.imageURL+'/image'"
+                                [src]="!!itemPost!.requester!.signURL ? itemPost.requester.signURL : (itemPost.requester.imageSignURL ? itemPost.requester.imageSignURL : apiBaseURL + itemPost.requester.imageURL + '/image')"
                                 alt="">
                         </ng-container>
                         <ng-template #elseTemplateImage>
@@ -256,7 +281,7 @@
                                 <g id="SvgjsG1006">
                                     <path
                                         d="M238.986,244.034c0,6.895-3.683,13.276-9.654,16.723L28.958,427.954c-5.971,3.452-13.333,3.452-19.306,0    C3.68,424.5,0,418.13,0,411.23V76.832c0-6.892,3.675-13.27,9.652-16.723c2.988-1.723,6.321-2.583,9.655-2.583    c3.341,0,6.663,0.864,9.655,2.583l200.379,167.2C235.304,230.759,238.986,237.137,238.986,244.034z M478.429,227.314    l-200.386-167.2c-2.978-1.724-6.312-2.583-9.651-2.583s-6.653,0.864-9.654,2.583c-5.973,3.453-9.652,9.825-9.652,16.723v334.4    c0,6.893,3.68,13.271,9.652,16.721c5.976,3.447,13.33,3.447,19.306,0l200.373-167.202c5.976-3.441,9.654-9.816,9.654-16.717    C488.08,237.142,484.392,230.759,478.429,227.314z"
-                                        fill="#84b572" data-original="#000000" style="" class="" />
+                                        fill="#84b572" data-original="#000000" />
                                 </g>
                             </g>
                             <g xmlns="http://www.w3.org/2000/svg">
@@ -295,10 +320,9 @@
                 <a href="/page/{{itemPost.pageId}}" target="_blank"
                     (click)="onClickEngagement($event , itemPost._id , 'page')">
                     <div class="profile-right">
-                        <ng-container
-                            *ngIf="itemPost.fulfillmentPage && itemPost.fulfillmentPage.imageURL && itemPost.fulfillmentPage.imageURL !== undefined && itemPost.fulfillmentPage.imageURL !== '' && itemPost.fulfillmentPage.imageURL !== null; else elseTemplateImagePage">
+                        <ng-container *ngIf="!!itemPost!.fulfillmentPage!.imageURL; else elseTemplateImagePage">
                             <img class="post-data-profile"
-                                [src]="itemPost.fulfillmentPage.signURL?itemPost.fulfillmentPage.signURL:itemPost.fulfillmentPage.imageSignURL?itemPost.fulfillmentPage.imageSignURL:apiBaseURL+itemPost.fulfillmentPage.imageURL+'/image'"
+                                [src]="itemPost.fulfillmentPage.signURL ? itemPost.fulfillmentPage.signURL : (itemPost.fulfillmentPage.imageSignURL ? itemPost.fulfillmentPage.imageSignURL : apiBaseURL+itemPost.fulfillmentPage.imageURL + '/image')"
                                 alt="">
                         </ng-container>
                         <ng-template #elseTemplateImagePage>
@@ -307,8 +331,7 @@
                         <div class="name-top">
                             <div class="fulfill-name">{{itemPost.fulfillmentPage && itemPost.fulfillmentPage.name}}
                             </div>
-                            <ng-container
-                                *ngIf="itemPost.objectiveTag && itemPost.objectiveTag !== null && itemPost.objectiveTag !== undefined && itemPost.objectiveTag !== ''; else elseTemplateObjective">
+                            <ng-container *ngIf="!!itemPost.objectiveTag; else elseTemplateObjective">
                                 <div class="text">สิ่งที่กำลังทำ</div>
                             </ng-container>
                             <ng-template #elseTemplateObjective>
@@ -326,15 +349,14 @@
         <display-gallery [gallery]="itemPost.gallery" (clickShowImage)="showDialogGallery($event)"></display-gallery>
         <!-- <display-gallery [gallery]="itemPost.gallery" (clickShowImage)="showDialogGallery($event)"></display-gallery> -->
     </ng-container>
-    <div class="topic-name" [class.active]="itemPost.referencePostObject"
-        *ngIf="itemPost.title === '' || itemPost.title === undefined || itemPost.title === null  ">
+    <div class="topic-name" [class.active]="itemPost.referencePostObject" *ngIf="!!itemPost!.title">
         <div class="name" *ngIf="itemPost.requester">
             {{itemPost.requester && itemPost.requester.displayName}} เต็มเติมให้กับ
             {{itemPost.fulfillmentPage && itemPost.fulfillmentPage.name}}
         </div>
     </div>
     <div class="wrapper-content"
-        [class.active]="(itemPost.type === 'FULFILLMENT' && itemPost.title !== '' && itemPost.title !== undefined && itemPost.title !== null) || (itemPost.type === 'NEEDS' && itemPost.gallery && itemPost.gallery.length === 0) || (itemPost.type === 'GENERAL' && itemPost.title !== '' && itemPost.detail !== '' && itemPost.gallery && itemPost.gallery.length === 0 || (itemPost.title === ''  || itemPost.detail === ''))">
+        [class.active]="(itemPost.type === 'FULFILLMENT' && !!itemPost!.title) || (itemPost.type === 'NEEDS' && itemPost.gallery && itemPost.gallery.length === 0) || (itemPost.type === 'GENERAL' && itemPost.title !== '' && itemPost.detail !== '' && itemPost.gallery && itemPost.gallery.length === 0 || (itemPost.title === ''  || itemPost.detail === ''))">
         <!-- <div class="wrapper-content" [class.active]="itemPost.gallery && itemPost.gallery.length > 0 " > -->
         <div *ngIf="itemPost.title" class="title" [phxPreload]="itemPost" [preloadClass]="'title'"
             [innerHTML]=" itemPost.title | highlight ">
@@ -342,15 +364,13 @@
         <div *ngIf="itemPost.detail" class="content" [phxPreload]="itemPost" [preloadClass]="'content'"
             [innerHTML]=" itemPost.detail | highlight ">
         </div>
-        <div class="page-give" *ngIf="isFulfill"
-            [class.active]="itemPost.gallery.length === 0 && itemPost.title !== '' && itemPost.title !== null && itemPost.title !== undefined ">
+        <div class="page-give" *ngIf="isFulfill" [class.active]="itemPost.gallery.length === 0 && !!itemPost!.title">
             <span>ร่วม{{PLATFORM_FULFILL_TEXT}}ให้กับ</span>
             <a target="_blank" (click)="onClickEngagement($event , itemPost._id , 'post')"
-                matTooltip="{{itemPost.casePostId && itemPost.casePostId !== undefined && itemPost.casePostId !== '' ? webBaseURL+'/post/'+itemPost.casePostId : webBaseURL+'/page/'+itemPost.pageId }}"
-                href="{{itemPost.casePostId && itemPost.casePostId !== undefined && itemPost.casePostId !== '' ? webBaseURL+'/post/'+itemPost.casePostId : webBaseURL+'/page/'+itemPost.pageId }}">
-                {{itemPost.casePostId && itemPost.casePostId !== undefined &&
-                itemPost.casePostId !== '' ?
-                'โพสต์' : 'เพจ' }} </a>
+                matTooltip="{{!!itemPost!.casePostId ? webBaseURL + '/post/' + itemPost.casePostId : webBaseURL + '/page/' + itemPost.pageId }}"
+                [href]="!!itemPost!.casePostId ? webBaseURL + '/post/' + itemPost.casePostId : webBaseURL + '/page/' + itemPost.pageId">
+                {{!!itemPost!.casePostId ? 'โพสต์' : 'เพจ' }}
+            </a>
         </div>
         <ng-container *ngIf="checkPost(itemPost.referencePostObject); else elseNullPost">
             <repost-data *ngIf="itemPost.referencePostObject" [itemPost]="itemPost.referencePostObject"
@@ -362,24 +382,24 @@
                 <null-data></null-data>
             </ng-container>
         </ng-template>
-        <ng-container *ngIf="itemPost.story">
+        <!-- <ng-container *ngIf="itemPost.story">
             <div (click)="storyTeb(itemPost)" class="content-sub"> อ่าน{{PLATFORM_STORY}} <span
                     style="margin-left: 1px;">...</span>
             </div>
-        </ng-container>
+        </ng-container> -->
         <div class="tag_div" *ngIf="itemPost.hashTags && itemPost.hashTags.length > 0">
             <div class="h_tag_list" *ngFor="let hashTag of itemPost.hashTags">
                 <a style="color: gray !important;" class="highlight-text" href="/search?hashtag={{hashTag.name}}"
                     target="_blank">#{{hashTag.name}}</a>
             </div>
         </div>
-        <needs-card *ngIf="itemPost.needs && itemPost.needs.length > 0" [itemNeeds]="itemPost.needs"
+        <!-- <needs-card *ngIf="itemPost.needs && itemPost.needs.length > 0" [itemNeeds]="itemPost.needs"
             [isFulfillQuantity]="true" [isFulfill]="isFulfill" [isPendingFulfill]="isPendingFulfill"
             (clickFulfill)="fulfillEngagement($event , itemPost._id)"
-            [isImage]="itemPost.gallery && itemPost.gallery.length > 0 && itemPost.title === '' "></needs-card>
+            [isImage]="itemPost.gallery && itemPost.gallery.length > 0 && itemPost.title === '' "></needs-card> -->
 
         <!-- shared post to facebook or twitter -->
-        <ng-container *ngIf="itemPost.socialPosts && itemPost.socialPosts.length > 0;">
+        <!-- <ng-container *ngIf="itemPost.socialPosts && itemPost.socialPosts.length > 0;">
             <div class="social-share">
                 <svg class="img-action" xmlns="http://www.w3.org/2000/svg" width="17.474" height="17.474"
                     viewBox="0 0 17.474 17.474">
@@ -401,7 +421,7 @@
                         <ng-template #elseTemplateShareSocial>
                             <a target="_blank" (click)="onClickEngagement($event , itemPost._id , 'post')"
                                 href="https://www.facebook.com/permalink.php?story_fbid={{substringData(item.socialId) && substringData(item.socialId)[1]}}&id={{substringData(item.socialId) && substringData(item.socialId)[0]}}">
-                                เฟสบุ๊ค
+                                เฟซบุ๊ค
                             </a>
                         </ng-template>
                     </ng-container>
@@ -422,7 +442,7 @@
                                 <ng-template #elseTemplateShareSocialMenu>
                                     <a target="_blank" (click)="onClickEngagement($event , itemPost._id , 'post')"
                                         href="https://www.facebook.com/permalink.php?story_fbid={{substringData(item.socialId)[1]}}&id={{substringData(item.socialId)[0]}}">
-                                        เฟสบุ๊ค
+                                        เฟซบุ๊ค
                                     </a>
                                 </ng-template>
                             </button>
@@ -430,7 +450,7 @@
                     </div>
                 </ng-template>
             </div>
-        </ng-container>
+        </ng-container> -->
         <div class="wrapper-footer-post"
             [class.active]="!(isEmptyObject(itemPost.emergencyEvent) && isEmptyObject(itemPost.objective))">
             <div class="left" *ngIf="isEmptyObject(itemPost.emergencyEvent) || isEmptyObject(itemPost.objective)">
@@ -452,24 +472,23 @@
                     [share]="itemPost.shareCount ? itemPost.shareCount : 0" [isBlack]="'true'"
                     [userLike]="itemPost.isLike" [userReboon]="itemPost.isRepost" [userComment]="itemPost.isComment"
                     [isPage]="isComments" [accessPage]="pageUser" (emitpage)="pageAction($event)"
-                    (submit)="postAction($event)" [isShowUser]="isShowUser">
+                    (submit)="postAction($event)" [isShowUser]="isShowUser" [isLike]="isLike" [isShare]="isShare"
+                    [isReboon]="isReboon" [isComment]="isShowComment">
                 </control-action>
             </div>
         </div>
         <ng-container>
             <div *ngIf="!isSearchHashTag && isComments" class="comment">
                 <div class="comment-img">
-                    <ng-container
-                        *ngIf="user && user.imageURL && user.imageURL !== undefined && user.imageURL !== null && user.imageURL !== '' ; else elseImage">
+                    <ng-container *ngIf="!!user!.imageURL; else elseImage">
                         <div class="menu-user" (click)="menuProfile();">
                             <img class="image-profile"
-                                [src]="user.signURL?user.signURL:user.imageSignURL?user.imageSignURL:apiBaseURL+user.imageURL+'/image'"
+                                [src]="user.signURL ? user.signURL : (user.imageSignURL ? user.imageSignURL : apiBaseURL + user.imageURL + '/image')"
                                 alt="">
                         </div>
                     </ng-container>
                     <ng-template #elseImage>
-                        <div class="menu-user displayName"
-                            *ngIf="user && user.displayName && user.displayName !== undefined && user.displayName !== null && user.displayName !== '' || user && user.name && user.name !== null && user.name !== '' && user.name !== undefined ">
+                        <div class="menu-user displayName" *ngIf="!!user!.displayName || !!user!.name">
                             <div class="donator">
                                 {{ user.name || user.displayName | slice: 0:1 }}
                             </div>
@@ -486,7 +505,7 @@
             </div>
             <ng-container *ngIf="commentpost.length > 0">
                 <div class="post-comment">
-                    <comment-post (isLogin)="isComments" (submit)="commentAction($event)" [userId]="usercurrent.id"
+                    <comment-post (isLogin)="isComments" (submit)="commentAction($event)" [userId]="usercurrent?.id"
                         [commentdata]="commentpost">
                     </comment-post>
                 </div>

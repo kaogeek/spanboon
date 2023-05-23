@@ -6,7 +6,7 @@
  */
 
 import { Component, OnInit, ViewChild, EventEmitter, ElementRef, Output } from '@angular/core';
-import { AuthenManager, ProfileFacade, AssetFacade, ObservableManager, PageFacade, PostFacade, PostCommentFacade, RecommendFacade, Engagement, UserEngagementFacade, PostActionService } from '../../../services/services';
+import { AuthenManager, ProfileFacade, AssetFacade, ObservableManager, PageFacade, PostFacade, PostCommentFacade, RecommendFacade, Engagement, UserEngagementFacade, PostActionService, SeoService } from '../../../services/services';
 import { MatDialog } from '@angular/material';
 import * as $ from 'jquery';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -26,11 +26,13 @@ import { DialogDoIng } from '../../shares/dialog/DialogDoIng.component';
 import { BoxPost } from '../../shares/BoxPost.component';
 import { DialogPost } from '../../shares/dialog/DialogPost.component';
 import { filter } from 'rxjs/internal/operators/filter';
+import { DialogShare } from '../../shares/dialog/DialogShare.component';
 
 const PAGE_NAME: string = 'profile';
 const URL_PATH: string = '/profile/';
 const REDIRECT_PATH: string = '/home';
 const IMAGE_SUBJECT: string = 'authen.image';
+const REFRESH_DATA: string = 'refresh_page';
 
 declare var $: any;
 @Component({
@@ -60,6 +62,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
   private engagementService: Engagement;
   private userEngagementFacade: UserEngagementFacade;
   private postActionService: PostActionService;
+  private seoService: SeoService;
   public dialog: MatDialog;
 
   public isLoading: boolean;
@@ -73,6 +76,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
   public isLoadingPost: boolean;
   public isLoadingClickTab: boolean;
   public isClickPostPreLoad: boolean;
+  public mainPostLink: string;
 
   public curPos: number;
   public position: number;
@@ -90,6 +94,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
   public dataRecommend: any;
   public selectedIndex: number;
   public pathPostId: string;
+  public linkPost: string;
 
   public postId: any
   public userCloneDatas: any
@@ -102,12 +107,25 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
   mySubscription: any;
   files: FileHandle[] = [];
 
-  public links = [{ label: 'ไทมไลน์', keyword: 'timeline' }, { label: this.PLATFORM_GENERAL_TEXT, keyword: 'general' }, { label: this.PLATFORM_FULFILL_TEXT, keyword: 'fulfillment' }];
+  public links = [
+    {
+      label: 'ไทมไลน์',
+      keyword: 'timeline'
+    },
+    {
+      label: this.PLATFORM_GENERAL_TEXT,
+      keyword: 'general'
+    },
+    // { 
+    //   label: this.PLATFORM_FULFILL_TEXT, 
+    //   keyword: 'fulfillment' 
+    // }
+  ];
   public activeLink = this.links[0].label;
 
   constructor(router: Router, authenManager: AuthenManager, profileFacade: ProfileFacade, dialog: MatDialog, pageFacade: PageFacade, postCommentFacade: PostCommentFacade,
     sanitizer: DomSanitizer, assetFacade: AssetFacade, observManager: ObservableManager, routeActivated: ActivatedRoute, postFacade: PostFacade, recommendFacade: RecommendFacade,
-    engagementService: Engagement, userEngagementFacade: UserEngagementFacade, postActionService: PostActionService) {
+    engagementService: Engagement, userEngagementFacade: UserEngagementFacade, postActionService: PostActionService, seoService: SeoService) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.dialog = dialog;
     this.sanitizer = sanitizer;
@@ -123,6 +141,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     this.engagementService = engagementService;
     this.userEngagementFacade = userEngagementFacade;
     this.postActionService = postActionService;
+    this.seoService = seoService;
     this.msgUserNotFound = false;
     this.isFiles = false;
     this.showLoading = true;
@@ -212,6 +231,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
   public ngOnDestroy() {
     this.mySubscription.unsubscribe();
     super.ngOnDestroy();
+    this.observManager.complete(REFRESH_DATA);
   }
 
   public ngOnInit(): void {
@@ -219,12 +239,19 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     this.setTab();
     this.checkLoginAndRedirection();
     this.getRecommend();
+    this.openLoading();
     if (this.isLogin()) {
       this.getProfileImage();
     }
     // this.searchPostById('6051c688fb3585b175ab4765')
     $(window).resize(() => {
       this.setTab();
+    });
+
+    this.observManager.subscribe(REFRESH_DATA, (result: any) => {
+      if (result) {
+        this.resPost.posts.unshift(result);
+      }
     });
   }
 
@@ -430,37 +457,46 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
   public showProfile(url: string): void {
     this.isLoading = true;
     this.profileFacade.getProfile(url).then((res) => {
-      if (res.status === 1 && res.data) {
-        let user = {
-          displayName: res.data.displayName,
-          firstName: res.data.firstName,
-          lastName: res.data.lastName,
-          birthdate: res.data.birthdate,
-          gender: res.data.gender,
-          customGender: res.data.customGender,
-          username: res.data.username
-        }
-        this.resEditProfile = user;
-        this.position = res.data.coverPosition;
-        this.resProfile = res.data;
-        if (this.resProfile && this.resProfile.name) {
-          this.name = this.resProfile.name
-        } else if (this.resProfile && this.resProfile.uniqueId) {
-          this.name = this.resProfile.uniqueId
-        } else if (this.resProfile.displayName) {
-          this.name = this.resProfile.displayName
-        }
+      if (res) {
+        this.seoService.updateTitle(res.data.name ? res.data.name : res.data.displayName);
+        if (res.status === 1 && res.data) {
+          let user = {
+            displayName: res.data.displayName,
+            firstName: res.data.firstName,
+            lastName: res.data.lastName,
+            birthdate: res.data.birthdate,
+            gender: res.data.gender,
+            customGender: res.data.customGender,
+            username: res.data.username
+          }
+          this.resEditProfile = user;
+          this.position = res.data.coverPosition;
+          this.resProfile = res.data;
+          if (this.resProfile && this.resProfile.name) {
+            this.name = this.resProfile.name
+          } else if (this.resProfile && this.resProfile.uniqueId) {
+            this.name = this.resProfile.uniqueId
+          } else if (this.resProfile.displayName) {
+            this.name = this.resProfile.displayName
+          }
+          // this.seoService.updateTitle(this.resProfile.displayName);
+          if (!!this.resProfile.imageURL) {
+            this.resProfile.isLoadingImage = true;
+            this.getDataIcon(this.resProfile.imageURL, "image");
+          }
 
-        if (this.resProfile.imageURL !== '' && this.resProfile.imageURL !== null && this.resProfile.imageURL !== undefined) {
-          this.resProfile.isLoadingImage = true;
-          this.getDataIcon(this.resProfile.imageURL, "image")
+          if (!this.resProfile!.coverSignURL) {
+            this.getDataIcon(this.resProfile.coverURL, "cover");
+          }
+
+          if (!this.resProfile!.coverSignURL && !this.resProfile!.coverURL) {
+            this.resProfile.isLoadingCover = false;
+          }
+
+          setTimeout(() => {
+            this.isLoading = false;
+          }, 2000);
         }
-        if (this.resProfile.coverURL !== '' && this.resProfile.coverURL !== null && this.resProfile.coverURL !== undefined) {
-          this.getDataIcon(this.resProfile.coverURL, "cover")
-        }
-        setTimeout(() => {
-          this.isLoading = false;
-        }, 1000);
       }
 
     }).catch((err: any) => {
@@ -563,6 +599,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     } else if (myType === "image") {
       Object.assign(this.resProfile, { isLoadingImage: true });
     }
+
     this.assetFacade.getPathFile(imageURL).then((res: any) => {
       if (res.status === 1) {
         if (myType === "image") {
@@ -575,9 +612,9 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
         } else if (myType === "cover") {
           this.resProfile.isLoadingCover = false;
           if (ValidBase64ImageUtil.validBase64Image(res.data)) {
-            Object.assign(this.resProfile, { coverBase64: res.data });
+            Object.assign(this.resProfile, { coverURL: res.data });
           } else {
-            Object.assign(this.resProfile, { coverBase64: '' });
+            Object.assign(this.resProfile, { coverURL: '' });
           }
         }
       }
@@ -589,7 +626,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
             Object.assign(this.resProfile, { imageBase64: '' });
           } else {
             this.resProfile.isLoadingCover = false;
-            Object.assign(this.resProfile, { coverBase64: '', isLoaded: true });
+            Object.assign(this.resProfile, { coverURL: '', isLoaded: true });
           }
         }
       }
@@ -643,10 +680,9 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
   }
 
   public saveCoverImage(): void {
+    this.isEditCover = true;
     let userId = this.getCurrentUserId();
-
-    this.isEditCover = false;
-    const styleWidth = document.getElementById('image');
+    const styleWidth = document.getElementById('images');
     let value = window.getComputedStyle(styleWidth).getPropertyValue("background-position-y");
     let position = value.substring(0, value.lastIndexOf("%"));
     let image = window.getComputedStyle(styleWidth).getPropertyValue("background-image");
@@ -655,7 +691,6 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     const typeImage = dataImage.split(':')[1];
     asset.mimeType = typeImage.split(';')[0];
     let index = image.substring(5).split(',')[1];
-
     asset.data = index.substring(0, index.lastIndexOf(")")).split('"')[0];
     asset.size = this.imageCoverSize;
     let dataImages = {
@@ -665,12 +700,20 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
 
     this.profileFacade.saveCoverImageProfile(userId, dataImages).then((res: any) => {
       if (res.status === 1) {
+        this.isEditCover = false;
         this.isFiles = false;
-        this.getDataIcon(res.data.coverURL, "cover");
+        if (!!res!.data!.coverSignURL) {
+          this.resProfile.coverSignURL = res.data.coverSignURL;
+        } else {
+          this.getDataIcon(res.data.coverURL, "cover");
+          this.resProfile.coverSignURL = '';
+        }
         this.resProfile.coverPosition = res.data.coverPosition;
       }
     }).catch((err: any) => {
-      console.log(err)
+      console.log(err);
+      this.isEditCover = false;
+      this.isFiles = false;
     })
   }
 
@@ -706,8 +749,8 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     $(img).on('load', function () {
       imgWidth = img.width;
       imgHeight = img.height;
-      let imgWidthTrue = $('#image').width();
-      let imgHeightTrue = $('#image').height();
+      let imgWidthTrue = $('#images').width();
+      let imgHeightTrue = $('#images').height();
       let varImg;
       if (imgHeight > imgWidth) {
         varImg = imgHeight / imgWidth;
@@ -721,18 +764,18 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
         imgHeightTotal = imgWidthTrue - imgHeightTrue;
       }
 
-      $('#image').css('background-image', 'url(' + img.src + ')');
-      $('#image').css('display', 'flex');
+      $('#images').css('background-image', 'url(' + img.src + ')');
+      $('#images').css('display', 'flex');
     });
 
     var start_y;
     var newPos;
     this.isFiles = true;
-    var curPos = $('#image').css('background-position-y');
+    var curPos = $('#images').css('background-position-y');
     var mouseDown = false;
     var move = true;
 
-    $('#image').mousedown(function (e) {
+    $('#images').mousedown(function (e) {
       mouseDown = true;
     });
 
@@ -741,7 +784,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
       $('.image').css('background-position-y', curPos)
     });
 
-    $('#image').mouseenter(function (e) {
+    $('#images').mouseenter(function (e) {
       start_y = e.clientY;
     });
 
@@ -750,7 +793,6 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
       start_y = e.clientY;
 
       if (mouseDown) {
-
         let newPercent = (100 / imgHeight) * newPos;
         newPercent = newPercent * 5;
 
@@ -780,16 +822,18 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
           }
         }
 
-        $('#image').css('background-position-y', this.coverImageoldValue + '%');
-        curPos = parseInt($('#image').css('background-position-y'));
+        $('#images').css('background-position-y', this.coverImageoldValue + '%');
+        curPos = parseInt($('#images').css('background-position-y'));
 
         if (curPos > 100) {
           curPos = 100;
-          $('#image').css('background-position-y', curPos + '%');
+          $('#images').css('background-position-y', curPos + '%');
+          this.position = curPos;
         }
         if (curPos < 0) {
           curPos = 0;
-          $('#image').css('background-position-y', curPos + '%');
+          $('#images').css('background-position-y', curPos + '%');
+          this.position = curPos;
         }
       }
     });
@@ -812,7 +856,8 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     }
     this.profileFacade.saveImageProfile(userId, editImage).then((res: any) => {
       if (res.status === 1) {
-        this.getDataIcon(res.data.coverURL, "cover")
+        this.getDataIcon((res.data.coverURL ? res.data.coverURL : res.data.imageURL
+        ), (res.data.coverURL ? "cover" : "image"));
         this.isFiles = false;
         this.observManager.publish('authen.image', res);
       }
@@ -849,14 +894,14 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
               let dialog = this.showAlertDialogWarming("คุณต้องการเลิกติดตาม " + data.recommed.displayName, "none");
               dialog.afterClosed().subscribe((res) => {
                 if (res) {
-                  Object.assign(this.dataRecommend[index], { follow: followUser.data.isFollow });
+                  Object.assign(this.dataRecommend[index], { isFollowed: followUser.data.isFollow });
                 } else {
-                  Object.assign(this.dataRecommend[index], { follow: true });
+                  Object.assign(this.dataRecommend[index], { isFollowed: true });
                 }
                 this.dialog.closeAll();
               });
             } else {
-              Object.assign(this.dataRecommend[index], { follow: followUser.data.isFollow });
+              Object.assign(this.dataRecommend[index], { isFollowed: followUser.data.isFollow });
             }
           }
         }
@@ -871,14 +916,14 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
               let dialog = this.showAlertDialogWarming("คุณต้องการเลิกติดตาม " + data.recommed.name, "none");
               dialog.afterClosed().subscribe((res) => {
                 if (res) {
-                  Object.assign(this.dataRecommend[index], { follow: followPage.data.isFollow });
+                  Object.assign(this.dataRecommend[index], { isFollowed: followPage.data.isFollow });
                 } else {
-                  Object.assign(this.dataRecommend[index], { follow: true });
+                  Object.assign(this.dataRecommend[index], { isFollowed: true });
                 }
                 this.dialog.closeAll();
               });
             } else {
-              Object.assign(this.dataRecommend[index], { follow: followPage.data.isFollow });
+              Object.assign(this.dataRecommend[index], { isFollowed: followPage.data.isFollow });
             }
           }
         }
@@ -984,9 +1029,24 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
       } else if (action.mod === 'LIKE') {
         this.isLoginCh();
         this.postLike(action, index);
+      } else if (action.mod === 'SHARE') {
+        this.mainPostLink = window.location.origin + '/profile/' + this.user.uniqueId + '/post/';
+        this.linkPost = (this.mainPostLink + this.resPost.posts[index]._id);
+        this.dialogShare();
       }
     }).catch((err: any) => {
       console.log('err ', err)
+    });
+  }
+
+  public dialogShare() {
+    let dialog = this.dialog.open(DialogShare, {
+      disableClose: true,
+      autoFocus: false,
+      data: {
+        title: "แชร์",
+        text: this.linkPost
+      }
     });
   }
 
@@ -1024,7 +1084,8 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result !== undefined) {
+      if (result !== null && result !== undefined) {
+        this.resPost.posts[index] = result;
       }
       this.stopLoading();
     });
@@ -1073,13 +1134,17 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
       this.pageUser.push(this.userCloneDatas)
       this.pageUser.reverse();
     }).catch((err: any) => {
+      console.log("err", err);
     });
     if (this.pageUser.length > 0) {
       for (let p of this.pageUser) {
-        var aw = await this.assetFacade.getPathFile(p.imageURL).then((res: any) => {
-          p.img64 = res.data
-        }).catch((err: any) => {
-        });
+        if (!p.signURL) {
+          await this.assetFacade.getPathFile(p.imageURL).then((res: any) => {
+            p.img64 = res.data
+          }).catch((err: any) => {
+            console.log("err", err);
+          });
+        }
       }
     }
   }
@@ -1167,5 +1232,48 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     }).catch((err: any) => {
       console.log('err ', err)
     })
+  }
+
+  public blockUser() {
+    let dialog = this.dialog.open(DialogAlert, {
+      disableClose: true,
+      data: {
+        text: 'คุณต้องการบล็อกผู้ใช้นี้ใช่หรือไม่',
+      },
+    });
+    dialog.afterClosed().subscribe((res) => {
+      if (res) {
+        // if(localStorage.getItem('blockUser') == null) {
+        //   localStorage.setItem('blockUser','[]');
+        // } 
+
+        // var add_data = JSON.parse(localStorage.getItem('blockUser'));
+        // add_data.push(this.resProfile.id);
+
+        // localStorage.setItem('blockUser', JSON.stringify(add_data));
+        // let show_blockUser = localStorage.getItem('blockUser');
+
+        // this.router.navigate(['home']);
+        // this.showAlertDevelopDialog('ระบบอยู่ในระหว่างการพัฒนา');
+      }
+    });
+  }
+
+  public reportUser() {
+    let dialog = this.dialog.open(DialogAlert, {
+      disableClose: true,
+      data: {
+        text: 'คุณต้องการรายงานผู้ใช้นี้ใช่หรือไม่',
+      },
+    });
+    dialog.afterClosed().subscribe((res) => {
+      if (res) {
+        // this.showAlertDevelopDialog('ระบบอยู่ในระหว่างการพัฒนา');
+      }
+    });
+  }
+
+  private openLoading() {
+    this.isLoading = true;
   }
 }

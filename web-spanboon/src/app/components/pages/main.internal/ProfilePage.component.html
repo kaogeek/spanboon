@@ -4,7 +4,6 @@
     License: MIT. https://opensource.org/licenses/MIT
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
-
 <ng-container *ngIf="!msgUserNotFound; else elsePageNotFound">
     <div class="profile-timeline-page">
         <div class="container">
@@ -39,7 +38,7 @@
                                 </div>
                             </div>
                             <!-- <div class="setting" [routerLink]="'/account/settings'"> -->
-                            <div class="setting" (click)="showAlertDevelopDialog()">
+                            <!-- <div class="setting" (click)="showAlertDevelopDialog()">
                                 <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="16.334" height="16.773"
                                     viewBox="0 0 16.334 16.773">
                                     <g id="tools-and-utensils" transform="translate(-6.71)" opacity="0.34">
@@ -75,7 +74,7 @@
                                 <div class="name">
                                     การแจ้งเตือน
                                 </div>
-                            </div>
+                            </div> -->
                             <div class="setting" (click)="logout()">
                                 <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="17.437" height="15.257"
                                     viewBox="0 0 17.437 15.257">
@@ -126,14 +125,15 @@
                     </ng-container>
                 </div>
                 <div class="wrapper-feed-profile">
-                    <div *ngIf="!showLoading" class="profile-background">
-                        <ng-container *ngIf="isLoading || (resProfile && resProfile.isLoadingCover); else elseisLoading">
+                    <div class="profile-background" *ngIf="!showLoading">
+                        <ng-container
+                            *ngIf="isLoading || (resProfile && resProfile.isLoadingCover); else elseisLoading">
                             <div class="cover-img preload-background"></div>
                         </ng-container>
                         <ng-template #elseisLoading>
                             <ng-container *ngIf="resProfile">
                                 <ng-container
-                                    *ngIf="resProfile.coverURL === '' || resProfile.coverURL === undefined || resProfile.coverURL === null ; else elseCoverImage">
+                                    *ngIf="!resProfile.coverSignURL && !resProfile.coverURL; else elseCoverImage">
                                     <ng-container *ngIf="isNotAccess; else elseisNotAccess">
                                         <div class="wrapper-cover-image" [class.hide]="isFiles"
                                             (click)="fileInput.click()" dragdrop-image (files)="filesDropped($event)">
@@ -195,7 +195,7 @@
                                     <div class="cover-img" [class.hide]="isFiles" *ngIf="!isEditCover">
                                         <div (load)="loadImageOK($event)" (error)="loadImageError($event)"
                                             class="body-cover-image"
-                                            [ngStyle]="resProfile.coverBase64 ? {'background-image': 'url('+resProfile.coverBase64+')' ,'background-position-y' : position+'%' } : {} ">
+                                            [ngStyle]="{'background-position-y' : resProfile.coverPosition ? resProfile.coverPosition + '%' : '50%' , 'background-image' : 'url(' + (resProfile.coverSignURL ?  resProfile.coverSignURL : (resProfile.coverURL ? resProfile.coverURL : '')) + ')' }">
                                         </div>
                                     </div>
                                     <div class="set-cover">
@@ -241,7 +241,7 @@
                                 </ng-template>
                             </ng-container>
                         </ng-template>
-                        <img id="image" [class.active]="!isEditCover"
+                        <img id="images" [class.active]="!isEditCover"
                             [ngStyle]="{'display': isEditCover ? 'flex' : 'none'}">
                     </div>
 
@@ -327,6 +327,28 @@
                                 [active]="activeLink == link.label">
                                 {{link.label}}
                             </a>
+                            <ng-container *ngIf="!isNotAccess">
+                                <button mat-icon-button [matMenuTriggerFor]="menu" [disableRipple]="'false'"
+                                    class="dropdown">
+                                    <span class="material-icons">
+                                        more_horiz
+                                    </span>
+                                </button>
+                                <mat-menu #menu="matMenu" xPosition="before">
+                                    <div>
+                                        <button mat-menu-item [disableRipple]="'true'" class="list-dropdown"
+                                            (click)="reportUser()">
+                                            <mat-icon>warning</mat-icon>
+                                            <span>รายงานผู้ใช้นี้</span>
+                                        </button>
+                                        <button mat-menu-item [disableRipple]="'true'" class="list-dropdown"
+                                            (click)="blockUser()">
+                                            <mat-icon>block</mat-icon>
+                                            <span>บล็อกผู้ใช้นี้</span>
+                                        </button>
+                                    </div>
+                                </mat-menu>
+                            </ng-container>
                         </nav>
                     </div>
                     <box-post *ngIf="isLogin() && isNotAccess && !showLoading && CheckPost" #boxPost id="boxPost"
@@ -384,7 +406,7 @@
     </div>
 </ng-container>
 <ng-template #elsePageNotFound>
-    <div class="profile-timeline-page userNotFound">
+    <div class="spanboon-fan-page pageNotFound">
         <svg id="Group_142" data-name="Group 142" xmlns="http://www.w3.org/2000/svg" width="67.553" height="33.8"
             viewBox="0 0 67.553 33.8">
             <circle id="Ellipse_89" data-name="Ellipse 89" cx="3.753" cy="3.753" r="3.753"
@@ -397,8 +419,9 @@
                 d="M187.761,979.776c-.008-13.128-15.127-23.769-33.776-23.769s-33.769,10.64-33.777,23.769h3.35a3.752,3.752,0,0,1,7.5,0h6.659V968.053a6.255,6.255,0,0,1,12.509,0v11.723h7.5V968.053a6.255,6.255,0,0,1,12.51,0v11.723h6.607v-.007a3.753,3.753,0,1,1,7.506,0v.007Z"
                 transform="translate(-120.208 -945.977)" fill="#a2a2a2" />
         </svg>
-        ไม่พบบัญชีผู้ใช้
+        <div class="text-NotFound">ไม่พบบัญชีผู้ใช้</div>
     </div>
 </ng-template>
 
 <loading [text]="'กำลังโพสต์'" *ngIf="isPostLoading"></loading>
+<loading *ngIf="isLoading"></loading>

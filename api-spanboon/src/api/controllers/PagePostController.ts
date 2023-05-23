@@ -299,6 +299,7 @@ export class PagePostController {
     public async createPagePost(@Body({ validate: true }) pagePost: PagePostRequest, @Param('pageId') pageId: string, @QueryParams() options: any, @Res() res: any, @Req() req: any): Promise<any> {
         const userObjId = new ObjectID(req.user.id);
         const clientId = req.headers['client-id'];
+        const mode = req.headers.mode;
         const ipAddress = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress).split(',')[0];
         const userIdList = [];
         const userTags = [];
@@ -367,7 +368,6 @@ export class PagePostController {
         }
 
         let assetResult: Asset;
-
         if (postStory !== null && postStory !== undefined && postStory !== '') {
             if (coverImage !== null && coverImage !== undefined) {
                 const newFileName = userObjId + FileUtil.renameFile();
@@ -589,9 +589,20 @@ export class PagePostController {
                     for (let i = 0; i < userFollow.length; i++) {
                         const tokenFCMId = await this.deviceToken.find({ userId: userFollow[i].userId, token: { $ne: null } });
                         const link = `/page/${pagePostId.id}/post/` + createPostPageData.id;
+                        await this.notificationService.createNotificationFCM(
+                            userFollow[i].userId,
+                            USER_TYPE.PAGE,
+                            req.user.id + '',
+                            USER_TYPE.USER,
+                            NOTIFICATION_TYPE.POST,
+                            notificationTextPOST,
+                            link,
+                            pagePostId.pageUsername,
+                            pagePostId.imageURL
+                        );
                         for (const tokenFCM of tokenFCMId) {
                             if (tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== null) {
-                                await this.notificationService.createNotificationFCM(
+                                await this.notificationService.sendNotificationFCM(
                                     tokenFCM.userId,
                                     USER_TYPE.PAGE,
                                     req.user.id + '',
@@ -605,15 +616,7 @@ export class PagePostController {
                                 );
                             }
                             else {
-                                await this.notificationService.createNotification(
-                                    userFollow[i].userId,
-                                    USER_TYPE.PAGE,
-                                    req.user.id + '',
-                                    USER_TYPE.USER,
-                                    NOTIFICATION_TYPE.POST,
-                                    notificationTextPOST,
-                                    link,
-                                );
+                                continue;
                             }
                         }
                     }
@@ -622,14 +625,25 @@ export class PagePostController {
                 else {
                     // user to user
                     const userPost = await this.userService.findOne({ _id: createPostPageData.ownerUser });
-                    const notificationTextPOST = 'มีโพสต์ใหม่จาก'+ space + userPost.displayName;
+                    const notificationTextPOST = 'มีโพสต์ใหม่จาก' + space + userPost.displayName;
                     const userFollow = await this.userFollowService.find({ subjectType: 'USER', subjectId: createPostPageData.ownerUser });
+                    const link = `/profile/${userPost.id}/post/` + createPostPageData.id;
                     for (let i = 0; i < userFollow.length; i++) {
+                        await this.notificationService.createNotificationFCM(
+                            userFollow[i].userId,
+                            USER_TYPE.USER,
+                            req.user.id + '',
+                            USER_TYPE.USER,
+                            NOTIFICATION_TYPE.POST,
+                            notificationTextPOST,
+                            link,
+                            userPost.displayName,
+                            userPost.imageURL
+                        );
                         const tokenFCMId = await this.deviceToken.find({ userId: userFollow[i].userId, token: { $ne: null } });
                         for (const tokenFCM of tokenFCMId) {
-                            const link = `/profile/${userPost.uniqueId}/post/` + createPostPageData.id;
                             if (tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== null) {
-                                await this.notificationService.createNotificationFCM(
+                                await this.notificationService.sendNotificationFCM(
                                     tokenFCM.userId,
                                     USER_TYPE.USER,
                                     req.user.id + '',
@@ -643,15 +657,7 @@ export class PagePostController {
                                 );
                             }
                             else {
-                                await this.notificationService.createNotification(
-                                    userFollow[i].userId,
-                                    USER_TYPE.USER,
-                                    req.user.id + '',
-                                    USER_TYPE.USER,
-                                    NOTIFICATION_TYPE.POST,
-                                    notificationTextPOST,
-                                    link,
-                                );
+                                continue;
                             }
                         }
 
@@ -849,7 +855,7 @@ export class PagePostController {
                         }
 
                         if (isPostFacebook) {
-                            const isValid = await this.pageSocialAccountService.pagePostToFacebook(createResult.posts.id, pageId);
+                            const isValid = await this.pageSocialAccountService.pagePostToFacebook(createResult.posts.id, pageId, userObjId, mode);
                             createResult.facebookValid = isValid;
                         }
                     }
@@ -985,26 +991,24 @@ export class PagePostController {
             let pageStmt;
             try {
                 pageObjId = new ObjectID(pId);
-                pageStmt = { _id: pageObjId };
+                pageStmt = { _id: pageObjId, banned: false };
             } catch (ex) {
-                pageStmt = { pageUsername: pId };
+                pageStmt = { pageUsername: pId, banned: false };
             } finally {
                 if (pageObjId === undefined || pageObjId === 'undefined') {
                     pageObjId = null;
                 }
 
-                pageStmt = { $or: [{ _id: pageObjId }, { pageUsername: pId }] };
+                pageStmt = { $or: [{ _id: pageObjId }, { pageUsername: pId }], banned: false };
             }
 
             const page: Page = await this.pageService.findOne(pageStmt);
-
             if (page !== null && page !== undefined) {
                 const postPageObjId = new ObjectID(page.id);
                 const today = moment().toDate();
                 const whereCondition = search.whereConditions;
                 let limit = search.limit;
                 let offset = search.offset;
-                let postPageStmt;
 
                 if (offset === null || offset === undefined) {
                     offset = 0;
@@ -1033,7 +1037,7 @@ export class PagePostController {
                     }
                 }
 
-                postPageStmt = [
+                const postPageStmt: any[] = [
                     { $match: matchStmt },
                     { $sort: { startDateTime: -1 } },
                     { $skip: offset },
@@ -1301,7 +1305,6 @@ export class PagePostController {
                     const postsMap: any = {};
                     const postList = [];
                     const referencePostList = [];
-
                     for (const posts of pagePostLists) {
                         const postId = posts._id;
                         postList.push(new ObjectID(postId));
@@ -1484,7 +1487,6 @@ export class PagePostController {
     @Authorized('user')
     public async updatePostPage(@Body({ validate: true }) postPages: PagePostRequest, @Param('pageId') pageId: string, @Param('postId') postId: string, @Res() res: any, @Req() req: any): Promise<any> {
         try {
-            console.log('ok');
             const pagePostsObjId = new ObjectID(postId);
             const ownerUser = new ObjectID(req.user.id);
             const clientId = req.headers['client-id'];

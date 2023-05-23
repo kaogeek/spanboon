@@ -14,6 +14,8 @@ import { AbstractPage } from '../../pages/AbstractPage';
 import { Router } from '@angular/router';
 import * as $ from 'jquery';
 import { environment } from '../../../../environments/environment';
+import { fromEvent, Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 const PAGE_NAME: string = 'editcomment';
 const SEARCH_LIMIT: number = 100;
@@ -28,7 +30,7 @@ declare var $: any;
 export class DialogCreatePage extends AbstractPage {
 
   public static readonly PAGE_NAME: string = PAGE_NAME;
-
+  private destroy = new Subject<void>();
   @ViewChild('pageName', { static: false }) pageName: ElementRef;
   @ViewChild('urlPage', { static: false }) urlPage: ElementRef;
 
@@ -61,6 +63,7 @@ export class DialogCreatePage extends AbstractPage {
   public isSkip: boolean = false;
   public isCanCel: boolean = true;
   public uuid: boolean;
+  public isValid: boolean;
   public isNull: boolean;
   public isNext: boolean;
   public isNextEmpty: boolean;
@@ -96,11 +99,19 @@ export class DialogCreatePage extends AbstractPage {
   }
 
   public ngAfterViewInit(): void {
+    fromEvent(this.urlPage && this.urlPage.nativeElement, 'keyup').pipe(
+      debounceTime(500)
+      , distinctUntilChanged()
+    ).subscribe((text: any) => {
+      this.checkUUID(this.urlPage.nativeElement.value);
+    });
     this.tabWizard(currentTab);
   }
 
   public ngOnDestroy(): void {
     super.ngOnDestroy();
+    this.destroy.next();
+    this.destroy.complete();
   }
 
   isPageDirty(): boolean {
@@ -344,6 +355,19 @@ export class DialogCreatePage extends AbstractPage {
     this.fixStepIndicator(n);
   }
 
+  public checkNamePage() {
+    const regEx = '[~!@#$%^*?]';
+    let pName = this.pageName.nativeElement.value;
+    let patternPageName = pName.match(regEx);
+    if (!patternPageName) {
+      this.isValid = false;
+      $('.but-conf').removeClass('active');
+    } else {
+      this.isValid = true;
+      $('.but-conf').addClass('active');
+    }
+  }
+
   public nextPrev(n) {
     this.isActive = false;
     this.isSkip = false;
@@ -355,7 +379,7 @@ export class DialogCreatePage extends AbstractPage {
       return;
     }
 
-    this.pName = this.pageName.nativeElement.value.trim();
+    this.pName = this.pageName.nativeElement.value;
     var x = document.getElementsByClassName("box-create");
     if (this.isChooseCategory) {
       if (n == 1 && !this.validateForm()) return false;
@@ -394,7 +418,6 @@ export class DialogCreatePage extends AbstractPage {
         this.isBack = false;
       }
     }
-
     this.tabWizard(currentTab);
   }
 
@@ -456,7 +479,6 @@ export class DialogCreatePage extends AbstractPage {
 
   public checkedClick() {
     this.checkedCon = !this.checkedCon;
-
     if (this.checkedCon === true) {
       $('.but-conf').removeClass('active');
     } else {

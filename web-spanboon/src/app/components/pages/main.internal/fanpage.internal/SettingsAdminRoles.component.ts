@@ -9,8 +9,8 @@ import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from "
 import { FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable } from 'rxjs';
-import { map, startWith } from 'rxjs/operators';
+import { fromEvent, Observable, Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, map, startWith } from 'rxjs/operators';
 import { POST_TYPE, USER_LEVEL } from '../../../../TypePost';
 import { AccountFacade, AssetFacade, AuthenManager, ObservableManager, PageFacade, UserAccessFacade } from '../../../../services/services';
 import { AbstractPage } from '../../AbstractPage';
@@ -60,6 +60,7 @@ export class SettingsAdminRoles extends AbstractPage implements OnInit {
     public isLoading: boolean = false;
     public isActive: boolean = false;
     public isButtonActive: boolean = false;
+    public isConfirm: boolean = false;
     public valueSt: any = '';
     public editIndex: any;
     public editAdminIndex: any;
@@ -74,6 +75,7 @@ export class SettingsAdminRoles extends AbstractPage implements OnInit {
     public accessPage: any;
     // public pageIdUrl: string;
 
+    private destroy = new Subject<void>();
     @ViewChild('formfield', { static: false }) formfield: ElementRef;
     @ViewChild('selectroles', { static: false }) selectroles: ElementRef;
     @ViewChild('search', { static: false }) search: ElementRef;
@@ -117,41 +119,41 @@ export class SettingsAdminRoles extends AbstractPage implements OnInit {
             check: true,
             title: "สามารถจัดการทุกแง่มุมของเพจได้ พวกเขาจะสามารถเผยแพร่และส่งข้อความ Messenger ในนามของเพจ, ตอบกลับและลบความคิดเห็นบนเพจ, ดูว่าใครสร้างโพสต์หรือแสดงความคิดเห็น, ดูข้อมูลเชิงลึก, และกำหนดบทบาทในเพจได้",
         },
-        {
-            label: "ผู้จัดการ",
-            keyword: "MODERATOR",
-            value: 2,
-            check: false,
-            title: "สามารถส่งข้อความ Messenger ในฐานะของเพจ, ตอบกลับและลบความคิดเห็นบนเพจ, ดูว่าใครสร้างโพสต์หรือแสดงความคิดเห็น",
-        },
-        {
-            label: "ผู้จัดการโพสต์",
-            keyword: "POST_MODERATOR",
-            value: 3,
-            check: false,
-            title: "ตอบกลับและลบความคิดเห็นบนเพจ, ดูว่าใครสร้างโพสต์หรือแสดงความคิดเห็น",
-        },
-        {
-            label: "ผู้จัดการ" + this.PLATFORM_FULFILL_TEXT,
-            keyword: "FULFILLMENT_MODERATOR",
-            value: 4,
-            check: false,
-            title: "สามารถส่งข้อความ จัดการโพสต์ที่" + this.PLATFORM_FULFILL_TEXT + "ได้",
-        },
-        {
-            label: "ผู้จัดการแชท",
-            keyword: "CHAT_MODERATOR",
-            value: 5,
-            check: false,
-            title: "สามารถส่งข้อความ Messenger ในฐานะของเพจ ",
-        },
-        {
-            label: "เจ้าของเพจ",
-            keyword: "OWNER",
-            value: 6,
-            check: false,
-            title: "สามารถเผยแพร่เนื้อหาและส่งข้อความใน Messenger ในฐานะเพจ, ตอบกลับและลบความคิดเห็นบนเพจ, ดูว่าใครเป็นคนสร้างโพสต์หรือแสดงความคิดเห็น, และดูข้อมูลเชิงลึกต่างๆได้",
-        },
+        // {
+        //     label: "ผู้จัดการ",
+        //     keyword: "MODERATOR",
+        //     value: 2,
+        //     check: false,
+        //     title: "สามารถส่งข้อความ Messenger ในฐานะของเพจ, ตอบกลับและลบความคิดเห็นบนเพจ, ดูว่าใครสร้างโพสต์หรือแสดงความคิดเห็น",
+        // },
+        // {
+        //     label: "ผู้จัดการโพสต์",
+        //     keyword: "POST_MODERATOR",
+        //     value: 3,
+        //     check: false,
+        //     title: "ตอบกลับและลบความคิดเห็นบนเพจ, ดูว่าใครสร้างโพสต์หรือแสดงความคิดเห็น",
+        // },
+        // {
+        //     label: "ผู้จัดการ" + this.PLATFORM_FULFILL_TEXT,
+        //     keyword: "FULFILLMENT_MODERATOR",
+        //     value: 4,
+        //     check: false,
+        //     title: "สามารถส่งข้อความ จัดการโพสต์ที่" + this.PLATFORM_FULFILL_TEXT + "ได้",
+        // },
+        // {
+        //     label: "ผู้จัดการแชท",
+        //     keyword: "CHAT_MODERATOR",
+        //     value: 5,
+        //     check: false,
+        //     title: "สามารถส่งข้อความ Messenger ในฐานะของเพจ ",
+        // },
+        // {
+        //     label: "เจ้าของเพจ",
+        //     keyword: "OWNER",
+        //     value: 6,
+        //     check: false,
+        //     title: "สามารถเผยแพร่เนื้อหาและส่งข้อความใน Messenger ในฐานะเพจ, ตอบกลับและลบความคิดเห็นบนเพจ, ดูว่าใครเป็นคนสร้างโพสต์หรือแสดงความคิดเห็น, และดูข้อมูลเชิงลึกต่างๆได้",
+        // },
     ];
 
     constructor(authenManager: AuthenManager, dialog: MatDialog, router: Router, userAccessFacade: UserAccessFacade, assetFacade: AssetFacade,
@@ -187,18 +189,25 @@ export class SettingsAdminRoles extends AbstractPage implements OnInit {
         this.dirtyCancelEvent = new EventEmitter();
     }
 
-    ngOnInit(): void { 
+    ngOnInit(): void {
         if (this.isLogin) {
             this.getAccessPage();
         }
     }
 
     ngAfterViewInit(): void {
-
+        fromEvent(this.search && this.search.nativeElement, 'keyup').pipe(
+            debounceTime(500)
+            , distinctUntilChanged()
+        ).subscribe((text: any) => {
+            this.keyUpAutoComp(this.search.nativeElement.value);
+        });
     }
 
     public ngOnDestroy(): void {
         super.ngOnDestroy();
+        this.destroy.next();
+        this.destroy.complete();
     }
 
     isPageDirty(): boolean {
@@ -274,10 +283,12 @@ export class SettingsAdminRoles extends AbstractPage implements OnInit {
             if (this.dataUser) {
                 for (let data of this.dataUser) {
                     let index = 0;
-                    if (data && data.imageURL && data.imageURL !== '' && data.imageURL !== undefined && data.imageURL !== null) {
-                        this.getImageBase64(data, index);
+                    if (!data.signURL) {
+                        if (!!data!.imageURL) {
+                            this.getImageBase64(data, index);
+                        }
+                        index++;
                     }
-                    index++;
                 }
             }
             this.isLoading = false;
@@ -364,30 +375,36 @@ export class SettingsAdminRoles extends AbstractPage implements OnInit {
         return base64Image && regex.test(base64Image) ? true : false;
     }
 
-    public addUserLevel() { 
-        if(this.valueSt === ''){
-            return;
-        }
-        this.isActive = true;
-        let levelUser = this.getLevelUser(this.selectPower.label); 
-        let access = {
-            level: levelUser,
-            user: this.valueSt.id || this.valueSt.uniqueId
-        } 
-        this.pageFacade.addAccess(this.pageId, access).then((res) => {
-            if (res.message === "Successfully adding User Page Access") {
-                this.clearInputData();
-                this.getAccessPage();
-                if (res) {
-                    this.accessPage = res;
+    public addUserLevel() {
+        if (!this.isConfirm) {
+            this.isConfirm = true;
+            if (this.valueSt === '') {
+                this.isConfirm = false;
+                return;
+            }
+            this.isActive = true;
+            let levelUser = this.getLevelUser(this.selectPower.label);
+            let access = {
+                level: levelUser,
+                user: this.valueSt.id || this.valueSt.uniqueId
+            }
+            this.pageFacade.addAccess(this.pageId, access).then((res) => {
+                if (res.message === "Successfully adding User Page Access") {
+                    this.clearInputData();
+                    this.getAccessPage();
+                    if (res) {
+                        this.isConfirm = false;
+                        this.accessPage = res;
+                    }
                 }
-            }
-        }).catch((err) => {
-            console.log(err)
-            if (err.error.message === 'Access Level was duplicated.') {
-                this.showAlertDialog('ไม่สามารถแอดสิทธิซ้ำได้');
-            }
-        })
+            }).catch((err) => {
+                console.log(err)
+                if (err.error.message === 'Access Level was duplicated.') {
+                    this.isConfirm = false;
+                    this.showAlertDialog('ไม่สามารถแอดสิทธิซ้ำได้');
+                }
+            })
+        }
     }
 
     public getLevelUser(selected) {

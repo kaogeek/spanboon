@@ -36,6 +36,11 @@ export class StandardItemRequestService {
         return await this.standardItemRequestRepository.deleteOne(query, options);
     }
 
+    // deleteMany
+    public async deleteMany(query: any, options?: any): Promise<any> {
+        return await this.standardItemRequestRepository.deleteMany(query, options);
+    }
+
     // find standardItemRequest
     public findAll(): Promise<any> {
         return this.standardItemRequestRepository.find();

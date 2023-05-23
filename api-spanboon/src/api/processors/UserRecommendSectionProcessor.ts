@@ -95,7 +95,7 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
                     type: {
                         $nin: [POST_TYPE.FULFILLMENT] // remove fulfillment post type comment this for showing all post type.
                     }
-                }; 
+                };
                 if (userId !== undefined && userId !== '') {
                     // ! impl 
                 } else if (clientId !== undefined) {
@@ -144,6 +144,25 @@ export class UserRecommendSectionProcessor extends AbstractSectionModelProcessor
                             localField: 'ownerUser',
                             foreignField: '_id',
                             as: 'user'
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'SocialPost',
+                            localField: '_id',
+                            foreignField: 'postId',
+                            as: 'socialPosts'
+                        }
+                    },
+                    {
+                        $project: {
+                            'socialPosts': {
+                                '_id': 0,
+                                'pageId': 0,
+                                'postId': 0,
+                                'postBy': 0,
+                                'postByType': 0
+                            }
                         }
                     },
                     {

@@ -46,7 +46,7 @@
                             </spanboon-button>
                         </div>
                     </div>
-                    <div class="card-checkbox-view check-left">
+                    <!-- <div class="card-checkbox-view check-left">
                         <div class="header-title">
                             <div class="left">
                                 การเข้าถึง
@@ -115,7 +115,7 @@
                                 </ng5-slider>
                             </div>
                         </ng-template>
-                    </div>
+                    </div> -->
                     <!-- <card-checkbox [title]="'สถานที่'"></card-checkbox> -->
                     <card-checkbox [title]="'ประเภทเพจ'" [data]="resPageType" [typePage]="page"
                         [isMutipleCheckbox]="'true'" (clickMutiple)="getPagecategory($event)"
@@ -150,7 +150,7 @@
                                                 <input matInput type="text" class="input-data"
                                                     placeholder="ชื่อคนหรือเพจ" name="createdname"
                                                     [(ngModel)]="createdName" [matAutocomplete]="autoComplete"
-                                                    (keyup)="keyUpAutoComp($event)" #inputAutocomp>
+                                                    (keyup)="keyUpAutoComp($event)">
                                                 <mat-autocomplete #autoComplete="matAutocomplete">
                                                     <mat-option class="mat-option-progress" *ngIf="isLoading">
                                                         <mat-progress-bar mode="indeterminate"></mat-progress-bar>
@@ -159,8 +159,7 @@
                                                         <mat-option class="img-users" *ngFor="let user of dataUser"
                                                             (click)="selectAutoComp(user)" [value]="user.displayName">
                                                             <div class="list-autocomp">
-                                                                <ng-container
-                                                                    *ngIf="user.imageURL && user.imageURL !== '' && user.imageURL !== undefined && user.imageURL !== null; else imageURL">
+                                                                <ng-container *ngIf="!!user!.imageURL; else imageURL">
                                                                     <img class="img" [src]="user.imageURL" alt="">
                                                                 </ng-container>
                                                                 <ng-template #imageURL>
@@ -308,7 +307,7 @@
                 </ng-template>
             </div>
             <div class="body-recommended">
-                <div class="recommended-left" *ngIf="!showLoading">
+                <div class="recommended-left" [ngStyle]="{'display': showLoading ? 'none' : 'block' }">
                     <div class="feed-body-search" #feedbodysearch>
                         <div class="feed-header-search">
                             <div class="filter">
@@ -478,10 +477,12 @@
                                         <div>ผู้คนหรือเพจที่ต้องการค้นหา</div>
                                         <div class="search-page">
                                             <div class="rigth">
-                                                <input matInput type="text" class="input-data"
+                                                <input matInput [formControl]="searchUser" class="input-data"
+                                                    [matAutocomplete]="autoComplete" name="createdname"
+                                                    [(ngModel)]="createdName" placeholder="ชื่อคนหรือเพจ">
+                                                <!-- <input matInput type="text" class="input-data"
                                                     placeholder="ชื่อคนหรือเพจ" name="createdname"
-                                                    [(ngModel)]="createdName" [matAutocomplete]="autoComplete"
-                                                    (keyup)="keyUpAutoComp($event)" #inputAutocomp>
+                                                    [(ngModel)]="createdName" [matAutocomplete]="autoComplete"> -->
                                                 <mat-autocomplete #autoComplete="matAutocomplete">
                                                     <mat-option class="mat-option-progress" *ngIf="isLoading">
                                                         <mat-progress-bar mode="indeterminate"></mat-progress-bar>
@@ -491,8 +492,10 @@
                                                             (click)="selectAutoComp(user)" [value]="user.displayName">
                                                             <div class="list-autocomp">
                                                                 <ng-container
-                                                                    *ngIf="user.imageURL && user.imageURL !== '' && user.imageURL !== undefined && user.imageURL !== null; else imageURL">
-                                                                    <img class="img" [src]="user.imageURL" alt="">
+                                                                    *ngIf="!!user!.signURL || !!user!.imageURL; else imageURL">
+                                                                    <img class="img"
+                                                                        [src]="user.signURL ? user.signURL : apiBaseURL + user.imageURL + '/image'"
+                                                                        alt="">
                                                                 </ng-container>
                                                                 <ng-template #imageURL>
                                                                     <div class="img not-image">
@@ -516,8 +519,10 @@
                                             <div class="card-page" *ngFor="let item of rowUser; let index = index;">
                                                 <div class="left">
                                                     <ng-container
-                                                        *ngIf="item.imageURL && item.imageURL !== '' && item.imageURL !== undefined && item.imageURL !== null ; else elsePhoto">
-                                                        <img class="page-img" [src]="item.imageURL" alt="">
+                                                        *ngIf="!!item!.signURL || !!item!.imageURL; else elsePhoto">
+                                                        <img class="page-img"
+                                                            [src]="item.signURL ? item.signURL : apiBaseURL + item.imageURL + '/image'"
+                                                            alt="">
                                                     </ng-container>
                                                     <ng-template #elsePhoto>
                                                         <div class="page-img not-image">
@@ -644,3 +649,4 @@
     </div>
 </div>
 <div class="backdrop" *ngIf="isBackdrop" (click)="focusout()"></div>
+<loading *ngIf="isLoading"></loading>

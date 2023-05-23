@@ -10,17 +10,17 @@
     border-radius: $border-radius-4px;
     background: $white;
 
-    > .header-title {
+    >.header-title {
         padding: 15pt;
-        border-bottom: $width-border solid $border-color; 
+        border-bottom: $width-border solid $border-color;
         @include font-size-9($font-head-500);
     }
 
-    > .wrapper-card {
+    >.wrapper-card {
         border-bottom: $width-border solid $border-color;
         background-color: $white;
 
-        > .card-follow {
+        >.card-follow {
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -31,13 +31,16 @@
             &:hover {
                 background-color: $background-hover;
             }
-            > .item-checkbox {
+
+            >.item-checkbox {
                 width: 100%;
-                > .mat-checkbox-layout {
-                    width: 100%; 
-                    > .mat-checkbox-inner-container {
-                    }
-                    > .mat-checkbox-label {
+
+                >.mat-checkbox-layout {
+                    width: 100%;
+
+                    >.mat-checkbox-inner-container {}
+
+                    >.mat-checkbox-label {
                         display: flex;
                         width: 100%;
                     }
@@ -47,11 +50,13 @@
             .description {
                 font-family: "Kanit-500";
                 margin-left: 6pt;
-                > .top {
+
+                >.top {
                     @include font-size-10($font-head-500);
                     color: #a5a5a6;
                 }
-                > .middle {
+
+                >.middle {
                     @include font-size-10($font-head-500);
                     display: -webkit-box;
                     -webkit-line-clamp: 1;
@@ -59,36 +64,41 @@
                     overflow: hidden;
                     word-break: break-all;
                 }
-                > .trend {
+
+                >.trend {
                     @include font-size-10($font-head-500);
                     display: -webkit-box;
                     -webkit-line-clamp: 1;
                     -webkit-box-orient: vertical;
                     overflow: hidden;
                     word-break: break-all;
-                    > .count {
-                    }
+
+                    >.count {}
+
                     // > .tag {
                     //     color: #1b95e0;
                     // }
                 }
             }
 
-            > .wrapper-btn-follow {
-                > button-follow {
-                }
+            >.wrapper-btn-follow {
+                >button-follow {}
             }
-            > .item-checkbox {
-                > .mat-checkbox-layout {
+
+            >.item-checkbox {
+                >.mat-checkbox-layout {
                     white-space: break-spaces;
                 }
             }
         }
-        > .checkbox {
+
+        >.checkbox {
             padding: 8pt;
             width: calc(100% - 16pt);
+
             >.item-checkbox {
                 width: 100%;
+
                 >.mat-checkbox-layout {
                     width: 100%;
                 }
@@ -96,22 +106,23 @@
         }
     }
 
-    > .follow-all {
+    >.follow-all {
         padding: 8pt 15pt;
         text-align: center;
         color: $brandcolor2;
-        @include pointer(); 
+        @include pointer();
         @include font-size-10($font-head-500);
         min-height: 26pt;
         display: flex;
         justify-content: center;
         align-items: center;
     }
-    > .preload-spinner {
+
+    >.preload-spinner {
         display: flex;
         align-items: center;
         justify-content: center;
-        
+
         svg {
             float: center;
         }

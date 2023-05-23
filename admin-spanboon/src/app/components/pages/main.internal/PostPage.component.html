@@ -42,7 +42,7 @@
         </mat-drawer>
         <mat-drawer-content>
             <div class="main-content">
-                <admin-table-component #table [facade]="pageFacade" [isApprovePage]="'true'" [title]="'ตรวจสอบเพจ'" (official)="clickOfficial($event)" (ban)="clickBan($event)" [fieldTable]="fieldTable" [actions]="actions"></admin-table-component>
+                <admin-table-component #table [facade]="pageFacade" [isApprovePage]="'true'" [title]="'ตรวจสอบเพจ'" (official)="clickOfficial($event)" (ban)="clickBan($event)" [fieldTable]="fieldTable" [actions]="actions" (delete)="clickDelete($event)"></admin-table-component>
             </div>
         </mat-drawer-content>
     </mat-drawer-container>

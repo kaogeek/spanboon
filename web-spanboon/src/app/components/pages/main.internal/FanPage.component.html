@@ -4,18 +4,18 @@
     License: MIT. https://opensource.org/licenses/MIT
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
-
 <div class="fanpage" (window:resize)="onResize($event)">
     <div class="container">
         <ng-container *ngIf="!msgPageNotFound; else elsePageNotFound">
             <div class="spanboon-fan-page">
-                <div *ngIf="!showLoading" class="fan-page-background" #fanpagebackground>
+                <div #fanpagebackground class="fan-page-background" *ngIf="!showLoading">
                     <ng-container *ngIf="isLoading; else elseisLoading">
                         <div style="height: 100%;" class="body-cover-image loading"></div>
                     </ng-container>
                     <ng-template #elseisLoading>
                         <ng-container *ngIf="resDataPage">
-                            <ng-container *ngIf="!resDataPage.coverBase64; else elseCoverImage">
+                            <ng-container
+                                *ngIf="!resDataPage.coverSignURL && !resDataPage.coverURL; else elseCoverImage">
                                 <ng-container *ngIf="isNotAccess; else elseOwner">
                                     <div class="wrapper-cover-image" [class.hide]="isFiles"
                                         (click)="fileInputCover.click()" dragdrop-image (files)="filesDropped($event)">
@@ -32,14 +32,14 @@
                                                             <g>
                                                                 <path
                                                                     d="M391.86,144.552c0.16-2.712,0.248-5.464,0.248-8.312c0.09-59.919-39.046-112.838-96.364-130.3
-                   c-71.85-21.89-147.842,18.61-169.732,90.46c-2.024-0.104-3.976-0.16-5.904-0.16c-66.274,0-120,53.726-120,120s53.726,120,120,120
-                   h72.088c4.418,0,8-3.582,8-8s-3.582-8-8-8h-72.088c-57.438,0-104-46.562-104-104s46.562-104,104-104
-                   c3.688,0.01,7.373,0.211,11.04,0.6c3.93,0.329,7.534-2.2,8.56-6.008c13.401-53.473,61.51-90.937,116.637-90.828
-                   c66.274,0.13,119.894,53.962,119.763,120.236c0.021,4.99-0.303,9.975-0.968,14.92c-0.049,0.358-0.073,0.72-0.073,1.081
-                   c0.001,4.418,3.583,7.999,8.001,7.999h1.04c44.183,0,80,35.817,80,80c0,44.183-35.817,80-80,80h-95.464c-4.418,0-8,3.582-8,8
-                   s3.582,8,8,8h95.464c50.028,0.01,91.677-38.401,95.707-88.267C484.086,195.127,444.707,148.823,391.86,144.552z" />
+                            c-71.85-21.89-147.842,18.61-169.732,90.46c-2.024-0.104-3.976-0.16-5.904-0.16c-66.274,0-120,53.726-120,120s53.726,120,120,120
+                            h72.088c4.418,0,8-3.582,8-8s-3.582-8-8-8h-72.088c-57.438,0-104-46.562-104-104s46.562-104,104-104
+                            c3.688,0.01,7.373,0.211,11.04,0.6c3.93,0.329,7.534-2.2,8.56-6.008c13.401-53.473,61.51-90.937,116.637-90.828
+                            c66.274,0.13,119.894,53.962,119.763,120.236c0.021,4.99-0.303,9.975-0.968,14.92c-0.049,0.358-0.073,0.72-0.073,1.081
+                            c0.001,4.418,3.583,7.999,8.001,7.999h1.04c44.183,0,80,35.817,80,80c0,44.183-35.817,80-80,80h-95.464c-4.418,0-8,3.582-8,8
+                            s3.582,8,8,8h95.464c50.028,0.01,91.677-38.401,95.707-88.267C484.086,195.127,444.707,148.823,391.86,144.552z" />
                                                                 <polygon points="336.276,245.088 240.108,148.928 143.94,245.088 155.26,256.408 232.108,179.552 232.108,480.24 248.108,480.24 
-                   248.108,179.552 324.956,256.408" />
+                            248.108,179.552 324.956,256.408" />
                                                             </g>
                                                         </g>
                                                     </g>
@@ -68,11 +68,11 @@
                                 </ng-template>
                             </ng-container>
                             <ng-template #elseCoverImage>
-                                <div class="cover-img" [class.hide]="isFiles">
+                                <div class="cover-img" [class.hide]="isFiles" *ngIf="!isEditCover">
                                     <div class="wrapper-img" id="wrapper-img" (load)="loadImageOK($event)"
                                         (error)="loadImageError($event)" [phxPreload]="resDataPage"
                                         [preloadClass]="'wrapper-img'"
-                                        [ngStyle]="resDataPage && resDataPage.coverSignURL ? {'background-image': 'url('+resDataPage.coverSignURL+')' ,'background-position-y' : position+'%' } : {'background-image': 'url('+resDataPage.coverBase64+')' ,'background-position-y' : position+'%' }">
+                                        [ngStyle]="{'background-position-y' : resDataPage.coverPosition ? resDataPage.coverPosition + '%' : '50%' , 'background-image' : 'url(' + (resDataPage.coverSignURL ?  resDataPage.coverSignURL : (resDataPage.coverURL ? resDataPage.coverURL : '')) + ')' }">
                                     </div>
                                     <ng-container
                                         *ngIf="resDataPage && resDataPage.subTitle && resDataPage.subTitle !== ''; else elseSubTitle">
@@ -132,9 +132,11 @@
                     <img id="images" [class.active]="!isEditCover"
                         [ngStyle]="{'display': isEditCover ? 'flex' : 'none'}">
                 </div>
+
                 <Preload-card *ngIf="showLoading" [isShowCard1]="true" [isShowCard2]="false"
                     [class]="'preload-profile'">
                 </Preload-card>
+
                 <div class="wrapper-fan-page">
                     <div *ngIf="!showLoading" class="wrapper-profile-fan-page" #pagefixHeight>
                         <div class="profile-fan-page">
@@ -157,13 +159,8 @@
                                         </g>
                                     </svg>
                                 </div>
-                                <ng-container
-                                    *ngIf="resDataPage && resDataPage.imageBase64 !== undefined  && resDataPage.imageBase64 !== '' && resDataPage.imageBase64 !== null; else elseImgUrl">
-                                    <img class="image-profile-fan-page" src="{{resDataPage.imageBase64}}">
-                                </ng-container>
-                                <ng-template #elseImgUrl>
-                                    <img class="image-profile-fan-page" src="../../../../assets/img/profile.svg">
-                                </ng-template>
+                                <img class="image-profile-fan-page"
+                                    [src]="!!resDataPage?.signURL ? resDataPage?.signURL : (!!resDataPage?.imageBase64 ? resDataPage?.imageBase64 : '../../../../assets/img/profile.svg')">
                             </div>
                             <div class="fan-page-name" [phxPreload]="resDataPage" [preloadClass]="'fan-page-name'">
                                 <svg *ngIf="resDataPage && resDataPage.isOfficial ? resDataPage.isOfficial : false"
@@ -220,7 +217,41 @@
                             <div class="btn-follow-about btn_fa">
                                 เกี่ยวกับ
                             </div>
-
+                            <ng-container>
+                                <button mat-icon-button [matMenuTriggerFor]="menu" [disableRipple]="'false'"
+                                    class="dropdown">
+                                    <span class="material-icons">
+                                        more_horiz
+                                    </span>
+                                </button>
+                                <mat-menu #menu="matMenu" xPosition="before">
+                                    <div>
+                                        <ng-container *ngIf="isLogin() && isNotAccess; else elseTemplatePage">
+                                            <button mat-menu-item [disableRipple]="'true'" class="list-dropdown"
+                                                (click)="clickSetting()">
+                                                <svg id="filter" xmlns="http://www.w3.org/2000/svg" width="20.091"
+                                                    height="20.091" viewBox="0 0 20.091 20.091">
+                                                    <path id="filter-2" data-name="filter"
+                                                        d="M20.091,1.256V3.767H7.157a2.442,2.442,0,0,1-4.269,0H0V1.256H2.888a2.442,2.442,0,0,1,4.269,0ZM15.068,7.534A2.431,2.431,0,0,0,12.933,8.79H0V11.3H12.933a2.442,2.442,0,0,0,4.269,0h2.888V8.79H17.2A2.431,2.431,0,0,0,15.068,7.534Zm-5.023,7.534a2.431,2.431,0,0,0-2.135,1.256H0v2.511H7.911a2.442,2.442,0,0,0,4.269,0h7.911V16.324H12.18A2.431,2.431,0,0,0,10.045,15.068Z" />
+                                                </svg>
+                                                <span>จัดการเพจ</span>
+                                            </button>
+                                        </ng-container>
+                                        <ng-template #elseTemplatePage>
+                                            <button mat-menu-item [disableRipple]="'true'" class="list-dropdown"
+                                                (click)="reportUser()">
+                                                <mat-icon>warning</mat-icon>
+                                                <span>รายงานเพจนี้</span>
+                                            </button>
+                                            <button mat-menu-item [disableRipple]="'true'" class="list-dropdown"
+                                                (click)="blockUser()">
+                                                <mat-icon>block</mat-icon>
+                                                <span>บล็อกเพจนี้</span>
+                                            </button>
+                                        </ng-template>
+                                    </div>
+                                </mat-menu>
+                            </ng-container>
                         </div>
                         <div class="wrapper-looking-for">
                             <div class="wrapper-header">
@@ -334,10 +365,9 @@
                                         </svg>
                                     </a>
                                 </ng-template>
-
                                 <ng-container *ngIf="resDataPage && resDataPage.facebookURL; else elseTemplateFacebook">
-                                    <a href="//{{resDataPage && resDataPage.facebookURL}}" target="_blank"
-                                        class="contact-social"
+                                    <a [href]="checkPathValidation(resDataPage && resDataPage.facebookURL)"
+                                        target="_blank" class="contact-social"
                                         [class.active]="resDataPage && resDataPage.facebookURL && resDataPage.facebookURL !== undefined  && resDataPage.facebookURL !== null  && resDataPage.facebookURL !== '' ? true : false">
                                         <svg class="facebook" xmlns="http://www.w3.org/2000/svg" width="7.073"
                                             height="14.146" viewBox="0 0 7.073 14.146">
@@ -358,7 +388,6 @@
                                         </svg>
                                     </a>
                                 </ng-template>
-
 
                                 <ng-container *ngIf="resDataPage && resDataPage.twitterURL; else elseTemplateTwitter">
                                     <a href="//{{resDataPage && resDataPage.twitterURL}}" target="_blank"
@@ -588,7 +617,7 @@
                                 </ng-template>
                             </div>
                         </div>
-                        <ng-container *ngIf="resDataPage && resDataPage.needs && resDataPage.needs.length > 0;">
+                        <!-- <ng-container *ngIf="resDataPage && resDataPage.needs && resDataPage.needs.length > 0;">
                             <ng-container>
                                 <card-item [isDevelop]="true" [itemData]="resDataPage.needs"
                                     [pageName]="resDataPage.name" [label]="'ร่วม'+PLATFORM_FULFILL_TEXT"
@@ -596,7 +625,7 @@
                                     [isButton]="true" [isShowWidthButton]="'899'">
                                 </card-item>
                             </ng-container>
-                        </ng-container>
+                        </ng-container> -->
                     </div>
                     <div *ngIf="showLoading" class="wrapper-profile-fan-page">
                         <Preload-card *ngFor="let item of [0 , 1]" [isShowCard1]="true" [isShowCard2]="false">
@@ -638,7 +667,8 @@
                                 <div *ngIf="!isPost" class="main-feed">
                                     <box-post *ngIf="isLogin() && isNotAccess" #boxPost [modeShowDoing]="'true'"
                                         [dataPage]="name" [userPage]="resDataPage" [dataPageId]="resDataPage"
-                                        [isClickPostPreLoad]="isClickPostPreLoad" [profile]="resDataPage.imageBase64"
+                                        [isClickPostPreLoad]="isClickPostPreLoad"
+                                        [profile]="!!resDataPage?.signURL ? resDataPage.signURL : resDataPage.imageBase64"
                                         [isShowTablet]="'true'" [isShowMaxWidth]="'899'"
                                         (createPost)="createPost($event)" style="display: block; padding: 5pt 0;">
                                     </box-post>
@@ -655,14 +685,14 @@
                                         <ng-container *ngIf="resPost && resPost.posts && resPost.posts.length > 0;">
                                             <ng-container *ngFor="let itemPost of resPost.posts;let index = index">
                                                 <post-data [itemPost]="itemPost" [user]="userImage"
-                                                    [mainPostLink]="resDataPage && resDataPage.pageUsername && resDataPage.pageUsername !== '' && resDataPage.pageUsername !== undefined ? 'page/'+resDataPage.pageUsername+'/post/' : 'page/'+resDataPage.id+'/post/' "
                                                     [isComments]="isLogin()" [isUserPage]="isLogin() && isNotAccess"
                                                     [isShowUser]="true" [isNotAccess]="isNotAccess"
                                                     (action)="actionComment($event,index)"
                                                     (comment)="createComment($event,index)" [pageUser]="pageUser"
                                                     [isPage]="isNotAccess" (userpage)="getAaaPost($event,index)"
-                                                    (delete)="deletePost($event,index)" (update)="editPost($event)"
-                                                    (engagement)="engagement($event)">
+                                                    (delete)="deletePost($event,index)"
+                                                    (update)="editPost($event,index)" (engagement)="engagement($event)"
+                                                    (hide)="hidePost($event,index)">
                                                 </post-data>
                                             </ng-container>
                                             <Preload-card *ngIf="isLoadingPost" [isShowCard1]="true"
@@ -676,11 +706,9 @@
                                 <div class="main-feed">
                                     <ng-container *ngIf="resDataPost && resDataPost.length > 0;">
                                         <ng-container *ngFor="let itemPost of resDataPost; let index = index">
-                                            <post-data [itemPost]="itemPost" [user]="userImage"
-                                                [mainPostLink]="resDataPage && resDataPage.pageUsername && resDataPage.pageUsername !== undefined && resDataPage.pageUsername !== '' ? 'page/'+resDataPage.pageUsername+'/post/' : 'page/'+resDataPage.id+'/post/' "
-                                                [isComments]="isLogin()" [isUserPage]="isLogin() && isNotAccess"
-                                                [isShowUser]="true" [isNotAccess]="isNotAccess"
-                                                (action)="actionComment($event,index)"
+                                            <post-data [itemPost]="itemPost" [user]="userImage" [isComments]="isLogin()"
+                                                [isUserPage]="isLogin() && isNotAccess" [isShowUser]="true"
+                                                [isNotAccess]="isNotAccess" (action)="actionComment($event,index)"
                                                 (comment)="createComment($event,index)" [pageUser]="pageUser"
                                                 [isPage]="isNotAccess" (userpage)="getAaaPost($event,index)"
                                                 (delete)="deletePost($event,index)" (update)="editPost($event)"
@@ -739,3 +767,4 @@
     </div>
 </div>
 <loading [text]="'กำลังโพสต์'" *ngIf="isPostLoading"></loading>
+<loading *ngIf="isLoading"></loading>

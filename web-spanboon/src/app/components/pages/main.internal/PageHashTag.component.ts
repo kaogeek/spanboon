@@ -6,14 +6,13 @@
  */
 
 import { Component, OnInit, Input, ViewChild, ElementRef, EventEmitter, Output } from '@angular/core';
-import { ObjectiveFacade, NeedsFacade, AssetFacade, AuthenManager, ObservableManager, PostCommentFacade, PageFacade, HashTagFacade, MainPageSlideFacade, EmergencyEventFacade, PageCategoryFacade, PostFacade, AccountFacade, Engagement, UserEngagementFacade } from '../../../services/services';
+import { ObjectiveFacade, NeedsFacade, AssetFacade, AuthenManager, ObservableManager, PostCommentFacade, PageFacade, HashTagFacade, MainPageSlideFacade, EmergencyEventFacade, PageCategoryFacade, PostFacade, AccountFacade, Engagement, UserEngagementFacade, SeoService } from '../../../services/services';
 import { DateAdapter, MatDialog } from '@angular/material';
-import { AbstractPage } from '../AbstractPage';
 import { FileHandle } from '../../shares/directive/directives';
 import * as $ from 'jquery';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
-import { BoxPost, DialogReboonTopic } from '../../shares/shares';
-import { ChangeContext, LabelType, Options, PointerType } from 'ng5-slider';
+import { BoxPost, DialogReboonTopic, DialogShare } from '../../shares/shares';
+import { ChangeContext, LabelType, Options } from 'ng5-slider';
 import { SearchFilter } from '../../../../app/models/SearchFilter';
 import { environment } from '../../../../environments/environment';
 import { CommentPosts } from '../../../models/CommentPosts';
@@ -23,6 +22,10 @@ import { RePost } from '../../../models/RePost';
 import { AbstractPageImageLoader } from '../AbstractPageImageLoader';
 import { UserEngagement } from '../../../models/UserEngagement';
 import { filter } from 'rxjs/internal/operators/filter';
+import { PLATFORM_NAME_TH } from 'src/custom/variable';
+import { fromEvent, Subject, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
+import { FormControl } from '@angular/forms';
 
 const PAGE_NAME: string = 'search';
 const SEARCH_LIMIT: number = 20;
@@ -36,15 +39,37 @@ declare var $: any;
   templateUrl: './PageHashTag.component.html',
 })
 export class PageHashTag extends AbstractPageImageLoader implements OnInit {
+  private unsubscriber = new Subject<void>();
+  searchUser = new FormControl();
+  debouncedValue = "";
 
+  private destroy = new Subject<void>();
   public static readonly PAGE_NAME: string = PAGE_NAME;
+  public PLATFORM_NAME_TH: string = PLATFORM_NAME_TH;
 
   @Input()
   protected isIconPage: boolean;
   @Input()
   protected text: string = "ข้อความ";
 
-  public links = [{ label: 'ทั้งหมด', keyword: 'timeline' }, { label: this.PLATFORM_GENERAL_TEXT, keyword: 'general' }, { label: this.PLATFORM_NEEDS_TEXT, keyword: 'needs' }, { label: this.PLATFORM_FULFILL_TEXT, keyword: 'fulfillment' }];
+  public links = [
+    {
+      label: 'ทั้งหมด',
+      keyword: 'timeline'
+    },
+    {
+      label: this.PLATFORM_GENERAL_TEXT,
+      keyword: 'general'
+    },
+    // {
+    //   label: this.PLATFORM_NEEDS_TEXT,
+    //   keyword: 'needs'
+    // },
+    // {
+    //   label: this.PLATFORM_FULFILL_TEXT,
+    //   keyword: 'fulfillment'
+    // }
+  ];
   public activeLink = this.links[0].label;
 
   filterType: 'เฉพาะที่คุณติดตาม' | 'ทั้งหมด' | 'กำหนดเอง' = 'ทั้งหมด';
@@ -52,7 +77,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   @ViewChild('boxPost', { static: false }) boxPost: BoxPost;
   @ViewChild("recommendedRight", { static: true }) recommendedRight: ElementRef;
   @ViewChild("recommendedLeft", { static: true }) recommendedLeft: ElementRef;
-  @ViewChild("feedbodysearch", { static: false }) feedbodysearch: ElementRef;
+  @ViewChild("feedbodysearch", { static: true }) feedbodysearch: ElementRef;
   @ViewChild("inputAutocomp", { static: true }) inputAutocomp: ElementRef;
 
   @Output()
@@ -73,7 +98,8 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   private pageFacade: PageFacade;
   private dateAdapter: DateAdapter<Date>;
   private engagementService: Engagement;
-  private userEngagementFacade: UserEngagementFacade; 
+  private userEngagementFacade: UserEngagementFacade;
+  private seoService: SeoService;
 
   public resDataPage: any;
   public resObjective: any;
@@ -93,6 +119,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   public isLoadMoreObjective: boolean;
   public isLoadMoreHashTag: boolean;
   public isLoadingClickTab: boolean;
+  public isHideMoreObjective: boolean;
   public imageCoverSize: number;
   public position: number;
   public dataTrend: any[] = [];
@@ -116,6 +143,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   public type: string;
   public createdName: any;
   public emergency: any;
+  public emergencyId: any;
   public emergencyUrl: any;
   public objective: any;
   public objectiveUrl: any;
@@ -143,9 +171,12 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   public follow: boolean;
   public isLoadingPost: boolean;
   public isMaxLoadingPost: boolean;
+  public mainPostLink: string;
+  public linkPost: string;
 
   public postId: any
   public isFollow: boolean = true;
+  public isCheckEmer: boolean = false;
   public item: any;
   public sort: any;
   public widthBtn: any;
@@ -165,6 +196,8 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   public pageUser: any;
   public userImage: any;
   public index: any;
+
+  public hidebar: boolean = true;
 
   sortingBy = [{
     name: 'วันที่ล่าสุด',
@@ -217,7 +250,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   files: FileHandle[] = [];
   constructor(router: Router, dialog: MatDialog, authenManager: AuthenManager, pageFacade: PageFacade, objectiveFacade: ObjectiveFacade, needsFacade: NeedsFacade, assetFacade: AssetFacade, hashTagFacade: HashTagFacade,
     observManager: ObservableManager, routeActivated: ActivatedRoute, postCommentFacade: PostCommentFacade, searchHashTagFacade: HashTagFacade, mainPageFacade: MainPageSlideFacade, dateAdapter: DateAdapter<Date>, emergencyEventFacade: EmergencyEventFacade,
-    pageCategoryFacade: PageCategoryFacade, postFacede: PostFacade, accountFacade: AccountFacade, engagementService: Engagement, userEngagementFacade: UserEngagementFacade ) {
+    pageCategoryFacade: PageCategoryFacade, postFacede: PostFacade, accountFacade: AccountFacade, engagementService: Engagement, userEngagementFacade: UserEngagementFacade, seoService: SeoService) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.dialog = dialog
     this.objectiveFacade = objectiveFacade;
@@ -243,6 +276,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     this.whereConditions = ["name"];
     this.isBackdrop = false;
     this.showLoading = true;
+    this.seoService = seoService;
 
     this.page = [];
     this.pageCateUrl = [];
@@ -262,123 +296,123 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     this.maxDate.setDate(this.maxDate.getDate());
     this.maxDate.setFullYear(this.maxDate.getFullYear());
 
-     this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe((event: NavigationEnd) => {
-      this.url = decodeURI(this.router.url);  
-        this.urlHashTag = undefined;
+    this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe((event: NavigationEnd) => {
+      this.url = decodeURI(this.router.url);
+      this.urlHashTag = undefined;
 
-        if (this.url.indexOf(PAGE_NAME) >= 0) {
-          let substringPath: string = this.url.substring(this.url.indexOf(PAGE_NAME), this.url.length);
+      if (this.url.indexOf(PAGE_NAME) >= 0) {
+        let substringPath: string = this.url.substring(this.url.indexOf(PAGE_NAME), this.url.length);
 
-          if (substringPath.startsWith('?')) {
-            substringPath = substringPath.substring(1, substringPath.length);
-          } else if (substringPath.includes('/search')) {
-            this.searchTrendTag(true); 
-          }
-          const splitText = substringPath.split('&');
-          for (let text of splitText) {
-            if (text.includes('hashtag')) {
-              const dataHashtag = text.split('=')[1].split(',');
-              if (dataHashtag.length > 0) {
-                for (let data of dataHashtag) {
-                  if (data.includes('#')) {
-                    this.matHashTag.push(data.substring(1, data.length));
-                  } else {
-                    this.matHashTag = text.split('=')[1].split(',');
-                  }
+        if (substringPath.startsWith('?')) {
+          substringPath = substringPath.substring(1, substringPath.length);
+        } else if (substringPath.includes('/search')) {
+          this.searchTrendTag(true);
+        }
+        const splitText = substringPath.split('&');
+        for (let text of splitText) {
+          if (text.includes('hashtag')) {
+            const dataHashtag = text.split('=')[1].split(',');
+            if (dataHashtag.length > 0) {
+              for (let data of dataHashtag) {
+                if (data.includes('#')) {
+                  this.matHashTag.push(data.substring(1, data.length));
+                } else {
+                  this.matHashTag = text.split('=')[1].split(',');
                 }
               }
-            } else if (text.includes('keyword')) {
-              this.keyword = text.split('=')[1].split(','); 
-            } else if (text.includes('follow')) {
-              this.follow = Boolean(JSON.parse(text.split('=')[1].toLowerCase()));
-              if (this.follow) {
-                this.filterType = 'เฉพาะที่คุณติดตาม';
-              } else {
-                this.filterType = 'ทั้งหมด';
-              }
-            } else if (text.includes('createdby')) {
-              this.filterType = 'กำหนดเอง';
-              this.createdName = text.split('=')[1];
-            } else if (text.includes('pagecategory')) {
-              this.pageCateUrl = text.split('=')[1].split(',');
-            } else if (text.includes('location')) {
-              this.location = text.split('=')[1];
-            } else if (text.includes('startdate')) {
-              const convertDate = Number(text.split('=')[1]);
-              let date = new Date(convertDate);
-              this.startDate = { begin: date }
-            } else if (text.includes('enddate')) {
-              const convertDate = Number(text.split('=')[1]);
-              this.endDate = new Date(convertDate);
-              Object.assign(this.startDate, { end: this.endDate })
-            } else if (text.includes('emergency')) {
-              this.emergencyUrl = text.split('=')[1].split(',');
-              this.emergencyUrl = this.emergencyUrl.pop();
-            } else if (text.includes('objective')) {
-              this.objectiveUrl = text.split('=')[1].split(',');
-              // this.objectiveUrl = this.objectiveUrl.pop();
-            } else if (text.includes('startcommentcount')) {
-              this.startCommentCount = Number(text.split('=')[1]);
-            } else if (text.includes('endcommentcount')) {
-              this.endCommentCount = Number(text.split('=')[1]);
-            } else if (text.includes('startRepostCount')) {
-              this.startRepostCount = Number(text.split('=')[1]);
-            } else if (text.includes('endRepostCount')) {
-              this.endRepostCount = Number(text.split('=')[1]);
-            } else if (text.includes('startlikecount')) {
-              this.startLikeCount = Number(text.split('=')[1]);
-            } else if (text.includes('endlikecount')) {
-              this.endLikeCount = Number(text.split('=')[1]);
-            } else if (text.includes('startShareCount')) {
-              this.startShareCount = Number(text.split('=')[1]);
-            } else if (text.includes('endShareCount')) {
-              this.endShareCount = Number(text.split('=')[1]);
-            } else if (text.includes('startactioncount')) {
-              this.startActionCount = Number(text.split('=')[1]);
-            } else if (text.includes('endactioncount')) {
-              this.endActionCount = Number(text.split('=')[1]);
-            } else if (text.includes('type')) {
-              const typeCate = text.split('=')[1];
-              if (typeCate.toUpperCase() === POST_TYPE.NEEDS) {
-                this.type = text.split('=')[1];
-                this.activeLink = this.PLATFORM_NEEDS_TEXT;
-              } else if (typeCate.toUpperCase() === POST_TYPE.FULFILLMENT) {
-                this.type = text.split('=')[1];
-                this.activeLink = this.PLATFORM_FULFILL_TEXT;
-              } else if (typeCate.toUpperCase() === POST_TYPE.GENERAL) {
-                this.type = text.split('=')[1];
-                this.activeLink = this.PLATFORM_GENERAL_TEXT;
-              } else {
-                this.type = text.split('=')[1];
-                this.activeLink = 'ทั้งหมด';
-              }
+            }
+          } else if (text.includes('keyword')) {
+            this.keyword = text.split('=')[1].split(',');
+          } else if (text.includes('follow')) {
+            this.follow = Boolean(JSON.parse(text.split('=')[1].toLowerCase()));
+            if (this.follow) {
+              this.filterType = 'เฉพาะที่คุณติดตาม';
+            } else {
+              this.filterType = 'ทั้งหมด';
+            }
+          } else if (text.includes('createdby')) {
+            this.filterType = 'กำหนดเอง';
+            this.createdName = text.split('=')[1];
+          } else if (text.includes('pagecategory')) {
+            this.pageCateUrl = text.split('=')[1].split(',');
+          } else if (text.includes('location')) {
+            this.location = text.split('=')[1];
+          } else if (text.includes('startdate')) {
+            const convertDate = Number(text.split('=')[1]);
+            let date = new Date(convertDate);
+            this.startDate = { begin: date }
+          } else if (text.includes('enddate')) {
+            const convertDate = Number(text.split('=')[1]);
+            this.endDate = new Date(convertDate);
+            Object.assign(this.startDate, { end: this.endDate })
+          } else if (text.includes('emergency')) {
+            this.emergencyUrl = text.split('=')[1].split(',');
+            this.emergencyUrl = this.emergencyUrl.pop();
+          } else if (text.includes('objective')) {
+            this.objectiveUrl = text.split('=')[1].split(',');
+            // this.objectiveUrl = this.objectiveUrl.pop();
+          } else if (text.includes('startcommentcount')) {
+            this.startCommentCount = Number(text.split('=')[1]);
+          } else if (text.includes('endcommentcount')) {
+            this.endCommentCount = Number(text.split('=')[1]);
+          } else if (text.includes('startRepostCount')) {
+            this.startRepostCount = Number(text.split('=')[1]);
+          } else if (text.includes('endRepostCount')) {
+            this.endRepostCount = Number(text.split('=')[1]);
+          } else if (text.includes('startlikecount')) {
+            this.startLikeCount = Number(text.split('=')[1]);
+          } else if (text.includes('endlikecount')) {
+            this.endLikeCount = Number(text.split('=')[1]);
+          } else if (text.includes('startShareCount')) {
+            this.startShareCount = Number(text.split('=')[1]);
+          } else if (text.includes('endShareCount')) {
+            this.endShareCount = Number(text.split('=')[1]);
+          } else if (text.includes('startactioncount')) {
+            this.startActionCount = Number(text.split('=')[1]);
+          } else if (text.includes('endactioncount')) {
+            this.endActionCount = Number(text.split('=')[1]);
+          } else if (text.includes('type')) {
+            const typeCate = text.split('=')[1];
+            if (typeCate.toUpperCase() === POST_TYPE.NEEDS) {
+              this.type = text.split('=')[1];
+              this.activeLink = this.PLATFORM_NEEDS_TEXT;
+            } else if (typeCate.toUpperCase() === POST_TYPE.FULFILLMENT) {
+              this.type = text.split('=')[1];
+              this.activeLink = this.PLATFORM_FULFILL_TEXT;
+            } else if (typeCate.toUpperCase() === POST_TYPE.GENERAL) {
+              this.type = text.split('=')[1];
+              this.activeLink = this.PLATFORM_GENERAL_TEXT;
+            } else {
+              this.type = text.split('=')[1];
+              this.activeLink = 'ทั้งหมด';
             }
           }
-          this.searchTrendTag(true); 
-          // const splitText = substringPath.split('=');
-          // let hashtag: string = '';
-          // if (splitText.length > 1) {
-          //   // [0] must be text as 'hashtag'
-          //   // [1] must be hashtag name 
-          //   if (splitText[1].includes('#')) {
-          //     hashtag = splitText[1].substring(1);
-          //     this.searchHashtag = hashtag;
-          //   }
-          // }
-
-          // if (this.matHashTag) {
-          //   // search for hashtag with REST '/main/content/search'
-          //   const keywordFilter = {
-          //     hashtag: this.matHashTag
-          //   };
-          //   this.mainPageFacade.searchMainContent(keywordFilter).then((res: any) => {
-          //     this.resHashTag = res.result
-          //   }).catch((error: any) => {
-          //   });
-          // }
         }
-       
-      });
+        this.searchTrendTag(true);
+        // const splitText = substringPath.split('=');
+        // let hashtag: string = '';
+        // if (splitText.length > 1) {
+        //   // [0] must be text as 'hashtag'
+        //   // [1] must be hashtag name 
+        //   if (splitText[1].includes('#')) {
+        //     hashtag = splitText[1].substring(1);
+        //     this.searchHashtag = hashtag;
+        //   }
+        // }
+
+        // if (this.matHashTag) {
+        //   // search for hashtag with REST '/main/content/search'
+        //   const keywordFilter = {
+        //     hashtag: this.matHashTag
+        //   };
+        //   this.mainPageFacade.searchMainContent(keywordFilter).then((res: any) => {
+        //     this.resHashTag = res.result
+        //   }).catch((error: any) => {
+        //   });
+        // }
+      }
+      this.seoService.updateTitle(PLATFORM_NAME_TH);
+    });
 
     this.observManager.subscribe('scroll.fix', (scrollTop) => {
       this.heightWindow();
@@ -392,7 +426,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
           if (window.innerWidth < 489) {
             this.feedbodysearch.nativeElement.style.top = 39 + 'pt';
           } else {
-            this.feedbodysearch.nativeElement.style.top = 55 + 'pt';
+            this.feedbodysearch.nativeElement.style.top = (this.hidebar ? '55pt' : '0');
           }
         }
       } else {
@@ -408,7 +442,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         if (!this.isMaxLoadingPost) {
           this.isLoadingPost = true;
           if (this.resPost && this.resPost.length > 0) {
-            this.searchTrendTag(); 
+            this.searchTrendTag();
           }
         }
       }
@@ -423,16 +457,57 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     this.routeActivated.queryParams.subscribe(params => {
     });*/
   }
+  ngAfterContentInit() {
+  }
+
+  onChangeInput(text: string) {
+  }
 
   public ngOnInit(): void {
+    // fromEvent(this.inputAutocomp && this.inputAutocomp.nativeElement, 'keyup').pipe(
+    //   debounceTime(500)
+    //   , distinctUntilChanged()
+    // ).subscribe((text: any) => {
+    //   this.keyUpAutoComp(this.inputAutocomp.nativeElement.value);
+    // });
+    // fromEvent(this.mytexttt.nativeElement, 'keyup').pipe(debounceTime(1000)).subscribe((data => {
+    //   console.log('Calling the API now with' + this.mytexttt.nativeElement.value);
+    //   this.resulttt = this.mytexttt.nativeElement.value;
+    // }));
+
+    this.searchUser.valueChanges
+      .pipe(
+        debounceTime(500)
+        , takeUntil(this.unsubscriber)
+      ).subscribe((value: any) => {
+        this.debouncedValue = value;
+        this.keyUpAutoComp(this.debouncedValue);
+      });
+
     this.searchEmergency();
     this.searchObjective();
     this.searchHashTag();
     this.searchPageCategory(false);
     this.getCount();
+    this.hidebar = this.authenManager.getHidebar();
+    if (!this.hidebar) {
+      this.recommendedLeft.nativeElement.style.top = '0';
+      this.feedbodysearch.nativeElement.style.top = '0';
+      this.recommendedRight.nativeElement.style.top = '0';
+    }
+    setTimeout(() => {
+      this.isLoading = false;
+    }, 1000);
   }
 
-  ngAfterViewInit(): void {
+  public ngAfterViewInit(): void {
+    // fromEvent(this.inputAutocomp && this.inputAutocomp.nativeElement, 'keyup').pipe(
+    //   debounceTime(500)
+    //   , distinctUntilChanged()
+    // ).subscribe((text: any) => {
+    //   this.keyUpAutoComp(this.inputAutocomp.nativeElement.value);
+    // });
+
     this.minEngagment = 0;
     this.maxEngagment = 0;
 
@@ -464,11 +539,16 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
 
     }).catch((err) => {
       console.log(err)
+      this.isLoading = false;
     });
   }
 
   public ngOnDestroy(): void {
     super.ngOnDestroy();
+    this.destroy.next();
+    this.destroy.complete();
+    this.unsubscriber.next();
+    this.unsubscriber.complete();
   }
 
   isPageDirty(): boolean {
@@ -484,31 +564,33 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     return;
   }
 
-  public keyUpAutoComp(text) {
-    this.isLoading = true;
-    let data = {
-      keyword: text.target.value
-    }
-    this.accountFacade.search(data).then((res) => {
-      this.dataUser = res;
+  public async keyUpAutoComp(text) {
+    try {
+      this.isLoading = true;
+      let data = {
+        keyword: text
+      }
+
+      this.dataUser = await this.accountFacade.search(data);
 
       for (let data of this.dataUser) {
-        if (data.imageURL !== null && data.imageURL !== undefined) {
-          data.imageURL = this.passSignUrl(data.imageURL);
+        if (!data.signURL) {
+          data.imageURL = await this.passSignUrl(data.imageURL);
         }
       }
 
       this.isLoading = false;
-    }).catch((err) => {
+    } catch (error) {
       this.isLoading = false;
-      console.log(err)
-    });
+      console.log(error)
+    }
   }
 
   public saveDate(event: any) {
     // this.startDate = { begin: new Date(event.value.begin), end: new Date(event.value.end) }
     this.startDateLong = new Date(event.value.begin).getTime();
     this.endDateLong = new Date(event.value.end).getTime();
+    this.autocomp(32);
     // this.searchTrendTag();
   }
 
@@ -521,6 +603,9 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   }
 
   public autocomp(keyword) {
+    if (keyword === 32) {
+      this.searchTrendTag();
+    }
     var autocomp = (document.getElementById("autocompSearch") as HTMLInputElement).value;
     var key = keyword.keyCode || keyword.charCode;
     if (autocomp.includes('#')) {
@@ -537,7 +622,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
             }
             autocomp = autocomp.replace(lTag, '');
             (document.getElementById("autocompSearch") as HTMLInputElement).value = autocomp;
-            this.searchTrendTag(); 
+            this.searchTrendTag();
           }
           index++;
         }
@@ -549,7 +634,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         if (index > -1) {
           this.keyword.splice(index, 1);
         }
-        this.searchTrendTag(true); 
+        this.searchTrendTag(true);
       }
     }
   }
@@ -557,7 +642,13 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   public clickSorting(data: any, index: number) {
     this.sortBy = data.name;
     this.sorting = data.type;
-    this.searchTrendTag(); 
+    if (this.sorting) {
+      const index = this.keyword.indexOf('', 0);
+      if (index > -1) {
+        this.keyword.splice(index, 1);
+      }
+      this.searchTrendTag(true);
+    }
   }
 
   public clickDataSearch(data) {
@@ -588,6 +679,9 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
           id: data.id,
           type: data.type
         });
+        if (data) {
+          this.searchTrendTag();
+        }
       }
     } else {
       this.rowUser.push(data);
@@ -595,21 +689,26 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         id: data.id,
         type: data.type
       });
+      if (data) {
+        this.searchTrendTag(true);
+      }
     }
 
     this.resetAutocomp();
-    this.searchTrendTag() 
+    // this.searchTrendTag();
   }
 
   public radioChange(event) {
     if (event.value === 'เฉพาะที่คุณติดตาม') {
       this.follow = true;
-      this.searchTrendTag(); 
+      this.searchTrendTag(true);
     } else if (event.value === 'กำหนดเอง') {
       this.follow = false;
     } else if (event.value === 'ทั้งหมด') {
-      this.follow = undefined;
-      this.searchTrendTag(); 
+      if (this.follow) {
+        this.follow = undefined;
+        this.searchTrendTag(true);
+      }
     }
   }
 
@@ -625,7 +724,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         this.recommendedRight.nativeElement.style.top = '-' + maxcount + 'px';
 
       } else {
-        this.recommendedRight.nativeElement.style.top = '55pt';
+        this.recommendedRight.nativeElement.style.top = (this.hidebar ? '0' : '0');
       }
     }
   }
@@ -643,7 +742,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         }
       } else {
         if (this.recommendedLeft) {
-          this.recommendedLeft.nativeElement.style.top = '55pt';
+          this.recommendedLeft.nativeElement.style.top = (this.hidebar ? '0' : '0');
         }
       }
     }
@@ -663,7 +762,6 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   }
 
   public async searchEmergency() {
-    this.isLoading = true;
     this.isLoadMorePageEmergency = true;
     const keywordFilter: any = {
       filter: {
@@ -675,13 +773,13 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         orderBy: {}
       },
     };
-    let cloneEmergency: any[] = [];
+
     await this.emergencyEventFacade.searchEmergency(keywordFilter).then((res: any) => {
       if (res) {
         for (let emer of res) {
-          cloneEmergency.push(emer);
+          this.resEmergency.push(emer);
         }
-        this.resEmergency = cloneEmergency;
+
         if (this.emergencyUrl) {
           for (let data of this.resEmergency) {
             if (this.emergencyUrl === data.hashTag) {
@@ -691,18 +789,18 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
           this.searchTrendTag();
         }
         if (this.emergency) {
-          for (let [index, tag] of cloneEmergency.entries()) {
+          for (let [index, tag] of this.resEmergency.entries()) {
             if (tag.value === this.objective) {
-              Object.assign(cloneEmergency[index], { selected: true })
+              Object.assign(this.resEmergency[index], { selected: false })
             }
           }
         }
         this.isLoadMorePageEmergency = false;
       }
 
-      this.isLoading = false;
     }).catch((err: any) => {
-      console.log(err)
+      console.log("error", err)
+      this.isLoading = false;
     });
   }
 
@@ -726,6 +824,11 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         for (let object of result.data) {
           cloneObject.push(object);
         }
+        // if (result.data.length === 5) {
+        //   this.isHideMoreObjective = false;
+        // } else {
+        //   this.isHideMoreObjective = true;
+        // }
         this.resObjective = cloneObject;
         if (this.objectiveUrl) {
           for (let data of this.resObjective) {
@@ -733,7 +836,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
               this.objective = data.id;
             }
           }
-          this.searchTrendTag(); 
+          this.searchTrendTag();
         }
         if (this.objective) {
           for (let [index, tag] of cloneObject.entries()) {
@@ -744,8 +847,10 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         }
       }
       this.isLoadMoreObjective = false;
+
     }).catch((err: any) => {
       console.log(err)
+      this.isLoading = false;
     })
   }
 
@@ -779,17 +884,18 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       // this.resHashTag = cloneHashtag;
     }).catch(error => {
       console.log(error);
+      this.isLoading = false;
       this.isLoadMoreHashTag = false;
     });
   }
 
   public getObjective(data) {
-    if (data.item.selected) {
-      this.objective = data.item.hashTag;
-    } else {
+    if (data.item.selected == null && data.item.selected == undefined) {
       this.objective = '';
+    } else {
+      this.objective = data.item.hashTag;
     }
-    this.searchTrendTag(); 
+    this.searchTrendTag();
 
     // const dataEngagement: UserEngagement = this.engagementService.engagementPost("objective", data.item.id, data.event.source._elementRef.nativeElement.innerText);
     // this.createEngagement(dataEngagement);
@@ -797,12 +903,14 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
   }
 
   public getEmergency(data) {
-    if (data.item.selected) {
-      this.emergency = data.item.id;
-    } else {
+    if (data.event.checked === false) {
       this.emergency = '';
+      this.emergencyId = '';
+    } else {
+      this.emergency = data.item.hashTag;
+      this.emergencyId = data.item.hasTagObj._id;
     }
-    this.searchTrendTag(true); 
+    this.searchTrendTag(true);
 
     // const dataEngagement: UserEngagement = this.engagementService.engagementPost("emergency", data.item.id, data.event.source._elementRef.nativeElement.innerText);
     // this.createEngagement(dataEngagement);
@@ -812,12 +920,13 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     return this.userEngagementFacade.create(dataEngagement).then((res: any) => {
     }).catch((err: any) => {
       console.log('err ', err)
+      this.isLoading = false;
     });
   }
 
-  public getPagecategory(data) { 
+  public getPagecategory(data) {
     if (data.event.checked) {
-      this.page.push(data.item.id); 
+      this.page.push(data.item.id);
     } else {
       let i = 0;
       for (let [index, listData] of this.page.entries()) {
@@ -827,7 +936,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         i++;
       }
     }
-    this.searchTrendTag(true); 
+    this.searchTrendTag(true);
   }
 
   public getTypeSearch(link) {
@@ -837,7 +946,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     }
     this.isLoadingClickTab = true;
     setTimeout(() => {
-      this.searchTrendTag(true); 
+      this.searchTrendTag(true);
     }, 1000);
   }
 
@@ -852,7 +961,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         this.matHashTag.splice(isHashtag, 1)
       }
     }
-    this.searchTrendTag(); 
+    this.searchTrendTag();
 
     // const dataEngagement: UserEngagement = this.engagementService.engagementPost("hashTag", data.item.value, data.event.source._elementRef.nativeElement.innerText);
     // this.createEngagement(dataEngagement);
@@ -882,7 +991,8 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       type: this.type ? this.type : '',
       createBy: this.userId,
       objective: this.objective ? this.objective : '',
-      emergencyEvent: this.emergency,
+      emergencyEventTag: this.emergency ? this.emergency : '',
+      emergencyEvent: this.emergencyId ? this.emergencyId : '',
       startDate: this.startDate && this.startDate.begin,
       endDate: this.startDate && this.startDate.end,
       startViewCount: this.startViewCount,
@@ -951,6 +1061,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
                 posts.post.referencePostObject = 'UNDEFINED PAGE'
               }
             }).catch((err: any) => {
+              this.isLoading = false;
             });
           }
         }
@@ -962,15 +1073,17 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
               let galleryIndex = 0;
               if (post.post.gallery.length > 0) {
                 for (let img of post.post.gallery) {
-                  if (img.imageURL !== '') {
-                    this.getDataGallery(img.imageURL, postIndex, galleryIndex);
-                    galleryIndex++
+                  if (!img.signURL) {
+                    if (img.imageURL !== '') {
+                      this.getDataGallery(img.imageURL, postIndex, galleryIndex);
+                      galleryIndex++
+                    }
                   }
                 }
               }
               postIndex++;
             }
-          } 
+          }
         }, 1500);
 
         this.isLoadingClickTab = false;
@@ -986,6 +1099,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       }
     }).catch((error: any) => {
       console.log(error);
+      this.isLoading = false;
     });
   }
 
@@ -1002,6 +1116,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         this.isLoading = false
       }
     }).catch((err: any) => {
+      this.isLoading = false;
       // if (err.error.status === 0) {
       //   if (err.error.message === 'Unable got Asset') {
       //     Object.assign(this.resDataPage.posts[postIndex].gallery[galleryIndex], { galleryBase64: null, isLoaded: true });
@@ -1045,6 +1160,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
 
     }).catch((err) => {
       console.log(err)
+      this.isLoading = false;
     })
   }
 
@@ -1181,14 +1297,15 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
               }
             }
           }
-          if(isLoadMore){ 
-            this.searchTrendTag(); 
-          }  
+          if (isLoadMore) {
+            this.searchTrendTag();
+          }
         }
       }
       this.isLoadMorePageCategory = false;
     }).catch((err: any) => {
       console.log(err)
+      this.isLoading = false;
     })
   }
 
@@ -1212,12 +1329,12 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     this.test = tag
     const index = this.matHashTag.indexOf(tag);
     const indexKeyword = this.keyword.indexOf(tag);
-    if(indexKeyword >= 0){
+    if (indexKeyword >= 0) {
       this.keyword.splice(index, 1);
     }
     if (index >= 0) {
       this.matHashTag.splice(index, 1);
-      this.searchTrendTag(); 
+      this.searchTrendTag();
     }
   }
 
@@ -1225,6 +1342,8 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     const indexCard = this.rowUser.indexOf(card);
     if (indexCard >= 0) {
       this.rowUser.splice(index, 1);
+      this.userId.splice(index, 1);
+      this.searchTrendTag();
     }
     for (let [i, user] of this.userId.entries()) {
       if (user.id === card.id) {
@@ -1232,7 +1351,6 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         break;
       }
     }
-    this.searchTrendTag(); 
   }
 
   onUserChangeStart(changeContext: ChangeContext, item: any): void {
@@ -1275,12 +1393,12 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       this.startActionCount = undefined;
       this.endActionCount = undefined;
     }
-    this.searchTrendTag(); 
+    this.searchTrendTag();
     return changeContext;
   }
 
   public clearDate() {
-    this.startDate = {} 
+    this.startDate = {}
     this.searchTrendTag();
   }
 
@@ -1291,9 +1409,9 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     if (this.scrollMobile) {
       this.recommendedLeft.nativeElement.style.height = 'auto';
     }
-    $("#menubottom").css({
-      'overflow-y': "hidden"
-    });
+    // $("#menubottom").css({
+    //   'overflow-y': "hidden"
+    // });
   }
 
   public async actionComment(action: any, index: number) {
@@ -1318,12 +1436,17 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
           var aw = await this.pageFacade.search(search).then((pages: any) => {
             pageInUser = pages
           }).catch((err: any) => {
+            this.isLoading = false;
           })
           for (let p of pageInUser) {
-            var aw = await this.assetFacade.getPathFile(p.imageURL).then((res: any) => {
-              p.img64 = res.data
-            }).catch((err: any) => {
-            });
+            if (!p.signURL) {
+              await this.assetFacade.getPathFile(p.imageURL).then((res: any) => {
+                p.img64 = res.data
+              }).catch((err: any) => {
+                console.log("err", err);
+                this.isLoading = false;
+              });
+            }
           }
           const dialogRef = this.dialog.open(DialogReboonTopic, {
             width: '450pt',
@@ -1369,6 +1492,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
                 this.resPost[index].post.repostCount++
               }).catch((err: any) => {
                 console.log(err)
+                this.isLoading = false;
               })
             }
           });
@@ -1380,10 +1504,12 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
             this.resPost[index].post.isRepost = true
           }).catch((err: any) => {
             console.log(err)
+            this.isLoading = false;
           })
         } else if (action.type === "UNDOTOPIC") {
           this.postFacede.undoPost(action.post._id).then((res: any) => {
           }).catch((err: any) => {
+            this.isLoading = false;
           })
         }
 
@@ -1391,7 +1517,10 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         this.isLoginCh();
         this.postLike(action, index);
       } else if (action.mod === 'SHARE') {
-        this.isLoginCh();
+        this.mainPostLink = window.location.origin + '/post/';
+        this.linkPost = (this.mainPostLink + this.resPost[index].post._id);
+        this.dialogShare();
+        // this.isLoginCh();
       } else if (action.mod === 'COMMENT') {
         this.isLoginCh();
       } else if (action.mod === 'POST') {
@@ -1400,6 +1529,17 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     } else {
       return this.showAlertLoginDialog(this.url);
     }
+  }
+
+  public dialogShare() {
+    let dialog = this.dialog.open(DialogShare, {
+      disableClose: true,
+      autoFocus: false,
+      data: {
+        title: "แชร์",
+        text: this.linkPost
+      }
+    });
   }
 
   private isLoginCh() {
@@ -1427,6 +1567,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         }
       }).catch((err: any) => {
         console.log(err)
+        this.isLoading = false;
       });
     }
   }
@@ -1443,6 +1584,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       this.resPost.posts[index].isComment = true
       this.resPost.posts[index]
     }).catch((err: any) => {
+      this.isLoading = false;
     })
   }
 
@@ -1452,9 +1594,9 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     var postion = $(".slide-left");
     postion.removeClass("active");
     this.isBackdrop = false;
-    $("#menubottom").css({
-      'overflow-y': "auto"
-    });
+    // $("#menubottom").css({
+    //   'overflow-y': "auto"
+    // });
     const scroll = this.recommendedLeft.nativeElement.scrollTop;
     if (scroll > 0) {
       this.recommendedLeft.nativeElement.scrollTop = 0
@@ -1492,4 +1634,5 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       postion.addClass("active");
     }
   }
+
 }

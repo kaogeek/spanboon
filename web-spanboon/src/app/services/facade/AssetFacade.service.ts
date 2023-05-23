@@ -25,7 +25,6 @@ export class AssetFacade extends AbstractFacade {
       let url: string = this.baseURL + urlPath;
 
       let body: any = {};
-
       this.http.get(url, body).toPromise().then((response: any) => {
         resolve(response as Asset);
       }).catch((error: any) => {
@@ -59,7 +58,7 @@ export class AssetFacade extends AbstractFacade {
         body = Object.assign(data)
       }
 
-      let options = this.getDefaultOptions();
+      let options = this.authMgr.getDefaultOptions();
 
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response as Asset);

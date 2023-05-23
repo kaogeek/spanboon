@@ -33,7 +33,6 @@ export class RecommendCard {
 
   public apiBaseURL = environment.apiBaseURL;
   public dialog: MatDialog;
-
   @Output()
   public submitFollow: EventEmitter<any> = new EventEmitter();
 
@@ -58,11 +57,11 @@ export class RecommendCard {
     });
   }
 
-  public onClick(index: number, recommed: any){ 
+  public onClick(index: number, recommed: any) {
     let data = {
-      index : index,
+      index: index,
       recommed
-    } 
+    }
     this.submitFollow.emit(data);
   }
 

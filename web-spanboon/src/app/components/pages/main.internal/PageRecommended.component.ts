@@ -5,8 +5,8 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-import { Component, OnInit, Input, ViewChild, ElementRef, EventEmitter } from '@angular/core';
-import { ObjectiveFacade, NeedsFacade, AssetFacade, AuthenManager, ObservableManager, PageFacade, HashTagFacade, Engagement, UserEngagementFacade, RecommendFacade } from '../../../services/services';
+import { Component, OnInit, Input, ViewChild, ElementRef, EventEmitter, Output } from '@angular/core';
+import { ObjectiveFacade, NeedsFacade, AssetFacade, AuthenManager, ObservableManager, PageFacade, HashTagFacade, Engagement, UserEngagementFacade, RecommendFacade, ProfileFacade, SeoService } from '../../../services/services';
 import { MatDialog } from '@angular/material';
 import { AbstractPage } from '../AbstractPage';
 import { FileHandle } from '../../shares/directive/directives';
@@ -33,6 +33,12 @@ export class PageRecommended extends AbstractPage implements OnInit {
   public isIconPage: boolean;
   @Input()
   public text: string = "ข้อความ";
+  @Input()
+  public data: any;
+  @Input()
+  public selectedIndex: number;
+  @Output()
+  public submitFollow: EventEmitter<any> = new EventEmitter();
 
   public links = [{ label: 'ไทมไลน์', keyword: 'timeline' }, { label: this.PLATFORM_GENERAL_TEXT, keyword: 'general' }, { label: 'กำลัง' + this.PLATFORM_NEEDS_TEXT, keyword: 'needs' }];
   public activeLink = this.links[0].label;
@@ -48,6 +54,9 @@ export class PageRecommended extends AbstractPage implements OnInit {
   private userEngagementFacade: UserEngagementFacade;
   protected observManager: ObservableManager;
   private recommendFacade: RecommendFacade;
+  private pageFacade: PageFacade;
+  private profileFacade: ProfileFacade;
+  private seoService: SeoService;
 
   public resDataPage: any;
   public resObjective: any;
@@ -61,7 +70,7 @@ export class PageRecommended extends AbstractPage implements OnInit {
   public dataTrend: any[] = [];
   public whereConditions: string[];
 
-  // public isFollow: boolean = true;
+  public isFollow: boolean = false;
   public isloading: boolean;
 
   mySubscription: any;
@@ -69,9 +78,9 @@ export class PageRecommended extends AbstractPage implements OnInit {
   public apiBaseURL = environment.apiBaseURL;
 
   files: FileHandle[] = [];
-  constructor(router: Router, dialog: MatDialog, authenManager: AuthenManager, pageFacade: PageFacade, objectiveFacade: ObjectiveFacade, needsFacade: NeedsFacade, assetFacade: AssetFacade,
+  constructor(router: Router, dialog: MatDialog, authenManager: AuthenManager, pageFacade: PageFacade, profileFacade: ProfileFacade, objectiveFacade: ObjectiveFacade, needsFacade: NeedsFacade, assetFacade: AssetFacade,
     observManager: ObservableManager, routeActivated: ActivatedRoute, searchHashTagFacade: HashTagFacade, engagementService: Engagement, userEngagementFacade: UserEngagementFacade,
-    recommendFacade: RecommendFacade) {
+    recommendFacade: RecommendFacade, seoService: SeoService) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.dialog = dialog
     this.objectiveFacade = objectiveFacade;
@@ -82,7 +91,10 @@ export class PageRecommended extends AbstractPage implements OnInit {
     this.engagementService = engagementService;
     this.userEngagementFacade = userEngagementFacade;
     this.recommendFacade = recommendFacade;
+    this.pageFacade = pageFacade;
+    this.profileFacade = profileFacade;
     this.whereConditions = ["name"]
+    this.seoService = seoService;
 
     this.observManager.subscribe('scroll.fix', (scrollTop) => {
       this.heightWindow();
@@ -93,6 +105,7 @@ export class PageRecommended extends AbstractPage implements OnInit {
     this.searchTrendTag();
     this.openLoading();
     this.getRecommend();
+    this.seoService.updateTitle("แนะนำสำหรับคุณ");
   }
 
   public ngOnDestroy(): void {
@@ -150,7 +163,7 @@ export class PageRecommended extends AbstractPage implements OnInit {
       this.recommendedRight.nativeElement.style.top = '-' + maxcount + 'px';
 
     } else {
-      this.recommendedRight.nativeElement.style.top = '55pt';
+      this.recommendedRight.nativeElement.style.top = '0pt';
     }
   }
 
@@ -197,6 +210,71 @@ export class PageRecommended extends AbstractPage implements OnInit {
     }).catch((err: any) => {
       console.log('err ', err)
     });
+  }
+
+  public async followPage(pageId: string) {
+    if (!this.isLogin()) {
+      this.showAlertLoginDialog("/page/" + this.resDataPage.id);
+    } else {
+      return this.pageFacade.follow(pageId);
+    }
+  }
+
+  public async followUser(userId: string) {
+    if (!this.isLogin()) {
+      this.showAlertLoginDialog("/page/" + this.resDataPage.id);
+    } else {
+      return this.profileFacade.follow(userId);
+    }
+  }
+
+  public async clickFollow(data: any) {
+    if (data.recommed.type === 'USER') {
+      const followUser = await this.followUser(data.recommed._id);
+      if (followUser) {
+        for (let [index, recommend] of this.dataRecommend.entries()) {
+          if (recommend._id === data.recommed._id) {
+            if (followUser.message === "Unfollow User Success") {
+              let dialog = this.showAlertDialogWarming("คุณต้องการเลิกติดตาม " + data.recommed.displayName, "none");
+              dialog.afterClosed().subscribe((res) => {
+                if (res) {
+                  Object.assign(this.dataRecommend[index], { isFollowed: followUser.data.isFollow });
+                } else {
+                  Object.assign(this.dataRecommend[index], { isFollowed: true });
+                }
+                this.dialog.closeAll();
+              });
+            } else {
+              Object.assign(this.dataRecommend[index], { isFollowed: followUser.data.isFollow });
+            }
+          }
+        }
+        this.selectedIndex = data.index;
+      }
+    } else {
+      const followPage = await this.followPage(data.recommed._id);
+      if (followPage) {
+        for (let [index, recommend] of this.dataRecommend.entries()) {
+          if (recommend._id === data.recommed._id) {
+            if (followPage.message === "Unfollow Page Success") {
+              let dialog = this.showAlertDialogWarming("คุณต้องการเลิกติดตาม " + data.recommed.name, "none");
+              dialog.afterClosed().subscribe((res) => {
+                if (res) {
+                  Object.assign(this.dataRecommend[index], { isFollowed: followPage.data.isFollow });
+                } else {
+                  Object.assign(this.dataRecommend[index], { isFollowed: true });
+                }
+                this.dialog.closeAll();
+              });
+            } else {
+              Object.assign(this.dataRecommend[index], { isFollowed: followPage.data.isFollow });
+            }
+          }
+        }
+
+        this.selectedIndex = data.index;
+      }
+    }
   }
 
   public async passSignUrl(url?: any): Promise<any> {

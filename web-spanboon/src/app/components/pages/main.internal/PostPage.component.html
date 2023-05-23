@@ -127,8 +127,7 @@
                     <div *ngIf="!isPload" class="wrapper-profile-fan-page" #pagefixHeight>
                         <div class="profile-fan-page">
                             <div class="img-profile">
-                                <ng-container
-                                    *ngIf="resDataPage && resDataPage.imageBase64 !== undefined  && resDataPage.imageBase64 !== '' && resDataPage.imageBase64 !== null; else elseImgUrl">
+                                <ng-container *ngIf="!!resDataPage!.imageBase64; else elseImgUrl">
                                     <img class="image-profile-fan-page" [phxPreload]="resDataPage"
                                         [preloadClass]="'image-profile-fan-page'" src="{{resDataPage.imageBase64}}">
                                 </ng-container>
@@ -298,7 +297,7 @@
                                 <!-- <span class="material-icons" *ngIf="isLogin() && isNotAccess"> edit </span> -->
                             </div>
                             <div class="wrapper-body-doing" style="height: auto;"
-                                *ngIf="resDataPage && resDataPage.backgroundStory !== null && resDataPage.backgroundStory !== undefined && resDataPage.backgroundStory !== ''; ">
+                                *ngIf="!!resDataPage!.backgroundStory">
                                 <div class="con-text">
                                     {{resDataPage.backgroundStory | slice:0:320}}<span
                                         *ngIf="resDataPage.backgroundStory.length > 320"
@@ -501,8 +500,7 @@
                                 </ng-container>
                             </div>
                             <div class="side-feed" #sidefeedHeight>
-                                <ng-container
-                                    *ngIf="resDataPage && resDataPage.backgroundStory !== null && resDataPage.backgroundStory !== undefined && resDataPage.backgroundStory !== ''; ">
+                                <ng-container *ngIf="!!resDataPage!.backgroundStory">
                                     <div class="wrapper-doing-user-relate">
                                         <div class="title">
                                             ความเป็นมา
@@ -532,8 +530,9 @@
                                             <ng-container
                                                 *ngFor="let item of resDataPage.pageObjectives; let index = index">
                                                 <div class="wrapper-doing" *ngIf="index <= 5">
-                                                    <display-image [isGlightbox]="false"  [class]="'image-tag'" [isPreload]="'true'"
-                                                        [isLoaded]="item.isLoaded" [base64]="item.iconBase64">
+                                                    <display-image [isGlightbox]="false" [class]="'image-tag'"
+                                                        [isPreload]="'true'" [isLoaded]="item.isLoaded"
+                                                        [base64]="item.iconBase64">
                                                     </display-image>
                                                     <span class="i_title">
                                                         {{item.title}}

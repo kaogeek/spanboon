@@ -11,9 +11,11 @@
             <div class="dropdown-page" *ngIf="isListPage && isHeaderPage && !isEdit && !isFulfill && !isMobilePost;">
                 <mat-form-field appearance="none">
                     <div class="selected-dropdown">
-                        <ng-container
-                            *ngIf="accessPageImage && accessPageImage.imageURL && accessPageImage.imageURL !== '' && accessPageImage.imageURL !== undefined && accessPageImage.imageURL !== null; else elseAccessPage">
-                            <img class="img" src="{{accessPageImage.imageURL}}" alt="">
+                        <ng-container *ngIf="accessPageImage && (!!accessPageImage.signURL 
+                            || !!accessPageImage.imageURL); else elseAccessPage">
+                            <img class="img"
+                                [src]="accessPageImage.signURL ? accessPageImage.signURL : accessPageImage.imageURL"
+                                alt="">
                         </ng-container>
                         <ng-template #elseAccessPage>
                             <div class="donator">
@@ -25,13 +27,15 @@
                             [(ngModel)]="accessPageImage.name || accessPageImage.displayName">
                             <ng-container *ngFor="let data of accessPage; let index = index">
                                 <mat-option *ngIf="index === 0 && data.user.type === 'user'"
-                                    [value]="accessPageImage.displayName === data.user.displayName ? data.user.displayName  : data.user.displayName "
+                                    [value]="accessPageImage.displayName === data.user.displayName ? data.user.displayName  : data.user.displayName"
                                     (click)="selectAccessPage(data.user,'USER')">
                                     <div class="wrapper-img-access">
                                         <div class="img-access">
                                             <ng-container
-                                                *ngIf="data.user.imageURL !== '' && data.user.imageURL !== undefined && data.user.imageURL !== null; else elseImageProfile">
-                                                <img class="icon-image" src="{{data.user.imageURL}}" alt="">
+                                                *ngIf="!!data.user.signURL || !!data.user.imageURL; else elseImageProfile">
+                                                <img class="icon-image"
+                                                    [src]="data.user.signURL ? data.user.signURL : data.user.imageURL"
+                                                    alt="">
                                             </ng-container>
                                             <ng-template #elseImageProfile>
                                                 <img class="icon-image" src="../../../assets/img/profile1.svg" alt="">
@@ -46,8 +50,10 @@
                                     <div class="wrapper-img-access">
                                         <div class="img-access">
                                             <ng-container
-                                                *ngIf="data.page.imageURL !== '' && data.page.imageURL !== undefined && data.page.imageURL !== null; else elseImageProfile">
-                                                <img class="icon-image" src="{{data.page.imageURL}}" alt="">
+                                                *ngIf="!!data.page.signURL || !!data.page.imageURL; else elseImageProfile">
+                                                <img class="icon-image"
+                                                    [src]="data.page.signURL ? data.page.signURL : data.page.imageURL"
+                                                    alt="">
                                             </ng-container>
                                             <ng-template #elseImageProfile>
                                                 <img class="icon-image" src="../../../assets/img/profile1.svg" alt="">
@@ -70,8 +76,10 @@
                 <mat-form-field appearance="none" *ngIf="!isSelectOption">
                     <div class="selected-dropdown">
                         <ng-container
-                            *ngIf="accessPageImage && accessPageImage.imageURL && accessPageImage.imageURL !== '' && accessPageImage.imageURL !== undefined && accessPageImage.imageURL !== null; else elseAccessPage">
-                            <img class="img" src="{{accessPageImage.imageURL}}" alt="">
+                            *ngIf="accessPageImage && (!!accessPageImage.signURL || !!accessPageImage.imageURL); else elseAccessPage">
+                            <img class="img"
+                                [src]="accessPageImage.signURL? accessPageImage.signURL : accessPageImage.imageURL"
+                                alt="">
                         </ng-container>
                         <ng-template #elseAccessPage>
                             <div class="donator">
@@ -88,8 +96,10 @@
                                     <div class="wrapper-img-access">
                                         <div class="img-access">
                                             <ng-container
-                                                *ngIf="data.user.imageURL !== '' && data.user.imageURL !== undefined && data.user.imageURL !== null; else elseImageProfile">
-                                                <img class="icon-image" src="{{data.user.imageURL}}" alt="">
+                                                *ngIf="!!data.user.signURL || !!data.user.imageURL; else elseImageProfile">
+                                                <img class="icon-image"
+                                                    [src]="data.user.signURL ? data.user.signURL : data.user.imageURL"
+                                                    alt="">
                                             </ng-container>
                                             <ng-template #elseImageProfile>
                                                 <img class="icon-image" src="../../../assets/img/profile1.svg" alt="">
@@ -104,8 +114,10 @@
                                     <div class="wrapper-img-access">
                                         <div class="img-access">
                                             <ng-container
-                                                *ngIf="data.page.imageURL !== '' && data.page.imageURL !== undefined && data.page.imageURL !== null; else elseImageProfile">
-                                                <img class="icon-image" src="{{data.page.imageURL}}" alt="">
+                                                *ngIf="!!data.page.signURL || !!data.page.imageURL; else elseImageProfile">
+                                                <img class="icon-image"
+                                                    [src]="data.page.signURL ? data.page.signURL : data.page.imageURL"
+                                                    alt="">
                                             </ng-container>
                                             <ng-template #elseImageProfile>
                                                 <img class="icon-image" src="../../../assets/img/profile1.svg" alt="">
@@ -122,12 +134,14 @@
                 </mat-form-field>
             </div>
 
-            <div class="box-toggle">
+            <!-- <div class="box-toggle">
                 <span *ngIf="isShowText">สร้าง{{PLATFORM_STORY}} :</span>
                 <mat-slide-toggle [ngModelOptions]="{standalone: true}" [(ngModel)]="isStory"
                     (change)="onChangeSlide($event)"></mat-slide-toggle>
-                <!-- <mat-slide-toggle [ngModelOptions]="{standalone: true}" [(ngModel)]="isChecked" (change)="onToggle($event)"></mat-slide-toggle> -->
-            </div>
+                    
+                    comment vvvvvv
+                <mat-slide-toggle [ngModelOptions]="{standalone: true}" [(ngModel)]="isChecked" (change)="onToggle($event)"></mat-slide-toggle>
+            </div> -->
         </div>
         <ng-container *ngIf="modeShowImage">
             <div class="box-image" *ngIf="imagesTimeline && imagesTimeline.length > 0">
@@ -183,7 +197,6 @@
             class="textarea-editor" contentEditable="true" attr.placeholder="{{PLATFORM_STORY_TALE}}ของ {{dataPage}}"
             (keyup)="onKeyup($event)" (click)="onKeyup($event)">
         </div>
-
         <div *ngIf="!isRepost" #storyPost id="{{prefix &&  prefix.detail? prefix.detail : ''}}editableStoryPost"
             class="textarea-editor" contentEditable="true"
             attr.placeholder="ความเห็นของคุณต่อ{{PLATFORM_STORY_TALE}}นี้ {{repostPage}} {{dataPage}}"
@@ -214,7 +227,8 @@
                 <div class="search-tag-emergency" *ngIf="!isFulfill">
                     <div *ngIf="isRepost" class="event-tag" [matMenuTriggerFor]="menuEvent"
                         (menuClosed)="focusOutEmergency()"
-                        [class.active-tag1]="isShowEmergency || isEmptyObject(dataAutoComp)" (click)="eventClick()">
+                        [class.active-tag1]="isShowEmergency || isEmptyObject(dataAutoComp)"
+                        (click)="eventClick(); autocompleteEmergency?.nativeElement?.focus();">
                         <svg xmlns="http://www.w3.org/2000/svg" width="23" height="21" viewBox="0 0 23 21">
                             <g id="Group_1312" data-name="Group 1312" transform="translate(-672.701 -415.463)">
                                 <path id="Subtraction_2" data-name="Subtraction 2"
@@ -243,7 +257,7 @@
                             </g>
                         </svg>
                         <ng-container *ngIf="isEmptyObject(dataAutoComp); else elseObjective">
-                            {{'#'+dataAutoComp.hashtag}}
+                            {{'#' + dataAutoComp.hashtag}}
                         </ng-container>
                         <ng-template #elseObjective>
                             เหตุการณ์ด่วน
@@ -258,8 +272,7 @@
                                         search
                                     </span>
                                     <input type="text" name="autocompleteEmergency" matInput id="autocompleteEmergency"
-                                        #autocompleteEmergency placeholder="ค้นหา"
-                                        (keyup)="keyUpSearchEmergencyEvent(autocompleteEmergency.value, true)">
+                                        #autocompleteEmergency placeholder="ค้นหา">
                                 </div>
                             </div>
                             <div class="panel-checkbox">
@@ -289,7 +302,7 @@
                 <div class="search-objective" *ngIf="modeShowDoing">
                     <div *ngIf="isRepost" class="objective-doing" [matMenuTriggerFor]="menuEventObjective"
                         (menuClosed)="focusOutObjective()" [class.active-tag]="isShowObjective || dataObjective.hashTag"
-                        (click)="clickObjectiveDoing();">
+                        (click)="clickObjectiveDoing(); searchInputObjective.nativeElement.value = ''; searchInputObjective.nativeElement.focus();">
                         <svg class="img-objective" xmlns="http://www.w3.org/2000/svg" width="22.899" height="22.899"
                             viewBox="0 0 22.899 22.899">
                             <g id="mission" transform="translate(0)">
@@ -348,7 +361,6 @@
                                                 </mat-select>
                                             </mat-form-field>
                                             <div class="hash">
-                                                <!-- <span class="wrapper-hashTag">#</span> -->
                                                 <label for="add-username">#</label>
                                                 <input type="text" class="input-hashTag" id="objective-doing-name"
                                                     name="objective-doing-name" #objectiveDoingName
@@ -395,37 +407,33 @@
                                             </spanboon-button>
                                         </div>
                                         <div class="btn-submit">
-                                            <spanboon-button (click)="createImageObjective()" [height]="'28pt'"
-                                                [width]="'79pt'" [text]="'สร้าง'">
+                                            <spanboon-button (click)="isLock ? null : createImageObjective()"
+                                                [height]="'28pt'" [width]="'79pt'" [text]="'สร้าง'">
                                             </spanboon-button>
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
                         </ng-container>
                         <ng-template #elseUpload>
-                            <div class="wrapper-body-objective">
+                            <div class="wrapper-body-objective" (click)="$event.stopPropagation()">
                                 <div class="search-header-objective">
-                                    <svg class="img-search" xmlns="http://www.w3.org/2000/svg" width="20.276"
-                                        height="20.682" viewBox="0 0 20.276 20.682">
-                                        <g id="surface1" transform="translate(-27)">
-                                            <path id="Path_104" data-name="Path 104"
-                                                d="M14.235,12.272a7.776,7.776,0,1,0-2.392,2.2l5.734,5.7a1.628,1.628,0,0,0,2.36-2.242c-.02-.021-.039-.04-.059-.059ZM7.883,12.8A5.016,5.016,0,1,1,12.9,7.779,5.017,5.017,0,0,1,7.883,12.8Zm0,0"
-                                                transform="translate(26.891 0)" fill="#474747" />
-                                        </g>
-                                    </svg>
-                                    <mat-form-field class="form-search-field" appearance="none"
-                                        (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
-                                        <input matInput placeholder="ค้นหา" #searchInputObjective
-                                            id="searchInputObjective"
-                                            (keyup)="keyUpSearchObjective(searchInputObjective.value)">
-                                    </mat-form-field>
+                                    <label for="searchInputObjective">
+                                        <svg class="img-search" xmlns="http://www.w3.org/2000/svg" width="20.276"
+                                            height="20.682" viewBox="0 0 20.276 20.682">
+                                            <g id="surface1" transform="translate(-27)">
+                                                <path id="Path_104" data-name="Path 104"
+                                                    d="M14.235,12.272a7.776,7.776,0,1,0-2.392,2.2l5.734,5.7a1.628,1.628,0,0,0,2.36-2.242c-.02-.021-.039-.04-.059-.059ZM7.883,12.8A5.016,5.016,0,1,1,12.9,7.779,5.017,5.017,0,0,1,7.883,12.8Zm0,0"
+                                                    transform="translate(26.891 0)" fill="#474747" />
+                                            </g>
+                                        </svg>
+                                    </label>
+                                    <input matInput placeholder="ค้นหา" #searchInputObjective id="searchInputObjective">
                                 </div>
                                 <div class="wrapper-add-doing">
                                     <div class="wrapper-add-image">
                                         <div class="page-doing">
-                                            สิ่งที่ {{dataPage ? '"'+dataPage+'"' : ''}} กำลังทำอยู่
+                                            สิ่งที่ {{dataPage ? '"' + dataPage + '"' : ''}} กำลังทำอยู่
                                         </div>
                                         <div class="image-upload" (click)="UploadImage(); $event.stopPropagation()">
                                             <svg class="icon-add" xmlns="http://www.w3.org/2000/svg" width="20.948"
@@ -457,7 +465,7 @@
                                                 </ng-container>
                                                 <ng-template #elseIsicon>
                                                     <ng-container
-                                                        *ngIf="item.iconURL === '' || item.iconURL === null || item.iconURL === undefined; else elseIsBase64">
+                                                        *ngIf="!item.iconSignURL && !item.iconURL; else elseIsBase64">
                                                         <div class="image-tag image-waste">
                                                             <img src="../../../../assets/img/photo.png"
                                                                 style="width: 40%; height: auto;">
@@ -465,8 +473,10 @@
                                                     </ng-container>
                                                     <ng-template #elseIsBase64>
                                                         <ng-container
-                                                            *ngIf="item.iconBase64 !== '' && item.iconBase64 !== undefined && item.iconBase64 !== null ; else elsecheckBase">
-                                                            <img class="image-tag" src="{{item.iconBase64}}" alt="">
+                                                            *ngIf="!!item.iconSignURL || !!item.iconBase64; else elsecheckBase">
+                                                            <img class="image-tag"
+                                                                [src]="item.iconSignURL ? item.iconSignURL : item.iconBase64"
+                                                                alt="">
                                                         </ng-container>
                                                         <ng-template #elsecheckBase>
                                                             <div class="image-tag image-waste">
@@ -498,11 +508,11 @@
                 </div>
             </div>
             <div class="wrapper-middle" #middle>
-                <div class="wrapper-edit-story" *ngIf="(isEmptyObject(dataStroy) || isDataStroy) && isStory">
-                    <div class="edit-story" (click)="showDialogCreateStory(true)">
+                <!-- <div class="wrapper-edit-story" *ngIf="(isEmptyObject(dataStroy) || isDataStroy) && isStory">
+                    <div class="edit-story" (click)="showDialogCreateStory(false)">
                         แก้ไข{{PLATFORM_STORY}}
                     </div>
-                </div>
+                </div> -->
                 <ng-container *ngIf="arrListItem && arrListItem.length > 0 && isTypeNeed; else elseNeeds">
                     <div class="wrapper-edit-story" (click)="showDialogDoing()">
                         <span class="label-needs"> กำลัง{{PLATFORM_NEEDS_TEXT}} {{getObjectLength(arrListItem)}}
@@ -539,7 +549,30 @@
 
         <div class="wrapper-tool-post" mat-dialog-actions (window:resize)="onResize()">
             <div class="box-left" [ngStyle]="{'border-right': isFulfill ? 'unset':'0.7px solid #e5e5e5'}">
-                <mat-form-field appearance="none" *ngIf="!isFulfill">
+                <ng-container *ngIf="!isFulfill">
+                    <ng-container *ngIf="isRepost; else elseIsRepost">
+                        <ng-container *ngIf="modeDoIng; else elseDoIng">
+                            <ng-container *ngFor="let data of chooseStorys">
+                                <div appDebounceClick class="butt" (click)="selectType(data.value)">
+                                    {{data.viewValue}}
+                                </div>
+                            </ng-container>
+                        </ng-container>
+                        <ng-template #elseDoIng>
+                            <ng-container *ngFor="let data of chooseStory">
+                                <div appDebounceClick class="butt" (click)="selectType(data.value)">
+                                    {{data.viewValue}}
+                                </div>
+                            </ng-container>
+                        </ng-template>
+                    </ng-container>
+                    <ng-template #elseIsRepost>
+                        <!-- <div appDebounceClick class="butt but-submit" (click)="selectType(data.value)">
+                            {{"แชร์เข้าไทมไลน์ของฉัน"}}
+                        </div> -->
+                    </ng-template>
+                </ng-container>
+                <!-- <mat-form-field appearance="none" *ngIf="!isFulfill">
                     <mat-select *ngIf="isRepost;" #matSelect [(ngModel)]="selected"
                         [ngModelOptions]="{standalone: true}">
                         <ng-container *ngIf="modeDoIng ; else elseDoIng">
@@ -573,7 +606,7 @@
                             </div>
                         </mat-option>
                     </mat-select>
-                </mat-form-field>
+                </mat-form-field> -->
             </div>
             <div class="box-center" style="justify-content: flex-end;">
                 <!-- <div class="center" style="justify-content: flex-end;"> -->
@@ -603,21 +636,18 @@
                     </div>
                     <mat-menu #menuTag="matMenu" class="drop-list" (click)="$event.stopPropagation()"
                         (keydown)="$event.stopPropagation()">
-                        <div class="au-comp" *ngIf="isShowCheckboxTag">
-                            <div class="header" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+                        <div class="au-comp" *ngIf="isShowCheckboxTag" (click)="$event.stopPropagation()">
+                            <div class="header">
                                 <div class="div-search">
                                     <span class="material-icons icons-search">
                                         search
                                     </span>
                                     <input type="text" matInput name="autocompleteField" id="autocompleteField"
-                                        #autocompleteField placeholder="ค้นหา" #autoCompleteTag
-                                        (keyup)="keyUpSearchHashTag(autocompleteField.value , false)">
+                                        #autocompleteField placeholder="ค้นหา">
                                 </div>
-                                <nav mat-tab-nav-bar animationDuration="0ms" (click)="$event.stopPropagation()"
-                                    (keydown)="$event.stopPropagation()">
+                                <nav mat-tab-nav-bar animationDuration="0ms">
                                     <a mat-tab-link *ngFor="let link of links" [disableRipple]="true"
-                                        (click)="keyUpSearchHashTag('',false); activeLink = link.keyword"
-                                        [active]="activeLink == link.keyword">
+                                        (click)="activeLink = link.keyword" [active]="activeLink == link.keyword">
                                         {{link.label}}
                                     </a>
                                 </nav>
@@ -628,39 +658,35 @@
                                         ยกเลิกทั้งหมด
                                     </span>
                                 </mat-option>
+                                <mat-option class="mat-option-progress" *ngIf="isLoading">
+                                    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                                </mat-option>
                                 <ng-container *ngIf="activeLink === 'tab1'; else elseTab">
-                                    <mat-option class="mat-option-progress" *ngIf="isLoading">
-                                        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-                                    </mat-option>
                                     <ng-container *ngIf="!isLoading">
-                                        <mat-option [ngClass]="{'dis': onPost}" class="list"
-                                            *ngFor="let item of resHashTag" [value]="item.value">
-                                            <div class="list-checkbox" (click)="optionClicked($event, item);">
-                                                <mat-checkbox (click)="$event.stopPropagation()" name="{{item.value}}"
-                                                    [(ngModel)]="item.selected" value="{{item.id}}"
-                                                    [ngModelOptions]="{standalone: true}"
-                                                    (change)="checkCheckBoxvalue($event, item)">
-                                                    #{{item.value}}
-                                                    <div class="tag-count">
-                                                        {{item.count ? item.count : 0 | shortNumber }} ครั้ง
-                                                    </div>
-                                                </mat-checkbox>
-                                            </div>
-                                        </mat-option>
+                                        <ng-container *ngFor="let item of resHashTag">
+                                            <mat-option [ngClass]="{'dis': onPost}" class="list" [value]="item.value">
+                                                <div class="list-checkbox">
+                                                    <mat-checkbox (change)="checkCheckBoxvalue($event, item)"
+                                                        name="{{item.value}}" [(ngModel)]="item.selected"
+                                                        value="{{item.id}}">
+                                                        #{{item.value}}
+                                                        <div class="tag-count">
+                                                            {{item.count ? item.count : 0 | shortNumber }} ครั้ง
+                                                        </div>
+                                                    </mat-checkbox>
+                                                </div>
+                                            </mat-option>
+                                        </ng-container>
                                     </ng-container>
                                 </ng-container>
                                 <ng-template #elseTab>
-                                    <mat-option class="mat-option-progress" *ngIf="isLoading">
-                                        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-                                    </mat-option>
                                     <ng-container *ngIf="!isLoading">
                                         <ng-container *ngFor="let item of listTag">
-                                            <mat-option class="list" *ngIf="item.isServer !== false"
+                                            <mat-option class="list" *ngIf="item.selected !== false"
                                                 [value]="item.name">
-                                                <div class="list-checkbox" (click)="optionClicked($event, item);">
-                                                    <mat-checkbox (click)="$event.stopPropagation()"
-                                                        name="{{item.name}}" [(ngModel)]="item.selected"
-                                                        (change)="checkCheckBoxvalue($event, item)">
+                                                <div class="list-checkbox">
+                                                    <mat-checkbox (change)="checkCheckBoxvalue($event, item)"
+                                                        name="{{item.name}}" [(ngModel)]="item.selected">
                                                         #{{item.name}}
                                                         <div class="tag-count">
                                                             <span>
@@ -671,7 +697,6 @@
                                                 </div>
                                             </mat-option>
                                         </ng-container>
-
                                     </ng-container>
                                 </ng-template>
                             </div>
@@ -719,7 +744,8 @@
                         </ng-template>
                     </div>
                     <ng-container *ngIf="isSharePost">
-                        <div class="share-social" #menuTrigger="matMenuTrigger" [matMenuTriggerFor]="menuSocial">
+                        <div class="share-social" #menuTrigger="matMenuTrigger" [matMenuTriggerFor]="menuSocial"
+                            (click)="clickToSocial()">
                             <svg class="icon-social"
                                 [class.active]="menuTrigger.menuOpen || isAutoPostTwitter || isAutoPostFacebook"
                                 xmlns="http://www.w3.org/2000/svg" width="17.474" height="17.474"
@@ -801,7 +827,6 @@
                 </div>
             </div>
             <div class="box-right" [class.active]="isClickPostPreLoad">
-                <div class="div-gatdata-post" (click)="onClickGetDataPost(false,true)"></div>
                 <ng-container *ngIf="isFulfill; else elseIsFulfill">
                     <mat-form-field appearance="none">
                         <mat-select [(value)]="selected1">
@@ -818,12 +843,16 @@
                         </div>
                     </ng-container>
                     <ng-template #elseIsEdit>
-                        <mat-form-field appearance="none" [class.active]="isMobilePost || isMobileButton">
+                        <div appDebounceClick class="butt" (click)="onClickGetDataPost(false,true)">
+                            โพสต์
+                        </div>
+                        <!-- <mat-form-field appearance="none" [class.active]="isMobilePost || isMobileButton">
                             <mat-select [(value)]="selected1">
                                 <mat-option *ngIf="isRepost" [value]="'โพสต์'" (click)="onClickGetDataPost(false,true)">
                                     โพสต์
                                 </mat-option>
-                                <mat-option *ngIf="!isRepost" [value]="'โพสต์'" (click)="onClickGetDataPost(false,true)">
+                                <mat-option *ngIf="!isRepost" [value]="'โพสต์'"
+                                    (click)="onClickGetDataPost(false,true)">
                                     โพสต์
                                 </mat-option>
                                 <mat-option *ngIf="isRepost" [value]="'บันทึกฉบับร่าง'"
@@ -833,7 +862,7 @@
                                 <mat-option *ngIf="isRepost" [value]="'ตั้งเวลาโพสต์'" (click)="onClickSettingTime()">
                                     ตั้งเวลาโพสต์
                                 </mat-option>
-                                <!-- <ng-container *ngIf="isEdit; else elseIsEdit"> 
+                                <ng-container *ngIf="isEdit; else elseIsEdit"> 
                                     <mat-option [value]="'แก้ไขโพสต์'" [class.active]="isEdit" (click)="onClickGetDataPost()">
                                         แก้ไขโพสต์
                                     </mat-option>
@@ -852,9 +881,9 @@
                                     <mat-option *ngIf="isRepost" [value]="'ตั้งเวลาโพสต์'" (click)="onClickSettingTime()">
                                         ตั้งเวลาโพสต์
                                     </mat-option>
-                                </ng-template> -->
+                                </ng-template>
                             </mat-select>
-                        </mat-form-field>
+                        </mat-form-field> -->
                     </ng-template>
                 </ng-template>
             </div>
@@ -862,7 +891,7 @@
     </form>
 
     <div class="section-tablet" *ngIf="isShowTablet">
-        <ng-container *ngIf="profile !== '' && profile !== null && profile !== undefined; else elseTemplateProfile">
+        <ng-container *ngIf="!!profile; else elseTemplateProfile">
             <img src="{{profile}}" alt="" class="img-profile">
         </ng-container>
         <ng-template #elseTemplateProfile>

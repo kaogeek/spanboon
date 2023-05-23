@@ -66,17 +66,17 @@ export abstract class AbstractPage implements OnInit {
   }
 
   public showAlertDevelopDialog(text?): void {
-    let dialog = this.dialog.open(DialogAlert, {
-      disableClose: true,
-      data: {
-        text: text ? text : MESSAGE.TEXT_TITLE_DEVERLOP,
-        bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-        bottomColorText2: "black",
-        btDisplay1: "none"
-      }
-    });
-    dialog.afterClosed().subscribe((res) => {
-    });
+    // let dialog = this.dialog.open(DialogAlert, {
+    //   disableClose: true,
+    //   data: {
+    //     text: text ? text : MESSAGE.TEXT_TITLE_DEVERLOP,
+    //     bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+    //     bottomColorText2: "black",
+    //     btDisplay1: "none"
+    //   }
+    // });
+    // dialog.afterClosed().subscribe((res) => {
+    // });
   }
 
   public getName(): string {
@@ -100,6 +100,16 @@ export abstract class AbstractPage implements OnInit {
 
     if (this.getCurrentUser() !== undefined && this.getCurrentUser() !== null) {
       userId = this.getCurrentUser().id;
+    }
+
+    return userId;
+  }
+
+  public getCurrentUniqueId(): string {
+    let userId = undefined;
+
+    if (this.getCurrentUser() !== undefined && this.getCurrentUser() !== null) {
+      userId = this.getCurrentUser().uniqueId;
     }
 
     return userId;

@@ -55,7 +55,7 @@ export class UserNotificationController {
             filter.take = limit;
         } else {
             filter.take = 5;
-        } 
+        }
         const userNotifications: Notification[] = await this.notificationService.find(filter);
         const notiResp = await this.parseNotificationsToResponses(userNotifications);
 
@@ -173,12 +173,12 @@ export class UserNotificationController {
     @Post('/search')
     @Authorized('user')
     public async searchUserNotifications(@Body({ validate: true }) filter: SearchFilter, @Res() res: any, @Req() req: any): Promise<any> {
+        let findAllCountNotification = undefined;
         if (filter === undefined) {
             filter = new SearchFilter();
         }
 
         const userObjId = new ObjectID(req.user.id);
-
         if (filter.whereConditions !== null && filter.whereConditions !== undefined) {
             if (typeof filter.whereConditions === 'object') {
                 filter.whereConditions.toUser = userObjId;
@@ -194,13 +194,18 @@ export class UserNotificationController {
         } else {
             filter.whereConditions = { toUser: userObjId, toUserType: USER_TYPE.USER };
         }
-
+        if (filter.whereConditions.isRead !== undefined && filter.whereConditions.isRead !== null && filter.whereConditions.isRead !== '') {
+            findAllCountNotification = await this.notificationService.find({ toUser: userObjId, isRead: filter.whereConditions.isRead });
+        } else {
+            findAllCountNotification = await this.notificationService.find({ toUser: userObjId });
+        }
         const userNotificationsList: any = await this.notificationService.search(filter);
-        console.log('userNotificationsList',userNotificationsList);
         const notiResp = await this.parseNotificationsToResponses(userNotificationsList);
-
-        if (userNotificationsList) {
-            const successResponse = ResponseUtil.getSuccessResponse('Successfully search UserNotifications', notiResp);
+        const query = {toUser:userObjId};
+        const newValues = {$set:{isRead:true}};
+        const updateReadNoti = await this.notificationService.updateMany(query,newValues);
+        if (userNotificationsList && updateReadNoti) {
+            const successResponse = ResponseUtil.getSuccessResponse('Successfully search UserNotifications', notiResp, findAllCountNotification.length);
             return res.status(200).send(successResponse);
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot search UserNotifications', undefined);
@@ -306,7 +311,7 @@ export class UserNotificationController {
         const userObjId = new ObjectID(req.user.id);
         const notiObjId = new ObjectID(notificationId);
 
-        const userNotifications: Notification = await this.notificationService.findOne({ where: { _id: notiObjId, toUser: userObjId, toUserType: USER_TYPE.USER } });
+        const userNotifications: Notification = await this.notificationService.findOne({ where: { _id: notiObjId, toUser: userObjId } });
 
         if (userNotifications) {
             userNotifications.isRead = true;

@@ -5,22 +5,18 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-import { Component, OnInit, ViewChild, ElementRef, HostListener, EventEmitter } from '@angular/core';
+import { Component, OnInit, ViewChild, EventEmitter, HostListener } from '@angular/core';
 import { MatPaginator, MatDialog } from '@angular/material';
-import { SwiperConfigInterface, SwiperComponent, SwiperDirective } from 'ngx-swiper-wrapper';
-import { NgxGalleryOptions, NgxGalleryImage } from 'ngx-gallery';
-import { Gallery, GalleryRef } from '@ngx-gallery/core';
-import { AuthenManager, MainPageSlideFacade, HashTagFacade, AssetFacade, PageFacade } from '../../../services/services';
+import { Gallery } from '@ngx-gallery/core';
+import { AuthenManager, MainPageSlideFacade, HashTagFacade, AssetFacade, PageFacade, SeoService } from '../../../services/services';
 import { AbstractPage } from '../AbstractPage';
 import { CacheConfigInfo } from '../../../services/CacheConfigInfo.service';
 import { PostFacade } from '../../../services/facade/PostFacade.service';
 import { Router } from '@angular/router';
 import { SearchFilter } from '../../../models/SearchFilter';
-import { ValidBase64ImageUtil } from '../../../utils/ValidBase64ImageUtil';
-import { DialogAlert } from '../../shares/dialog/dialog';
 import { DialogPostCrad } from '../../shares/dialog/DialogPostCrad.component';
 import { environment } from 'src/environments/environment';
-import { MESSAGE } from '../../../../custom/variable';
+import { PLATFORM_NAME_TH } from 'src/custom/variable';
 
 declare var $: any;
 
@@ -39,30 +35,47 @@ export class HomePage extends AbstractPage implements OnInit {
   private pageFacade: PageFacade;
   private mainPageModelFacade: MainPageSlideFacade;
   private assetFacade: AssetFacade;
+  private seoService: SeoService;
 
   public static readonly PAGE_NAME: string = PAGE_NAME;
   @ViewChild("paginator", { static: false }) public paginator: MatPaginator;
 
+  public isPostNewTab: boolean = false;
+  public windowWidth: any;
   public userCloneDatas: any;
   public pageUser: any;
   public model: any = undefined;
   public hashTag: any = [];
+  public PLATFORM_NAME_TH: string = PLATFORM_NAME_TH;
 
   public apiBaseURL = environment.apiBaseURL;
+  public isLoading: boolean;
+
+  @HostListener('window:resize', ['$event'])
+  public getScreenSize(event?) {
+    this.windowWidth = window.innerWidth;
+
+    if (this.windowWidth <= 479) {
+      this.isPostNewTab = true;
+    } else {
+      this.isPostNewTab = false;
+    }
+  }
 
   constructor(private gallery: Gallery, router: Router, authenManager: AuthenManager, postFacade: PostFacade, dialog: MatDialog, cacheConfigInfo: CacheConfigInfo,
-    mainPageModelFacade: MainPageSlideFacade, pageFacade: PageFacade, hashTagFacade: HashTagFacade, assetFacade: AssetFacade) {
+    mainPageModelFacade: MainPageSlideFacade, pageFacade: PageFacade, hashTagFacade: HashTagFacade, assetFacade: AssetFacade, seoService: SeoService) {
     super(null, authenManager, dialog, router);
 
     this.pageFacade = pageFacade;
     this.mainPageModelFacade = mainPageModelFacade;
     this.assetFacade = assetFacade;
     this.hashTagFacade = hashTagFacade;
+    this.seoService = seoService;
 
   }
 
   public ngOnInit() {
-    let user = this.authenManager.getCurrentUser()
+    let user = this.authenManager.getCurrentUser();
     this.userCloneDatas = JSON.parse(JSON.stringify(user));
     if (this.userCloneDatas !== undefined && this.userCloneDatas !== null) {
       this.getMainPageModel(this.userCloneDatas.id);
@@ -71,11 +84,13 @@ export class HomePage extends AbstractPage implements OnInit {
       this.getMainPageModel();
       this.searchPageInUser();
     }
+    this.stopIsloading();
+    this.getScreenSize();
     super.ngOnInit();
-    // type: "FULFILLMENT"
   }
 
   private async getMainPageModel(userId?) {
+    this.isLoading = true;
     this.model = await this.mainPageModelFacade.getMainPageModel(userId);
     for (let index = 0; index < this.model.postSectionModel.contents.length; index++) {
       if (this.model.postSectionModel.contents[index].post.type === "FULFILLMENT") {
@@ -84,6 +99,7 @@ export class HomePage extends AbstractPage implements OnInit {
         this.model.postSectionModel.contents.splice(index, 1);
       }
     }
+    this.seoService.updateTitle(PLATFORM_NAME_TH);
     let filter: SearchFilter = new SearchFilter();
     filter.limit = 5;
     filter.offset = 0;
@@ -101,24 +117,34 @@ export class HomePage extends AbstractPage implements OnInit {
     });
   }
 
+  public stopIsloading() {
+    setTimeout(() => {
+      this.isLoading = false;
+    }, 1000);
+  }
+
   public async searchPageInUser(userId?) {
     if (userId) {
       let search: SearchFilter = new SearchFilter();
       search.limit = 2;
       search.count = false;
       search.whereConditions = { ownerUser: userId };
-      var aw = await this.pageFacade.search(search).then((pages: any) => {
+      await this.pageFacade.search(search).then((pages: any) => {
         this.pageUser = pages
         this.pageUser.push(this.userCloneDatas)
         this.pageUser.reverse();
       }).catch((err: any) => {
+        console.log("err", err);
       });
       if (this.pageUser.length > 0) {
         for (let p of this.pageUser) {
-          var aw = await this.assetFacade.getPathFile(p.imageURL).then((res: any) => {
-            p.img64 = res.data
-          }).catch((err: any) => {
-          });
+          if (!p.signURL) {
+            await this.assetFacade.getPathFile(p.imageURL).then((res: any) => {
+              p.img64 = res.data
+            }).catch((err: any) => {
+              console.log("err", err);
+            });
+          }
         }
       }
     }
@@ -178,6 +204,8 @@ export class HomePage extends AbstractPage implements OnInit {
           isNotAccess: false,
           user: this.userCloneDatas,
           pageUser: this.pageUser,
+          panelClass: 'dialog-postcard',
+          backdropClass: 'dialog-postcard',
         }
       });
 
