@@ -535,15 +535,22 @@
               background-size: cover;
               filter: blur(5px);
               width: 100%;
-              min-height: 300px;
             }
 
             >.image {
-              width: 50%;
+              max-width: 80%;
               height: auto;
               position: relative;
               z-index: 1;
-              min-height: 300px;
+              aspect-ratio: 4 / 3;
+              object-fit: contain;
+
+              @media (max-width: $small) {
+                width: 100%;
+                max-width: unset;
+                aspect-ratio: unset;
+                object-fit: unset;
+              }
             }
           }
 
@@ -777,29 +784,55 @@
       gap: 15px;
 
       >.profile-pages {
+        border: 1px solid black;
+        border-radius: 20px;
+        margin: 15px;
+        height: 300px;
+
         >.profile-page {
           display: flex;
           align-items: center;
           justify-content: center;
 
           >.image-profile-fan-page {
-            width: calc(50% - 8px);
-            height: calc(50% - 8px);
+            width: 60%;
             border-radius: 50%;
             border: 4px solid $border-color;
             object-fit: cover;
             background-color: $white;
             margin-top: 30px;
           }
+
+          >span {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            overflow: hidden;
+            background: #ee7623;
+            color: #f3f8f2;
+            border: 4px solid $border-color;
+            margin-top: 30px;
+            @include font-size-9($font-head-500);
+            font-size: 36pt;
+          }
         }
 
-        >.fan-page-name {
-          display: flex;
-          align-items: center;
+        >.owner-name {
+          @include font-size-9($font-head-500);
           color: $brandcolor2;
-          font-size: qqpx;
-          margin-top: 25px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
           text-align: center;
+          padding: 5px;
+          height: 30%;
+
+          >span {
+            padding: 0 5px;
+          }
         }
       }
 

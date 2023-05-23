@@ -147,7 +147,7 @@
                                                 </g>
                                             </svg> เกาะทุกก้าว
                                         </div>
-                                        <img class="image-background"
+                                        <img class="image-background" *ngIf="!isRes1"
                                             [src]="model && model.emergencyEvents.contents[0].coverPageSignUrl ? model.emergencyEvents.contents[0].coverPageSignUrl : apiBaseURL + (model && model.emergencyEvents.contents[0].coverPageUrl) + '/image'"
                                             alt="">
                                         <img class="image"
@@ -690,9 +690,16 @@
                                             *ngIf="model && model.pageRoundRobin.contents.length === 2; else elseCoverImage2">
                                             <div class="wrapper-news-post-img"
                                                 [ngClass]="!isRes && model && model.pageRoundRobin.contents.length === 2 ? 'post-wid' : ''">
-                                                <img src="{{model.pageRoundRobin.contents[1].coverPageSignUrl ? model.pageRoundRobin.contents[1].coverPageSignUrl : apiBaseURL + (model && model.pageRoundRobin.contents[1].coverPageUrl) + '/image'}}"
-                                                    alt=""
-                                                    (click)="isPostNewTab ? openDilogPost(model && model.pageRoundRobin.contents[1]) : (clickToPost(model && model.pageRoundRobin.contents[1].post._id))">
+                                                <ng-container
+                                                    *ngIf="model && model.pageRoundRobin.contents[1].coverPageUrl === null || model && model.pageRoundRobin.contents[1].coverPageUrl === undefined; else elseCoverPageRound1">
+                                                    <span
+                                                        [innerHTML]="model && model.pageRoundRobin.contents[1].post.title"></span>
+                                                </ng-container>
+                                                <ng-template #elseCoverPageRound1>
+                                                    <img src="{{model.pageRoundRobin.contents[1].coverPageSignUrl ? model.pageRoundRobin.contents[1].coverPageSignUrl : apiBaseURL + (model && model.pageRoundRobin.contents[1].coverPageUrl) + '/image'}}"
+                                                        alt=""
+                                                        (click)="isPostNewTab ? openDilogPost(model && model.pageRoundRobin.contents[1]) : (clickToPost(model && model.pageRoundRobin.contents[1].post._id))">
+                                                </ng-template>
                                             </div>
                                         </ng-container>
                                         <ng-template #elseCoverImage2>
@@ -1221,8 +1228,8 @@
             </div>
         </div>
     </section>
-    <!--
-    <section class="section-5">
+
+    <section class="section-5" *ngIf="isLogin() && hidebar">
         <div class="container">
             <div class="header-title" style="
             grid-template-columns: 1fr auto 1fr;">
@@ -1238,18 +1245,18 @@
             </div>
         </div>
     </section>
-    <section class="section-6">
+    <section class="section-6" *ngIf="isLogin() && hidebar">
         <div class="container">
             <div class="header-title">
                 <div class="wrapper-title">
-                    <span>{{isRead.title}}</span>
+                    <span [innerHTML]="modelBottom && modelBottom.isReadPosts.title"></span>
                 </div>
                 <div class="wrapper-title">
                     <hr>
                 </div>
             </div>
             <div class="wrapper-content">
-                <ng-container *ngFor="let item of isRead && isRead.contents; let i=index">
+                <ng-container *ngFor="let item of modelBottom && modelBottom.isReadPosts.contents; let i=index">
                     <div class="card-content">
                         <div class="wrapper-bar">
                             <span class="news-post-bar-left">
@@ -1270,13 +1277,15 @@
                         <div class="container-content"
                             (click)="isPostNewTab ? openDilogPost(item) : clickToPost(item.post._id)">
                             <ng-container *ngIf="item.coverPageUrl; else elseImage">
-                                <img class="image-content" [src]="apiBaseURL + (item.coverPageUrl) + '/image'">
+                                <img class="image-content"
+                                    [src]="item.coverPageSignUrl ? item.coverPageSignUrl : apiBaseURL + (item.coverPageUrl) + '/image'">
                             </ng-container>
                             <ng-template #elseImage>
                                 <div class="image-content image-null">
                                     <span [innerHTML]="item.post.title"></span>
                                 </div>
                             </ng-template>
+                            <span class="idpost" [innerHTML]="item.post._id" *ngIf="!item.post.isRead"></span>
                             <p class="title-post" [innerHTML]="item.coverPageUrl ? item.post.title : item.post.detail">
                             </p>
                         </div>
@@ -1297,23 +1306,47 @@
                 </ng-container>
             </div>
         </div>
+    </section>
+    <!-- <section class="section-7">
         <div class="container">
             <div class="header-title">
                 <div class="wrapper-title">
-                    <span>{{following.title}}</span>
+                    <span [innerHTML]="modelBottom && modelBottom.isFollowing.title"></span>
                 </div>
                 <div class="wrapper-title">
                     <hr>
                 </div>
             </div>
-            <div class="wrapper-content-following">
-                <div class ='profile-pages'>
+            <div class="wrapper-content-following"
+                *ngFor="let owner of modelBottom && modelBottom.isFollowing.contents; let ownerI=index">
+                <div class='profile-pages'>
                     <div class='profile-page'>
-                        <img class ="image-profile-fan-page" src="https://d1evz9svx3lh53.cloudfront.net/63d91345670ef42f7be2c50b/b7cskl21sw41675170668320xwwqclcl15.jpg?AWSAccessKeyId=AKIATCMHTO4YJZYKAD7U&Expires=1684133640&Signature=5nlXIsbVb0Aj0qBxlK4ACu6AgA8%3D"/>
+                        <ng-container *ngIf="owner.owner.type !== 'EMERGENCY'; else elseEmer">
+                            <ng-container *ngIf="!!owner!.owner!.imageURL; else elseTemplate">
+                                <img class="image-profile-fan-page"
+                                    [src]="apiBaseURL + (owner.owner.imageURL) + '/image'">
+                            </ng-container>
+                            <ng-template #elseTemplate>
+                                <span
+                                    [innerHTML]="owner.owner.name ? (owner.owner.name | slice: 0:1) : owner.owner.displayName ? (owner.owner.displayName | slice: 0:1) : (owner.owner.title | slice: 0:1)"></span>
+                            </ng-template>
+                        </ng-container>
+                        <ng-template #elseEmer>
+                            <img class="image-profile-fan-page"
+                                [src]="apiBaseURL + (owner.owner.coverPageURL) + '/image'">
+                        </ng-template>
                     </div>
-                    <p class = "fan-page-name">{{following.contents[0].owner.name}}</p>
+                    <div class="owner-name">
+                        <ng-container *ngIf="owner.owner.type !== 'EMERGENCY'; else elseEmerName">
+                            <span
+                                [innerHTML]="owner.owner.type === 'PAGE' ? owner.owner.name : owner.owner.displayName"></span>
+                        </ng-container>
+                        <ng-template #elseEmerName>
+                            <span [innerHTML]="owner.owner.title"></span>
+                        </ng-template>
+                    </div>
                 </div>
-                <ng-container *ngFor="let item of following && following.contents | slice:0:8; let i=index">
+                <ng-container *ngFor="let item of owner.owner.posts | slice:0:3; let i=index">
                     <div class="card-content">
                         <div class="wrapper-bar">
                             <span class="news-post-bar-left">
@@ -1334,19 +1367,17 @@
                         <div class="container-content"
                             (click)="isPostNewTab ? openDilogPost(item) : clickToPost(item.post._id)">
                             <ng-container *ngIf="item.coverPageUrl; else elseImage">
-                                <img class="image-content" [src]="apiBaseURL + (item.coverPageUrl) + '/image'">
+                                <img class="image-content"
+                                    [src]="item.coverPageSignUrl ? item.coverPageSignUrl : apiBaseURL + (item.coverPageUrl) + '/image'">
                             </ng-container>
                             <ng-template #elseImage>
                                 <div class="image-content image-null">
                                     <span [innerHTML]="item.post.title"></span>
                                 </div>
                             </ng-template>
+                            <span class="idpost" [innerHTML]="item.post._id" *ngIf="!item.post.isRead"></span>
                             <p class="title-post" [innerHTML]="item.coverPageUrl ? item.post.title : item.post.detail">
                             </p>
-                        </div>
-                        <div class="owner-post">
-                            <p class="owner-name" (click)="clickToPageUser(item.owner.id)"
-                                [innerHTML]="item.owner.name ? item.owner.name : item.owner.displayName"></p>
                         </div>
                         <p class="amount-social">
                             <span>{{item.post.commentCount | shortNumber}} ความคิดเห็น</span>
@@ -1361,63 +1392,5 @@
                 </ng-container>
             </div>
         </div>
-        <div class="container">
-            <div class="header-title">
-                <div class="wrapper-title">
-                    <span>{{followingProvince.title}}</span>
-                </div>
-                <div class="wrapper-title">
-                    <hr>
-                </div>
-            </div>
-            <div class="wrapper-content">
-                <ng-container *ngFor="let item of followingProvince && followingProvince.contents; let i=index">
-                    <div class="card-content">
-                        <div class="wrapper-bar">
-                            <span class="news-post-bar-left">
-                                <span class="post-point">●</span>
-                                <span>ทั่วไป</span>
-                            </span>
-                            <span class="news-post-bar-right">
-                                <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                        d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0" />
-                                    <path
-                                        d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 " />
-                                </svg>
-                                <a class="tag-link gray time" (click)="clickToPost(item.post._id)"
-                                    [innerHTML]="item.post.createdDate | thformatdatetime"></a>
-                            </span>
-                        </div>
-                        <div class="container-content"
-                            (click)="isPostNewTab ? openDilogPost(item) : clickToPost(item.post._id)">
-                            <ng-container *ngIf="item.coverPageUrl; else elseImage">
-                                <img class="image-content" [src]="apiBaseURL + (item.coverPageUrl) + '/image'">
-                            </ng-container>
-                            <ng-template #elseImage>
-                                <div class="image-content image-null">
-                                    <span [innerHTML]="item.post.title"></span>
-                                </div>
-                            </ng-template>
-                            <p class="title-post" [innerHTML]="item.coverPageUrl ? item.post.title : item.post.detail">
-                            </p>
-                        </div>
-                        <div class="owner-post">
-                            <p class="owner-name" (click)="clickToPageUser(item.owner.id)"
-                                [innerHTML]="item.owner.name ? item.owner.name : item.owner.displayName"></p>
-                        </div>
-                        <p class="amount-social">
-                            <span>{{item.post.commentCount | shortNumber}} ความคิดเห็น</span>
-                            <span>•</span>
-                            <span>{{item.post.repostCount | shortNumber}} บอกต่อ</span>
-                            <span>•</span>
-                            <span>{{item.post.likeCount | shortNumber}} ถูกใจ</span>
-                            <span>•</span>
-                            <span>{{item.post.shareCount | shortNumber}} แชร์</span>
-                        </p>
-                    </div>
-                </ng-container>
-            </div>
-        </div>
-    </section>  -->
+    </section> -->
 </div>

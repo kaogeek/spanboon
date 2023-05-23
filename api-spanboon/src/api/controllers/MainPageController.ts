@@ -87,6 +87,7 @@ import { KaokaiContentModelProcessor } from '../processors/KaokaiContentModelPro
 import { MAILService } from '../../auth/mail.services';
 import { DeviceTokenService } from '../services/DeviceToken';
 import cluster from 'cluster';
+import pm2 from 'pm2';
 @JsonController('/main')
 export class MainPageController {
     constructor(
@@ -113,7 +114,7 @@ export class MainPageController {
     // Home page content V2
     @Get('/content/v3')
     public async getContentListV2(@QueryParam('offset') offset: number, @QueryParam('section') section: string, @QueryParam('date') date: any, @Res() res: any, @Req() req: any): Promise<any> {
-
+        const jobscheduler = req.headers.jobscheduler;
         const dateFormat = new Date(date);
         const dateReal = dateFormat.setDate(dateFormat.getDate() + 1);
         const toDate = new Date(dateReal);
@@ -148,6 +149,7 @@ export class MainPageController {
             rangeHashtags = rangeHashtag.value;
         }
         const emergencyCheckEndDate = assetTodayRangeDate.endDateTime;
+        console.log('emergencyCheckEndDate',emergencyCheckEndDate);
         const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), assetTodayDate);
         if (toDate) {
             const checkSnapshot = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: toDate });
@@ -388,7 +390,7 @@ export class MainPageController {
         result.kaokaiContent = kaokaiContent;
         result.announcement = announcements;
         result.linkAnnounceMent = linkAnnouncements;
-        content = await this.snapShotToday(result, monthRange[0], monthRange[1]);
+        content = await this.snapShotToday(result, monthRange[0], monthRange[1], jobscheduler);
         // const noti = await this.pushNotification(result, monthRange[0], monthRange[1]);
         if (date !== undefined && date !== null) {
             if (content) {
@@ -413,25 +415,29 @@ export class MainPageController {
     public async mirrorTrends(@QueryParam('offset') offset: number, @QueryParam('section') section: string, @QueryParam('date') date: any, @Res() res: any, @Req() req: any): Promise<any> {
 
         const userId = req.headers.userid;
+        const objIds = new ObjectID(userId);
+        const isRead = await this.isReadPostService.find({ userId: objIds });
         const mainPageSearchConfig = await this.pageService.searchPageOfficialConfig();
         const searchOfficialOnly = mainPageSearchConfig.searchOfficialOnly;
-        const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 15);
+        const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 7);
         const isReadSectionProcessor: IsReadSectionProcessor = new IsReadSectionProcessor(this.postsService, this.s3Service, this.userLikeService, this.isReadPostService);
         isReadSectionProcessor.setData({
             userId,
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
+            postIds: isRead,
         });
 
         isReadSectionProcessor.setConfig({
             searchOfficialOnly
         });
         const isReadPosts = await isReadSectionProcessor.process();
-        const followingPostSectionModelProcessor: FollowingPostSectionModelProcessor = new FollowingPostSectionModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.userFollowService);
+        const followingPostSectionModelProcessor: FollowingPostSectionModelProcessor = new FollowingPostSectionModelProcessor(/* this.postsService */ this.s3Service,/* this.userLikeService*/this.emergencyEventService, this.pageObjectiveService, this.userFollowService, this.userService, this.pageService);
         followingPostSectionModelProcessor.setData({
             userId,
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
+            postIds: isRead,
         });
 
         followingPostSectionModelProcessor.setConfig({
@@ -443,6 +449,7 @@ export class MainPageController {
             userId,
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
+            postIds: isRead,
         });
 
         followingProvinceSectionModelProcessor.setConfig({
@@ -454,6 +461,7 @@ export class MainPageController {
             userId,
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
+            postIds: isRead,
         });
 
         followingContentsModelProcessor.setConfig({
@@ -1954,11 +1962,31 @@ export class MainPageController {
             return res.status(400).send(errorResponse);
         }
     }
-    public async snapShotToday(data: any, startDateRange: Date, endDateTimeToday: Date): Promise<any> {
+    public async snapShotToday(data: any, startDateRange: Date, endDateTimeToday: Date, jobscheduler: string): Promise<any> {
         // check before create
+        let pid = undefined;
+        pm2.list((err: Error | null, processList: pm2.ProcessDescription[]) => {
+            if (err) {
+                console.error(err);
+                return;
+            }
+
+            // Find the process by name or other criteria
+            const targetProcess = processList.find((process) => process.name === 'Today API');
+
+            if (targetProcess) {
+                pid = targetProcess.pid;
+                console.log(`PID of the process: ${pid}`);
+            } else {
+                console.log('Process not found.');
+            }
+        });
+        console.log('pid', pid);
         console.log('cluster.isPrimary', cluster.isPrimary);
         console.log('cluster.isMaster', cluster.isMaster);
         console.log('cluster.worker', cluster.isWorker);
+        const scheduler = String(jobscheduler);
+        console.log('scheduler', scheduler);
         let switchEmail = DEFAULT_SWITCH_CASE_SEND_EMAIL;
         const switchSendEmail = await this.configService.getConfig(SWITCH_CASE_SEND_EMAIL);
         if (switchSendEmail) {
@@ -1997,18 +2025,19 @@ export class MainPageController {
             return checkCreate.data;
         }
 
-        const contents = data;
-        const startDate = startDateRange;
-        const result: any = {};
-        result.data = contents;
-        result.startDateTime = startDate;
-        result.endDateTime = endDateTimeToday;
         // Check Date time === 06:00 morning
         const fireBaseToken = [];
         // String(switchSendEm) === 'true'
-        if (hours === parseInt(hourSplit, 10) && minutes === parseInt(minuteSpit, 10)) {
+        if (scheduler === 'processor' && hours === parseInt(hourSplit, 10) && minutes === parseInt(minuteSpit, 10)) {
+            console.log('pass create snapshot');
+            const result: any = {};
+            result.data = data;
+            result.startDateTime = startDateRange;
+            result.endDateTime = endDateTimeToday;
             const snapshot = await this.kaokaiTodaySnapShotService.create(result);
+            console.log('snapshot', snapshot);
             if (String(switchSendEm) === 'true' && snapshot) {
+                console.log('pass 1 send email');
                 let user = undefined;
                 for (const userEmail of emailStack) {
                     user = await this.userService.findOne({ email: userEmail.toString() });
@@ -2031,6 +2060,7 @@ export class MainPageController {
                 }
             }
             if (String(sendNotification) === 'true' && snapshot) {
+                console.log('pass 2 send noti');
                 for (const userEmail of emailStack) {
                     const user = await this.userService.findOne({ email: userEmail.toString() });
                     const deviceToken = await this.deviceTokenService.aggregate(
@@ -2203,13 +2233,13 @@ export class MainPageController {
         let postMajorTitleS = undefined;
         let postMajorNameF = undefined;
         let postMajorNameS = undefined;
-        if (majorContents[0].post !== undefined) {
+        if (majorContents[0] !== undefined) {
             postMajorTitleF = majorContents[0].post.title;
             if (postMajorTitleF.length > 100) {
                 postMajorTitleF = majorContents[0].post.title.slice(0, 100) + '...';
             }
             newsTitle.push(postMajorTitleF);
-        } if (majorContents[1].post !== undefined) {
+        } if (majorContents[1] !== undefined) {
             postMajorTitleS = majorContents[1].post.title;
             if (postMajorTitleS.length > 100) {
                 postMajorTitleS = majorContents[1].post.title.slice(0, 100) + '...';

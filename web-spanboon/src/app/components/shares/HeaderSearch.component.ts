@@ -47,6 +47,7 @@ export class HeaderSearch extends AbstractPage implements OnInit {
   public aboutUs: EventEmitter<any> = new EventEmitter();
 
   @ViewChild('search', { static: false }) public search: ElementRef;
+  @ViewChild('buttonSearch', { static: false }) public buttonSearch: ElementRef;
 
   public router: Router;
   private mainPageFacade: MainPageSlideFacade;
@@ -72,6 +73,7 @@ export class HeaderSearch extends AbstractPage implements OnInit {
   public isHideButton: boolean = false;
   public apiBaseURL = environment.apiBaseURL;
   public isTabClick: string;
+  public isLimit: boolean = false;
 
   @ViewChild('tabs', { static: false }) private tabs: ElementRef;
   @ViewChild('wrapperBodyTag', { static: false }) private wrapperBodyTag: ElementRef;
@@ -107,6 +109,22 @@ export class HeaderSearch extends AbstractPage implements OnInit {
     ).subscribe((text: any) => {
       this.keyUpAutoComp(this.search.nativeElement.value);
     });
+
+    fromEvent(this.buttonSearch.nativeElement, 'click').pipe(
+      debounceTime(500)
+      , distinctUntilChanged()
+    ).subscribe((text: any) => {
+      if (!this.isLimit) {
+        this.clickShowSearch('hide');
+      } else {
+        let dialog = this.showAlertDialogWarming("กรุณารอ 15นาที เพื่อค้นหาอีกครั้ง", "none");
+        dialog.afterClosed().subscribe((res) => {
+          if (res) {
+            this.SearchShow = false;
+          }
+        });
+      }
+    });
   }
 
   public ngOnDestroy(): void {
@@ -134,6 +152,10 @@ export class HeaderSearch extends AbstractPage implements OnInit {
     }, 250);
   }
 
+  public searchShow() {
+    this.SearchShow = true;
+  }
+
   public clickShowSearch(value: string) {
     if (value === 'hide') {
       this.aboutUs.emit(value);
@@ -141,7 +163,6 @@ export class HeaderSearch extends AbstractPage implements OnInit {
     // $("#menubottom").css({
     //   'overflow-y': "hidden"
     // });
-    this.SearchShow = true;
     this.filled = true;
     this.searchPageRecent();
     this.searchRecentNames();
@@ -327,8 +348,12 @@ export class HeaderSearch extends AbstractPage implements OnInit {
       delete filter.whereConditions.userId
     }
     this.searchHistoryFacade.search(filter).then((res: any) => {
+      this.isLimit = false;
       this.searchRecentName = res
     }).catch((err: any) => {
+      if (err.error.message === "Too many requests") {
+        this.isLimit = true;
+      }
       if (err.error.status === 0) {
         if (err.error.message === 'History Not Found') {
           this.isMsgHistory = true;

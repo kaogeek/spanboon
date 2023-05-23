@@ -8,8 +8,8 @@
 <div class="header-search" [class.show]="filled" (window:resize)="checkMenu($event)">
     <div class="search">
         <div class="wrapper-search">
-            <label class="material-icons icon-search-out" matRipple [matRippleCentered]="'centered'" for="searchInput"
-                (click)="clickShowSearch('hide')" [ngStyle]="{'opacity': !SearchShow ? '1' : '0'}">
+            <label #buttonSearch class="material-icons icon-search-out" matRipple [matRippleCentered]="'centered'"
+                for="searchInput" (click)="searchShow()" [ngStyle]="{'opacity': !SearchShow ? '1' : '0'}">
                 search
             </label>
             <div class="home-back-left" *ngIf="SearchShow" matRipple [matRippleCentered]="'centered'"

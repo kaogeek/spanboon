@@ -49,9 +49,9 @@ export class AdminConfigController {
     public async createConfig(@Body({ validate: true }) config: CreateConfigRequest, @Res() res: any, @Req() req: any): Promise<any> {
         const currentConfig = await this.configService.findOne({ where: { name: config.name } });
         const configName = config.name;
-        if(configName === 'kaokaiToday.time.emergencyEvent.date'){
+        if (configName === 'kaokaiToday.time.emergencyEvent.date') {
             const dateFormat = new Date();
-            const dateReal = dateFormat.setDate(dateFormat.getDate() + parseInt(config.value,10));
+            const dateReal = dateFormat.setDate(dateFormat.getDate() + parseInt(config.value, 10));
             const toDate = new Date(dateReal);
 
             const userId = new ObjectID(req.user.id);
@@ -63,7 +63,7 @@ export class AdminConfigController {
             configValueDate.createdByUsername = req.user.username;
             configValueDate.createdBy = userId;
             const emergencyEventDate: Config = await this.configService.create(configValueDate);
-            
+
             if (emergencyEventDate) {
                 const ipAddress = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress).split(',')[0];
                 const adminLogs = new AdminUserActionLogs();
@@ -74,7 +74,7 @@ export class AdminConfigController {
                 adminLogs.ip = ipAddress;
                 adminLogs.data = emergencyEventDate;
                 await this.actionLogService.create(adminLogs);
-    
+
                 const successResponse = ResponseUtil.getSuccessResponse('Successfully create config', emergencyEventDate);
                 return res.status(200).send(successResponse);
             }
@@ -147,20 +147,21 @@ export class AdminConfigController {
         }
         const userObjId = new ObjectID(req.user.id);
         let configSave = undefined;
-        if(editConfig.name === 'kaokaiToday.emergency.range.date'){
+        if (editConfig.name === 'kaokaiToday.time.emergencyEvent.date') {
             const dateFormat = new Date();
-            const dateReal = dateFormat.setDate(dateFormat.getDate() + parseInt(configReq.value,10));
+            const dateReal = dateFormat.setDate(dateFormat.getDate() + parseInt(configReq.value, 10));
             const toDate = new Date(dateReal);
             configSave = await this.configService.update(
-                { name: cfgName }, 
-                { $set: 
+                { name: cfgName },
+                {
+                    $set:
                     {
-                         value: configReq.value, 
-                         type: configReq.type, 
-                         endDateTime:toDate,
-                         updateByUsername: req.user.username, 
-                         modifiedBy: userObjId 
-                    } 
+                        value: configReq.value,
+                        type: configReq.type,
+                        endDateTime: toDate,
+                        updateByUsername: req.user.username,
+                        modifiedBy: userObjId
+                    }
                 });
         }
 
@@ -209,15 +210,13 @@ export class AdminConfigController {
     @Authorized()
     public async deleteConfig(@Param('name') cfgName: string, @Res() res: any, @Req() req: any): Promise<any> {
         const config = await this.configService.findOne({ where: { name: cfgName } });
-
         if (!config) {
             const errorResponse = ResponseUtil.getErrorResponse('invalid config name "' + cfgName + '"', cfgName);
             return res.status(400).send(errorResponse);
         }
+        const deleteConfigReal = await this.configService.delete({ _id: config.id });
 
-        const deleteConfig = await this.configService.delete(config);
-
-        if (deleteConfig) {
+        if (deleteConfigReal) {
             const userObjId = new ObjectID(req.user.id);
 
             const ipAddress = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress).split(',')[0];
