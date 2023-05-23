@@ -1956,6 +1956,9 @@ export class MainPageController {
     }
     public async snapShotToday(data: any, startDateRange: Date, endDateTimeToday: Date): Promise<any> {
         // check before create
+        console.log('cluster.isPrimary', cluster.isPrimary);
+        console.log('cluster.isMaster', cluster.isMaster);
+        console.log('cluster.worker', cluster.isWorker);
         let switchEmail = DEFAULT_SWITCH_CASE_SEND_EMAIL;
         const switchSendEmail = await this.configService.getConfig(SWITCH_CASE_SEND_EMAIL);
         if (switchSendEmail) {
@@ -1993,7 +1996,7 @@ export class MainPageController {
         if (checkCreate !== undefined && checkCreate !== null) {
             return checkCreate.data;
         }
-        console.log('cluster.isMaster', cluster.isMaster);
+
         const contents = data;
         const startDate = startDateRange;
         const result: any = {};
@@ -2003,7 +2006,7 @@ export class MainPageController {
         // Check Date time === 06:00 morning
         const fireBaseToken = [];
         // String(switchSendEm) === 'true'
-        if (cluster.isMaster && hours === parseInt(hourSplit, 10) && minutes === parseInt(minuteSpit, 10)) {
+        if (hours === parseInt(hourSplit, 10) && minutes === parseInt(minuteSpit, 10)) {
             const snapshot = await this.kaokaiTodaySnapShotService.create(result);
             if (String(switchSendEm) === 'true' && snapshot) {
                 let user = undefined;
@@ -2272,7 +2275,7 @@ export class MainPageController {
                 nameRoundRobinF = pageRoundRobin[0].owner.name ? pageRoundRobin[0].owner.name : pageRoundRobin[0].owner.displayName;
             }
             if (pageRoundRobin[0] !== undefined) {
-                linkPostRoundRobinF = process.env.APP_POST + '/' +pageRoundRobin[0].post._id;
+                linkPostRoundRobinF = process.env.APP_POST + '/' + pageRoundRobin[0].post._id;
             }
             if (pageRoundRobin[0] !== undefined) {
                 postRoundRobinF = pageRoundRobin[0].post.title;
