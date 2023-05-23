@@ -149,6 +149,7 @@ export class MainPageController {
             rangeHashtags = rangeHashtag.value;
         }
         const emergencyCheckEndDate = assetTodayRangeDate.endDateTime;
+        console.log('emergencyCheckEndDate',emergencyCheckEndDate);
         const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), assetTodayDate);
         if (toDate) {
             const checkSnapshot = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: toDate });
