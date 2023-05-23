@@ -414,25 +414,29 @@ export class MainPageController {
     public async mirrorTrends(@QueryParam('offset') offset: number, @QueryParam('section') section: string, @QueryParam('date') date: any, @Res() res: any, @Req() req: any): Promise<any> {
 
         const userId = req.headers.userid;
+        const objIds = new ObjectID(userId);
+        const isRead = await this.isReadPostService.find({userId:objIds});
         const mainPageSearchConfig = await this.pageService.searchPageOfficialConfig();
         const searchOfficialOnly = mainPageSearchConfig.searchOfficialOnly;
-        const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 15);
+        const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 7);
         const isReadSectionProcessor: IsReadSectionProcessor = new IsReadSectionProcessor(this.postsService, this.s3Service, this.userLikeService, this.isReadPostService);
         isReadSectionProcessor.setData({
             userId,
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
+            postIds:isRead,
         });
 
         isReadSectionProcessor.setConfig({
             searchOfficialOnly
         });
         const isReadPosts = await isReadSectionProcessor.process();
-        const followingPostSectionModelProcessor: FollowingPostSectionModelProcessor = new FollowingPostSectionModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.userFollowService);
+        const followingPostSectionModelProcessor: FollowingPostSectionModelProcessor = new FollowingPostSectionModelProcessor(/* this.postsService */ this.s3Service,/* this.userLikeService*/ this.userFollowService, this.userService, this.pageService);
         followingPostSectionModelProcessor.setData({
             userId,
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
+            postIds:isRead,
         });
 
         followingPostSectionModelProcessor.setConfig({
@@ -444,6 +448,7 @@ export class MainPageController {
             userId,
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
+            postIds:isRead,
         });
 
         followingProvinceSectionModelProcessor.setConfig({
@@ -455,6 +460,7 @@ export class MainPageController {
             userId,
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
+            postIds:isRead,
         });
 
         followingContentsModelProcessor.setConfig({
@@ -1979,7 +1985,7 @@ export class MainPageController {
         console.log('cluster.isMaster', cluster.isMaster);
         console.log('cluster.worker', cluster.isWorker);
         const scheduler = String(jobscheduler);
-        console.log('scheduler',scheduler);
+        console.log('scheduler', scheduler);
         let switchEmail = DEFAULT_SWITCH_CASE_SEND_EMAIL;
         const switchSendEmail = await this.configService.getConfig(SWITCH_CASE_SEND_EMAIL);
         if (switchSendEmail) {
