@@ -378,6 +378,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
             emergencyResult.isPin = emergency.isPin;
             emergencyResult.coverPageURL = emergency.coverPageURL;
             emergencyResult.s3CoverPageURL = emergency.s3CoverPageURL;
+            emergencyResult.type = 'EMERGENCY';
             emergencyResult.posts = [];
             for (const row of posts) {
                 const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
