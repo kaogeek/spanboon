@@ -690,9 +690,16 @@
                                             *ngIf="model && model.pageRoundRobin.contents.length === 2; else elseCoverImage2">
                                             <div class="wrapper-news-post-img"
                                                 [ngClass]="!isRes && model && model.pageRoundRobin.contents.length === 2 ? 'post-wid' : ''">
-                                                <img src="{{model.pageRoundRobin.contents[1].coverPageSignUrl ? model.pageRoundRobin.contents[1].coverPageSignUrl : apiBaseURL + (model && model.pageRoundRobin.contents[1].coverPageUrl) + '/image'}}"
-                                                    alt=""
-                                                    (click)="isPostNewTab ? openDilogPost(model && model.pageRoundRobin.contents[1]) : (clickToPost(model && model.pageRoundRobin.contents[1].post._id))">
+                                                <ng-container
+                                                    *ngIf="model && model.pageRoundRobin.contents[1].coverPageUrl === null || model && model.pageRoundRobin.contents[1].coverPageUrl === undefined; else elseCoverPageRound1">
+                                                    <span
+                                                        [innerHTML]="model && model.pageRoundRobin.contents[1].post.title"></span>
+                                                </ng-container>
+                                                <ng-template #elseCoverPageRound1>
+                                                    <img src="{{model.pageRoundRobin.contents[1].coverPageSignUrl ? model.pageRoundRobin.contents[1].coverPageSignUrl : apiBaseURL + (model && model.pageRoundRobin.contents[1].coverPageUrl) + '/image'}}"
+                                                        alt=""
+                                                        (click)="isPostNewTab ? openDilogPost(model && model.pageRoundRobin.contents[1]) : (clickToPost(model && model.pageRoundRobin.contents[1].post._id))">
+                                                </ng-template>
                                             </div>
                                         </ng-container>
                                         <ng-template #elseCoverImage2>
