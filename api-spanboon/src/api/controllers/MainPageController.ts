@@ -415,7 +415,7 @@ export class MainPageController {
 
         const userId = req.headers.userid;
         const objIds = new ObjectID(userId);
-        const isRead = await this.isReadPostService.find({userId:objIds});
+        const isRead = await this.isReadPostService.find({ userId: objIds });
         const mainPageSearchConfig = await this.pageService.searchPageOfficialConfig();
         const searchOfficialOnly = mainPageSearchConfig.searchOfficialOnly;
         const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 7);
@@ -424,19 +424,19 @@ export class MainPageController {
             userId,
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
-            postIds:isRead,
+            postIds: isRead,
         });
 
         isReadSectionProcessor.setConfig({
             searchOfficialOnly
         });
         const isReadPosts = await isReadSectionProcessor.process();
-        const followingPostSectionModelProcessor: FollowingPostSectionModelProcessor = new FollowingPostSectionModelProcessor(/* this.postsService */ this.s3Service,/* this.userLikeService*/this.emergencyEventService, this.userFollowService, this.userService, this.pageService);
+        const followingPostSectionModelProcessor: FollowingPostSectionModelProcessor = new FollowingPostSectionModelProcessor(/* this.postsService */ this.s3Service,/* this.userLikeService*/this.emergencyEventService, this.pageObjectiveService, this.userFollowService, this.userService, this.pageService);
         followingPostSectionModelProcessor.setData({
             userId,
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
-            postIds:isRead,
+            postIds: isRead,
         });
 
         followingPostSectionModelProcessor.setConfig({
@@ -448,7 +448,7 @@ export class MainPageController {
             userId,
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
-            postIds:isRead,
+            postIds: isRead,
         });
 
         followingProvinceSectionModelProcessor.setConfig({
@@ -460,7 +460,7 @@ export class MainPageController {
             userId,
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
-            postIds:isRead,
+            postIds: isRead,
         });
 
         followingContentsModelProcessor.setConfig({
