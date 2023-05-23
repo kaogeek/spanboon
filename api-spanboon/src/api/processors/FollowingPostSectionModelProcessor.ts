@@ -331,7 +331,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                 result.contents = [];
                 result.type = 'Following'; // set type by processor type
                 const lastestDate = null;
-                if (pageFollowingContents.lenght > 0) {
+                if (pageFollowingContents !== undefined) {
                     for (const rows of pageFollowingContents) {
                         const contents: any = {};
                         contents.owner = {};
@@ -341,7 +341,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                         result.contents.push(contents);
                     }
                 }
-                if (userFollowingContents.lenght > 0) {
+                if (userFollowingContents !== undefined) {
                     for (const rows of userFollowingContents) {
                         const contents: any = {};
                         contents.owner = {};
@@ -351,7 +351,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                         result.contents.push(contents);
                     }
                 }
-                if (emergencyFollowingContents.lenght > 0) {
+                if (emergencyFollowingContents !== undefined) {
                     for (const rows of emergencyFollowingContents) {
                         const contents: any = {};
                         contents.owner = {};
@@ -361,7 +361,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                         result.contents.push(contents);
                     }
                 }
-                if (objectiveFollowingContents.length > 0) {
+                if (objectiveFollowingContents !== undefined) {
                     for (const rows of objectiveFollowingContents) {
                         const contents: any = {};
                         contents.owner = {};
