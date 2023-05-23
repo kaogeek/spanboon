@@ -499,10 +499,10 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
             this.resProfile.isLoadingCover = false;
           }
 
-          setTimeout(() => {
-            this.isLoading = false;
-          }, 2000);
         }
+        setTimeout(() => {
+          this.isLoading = false;
+        }, 2000);
       }
 
     }).catch((err: any) => {
