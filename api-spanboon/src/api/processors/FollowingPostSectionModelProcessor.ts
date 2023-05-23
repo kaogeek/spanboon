@@ -7,18 +7,14 @@
 
 import { AbstractSeparateSectionProcessor } from './AbstractSeparateSectionProcessor';
 import { SectionModel } from '../models/SectionModel';
-import { PostsService } from '../services/PostsService';
 import { SearchFilter } from '../controllers/requests/SearchFilterRequest';
 import { S3Service } from '../services/S3Service';
-import { UserLikeService } from '../services/UserLikeService';
 import { UserService } from '../services/UserService';
 import { UserFollowService } from '../services/UserFollowService';
 // import { UserLike } from '../models/UserLike';
-import { LIKE_TYPE } from '../../constants/LikeType';
 import { ObjectID } from 'mongodb';
 import { PageService } from '../services/PageService';
-import moment from 'moment';
-
+import { EmergencyEventService } from '../services/EmergencyEventService';
 export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionProcessor {
     private DEFAULT_SEARCH_LIMIT = 10;
     private DEFAULT_SEARCH_OFFSET = 0;
@@ -26,6 +22,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
         // private postsService: PostsService,
         private s3Service: S3Service,
         // private userLikeService: UserLikeService,
+        private emergencyEventService: EmergencyEventService,
         private userFollowService: UserFollowService,
         private userService: UserService,
         private pageService: PageService
@@ -39,15 +36,9 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                 // get config
                 // let searchOfficialOnly: number = undefined;
                 let userId = undefined;
-                let postId = undefined;
                 // get startDateTime, endDateTime
-                let startDateTime: Date = undefined;
-                let endDateTime: Date = undefined;
                 if (this.data !== undefined && this.data !== null) {
-                    startDateTime = this.data.startDateTime;
-                    endDateTime = this.data.endDateTime;
                     userId = this.data.userId;
-                    postId = this.data.postIds;
                 }
                 const objIds = new ObjectID(userId);
                 let limit: number = undefined;
@@ -106,6 +97,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                 // OBJECTIVE
                 const userIds = [];
                 const pageIds = [];
+                const emegencyIds = [];
                 if (isFollowing.length > 0) {
                     for (let i = 0; i < isFollowing.length; i++) {
                         if (isFollowing[i].subjectType === 'USER') {
@@ -115,7 +107,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                             pageIds.push((new ObjectID(isFollowing[i].subjectId)));
                         }
                         if (isFollowing[i].subjectType === 'EMERGENCY_EVENT') {
-                            postIds.push(({ 'EMERGENCY_EVENT': isFollowing[i].subjectId }));
+                            emegencyIds.push((new ObjectID(isFollowing[i].subjectId)));
                         } if (isFollowing[i].subjectType === 'OBJECTIVE') {
                             postIds.push(({ 'OBJECTIVE': isFollowing[i].subjectId }));
                         } else {
@@ -123,8 +115,10 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                         }
                     }
                 }
+                console.log('emegencyIds', emegencyIds);
                 let pageFollowingContents = undefined;
                 let userFollowingContents = undefined;
+                let emergencyFollowingContents = undefined;
                 if (pageIds.length > 0) {
                     pageFollowingContents = await this.pageService.aggregate(
                         [
@@ -191,9 +185,9 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                     let: { id: '$_id' },
                                     pipeline: [
                                         {
-                                            $match: { 
-                                                $expr: { 
-                                                    $eq: ['$$id', '$ownerUser'] 
+                                            $match: {
+                                                $expr: {
+                                                    $eq: ['$$id', '$ownerUser']
                                                 },
                                             }
                                         },
@@ -229,6 +223,48 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                         ]
                     );
                 }
+                if (emegencyIds.length > 0) {
+                    emergencyFollowingContents = await this.emergencyEventService.aggregate(
+                        [
+                            {
+                                $match: {
+                                    _id: { $in: emegencyIds }
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'Posts',
+                                    let: { id: '$_id' },
+                                    pipeline: [
+                                        {
+                                            $match: {
+                                                $expr: { $eq: ['$$id', '$emergencyEvent'] }
+                                            }
+                                        },
+                                        {
+                                            $sort: {
+                                                createdDate: -1,
+                                            },
+                                        },
+                                        {
+                                            $limit: 10,
+                                        },
+                                        {
+                                            $lookup: {
+                                                from: 'PostsGallery',
+                                                localField: '_id',
+                                                foreignField: 'post',
+                                                as: 'gallery',
+                                            },
+                                        },
+                                    ],
+                                    as: 'posts'
+                                }
+                            }
+                        ]
+                    );
+                }
+                console.log('emergencyFollowingContents', emergencyFollowingContents);
                 const result: SectionModel = new SectionModel();
                 result.title = (this.config === undefined || this.config.title === undefined) ? 'เพราะคุณติดตาม' : this.config.title;
                 result.subtitle = '';
@@ -252,7 +288,14 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                         contents.owner = await this.parseUserField(rows, rows.user.posts);
                     }
                     result.contents.push(contents);
-
+                }
+                for (const rows of emergencyFollowingContents) {
+                    const contents: any = {};
+                    contents.owner = {};
+                    if (rows !== undefined) {
+                        contents.owner = await this.parseEmergencyField(rows, rows.posts);
+                    }
+                    result.contents.push(contents);
                 }
                 result.dateTime = lastestDate;
                 resolve(result);
@@ -324,5 +367,35 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
         }
 
         return userResult;
+    }
+    private async parseEmergencyField(emergency: any, posts: any): Promise<any> {
+        const emergencyResult: any = {};
+        if (emergency !== undefined) {
+            emergencyResult.id = emergency._id;
+            emergencyResult.title = emergency.title;
+            emergencyResult.detail = emergency.detail;
+            emergencyResult.hashtag = emergency.hashTag;
+            emergencyResult.isPin = emergency.isPin;
+            emergencyResult.coverPageURL = emergency.coverPageURL;
+            emergencyResult.s3CoverPageURL = emergency.s3CoverPageURL;
+            emergencyResult.posts = [];
+            for (const row of posts) {
+                const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
+                const contents: any = {};
+                contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
+                if (firstImage !== undefined && firstImage.s3ImageURL !== undefined) {
+                    try {
+                        const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
+                        contents.coverPageSignUrl = signUrl;
+                    } catch (error) {
+                        console.log('PostSectionProcessor: ' + error);
+                    }
+                }
+                row.isLike = false;
+                contents.post = row;
+                emergencyResult.posts.push(contents);
+            }
+        }
+        return emergencyResult;
     }
 }

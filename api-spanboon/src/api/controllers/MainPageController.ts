@@ -431,7 +431,7 @@ export class MainPageController {
             searchOfficialOnly
         });
         const isReadPosts = await isReadSectionProcessor.process();
-        const followingPostSectionModelProcessor: FollowingPostSectionModelProcessor = new FollowingPostSectionModelProcessor(/* this.postsService */ this.s3Service,/* this.userLikeService*/ this.userFollowService, this.userService, this.pageService);
+        const followingPostSectionModelProcessor: FollowingPostSectionModelProcessor = new FollowingPostSectionModelProcessor(/* this.postsService */ this.s3Service,/* this.userLikeService*/this.emergencyEventService, this.userFollowService, this.userService, this.pageService);
         followingPostSectionModelProcessor.setData({
             userId,
             startDateTime: monthRange[0],
@@ -2027,7 +2027,7 @@ export class MainPageController {
         // Check Date time === 06:00 morning
         const fireBaseToken = [];
         // String(switchSendEm) === 'true'
-        if (pid === 962 && scheduler === 'processor' && hours === parseInt(hourSplit, 10) && minutes === parseInt(minuteSpit, 10)) {
+        if (scheduler === 'processor' && hours === parseInt(hourSplit, 10) && minutes === parseInt(minuteSpit, 10)) {
             console.log('pass create snapshot');
             const result: any = {};
             result.data = data;
