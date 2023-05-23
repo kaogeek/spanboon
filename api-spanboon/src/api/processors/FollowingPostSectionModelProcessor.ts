@@ -331,37 +331,45 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                 result.contents = [];
                 result.type = 'Following'; // set type by processor type
                 const lastestDate = null;
-                for (const rows of pageFollowingContents) {
-                    const contents: any = {};
-                    contents.owner = {};
-                    if (rows.page !== undefined) {
-                        contents.owner = await this.parsePageField(rows, rows.page.posts);
+                if (pageFollowingContents.lenght > 0) {
+                    for (const rows of pageFollowingContents) {
+                        const contents: any = {};
+                        contents.owner = {};
+                        if (rows.page !== undefined) {
+                            contents.owner = await this.parsePageField(rows, rows.page.posts);
+                        }
+                        result.contents.push(contents);
                     }
-                    result.contents.push(contents);
                 }
-                for (const rows of userFollowingContents) {
-                    const contents: any = {};
-                    contents.owner = {};
-                    if (rows !== undefined) {
-                        contents.owner = await this.parseUserField(rows, rows.user.posts);
+                if (userFollowingContents.lenght > 0) {
+                    for (const rows of userFollowingContents) {
+                        const contents: any = {};
+                        contents.owner = {};
+                        if (rows !== undefined) {
+                            contents.owner = await this.parseUserField(rows, rows.user.posts);
+                        }
+                        result.contents.push(contents);
                     }
-                    result.contents.push(contents);
                 }
-                for (const rows of emergencyFollowingContents) {
-                    const contents: any = {};
-                    contents.owner = {};
-                    if (rows !== undefined) {
-                        contents.owner = await this.parseEmergencyField(rows, rows.posts);
+                if (emergencyFollowingContents.lenght > 0) {
+                    for (const rows of emergencyFollowingContents) {
+                        const contents: any = {};
+                        contents.owner = {};
+                        if (rows !== undefined) {
+                            contents.owner = await this.parseEmergencyField(rows, rows.posts);
+                        }
+                        result.contents.push(contents);
                     }
-                    result.contents.push(contents);
                 }
-                for(const rows of objectiveFollowingContents){
-                    const contents: any = {};
-                    contents.owner = {};
-                    if (rows !== undefined) {
-                        contents.owner = await this.parseObjectiveField(rows, rows.posts);
+                if (objectiveFollowingContents.length > 0) {
+                    for (const rows of objectiveFollowingContents) {
+                        const contents: any = {};
+                        contents.owner = {};
+                        if (rows !== undefined) {
+                            contents.owner = await this.parseObjectiveField(rows, rows.posts);
+                        }
+                        result.contents.push(contents);
                     }
-                    result.contents.push(contents);
                 }
                 result.dateTime = lastestDate;
                 resolve(result);
@@ -465,9 +473,9 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
         }
         return emergencyResult;
     }
-    private async parseObjectiveField(objective:any,posts:any):Promise<any>{
+    private async parseObjectiveField(objective: any, posts: any): Promise<any> {
         const objectiveResult: any = {};
-        if(objective !== undefined){
+        if (objective !== undefined) {
             objectiveResult.id = objective._id;
             objectiveResult.pageId = objective.pageId;
             objectiveResult.title = objective.title;
@@ -477,7 +485,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
             objectiveResult.hashTag = objective.hashTag;
             objectiveResult.s3IconURL = objective.s3IconURL;
             objectiveResult.posts = [];
-            for(const row of posts){
+            for (const row of posts) {
                 const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
                 const contents: any = {};
                 contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
