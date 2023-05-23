@@ -387,7 +387,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
             pageResult.isOfficial = page.isOfficial;
             pageResult.uniqueId = page.pageUsername;
             pageResult.type = 'PAGE';
-            pageResult.post = [];
+            pageResult.posts = [];
             for (const row of posts) {
                 const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
                 const contents: any = {};
@@ -420,7 +420,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
             userResult.isAdmin = user.isAdmin;
             userResult.uniqueId = user.uniqueId;
             userResult.type = 'USER';
-            userResult.post = [];
+            userResult.posts = [];
             for (const row of posts) {
                 const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
                 const contents: any = {};
