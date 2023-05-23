@@ -50,6 +50,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   public windowWidth: any;
   public mainPageModelFacade: MainPageSlideFacade;
   public model: any = undefined;
+  public modelBottom: any = undefined;
   private hashTagFacade: HashTagFacade;
   private pageFacade: PageFacade;
   private postFacade: PostFacade;
@@ -114,6 +115,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     this.userCloneDatas = JSON.parse(JSON.stringify(user));
     if (this.userCloneDatas !== undefined && this.userCloneDatas !== null) {
       this.getMainPageModelV3(this.userCloneDatas.id);
+      this.getBottomContent(this.userCloneDatas.id);
       this.searchPageInUser(this.userCloneDatas.id);
     } else {
       this.getMainPageModelV3();
@@ -177,6 +179,17 @@ export class HomePageV3 extends AbstractPage implements OnInit {
       localStorage.removeItem('datetime')
     });
     this.router.navigate(['/home'], { queryParams: { date: formattedDate } });
+  }
+
+  public async getBottomContent(userId?) {
+    this.mainPageModelFacade.bottomContent(userId).then((res) => {
+      if (res) {
+        this.modelBottom = res;
+      }
+    }).catch((err) => {
+      if (err) {
+      }
+    })
   }
 
   public async getMainPageModelV3(userId?) {
