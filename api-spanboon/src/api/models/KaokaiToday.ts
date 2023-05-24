@@ -24,6 +24,9 @@ export class KaokaiToday extends BaseModel {
     @Column({ name: 'flag'})
     public flag:boolean;
 
+    @Column({ name: 'pics'})
+    public pics:boolean;
+
     @Column({ name: 'buckets' })
     public buckets: any;
 

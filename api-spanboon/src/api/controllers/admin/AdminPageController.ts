@@ -505,6 +505,7 @@ export class AdminPageController {
                 createKaokaiToday.type = createKaokaiTodayRequest.type;
                 createKaokaiToday.field = createKaokaiTodayRequest.field;
                 createKaokaiToday.flag = createKaokaiTodayRequest.flag;
+                createKaokaiToday.pics = createKaokaiTodayRequest.pics;
                 createKaokaiToday.limit = createKaokaiTodayRequest.limit;
                 createKaokaiToday.position = createKaokaiTodayRequest.position;
                 createKaokaiToday.buckets = createKaokaiTodayRequest.buckets;
@@ -522,6 +523,7 @@ export class AdminPageController {
             createKaokaiToday.type = createKaokaiTodayRequest.type;
             createKaokaiToday.field = createKaokaiTodayRequest.field;
             createKaokaiToday.flag = createKaokaiTodayRequest.flag;
+            createKaokaiToday.pics = createKaokaiTodayRequest.pics;
             createKaokaiToday.limit = createKaokaiTodayRequest.limit;
             createKaokaiToday.position = createKaokaiTodayRequest.position;
             createKaokaiToday.buckets = createKaokaiTodayRequest.buckets;
@@ -576,6 +578,7 @@ export class AdminPageController {
                         position: createKaokaiTodayRequest.position,
                         limit: createKaokaiTodayRequest.limit,
                         flag: createKaokaiTodayRequest.flag,
+                        pics:createKaokaiTodayRequest.pics
                       },
                       $pull: {
                         buckets: null,

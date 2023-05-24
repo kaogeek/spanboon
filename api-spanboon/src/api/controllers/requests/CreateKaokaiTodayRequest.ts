@@ -16,6 +16,7 @@ export class CreateKaokaiTodayRequest {
     public field: string;
     public position:number;
     public flag: boolean;
+    public pics:boolean;
     public limit: number;
     public buckets: any;
     public deleteIndex:any;

@@ -84,6 +84,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     }
                 }
                 const majorTrend = await this.kaokaiTodayService.findOne({ position: sortV[0] });
+                const postPics = majorTrend.pics;
                 if (majorTrend === undefined) {
                     const result: SectionModel = new SectionModel();
                     result.title = (this.config === undefined || this.config.title === undefined) ? 'เกาะกระแส' : 'เกาะกระแส';
@@ -243,40 +244,83 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     result.type = this.getType(); // set type by processor type
                     result.position = majorTrend.position;
                     for (const row of postAggregate) {
-                        const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
-                        const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
+                        if (postPics === false) {
+                            const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
+                            const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
 
-                        const contents: any = {};
-                        contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                        if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
-                            try {
-                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
-                                contents.coverPageSignUrl = signUrl;
-                            } catch (error) {
-                                console.log('PostSectionProcessor: ' + error);
+                            const contents: any = {};
+                            contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
+                            if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
+                                try {
+                                    const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
+                                    contents.coverPageSignUrl = signUrl;
+                                } catch (error) {
+                                    console.log('PostSectionProcessor: ' + error);
+                                }
                             }
-                        }
 
-                        // search isLike
-                        row.isLike = false;
-                        if (userId !== undefined && userId !== undefined && userId !== '') {
-                            const userLikes: UserLike[] = await this.userLikeService.find({ userId: new ObjectID(userId), subjectId: row._id, subjectType: LIKE_TYPE.POST });
-                            if (userLikes.length > 0) {
-                                row.isLike = true;
+                            // search isLike
+                            row.isLike = false;
+                            if (userId !== undefined && userId !== undefined && userId !== '') {
+                                const userLikes: UserLike[] = await this.userLikeService.find({ userId: new ObjectID(userId), subjectId: row._id, subjectType: LIKE_TYPE.POST });
+                                if (userLikes.length > 0) {
+                                    row.isLike = true;
+                                }
                             }
-                        }
 
-                        contents.owner = {};
-                        if (row.page !== undefined) {
-                            contents.owner = this.parsePageField(row.page);
+                            contents.owner = {};
+                            if (row.page !== undefined) {
+                                contents.owner = this.parsePageField(row.page);
+                            } else {
+                                contents.owner = this.parseUserField(user);
+                            }
+                            // remove page agg
+                            // delete row.page;
+                            delete row.user;
+                            contents.post = row;
+                            result.contents.push(contents);
+
                         } else {
-                            contents.owner = this.parseUserField(user);
+                            if (row.gallery.length > 0) {
+                                const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
+                                const firstImage = row.gallery[0];
+
+                                const contents: any = {};
+                                contents.coverPageUrl = row.gallery[0].imageURL;
+                                if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
+                                    try {
+                                        const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
+                                        contents.coverPageSignUrl = signUrl;
+                                    } catch (error) {
+                                        console.log('PostSectionProcessor: ' + error);
+                                    }
+                                }
+
+                                // search isLike
+                                row.isLike = false;
+                                if (userId !== undefined && userId !== undefined && userId !== '') {
+                                    const userLikes: UserLike[] = await this.userLikeService.find({ userId: new ObjectID(userId), subjectId: row._id, subjectType: LIKE_TYPE.POST });
+                                    if (userLikes.length > 0) {
+                                        row.isLike = true;
+                                    }
+                                }
+
+                                contents.owner = {};
+                                if (row.page !== undefined) {
+                                    contents.owner = this.parsePageField(row.page);
+                                } else {
+                                    contents.owner = this.parseUserField(user);
+                                }
+                                // remove page agg
+                                // delete row.page;
+                                delete row.user;
+                                contents.post = row;
+                                result.contents.push(contents);
+
+                            } else {
+                                continue;
+                            }
                         }
-                        // remove page agg
-                        // delete row.page;
-                        delete row.user;
-                        contents.post = row;
-                        result.contents.push(contents);
                     }
                     result.dateTime = lastestDate;
 
@@ -451,7 +495,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                             }
                         }
                     }
-                    const slice = stackPage.slice(0,limit);
+                    const slice = stackPage.slice(0, limit);
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
                     result.title = (this.config === undefined || this.config.title === undefined) ? majorTrend.title : majorTrend.title;
@@ -462,41 +506,82 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     result.type = this.getType(); // set type by processor type
                     result.position = majorTrend.position;
                     for (const row of slice) {
-                        const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
-                        const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
+                        if (postPics === false) {
+                            const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
+                            const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
 
-                        const contents: any = {};
-                        contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                        if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
-                            try {
-                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
-                                contents.coverPageSignUrl = signUrl;
-                            } catch (error) {
-                                console.log('PostSectionProcessor: ' + error);
+                            const contents: any = {};
+                            contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
+                            if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
+                                try {
+                                    const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
+                                    contents.coverPageSignUrl = signUrl;
+                                } catch (error) {
+                                    console.log('PostSectionProcessor: ' + error);
+                                }
                             }
-                        }
 
-                        // search isLike
-                        row.isLike = false;
-                        if (userId !== undefined && userId !== undefined && userId !== '') {
-                            const userLikes: UserLike[] = await this.userLikeService.find({ userId: new ObjectID(userId), subjectId: row._id, subjectType: LIKE_TYPE.POST });
-                            if (userLikes.length > 0) {
-                                row.isLike = true;
+                            // search isLike
+                            row.isLike = false;
+                            if (userId !== undefined && userId !== undefined && userId !== '') {
+                                const userLikes: UserLike[] = await this.userLikeService.find({ userId: new ObjectID(userId), subjectId: row._id, subjectType: LIKE_TYPE.POST });
+                                if (userLikes.length > 0) {
+                                    row.isLike = true;
+                                }
                             }
-                        }
 
-                        contents.owner = {};
-                        if (row.page !== undefined) {
-                            contents.owner = this.parsePageField(row.page);
-                        } else {
-                            contents.owner = this.parseUserField(user);
-                        }
-                        // remove page agg
-                        // delete row.page;
-                        delete row.user;
-                        contents.post = row;
-                        if (contents.owner.isOfficial === true) {
+                            contents.owner = {};
+                            if (row.page !== undefined) {
+                                contents.owner = this.parsePageField(row.page);
+                            } else {
+                                contents.owner = this.parseUserField(user);
+                            }
+                            // remove page agg
+                            // delete row.page;
+                            delete row.user;
+                            contents.post = row;
                             result.contents.push(contents);
+
+                        } else {
+                            if (row.gallery.length > 0) {
+                                const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
+                                const firstImage = row.gallery[0];
+
+                                const contents: any = {};
+                                contents.coverPageUrl = row.gallery[0].imageURL;
+                                if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
+                                    try {
+                                        const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
+                                        contents.coverPageSignUrl = signUrl;
+                                    } catch (error) {
+                                        console.log('PostSectionProcessor: ' + error);
+                                    }
+                                }
+
+                                // search isLike
+                                row.isLike = false;
+                                if (userId !== undefined && userId !== undefined && userId !== '') {
+                                    const userLikes: UserLike[] = await this.userLikeService.find({ userId: new ObjectID(userId), subjectId: row._id, subjectType: LIKE_TYPE.POST });
+                                    if (userLikes.length > 0) {
+                                        row.isLike = true;
+                                    }
+                                }
+
+                                contents.owner = {};
+                                if (row.page !== undefined) {
+                                    contents.owner = this.parsePageField(row.page);
+                                } else {
+                                    contents.owner = this.parseUserField(user);
+                                }
+                                // remove page agg
+                                // delete row.page;
+                                delete row.user;
+                                contents.post = row;
+                                result.contents.push(contents);
+
+                            } else {
+                                continue;
+                            }
                         }
                     }
                     result.dateTime = lastestDate;
@@ -673,7 +758,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                             }
                         }
                     }
-                    const slice = stackPage.slice(0,limit);
+                    const slice = stackPage.slice(0, limit);
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
                     result.title = (this.config === undefined || this.config.title === undefined) ? majorTrend.title : this.config.title;
@@ -684,40 +769,83 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     result.type = this.getType(); // set type by processor type
                     result.position = majorTrend.position;
                     for (const row of slice) {
-                        const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
-                        const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
+                        if (postPics === false) {
+                            const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
+                            const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
 
-                        const contents: any = {};
-                        contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                        if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
-                            try {
-                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
-                                contents.coverPageSignUrl = signUrl;
-                            } catch (error) {
-                                console.log('PostSectionProcessor: ' + error);
+                            const contents: any = {};
+                            contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
+                            if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
+                                try {
+                                    const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
+                                    contents.coverPageSignUrl = signUrl;
+                                } catch (error) {
+                                    console.log('PostSectionProcessor: ' + error);
+                                }
                             }
-                        }
 
-                        // search isLike
-                        row.isLike = false;
-                        if (userId !== undefined && userId !== undefined && userId !== '') {
-                            const userLikes: UserLike[] = await this.userLikeService.find({ userId: new ObjectID(userId), subjectId: row._id, subjectType: LIKE_TYPE.POST });
-                            if (userLikes.length > 0) {
-                                row.isLike = true;
+                            // search isLike
+                            row.isLike = false;
+                            if (userId !== undefined && userId !== undefined && userId !== '') {
+                                const userLikes: UserLike[] = await this.userLikeService.find({ userId: new ObjectID(userId), subjectId: row._id, subjectType: LIKE_TYPE.POST });
+                                if (userLikes.length > 0) {
+                                    row.isLike = true;
+                                }
                             }
-                        }
 
-                        contents.owner = {};
-                        if (row.page !== undefined) {
-                            contents.owner = this.parsePageField(row.page);
+                            contents.owner = {};
+                            if (row.page !== undefined) {
+                                contents.owner = this.parsePageField(row.page);
+                            } else {
+                                contents.owner = this.parseUserField(user);
+                            }
+                            // remove page agg
+                            // delete row.page;
+                            delete row.user;
+                            contents.post = row;
+                            result.contents.push(contents);
+
                         } else {
-                            contents.owner = this.parseUserField(user);
+                            if (row.gallery.length > 0) {
+                                const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
+                                const firstImage = row.gallery[0];
+
+                                const contents: any = {};
+                                contents.coverPageUrl = row.gallery[0].imageURL;
+                                if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
+                                    try {
+                                        const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
+                                        contents.coverPageSignUrl = signUrl;
+                                    } catch (error) {
+                                        console.log('PostSectionProcessor: ' + error);
+                                    }
+                                }
+
+                                // search isLike
+                                row.isLike = false;
+                                if (userId !== undefined && userId !== undefined && userId !== '') {
+                                    const userLikes: UserLike[] = await this.userLikeService.find({ userId: new ObjectID(userId), subjectId: row._id, subjectType: LIKE_TYPE.POST });
+                                    if (userLikes.length > 0) {
+                                        row.isLike = true;
+                                    }
+                                }
+
+                                contents.owner = {};
+                                if (row.page !== undefined) {
+                                    contents.owner = this.parsePageField(row.page);
+                                } else {
+                                    contents.owner = this.parseUserField(user);
+                                }
+                                // remove page agg
+                                // delete row.page;
+                                delete row.user;
+                                contents.post = row;
+                                result.contents.push(contents);
+
+                            } else {
+                                continue;
+                            }
                         }
-                        // remove page agg
-                        // delete row.page;
-                        delete row.user;
-                        contents.post = row;
-                        result.contents.push(contents);
                     }
                     result.dateTime = lastestDate;
                     resolve(result);
@@ -897,7 +1025,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                             }
                         }
                     }
-                    const slice = stackPage.slice(0,limit);
+                    const slice = stackPage.slice(0, limit);
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
                     result.title = (this.config === undefined || this.config.title === undefined) ? majorTrend.title : majorTrend.title;
@@ -908,41 +1036,83 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     result.type = this.getType(); // set type by processor type
                     result.position = majorTrend.position;
                     for (const row of slice) {
-                        const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
-                        const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
+                        if (postPics === false) {
+                            const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
+                            const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
 
-                        const contents: any = {};
-                        contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                        if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
-                            try {
-                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
-                                contents.coverPageSignUrl = signUrl;
-                            } catch (error) {
-                                console.log('PostSectionProcessor: ' + error);
+                            const contents: any = {};
+                            contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
+                            if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
+                                try {
+                                    const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
+                                    contents.coverPageSignUrl = signUrl;
+                                } catch (error) {
+                                    console.log('PostSectionProcessor: ' + error);
+                                }
                             }
-                        }
 
-                        // search isLike
-                        row.isLike = false;
-                        if (userId !== undefined && userId !== undefined && userId !== '') {
-                            const userLikes: UserLike[] = await this.userLikeService.find({ userId: new ObjectID(userId), subjectId: row._id, subjectType: LIKE_TYPE.POST });
-                            if (userLikes.length > 0) {
-                                row.isLike = true;
+                            // search isLike
+                            row.isLike = false;
+                            if (userId !== undefined && userId !== undefined && userId !== '') {
+                                const userLikes: UserLike[] = await this.userLikeService.find({ userId: new ObjectID(userId), subjectId: row._id, subjectType: LIKE_TYPE.POST });
+                                if (userLikes.length > 0) {
+                                    row.isLike = true;
+                                }
                             }
-                        }
 
-                        contents.owner = {};
-                        if (row.page !== undefined) {
-                            contents.owner = this.parsePageField(row.page);
+                            contents.owner = {};
+                            if (row.page !== undefined) {
+                                contents.owner = this.parsePageField(row.page);
+                            } else {
+                                contents.owner = this.parseUserField(user);
+                            }
+                            // remove page agg
+                            // delete row.page;
+                            delete row.user;
+                            contents.post = row;
+                            result.contents.push(contents);
+
                         } else {
-                            contents.owner = this.parseUserField(user);
-                        }
-                        // remove page agg
-                        // delete row.page;
-                        delete row.user;
+                            if (row.gallery.length > 0) {
+                                const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
+                                const firstImage = row.gallery[0];
 
-                        contents.post = row;
-                        result.contents.push(contents);
+                                const contents: any = {};
+                                contents.coverPageUrl = row.gallery[0].imageURL;
+                                if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
+                                    try {
+                                        const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
+                                        contents.coverPageSignUrl = signUrl;
+                                    } catch (error) {
+                                        console.log('PostSectionProcessor: ' + error);
+                                    }
+                                }
+
+                                // search isLike
+                                row.isLike = false;
+                                if (userId !== undefined && userId !== undefined && userId !== '') {
+                                    const userLikes: UserLike[] = await this.userLikeService.find({ userId: new ObjectID(userId), subjectId: row._id, subjectType: LIKE_TYPE.POST });
+                                    if (userLikes.length > 0) {
+                                        row.isLike = true;
+                                    }
+                                }
+
+                                contents.owner = {};
+                                if (row.page !== undefined) {
+                                    contents.owner = this.parsePageField(row.page);
+                                } else {
+                                    contents.owner = this.parseUserField(user);
+                                }
+                                // remove page agg
+                                // delete row.page;
+                                delete row.user;
+                                contents.post = row;
+                                result.contents.push(contents);
+
+                            } else {
+                                continue;
+                            }
+                        }
                     }
 
                     result.dateTime = lastestDate;
@@ -1060,40 +1230,83 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     result.type = this.getType(); // set type by processor type
                     result.position = majorTrend.position;
                     for (const row of postAggregate) {
-                        const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
-                        const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
+                        if (postPics === false) {
+                            const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
+                            const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
 
-                        const contents: any = {};
-                        contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                        if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
-                            try {
-                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
-                                contents.coverPageSignUrl = signUrl;
-                            } catch (error) {
-                                console.log('PostSectionProcessor: ' + error);
+                            const contents: any = {};
+                            contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
+                            if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
+                                try {
+                                    const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
+                                    contents.coverPageSignUrl = signUrl;
+                                } catch (error) {
+                                    console.log('PostSectionProcessor: ' + error);
+                                }
                             }
-                        }
 
-                        // search isLike
-                        row.isLike = false;
-                        if (userId !== undefined && userId !== undefined && userId !== '') {
-                            const userLikes: UserLike[] = await this.userLikeService.find({ userId: new ObjectID(userId), subjectId: row._id, subjectType: LIKE_TYPE.POST });
-                            if (userLikes.length > 0) {
-                                row.isLike = true;
+                            // search isLike
+                            row.isLike = false;
+                            if (userId !== undefined && userId !== undefined && userId !== '') {
+                                const userLikes: UserLike[] = await this.userLikeService.find({ userId: new ObjectID(userId), subjectId: row._id, subjectType: LIKE_TYPE.POST });
+                                if (userLikes.length > 0) {
+                                    row.isLike = true;
+                                }
                             }
-                        }
 
-                        contents.owner = {};
-                        if (row.page !== undefined) {
-                            contents.owner = this.parsePageField(row.page);
+                            contents.owner = {};
+                            if (row.page !== undefined) {
+                                contents.owner = this.parsePageField(row.page);
+                            } else {
+                                contents.owner = this.parseUserField(user);
+                            }
+                            // remove page agg
+                            // delete row.page;
+                            delete row.user;
+                            contents.post = row;
+                            result.contents.push(contents);
+
                         } else {
-                            contents.owner = this.parseUserField(user);
+                            if (row.gallery.length > 0) {
+                                const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
+                                const firstImage = row.gallery[0];
+
+                                const contents: any = {};
+                                contents.coverPageUrl = row.gallery[0].imageURL;
+                                if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
+                                    try {
+                                        const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
+                                        contents.coverPageSignUrl = signUrl;
+                                    } catch (error) {
+                                        console.log('PostSectionProcessor: ' + error);
+                                    }
+                                }
+
+                                // search isLike
+                                row.isLike = false;
+                                if (userId !== undefined && userId !== undefined && userId !== '') {
+                                    const userLikes: UserLike[] = await this.userLikeService.find({ userId: new ObjectID(userId), subjectId: row._id, subjectType: LIKE_TYPE.POST });
+                                    if (userLikes.length > 0) {
+                                        row.isLike = true;
+                                    }
+                                }
+
+                                contents.owner = {};
+                                if (row.page !== undefined) {
+                                    contents.owner = this.parsePageField(row.page);
+                                } else {
+                                    contents.owner = this.parseUserField(user);
+                                }
+                                // remove page agg
+                                // delete row.page;
+                                delete row.user;
+                                contents.post = row;
+                                result.contents.push(contents);
+
+                            } else {
+                                continue;
+                            }
                         }
-                        // remove page agg
-                        // delete row.page;
-                        delete row.user;
-                        contents.post = row;
-                        result.contents.push(contents);
                     }
                     result.dateTime = lastestDate;
                     resolve(result);
@@ -1275,7 +1488,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                             }
                         }
                     }
-                    const slice = stackPage.slice(0,limit);
+                    const slice = stackPage.slice(0, limit);
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
                     result.title = (this.config === undefined || this.config.title === undefined) ? majorTrend.title : majorTrend.title;
@@ -1285,41 +1498,83 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     result.type = this.getType(); // set type by processor type
                     result.position = majorTrend.position;
                     for (const row of slice) {
-                        const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
-                        const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
+                        if (postPics === false) {
+                            const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
+                            const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
 
-                        const contents: any = {};
-                        contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                        if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
-                            try {
-                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
-                                contents.coverPageSignUrl = signUrl;
-                            } catch (error) {
-                                console.log('PostSectionProcessor: ' + error);
+                            const contents: any = {};
+                            contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
+                            if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
+                                try {
+                                    const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
+                                    contents.coverPageSignUrl = signUrl;
+                                } catch (error) {
+                                    console.log('PostSectionProcessor: ' + error);
+                                }
                             }
-                        }
 
-                        // search isLike
-                        row.isLike = false;
-                        if (userId !== undefined && userId !== undefined && userId !== '') {
-                            const userLikes: UserLike[] = await this.userLikeService.find({ userId: new ObjectID(userId), subjectId: row._id, subjectType: LIKE_TYPE.POST });
-                            if (userLikes.length > 0) {
-                                row.isLike = true;
+                            // search isLike
+                            row.isLike = false;
+                            if (userId !== undefined && userId !== undefined && userId !== '') {
+                                const userLikes: UserLike[] = await this.userLikeService.find({ userId: new ObjectID(userId), subjectId: row._id, subjectType: LIKE_TYPE.POST });
+                                if (userLikes.length > 0) {
+                                    row.isLike = true;
+                                }
                             }
-                        }
 
-                        contents.owner = {};
-                        if (row.page !== undefined) {
-                            contents.owner = this.parsePageField(row.page);
+                            contents.owner = {};
+                            if (row.page !== undefined) {
+                                contents.owner = this.parsePageField(row.page);
+                            } else {
+                                contents.owner = this.parseUserField(user);
+                            }
+                            // remove page agg
+                            // delete row.page;
+                            delete row.user;
+                            contents.post = row;
+                            result.contents.push(contents);
+
                         } else {
-                            contents.owner = this.parseUserField(user);
-                        }
-                        // remove page agg
-                        // delete row.page;
-                        delete row.user;
+                            if (row.gallery.length > 0) {
+                                const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
+                                const firstImage = row.gallery[0];
 
-                        contents.post = row;
-                        result.contents.push(contents);
+                                const contents: any = {};
+                                contents.coverPageUrl = row.gallery[0].imageURL;
+                                if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
+                                    try {
+                                        const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
+                                        contents.coverPageSignUrl = signUrl;
+                                    } catch (error) {
+                                        console.log('PostSectionProcessor: ' + error);
+                                    }
+                                }
+
+                                // search isLike
+                                row.isLike = false;
+                                if (userId !== undefined && userId !== undefined && userId !== '') {
+                                    const userLikes: UserLike[] = await this.userLikeService.find({ userId: new ObjectID(userId), subjectId: row._id, subjectType: LIKE_TYPE.POST });
+                                    if (userLikes.length > 0) {
+                                        row.isLike = true;
+                                    }
+                                }
+
+                                contents.owner = {};
+                                if (row.page !== undefined) {
+                                    contents.owner = this.parsePageField(row.page);
+                                } else {
+                                    contents.owner = this.parseUserField(user);
+                                }
+                                // remove page agg
+                                // delete row.page;
+                                delete row.user;
+                                contents.post = row;
+                                result.contents.push(contents);
+
+                            } else {
+                                continue;
+                            }
+                        }
                     }
                     result.dateTime = lastestDate;
 
@@ -1508,7 +1763,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                             }
                         }
                     }
-                    const slice = stackPage.slice(0,limit);
+                    const slice = stackPage.slice(0, limit);
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
                     result.title = (this.config === undefined || this.config.title === undefined) ? majorTrend.title : majorTrend.title;
@@ -1518,41 +1773,83 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     result.type = this.getType(); // set type by processor type
                     result.position = majorTrend.position;
                     for (const row of slice) {
-                        const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
-                        const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
+                        if (postPics === false) {
+                            const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
+                            const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
 
-                        const contents: any = {};
-                        contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                        if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
-                            try {
-                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
-                                contents.coverPageSignUrl = signUrl;
-                            } catch (error) {
-                                console.log('PostSectionProcessor: ' + error);
+                            const contents: any = {};
+                            contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
+                            if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
+                                try {
+                                    const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
+                                    contents.coverPageSignUrl = signUrl;
+                                } catch (error) {
+                                    console.log('PostSectionProcessor: ' + error);
+                                }
                             }
-                        }
 
-                        // search isLike
-                        row.isLike = false;
-                        if (userId !== undefined && userId !== undefined && userId !== '') {
-                            const userLikes: UserLike[] = await this.userLikeService.find({ userId: new ObjectID(userId), subjectId: row._id, subjectType: LIKE_TYPE.POST });
-                            if (userLikes.length > 0) {
-                                row.isLike = true;
+                            // search isLike
+                            row.isLike = false;
+                            if (userId !== undefined && userId !== undefined && userId !== '') {
+                                const userLikes: UserLike[] = await this.userLikeService.find({ userId: new ObjectID(userId), subjectId: row._id, subjectType: LIKE_TYPE.POST });
+                                if (userLikes.length > 0) {
+                                    row.isLike = true;
+                                }
                             }
-                        }
 
-                        contents.owner = {};
-                        if (row.page !== undefined) {
-                            contents.owner = this.parsePageField(row.page);
+                            contents.owner = {};
+                            if (row.page !== undefined) {
+                                contents.owner = this.parsePageField(row.page);
+                            } else {
+                                contents.owner = this.parseUserField(user);
+                            }
+                            // remove page agg
+                            // delete row.page;
+                            delete row.user;
+                            contents.post = row;
+                            result.contents.push(contents);
+
                         } else {
-                            contents.owner = this.parseUserField(user);
-                        }
-                        // remove page agg
-                        // delete row.page;
-                        delete row.user;
+                            if (row.gallery.length > 0) {
+                                const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
+                                const firstImage = row.gallery[0];
 
-                        contents.post = row;
-                        result.contents.push(contents);
+                                const contents: any = {};
+                                contents.coverPageUrl = row.gallery[0].imageURL;
+                                if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
+                                    try {
+                                        const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
+                                        contents.coverPageSignUrl = signUrl;
+                                    } catch (error) {
+                                        console.log('PostSectionProcessor: ' + error);
+                                    }
+                                }
+
+                                // search isLike
+                                row.isLike = false;
+                                if (userId !== undefined && userId !== undefined && userId !== '') {
+                                    const userLikes: UserLike[] = await this.userLikeService.find({ userId: new ObjectID(userId), subjectId: row._id, subjectType: LIKE_TYPE.POST });
+                                    if (userLikes.length > 0) {
+                                        row.isLike = true;
+                                    }
+                                }
+
+                                contents.owner = {};
+                                if (row.page !== undefined) {
+                                    contents.owner = this.parsePageField(row.page);
+                                } else {
+                                    contents.owner = this.parseUserField(user);
+                                }
+                                // remove page agg
+                                // delete row.page;
+                                delete row.user;
+                                contents.post = row;
+                                result.contents.push(contents);
+
+                            } else {
+                                continue;
+                            }
+                        }
                     }
                     result.dateTime = lastestDate;
 
@@ -1721,7 +2018,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                             }
                         }
                     }
-                    const slice = stackPage.slice(0,limit);
+                    const slice = stackPage.slice(0, limit);
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
                     result.title = (this.config === undefined || this.config.title === undefined) ? majorTrend.title : majorTrend.title;
@@ -1732,41 +2029,83 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     result.type = this.getType(); // set type by processor type
                     result.position = majorTrend.position;
                     for (const row of slice) {
-                        const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
-                        const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
+                        if (postPics === false) {
+                            const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
+                            const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
 
-                        const contents: any = {};
-                        contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                        if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
-                            try {
-                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
-                                contents.coverPageSignUrl = signUrl;
-                            } catch (error) {
-                                console.log('PostSectionProcessor: ' + error);
+                            const contents: any = {};
+                            contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
+                            if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
+                                try {
+                                    const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
+                                    contents.coverPageSignUrl = signUrl;
+                                } catch (error) {
+                                    console.log('PostSectionProcessor: ' + error);
+                                }
                             }
-                        }
 
-                        // search isLike
-                        row.isLike = false;
-                        if (userId !== undefined && userId !== undefined && userId !== '') {
-                            const userLikes: UserLike[] = await this.userLikeService.find({ userId: new ObjectID(userId), subjectId: row._id, subjectType: LIKE_TYPE.POST });
-                            if (userLikes.length > 0) {
-                                row.isLike = true;
+                            // search isLike
+                            row.isLike = false;
+                            if (userId !== undefined && userId !== undefined && userId !== '') {
+                                const userLikes: UserLike[] = await this.userLikeService.find({ userId: new ObjectID(userId), subjectId: row._id, subjectType: LIKE_TYPE.POST });
+                                if (userLikes.length > 0) {
+                                    row.isLike = true;
+                                }
                             }
-                        }
 
-                        contents.owner = {};
-                        if (row.page !== undefined) {
-                            contents.owner = this.parsePageField(row.page);
+                            contents.owner = {};
+                            if (row.page !== undefined) {
+                                contents.owner = this.parsePageField(row.page);
+                            } else {
+                                contents.owner = this.parseUserField(user);
+                            }
+                            // remove page agg
+                            // delete row.page;
+                            delete row.user;
+                            contents.post = row;
+                            result.contents.push(contents);
+
                         } else {
-                            contents.owner = this.parseUserField(user);
-                        }
-                        // remove page agg
-                        // delete row.page;
-                        delete row.user;
+                            if (row.gallery.length > 0) {
+                                const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
+                                const firstImage = row.gallery[0];
 
-                        contents.post = row;
-                        result.contents.push(contents);
+                                const contents: any = {};
+                                contents.coverPageUrl = row.gallery[0].imageURL;
+                                if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
+                                    try {
+                                        const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
+                                        contents.coverPageSignUrl = signUrl;
+                                    } catch (error) {
+                                        console.log('PostSectionProcessor: ' + error);
+                                    }
+                                }
+
+                                // search isLike
+                                row.isLike = false;
+                                if (userId !== undefined && userId !== undefined && userId !== '') {
+                                    const userLikes: UserLike[] = await this.userLikeService.find({ userId: new ObjectID(userId), subjectId: row._id, subjectType: LIKE_TYPE.POST });
+                                    if (userLikes.length > 0) {
+                                        row.isLike = true;
+                                    }
+                                }
+
+                                contents.owner = {};
+                                if (row.page !== undefined) {
+                                    contents.owner = this.parsePageField(row.page);
+                                } else {
+                                    contents.owner = this.parseUserField(user);
+                                }
+                                // remove page agg
+                                // delete row.page;
+                                delete row.user;
+                                contents.post = row;
+                                result.contents.push(contents);
+
+                            } else {
+                                continue;
+                            }
+                        }
                     }
 
                     result.dateTime = lastestDate;
