@@ -352,7 +352,6 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
 
             return;
         }
-        console.log('postPics',this.postPics);
         const result: any = {};
         result.title = this.selectedValueTitle;
         result.type = this.selectedValueType;
