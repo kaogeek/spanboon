@@ -1982,9 +1982,9 @@ export class MainPageController {
             }
         });
         console.log('pid', pid);
-        console.log('id',idPm2);
+        console.log('id', idPm2);
         const scheduler = String(jobscheduler);
-        console.log('scheduler',scheduler);
+        console.log('scheduler', scheduler);
         let switchEmail = DEFAULT_SWITCH_CASE_SEND_EMAIL;
         const switchSendEmail = await this.configService.getConfig(SWITCH_CASE_SEND_EMAIL);
         if (switchSendEmail) {
@@ -2102,7 +2102,6 @@ export class MainPageController {
                     if (token.length > 0) {
                         for (let z = 0; z < token.length; z++) {
                             if (token[z] !== undefined) {
-                                console.log('pass 1?????');
                                 await this.notificationService.pushNotificationMessage(snapshot.data, token[z], endDateTimeToday);
                             } else {
                                 continue;
