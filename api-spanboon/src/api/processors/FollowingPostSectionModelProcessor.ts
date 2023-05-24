@@ -402,7 +402,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                 }
                 row.isLike = false;
                 contents.post = row;
-                pageResult.post.push(contents);
+                pageResult.posts.push(contents);
             }
         }
 
@@ -435,7 +435,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                 }
                 row.isLike = false;
                 contents.post = row;
-                userResult.post.push(contents);
+                userResult.posts.push(contents);
             }
 
         }

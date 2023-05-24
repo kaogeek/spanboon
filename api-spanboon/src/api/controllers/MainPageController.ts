@@ -86,7 +86,6 @@ import { KaokaiTodaySnapShotService } from '../services/KaokaiTodaySnapShot';
 import { KaokaiContentModelProcessor } from '../processors/KaokaiContentModelProcessor';
 import { MAILService } from '../../auth/mail.services';
 import { DeviceTokenService } from '../services/DeviceToken';
-import cluster from 'cluster';
 import pm2 from 'pm2';
 @JsonController('/main')
 export class MainPageController {
@@ -149,7 +148,6 @@ export class MainPageController {
             rangeHashtags = rangeHashtag.value;
         }
         const emergencyCheckEndDate = assetTodayRangeDate.endDateTime;
-        console.log('emergencyCheckEndDate',emergencyCheckEndDate);
         const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), assetTodayDate);
         if (toDate) {
             const checkSnapshot = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: toDate });
@@ -1965,6 +1963,7 @@ export class MainPageController {
     public async snapShotToday(data: any, startDateRange: Date, endDateTimeToday: Date, jobscheduler: string): Promise<any> {
         // check before create
         let pid = undefined;
+        let idPm2 = undefined;
         pm2.list((err: Error | null, processList: pm2.ProcessDescription[]) => {
             if (err) {
                 console.error(err);
@@ -1976,17 +1975,17 @@ export class MainPageController {
 
             if (targetProcess) {
                 pid = targetProcess.pid;
+                idPm2 = targetProcess.pm_id;
                 console.log(`PID of the process: ${pid}`);
+                console.log(`PM2 ID of the process: ${idPm2}`);
             } else {
                 console.log('Process not found.');
             }
         });
         console.log('pid', pid);
-        console.log('cluster.isPrimary', cluster.isPrimary);
-        console.log('cluster.isMaster', cluster.isMaster);
-        console.log('cluster.worker', cluster.isWorker);
+        console.log('id',idPm2);
         const scheduler = String(jobscheduler);
-        console.log('scheduler', scheduler);
+        console.log('scheduler',scheduler);
         let switchEmail = DEFAULT_SWITCH_CASE_SEND_EMAIL;
         const switchSendEmail = await this.configService.getConfig(SWITCH_CASE_SEND_EMAIL);
         if (switchSendEmail) {
@@ -2035,7 +2034,6 @@ export class MainPageController {
             result.startDateTime = startDateRange;
             result.endDateTime = endDateTimeToday;
             const snapshot = await this.kaokaiTodaySnapShotService.create(result);
-            console.log('snapshot', snapshot);
             if (String(switchSendEm) === 'true' && snapshot) {
                 console.log('pass 1 send email');
                 let user = undefined;
