@@ -16,7 +16,6 @@ import { UserService } from '../services/UserService';
 import { UserLike } from '../models/UserLike';
 import { LIKE_TYPE } from '../../constants/LikeType';
 import { ObjectID } from 'mongodb';
-import moment from 'moment';
 
 export class FollowingProvinceSectionModelProcessor extends AbstractSeparateSectionProcessor {
     private DEFAULT_SEARCH_LIMIT = 10;
@@ -38,10 +37,8 @@ export class FollowingProvinceSectionModelProcessor extends AbstractSeparateSect
                 let searchOfficialOnly: number = undefined;
                 let userId = undefined;
                 // get startDateTime, endDateTime
-                let startDateTime: Date = undefined;
                 let endDateTime: Date = undefined;
                 if (this.data !== undefined && this.data !== null) {
-                    startDateTime = this.data.startDateTime;
                     endDateTime = this.data.endDateTime;
                     userId = this.data.userId;
                 }
@@ -79,7 +76,6 @@ export class FollowingProvinceSectionModelProcessor extends AbstractSeparateSect
                     isClose: false
                 };
                 // const today = moment().add(month, 'month').toDate();
-                const today = moment().toDate();
                 const pageId = [];
                 const userProvince = await this.userService.aggregate(
                     [
@@ -120,24 +116,12 @@ export class FollowingProvinceSectionModelProcessor extends AbstractSeparateSect
                     isDraft: false,
                     deleted: false,
                     hidden: false,
+                    startDateTime: { $lte: endDateTime},
                     pageId: { $in: pageId }
                 };
-                const dateTimeAndArray = [];
-                if (startDateTime !== undefined && startDateTime !== null) {
-                    dateTimeAndArray.push({ startDateTime: { $gte: startDateTime } });
-                }
-                if (endDateTime !== undefined && endDateTime !== null) {
-                    dateTimeAndArray.push({ startDateTime: { $lte: endDateTime } });
-                }
-
-                if (dateTimeAndArray.length > 0) {
-                    postMatchStmt['$and'] = dateTimeAndArray;
-                } else {
-                    // default if startDateTime and endDateTime is not defined.
-                    postMatchStmt.startDateTime = { $lte: today };
-                }
                 const postStmt = [
                     { $match: postMatchStmt },
+                    { $sort: { summationScore: -1 } },
                     {
                         $lookup:
                         {
@@ -149,7 +133,9 @@ export class FollowingProvinceSectionModelProcessor extends AbstractSeparateSect
                             as: 'page'
                         }
                     },
-                    { $sort: { summationScore: -1 } },
+                    {
+                        '$limit': limit
+                    },
                     {
                         $unwind: {
                             path: '$page',
@@ -197,9 +183,6 @@ export class FollowingProvinceSectionModelProcessor extends AbstractSeparateSect
                         }
 
                     },
-                    {
-                        '$limit': limit
-                    }
                 ];
                 if (searchOfficialOnly) {
                     postStmt.splice(3, 0, { $match: { 'page.isOfficial': true, 'page.banned': false } });
