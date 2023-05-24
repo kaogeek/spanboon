@@ -68,6 +68,7 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
     public showComp: any = [];
     public reset: FormArray;
     public isPin: boolean;
+    public postPics:boolean;
     public isSelect: boolean = false;
     public deleteIndex: any = [];
     public bucketDefault: any = [];
@@ -351,11 +352,13 @@ export class TodayPageV2 extends AbstractPage implements OnInit {
 
             return;
         }
+        console.log('postPics',this.postPics);
         const result: any = {};
         result.title = this.selectedValueTitle;
         result.type = this.selectedValueType;
         result.field = this.selectedValueField;
         result.flag = this.isPin;
+        result.pics = this.postPics;
         result.limit = this.limit;
         result.buckets = this.empForm.value.buckets;
         result.position = this.selectedPosition;
