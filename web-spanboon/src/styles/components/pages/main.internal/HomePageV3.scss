@@ -778,152 +778,170 @@
       }
     }
 
-    >.wrapper-content-following {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 15px;
+    >.box-content {
+      height: 680px;
+      overflow: hidden;
+      overflow-y: scroll;
 
-      >.profile-pages {
-        border: 1px solid black;
-        border-radius: 20px;
+      >.wrapper-content-following {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
         margin: 15px;
         height: 300px;
+        border-radius: 5px;
+        border: solid 1px #e6e6e6;
+        background-color: white;
+        transition: 0.3s;
+        cursor: pointer;
+        padding: 10px;
 
-        >.profile-page {
-          display: flex;
-          align-items: center;
-          justify-content: center;
+        &:hover {
+          transition: 0.3s;
+          transform: scale(1.03);
+        }
 
-          >.image-profile-fan-page {
-            width: 60%;
-            border-radius: 50%;
-            border: 4px solid $border-color;
-            object-fit: cover;
-            background-color: $white;
-            margin-top: 30px;
-          }
+        >.profile-pages {
+          // border: 1px solid black;
+          // border-radius: 20px;
 
-          >span {
+          >.profile-page {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 130px;
-            height: 130px;
-            border-radius: 50%;
-            overflow: hidden;
-            background: #ee7623;
-            color: #f3f8f2;
-            border: 4px solid $border-color;
-            margin-top: 30px;
-            @include font-size-9($font-head-500);
-            font-size: 36pt;
-          }
-        }
 
-        >.owner-name {
-          @include font-size-9($font-head-500);
-          color: $brandcolor2;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          text-align: center;
-          padding: 5px;
-          height: 30%;
-
-          >span {
-            padding: 0 5px;
-          }
-        }
-      }
-
-      @media (max-width: $xlarge) {
-        grid-template-columns: repeat(2, 1fr);
-        row-gap: 40px;
-      }
-
-      @media (max-width: $medium) {
-        grid-template-columns: 1fr;
-        row-gap: 40px;
-      }
-
-      >.card-content {
-        display: flex;
-        flex-direction: column;
-
-        .wrapper-bar {
-          flex: 0 0 auto;
-        }
-
-        .container-content {
-          flex: 1 1 0%;
-          @include pointer();
-
-          >.image-content {
-            width: 100%;
-            aspect-ratio: 16/9;
-            object-fit: cover;
-            @include font-size-9($font-head-500);
-
-            &.image-null {
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              text-align: center;
-              background-color: #f8f8f8;
+            >.image-profile-fan-page {
+              width: 60%;
+              border-radius: 50%;
+              border: 4px solid $border-color;
+              object-fit: cover;
+              background-color: $white;
+              margin-top: 30px;
             }
 
             >span {
-              margin: 12px;
-              display: -webkit-box;
-              -webkit-line-clamp: 2;
-              -webkit-box-orient: vertical;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              width: 130px;
+              height: 130px;
+              border-radius: 50%;
               overflow: hidden;
-              word-break: break-word;
-            }
-
-            @media (max-width: $medium) {
-              margin-bottom: 10px;
+              background: #ee7623;
+              color: #f3f8f2;
+              border: 4px solid $border-color;
+              margin-top: 30px;
+              @include font-size-9($font-head-500);
+              font-size: 36pt;
             }
           }
 
-          >.title-post {
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            line-height: 26px;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            margin-top: 10px;
-            word-break: break-word;
+          >.owner-name {
             @include font-size-9($font-head-500);
+            color: $brandcolor2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 5px;
+            height: 30%;
 
-            &:hover {
-              color: rgba($brandcolor2, 0.95);
+            >span {
+              padding: 0 5px;
             }
-          }
-
-          >.idpost {
-            display: none;
           }
         }
 
-        .owner-post {
-          >.owner-name {
-            @include font-size-11($font-head-500);
-            color: slategray;
-            cursor: pointer;
-            -webkit-line-clamp: 1;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            word-break: break-word;
-            display: -webkit-box;
+        @media (max-width: $xlarge) {
+          grid-template-columns: repeat(2, 1fr);
+          row-gap: 40px;
+        }
 
-            &:hover {
-              color: rgba($brandcolor2, 0.95);
+        @media (max-width: $medium) {
+          grid-template-columns: 1fr;
+          row-gap: 40px;
+        }
+
+        >.card-content {
+          display: flex;
+          flex-direction: column;
+
+          .wrapper-bar {
+            flex: 0 0 auto;
+          }
+
+          .container-content {
+            flex: 1 1 0%;
+            @include pointer();
+
+            >.image-content {
+              width: 100%;
+              aspect-ratio: 16/9;
+              object-fit: cover;
+              @include font-size-9($font-head-500);
+
+              &.image-null {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                background-color: #f8f8f8;
+              }
+
+              >span {
+                margin: 12px;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                word-break: break-word;
+              }
+
+              @media (max-width: $medium) {
+                margin-bottom: 10px;
+              }
+            }
+
+            >.title-post {
+              display: -webkit-box;
+              -webkit-line-clamp: 3;
+              line-height: 26px;
+              -webkit-box-orient: vertical;
+              overflow: hidden;
+              margin-top: 10px;
+              word-break: break-word;
+              @include font-size-9($font-head-500);
+
+              &:hover {
+                color: rgba($brandcolor2, 0.95);
+              }
+            }
+
+            >.idpost {
+              display: none;
+            }
+          }
+
+          .owner-post {
+            >.owner-name {
+              @include font-size-11($font-head-500);
+              color: slategray;
+              cursor: pointer;
+              -webkit-line-clamp: 1;
+              -webkit-box-orient: vertical;
+              overflow: hidden;
+              word-break: break-word;
+              display: -webkit-box;
+
+              &:hover {
+                color: rgba($brandcolor2, 0.95);
+              }
             }
           }
         }
       }
     }
+
   }
 }
 
@@ -942,4 +960,8 @@
 .post-wid {
   width: 50%;
   display: flex;
+}
+
+.box-content::-webkit-scrollbar {
+  display: none;
 }
