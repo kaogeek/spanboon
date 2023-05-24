@@ -44,15 +44,18 @@
                                     <span class="disiption">ติดตาม</span>
                                 </div>
                                 <div class="score-type">
-                                    <span class="title">{{objectiveData.timelines[0].post.viewCount}}</span>
+                                    <span class="title">{{objectiveData.timelines[0] ?
+                                        objectiveData.timelines[0].post.viewCount : '0'}}</span>
                                     <span class="disiption">การพูดถึง</span>
                                 </div>
                                 <div class="score-type">
-                                    <span class="title">{{objectiveData.timelines[0].post.repostCount}}</span>
+                                    <span class="title">{{objectiveData.timelines[0] ?
+                                        objectiveData.timelines[0].post.repostCount : '0'}}</span>
                                     <span class="disiption">บอกต่อ</span>
                                 </div>
                                 <div class="score-type">
-                                    <span class="title">{{objectiveData.timelines[0].post.shareCount}}</span>
+                                    <span class="title">{{objectiveData.timelines[0] ?
+                                        objectiveData.timelines[0].post.shareCount : '0'}}</span>
                                     <span class="disiption">แชร์</span>
                                 </div>
                             </div>
@@ -65,15 +68,18 @@
                                 </div>
                                 <div class="sub-score">
                                     <div class="score-type">
-                                        <span class="title">{{objectiveData.timelines[0].post.shareCount}}</span>
+                                        <span class="title">{{objectiveData.timelines[0] ?
+                                            objectiveData.timelines[0].post.shareCount : '0'}}</span>
                                         <span class="disiption">แชร์</span>
                                     </div>
                                     <div class="score-type">
-                                        <span class="title">{{objectiveData.timelines[0].post.repostCount}}</span>
+                                        <span class="title">{{objectiveData.timelines[0] ?
+                                            objectiveData.timelines[0].post.repostCount : '0'}}</span>
                                         <span class="disiption">การพูดถึง</span>
                                     </div>
                                     <div class="score-type">
-                                        <span class="title">{{objectiveData.timelines[0].post.shareCount}}</span>
+                                        <span class="title">{{objectiveData.timelines[0] ?
+                                            objectiveData.timelines[0].post.shareCount : '0'}}</span>
                                         <span class="disiption">บอกต่อ</span>
                                     </div>
                                 </div>

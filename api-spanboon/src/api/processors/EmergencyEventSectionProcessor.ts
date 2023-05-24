@@ -92,7 +92,6 @@ export class EmergencyEventSectionProcessor extends AbstractSectionModelProcesso
                         }
                     }
                 ]);
-
                 const searchCountFilter: SearchFilter = new SearchFilter();
                 searchCountFilter.count = true;
                 searchCountFilter.whereConditions = {

@@ -43,20 +43,20 @@ export const jobSchedulerLoader: MicroframeworkLoader = (settings: Microframewor
     });
 
     // Run Every 1 min 
-
-    schedule.scheduleJob('*/1 * * * *', async () => {
-        axios.get(process.env.APP_API_PROCESSV3, {
-            headers: {
-                Origin: process.env.APP_API_PROCESSV3,
-                Referer: process.env.APP_API_PROCESSV3,
-                jobScheduler:'processor'
-            }
-        }).then((res) => {
-            console.log(`Main Contents : ${res.status}`);
-        }).catch((err) => {
-            console.log('err:' + err);
-        });
-    });
+    
+    // schedule.scheduleJob('*/1 * * * *', async () => {
+        // axios.get(process.env.APP_API_PROCESSV3, {
+            // headers: {
+                // Origin: process.env.APP_API_PROCESSV3,
+                // Referer: process.env.APP_API_PROCESSV3,
+                // jobScheduler:'processor'
+            // }
+        // }).then((res) => {
+            // console.log(`Main Contents : ${res.status}`);
+        // }).catch((err) => {
+            // console.log('err:' + err);
+        // });
+    // });
 
     // fetch feed twitter
     // schedule.scheduleJob('*/30 * * * *', () => {

@@ -185,7 +185,21 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   public async getBottomContent(userId?) {
     this.mainPageModelFacade.bottomContent(userId).then((res) => {
       if (res) {
-        this.modelBottom = res;
+        let dataPost = [];
+        let model: any = {};
+        for (let data of res.isFollowing.contents) {
+          if (data.owner.posts.length > 0) {
+            dataPost.push(data)
+          }
+        }
+        model = {
+          followingContents: res.followingContents,
+          followingProvince: res.followingProvince,
+          isReadPosts: res.isReadPosts,
+          isFollowing: res.isFollowing
+        };
+        model.isFollowing.contents = dataPost;
+        this.modelBottom = model;
       }
     }).catch((err) => {
       if (err) {
@@ -495,6 +509,12 @@ export class HomePageV3 extends AbstractPage implements OnInit {
         window.open('/objective/' + pageId);
       } else if (owner === 'post') {
         window.open('/post/' + pageId);
+      } else if (owner === 'USER') {
+        window.open('/profile/' + pageId);
+      } else if (owner === 'EMERGENCY') {
+        window.open('/emergencyevent/' + pageId);
+      } else if (owner === 'OBJECTIVE') {
+        window.open('/objective/' + pageId);
       } else {
         window.open('/page/' + pageId);
       }
