@@ -12,7 +12,9 @@ import { S3Service } from '../services/S3Service';
 import { UserService } from '../services/UserService';
 import { UserFollowService } from '../services/UserFollowService';
 import { PageObjectiveService } from '../services/PageObjectiveService';
-// import { UserLike } from '../models/UserLike';
+import { UserLikeService } from '../services/UserLikeService';
+import { UserLike } from '../models/UserLike';
+import { LIKE_TYPE } from '../../constants/LikeType';
 import { ObjectID } from 'mongodb';
 import { PageService } from '../services/PageService';
 import { EmergencyEventService } from '../services/EmergencyEventService';
@@ -22,7 +24,7 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
     constructor(
         // private postsService: PostsService,
         private s3Service: S3Service,
-        // private userLikeService: UserLikeService,
+        private userLikeService: UserLikeService,
         private emergencyEventService: EmergencyEventService,
         private pageObjectiveService: PageObjectiveService,
         private userFollowService: UserFollowService,
@@ -117,18 +119,16 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                         }
                     }
                 }
-                let pageFollowingContents = undefined;
-                let userFollowingContents = undefined;
-                let emergencyFollowingContents = undefined;
-                let objectiveFollowingContents = undefined;
+                const allContents = [];
                 if (pageIds.length > 0) {
-                    pageFollowingContents = await this.pageService.aggregate(
+                    const pageFollowingContents = await this.pageService.aggregate(
                         [
                             {
                                 $match: {
                                     _id: { $in: pageIds },
                                 },
                             },
+
                             {
                                 $lookup: {
                                     from: 'Posts',
@@ -157,6 +157,34 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                                 as: 'gallery',
                                             },
                                         },
+                                        {
+                                            $lookup: {
+                                                from: 'User',
+                                                let: { ownerUser: '$ownerUser' },
+                                                pipeline: [
+                                                    {
+                                                        $match: {
+                                                            $expr: { $eq: ['$$ownerUser', '$_id'] },
+                                                        },
+
+                                                    },
+                                                    { $project: { email: 0, username: 0, password: 0 } }
+                                                ],
+                                                as: 'user'
+                                            }
+                                        },
+                                        {
+                                            $unwind: {
+                                                path: '$user',
+                                                preserveNullAndEmptyArrays: true
+                                            }
+                                        },
+                                        {
+                                            $project: {
+                                                story: 0
+                                            }
+
+                                        },
                                     ],
                                     as: 'posts',
                                 },
@@ -172,9 +200,10 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                 },
                             },
                         ]);
+                    allContents.push(pageFollowingContents);
                 }
                 if (userIds.length > 0) {
-                    userFollowingContents = await this.userService.aggregate(
+                    const userFollowingContents = await this.userService.aggregate(
                         [
                             {
                                 $match: {
@@ -209,6 +238,34 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                                 as: 'gallery',
                                             },
                                         },
+                                        {
+                                            $lookup: {
+                                                from: 'User',
+                                                let: { ownerUser: '$ownerUser' },
+                                                pipeline: [
+                                                    {
+                                                        $match: {
+                                                            $expr: { $eq: ['$$ownerUser', '$_id'] },
+                                                        },
+
+                                                    },
+                                                    { $project: { email: 0, username: 0, password: 0 } }
+                                                ],
+                                                as: 'user'
+                                            }
+                                        },
+                                        {
+                                            $unwind: {
+                                                path: '$user',
+                                                preserveNullAndEmptyArrays: true
+                                            }
+                                        },
+                                        {
+                                            $project: {
+                                                story: 0
+                                            }
+
+                                        },
                                     ],
                                     as: 'posts'
                                 }
@@ -224,9 +281,10 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                             }
                         ]
                     );
+                    allContents.push(userFollowingContents);
                 }
                 if (emegencyIds.length > 0) {
-                    emergencyFollowingContents = await this.emergencyEventService.aggregate(
+                    const emergencyFollowingContents = await this.emergencyEventService.aggregate(
                         [
                             {
                                 $match: {
@@ -260,30 +318,53 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                             },
                                         },
                                         {
-                                            $sort: {
-                                                createdDate: -1,
-                                            },
-                                        },
-                                        {
-                                            $limit: 10,
-                                        },
-                                        {
                                             $lookup: {
-                                                from: 'PostsGallery',
-                                                localField: '_id',
-                                                foreignField: 'post',
-                                                as: 'gallery',
-                                            },
+                                                from: 'User',
+                                                let: { ownerUser: '$ownerUser' },
+                                                pipeline: [
+                                                    {
+                                                        $match: {
+                                                            $expr: { $eq: ['$$ownerUser', '$_id'] },
+                                                        },
+
+                                                    },
+                                                    { $project: { email: 0, username: 0, password: 0 } }
+                                                ],
+                                                as: 'user'
+                                            }
+                                        },
+                                        {
+                                            $unwind: {
+                                                path: '$user',
+                                                preserveNullAndEmptyArrays: true
+                                            }
+                                        },
+                                        {
+                                            $project: {
+                                                story: 0
+                                            }
+
                                         },
                                     ],
                                     as: 'posts'
                                 },
+                            },
+                            {
+                                $addFields: {
+                                    'emergencyEvent.posts': '$posts'
+                                }
+                            },
+                            {
+                                $project: {
+                                    posts: 0
+                                }
                             }
                         ]
                     );
+                    allContents.push(emergencyFollowingContents);
                 }
                 if (objectiveIds.length > 0) {
-                    objectiveFollowingContents = await this.pageObjectiveService.aggregate(
+                    const objectiveFollowingContents = await this.pageObjectiveService.aggregate(
                         [
                             {
                                 $match: {
@@ -316,12 +397,76 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                                 as: 'gallery',
                                             },
                                         },
+                                        {
+                                            $lookup: {
+                                                from: 'User',
+                                                let: { ownerUser: '$ownerUser' },
+                                                pipeline: [
+                                                    {
+                                                        $match: {
+                                                            $expr: { $eq: ['$$ownerUser', '$_id'] },
+                                                        },
+
+                                                    },
+                                                    { $project: { email: 0, username: 0, password: 0 } }
+                                                ],
+                                                as: 'user'
+                                            }
+                                        },
+                                        {
+                                            $unwind: {
+                                                path: '$user',
+                                                preserveNullAndEmptyArrays: true
+                                            }
+                                        },
+                                        {
+                                            $project: {
+                                                story: 0
+                                            }
+
+                                        },
                                     ],
                                     as: 'posts'
+                                }
+                            },
+                            {
+                                $addFields: {
+                                    'pageObjective.posts': '$posts'
+                                }
+                            },
+                            {
+                                $project: {
+                                    posts: 0
                                 }
                             }
                         ]
                     );
+                    allContents.push(objectiveFollowingContents);
+                }
+                const posts = [];
+                const postContents = [];
+                let summationScore = undefined;
+                if (allContents.length > 0) {
+                    for (const rows of allContents.flat()) {
+                        if (rows.page !== undefined) {
+                            posts.push(rows.page);
+                        } else if (rows.user !== undefined) {
+                            posts.push(rows.user);
+                        } else if (rows.emergencyEvent !== undefined) {
+                            posts.push(rows.emergencyEvent);
+                        } else {
+                            posts.push(rows.pageObjective);
+                        }
+                    }
+                }
+                const flatPosts = posts.flat();
+                if (flatPosts.length > 0) {
+                    for (const row of flatPosts) {
+                        summationScore = row.posts.sort((a, b) => b.summationScore - a.summationScore);
+                        if (summationScore) {
+                            postContents.push(summationScore);
+                        }
+                    }
                 }
                 const result: SectionModel = new SectionModel();
                 result.title = (this.config === undefined || this.config.title === undefined) ? 'เพราะคุณติดตาม' : this.config.title;
@@ -331,43 +476,31 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                 result.contents = [];
                 result.type = 'Following'; // set type by processor type
                 const lastestDate = null;
-                if (pageFollowingContents !== undefined) {
-                    for (const rows of pageFollowingContents) {
+                if (postContents.length > 0) {
+                    for (const row of postContents.flat()) {
+                        const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
                         const contents: any = {};
-                        contents.owner = {};
-                        if (rows.page !== undefined) {
-                            contents.owner = await this.parsePageField(rows, rows.page.posts);
+                        contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
+                        if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
+                            try {
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
+                                contents.coverPageSignUrl = signUrl;
+                            } catch (error) {
+                                console.log('PostSectionProcessor: ' + error);
+                            }
                         }
-                        result.contents.push(contents);
-                    }
-                }
-                if (userFollowingContents !== undefined) {
-                    for (const rows of userFollowingContents) {
-                        const contents: any = {};
-                        contents.owner = {};
-                        if (rows !== undefined) {
-                            contents.owner = await this.parseUserField(rows, rows.user.posts);
+                        row.isLike = false;
+                        if (userId !== undefined && userId !== undefined && userId !== '') {
+                            const userLikes: UserLike[] = await this.userLikeService.find({ userId: new ObjectID(userId), subjectId: row._id, subjectType: LIKE_TYPE.POST });
+                            if (userLikes.length > 0) {
+                                row.isLike = true;
+                            }
                         }
-                        result.contents.push(contents);
-                    }
-                }
-                if (emergencyFollowingContents !== undefined) {
-                    for (const rows of emergencyFollowingContents) {
-                        const contents: any = {};
                         contents.owner = {};
-                        if (rows !== undefined) {
-                            contents.owner = await this.parseEmergencyField(rows, rows.posts);
+                        if (row) {
+                            contents.owner = await this.parsePageField(row.user);
                         }
-                        result.contents.push(contents);
-                    }
-                }
-                if (objectiveFollowingContents !== undefined) {
-                    for (const rows of objectiveFollowingContents) {
-                        const contents: any = {};
-                        contents.owner = {};
-                        if (rows !== undefined) {
-                            contents.owner = await this.parseObjectiveField(rows, rows.posts);
-                        }
+                        contents.post = row;
                         result.contents.push(contents);
                     }
                 }
@@ -378,132 +511,16 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
             }
         });
     }
-    private async parsePageField(page: any, posts: any): Promise<any> {
+    private async parsePageField(all: any): Promise<any> {
         const pageResult: any = {};
-        if (page !== undefined) {
-            pageResult.id = page._id;
-            pageResult.name = page.name;
-            pageResult.imageURL = page.imageURL;
-            pageResult.isOfficial = page.isOfficial;
-            pageResult.uniqueId = page.pageUsername;
-            pageResult.type = 'PAGE';
-            pageResult.posts = [];
-            for (const row of posts) {
-                const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
-                const contents: any = {};
-                contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                if (firstImage !== undefined && firstImage.s3ImageURL !== undefined) {
-                    try {
-                        const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
-                        contents.coverPageSignUrl = signUrl;
-                    } catch (error) {
-                        console.log('PostSectionProcessor: ' + error);
-                    }
-                }
-                row.isLike = false;
-                contents.post = row;
-                pageResult.posts.push(contents);
-            }
+        if (all !== undefined) {
+            pageResult.id = all._id;
+            pageResult.name = all.displayName;
+            pageResult.imageURL = all.imageURL;
+            pageResult.uniqueId = all.uniqueId;
+            pageResult.type = 'All';
         }
 
         return pageResult;
-    }
-
-    private async parseUserField(user: any, posts: any): Promise<any> {
-        const userResult: any = {};
-
-        if (user !== undefined) {
-            userResult.id = user._id;
-            userResult.displayName = user.displayName;
-            userResult.imageURL = user.imageURL;
-            userResult.email = user.email;
-            userResult.isAdmin = user.isAdmin;
-            userResult.uniqueId = user.uniqueId;
-            userResult.type = 'USER';
-            userResult.posts = [];
-            for (const row of posts) {
-                const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
-                const contents: any = {};
-                contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                if (firstImage !== undefined && firstImage.s3ImageURL !== undefined) {
-                    try {
-                        const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
-                        contents.coverPageSignUrl = signUrl;
-                    } catch (error) {
-                        console.log('PostSectionProcessor: ' + error);
-                    }
-                }
-                row.isLike = false;
-                contents.post = row;
-                userResult.posts.push(contents);
-            }
-
-        }
-
-        return userResult;
-    }
-    private async parseEmergencyField(emergency: any, posts: any): Promise<any> {
-        const emergencyResult: any = {};
-        if (emergency !== undefined) {
-            emergencyResult.id = emergency._id;
-            emergencyResult.title = emergency.title;
-            emergencyResult.detail = emergency.detail;
-            emergencyResult.hashtag = emergency.hashTag;
-            emergencyResult.isPin = emergency.isPin;
-            emergencyResult.coverPageURL = emergency.coverPageURL;
-            emergencyResult.s3CoverPageURL = emergency.s3CoverPageURL;
-            emergencyResult.type = 'EMERGENCY';
-            emergencyResult.posts = [];
-            for (const row of posts) {
-                const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
-                const contents: any = {};
-                contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                if (firstImage !== undefined && firstImage.s3ImageURL !== undefined) {
-                    try {
-                        const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
-                        contents.coverPageSignUrl = signUrl;
-                    } catch (error) {
-                        console.log('PostSectionProcessor: ' + error);
-                    }
-                }
-                row.isLike = false;
-                contents.post = row;
-                emergencyResult.posts.push(contents);
-            }
-        }
-        return emergencyResult;
-    }
-    private async parseObjectiveField(objective: any, posts: any): Promise<any> {
-        const objectiveResult: any = {};
-        if (objective !== undefined) {
-            objectiveResult.id = objective._id;
-            objectiveResult.pageId = objective.pageId;
-            objectiveResult.title = objective.title;
-            objectiveResult.detail = objective.detail;
-            objectiveResult.iconURL = objective.iconURL;
-            objectiveResult.category = objective.category;
-            objectiveResult.hashTag = objective.hashTag;
-            objectiveResult.s3IconURL = objective.s3IconURL;
-            objectiveResult.posts = [];
-            for (const row of posts) {
-                const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
-                const contents: any = {};
-                contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                if (firstImage !== undefined && firstImage.s3ImageURL !== undefined) {
-                    try {
-                        const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
-                        contents.coverPageSignUrl = signUrl;
-                    } catch (error) {
-                        console.log('PostSectionProcessor: ' + error);
-                    }
-                }
-                row.isLike = false;
-                contents.post = row;
-                objectiveResult.posts.push(contents);
-
-            }
-        }
-        return objectiveResult;
-
     }
 }
