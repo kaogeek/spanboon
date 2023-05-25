@@ -453,7 +453,7 @@ export class MainPageController {
             searchOfficialOnly
         });
         const followingProvince = await followingProvinceSectionModelProcessor.process();
-        const followingContentsModelProcessor: FollowingContentsModelProcessor = new FollowingContentsModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.userFollowService);
+        const followingContentsModelProcessor: FollowingContentsModelProcessor = new FollowingContentsModelProcessor(/* this.postsService */ this.s3Service,/* this.userLikeService*/this.emergencyEventService, this.pageObjectiveService, this.userFollowService, this.userService, this.pageService);
         followingContentsModelProcessor.setData({
             userId,
             startDateTime: monthRange[0],
