@@ -990,7 +990,7 @@ export class PostsController {
                             pageLike.name,
                             pageLike.imageURL,
                         );
-
+                        
                         for (const tokenFCM of tokenFCMId) {
                             if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
                                 await this.notificationService.sendNotificationFCM(
@@ -1009,11 +1009,11 @@ export class PostsController {
                             else {
                                 continue;
                             }
-                        }
+                        } 
                     }
                     // page to user
                     else {
-                        // const tokenFCMId = await this.deviceTokenService.find({ userId: post_who.ownerUser });
+                        const tokenFCMId = await this.deviceTokenService.find({ userId: post_who.ownerUser });
                         const notificationText = pageLike.name + space + 'กดถูกใจโพสต์ของคุณ';
                         const link = `/profile/${userOwnerPage.id}/post/` + post_who.id;
                         await this.notificationService.createNotificationFCM(
@@ -1027,7 +1027,7 @@ export class PostsController {
                             pageLike.name,
                             pageLike.imageURL
                         );
-                        /* 
+                        
                         for (const tokenFCM of tokenFCMId) {
                             if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
                                 await this.notificationService.sendNotificationFCM(
@@ -1046,13 +1046,14 @@ export class PostsController {
                             else {
                                 continue;
                             }
-                        } */
+                        }
                     }
                 }
                 else {
                     // user to page
                     if (post_who.pageId !== null && post_who.pageId !== undefined) {
-                        // const tokenFCMId = await this.deviceTokenService.find({ userId: post_who.ownerUser });
+                        const user_ownerPage = await this.userService.findOne({_id:page.ownerUser});
+                        const tokenFCMId = await this.deviceTokenService.find({ userId: post_who.ownerUser });
                         const notificationText = userLikeId.displayName + space + 'กดถูกใจโพสต์ของเพจ' + space + page.name;
                         const link = `/page/${page.id}/post/` + post_who.id;
                         await this.pageNotificationService.notifyToPageUserFcm
@@ -1067,7 +1068,7 @@ export class PostsController {
                                 userLikeId.displayName,
                                 userLikeId.imageURL
                             );
-                        /* 
+                        
                         for (const tokenFCM of tokenFCMId) {
                             if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
                                 await this.notificationService.sendNotificationFCM
@@ -1087,13 +1088,13 @@ export class PostsController {
                             else {
                                 continue;
                             }
-                        } */
+                        } 
                     }
                     // user to user 
                     else {
                         // owner post 
                         // FCM device token owner post
-                        // const tokenFCMId = await this.deviceTokenService.find({ userId: ownerPost.ownerUser });
+                        const tokenFCMId = await this.deviceTokenService.find({ userId: ownerPost.ownerUser });
                         const notificationText = userLikeId.displayName + space + 'กดถูกใจโพสต์ของคุณ';
                         const link = `/profile/${userLikeId.id}/post/` + post_who.id;
                         await this.notificationService.createNotificationFCM
@@ -1108,7 +1109,7 @@ export class PostsController {
                                 userLikeId.displayName,
                                 userLikeId.imageURL
                             );
-                        /* 
+                        
                         for (const tokenFCM of tokenFCMId) {
                             if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
                                 await this.notificationService.sendNotificationFCM
@@ -1127,7 +1128,7 @@ export class PostsController {
                             } else {
                                 continue;
                             }
-                        } */
+                        }
                     }
                 }
                 const userEngagement = new UserEngagement();

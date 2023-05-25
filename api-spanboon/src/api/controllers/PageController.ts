@@ -79,6 +79,7 @@ import { NotificationService } from '../services/NotificationService';
 import { DeletePageService } from '../services/DeletePageService';
 import axios from 'axios';
 import { PageGroupService } from '../services/PageGroupService';
+// import { IpAddressEvent } from '../middlewares/IpAddressesMiddleware';
 @JsonController('/page')
 export class PageController {
     private PAGE_ACCESS_LEVEL_GUEST = 'GUEST';

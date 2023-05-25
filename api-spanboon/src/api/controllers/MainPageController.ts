@@ -442,6 +442,7 @@ export class MainPageController {
             searchOfficialOnly
         });
         const isFollowing = await followingPostSectionModelProcessor.process();
+        console.log('isFollowing',isFollowing);
         const followingProvinceSectionModelProcessor: FollowingProvinceSectionModelProcessor = new FollowingProvinceSectionModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.userService, this.pageService);
         followingProvinceSectionModelProcessor.setData({
             userId,
