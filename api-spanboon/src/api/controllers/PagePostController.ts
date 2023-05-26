@@ -59,7 +59,7 @@ import { PageAccessLevelService } from '../services/PageAccessLevelService';
 import { SearchFilter } from './requests/SearchFilterRequest';
 import { PageSocialAccountService } from '../services/PageSocialAccountService';
 import { PostUtil } from '../../utils/PostUtil';
-import { DeviceTokenService } from '../services/DeviceToken';
+// import { DeviceTokenService } from '../services/DeviceToken';
 import { UserFollowService } from '../services/UserFollowService';
 @JsonController('/page')
 export class PagePostController {
@@ -85,7 +85,7 @@ export class PagePostController {
         private notificationService: NotificationService,
         private pageSocialAccountService: PageSocialAccountService,
         private s3Service: S3Service,
-        private deviceToken: DeviceTokenService,
+        // private deviceToken: DeviceTokenService,
         private userFollowService: UserFollowService
     ) { }
     // @Get('/test/post')
@@ -592,13 +592,13 @@ export class PagePostController {
                 engagement.action = ENGAGEMENT_ACTION.CREATE;
                 engagement.isFirst = true;
                 await this.userEngagementService.create(engagement);
-                // page to user
+                // page to user /// 
                 const pagePostId = await this.pageService.findOne({ _id: createPostPageData.pageId });
                 if (createPostPageData.pageId !== null) {
                     const notificationTextPOST = 'มีโพสต์ใหม่จากเพจ' + space + pagePostId.name;
                     const userFollow = await this.userFollowService.find({ subjectType: 'PAGE', subjectId: createPostPageData.pageId });
                     for (let i = 0; i < userFollow.length; i++) {
-                        const tokenFCMId = await this.deviceToken.find({ userId: userFollow[i].userId, token: { $ne: null } });
+                        // const tokenFCMId = await this.deviceToken.find({ userId: userFollow[i].userId, token: { $ne: null } });
                         const link = `/page/${pagePostId.id}/post/` + createPostPageData.id;
                         await this.notificationService.createNotificationFCM(
                             userFollow[i].userId,
@@ -611,8 +611,9 @@ export class PagePostController {
                             pagePostId.pageUsername,
                             pagePostId.imageURL
                         );
+                        /* 
                         for (const tokenFCM of tokenFCMId) {
-                            if (tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== null) {
+                            if (tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== null && tokenFCM.Tokens !== '') {
                                 await this.notificationService.sendNotificationFCM(
                                     tokenFCM.userId,
                                     USER_TYPE.PAGE,
@@ -629,7 +630,7 @@ export class PagePostController {
                             else {
                                 continue;
                             }
-                        }
+                        } */
                     }
 
                 }
@@ -639,6 +640,7 @@ export class PagePostController {
                     const notificationTextPOST = 'มีโพสต์ใหม่จาก' + space + userPost.displayName;
                     const userFollow = await this.userFollowService.find({ subjectType: 'USER', subjectId: createPostPageData.ownerUser });
                     const link = `/profile/${userPost.id}/post/` + createPostPageData.id;
+
                     for (let i = 0; i < userFollow.length; i++) {
                         await this.notificationService.createNotificationFCM(
                             userFollow[i].userId,
@@ -651,9 +653,10 @@ export class PagePostController {
                             userPost.displayName,
                             userPost.imageURL
                         );
-                        const tokenFCMId = await this.deviceToken.find({ userId: userFollow[i].userId, token: { $ne: null } });
+                        // const tokenFCMId = await this.deviceToken.find({ userId: userFollow[i].userId, token: { $ne: null } });
+                        /* 
                         for (const tokenFCM of tokenFCMId) {
-                            if (tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== null) {
+                            if (tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== null && tokenFCM.Tokens !== '') {
                                 await this.notificationService.sendNotificationFCM(
                                     tokenFCM.userId,
                                     USER_TYPE.USER,
@@ -670,7 +673,7 @@ export class PagePostController {
                             else {
                                 continue;
                             }
-                        }
+                        } */
 
                     }
                 }
