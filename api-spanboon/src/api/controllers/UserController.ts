@@ -398,7 +398,7 @@ export class UserController {
                 userEngagement.userId = userObjId;
                 userEngagement.action = ENGAGEMENT_ACTION.FOLLOW;
                 const whoFollowYou = await this.userService.findOne({ _id: userFollow.userId });
-                const tokenFCMId = await this.deviceTokenService.find({ userId: userFollow.subjectId });
+                // const tokenFCMId = await this.deviceTokenService.find({ userId: userFollow.subjectId });
                 const notification_follower = whoFollowYou.displayName + space + 'กดติดตามคุณ';
                 const link = `/profile/${whoFollowYou.id}`;
                 await this.notificationService.createNotificationFCM(
@@ -412,7 +412,7 @@ export class UserController {
                     whoFollowYou.displayName,
                     whoFollowYou.imageURL
                 );
-
+                /* 
                 for (const tokenFCM of tokenFCMId) {
                     if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
                         await this.notificationService.sendNotificationFCM(
@@ -431,7 +431,7 @@ export class UserController {
                     else {
                         continue;
                     }
-                }
+                } */
                 // USER TO USER
                 const engagement: UserEngagement = await this.userEngagementService.findOne({ where: { contentId: followUserObjId, userId: userObjId, contentType: ENGAGEMENT_CONTENT_TYPE.USER, action: ENGAGEMENT_ACTION.FOLLOW } });
                 if (engagement) {
@@ -458,7 +458,22 @@ export class UserController {
             }
         }
     }
-
+    @Get('/follow/notification')
+    public async followNotification(@Res() res: any, @Req() req: any):Promise<any>{
+        const today = moment().toDate();
+        const thirtyMoment = new Date(today.getTime() - 300000);
+        console.log('today',today);
+        console.log('thirtyMoment',thirtyMoment);
+        const followNoti = await this.notificationService.aggregate(
+            [
+                {
+                    $match:{toUserType:'USER',fromUserType:'USER',type:'FOLLOW',deleted:false,createdDate:{$gte:thirtyMoment,$lte:today}}
+                }
+            ]
+        );
+        // console.log('followNoti',followNoti);
+        return res.status(200).send(followNoti);
+    }
     /**
      * @api {get} /api/user/config/:name Get User Config API
      * @apiGroup User

@@ -61,7 +61,7 @@ import { NotificationService } from '../services/NotificationService';
 import { IsReadSectionProcessor } from '../processors/IsReadSectionProcessor';
 import { FollowingPostSectionModelProcessor } from '../processors/FollowingPostSectionModelProcessor';
 import { FollowingProvinceSectionModelProcessor } from '../processors/FollowingProvinceSectionModelProcessor';
-import { FollowingContentsModelProcessor } from '../processors/FollowingContentsModelProcessor';
+// import { FollowingContentsModelProcessor } from '../processors/FollowingContentsModelProcessor';
 import {
     TODAY_DATETIME_GAP,
     DEFAULT_TODAY_DATETIME_GAP,
@@ -442,7 +442,6 @@ export class MainPageController {
             searchOfficialOnly
         });
         const isFollowing = await followingPostSectionModelProcessor.process();
-        console.log('isFollowing',isFollowing);
         const followingProvinceSectionModelProcessor: FollowingProvinceSectionModelProcessor = new FollowingProvinceSectionModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.userService, this.pageService);
         followingProvinceSectionModelProcessor.setData({
             userId,
@@ -454,9 +453,11 @@ export class MainPageController {
             searchOfficialOnly
         });
         const followingProvince = await followingProvinceSectionModelProcessor.process();
-        const followingContentsModelProcessor: FollowingContentsModelProcessor = new FollowingContentsModelProcessor(/* this.postsService */ this.s3Service,this.userLikeService,this.emergencyEventService, this.pageObjectiveService, this.userFollowService, this.userService, this.pageService);
+        /* 
+        const followingContentsModelProcessor: FollowingContentsModelProcessor = new FollowingContentsModelProcessor(/* this.postsService  this.s3Service,this.userLikeService,this.emergencyEventService, this.pageObjectiveService, this.userFollowService, this.userService, this.pageService);
         followingContentsModelProcessor.setData({
             userId,
+            contentPost:isFollowing.contents,
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
             postIds: isRead,
@@ -465,12 +466,12 @@ export class MainPageController {
         followingContentsModelProcessor.setConfig({
             searchOfficialOnly
         });
-        const followingContents = await followingContentsModelProcessor.process();
+        const followingContents = await followingContentsModelProcessor.process(); */
         const result: any = {};
         result.isReadPosts = isReadPosts;
         result.isFollowing = isFollowing;
         result.followingProvince = followingProvince;
-        result.followingContents = followingContents;
+        // result.followingContents = followingContents;
         const successResponse = ResponseUtil.getSuccessResponse('Successfully create isRead.', result);
         return res.status(200).send(successResponse);
 

@@ -73,9 +73,9 @@ import { FetchSocialPostEnableRequest } from './requests/FetchSocialPostEnableRe
 import { SocialPostLogsService } from '../services/SocialPostLogsService';
 import { SocialPostLogs } from '../models/SocialPostLogs';
 import { USER_TYPE, NOTIFICATION_TYPE } from '../../constants/NotificationType';
-import { DeviceTokenService } from '../services/DeviceToken';
+// import { DeviceTokenService } from '../services/DeviceToken';
 import { PageNotificationService } from '../services/PageNotificationService';
-import { NotificationService } from '../services/NotificationService';
+// import { NotificationService } from '../services/NotificationService';
 import { DeletePageService } from '../services/DeletePageService';
 import axios from 'axios';
 import { PageGroupService } from '../services/PageGroupService';
@@ -106,9 +106,9 @@ export class PageController {
         private authenService: AuthenticationIdService,
         private stdItemService: StandardItemService,
         private socialPostLogsService: SocialPostLogsService,
-        private deviceTokenService: DeviceTokenService,
+        // private deviceTokenService: DeviceTokenService,
         private pageNotificationService: PageNotificationService,
-        private notificationService: NotificationService,
+        // private notificationService: NotificationService,
         private deletePageService: DeletePageService,
         private pageGroupService:PageGroupService
     ) { }
@@ -2391,22 +2391,23 @@ export class PageController {
 
                 const engagement: UserEngagement = await this.getPageEnagagement(pageObjId, userObjId, action, contentType);
                 const whoFollowYou = await this.userService.findOne({ _id: userFollow.userId });
-                const pageOwnerNoti = await this.userService.findOne({ _id: page.ownerUser });
+                // const pageOwnerNoti = await this.userService.findOne({ _id: page.ownerUser });
                 // user to page 
-                const tokenFCMId = await this.deviceTokenService.find({ userId: pageOwnerNoti.id });
+                // const tokenFCMId = await this.deviceTokenService.find({ userId: pageOwnerNoti.id });
                 const notificationFollower = whoFollowYou.displayName + space + 'กดติดตามเพจ' + space + page.name;
                 const link = `/profile/${whoFollowYou.id}`;
                 await this.pageNotificationService.notifyToPageUserFcm(
                     followCreate.subjectId,
                     undefined,
                     req.user.id + '',
-                    USER_TYPE.PAGE,
+                    USER_TYPE.USER,
                     NOTIFICATION_TYPE.FOLLOW,
                     notificationFollower,
                     link,
                     whoFollowYou.displayName,
                     whoFollowYou.imageURL
                 );
+                /*
                 for (const tokenFCM of tokenFCMId) {
                     if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
                         await this.notificationService.sendNotificationFCM(
@@ -2424,7 +2425,7 @@ export class PageController {
                     } else {
                         continue;
                     }
-                }
+                } */
                 if (engagement) {
                     userEngagement.isFirst = false;
                 } else {

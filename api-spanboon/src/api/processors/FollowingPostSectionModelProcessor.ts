@@ -157,6 +157,34 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                                 as: 'gallery',
                                             },
                                         },
+                                        {
+                                            $lookup: {
+                                                from: 'User',
+                                                let: { ownerUser: '$ownerUser' },
+                                                pipeline: [
+                                                    {
+                                                        $match: {
+                                                            $expr: { $eq: ['$$ownerUser', '$_id'] },
+                                                        },
+
+                                                    },
+                                                    { $project: { email: 0, username: 0, password: 0 } }
+                                                ],
+                                                as: 'user'
+                                            }
+                                        },
+                                        {
+                                            $unwind: {
+                                                path: '$user',
+                                                preserveNullAndEmptyArrays: true
+                                            }
+                                        },
+                                        {
+                                            $project: {
+                                                story: 0
+                                            }
+
+                                        },
                                     ],
                                     as: 'posts',
                                 },
@@ -209,6 +237,34 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                                 as: 'gallery',
                                             },
                                         },
+                                        {
+                                            $lookup: {
+                                                from: 'User',
+                                                let: { ownerUser: '$ownerUser' },
+                                                pipeline: [
+                                                    {
+                                                        $match: {
+                                                            $expr: { $eq: ['$$ownerUser', '$_id'] },
+                                                        },
+
+                                                    },
+                                                    { $project: { email: 0, username: 0, password: 0 } }
+                                                ],
+                                                as: 'user'
+                                            }
+                                        },
+                                        {
+                                            $unwind: {
+                                                path: '$user',
+                                                preserveNullAndEmptyArrays: true
+                                            }
+                                        },
+                                        {
+                                            $project: {
+                                                story: 0
+                                            }
+
+                                        },
                                     ],
                                     as: 'posts'
                                 }
@@ -260,20 +316,32 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                             },
                                         },
                                         {
-                                            $sort: {
-                                                createdDate: -1,
-                                            },
-                                        },
-                                        {
-                                            $limit: 10,
-                                        },
-                                        {
                                             $lookup: {
-                                                from: 'PostsGallery',
-                                                localField: '_id',
-                                                foreignField: 'post',
-                                                as: 'gallery',
-                                            },
+                                                from: 'User',
+                                                let: { ownerUser: '$ownerUser' },
+                                                pipeline: [
+                                                    {
+                                                        $match: {
+                                                            $expr: { $eq: ['$$ownerUser', '$_id'] },
+                                                        },
+
+                                                    },
+                                                    { $project: { email: 0, username: 0, password: 0 } }
+                                                ],
+                                                as: 'user'
+                                            }
+                                        },
+                                        {
+                                            $unwind: {
+                                                path: '$user',
+                                                preserveNullAndEmptyArrays: true
+                                            }
+                                        },
+                                        {
+                                            $project: {
+                                                story: 0
+                                            }
+
                                         },
                                     ],
                                     as: 'posts'
@@ -315,6 +383,34 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                                 foreignField: 'post',
                                                 as: 'gallery',
                                             },
+                                        },
+                                        {
+                                            $lookup: {
+                                                from: 'User',
+                                                let: { ownerUser: '$ownerUser' },
+                                                pipeline: [
+                                                    {
+                                                        $match: {
+                                                            $expr: { $eq: ['$$ownerUser', '$_id'] },
+                                                        },
+
+                                                    },
+                                                    { $project: { email: 0, username: 0, password: 0 } }
+                                                ],
+                                                as: 'user'
+                                            }
+                                        },
+                                        {
+                                            $unwind: {
+                                                path: '$user',
+                                                preserveNullAndEmptyArrays: true
+                                            }
+                                        },
+                                        {
+                                            $project: {
+                                                story: 0
+                                            }
+
                                         },
                                     ],
                                     as: 'posts'
