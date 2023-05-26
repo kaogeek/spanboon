@@ -135,8 +135,7 @@ export class NotificationService {
         const notification_id = String(id);
         const payload =
         {
-
-            notification: {
+            data:{
                 toUser,
                 fromUserId,
                 title,
@@ -146,9 +145,9 @@ export class NotificationService {
                 image_url,
                 notification_id,
                 count_data
-
             }
         };
+
         if (String(notification.toUser) !== String(notification.fromUser)) {
             Promise.all([await admin.messaging().sendToDevice(token, payload)]);
         } else {

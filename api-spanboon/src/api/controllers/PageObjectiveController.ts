@@ -286,7 +286,7 @@ export class ObjectiveController {
         if (filter.whereConditions !== null && filter.whereConditions !== undefined && Object.keys(filter.whereConditions).length > 0 && typeof filter.whereConditions === 'object') {
             const pageId = filter.whereConditions.pageId;
             let pageObjId;
-            if (pageId !== null && pageId !== undefined && pageId !== '') {
+            if (pageId !== null && pageId !== undefined && pageId !== '' && JSON.stringify(pageId) !== '{}' ) {
                 pageObjId = new ObjectID(filter.whereConditions.pageId);
             }
 

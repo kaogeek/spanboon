@@ -220,7 +220,7 @@ export class PostsCommentController {
                         const notificationComment = 'เพจ' + space + pageName.name + space + 'ได้แสดงความคิดเห็นต่อโพสต์ของคุณ';
                         const link = `/profile/${userDisplayName.id}/post/` + postWho.id;
                         // page to user
-                        const tokenFCMId = await this.deviceTokenService.find({ userId: getPost.ownerUser });
+                        // const tokenFCMId = await this.deviceTokenService.find({ userId: getPost.ownerUser });
                         await this.notificationService.createNotificationFCM(
                             getPost.ownerUser,
                             USER_TYPE.PAGE,
@@ -261,7 +261,7 @@ export class PostsCommentController {
                     const page = await this.pageService.findOne({ _id: postWho.pageId });
                     if (postWho.pageId !== undefined && postWho.pageId !== null) {
                         const userName = await this.userService.findOne({ _id: postsComment.user });
-                        const tokenFCMId = await this.deviceTokenService.find({ userId: getPost.ownerUser });
+                        // const tokenFCMId = await this.deviceTokenService.find({ userId: getPost.ownerUser });
                         const notificationComment = `${userName.displayName}${space}ได้แสดงความคิดเห็นต่อโพสต์ของเพจ${space}${page.name}`;
                         const link = `/post/` + postWho.id;
                         await this.pageNotificationService.notifyToPageUserFcm(
@@ -299,7 +299,7 @@ export class PostsCommentController {
                     else {
                         // USER TO USER
                         const userName = await this.userService.findOne({ _id: postsComment.user });
-                        const tokenFCMId = await this.deviceTokenService.find({ userId: postWho.ownerUser });
+                        // const tokenFCMId = await this.deviceTokenService.find({ userId: postWho.ownerUser });
                         const notificationComment = userName.displayName + space + 'ได้แสดงความคิดเห็นต่อโพสต์ของคุณ';
                         const link = `/profile/${userName.id}/post/` + postWho.id;
                         await this.notificationService.createNotificationFCM(
@@ -332,8 +332,10 @@ export class PostsCommentController {
                             else {
                                 continue;
                             }
-                        } */
+                        }  */
+
                     }
+
                 }
                 return res.status(200).send(successResponse);
             } else {

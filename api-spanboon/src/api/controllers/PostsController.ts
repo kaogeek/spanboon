@@ -47,7 +47,7 @@ import { AssetService } from '../services/AssetService';
 import { PostUtil } from '../../utils/PostUtil';
 import { POST_TYPE } from '../../constants/PostType';
 import { UserService } from '../services/UserService';
-import { DeviceTokenService } from '../services/DeviceToken';
+// import { DeviceTokenService } from '../services/DeviceToken';
 import { POST_WEIGHT_SCORE, DEFAULT_POST_WEIGHT_SCORE } from '../../constants/SystemConfig';
 @JsonController('/post')
 export class PostsController {
@@ -67,7 +67,7 @@ export class PostsController {
         private s3Service: S3Service,
         private configService: ConfigService,
         private assetService: AssetService,
-        private deviceTokenService: DeviceTokenService,
+        // private deviceTokenService: DeviceTokenService,
         private userService: UserService
     ) { }
 
@@ -976,7 +976,7 @@ export class PostsController {
                 if (likeCreate.likeAsPage !== null) {
                     // page to page
                     if (post_who.pageId !== null && post_who.pageId !== undefined) {
-                        const tokenFCMId = await this.deviceTokenService.find({ userId: post_who.ownerUser });
+                        // const tokenFCMId = await this.deviceTokenService.find({ userId: post_who.ownerUser });
                         const notificationText = pageLike.name + space + 'กดถูกใจโพสต์ของเพจ' + space + page.name;
                         const link = `/page/${page.id}/post/` + post_who.id;
                         await this.pageNotificationService.notifyToPageUserFcm(
@@ -990,7 +990,7 @@ export class PostsController {
                             pageLike.name,
                             pageLike.imageURL,
                         );
-
+                        /* 
                         for (const tokenFCM of tokenFCMId) {
                             if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
                                 await this.notificationService.sendNotificationFCM(
@@ -1009,7 +1009,7 @@ export class PostsController {
                             else {
                                 continue;
                             }
-                        }
+                        } */
                     }
                     // page to user
                     else {
@@ -1052,6 +1052,7 @@ export class PostsController {
                 else {
                     // user to page
                     if (post_who.pageId !== null && post_who.pageId !== undefined) {
+                        // const user_ownerPage = await this.userService.findOne({_id:page.ownerUser});
                         // const tokenFCMId = await this.deviceTokenService.find({ userId: post_who.ownerUser });
                         const notificationText = userLikeId.displayName + space + 'กดถูกใจโพสต์ของเพจ' + space + page.name;
                         const link = `/page/${page.id}/post/` + post_who.id;
