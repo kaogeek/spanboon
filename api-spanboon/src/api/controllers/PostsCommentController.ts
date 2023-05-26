@@ -182,7 +182,7 @@ export class PostsCommentController {
                         const page = await this.pageService.findOne({ _id: getPost.pageId });
                         const notificationComment = 'เพจ' + pageName.name + space + 'ได้แสดงความคิดเห็นต่อโพสต์ของเพจ' + space + page.name;
                         const link = `/page/${pageName.id}/post/` + postWho.id;
-                        const tokenFCMId = await this.deviceTokenService.find({ userId: getPost.ownerUser });
+                        // const tokenFCMId = await this.deviceTokenService.find({ userId: getPost.ownerUser });
                         await this.pageNotificationService.notifyToPageUserFcm(
                             getPost.pageId,
                             undefined,
@@ -194,7 +194,7 @@ export class PostsCommentController {
                             pageName.name,
                             pageName.imageURL
                         );
-
+                        /* 
                         for (const tokenFCM of tokenFCMId) {
                             if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
                                 await this.notificationService.sendNotificationFCM(
@@ -213,7 +213,7 @@ export class PostsCommentController {
                             else {
                                 continue;
                             }
-                        }
+                        } */
                     }
                     // page to user
                     else {
@@ -232,7 +232,7 @@ export class PostsCommentController {
                             pageName.name,
                             pageName.imageURL
                         );
-
+                        /* 
                         for (const tokenFCM of tokenFCMId) {
                             if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
                                 await this.notificationService.sendNotificationFCM(
@@ -251,7 +251,7 @@ export class PostsCommentController {
                             else {
                                 continue;
                             }
-                        }
+                        } */
                     }
                 }
 
@@ -275,6 +275,7 @@ export class PostsCommentController {
                             userName.displayName,
                             userName.imageURL
                         );
+                        /* 
                         for (const tokenFCM of tokenFCMId) {
                             if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
                                 await this.notificationService.sendNotificationFCM(
@@ -293,7 +294,7 @@ export class PostsCommentController {
                             else {
                                 continue;
                             }
-                        }
+                        } */
                     }
                     else {
                         // USER TO USER
@@ -312,7 +313,7 @@ export class PostsCommentController {
                             userName.displayName,
                             userName.imageURL
                         );
-
+                        /* 
                         for (const tokenFCM of tokenFCMId) {
                             if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
                                 await this.notificationService.sendNotificationFCM(
@@ -331,7 +332,7 @@ export class PostsCommentController {
                             else {
                                 continue;
                             }
-                        }
+                        } */
                     }
                 }
                 return res.status(200).send(successResponse);
