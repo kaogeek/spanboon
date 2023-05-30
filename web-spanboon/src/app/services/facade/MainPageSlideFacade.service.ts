@@ -51,12 +51,18 @@ export class MainPageSlideFacade extends AbstractFacade {
     });
   }
 
-  public bottomContent(userId: string,offset?: string): Promise<any>{
-    return new Promise((resolve,reject) =>{
+  public bottomContent(userId: string, filter: string, offset?: number, limit?: number, foffset?: number, flimit?: number): Promise<any> {
+    return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/main/bottom/trend';
       if (offset !== undefined) {
-        url += `?offset=${offset}`;
+        url += `?limitFollow=${flimit}&offsetFollow=${foffset}&limit=${limit}&offset=${offset}`;
       }
+
+      let body;
+      if (!!filter) {
+        body = filter
+      }
+
       let httpOptions: any = {
         headers: this.authMgr.getDefaultOptions()
       };
@@ -65,7 +71,7 @@ export class MainPageSlideFacade extends AbstractFacade {
           'userid': userId
         });
       }
-      this.http.get(url, httpOptions).toPromise().then((response: any) => {
+      this.http.post(url, body, httpOptions).toPromise().then((response: any) => {
         resolve(response.data);
       }).catch((error: any) => {
         reject(error);

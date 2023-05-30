@@ -53,6 +53,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                 }
 
                 let userId = undefined;
+                let limits = undefined;
                 let filterContentsRobin = undefined;
                 let filterContentsMajor = undefined;
                 let filterContentsProvince = undefined;
@@ -76,6 +77,8 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                     checkPosition2 = this.data.checkPosition2;
                     checkPosition3 = this.data.checkPosition3;
                     checkPosition4 = this.data.checkPosition4;
+                    limits = this.data.configLimit;
+
                 }
                 const postId = [];
                 const sortV = [];
@@ -235,7 +238,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
 
                         },
                         {
-                            '$limit': limit
+                            '$limit': limits
                         }
                     ];
                     if (searchOfficialOnly) {
@@ -458,7 +461,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
 
                                 },
                                 {
-                                    '$limit': limit
+                                    '$limit': limits
                                 }
                             ];
                             if (searchOfficialOnly) {
@@ -722,7 +725,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
 
                                 },
                                 {
-                                    '$limit': limit
+                                    '$limit': limits
                                 }
                             ];
                             if (searchOfficialOnly) {
@@ -989,7 +992,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
 
                                 },
                                 {
-                                    '$limit': limit
+                                    '$limit': limits
                                 }
                             ];
                             if (searchOfficialOnly) {
@@ -1218,7 +1221,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
 
                         },
                         {
-                            '$limit': ContentProcessor.limit
+                            '$limit': limits
                         }
 
                     ];
@@ -1451,7 +1454,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
 
                                 },
                                 {
-                                    '$limit': limit
+                                    '$limit': limits
                                 }
                             ];
                             if (searchOfficialOnly) {
@@ -1718,7 +1721,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
 
                                 },
                                 {
-                                    '$limit': limit
+                                    '$limit': limits
                                 }
                             ];
                             if (searchOfficialOnly) {
@@ -1987,7 +1990,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
 
                                 },
                                 {
-                                    '$limit': limit
+                                    '$limit': limits
                                 }
                             ];
                             if (searchOfficialOnly) {

@@ -54,6 +54,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                 }
 
                 let userId = undefined;
+                let limits = undefined;
                 let filterContentsRobin = undefined;
                 let filterContentsMajor = undefined;
                 let checkPosition1 = undefined;
@@ -69,6 +70,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                     filterContentsMajor = this.data.filterContentsMajor;
                     checkPosition1 = this.data.checkPosition1;
                     checkPosition2 = this.data.checkPosition2;
+                    limits = this.data.configLimit;
                 }
                 const postId = [];
                 const sortV = [];
@@ -219,7 +221,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
 
                         },
                         {
-                            '$limit': limit
+                            '$limit': limits
                         }
                     ];
                     if (searchOfficialOnly) {
@@ -432,7 +434,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
 
                                 },
                                 {
-                                    '$limit': limit
+                                    '$limit': limits
                                 }
                             ];
                             if (searchOfficialOnly) {
@@ -685,7 +687,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
 
                                 },
                                 {
-                                    '$limit': limit
+                                    '$limit': limits
                                 }
                             ];
                             if (searchOfficialOnly) {
@@ -951,7 +953,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
 
                                 },
                                 {
-                                    '$limit': limit
+                                    '$limit': limits
                                 }
                             ];
                             if (searchOfficialOnly) {
@@ -1180,7 +1182,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
 
                         },
                         {
-                            '$limit': provincePage.limit
+                            '$limit': limits
                         }
 
                     ];
@@ -1367,7 +1369,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                                     },
                                     { $sort: { summationScore: -1 } },
                                     {
-                                        $limit: limit
+                                        $limit: limits
                                     },
                                     {
                                         $unwind: {
@@ -1632,7 +1634,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                                     },
                                     { $sort: { summationScore: -1 } },
                                     {
-                                        $limit: provincePage.limit
+                                        $limit: limits
                                     },
                                     {
                                         $unwind: {
@@ -1891,7 +1893,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                                     },
                                     { $sort: { summationScore: -1 } },
                                     {
-                                        $limit: provincePage.limit
+                                        $limit: limits
                                     },
                                     {
                                         $unwind: {

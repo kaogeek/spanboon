@@ -2320,7 +2320,9 @@ export class BoxPost extends AbstractPage implements OnInit {
     filter.orderBy = {}
     this.objectiveFacade.searchObjectiveCategory(filter).then((res: any) => {
       this.resPageCategory = res.data;
+      this.isLoading = false;
     }).catch((err: any) => {
+      this.isLoading = false;
       console.log(err)
     })
   }

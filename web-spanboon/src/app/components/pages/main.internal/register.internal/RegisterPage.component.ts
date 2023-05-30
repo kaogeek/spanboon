@@ -395,6 +395,12 @@ export class RegisterPage extends AbstractPage implements OnInit {
         asset
       }
 
+      if (register.province === undefined || register.province === null || register.province === '') {
+        let dialog = this.showAlertDialogWarming('กรุณาเลือกจังหวัดของท่าน', "none");
+        this.isRegister = false;
+        return;
+      }
+
       let body = Object.assign(register, image)
 
       if (this.mode === "normal") {

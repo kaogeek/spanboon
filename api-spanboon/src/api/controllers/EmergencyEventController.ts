@@ -282,6 +282,7 @@ export class EmergencyEventController {
      */
     @Get('/:id/timeline')
     public async getEmergencyEventTimeline(@QueryParam('limit') limit: number, @QueryParam('offset') offset: number, @Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
+        // ????? >>>>
         const userId = req.headers.userid;
         let emergencyEvent: EmergencyEvent;
         const objId = new ObjectID(id);

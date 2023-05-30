@@ -459,19 +459,80 @@ export class UserController {
         }
     }
     @Get('/follow/notification')
-    public async followNotification(@Res() res: any, @Req() req: any):Promise<any>{
+    public async userfollowNotification(@Res() res: any, @Req() req: any): Promise<any> {
+        const space = ' ';
+        let firstUser = undefined;
+        let secondUser = undefined;
+        let link = undefined;
         const today = moment().toDate();
-        const thirtyMoment = new Date(today.getTime() - 300000);
-        console.log('today',today);
-        console.log('thirtyMoment',thirtyMoment);
+        const thirtyMoment = new Date(today.getTime() - 3000000);
         const followNoti = await this.notificationService.aggregate(
             [
                 {
-                    $match:{toUserType:'USER',fromUserType:'USER',type:'FOLLOW',deleted:false,createdDate:{$gte:thirtyMoment,$lte:today}}
+                    $match: { toUserType: 'USER', fromUserType: 'USER', type: 'FOLLOW', deleted: false, createdDate: { $gte: thirtyMoment, $lte: today } }
                 }
             ]
         );
-        // console.log('followNoti',followNoti);
+        if (followNoti.length > 0) {
+            let notification_follower = undefined;
+            const toUser = [];
+            for (const user of followNoti) {
+                toUser.push(user.toUser);
+            }
+            const following = await this.notificationService.aggregate(
+                [
+                    {
+                        $match: { toUser: { $in: toUser }, toUserType: 'USER', fromUserType: 'USER', type: 'FOLLOW', deleted: false, createdDate: { $gte: thirtyMoment, $lte: today } },
+                    },
+                    {
+                        $sort: { createdDate: -1 }
+                    }
+                ]
+            );
+            if (following.length > 0) {
+                for (let i = 0; i < following.length; i++) {
+                    if (i === 3) {
+                        firstUser = await this.userService.findOne({ _id: ObjectID(following[0].fromUser) });
+                        secondUser = await this.userService.findOne({ _id: ObjectID(following[1].fromUser) });
+                        notification_follower = firstUser.displayName + space + 'และ' + space + secondUser.displayName + space + 'กดติดตามคุณ' + space + 'และอื่นๆ';
+                        link = `/profile/${firstUser.id}`;
+                        break;
+                    } else if (i === 2 && following.length === 2) {
+                        firstUser = await this.userService.findOne({ _id: ObjectID(following[0].fromUser) });
+                        secondUser = await this.userService.findOne({ _id: ObjectID(following[1].fromUser) });
+                        notification_follower = firstUser.displayName + space + 'และ' + space + secondUser.displayName + space + 'กดติดตามคุณ';
+                        link = `/profile/${firstUser.id}`;
+                        break;
+                    } else {
+                        firstUser = await this.userService.findOne({ _id: ObjectID(following[0].fromUser) });
+                        notification_follower = firstUser.displayName + space + 'กดติดตามคุณ';
+                        link = `/profile/${firstUser.id}`;
+                    }
+                }
+            }
+            const tokenFCMtoUser = await this.deviceTokenService.find({ userId: toUser[0] });
+            if (tokenFCMtoUser.length > 0) {
+                for (const tokenFCM of tokenFCMtoUser) {
+                    if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
+                        await this.notificationService.sendNotificationFCM(
+                            firstUser.id,
+                            USER_TYPE.USER,
+                            toUser[0],
+                            USER_TYPE.USER,
+                            NOTIFICATION_TYPE.FOLLOW,
+                            notification_follower,
+                            link,
+                            tokenFCM.Tokens,
+                            firstUser.displayName,
+                            firstUser.imageURL,
+                        );
+                    }
+                    else {
+                        continue;
+                    }
+                }
+            }
+        }
         return res.status(200).send(followNoti);
     }
     /**

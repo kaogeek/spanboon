@@ -518,6 +518,9 @@ export class EmergencyEventSectionProcessor extends AbstractSectionModelProcesso
                                             _id: 1,
                                             name: 1
                                         }
+                                    },
+                                    {
+                                        $limit:limit
                                     }
                                 ]
                             );
@@ -535,6 +538,9 @@ export class EmergencyEventSectionProcessor extends AbstractSectionModelProcesso
                                         _id: 0,
                                         name: 1
                                     }
+                                },
+                                {
+                                    $limit:limit
                                 }
                             ]);
                         }

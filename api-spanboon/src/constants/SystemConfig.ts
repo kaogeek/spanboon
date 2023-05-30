@@ -34,6 +34,7 @@ export const DEFAULT_MAIN_PAGE_SEARCH_OFFICIAL_POST_ONLY = false;
 export const SEARCH_CONFIG_NAME = {
     LIMIT_CONFIG: 'search.limit'
 };
+export const SEARCH_CONFIG_VALUES = 'search.config.values';
 
 export const DEFAULT_SEARCH_CONFIG_VALUE = {
     LIMIT: 200,
@@ -86,3 +87,6 @@ export const DEFAULT_KAOKAITODAY_LINK_ANNOUNCEMENT= 'home';
 
 export const KAOKAITODAY_RANGE_OF_POPULAR_HASHTAGS='kaokaiToday.range.of.popular.hashtags';
 export const DEFAULT_KAOKAITODAY_RANGE_OF_POPULAR_HASHTAGS=5;
+
+export const DEFAULT_SEND_NOTIFICATION_NEWS = 5000;
+export const SEND_NOTIFICATION_NEWS = 'send.notification.news';

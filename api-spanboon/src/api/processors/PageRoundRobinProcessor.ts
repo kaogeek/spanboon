@@ -91,6 +91,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                 limit = (limit === undefined || limit === null) ? roundRobin.limit : this.DEFAULT_SEARCH_LIMIT;
                 offset = (offset === undefined || offset === null) ? this.DEFAULT_SEARCH_OFFSET : offset;
                 let userId = undefined;
+                let limits = undefined;
                 // get startDateTime, endDateTime
                 let startDateTime: Date = undefined;
                 let endDateTime: Date = undefined;
@@ -98,6 +99,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     startDateTime = this.data.startDateTime;
                     endDateTime = this.data.endDateTime;
                     userId = this.data.userId;
+                    limits = this.data.configLimit;
                 }
                 const searchFilter: SearchFilter = new SearchFilter();
                 searchFilter.limit = limit;
@@ -200,7 +202,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
 
                         },
                         {
-                            '$limit': limit
+                            '$limit': limits
                         }
                     ];
                     if (searchOfficialOnly) {
@@ -413,7 +415,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
 
                                 },
                                 {
-                                    '$limit': limit
+                                    '$limit': limits
                                 }
                             ];
                             if (searchOfficialOnly) {
@@ -665,7 +667,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
 
                                 },
                                 {
-                                    '$limit': limit
+                                    '$limit': limits
                                 }
                             ];
                             if (searchOfficialOnly) {
@@ -931,7 +933,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
 
                                 },
                                 {
-                                    '$limit': limit
+                                    '$limit': limits
                                 }
                             ];
                             if (searchOfficialOnly) {
@@ -1158,7 +1160,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
 
                         },
                         {
-                            '$limit': roundRobin.limit
+                            '$limit': limits
                         }
 
                     ];
@@ -1389,7 +1391,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
 
                                 },
                                 {
-                                    '$limit': limit
+                                    '$limit': limits
                                 }
                             ];
                             if (searchOfficialOnly) {
@@ -1656,7 +1658,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
 
                                 },
                                 {
-                                    '$limit': limit
+                                    '$limit': limits
                                 }
                             ];
                             if (searchOfficialOnly) {
@@ -1915,7 +1917,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
 
                                 },
                                 {
-                                    '$limit': limit
+                                    '$limit': limits
                                 }
                             ];
                             if (searchOfficialOnly) {
