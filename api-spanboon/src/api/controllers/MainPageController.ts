@@ -61,7 +61,6 @@ import { NotificationService } from '../services/NotificationService';
 import { IsReadSectionProcessor } from '../processors/IsReadSectionProcessor';
 import { FollowingPostSectionModelProcessor } from '../processors/FollowingPostSectionModelProcessor';
 import { FollowingProvinceSectionModelProcessor } from '../processors/FollowingProvinceSectionModelProcessor';
-// import { FollowingContentsModelProcessor } from '../processors/FollowingContentsModelProcessor';
 import {
     TODAY_DATETIME_GAP,
     DEFAULT_TODAY_DATETIME_GAP,
@@ -92,6 +91,7 @@ import { MAILService } from '../../auth/mail.services';
 import { DeviceTokenService } from '../services/DeviceToken';
 import { NotificationNewsService } from '../services/NotificationNewsService';
 import pm2 from 'pm2';
+import { FollowingContentsModelProcessor } from '../processors/FollowingContentsModelProcessor';
 @JsonController('/main')
 export class MainPageController {
     constructor(
@@ -470,25 +470,27 @@ export class MainPageController {
             searchOfficialOnly
         });
         const followingProvince = await followingProvinceSectionModelProcessor.process();
-        /* 
-        const followingContentsModelProcessor: FollowingContentsModelProcessor = new FollowingContentsModelProcessor(/* this.postsService  this.s3Service,this.userLikeService,this.emergencyEventService, this.pageObjectiveService, this.userFollowService, this.userService, this.pageService);
+
+        const followingContentsModelProcessor: FollowingContentsModelProcessor = new FollowingContentsModelProcessor(/* this.postsService */this.s3Service, this.userLikeService, this.emergencyEventService, this.pageObjectiveService, this.userFollowService, this.userService, this.pageService);
         followingContentsModelProcessor.setData({
             userId,
-            contentPost:isFollowing.contents,
+            contentPost: isFollowing.contents,
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
             postIds: isRead,
+            limits: limit,
+            offsets: offset,
         });
 
         followingContentsModelProcessor.setConfig({
             searchOfficialOnly
         });
-        const followingContents = await followingContentsModelProcessor.process(); */
+        const followingContents = await followingContentsModelProcessor.process();
         const result: any = {};
         result.isReadPosts = isReadPosts;
         result.isFollowing = isFollowing;
         result.followingProvince = followingProvince;
-        // result.followingContents = followingContents;
+        result.followingContents = followingContents;
         const successResponse = ResponseUtil.getSuccessResponse('Successfully create isRead.', result);
         return res.status(200).send(successResponse);
 
