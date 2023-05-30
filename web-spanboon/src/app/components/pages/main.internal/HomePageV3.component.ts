@@ -26,6 +26,7 @@ import { DialogAlert } from '../../shares/dialog/DialogAlert.component';
 import { DialogCheckBox } from '../../shares/dialog/DialogCheckBox.component';
 import { DialogPostCrad } from '../../shares/dialog/DialogPostCrad.component';
 import { debounce } from '../../shares/directive/DebounceScroll.directive';
+import { ObservableManager } from 'src/app/services/ObservableManager.service';
 
 declare var $: any;
 
@@ -58,6 +59,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   private assetFacade: AssetFacade;
   private seoService: SeoService;
   private userSubject: UserSubjectFacade;
+  private observManager: ObservableManager;
   public hashTag: any = [];
   public pageUser: any;
   public startDateLong: number;
@@ -72,6 +74,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   public listContent: any = [];
   public readContent: any[] = [];
   public hidebar: boolean = true;
+  public isLoadingPost: boolean;
 
   maxDate = new Date();
 
@@ -88,7 +91,8 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     assetFacade: AssetFacade,
     seoService: SeoService,
     userSubject: UserSubjectFacade,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    observManager: ObservableManager
   ) {
 
     super(null, authenManager, dialog, router);
@@ -109,6 +113,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     this.seoService = seoService;
     this.userSubject = userSubject;
     this.showLoading = true;
+    this.observManager = observManager;
   }
 
   public ngOnInit(): void {
@@ -127,6 +132,9 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     this.getDateFilter();
     this.hidebar = this.authenManager.getHidebar();
     super.ngOnInit();
+  }
+
+  public ngOnDestroy(): void {
   }
 
   public async saveDate(event: any) {
@@ -183,13 +191,20 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   }
 
   public async getBottomContent(userId?) {
-    this.mainPageModelFacade.bottomContent(userId).then((res) => {
+    const filter: any = {};
+    let limit = 5;
+    let offset = 0;
+    let FollowLimit = 2;
+    let FollowOffset = 0
+    filter.whereConditions = {};
+    filter.orderBy = {};
+    this.mainPageModelFacade.bottomContent(userId, filter, offset, limit, FollowOffset, FollowLimit).then((res) => {
       if (res) {
         let dataPost = [];
         let model: any = {};
         for (let data of res.isFollowing.contents) {
           if (data.owner.posts.length > 0) {
-            dataPost.push(data)
+            dataPost.push(data);
           }
         }
         model = {
