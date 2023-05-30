@@ -149,6 +149,7 @@ import {
   ChatMessage,
   ChatFulfill,
   FulfillItemCard,
+  CardPostContentHome,
   //
   SpanBoonButton,
   ButtonSocial,
@@ -427,6 +428,7 @@ const COMPONENTS: any[] = [
   CardCreateStoryImage,
   CardCreateStoryVideo,
   CardCreateStoryTitleText,
+  CardPostContentHome,
   NeedsCard,
   //
   BoxPost,
