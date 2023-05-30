@@ -9,15 +9,15 @@ import { AbstractSeparateSectionProcessor } from './AbstractSeparateSectionProce
 import { SectionModel } from '../models/SectionModel';
 import { SearchFilter } from '../controllers/requests/SearchFilterRequest';
 import { S3Service } from '../services/S3Service';
-import { UserService } from '../services/UserService';
+// import { UserService } from '../services/UserService';
 import { UserFollowService } from '../services/UserFollowService';
-import { PageObjectiveService } from '../services/PageObjectiveService';
+// import { PageObjectiveService } from '../services/PageObjectiveService';
 import { UserLikeService } from '../services/UserLikeService';
 import { UserLike } from '../models/UserLike';
 import { LIKE_TYPE } from '../../constants/LikeType';
 import { ObjectID } from 'mongodb';
 import { PageService } from '../services/PageService';
-import { EmergencyEventService } from '../services/EmergencyEventService';
+// import { EmergencyEventService } from '../services/EmergencyEventService';
 export class FollowingContentsModelProcessor extends AbstractSeparateSectionProcessor {
     private DEFAULT_SEARCH_LIMIT = 10;
     private DEFAULT_SEARCH_OFFSET = 0;
@@ -25,10 +25,10 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
         // private postsService: PostsService,
         private s3Service: S3Service,
         private userLikeService: UserLikeService,
-        private emergencyEventService: EmergencyEventService,
-        private pageObjectiveService: PageObjectiveService,
+        // private emergencyEventService: EmergencyEventService,
+        // private pageObjectiveService: PageObjectiveService,
         private userFollowService: UserFollowService,
-        private userService: UserService,
+        // private userService: UserService,
         private pageService: PageService
     ) {
         super();
@@ -45,14 +45,16 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                     userId = this.data.userId;
                 }
                 const objIds = new ObjectID(userId);
+                let limitFollows: number = undefined;
                 let limit: number = undefined;
                 let offset: number = undefined;
                 if (this.data !== undefined && this.data !== null) {
+                    limitFollows = this.data.limitFollow;
                     limit = this.data.limits;
                     offset = this.data.offsets;
                 }
                 limit = (limit === undefined || limit === null) ? limit : this.DEFAULT_SEARCH_LIMIT;
-                offset = (offset === undefined || offset === null) ? offset : offset;
+                offset = (offset === undefined || offset === null) ? offset : this.DEFAULT_SEARCH_OFFSET;
                 const searchFilter: SearchFilter = new SearchFilter();
                 searchFilter.limit = limit;
                 searchFilter.offset = offset;
@@ -62,7 +64,6 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                 searchFilter.whereConditions = {
                     isClose: false
                 };
-
                 const searchCountFilter: SearchFilter = new SearchFilter();
                 searchCountFilter.count = true;
                 searchCountFilter.whereConditions = {
@@ -74,6 +75,9 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                         $match: {
                             userId: objIds
                         }
+                    },
+                    {
+                        $limit: limitFollows
                     },
                     {
                         $project: {
@@ -133,14 +137,14 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                         },
                                         {
                                             $sort: {
-                                                createdDate: -1,
+                                                summationScore: -1,
                                             },
                                         },
                                         {
-                                            $limit: limit,
+                                            $skip: offset
                                         },
                                         {
-                                            $skip: offset
+                                            $limit: limit + offset,
                                         },
                                         {
                                             $lookup: {
@@ -195,6 +199,7 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                         ]);
                     allContents.push(pageFollowingContents);
                 }
+                /* 
                 if (userIds.length > 0) {
                     const userFollowingContents = await this.userService.aggregate(
                         [
@@ -217,14 +222,14 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                         },
                                         {
                                             $sort: {
-                                                createdDate: -1,
+                                                summationScore: -1,
                                             },
                                         },
                                         {
-                                            $limit: limit,
+                                            $limit: 5,
                                         },
                                         {
-                                            $skip: offset
+                                            $skip: 0
                                         },
                                         {
                                             $lookup: {
@@ -278,43 +283,25 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                         ]
                     );
                     allContents.push(userFollowingContents);
-                }
+                } */
 
                 const posts = [];
-                const postContents = [];
-                let summationScore = undefined;
                 if (allContents.length > 0) {
                     for (const rows of allContents.flat()) {
-                        if (rows.page !== undefined) {
-                            posts.push(rows.page);
-                        } else if (rows.user !== undefined) {
-                            posts.push(rows.user);
-                        } else if (rows.emergencyEvent !== undefined) {
-                            posts.push(rows.emergencyEvent);
-                        } else {
-                            posts.push(rows.pageObjective);
-                        }
-                    }
-                }
-                const flatPosts = posts.flat();
-                if (flatPosts.length > 0) {
-                    for (const row of flatPosts) {
-                        summationScore = row.posts.sort((a, b) => b.summationScore - a.summationScore);
-                        if (summationScore) {
-                            postContents.push(summationScore);
-                        }
+                        posts.push(rows.page.posts);
                     }
                 }
                 const result: SectionModel = new SectionModel();
-                result.title = (this.config === undefined || this.config.title === undefined) ? 'เพราะคุณติดตาม' : this.config.title;
+                result.title = (this.config === undefined || this.config.title === undefined) ? 'ข่าวสารก่อนหน้านี้' : this.config.title;
                 result.subtitle = '';
                 result.description = '';
                 result.iconUrl = '';
                 result.contents = [];
-                result.type = 'Following'; // set type by processor type
+                result.type = 'ข่าวสารก่อนหน้านี้'; // set type by processor type
                 const lastestDate = null;
-                if (postContents.length > 0) {
-                    for (const row of postContents.flat()) {
+                if (posts.length > 0) {
+                    for (const row of posts.flat()) {
+                        const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                         const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
                         const contents: any = {};
                         contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
@@ -334,8 +321,10 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                             }
                         }
                         contents.owner = {};
-                        if (row) {
-                            contents.owner = await this.parsePageField(row.user);
+                        if (row.page !== undefined) {
+                            contents.owner = this.parsePageField(row.page);
+                        } else {
+                            contents.owner = this.parseUserField(user);
                         }
                         contents.post = row;
                         result.contents.push(contents);
@@ -348,16 +337,34 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
             }
         });
     }
-    private async parsePageField(all: any): Promise<any> {
+    private parsePageField(page: any): any {
         const pageResult: any = {};
-        if (all !== undefined) {
-            pageResult.id = all._id;
-            pageResult.name = all.displayName;
-            pageResult.imageURL = all.imageURL;
-            pageResult.uniqueId = all.uniqueId;
-            pageResult.type = 'All';
+
+        if (page !== undefined) {
+            pageResult.id = page._id;
+            pageResult.name = page.name;
+            pageResult.imageURL = page.imageURL;
+            pageResult.isOfficial = page.isOfficial;
+            pageResult.uniqueId = page.pageUsername;
+            pageResult.type = 'PAGE';
         }
 
         return pageResult;
+    }
+
+    private parseUserField(user: any): any {
+        const userResult: any = {};
+
+        if (user !== undefined) {
+            userResult.id = user._id;
+            userResult.displayName = user.displayName;
+            userResult.imageURL = user.imageURL;
+            userResult.email = user.email;
+            userResult.isAdmin = user.isAdmin;
+            userResult.uniqueId = user.uniqueId;
+            userResult.type = 'USER';
+        }
+
+        return userResult;
     }
 }

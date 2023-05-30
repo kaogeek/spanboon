@@ -426,7 +426,7 @@ export class MainPageController {
     }
 
     @Post('/bottom/trend')
-    public async mirrorTrends(@QueryParam('limit') limit: number, @QueryParam('offset') offset: number, @QueryParam('section') section: string, @QueryParam('date') date: any, @Res() res: any, @Req() req: any): Promise<any> {
+    public async mirrorTrends(@QueryParam('limitFollow') limitFollow: number, @QueryParam('limit') limit: number, @QueryParam('offset') offset: number, @QueryParam('section') section: string, @QueryParam('date') date: any, @Res() res: any, @Req() req: any): Promise<any> {
         const userId = req.headers.userid;
         const objIds = new ObjectID(userId);
         const isRead = await this.isReadPostService.find({ userId: objIds });
@@ -451,6 +451,7 @@ export class MainPageController {
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
             postIds: isRead,
+            limitFollow: limitFollow,
             limits: limit,
             offsets: offset,
         });
@@ -471,13 +472,14 @@ export class MainPageController {
         });
         const followingProvince = await followingProvinceSectionModelProcessor.process();
 
-        const followingContentsModelProcessor: FollowingContentsModelProcessor = new FollowingContentsModelProcessor(/* this.postsService */this.s3Service, this.userLikeService, this.emergencyEventService, this.pageObjectiveService, this.userFollowService, this.userService, this.pageService);
+        const followingContentsModelProcessor: FollowingContentsModelProcessor = new FollowingContentsModelProcessor(/* this.postsService */this.s3Service, this.userLikeService,/* this.emergencyEventService, this.pageObjectiveService,*/ this.userFollowService,/*  this.userService,*/ this.pageService);
         followingContentsModelProcessor.setData({
             userId,
             contentPost: isFollowing.contents,
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
             postIds: isRead,
+            limitFollow: limitFollow,
             limits: limit,
             offsets: offset,
         });

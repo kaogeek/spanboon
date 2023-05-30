@@ -43,10 +43,11 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                     userId = this.data.userId;
                 }
                 const objIds = new ObjectID(userId);
+                let limitFollows: number = undefined;
                 let limit: number = undefined;
                 let offset: number = undefined;
-
                 if (this.data !== undefined && this.data !== null) {
+                    limitFollows = this.data.limitFollow;
                     limit = this.data.limits;
                     offset = this.data.offsets;
                 }
@@ -73,6 +74,9 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                         $match: {
                             userId: objIds
                         }
+                    },
+                    {
+                        $limit: limitFollows
                     },
                     {
                         $project: {
