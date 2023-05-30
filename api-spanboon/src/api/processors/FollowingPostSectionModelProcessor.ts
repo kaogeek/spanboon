@@ -45,22 +45,13 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                 const objIds = new ObjectID(userId);
                 let limit: number = undefined;
                 let offset: number = undefined;
-                if (this.config !== undefined && this.config !== null) {
-                    if (typeof this.config.limit === 'number') {
-                        limit = this.config.limit;
-                    }
 
-                    if (typeof this.config.offset === 'number') {
-                        offset = this.config.offset;
-                    }
-                    /* 
-                    if (typeof this.config.searchOfficialOnly === 'boolean') {
-                        searchOfficialOnly = this.config.searchOfficialOnly;
-                    } */
+                if (this.data !== undefined && this.data !== null) {
+                    limit = this.data.limits;
+                    offset = this.data.offsets;
                 }
-
-                limit = (limit === undefined || limit === null) ? this.DEFAULT_SEARCH_LIMIT : this.DEFAULT_SEARCH_LIMIT;
-                offset = (offset === undefined || offset === null) ? this.DEFAULT_SEARCH_OFFSET : offset;
+                limit = (limit === undefined || limit === null) ? limit : this.DEFAULT_SEARCH_LIMIT;
+                offset = (offset === undefined || offset === null) ? offset : this.DEFAULT_SEARCH_OFFSET;
                 const searchFilter: SearchFilter = new SearchFilter();
                 searchFilter.limit = limit;
                 searchFilter.offset = offset;
@@ -147,7 +138,11 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                             },
                                         },
                                         {
-                                            $limit: 10,
+                                            $limit: limit + offset,
+
+                                        },
+                                        {
+                                            $skip: offset
                                         },
                                         {
                                             $lookup: {
@@ -227,7 +222,11 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                             },
                                         },
                                         {
-                                            $limit: 10,
+                                            $limit: limit + offset,
+
+                                        },
+                                        {
+                                            $skip: offset
                                         },
                                         {
                                             $lookup: {
@@ -305,7 +304,11 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                             },
                                         },
                                         {
-                                            $limit: 10,
+                                            $limit: limit + offset,
+
+                                        },
+                                        {
+                                            $skip: offset
                                         },
                                         {
                                             $lookup: {
@@ -374,7 +377,11 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                             },
                                         },
                                         {
-                                            $limit: 10,
+                                            $limit: limit + offset,
+
+                                        },
+                                        {
+                                            $skip: offset
                                         },
                                         {
                                             $lookup: {
