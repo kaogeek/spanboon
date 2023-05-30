@@ -427,12 +427,12 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                     );
                 }
                 const result: SectionModel = new SectionModel();
-                result.title = (this.config === undefined || this.config.title === undefined) ? 'เพราะคุณติดตาม' : this.config.title;
+                result.title = (this.config === undefined || this.config.title === undefined) ? 'ข่าวสารก่อนหน้านี้' : this.config.title;
                 result.subtitle = '';
                 result.description = '';
                 result.iconUrl = '';
                 result.contents = [];
-                result.type = 'Following'; // set type by processor type
+                result.type = 'ข่าวสารก่อนหน้านี้'; // set type by processor type
                 const lastestDate = null;
                 if (pageFollowingContents !== undefined) {
                     for (const rows of pageFollowingContents) {
