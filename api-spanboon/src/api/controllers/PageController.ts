@@ -73,9 +73,9 @@ import { FetchSocialPostEnableRequest } from './requests/FetchSocialPostEnableRe
 import { SocialPostLogsService } from '../services/SocialPostLogsService';
 import { SocialPostLogs } from '../models/SocialPostLogs';
 import { USER_TYPE, NOTIFICATION_TYPE } from '../../constants/NotificationType';
-// import { DeviceTokenService } from '../services/DeviceToken';
+import { DeviceTokenService } from '../services/DeviceToken';
 import { PageNotificationService } from '../services/PageNotificationService';
-// import { NotificationService } from '../services/NotificationService';
+import { NotificationService } from '../services/NotificationService';
 import { DeletePageService } from '../services/DeletePageService';
 import axios from 'axios';
 import { PageGroupService } from '../services/PageGroupService';
@@ -106,11 +106,11 @@ export class PageController {
         private authenService: AuthenticationIdService,
         private stdItemService: StandardItemService,
         private socialPostLogsService: SocialPostLogsService,
-        // private deviceTokenService: DeviceTokenService,
+        private deviceTokenService: DeviceTokenService,
         private pageNotificationService: PageNotificationService,
-        // private notificationService: NotificationService,
+        private notificationService: NotificationService,
         private deletePageService: DeletePageService,
-        private pageGroupService:PageGroupService
+        private pageGroupService: PageGroupService
     ) { }
 
     // Find Page API
@@ -1143,7 +1143,7 @@ export class PageController {
      * HTTP/1.1 500 Internal Server Error
      */
     @Get('/:id/objective')
-    public async getPageObjective(@Param('id') pageId: string,@Req() req:any ,@Res() res: any): Promise<any> {
+    public async getPageObjective(@Param('id') pageId: string, @Req() req: any, @Res() res: any): Promise<any> {
         const pageObjId = new ObjectID(pageId);
         const pageData: Page = await this.pageService.findOne({ where: { _id: pageObjId } });
 
@@ -2451,13 +2451,92 @@ export class PageController {
         }
     }
 
+    @Get('/follow/notification')
+    public async pagefollowingNotification(@Res() res: any, @Req() req: any): Promise<any> {
+        const space = ' ';
+        let firstUser = undefined;
+        let secondUser = undefined;
+        let link = undefined;
+        const today = moment().toDate();
+        const thirtyMoment = new Date(today.getTime() - 3000000);
+        // {toUserType:'PAGE',fromUserType:'USER',type:'FOLLOW'}
+        // const notificationFollower = whoFollowYou.displayName + space + 'กดติดตามเพจ' + space + page.name;
+        const followNoti = await this.notificationService.aggregate(
+            [
+                {
+                    $match: { toUserType: 'PAGE', fromUserType: 'USER', type: 'FOLLOW', deleted: false, createdDate: { $gte: thirtyMoment, $lte: today } }
+                }
+            ]
+        );
+        if (followNoti.length > 0) {
+            let notification_follower = undefined;
+            const toUser = [];
+            for (const user of followNoti) {
+                toUser.push(user.toUser);
+            }
+            const following = await this.notificationService.aggregate(
+                [
+                    {
+                        $match: { toUser: { $in: toUser }, toUserType: 'PAGE', fromUserType: 'USER', type: 'FOLLOW', deleted: false, createdDate: { $gte: thirtyMoment, $lte: today } },
+                    },
+                    {
+                        $sort: { createdDate: -1 }
+                    }
+                ]
+            );
+            if (following.length > 0) {
+                for (let i = 0; i < following.length; i++) {
+                    if (i === 3) {
+                        firstUser = await this.userService.findOne({ _id: ObjectID(following[0].fromUser) });
+                        secondUser = await this.userService.findOne({ _id: ObjectID(following[1].fromUser) });
+                        notification_follower = firstUser.displayName + space + 'และ' + space + secondUser.displayName + space + 'กดติดตามเพจ' + space + 'และอื่นๆ';
+                        link = `/profile/${firstUser.id}`;
+                        break;
+                    } else if (i === 2 && following.length === 2) {
+                        firstUser = await this.userService.findOne({ _id: ObjectID(following[0].fromUser) });
+                        secondUser = await this.userService.findOne({ _id: ObjectID(following[1].fromUser) });
+                        notification_follower = firstUser.displayName + space + 'และ' + space + secondUser.displayName + space + 'กดติดตามเพจ';
+                        link = `/profile/${firstUser.id}`;
+                        break;
+                    } else {
+                        firstUser = await this.userService.findOne({ _id: ObjectID(following[0].fromUser) });
+                        notification_follower = firstUser.displayName + space + 'กดติดตามเพจ';
+                        link = `/profile/${firstUser.id}`;
+                    }
+                }
+            }
+            const tokenFCMtoUser = await this.deviceTokenService.find({ userId: toUser[0] });
+            if (tokenFCMtoUser.length > 0) {
+                for (const tokenFCM of tokenFCMtoUser) {
+                    if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
+                        await this.notificationService.sendNotificationFCM(
+                            firstUser.id,
+                            USER_TYPE.USER,
+                            toUser[0],
+                            USER_TYPE.USER,
+                            NOTIFICATION_TYPE.FOLLOW,
+                            notification_follower,
+                            link,
+                            tokenFCM.Tokens,
+                            firstUser.displayName,
+                            firstUser.imageURL,
+                        );
+                    }
+                    else {
+                        continue;
+                    }
+                }
+            }
+        }
+    }
+
     @Get('/group/receive')
-    public async getPageGroup(@Res() res: any, @Req() req: any): Promise<any>{
+    public async getPageGroup(@Res() res: any, @Req() req: any): Promise<any> {
         const pageGroup = await this.pageGroupService.find();
-        if(pageGroup.length > 0){
+        if (pageGroup.length > 0) {
             const successResponse = ResponseUtil.getSuccessResponse('Get Page Group is Success', pageGroup);
-            return res.status(200).send(successResponse);        
-        }else{
+            return res.status(200).send(successResponse);
+        } else {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot Get Page Group.', undefined);
             return res.status(400).send(errorResponse);
         }
@@ -2577,10 +2656,10 @@ export class PageController {
                 pageEmail = pageUpdate.email;
             }
 
-            if(pageProvince === null || pageProvince === undefined){
+            if (pageProvince === null || pageProvince === undefined) {
                 pageProvince = pageUpdate.province;
             }
-            if(pageGroup === null || pageGroup === undefined){
+            if (pageGroup === null || pageGroup === undefined) {
                 pageGroup = pageUpdate.group;
             }
 
@@ -2686,7 +2765,7 @@ export class PageController {
                     twitterURL: pageTwitterURL,
                     email: pageEmail,
                     province: pageProvince,
-                    group:pageGroup,
+                    group: pageGroup,
                 }
             };
             const pageSave = await this.pageService.update(updateQuery, newValue);
@@ -3088,7 +3167,7 @@ export class PageController {
             return res.status(401).send(ResponseUtil.getErrorResponse('You cannot access the page.', undefined));
         }
         let result = undefined;
-        const query = {page: pageObjId };
+        const query = { page: pageObjId };
         const currentConfig = await this.pageConfigService.findOne(query);
         if (currentConfig) {
             result = await this.pageConfigService.updateMany(query, {

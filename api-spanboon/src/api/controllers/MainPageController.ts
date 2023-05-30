@@ -79,13 +79,18 @@ import {
     KAOKAITODAY_RANGE_OF_POPULAR_HASHTAGS,
     DEFAULT_KAOKAITODAY_RANGE_OF_POPULAR_HASHTAGS,
     SWITCH_CASE_SEND_NOTI,
-    DEFAULT_SWITCH_CASE_SEND_NOTI
+    DEFAULT_SWITCH_CASE_SEND_NOTI,
+    DEFAULT_SEARCH_CONFIG_VALUE,
+    SEARCH_CONFIG_VALUES,
+    DEFAULT_SEND_NOTIFICATION_NEWS,
+    SEND_NOTIFICATION_NEWS
 } from '../../constants/SystemConfig';
 import { ConfigService } from '../services/ConfigService';
 import { KaokaiTodaySnapShotService } from '../services/KaokaiTodaySnapShot';
 import { KaokaiContentModelProcessor } from '../processors/KaokaiContentModelProcessor';
 import { MAILService } from '../../auth/mail.services';
 import { DeviceTokenService } from '../services/DeviceToken';
+import { NotificationNewsService } from '../services/NotificationNewsService';
 import pm2 from 'pm2';
 @JsonController('/main')
 export class MainPageController {
@@ -108,7 +113,8 @@ export class MainPageController {
         private kaokaiTodaySnapShotService: KaokaiTodaySnapShotService,
         private isReadPostService: IsReadPostService,
         private deviceTokenService: DeviceTokenService,
-        private notificationService: NotificationService
+        private notificationService: NotificationService,
+        private notificationNewsService: NotificationNewsService
     ) { }
     // Home page content V2
     @Get('/content/v3')
@@ -126,11 +132,13 @@ export class MainPageController {
         const announcement = await this.configService.getConfig(KAOKAITODAY_ANNOUNCEMENT);
         const linkAnnounceMent = await this.configService.getConfig(KAOKAITODAY_LINK_ANNOUNCEMENT);
         const rangeHashtag = await this.configService.getConfig(KAOKAITODAY_RANGE_OF_POPULAR_HASHTAGS);
+        const rateLimit = await this.configService.getConfig(SEARCH_CONFIG_VALUES);
         let announcements = DEFAULT_KAOKAITODAY_ANNOUNCEMENT;
         let linkAnnouncements = DEFAULT_KAOKAITODAY_LINK_ANNOUNCEMENT;
         let assetEmergenDays = DEFAULT_KAOKAITODAY_RANGE_DATE_EMERGENY;
         let assetTodayDate = DEFAULT_TODAY_DATETIME_GAP;
         let rangeHashtags = DEFAULT_KAOKAITODAY_RANGE_OF_POPULAR_HASHTAGS;
+        let configLimit = DEFAULT_SEARCH_CONFIG_VALUE.LIMIT;
         if (assetTodayDateGap) {
             assetTodayDate = parseInt(assetTodayDateGap.value, 10);
         }
@@ -146,6 +154,9 @@ export class MainPageController {
         }
         if (rangeHashtag) {
             rangeHashtags = rangeHashtag.value;
+        }
+        if (rateLimit) {
+            configLimit = parseInt(rateLimit.value, 10);
         }
         const emergencyCheckEndDate = assetTodayRangeDate.endDateTime;
         const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), assetTodayDate);
@@ -196,6 +207,7 @@ export class MainPageController {
             userId,
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
+            configLimit
         });
 
         pageProcessor.setConfig({
@@ -217,7 +229,8 @@ export class MainPageController {
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
             filterContentsRobin,
-            checkPosition1
+            checkPosition1,
+            configLimit
         });
 
         majorTrendProcessor.setConfig({
@@ -239,7 +252,8 @@ export class MainPageController {
             filterContentsRobin,
             filterContentsMajor,
             checkPosition1,
-            checkPosition2
+            checkPosition2,
+            configLimit
 
         });
 
@@ -263,7 +277,8 @@ export class MainPageController {
             filterContentsProvince,
             checkPosition1,
             checkPosition2,
-            checkPosition3
+            checkPosition3,
+            configLimit
         });
 
         kaokaiHashTagProcessor.setConfig({
@@ -289,7 +304,8 @@ export class MainPageController {
             checkPosition1,
             checkPosition2,
             checkPosition3,
-            checkPosition4
+            checkPosition4,
+            configLimit
         });
 
         kaokaiContentProcessor.setConfig({
@@ -1961,8 +1977,137 @@ export class MainPageController {
             return res.status(400).send(errorResponse);
         }
     }
+
+    @Get('/notification/news')
+    public async notificationNews(@Res() res: any, @Req() req: any): Promise<any> {
+        let query = undefined;
+        let update = undefined;
+        let updated = undefined;
+        const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 1);
+        const sendNotiNewsLimit = await this.configService.getConfig(SEND_NOTIFICATION_NEWS);
+        let limitSends = DEFAULT_SEND_NOTIFICATION_NEWS;
+        if (sendNotiNewsLimit) {
+            limitSends = parseInt(sendNotiNewsLimit.value, 10);
+        }
+        const fireBaseToken = [];
+        const notiNews = await this.notificationNewsService.aggregate
+            ([
+                {
+                    $match: { startDateTime: monthRange[1], finish: false, status: true }
+                },
+                {
+                    $sort: { startDateTime: -1 }
+                },
+                {
+                    $limit: 1
+                }
+            ]);
+        if (notiNews) {
+            const deviceToken = await this.deviceTokenService.aggregate(
+                [
+                    {
+                        $match: {
+                            token: { $ne: null, $nin: notiNews[0].tokenFCM }
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'User',
+                            localField: 'userId',
+                            foreignField: '_id',
+                            as: 'User'
+                        }
+                    },
+                    {
+                        $unwind: {
+                            path: '$User',
+                            preserveNullAndEmptyArrays: true
+                        }
+                    }
+                ]
+            );
+            if (deviceToken.length > 0) {
+                for (let j = 0; j < deviceToken.length; j++) {
+                    if (deviceToken[0].User.subscribeNoti === true && deviceToken[0].User !== undefined && deviceToken[j].token !== undefined && deviceToken[j].token !== null && deviceToken[j].token !== '') {
+                        fireBaseToken.push(deviceToken[j].token);
+                    } else {
+                        continue;
+                    }
+                }
+            }
+            if (fireBaseToken.length > 0) {
+                let number = undefined;
+                const stackTokenFCM = [];
+                const token = fireBaseToken.filter((element, index) => {
+                    return fireBaseToken.indexOf(element) === index;
+                });
+                if (token.length > 0) {
+                    for (let z = 0; z < token.length; z++) {
+                        if (token[z] !== undefined && z <= limitSends) {
+                            number = z;
+                            stackTokenFCM.push(token[z]);
+                            await this.notificationService.pushNotificationMessage(notiNews[0].data, token[z], monthRange[1]);
+                        } else {
+                            continue;
+                        }
+                    }
+                    if (number === limitSends) {
+                        const mergeArray = notiNews[0].tokenFCM.concat(stackTokenFCM);
+                        query = { _id: new ObjectID(notiNews[0]._id) };
+                        update = {
+                            $set: {
+                                tokenFCM: mergeArray,
+                                send: number + notiNews[0].tokenFCM.length,
+                                finish: false,
+                                status: true
+                            }
+                        };
+                        updated = await this.notificationNewsService.update(query, update);
+                        if (updated) {
+                            return res.status(200).send(ResponseUtil.getSuccessResponse('Update is Successfully.', false));
+                        }
+                    } else {
+                        const mergeArray = notiNews[0].tokenFCM.concat(stackTokenFCM);
+                        query = { _id: new ObjectID(notiNews[0]._id) };
+                        update = {
+                            $set: {
+                                tokenFCM: mergeArray,
+                                send: token.length + notiNews[0].tokenFCM.length,
+                                finish: false
+                            }
+                        };
+                        updated = await this.notificationNewsService.update(query, update);
+                        if (updated) {
+                            return res.status(200).send(ResponseUtil.getSuccessResponse('Update is Successfully.', false));
+                        }
+                    }
+                }
+            } else {
+                query = { _id: new ObjectID(notiNews[0]._id) };
+                update = {
+                    $set: {
+                        finish: true,
+                        status: false
+                    }
+                };
+                updated = await this.notificationNewsService.update(query, update);
+                if (updated) {
+                    return res.status(200).send(ResponseUtil.getSuccessResponse('Search Success', true));
+                }
+            }
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Search Error cannot find noti news', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+
     public async snapShotToday(data: any, startDateRange: Date, endDateTimeToday: Date, jobscheduler: string): Promise<any> {
         // check before create
+        const sendNotiNewsLimit = await this.configService.getConfig(SEND_NOTIFICATION_NEWS);
+        let limitSends = DEFAULT_SEND_NOTIFICATION_NEWS;
+        if (sendNotiNewsLimit) {
+            limitSends = parseInt(sendNotiNewsLimit.value, 10);
+        }
         let pid = undefined;
         let idPm2 = undefined;
         pm2.list((err: Error | null, processList: pm2.ProcessDescription[]) => {
@@ -1983,10 +2128,8 @@ export class MainPageController {
                 console.log('Process not found.');
             }
         });
-        console.log('pid', pid);
-        console.log('id', idPm2);
+
         const scheduler = String(jobscheduler);
-        console.log('scheduler', scheduler);
         let switchEmail = DEFAULT_SWITCH_CASE_SEND_EMAIL;
         const switchSendEmail = await this.configService.getConfig(SWITCH_CASE_SEND_EMAIL);
         if (switchSendEmail) {
@@ -2029,14 +2172,12 @@ export class MainPageController {
         const fireBaseToken = [];
         // String(switchSendEm) === 'true'
         if (scheduler === 'processor' && hours === parseInt(hourSplit, 10) && minutes === parseInt(minuteSpit, 10)) {
-            console.log('pass create snapshot');
             const result: any = {};
             result.data = data;
             result.startDateTime = startDateRange;
             result.endDateTime = endDateTimeToday;
             const snapshot = await this.kaokaiTodaySnapShotService.create(result);
             if (String(switchSendEm) === 'true' && snapshot) {
-                console.log('pass 1 send email');
                 let user = undefined;
                 for (const userEmail of emailStack) {
                     user = await this.userService.findOne({ email: userEmail.toString() });
@@ -2059,7 +2200,6 @@ export class MainPageController {
                 }
             }
             if (String(sendNotification) === 'true' && snapshot) {
-                console.log('pass 2 send noti');
                 for (const userEmail of emailStack) {
                     const user = await this.userService.findOne({ email: userEmail.toString() });
                     const deviceToken = await this.deviceTokenService.aggregate(
@@ -2100,7 +2240,6 @@ export class MainPageController {
                     const token = fireBaseToken.filter((element, index) => {
                         return fireBaseToken.indexOf(element) === index;
                     });
-                    console.log('token -> outside', token);
                     if (token.length > 0) {
                         for (let z = 0; z < token.length; z++) {
                             if (token[z] !== undefined) {
@@ -2109,6 +2248,7 @@ export class MainPageController {
                                 continue;
                             }
                         }
+
                     }
                 }
             } else {
@@ -2145,16 +2285,36 @@ export class MainPageController {
                     }
                 }
                 if (fireBaseToken.length > 0) {
+                    let number = undefined;
+                    const stackTokenFCM = [];
                     const token = fireBaseToken.filter((element, index) => {
                         return fireBaseToken.indexOf(element) === index;
                     });
                     if (token.length > 0 && snapshot) {
                         for (let z = 0; z < token.length; z++) {
-                            if (token[z] !== undefined) {
+                            if (token[z] !== undefined && z <= limitSends) {
+                                number = z;
+                                stackTokenFCM.push(token[z]);
                                 await this.notificationService.pushNotificationMessage(snapshot.data, token[z], endDateTimeToday);
                             } else {
                                 continue;
                             }
+                        }
+                        if (number === limitSends) {
+                            await this.notificationNewsService.create(
+                                {
+                                    kaokaiTodaySnapShotId: snapshot.id,
+                                    data: snapshot.data,
+                                    tokenFCM: stackTokenFCM,
+                                    startDateTime: endDateTimeToday,
+                                    endDateTime: endDateTimeToday,
+                                    total: token.length,
+                                    send: number,
+                                    finish: false,
+                                    type: 'notification_news',
+                                    status: true
+                                }
+                            );
                         }
                     }
                 }

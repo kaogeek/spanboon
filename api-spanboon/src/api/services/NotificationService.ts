@@ -128,6 +128,7 @@ export class NotificationService {
         notification.data = data;
         const token = String(data);
         const toUser = String(toUserId);
+        const fromUser = String(fromUserId);
         const displayNameFCM = String(displayName);
         const link_noti = String(link);
         const image_url = String(image);
@@ -135,9 +136,9 @@ export class NotificationService {
         const notification_id = String(id);
         const payload =
         {
-            data:{
+            data: {
                 toUser,
-                fromUserId,
+                fromUser,
                 title,
                 link_noti,
                 notificationType,
@@ -147,7 +148,8 @@ export class NotificationService {
                 count_data
             }
         };
-
+        console.log('token', token);
+        console.log('payload', payload);
         if (String(notification.toUser) !== String(notification.fromUser)) {
             Promise.all([await admin.messaging().sendToDevice(token, payload)]);
         } else {
