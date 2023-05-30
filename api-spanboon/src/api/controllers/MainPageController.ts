@@ -426,7 +426,7 @@ export class MainPageController {
     }
 
     @Post('/bottom/trend')
-    public async mirrorTrends(@QueryParam('limitFollow') limitFollow: number, @QueryParam('limit') limit: number, @QueryParam('offset') offset: number, @QueryParam('section') section: string, @QueryParam('date') date: any, @Res() res: any, @Req() req: any): Promise<any> {
+    public async mirrorTrends(@QueryParam('limitFollow') limitFollow: number, @QueryParam('offsetFollow') offsetFollow: number, @QueryParam('limit') limit: number, @QueryParam('offset') offset: number, @QueryParam('section') section: string, @QueryParam('date') date: any, @Res() res: any, @Req() req: any): Promise<any> {
         const userId = req.headers.userid;
         const objIds = new ObjectID(userId);
         const isRead = await this.isReadPostService.find({ userId: objIds });
@@ -451,7 +451,8 @@ export class MainPageController {
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
             postIds: isRead,
-            limitFollow: limitFollow,
+            limitFollows: limitFollow,
+            offsetFollows: offsetFollow,
             limits: limit,
             offsets: offset,
         });
@@ -479,7 +480,8 @@ export class MainPageController {
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
             postIds: isRead,
-            limitFollow: limitFollow,
+            limitFollows: limitFollow,
+            offsetFollows: offsetFollow,
             limits: limit,
             offsets: offset,
         });
