@@ -9,14 +9,13 @@ import { AbstractSeparateSectionProcessor } from './AbstractSeparateSectionProce
 import { SectionModel } from '../models/SectionModel';
 import { SearchFilter } from '../controllers/requests/SearchFilterRequest';
 import { S3Service } from '../services/S3Service';
-// import { UserService } from '../services/UserService';
+import { UserService } from '../services/UserService';
 import { UserFollowService } from '../services/UserFollowService';
-// import { PageObjectiveService } from '../services/PageObjectiveService';
-import { UserLikeService } from '../services/UserLikeService';
-import { UserLike } from '../models/UserLike';
-import { LIKE_TYPE } from '../../constants/LikeType';
+import { PageObjectiveService } from '../services/PageObjectiveService';
+// import { UserLike } from '../models/UserLike';
 import { ObjectID } from 'mongodb';
 import { PageService } from '../services/PageService';
+import { EmergencyEventService } from '../services/EmergencyEventService';
 // import { EmergencyEventService } from '../services/EmergencyEventService';
 export class FollowingContentsModelProcessor extends AbstractSeparateSectionProcessor {
     private DEFAULT_SEARCH_LIMIT = 10;
@@ -24,11 +23,11 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
     constructor(
         // private postsService: PostsService,
         private s3Service: S3Service,
-        private userLikeService: UserLikeService,
-        // private emergencyEventService: EmergencyEventService,
-        // private pageObjectiveService: PageObjectiveService,
+        // private userLikeService: UserLikeService,
+        private emergencyEventService: EmergencyEventService,
+        private pageObjectiveService: PageObjectiveService,
         private userFollowService: UserFollowService,
-        // private userService: UserService,
+        private userService: UserService,
         private pageService: PageService
     ) {
         super();
@@ -66,6 +65,7 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                 searchFilter.whereConditions = {
                     isClose: false
                 };
+
                 const searchCountFilter: SearchFilter = new SearchFilter();
                 searchCountFilter.count = true;
                 searchCountFilter.whereConditions = {
@@ -118,16 +118,18 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                         }
                     }
                 }
-                const allContents = [];
+                let pageFollowingContents = undefined;
+                let userFollowingContents = undefined;
+                let emergencyFollowingContents = undefined;
+                let objectiveFollowingContents = undefined;
                 if (pageIds.length > 0) {
-                    const pageFollowingContents = await this.pageService.aggregate(
+                    pageFollowingContents = await this.pageService.aggregate(
                         [
                             {
                                 $match: {
                                     _id: { $in: pageIds },
                                 },
                             },
-
                             {
                                 $lookup: {
                                     from: 'Posts',
@@ -142,14 +144,15 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                         },
                                         {
                                             $sort: {
-                                                summationScore: -1,
+                                                createdDate: -1,
                                             },
                                         },
                                         {
-                                            $skip: offset
+                                            $limit: limit + offset,
+
                                         },
                                         {
-                                            $limit: limit + offset,
+                                            $skip: offset
                                         },
                                         {
                                             $lookup: {
@@ -202,11 +205,9 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                 },
                             },
                         ]);
-                    allContents.push(pageFollowingContents);
                 }
-                /* 
                 if (userIds.length > 0) {
-                    const userFollowingContents = await this.userService.aggregate(
+                    userFollowingContents = await this.userService.aggregate(
                         [
                             {
                                 $match: {
@@ -227,14 +228,15 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                         },
                                         {
                                             $sort: {
-                                                summationScore: -1,
+                                                createdDate: -1,
                                             },
                                         },
                                         {
-                                            $limit: 5,
+                                            $limit: limit + offset,
+
                                         },
                                         {
-                                            $skip: 0
+                                            $skip: offset
                                         },
                                         {
                                             $lookup: {
@@ -287,14 +289,152 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                             }
                         ]
                     );
-                    allContents.push(userFollowingContents);
-                } */
+                }
+                if (emegencyIds.length > 0) {
+                    emergencyFollowingContents = await this.emergencyEventService.aggregate(
+                        [
+                            {
+                                $match: {
+                                    _id: { $in: emegencyIds }
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'Posts',
+                                    let: { id: '$_id' },
+                                    pipeline: [
+                                        {
+                                            $match: {
+                                                $expr: { $eq: ['$$id', '$emergencyEvent'] }
+                                            }
+                                        },
+                                        {
+                                            $sort: {
+                                                createdDate: -1,
+                                            },
+                                        },
+                                        {
+                                            $limit: limit + offset,
 
-                const posts = [];
-                if (allContents.length > 0) {
-                    for (const rows of allContents.flat()) {
-                        posts.push(rows.page.posts);
-                    }
+                                        },
+                                        {
+                                            $skip: offset
+                                        },
+                                        {
+                                            $lookup: {
+                                                from: 'PostsGallery',
+                                                localField: '_id',
+                                                foreignField: 'post',
+                                                as: 'gallery',
+                                            },
+                                        },
+                                        {
+                                            $lookup: {
+                                                from: 'User',
+                                                let: { ownerUser: '$ownerUser' },
+                                                pipeline: [
+                                                    {
+                                                        $match: {
+                                                            $expr: { $eq: ['$$ownerUser', '$_id'] },
+                                                        },
+
+                                                    },
+                                                    { $project: { email: 0, username: 0, password: 0 } }
+                                                ],
+                                                as: 'user'
+                                            }
+                                        },
+                                        {
+                                            $unwind: {
+                                                path: '$user',
+                                                preserveNullAndEmptyArrays: true
+                                            }
+                                        },
+                                        {
+                                            $project: {
+                                                story: 0
+                                            }
+
+                                        },
+                                    ],
+                                    as: 'posts'
+                                },
+                            }
+                        ]
+                    );
+                }
+                if (objectiveIds.length > 0) {
+                    objectiveFollowingContents = await this.pageObjectiveService.aggregate(
+                        [
+                            {
+                                $match: {
+                                    _id: { $in: objectiveIds }
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'Posts',
+                                    let: { id: '$_id' },
+                                    pipeline: [
+                                        {
+                                            $match: {
+                                                $expr: { $eq: ['$$id', '$objective'] }
+                                            }
+                                        },
+                                        {
+                                            $sort: {
+                                                createdDate: -1,
+                                            },
+                                        },
+                                        {
+                                            $limit: limit + offset,
+
+                                        },
+                                        {
+                                            $skip: offset
+                                        },
+                                        {
+                                            $lookup: {
+                                                from: 'PostsGallery',
+                                                localField: '_id',
+                                                foreignField: 'post',
+                                                as: 'gallery',
+                                            },
+                                        },
+                                        {
+                                            $lookup: {
+                                                from: 'User',
+                                                let: { ownerUser: '$ownerUser' },
+                                                pipeline: [
+                                                    {
+                                                        $match: {
+                                                            $expr: { $eq: ['$$ownerUser', '$_id'] },
+                                                        },
+
+                                                    },
+                                                    { $project: { email: 0, username: 0, password: 0 } }
+                                                ],
+                                                as: 'user'
+                                            }
+                                        },
+                                        {
+                                            $unwind: {
+                                                path: '$user',
+                                                preserveNullAndEmptyArrays: true
+                                            }
+                                        },
+                                        {
+                                            $project: {
+                                                story: 0
+                                            }
+
+                                        },
+                                    ],
+                                    as: 'posts'
+                                }
+                            }
+                        ]
+                    );
                 }
                 const result: SectionModel = new SectionModel();
                 result.title = (this.config === undefined || this.config.title === undefined) ? 'ข่าวสารก่อนหน้านี้' : this.config.title;
@@ -304,47 +444,58 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                 result.contents = [];
                 result.type = 'ข่าวสารก่อนหน้านี้'; // set type by processor type
                 const lastestDate = null;
-                if (posts.length > 0) {
-                    for (const row of posts.flat()) {
-                        const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
-                        const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
+                if (pageFollowingContents !== undefined) {
+                    for (const rows of pageFollowingContents) {
                         const contents: any = {};
-                        contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                        if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
-                            try {
-                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
-                                contents.coverPageSignUrl = signUrl;
-                            } catch (error) {
-                                console.log('PostSectionProcessor: ' + error);
-                            }
-                        }
-                        row.isLike = false;
-                        if (userId !== undefined && userId !== undefined && userId !== '') {
-                            const userLikes: UserLike[] = await this.userLikeService.find({ userId: new ObjectID(userId), subjectId: row._id, subjectType: LIKE_TYPE.POST });
-                            if (userLikes.length > 0) {
-                                row.isLike = true;
-                            }
-                        }
                         contents.owner = {};
-                        if (row.page !== undefined) {
-                            contents.owner = this.parsePageField(row.page);
-                        } else {
-                            contents.owner = this.parseUserField(user);
+                        if (rows.page !== undefined) {
+                            contents.owner = await this.parsePageField(rows, rows.page.posts);
                         }
-                        contents.post = row;
+                        result.contents.push(contents);
+                    }
+                }
+                if (userFollowingContents !== undefined) {
+                    for (const rows of userFollowingContents) {
+                        const contents: any = {};
+                        contents.owner = {};
+                        if (rows !== undefined) {
+                            contents.owner = await this.parseUserField(rows, rows.user.posts);
+                        }
+                        result.contents.push(contents);
+                    }
+                }
+                if (emergencyFollowingContents !== undefined) {
+                    for (const rows of emergencyFollowingContents) {
+                        const contents: any = {};
+                        contents.owner = {};
+                        if (rows !== undefined) {
+                            contents.owner = await this.parseEmergencyField(rows, rows.posts);
+                        }
+                        result.contents.push(contents);
+                    }
+                }
+                if (objectiveFollowingContents !== undefined) {
+                    for (const rows of objectiveFollowingContents) {
+                        const contents: any = {};
+                        contents.owner = {};
+                        if (rows !== undefined) {
+                            contents.owner = await this.parseObjectiveField(rows, rows.posts);
+                        }
                         result.contents.push(contents);
                     }
                 }
                 result.dateTime = lastestDate;
+                const sort = result.contents[0];
+                const summation = sort.owner.posts.sort((a,b) => b.post.summationScore - a.post.summationScore);
+                result.contents = summation;
                 resolve(result);
             } catch (error) {
                 reject(error);
             }
         });
     }
-    private parsePageField(page: any): any {
+    private async parsePageField(page: any, posts: any): Promise<any> {
         const pageResult: any = {};
-
         if (page !== undefined) {
             pageResult.id = page._id;
             pageResult.name = page.name;
@@ -352,12 +503,29 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
             pageResult.isOfficial = page.isOfficial;
             pageResult.uniqueId = page.pageUsername;
             pageResult.type = 'PAGE';
+            pageResult.posts = [];
+            for (const row of posts) {
+                const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
+                const contents: any = {};
+                contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
+                if (firstImage !== undefined && firstImage.s3ImageURL !== undefined) {
+                    try {
+                        const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
+                        contents.coverPageSignUrl = signUrl;
+                    } catch (error) {
+                        console.log('PostSectionProcessor: ' + error);
+                    }
+                }
+                row.isLike = false;
+                contents.post = row;
+                pageResult.posts.push(contents);
+            }
         }
 
         return pageResult;
     }
 
-    private parseUserField(user: any): any {
+    private async parseUserField(user: any, posts: any): Promise<any> {
         const userResult: any = {};
 
         if (user !== undefined) {
@@ -368,8 +536,89 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
             userResult.isAdmin = user.isAdmin;
             userResult.uniqueId = user.uniqueId;
             userResult.type = 'USER';
+            userResult.posts = [];
+            for (const row of posts) {
+                const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
+                const contents: any = {};
+                contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
+                if (firstImage !== undefined && firstImage.s3ImageURL !== undefined) {
+                    try {
+                        const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
+                        contents.coverPageSignUrl = signUrl;
+                    } catch (error) {
+                        console.log('PostSectionProcessor: ' + error);
+                    }
+                }
+                row.isLike = false;
+                contents.post = row;
+                userResult.posts.push(contents);
+            }
+
         }
 
         return userResult;
+    }
+    private async parseEmergencyField(emergency: any, posts: any): Promise<any> {
+        const emergencyResult: any = {};
+        if (emergency !== undefined) {
+            emergencyResult.id = emergency._id;
+            emergencyResult.title = emergency.title;
+            emergencyResult.detail = emergency.detail;
+            emergencyResult.hashtag = emergency.hashTag;
+            emergencyResult.isPin = emergency.isPin;
+            emergencyResult.coverPageURL = emergency.coverPageURL;
+            emergencyResult.s3CoverPageURL = emergency.s3CoverPageURL;
+            emergencyResult.type = 'EMERGENCY';
+            emergencyResult.posts = [];
+            for (const row of posts) {
+                const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
+                const contents: any = {};
+                contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
+                if (firstImage !== undefined && firstImage.s3ImageURL !== undefined) {
+                    try {
+                        const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
+                        contents.coverPageSignUrl = signUrl;
+                    } catch (error) {
+                        console.log('PostSectionProcessor: ' + error);
+                    }
+                }
+                row.isLike = false;
+                contents.post = row;
+                emergencyResult.posts.push(contents);
+            }
+        }
+        return emergencyResult;
+    }
+    private async parseObjectiveField(objective: any, posts: any): Promise<any> {
+        const objectiveResult: any = {};
+        if (objective !== undefined) {
+            objectiveResult.id = objective._id;
+            objectiveResult.pageId = objective.pageId;
+            objectiveResult.title = objective.title;
+            objectiveResult.detail = objective.detail;
+            objectiveResult.iconURL = objective.iconURL;
+            objectiveResult.category = objective.category;
+            objectiveResult.hashTag = objective.hashTag;
+            objectiveResult.s3IconURL = objective.s3IconURL;
+            objectiveResult.posts = [];
+            for (const row of posts) {
+                const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
+                const contents: any = {};
+                contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
+                if (firstImage !== undefined && firstImage.s3ImageURL !== undefined) {
+                    try {
+                        const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
+                        contents.coverPageSignUrl = signUrl;
+                    } catch (error) {
+                        console.log('PostSectionProcessor: ' + error);
+                    }
+                }
+                row.isLike = false;
+                contents.post = row;
+                objectiveResult.posts.push(contents);
+
+            }
+        }
+        return objectiveResult;
     }
 }
