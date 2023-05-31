@@ -473,7 +473,7 @@ export class MainPageController {
         });
         const followingProvince = await followingProvinceSectionModelProcessor.process();
 
-        const followingContentsModelProcessor: FollowingContentsModelProcessor = new FollowingContentsModelProcessor(/* this.postsService */this.s3Service, this.userLikeService,/* this.emergencyEventService, this.pageObjectiveService,*/ this.userFollowService, this.userService, this.pageService);
+        const followingContentsModelProcessor: FollowingContentsModelProcessor = new FollowingContentsModelProcessor(/* this.postsService */this.s3Service, this.userLikeService,/* this.emergencyEventService, this.pageObjectiveService,*/ this.userFollowService,/*  this.userService,*/ this.pageService);
         followingContentsModelProcessor.setData({
             userId,
             contentPost: isFollowing.contents,
@@ -2058,7 +2058,7 @@ export class MainPageController {
                             continue;
                         }
                     }
-                    if (parseInt(number, 10) === limitSends) {
+                    if (parseInt(number,10) === limitSends) {
                         const mergeArray = notiNews[0].tokenFCM.concat(stackTokenFCM);
                         query = { _id: new ObjectID(notiNews[0]._id) };
                         update = {
@@ -2307,7 +2307,7 @@ export class MainPageController {
                                 continue;
                             }
                         }
-                        if (parseInt(number, 10) === limitSends) {
+                        if (parseInt(number,10) === limitSends) {
                             await this.notificationNewsService.create(
                                 {
                                     kaokaiTodaySnapShotId: snapshot.id,
