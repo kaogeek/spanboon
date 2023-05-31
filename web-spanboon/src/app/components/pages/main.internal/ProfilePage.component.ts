@@ -506,12 +506,12 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
       }
 
     }).catch((err: any) => {
+      this.isLoading = false;
       if (err.error.status === 0) {
         if (err.error.message === 'Unable to Get UserProfile') {
           this.msgUserNotFound = true;
         }
       }
-      this.stopLoading();
     })
   }
 
