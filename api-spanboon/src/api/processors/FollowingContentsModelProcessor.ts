@@ -9,7 +9,7 @@ import { AbstractSeparateSectionProcessor } from './AbstractSeparateSectionProce
 import { SectionModel } from '../models/SectionModel';
 import { SearchFilter } from '../controllers/requests/SearchFilterRequest';
 import { S3Service } from '../services/S3Service';
-// import { UserService } from '../services/UserService';
+import { UserService } from '../services/UserService';
 import { UserFollowService } from '../services/UserFollowService';
 // import { PageObjectiveService } from '../services/PageObjectiveService';
 import { UserLikeService } from '../services/UserLikeService';
@@ -28,7 +28,7 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
         // private emergencyEventService: EmergencyEventService,
         // private pageObjectiveService: PageObjectiveService,
         private userFollowService: UserFollowService,
-        // private userService: UserService,
+        private userService: UserService,
         private pageService: PageService
     ) {
         super();
@@ -204,7 +204,7 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                         ]);
                     allContents.push(pageFollowingContents);
                 }
-                /* 
+
                 if (userIds.length > 0) {
                     const userFollowingContents = await this.userService.aggregate(
                         [
@@ -288,7 +288,7 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                         ]
                     );
                     allContents.push(userFollowingContents);
-                } */
+                }
 
                 const posts = [];
                 if (allContents.length > 0) {

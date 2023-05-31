@@ -9,7 +9,7 @@ import { Service } from 'typedi';
 import { OrmRepository } from 'typeorm-typedi-extensions';
 import { Logger, LoggerInterface } from '../../decorators/Logger';
 import { NotificationNewsRepository } from '../repositories/NotificationNewsRepository';
-
+import { SearchUtil } from '../../utils/SearchUtil';
 @Service()
 export class NotificationNewsService {
 
@@ -45,5 +45,13 @@ export class NotificationNewsService {
 
     public aggregate(query: any, options?: any): Promise<any[]> {
         return this.notificationNewsRepository.aggregate(query, options).toArray();
+    }
+    public search(limit: number, offset: number, select: any = [], relation: any[], whereConditions: any = [], orderBy: any, count: boolean): Promise<any> {
+        const condition: any = SearchUtil.createFindCondition(limit, offset, select, relation, whereConditions, orderBy);
+        if (count) {
+            return this.notificationNewsRepository.count();
+        } else {
+            return this.find(condition);
+        }
     }
 }
