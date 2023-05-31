@@ -616,6 +616,5 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
             }
         }
         return objectiveResult;
-
     }
 }
