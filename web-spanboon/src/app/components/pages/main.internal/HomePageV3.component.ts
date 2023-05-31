@@ -192,9 +192,9 @@ export class HomePageV3 extends AbstractPage implements OnInit {
 
   public async getBottomContent(userId?) {
     const filter: any = {};
-    let limit = 5;
+    let limit = 10;
     let offset = 0;
-    let FollowLimit = 2;
+    let FollowLimit = 5;
     let FollowOffset = 0
     filter.whereConditions = {};
     filter.orderBy = {};
