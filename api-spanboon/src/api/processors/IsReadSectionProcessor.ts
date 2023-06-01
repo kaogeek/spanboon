@@ -37,10 +37,8 @@ export class IsReadSectionProcessor extends AbstractSeparateSectionProcessor {
                 let userId = undefined;
                 // get startDateTime, endDateTime
                 let startDateTime: Date = undefined;
-                let endDateTime: Date = undefined;
                 if (this.data !== undefined && this.data !== null) {
                     startDateTime = this.data.startDateTime;
-                    endDateTime = this.data.endDateTime;
                     userId = this.data.userId;
                 }
                 const objIds = new ObjectID(userId);
@@ -102,8 +100,6 @@ export class IsReadSectionProcessor extends AbstractSeparateSectionProcessor {
                     hidden: false,
                     _id: { $nin: postIds }
                 };
-                console.log('startDateTime',startDateTime);
-                console.log('endDateTime',endDateTime);
                 const dateTimeAndArray = [];
                 if (startDateTime !== undefined && startDateTime !== null) {
                     dateTimeAndArray.push({ startDateTime: { $lte: startDateTime } });
