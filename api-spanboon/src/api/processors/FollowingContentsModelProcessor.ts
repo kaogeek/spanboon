@@ -44,13 +44,9 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                     userId = this.data.userId;
                 }
                 const objIds = new ObjectID(userId);
-                let limitFollows: number = undefined;
-                let offsetFollows: number = undefined;
                 let limit: number = undefined;
                 let offset: number = undefined;
                 if (this.data !== undefined && this.data !== null) {
-                    limitFollows = this.data.limitFollows;
-                    offsetFollows = this.data.offsetFollows;
                     offset = this.data.offsets;
                 }
                 limit = (limit === undefined || limit === null) ? this.data.limits : this.DEFAULT_SEARCH_LIMIT;
@@ -71,6 +67,7 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                     isClose: false
                 };
                 // const today = moment().add(month, 'month').toDate();
+
                 const isFollowing = await this.userFollowService.aggregate([
                     {
                         $match: {
@@ -78,10 +75,10 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                         }
                     },
                     {
-                        $skip: offsetFollows
+                        $skip: this.data.offsetFollows
                     },
                     {
-                        $limit: limitFollows + offsetFollows
+                        $limit: this.data.limitFollows + this.data.offsetFollows
                     },
                     {
                         $project: {
@@ -143,7 +140,7 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                         },
                                         {
                                             $sort: {
-                                                createdDate: -1,
+                                                summationScore: -1
                                             },
                                         },
                                         {
@@ -227,7 +224,7 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                         },
                                         {
                                             $sort: {
-                                                createdDate: -1,
+                                                summationScore: -1
                                             },
                                         },
                                         {
@@ -309,7 +306,7 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                         },
                                         {
                                             $sort: {
-                                                createdDate: -1,
+                                                summationScore: -1
                                             },
                                         },
                                         {
@@ -382,7 +379,7 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                         },
                                         {
                                             $sort: {
-                                                createdDate: -1,
+                                                summationScore: -1
                                             },
                                         },
                                         {
@@ -445,12 +442,14 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                 const lastestDate = null;
                 if (pageFollowingContents !== undefined) {
                     for (const rows of pageFollowingContents) {
-                        const contents: any = {};
-                        contents.owner = {};
-                        if (rows.page !== undefined) {
-                            contents.owner = await this.parsePageField(rows, rows.page.posts);
+                        if (rows.page.posts.length > 0) {
+                            const contents: any = {};
+                            contents.owner = {};
+                            if (rows.page !== undefined) {
+                                contents.owner = await this.parsePageField(rows, rows.page.posts);
+                            }
+                            result.contents.push(contents);
                         }
-                        result.contents.push(contents);
                     }
                 }
                 if (userFollowingContents !== undefined) {
