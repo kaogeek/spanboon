@@ -484,9 +484,6 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                     }
                 }
                 result.dateTime = lastestDate;
-                const sort = result.contents[0];
-                const summation = sort.owner.posts.sort((a,b) => b.post.summationScore - a.post.summationScore);
-                result.contents = summation;
                 resolve(result);
             } catch (error) {
                 reject(error);
