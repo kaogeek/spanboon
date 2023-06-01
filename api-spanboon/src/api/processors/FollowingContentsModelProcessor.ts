@@ -54,7 +54,7 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                     offset = this.data.offsets;
                 }
                 limit = (limit === undefined || limit === null) ? this.data.limits : this.DEFAULT_SEARCH_LIMIT;
-                offset = (offset === undefined || offset === null) ? offset : this.DEFAULT_SEARCH_OFFSET;
+                offset = this.data.offsets ? this.data.offsets : this.DEFAULT_SEARCH_OFFSET;
                 const searchFilter: SearchFilter = new SearchFilter();
                 searchFilter.limit = limit;
                 searchFilter.offset = offset;

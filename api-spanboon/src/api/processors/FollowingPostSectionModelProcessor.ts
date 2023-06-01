@@ -53,8 +53,8 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                     limit = this.data.limits;
                     offset = this.data.offsets;
                 }
-                limit = (limit === undefined || limit === null) ? limit : this.DEFAULT_SEARCH_LIMIT;
-                offset = (offset === undefined || offset === null) ? offset : this.DEFAULT_SEARCH_OFFSET;
+                limit = (limit === undefined || limit === null) ? this.data.limits : this.DEFAULT_SEARCH_LIMIT;
+                offset = this.data.offsets ? this.data.offsets : this.DEFAULT_SEARCH_OFFSET;
                 const searchFilter: SearchFilter = new SearchFilter();
                 searchFilter.limit = limit;
                 searchFilter.offset = offset;
