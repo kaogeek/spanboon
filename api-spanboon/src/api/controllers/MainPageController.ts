@@ -451,6 +451,10 @@ export class MainPageController {
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
             postIds: isRead,
+            limitFollows: limitFollow,
+            offsetFollows: offsetFollow,
+            limits: limit,
+            offsets: offset,
         });
 
         followingPostSectionModelProcessor.setConfig({
