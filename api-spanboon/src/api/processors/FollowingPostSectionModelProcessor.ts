@@ -67,7 +67,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                     isClose: false
                 };
                 // const today = moment().add(month, 'month').toDate();
-                const rateLimit = (limit + offset) / 5;
+                const rateLimit = 2 * (limit + offset) / 5;
                 const isFollowing = await this.userFollowService.aggregate([
                     {
                         $match: {
@@ -75,7 +75,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                         }
                     },
                     {
-                        $skip: offset
+                        $skip: offset / 2
                     },
                     {
                         $limit: rateLimit

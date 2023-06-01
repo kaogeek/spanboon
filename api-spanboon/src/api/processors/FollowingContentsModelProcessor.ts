@@ -66,7 +66,7 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                 searchCountFilter.whereConditions = {
                     isClose: false
                 };
-                const rateLimit = (limit + offset) / 5;
+                const rateLimit = 2 * (limit + offset) / 5;
                 // const today = moment().add(month, 'month').toDate();
                 const isFollowing = await this.userFollowService.aggregate([
                     {
@@ -75,7 +75,7 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                         }
                     },
                     {
-                        $skip: offset
+                        $skip: offset / 2
                     },
                     {
                         $limit: rateLimit
