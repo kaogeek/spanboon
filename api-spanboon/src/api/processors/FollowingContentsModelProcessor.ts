@@ -44,9 +44,13 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                     userId = this.data.userId;
                 }
                 const objIds = new ObjectID(userId);
+                let limitFollows: number = undefined;
+                let offsetFollows: number = undefined;
                 let limit: number = undefined;
                 let offset: number = undefined;
                 if (this.data !== undefined && this.data !== null) {
+                    limitFollows = this.data.limitFollows;
+                    offsetFollows = this.data.offsetFollows;
                     offset = this.data.offsets;
                 }
                 limit = (limit === undefined || limit === null) ? this.data.limits : this.DEFAULT_SEARCH_LIMIT;
@@ -74,10 +78,10 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                         }
                     },
                     {
-                        $skip: offset
+                        $skip: offsetFollows
                     },
                     {
-                        $limit: limit + offset
+                        $limit: limitFollows + offsetFollows
                     },
                     {
                         $project: {
