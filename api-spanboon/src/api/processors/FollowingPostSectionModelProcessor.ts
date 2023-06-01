@@ -70,12 +70,6 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                         }
                     },
                     {
-                        $skip: offset
-                    },
-                    {
-                        $limit: limit + offset
-                    },
-                    {
                         $project: {
                             subjectId: 1,
                             subjectType: 1,
