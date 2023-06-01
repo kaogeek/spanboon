@@ -67,6 +67,7 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                     isClose: false
                 };
                 // const today = moment().add(month, 'month').toDate();
+
                 const isFollowing = await this.userFollowService.aggregate([
                     {
                         $match: {
@@ -77,7 +78,7 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                         $skip: this.data.offsetFollows
                     },
                     {
-                        $limit: this.data.limitFollows + this.data.offsetFollows
+                        $limit: this.data.limitFollows
                     },
                     {
                         $project: {
@@ -146,7 +147,7 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                             $skip: offset
                                         },
                                         {
-                                            $limit: limit + offset,
+                                            $limit: limit,
 
                                         },
                                         {
@@ -200,7 +201,6 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                 },
                             },
                         ]);
-                    console.log('pageFollowingContents', pageFollowingContents);
                 }
                 if (userIds.length > 0) {
                     userFollowingContents = await this.userService.aggregate(
@@ -231,7 +231,7 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                             $skip: offset
                                         },
                                         {
-                                            $limit: limit + offset,
+                                            $limit: limit,
 
                                         },
                                         {
@@ -313,7 +313,7 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                             $skip: offset
                                         },
                                         {
-                                            $limit: limit + offset,
+                                            $limit: limit,
 
                                         },
                                         {
@@ -386,7 +386,7 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                             $skip: offset
                                         },
                                         {
-                                            $limit: limit + offset,
+                                            $limit: limit,
 
                                         },
                                         {
