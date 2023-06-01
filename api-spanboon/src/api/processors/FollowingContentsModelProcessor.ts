@@ -78,10 +78,10 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                         }
                     },
                     {
-                        $limit: limitFollows + offsetFollows
+                        $skip: offsetFollows
                     },
                     {
-                        $skip: offsetFollows
+                        $limit: limitFollows + offsetFollows
                     },
                     {
                         $project: {
@@ -147,11 +147,11 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                             },
                                         },
                                         {
-                                            $limit: limit + offset,
-
+                                            $skip: offset
                                         },
                                         {
-                                            $skip: offset
+                                            $limit: limit + offset,
+
                                         },
                                         {
                                             $lookup: {
@@ -231,11 +231,11 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                             },
                                         },
                                         {
-                                            $limit: limit + offset,
-
+                                            $skip: offset
                                         },
                                         {
-                                            $skip: offset
+                                            $limit: limit + offset,
+
                                         },
                                         {
                                             $lookup: {
@@ -313,11 +313,11 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                             },
                                         },
                                         {
-                                            $limit: limit + offset,
-
+                                            $skip: offset
                                         },
                                         {
-                                            $skip: offset
+                                            $limit: limit + offset,
+
                                         },
                                         {
                                             $lookup: {
@@ -386,11 +386,11 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                             },
                                         },
                                         {
-                                            $limit: limit + offset,
-
+                                            $skip: offset
                                         },
                                         {
-                                            $skip: offset
+                                            $limit: limit + offset,
+
                                         },
                                         {
                                             $lookup: {
