@@ -147,11 +147,11 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                             },
                                         },
                                         {
-                                            $limit: limit + offset,
-
+                                            $skip: offset
                                         },
                                         {
-                                            $skip: offset
+                                            $limit: limit + offset,
+
                                         },
                                         {
                                             $lookup: {
@@ -231,11 +231,11 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                             },
                                         },
                                         {
-                                            $limit: limit + offset,
-
+                                            $skip: offset
                                         },
                                         {
-                                            $skip: offset
+                                            $limit: limit + offset,
+
                                         },
                                         {
                                             $lookup: {
@@ -313,11 +313,11 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                             },
                                         },
                                         {
-                                            $limit: limit + offset,
-
+                                            $skip: offset
                                         },
                                         {
-                                            $skip: offset
+                                            $limit: limit + offset,
+
                                         },
                                         {
                                             $lookup: {
@@ -386,11 +386,11 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                             },
                                         },
                                         {
-                                            $limit: limit + offset,
-
+                                            $skip: offset
                                         },
                                         {
-                                            $skip: offset
+                                            $limit: limit + offset,
+
                                         },
                                         {
                                             $lookup: {

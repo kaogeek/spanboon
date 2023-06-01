@@ -474,13 +474,13 @@ export class MainPageController {
         const followingProvince = await followingProvinceSectionModelProcessor.process();
 
         const followingContentsModelProcessor: FollowingContentsModelProcessor = new FollowingContentsModelProcessor(
-            /* this.postsService */ 
+            /* this.postsService */
             this.s3Service,
             /* this.userLikeService*/
-            this.emergencyEventService, 
-            this.pageObjectiveService, 
-            this.userFollowService, 
-            this.userService, 
+            this.emergencyEventService,
+            this.pageObjectiveService,
+            this.userFollowService,
+            this.userService,
             this.pageService);
         followingContentsModelProcessor.setData({
             userId,
@@ -2118,11 +2118,6 @@ export class MainPageController {
 
     public async snapShotToday(data: any, startDateRange: Date, endDateTimeToday: Date, jobscheduler: string): Promise<any> {
         // check before create
-        const sendNotiNewsLimit = await this.configService.getConfig(SEND_NOTIFICATION_NEWS);
-        let limitSends = DEFAULT_SEND_NOTIFICATION_NEWS;
-        if (sendNotiNewsLimit) {
-            limitSends = parseInt(sendNotiNewsLimit.value, 10);
-        }
         let pid = undefined;
         let idPm2 = undefined;
         pm2.list((err: Error | null, processList: pm2.ProcessDescription[]) => {
@@ -2300,36 +2295,16 @@ export class MainPageController {
                     }
                 }
                 if (fireBaseToken.length > 0) {
-                    let number = undefined;
-                    const stackTokenFCM = [];
                     const token = fireBaseToken.filter((element, index) => {
                         return fireBaseToken.indexOf(element) === index;
                     });
                     if (token.length > 0 && snapshot) {
                         for (let z = 0; z < token.length; z++) {
-                            if (token[z] !== undefined && z <= limitSends) {
-                                number = z;
-                                stackTokenFCM.push(token[z]);
+                            if (token[z] !== undefined) {
                                 await this.notificationService.pushNotificationMessage(snapshot.data, token[z], endDateTimeToday);
                             } else {
                                 continue;
                             }
-                        }
-                        if (parseInt(number, 10) === limitSends) {
-                            await this.notificationNewsService.create(
-                                {
-                                    kaokaiTodaySnapShotId: snapshot.id,
-                                    data: snapshot.data,
-                                    tokenFCM: stackTokenFCM,
-                                    startDateTime: endDateTimeToday,
-                                    endDateTime: endDateTimeToday,
-                                    total: token.length,
-                                    send: number,
-                                    finish: false,
-                                    type: 'notification_news',
-                                    status: true
-                                }
-                            );
                         }
                     }
                 }
