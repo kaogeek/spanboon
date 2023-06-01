@@ -44,13 +44,9 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                     userId = this.data.userId;
                 }
                 const objIds = new ObjectID(userId);
-                let limitFollows: number = undefined;
-                let offsetFollows: number = undefined;
                 let limit: number = undefined;
                 let offset: number = undefined;
                 if (this.data !== undefined && this.data !== null) {
-                    limitFollows = this.data.limitFollows;
-                    offsetFollows = this.data.offsetFollows;
                     offset = this.data.offsets;
                 }
                 limit = (limit === undefined || limit === null) ? this.data.limits : this.DEFAULT_SEARCH_LIMIT;
@@ -70,6 +66,7 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                 searchCountFilter.whereConditions = {
                     isClose: false
                 };
+                const rateLimit = (limit + offset) / 5;
                 // const today = moment().add(month, 'month').toDate();
                 const isFollowing = await this.userFollowService.aggregate([
                     {
@@ -78,10 +75,10 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                         }
                     },
                     {
-                        $skip: offsetFollows
+                        $skip: offset
                     },
                     {
-                        $limit: limitFollows + offsetFollows
+                        $limit: rateLimit
                     },
                     {
                         $project: {
