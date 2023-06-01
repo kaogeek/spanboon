@@ -67,7 +67,6 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                     isClose: false
                 };
                 // const today = moment().add(month, 'month').toDate();
-
                 const isFollowing = await this.userFollowService.aggregate([
                     {
                         $match: {
@@ -100,15 +99,15 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                 if (isFollowing.length > 0) {
                     for (let i = 0; i < isFollowing.length; i++) {
                         if (isFollowing[i].subjectType === 'USER') {
-                            userIds.push((new ObjectID(isFollowing[i].subjectId)));
+                            // userIds.push((new ObjectID(isFollowing[i].subjectId)));
                         }
                         if (isFollowing[i].subjectType === 'PAGE') {
                             pageIds.push((new ObjectID(isFollowing[i].subjectId)));
                         }
                         if (isFollowing[i].subjectType === 'EMERGENCY_EVENT') {
-                            emegencyIds.push((new ObjectID(isFollowing[i].subjectId)));
+                            // emegencyIds.push((new ObjectID(isFollowing[i].subjectId)));
                         } if (isFollowing[i].subjectType === 'OBJECTIVE') {
-                            objectiveIds.push((new ObjectID(isFollowing[i].subjectId)));
+                            // objectiveIds.push((new ObjectID(isFollowing[i].subjectId)));
                         } else {
                             continue;
                         }
@@ -201,6 +200,7 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                 },
                             },
                         ]);
+                    console.log('pageFollowingContents', pageFollowingContents);
                 }
                 if (userIds.length > 0) {
                     userFollowingContents = await this.userService.aggregate(
@@ -483,9 +483,11 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                     }
                 }
                 result.dateTime = lastestDate;
-                const sort = result.contents[0];
-                const summation = sort.owner.posts.sort((a, b) => b.post.summationScore - a.post.summationScore);
-                result.contents = summation;
+                let summation = undefined;
+                if (result.contents[0] !== undefined) {
+                    summation = result.contents[0].owner.posts.sort((a, b) => b.post.summationScore - a.post.summationScore);
+                    result.contents = summation;
+                }
                 resolve(result);
             } catch (error) {
                 reject(error);
