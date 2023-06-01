@@ -51,10 +51,9 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                 if (this.data !== undefined && this.data !== null) {
                     limitFollows = this.data.limitFollows;
                     offsetFollows = this.data.offsetFollows;
-                    limit = this.data.limits;
                     offset = this.data.offsets;
                 }
-                limit = (limit === undefined || limit === null) ? limit : this.DEFAULT_SEARCH_LIMIT;
+                limit = (limit === undefined || limit === null) ? this.data.limits : this.DEFAULT_SEARCH_LIMIT;
                 offset = (offset === undefined || offset === null) ? offset : this.DEFAULT_SEARCH_OFFSET;
                 const searchFilter: SearchFilter = new SearchFilter();
                 searchFilter.limit = limit;
@@ -148,11 +147,11 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                             },
                                         },
                                         {
-                                            $limit: limit + offset,
-
+                                            $skip: offset
                                         },
                                         {
-                                            $skip: offset
+                                            $limit: limit + offset,
+
                                         },
                                         {
                                             $lookup: {
@@ -232,11 +231,11 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                             },
                                         },
                                         {
-                                            $limit: limit + offset,
-
+                                            $skip: offset
                                         },
                                         {
-                                            $skip: offset
+                                            $limit: limit + offset,
+
                                         },
                                         {
                                             $lookup: {
@@ -314,11 +313,11 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                             },
                                         },
                                         {
-                                            $limit: limit + offset,
-
+                                            $skip: offset
                                         },
                                         {
-                                            $skip: offset
+                                            $limit: limit + offset,
+
                                         },
                                         {
                                             $lookup: {
@@ -387,11 +386,11 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                             },
                                         },
                                         {
-                                            $limit: limit + offset,
-
+                                            $skip: offset
                                         },
                                         {
-                                            $skip: offset
+                                            $limit: limit + offset,
+
                                         },
                                         {
                                             $lookup: {
@@ -486,7 +485,7 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                 }
                 result.dateTime = lastestDate;
                 const sort = result.contents[0];
-                const summation = sort.owner.posts.sort((a,b) => b.post.summationScore - a.post.summationScore);
+                const summation = sort.owner.posts.sort((a, b) => b.post.summationScore - a.post.summationScore);
                 result.contents = summation;
                 resolve(result);
             } catch (error) {
