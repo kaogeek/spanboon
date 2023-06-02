@@ -75,6 +75,13 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   public readContent: any[] = [];
   public hidebar: boolean = true;
   public isLoadingPost: boolean;
+  public throttle = 300;
+  public scrollDistance = 1;
+  public offset: number = 0;
+  public limit: number = 8;
+  public followOffset: number = 0;
+  public followLimit: number = 2;
+  public isOnLoad: boolean;
 
   maxDate = new Date();
 
@@ -121,12 +128,13 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     this.userCloneDatas = JSON.parse(JSON.stringify(user));
     if (this.userCloneDatas !== undefined && this.userCloneDatas !== null) {
       this.getMainPageModelV3(this.userCloneDatas.id);
-      this.getBottomContent(this.userCloneDatas.id);
       this.searchPageInUser(this.userCloneDatas.id);
     } else {
       this.getMainPageModelV3();
       this.searchPageInUser();
     }
+    this._scrollIsRead();
+    this._readHomeContent();
     this.stopIsloading();
     this.getScreenSize();
     this.getDateFilter();
@@ -192,29 +200,39 @@ export class HomePageV3 extends AbstractPage implements OnInit {
 
   public async getBottomContent(userId?) {
     const filter: any = {};
-    let limit = 10;
-    let offset = 0;
-    let FollowLimit = 5;
-    let FollowOffset = 0
     filter.whereConditions = {};
     filter.orderBy = {};
-    this.mainPageModelFacade.bottomContent(userId, filter, offset, limit, FollowOffset, FollowLimit).then((res) => {
+    this.mainPageModelFacade.bottomContent(userId, filter, this.offset, this.limit, this.followOffset, this.followLimit).then((res) => {
       if (res) {
-        let dataPost = [];
-        let model: any = {};
-        for (let data of res.isFollowing.contents) {
-          if (data.owner.posts.length > 0) {
-            dataPost.push(data);
+        if (this.isOnLoad === true) {
+          let data = []; let arr = [];
+          for (let model of this.modelBottom.followingContents.contents) {
+            arr.push(model);
           }
+          for (let model of res.followingContents.contents) {
+            data.push(model);
+          }
+          let model = arr.concat(data);
+          this.modelBottom.followingContents.contents = model;
+          this.isOnLoad = false;
+          this.isLoadingPost = false;
+        } else {
+          let dataPost = [];
+          let model: any = {};
+          for (let data of res.isFollowing.contents) {
+            if (data.owner.posts.length > 0) {
+              dataPost.push(data);
+            }
+          }
+          model = {
+            followingContents: res.followingContents,
+            followingProvince: res.followingProvince,
+            isReadPosts: res.isReadPosts,
+            isFollowing: res.isFollowing
+          };
+          model.isFollowing.contents = dataPost;
+          this.modelBottom = model;
         }
-        model = {
-          followingContents: res.followingContents,
-          followingProvince: res.followingProvince,
-          isReadPosts: res.isReadPosts,
-          isFollowing: res.isFollowing
-        };
-        model.isFollowing.contents = dataPost;
-        this.modelBottom = model;
       }
     }).catch((err) => {
       if (err) {
@@ -322,6 +340,9 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     // if (this.isLogin) {
     //   this.getSubject();
     // }
+    if (this.isLogin() && !!this.model) {
+      this.getBottomContent(this.userCloneDatas.id);
+    }
     this.showLoading = false;
     this.seoService.updateTitle(PLATFORM_NAME_TH);
     let filter: SearchFilter = new SearchFilter();
@@ -513,9 +534,15 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   }
 
   public clickToPost(postId: any) {
-    this.router.navigate([]).then(() => {
-      window.open('/post/' + postId);
-    });
+    if (postId.type === 'USER') {
+      this.router.navigate([]).then(() => {
+        window.open('/profile/' + postId.userid + '/post/' + postId.idpost);
+      });
+    } else {
+      this.router.navigate([]).then(() => {
+        window.open('/post/' + postId);
+      });
+    }
   }
 
   public clickToPageUser(pageId: any, owner?: any) {
@@ -610,17 +637,28 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     }
   }
 
-  private _readHomeContent() {
+  private async _readHomeContent() {
     if (this.isLogin()) {
       let userId = this.userCloneDatas.id;
-      this.mainPageModelFacade.readContent(userId, this.readContent).then((res => {
-        if (res) {
+      if (this.readContent.length > 0) {
+        try {
+          await this.mainPageModelFacade.readContent(userId, this.readContent);
+        } catch (error) {
+          console.log("err", error);
         }
-      })).catch((err) => {
-        if (err) {
-        }
-      })
+      }
     }
+  }
+
+  public onScrollDown(ev) {
+    if (this.isLogin()) {
+      this.offset += this.limit;
+      this.followOffset += this.followLimit;
+      this.isOnLoad = true;
+      this.isLoadingPost = true;
+      this.getBottomContent(this.userCloneDatas.id);
+    }
+
   }
 
   public stopIsloading() {

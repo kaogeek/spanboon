@@ -37,6 +37,8 @@ export class CardPostContentHome implements OnInit {
     @Input()
     public ownerid: any;
     @Input()
+    public pageId: any;
+    @Input()
     public titlepost: any;
     @Input()
     public idpost: any;
@@ -74,7 +76,11 @@ export class CardPostContentHome implements OnInit {
     }
 
     public clickPost(idpost) {
-        this.clickToPost.emit(idpost);
+        if (!!this.pageId) {
+            this.clickToPost.emit(idpost);
+        } else {
+            this.clickToPost.emit({ idpost: idpost, userid: this.ownerid, type: 'USER' });
+        }
     }
 
     public clickUser(ownerid) {

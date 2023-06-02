@@ -173,4 +173,39 @@
             </div>
         </div>
     </div>
+
+    <div class="postcard-home bottom-content" *ngIf="isShowCard6" [ngClass]="class">
+        <div class="post-card-bottom" style="margin-top:unset;" *ngIf="!isRes1">
+            <div class="box-bottom" [ngStyle]="{'grid-template-columns': isRes ? '1fr 1fr' : '1fr 1fr 1fr 1fr'}">
+                <div class="box">
+                    <div class="div-preload" style="width: 60pt;height: 16px;margin: 20px 20px 0 0;"></div>
+                    <div class="div-preload" style="width: 50%;height: 16px;margin-top: 20px;"></div>
+                    <div class="div-preload" style="width: 100%;height: 175px"></div>
+                    <div class="div-preload" style="width: 50%;height: 24px;margin-top: 20px;"></div>
+                    <div class="div-preload" style="width: 30%;height: 24px;margin-top: 20px;margin-left: 10px;"></div>
+                </div>
+                <div class="box">
+                    <div class="div-preload" style="width: 60pt;height: 16px;margin: 20px 20px 0 0;"></div>
+                    <div class="div-preload" style="width: 50%;height: 16px;margin-top: 20px;"></div>
+                    <div class="div-preload" style="width: 100%;height: 175px"></div>
+                    <div class="div-preload" style="width: 50%;height: 24px;margin-top: 20px;"></div>
+                    <div class="div-preload" style="width: 30%;height: 24px;margin-top: 20px;margin-left: 10px;"></div>
+                </div>
+                <div class="box" *ngIf="!isRes">
+                    <div class="div-preload" style="width: 60pt;height: 16px;margin: 20px 20px 0 0;"></div>
+                    <div class="div-preload" style="width: 50%;height: 16px;margin-top: 20px;"></div>
+                    <div class="div-preload" style="width: 100%;height: 175px"></div>
+                    <div class="div-preload" style="width: 50%;height: 24px;margin-top: 20px;"></div>
+                    <div class="div-preload" style="width: 30%;height: 24px;margin-top: 20px;margin-left: 10px;"></div>
+                </div>
+                <div class="box" *ngIf="!isRes">
+                    <div class="div-preload" style="width: 60pt;height: 16px;margin: 20px 20px 0 0;"></div>
+                    <div class="div-preload" style="width: 50%;height: 16px;margin-top: 20px;"></div>
+                    <div class="div-preload" style="width: 100%;height: 175px"></div>
+                    <div class="div-preload" style="width: 50%;height: 24px;margin-top: 20px;"></div>
+                    <div class="div-preload" style="width: 30%;height: 24px;margin-top: 20px;margin-left: 10px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
