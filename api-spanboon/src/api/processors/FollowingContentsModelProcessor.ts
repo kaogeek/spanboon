@@ -676,11 +676,6 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                     }
                 }
                 result.dateTime = lastestDate;
-                let summation = undefined;
-                if (result.contents[0] !== undefined) {
-                    summation = result.contents[0].owner.posts.sort((a, b) => b.post.summationScore - a.post.summationScore);
-                    result.contents = summation;
-                }
                 resolve(result);
             } catch (error) {
                 reject(error);
