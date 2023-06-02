@@ -212,6 +212,11 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                             }
                         },
                         {
+                            $match: {
+                                gallery: { $ne: [] } 
+                            }
+                        },
+                        {
                             $lookup: {
                                 from: 'User',
                                 localField: 'ownerUser',

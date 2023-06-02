@@ -1668,6 +1668,11 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                                         }
                                     },
                                     {
+                                        $match: {
+                                            gallery: { $ne: [] } 
+                                        }
+                                    },
+                                    {
                                         $lookup: {
                                             from: 'User',
                                             localField: 'ownerUser',

@@ -1901,6 +1901,11 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                                     }
                                 },
                                 {
+                                    $match: {
+                                        gallery: { $ne: [] } 
+                                    }
+                                },
+                                {
                                     $lookup: {
                                         from: 'User',
                                         localField: 'ownerUser',
