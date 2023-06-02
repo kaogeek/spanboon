@@ -432,6 +432,199 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                         ]
                     );
                 }
+                if (pageFollowingContents === undefined) {
+                    async function createMachine(stateMachineDefintion: any): Promise<any> {
+                        const actions = {};
+                        const transitions = {};
+                        for (const [state, definition] of Object.entries(stateMachineDefintion)) {
+                            actions[state] = state || {};
+                            transitions[state] = definition || {};
+                        }
+                        return {
+                            currentState: stateMachineDefintion.initialState,
+                            value: stateMachineDefintion.initialState,
+                            actions,
+                            transitions,
+
+                            transition(action: any): any {
+                                const current = this.currentState;
+                                const transitionData = this.transitions[current][action];
+                                if (!transitionData) {
+                                    console.error(`Invalid transition from state ${current} with action ${action}`);
+                                    return this.value;
+                                }
+                                const { target, action: transitionAction } = transitionData;
+
+                                // execute transition action if present
+                                if (transitionAction) {
+                                    transitionAction();
+                                }
+                                if (this.actions[target] && this.actions[target][action]) {
+                                    this.actions[target][action]();
+                                }
+
+                                this.currentState = target;
+                                this.value = target;
+                                return this.value;
+                            }
+                        };
+                    }
+                    const machine: any = await createMachine({
+                        initialState: 'start',
+                        start: {
+                            actions: {
+                                openBracket(): any {
+                                    console.log('Start state: open bracket');
+                                },
+                            },
+                            transitions: {
+                                'undefined': { target: 'undefined', action: () => console.log('Transition to undefined state') }
+                            },
+                        },
+                        undefined: {
+                            actions: {
+                                undefined(char: any): any {
+                                    console.log('undefined state:', char);
+                                },
+                                closeBracket(): any {
+                                    console.log('Close bracket undefined state');
+                                },
+                            },
+                            transitions: {
+                                'end': { target: 'end', action: () => console.log('Transition to end state') }
+                            },
+                        },
+                        end: {
+                            actions: {
+                                closeBracket(): any {
+                                    console.log('Close bracket end state');
+                                }
+                            }
+                        }
+                    });
+                    const findFollowNextState = await this.userFollowService.aggregate(
+                        [
+                            {
+                                $match: {
+                                    userId: objIds,
+                                    subjectId: { $ne: pageIds }
+                                }
+                            },
+                            {
+                                $project: {
+                                    subjectId: 1,
+                                    subjectType: 1,
+                                    _id: 0
+                                }
+                            },
+                        ]);
+                    async function checkPost(post: any): Promise<any> {
+                        if (post.length > 0) {
+                            return 'end';
+                        } else {
+                            return 'undefined';
+                        }
+                    }
+
+                    if (findFollowNextState.length > 0) {
+                        for (let i = 0; i < findFollowNextState.length; i++) {
+                            if (findFollowNextState[i].subjectType === 'PAGE') {
+                                pageIds.push((new ObjectID(findFollowNextState[i].subjectId)));
+                            }
+                        }
+                    }
+                    if (pageIds.length > 0) {
+                        pageFollowingContents = await this.pageService.aggregate(
+                            [
+                                {
+                                    $match: {
+                                        _id: { $in: pageIds },
+                                    },
+                                },
+                                {
+                                    $lookup: {
+                                        from: 'Posts',
+                                        let: { id: '$_id' },
+                                        pipeline: [
+                                            {
+                                                $match: {
+                                                    $expr: {
+                                                        $eq: ['$$id', '$pageId'],
+                                                    },
+                                                },
+                                            },
+                                            {
+                                                $sort: {
+                                                    summationScore: -1
+                                                },
+                                            },
+                                            {
+                                                $skip: offset
+                                            },
+                                            {
+                                                $limit: limit,
+
+                                            },
+                                            {
+                                                $lookup: {
+                                                    from: 'PostsGallery',
+                                                    localField: '_id',
+                                                    foreignField: 'post',
+                                                    as: 'gallery',
+                                                },
+                                            },
+                                            {
+                                                $lookup: {
+                                                    from: 'User',
+                                                    let: { ownerUser: '$ownerUser' },
+                                                    pipeline: [
+                                                        {
+                                                            $match: {
+                                                                $expr: { $eq: ['$$ownerUser', '$_id'] },
+                                                            },
+
+                                                        },
+                                                        { $project: { email: 0, username: 0, password: 0 } }
+                                                    ],
+                                                    as: 'user'
+                                                }
+                                            },
+                                            {
+                                                $unwind: {
+                                                    path: '$user',
+                                                    preserveNullAndEmptyArrays: true
+                                                }
+                                            },
+                                            {
+                                                $project: {
+                                                    story: 0
+                                                }
+
+                                            },
+                                        ],
+                                        as: 'posts',
+                                    },
+                                },
+                                {
+                                    $addFields: {
+                                        'page.posts': '$posts',
+                                    },
+                                },
+                                {
+                                    $project: {
+                                        posts: 0,
+                                    },
+                                },
+                            ]);
+                    }
+                    let stateMachine = machine.value;
+                    const posting = await checkPost(pageFollowingContents);
+                    if (posting) {
+                        stateMachine = machine.transition(posting);
+                    }
+                    console.log('posting', posting);
+                    console.log('stateMachine', stateMachine);
+                }
                 const result: SectionModel = new SectionModel();
                 result.title = (this.config === undefined || this.config.title === undefined) ? 'ข่าวสารก่อนหน้านี้' : this.config.title;
                 result.subtitle = '';
@@ -621,4 +814,5 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
         }
         return objectiveResult;
     }
+
 }
