@@ -10,10 +10,6 @@ import { SectionModel } from '../models/SectionModel';
 import { PostsService } from '../services/PostsService';
 import { SearchFilter } from '../controllers/requests/SearchFilterRequest';
 import { S3Service } from '../services/S3Service';
-import { UserLikeService } from '../services/UserLikeService';
-import { IsReadPostService } from '../services/IsReadPostService';
-import { UserLike } from '../models/UserLike';
-import { LIKE_TYPE } from '../../constants/LikeType';
 import { ObjectID } from 'mongodb';
 import moment from 'moment';
 
@@ -23,8 +19,6 @@ export class IsReadSectionProcessor extends AbstractSeparateSectionProcessor {
     constructor(
         private postsService: PostsService,
         private s3Service: S3Service,
-        private userLikeService: UserLikeService,
-        private isReadPostService: IsReadPostService
     ) {
         super();
     }
@@ -34,14 +28,13 @@ export class IsReadSectionProcessor extends AbstractSeparateSectionProcessor {
             try {
                 // get config
                 let searchOfficialOnly: number = undefined;
-                let userId = undefined;
+                let isReadPostIds = undefined;
                 // get startDateTime, endDateTime
                 let startDateTime: Date = undefined;
                 if (this.data !== undefined && this.data !== null) {
                     startDateTime = this.data.startDateTime;
-                    userId = this.data.userId;
+                    isReadPostIds = this.data.postIds;
                 }
-                const objIds = new ObjectID(userId);
                 let limit: number = undefined;
                 let offset: number = undefined;
                 if (this.config !== undefined && this.config !== null) {
@@ -56,7 +49,6 @@ export class IsReadSectionProcessor extends AbstractSeparateSectionProcessor {
                         searchOfficialOnly = this.config.searchOfficialOnly;
                     }
                 }
-
                 limit = (limit === undefined || limit === null) ? this.DEFAULT_SEARCH_LIMIT : this.DEFAULT_SEARCH_LIMIT;
                 offset = (offset === undefined || offset === null) ? this.DEFAULT_SEARCH_OFFSET : offset;
                 const searchFilter: SearchFilter = new SearchFilter();
@@ -75,30 +67,25 @@ export class IsReadSectionProcessor extends AbstractSeparateSectionProcessor {
                     isClose: false
                 };
                 // const today = moment().add(month, 'month').toDate();
-                const today = moment().toDate();
-                let postIds = undefined;
-                const checkIsRead = await this.isReadPostService.aggregate
-                    (
-                        [
-                            {
-                                $match:
-                                {
-                                    userId: objIds
-                                }
-                            }
-                        ]
-                    );
-                if (checkIsRead.length > 0) {
-                    for (let i = 0; i < checkIsRead.length; i++) {
-                        const mapIds = checkIsRead[i].postId.map(ids => new ObjectID(ids));
-                        postIds = mapIds;
+                const postIds = [];
+                let mapIds = undefined;
+                if(isReadPostIds.length>0){
+                    for(let i = 0 ; i<isReadPostIds.length;i++){
+                        postIds.push(isReadPostIds[i].postId);
                     }
                 }
+                if(postIds.length>0){
+                    for(let j = 0 ; j<postIds.length;j++){
+                        mapIds = postIds.flat().map(id => new ObjectID(id));
+                    }
+                }
+                const today = moment().toDate();
+
                 const postMatchStmt:any = {
                     isDraft: false,
                     deleted: false,
                     hidden: false,
-                    _id: { $nin: postIds }
+                    _id: { $nin: mapIds }
                 };
                 const dateTimeAndArray = [];
                 if (startDateTime !== undefined && startDateTime !== null) {
@@ -205,12 +192,6 @@ export class IsReadSectionProcessor extends AbstractSeparateSectionProcessor {
 
                     // search isLike
                     row.isLike = false;
-                    if (userId !== undefined && userId !== undefined && userId !== '') {
-                        const userLikes: UserLike[] = await this.userLikeService.find({ userId: new ObjectID(userId), subjectId: row._id, subjectType: LIKE_TYPE.POST });
-                        if (userLikes.length > 0) {
-                            row.isLike = true;
-                        }
-                    }
 
                     contents.owner = {};
                     if (row.page !== undefined) {

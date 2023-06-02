@@ -45,7 +45,6 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                 }
                 const sorts = position.sort((a, b) => Math.abs(a) - Math.abs(b) || a - b);
                 let checkPosition = undefined;
-                let limits = undefined;
                 let userId = undefined;
                 let filterContentsRobin = undefined;
                 // get startDateTime, endDateTime
@@ -57,7 +56,6 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     userId = this.data.userId;
                     filterContentsRobin = this.data.filterContentsRobin;
                     checkPosition = this.data.checkPosition1;
-                    limits = this.data.configLimit;
                 }
                 const postId = [];
                 const sortV = [];
@@ -228,7 +226,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
 
                         },
                         {
-                            '$limit': limits
+                            '$limit': limit
                         }
                     ];
                     if (searchOfficialOnly) {
@@ -453,7 +451,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
 
                                 },
                                 {
-                                    '$limit': limits
+                                    '$limit': limit
                                 }
                             ];
                             if (searchOfficialOnly) {
@@ -717,7 +715,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
 
                                 },
                                 {
-                                    '$limit': limits
+                                    '$limit': limit
                                 }
                             ];
                             if (searchOfficialOnly) {
@@ -984,7 +982,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
 
                                 },
                                 {
-                                    '$limit': limits
+                                    '$limit': limit
                                 }
                             ];
                             if (searchOfficialOnly) {
@@ -1213,7 +1211,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
 
                         },
                         {
-                            '$limit': limits
+                            '$limit': limit
                         }
 
                     ];
@@ -1446,7 +1444,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
 
                                 },
                                 {
-                                    '$limit': limits
+                                    '$limit': limit
                                 }
                             ];
                             if (searchOfficialOnly) {
@@ -1713,7 +1711,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
 
                                 },
                                 {
-                                    '$limit': limits
+                                    '$limit': limit
                                 }
                             ];
                             if (searchOfficialOnly) {
@@ -1977,7 +1975,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
 
                                 },
                                 {
-                                    '$limit': limits
+                                    '$limit': limit
                                 }
                             ];
                             if (searchOfficialOnly) {
