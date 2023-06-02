@@ -145,6 +145,14 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                         },
                                         {
                                             $lookup: {
+                                                from: 'Page',
+                                                localField: 'pageId',
+                                                foreignField: '_id',
+                                                as: 'page'
+                                            }
+                                        },
+                                        {
+                                            $lookup: {
                                                 from: 'PostsGallery',
                                                 localField: '_id',
                                                 foreignField: 'post',
@@ -226,6 +234,14 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                         {
                                             $limit: limit + offset,
 
+                                        },
+                                        {
+                                            $lookup: {
+                                                from: 'Page',
+                                                localField: 'pageId',
+                                                foreignField: '_id',
+                                                as: 'page'
+                                            }
                                         },
                                         {
                                             $lookup: {
@@ -312,8 +328,8 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                         {
                                             $lookup: {
                                                 from: 'Page',
-                                                localField: '_id',
-                                                foreignField: 'pageId',
+                                                localField: 'pageId',
+                                                foreignField: '_id',
                                                 as: 'page'
                                             }
                                         },
@@ -393,8 +409,8 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                         {
                                             $lookup: {
                                                 from: 'Page',
-                                                localField: '_id',
-                                                foreignField: 'pageId',
+                                                localField: 'pageId',
+                                                foreignField: '_id',
                                                 as: 'page'
                                             }
                                         },

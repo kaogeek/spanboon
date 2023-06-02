@@ -12,10 +12,12 @@ import { S3Service } from '../services/S3Service';
 import { UserService } from '../services/UserService';
 import { UserFollowService } from '../services/UserFollowService';
 import { PageObjectiveService } from '../services/PageObjectiveService';
-// import { UserLike } from '../models/UserLike';
+import { UserLikeService } from '../services/UserLikeService';
+import { UserLike } from '../models/UserLike';
 import { ObjectID } from 'mongodb';
 import { PageService } from '../services/PageService';
 import { EmergencyEventService } from '../services/EmergencyEventService';
+import { LIKE_TYPE } from '../../constants/LikeType';
 // import { EmergencyEventService } from '../services/EmergencyEventService';
 export class FollowingContentsModelProcessor extends AbstractSeparateSectionProcessor {
     private DEFAULT_SEARCH_LIMIT = 10;
@@ -23,7 +25,7 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
     constructor(
         // private postsService: PostsService,
         private s3Service: S3Service,
-        // private userLikeService: UserLikeService,
+        private userLikeService: UserLikeService,
         private emergencyEventService: EmergencyEventService,
         private pageObjectiveService: PageObjectiveService,
         private userFollowService: UserFollowService,
@@ -149,6 +151,14 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                         {
                                             $limit: limit,
 
+                                        },
+                                        {
+                                            $lookup: {
+                                                from: 'Page',
+                                                localField: 'pageId',
+                                                foreignField: '_id',
+                                                as: 'page'
+                                            }
                                         },
                                         {
                                             $lookup: {
@@ -433,6 +443,9 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                     );
                 }
                 if (pageFollowingContents === undefined) {
+                    const pageIdsState = [];
+                    let limitState = 2;
+                    let offsetState = 2;
                     async function createMachine(stateMachineDefintion: any): Promise<any> {
                         const actions = {};
                         const transitions = {};
@@ -511,6 +524,12 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                 }
                             },
                             {
+                                $skip: this.data.offsetFollows + offsetState
+                            },
+                            {
+                                $limit: this.data.limitFollows + limitState
+                            },
+                            {
                                 $project: {
                                     subjectId: 1,
                                     subjectType: 1,
@@ -529,16 +548,16 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                     if (findFollowNextState.length > 0) {
                         for (let i = 0; i < findFollowNextState.length; i++) {
                             if (findFollowNextState[i].subjectType === 'PAGE') {
-                                pageIds.push((new ObjectID(findFollowNextState[i].subjectId)));
+                                pageIdsState.push((new ObjectID(findFollowNextState[i].subjectId)));
                             }
                         }
                     }
-                    if (pageIds.length > 0) {
+                    if (pageIdsState.length > 0) {
                         pageFollowingContents = await this.pageService.aggregate(
                             [
                                 {
                                     $match: {
-                                        _id: { $in: pageIds },
+                                        _id: { $in: pageIdsState },
                                     },
                                 },
                                 {
@@ -564,6 +583,14 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                             {
                                                 $limit: limit,
 
+                                            },
+                                            {
+                                                $lookup: {
+                                                    from: 'Page',
+                                                    localField: 'pageId',
+                                                    foreignField: '_id',
+                                                    as: 'page'
+                                                }
                                             },
                                             {
                                                 $lookup: {
@@ -619,11 +646,20 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                     }
                     let stateMachine = machine.value;
                     const posting = await checkPost(pageFollowingContents);
-                    if (posting) {
+                    if (posting !== 'end') {
                         stateMachine = machine.transition(posting);
+                        console.log('posting', posting);
+                        console.log('stateMachine', stateMachine);
+                    } else {
+                        limitState += 2;
+                        offsetState += 2;
                     }
-                    console.log('posting', posting);
-                    console.log('stateMachine', stateMachine);
+                }
+                const stackPosts = [];
+                if (pageFollowingContents !== undefined) {
+                    for (const stacks of pageFollowingContents) {
+                        stackPosts.push(stacks.page.posts);
+                    }
                 }
                 const result: SectionModel = new SectionModel();
                 result.title = (this.config === undefined || this.config.title === undefined) ? 'ข่าวสารก่อนหน้านี้' : this.config.title;
@@ -633,45 +669,41 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                 result.contents = [];
                 result.type = 'ข่าวสารก่อนหน้านี้'; // set type by processor type
                 const lastestDate = null;
-                if (pageFollowingContents !== undefined) {
-                    for (const rows of pageFollowingContents) {
-                        if (rows.page.posts.length > 0) {
-                            const contents: any = {};
-                            contents.owner = {};
-                            if (rows.page !== undefined) {
-                                contents.owner = await this.parsePageField(rows, rows.page.posts);
+                if (stackPosts.length > 0) {
+                    for (const row of stackPosts.flat()) {
+                        const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
+                        const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
+
+                        const contents: any = {};
+                        contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
+                        if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
+                            try {
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
+                                contents.coverPageSignUrl = signUrl;
+                            } catch (error) {
+                                console.log('PostSectionProcessor: ' + error);
                             }
-                            result.contents.push(contents);
                         }
-                    }
-                }
-                if (userFollowingContents !== undefined) {
-                    for (const rows of userFollowingContents) {
-                        const contents: any = {};
+
+                        // search isLike
+                        row.isLike = false;
+                        if (userId !== undefined && userId !== undefined && userId !== '') {
+                            const userLikes: UserLike[] = await this.userLikeService.find({ userId: new ObjectID(userId), subjectId: row._id, subjectType: LIKE_TYPE.POST });
+                            if (userLikes.length > 0) {
+                                row.isLike = true;
+                            }
+                        }
+
                         contents.owner = {};
-                        if (rows !== undefined) {
-                            contents.owner = await this.parseUserField(rows, rows.user.posts);
+                        if (row.page !== undefined) {
+                            contents.owner = this.parsePageField(row.page);
+                        } else {
+                            contents.owner = this.parseUserField(user);
                         }
-                        result.contents.push(contents);
-                    }
-                }
-                if (emergencyFollowingContents !== undefined) {
-                    for (const rows of emergencyFollowingContents) {
-                        const contents: any = {};
-                        contents.owner = {};
-                        if (rows !== undefined) {
-                            contents.owner = await this.parseEmergencyField(rows, rows.posts);
-                        }
-                        result.contents.push(contents);
-                    }
-                }
-                if (objectiveFollowingContents !== undefined) {
-                    for (const rows of objectiveFollowingContents) {
-                        const contents: any = {};
-                        contents.owner = {};
-                        if (rows !== undefined) {
-                            contents.owner = await this.parseObjectiveField(rows, rows.posts);
-                        }
+                        // remove page agg
+                        // delete row.page;
+                        delete row.user;
+                        contents.post = row;
                         result.contents.push(contents);
                     }
                 }
@@ -682,38 +714,22 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
             }
         });
     }
-    private async parsePageField(page: any, posts: any): Promise<any> {
+    private parsePageField(page: any): any {
         const pageResult: any = {};
+
         if (page !== undefined) {
-            pageResult.id = page._id;
-            pageResult.name = page.name;
-            pageResult.imageURL = page.imageURL;
-            pageResult.isOfficial = page.isOfficial;
-            pageResult.uniqueId = page.pageUsername;
+            pageResult.id = page[0]._id;
+            pageResult.name = page[0].name;
+            pageResult.imageURL = page[0].imageURL;
+            pageResult.isOfficial = page[0].isOfficial;
+            pageResult.uniqueId = page[0].pageUsername;
             pageResult.type = 'PAGE';
-            pageResult.posts = [];
-            for (const row of posts) {
-                const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
-                const contents: any = {};
-                contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                if (firstImage !== undefined && firstImage.s3ImageURL !== undefined) {
-                    try {
-                        const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
-                        contents.coverPageSignUrl = signUrl;
-                    } catch (error) {
-                        console.log('PostSectionProcessor: ' + error);
-                    }
-                }
-                row.isLike = false;
-                contents.post = row;
-                pageResult.posts.push(contents);
-            }
         }
 
         return pageResult;
     }
 
-    private async parseUserField(user: any, posts: any): Promise<any> {
+    private parseUserField(user: any): any {
         const userResult: any = {};
 
         if (user !== undefined) {
@@ -724,90 +740,9 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
             userResult.isAdmin = user.isAdmin;
             userResult.uniqueId = user.uniqueId;
             userResult.type = 'USER';
-            userResult.posts = [];
-            for (const row of posts) {
-                const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
-                const contents: any = {};
-                contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                if (firstImage !== undefined && firstImage.s3ImageURL !== undefined) {
-                    try {
-                        const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
-                        contents.coverPageSignUrl = signUrl;
-                    } catch (error) {
-                        console.log('PostSectionProcessor: ' + error);
-                    }
-                }
-                row.isLike = false;
-                contents.post = row;
-                userResult.posts.push(contents);
-            }
-
         }
 
         return userResult;
-    }
-    private async parseEmergencyField(emergency: any, posts: any): Promise<any> {
-        const emergencyResult: any = {};
-        if (emergency !== undefined) {
-            emergencyResult.id = emergency._id;
-            emergencyResult.title = emergency.title;
-            emergencyResult.detail = emergency.detail;
-            emergencyResult.hashtag = emergency.hashTag;
-            emergencyResult.isPin = emergency.isPin;
-            emergencyResult.coverPageURL = emergency.coverPageURL;
-            emergencyResult.s3CoverPageURL = emergency.s3CoverPageURL;
-            emergencyResult.type = 'EMERGENCY';
-            emergencyResult.posts = [];
-            for (const row of posts) {
-                const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
-                const contents: any = {};
-                contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                if (firstImage !== undefined && firstImage.s3ImageURL !== undefined) {
-                    try {
-                        const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
-                        contents.coverPageSignUrl = signUrl;
-                    } catch (error) {
-                        console.log('PostSectionProcessor: ' + error);
-                    }
-                }
-                row.isLike = false;
-                contents.post = row;
-                emergencyResult.posts.push(contents);
-            }
-        }
-        return emergencyResult;
-    }
-    private async parseObjectiveField(objective: any, posts: any): Promise<any> {
-        const objectiveResult: any = {};
-        if (objective !== undefined) {
-            objectiveResult.id = objective._id;
-            objectiveResult.pageId = objective.pageId;
-            objectiveResult.title = objective.title;
-            objectiveResult.detail = objective.detail;
-            objectiveResult.iconURL = objective.iconURL;
-            objectiveResult.category = objective.category;
-            objectiveResult.hashTag = objective.hashTag;
-            objectiveResult.s3IconURL = objective.s3IconURL;
-            objectiveResult.posts = [];
-            for (const row of posts) {
-                const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
-                const contents: any = {};
-                contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                if (firstImage !== undefined && firstImage.s3ImageURL !== undefined) {
-                    try {
-                        const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
-                        contents.coverPageSignUrl = signUrl;
-                    } catch (error) {
-                        console.log('PostSectionProcessor: ' + error);
-                    }
-                }
-                row.isLike = false;
-                contents.post = row;
-                objectiveResult.posts.push(contents);
-
-            }
-        }
-        return objectiveResult;
     }
 
 }

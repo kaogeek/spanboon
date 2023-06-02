@@ -472,7 +472,7 @@ export class MainPageController {
         const followingContentsModelProcessor: FollowingContentsModelProcessor = new FollowingContentsModelProcessor(
             /* this.postsService */
             this.s3Service,
-            /* this.userLikeService*/
+            this.userLikeService,
             this.emergencyEventService,
             this.pageObjectiveService,
             this.userFollowService,
