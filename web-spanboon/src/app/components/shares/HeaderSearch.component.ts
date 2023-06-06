@@ -17,6 +17,7 @@ import { map, distinctUntilChanged, debounceTime, takeUntil } from 'rxjs/operato
 import { CookieUtil } from '../../utils/CookieUtil';
 import { ValidBase64ImageUtil } from '../../utils/ValidBase64ImageUtil';
 import { environment } from 'src/environments/environment';
+import { CountdownConfig } from 'ngx-countdown';
 
 declare var $: any;
 const SEARCH_LIMIT: number = 10;
@@ -74,6 +75,8 @@ export class HeaderSearch extends AbstractPage implements OnInit {
   public apiBaseURL = environment.apiBaseURL;
   public isTabClick: string;
   public isLimit: boolean = false;
+
+  public configCountdown: CountdownConfig = { leftTime: 180, format: 'mm:ss' };
 
   @ViewChild('tabs', { static: false }) private tabs: ElementRef;
   @ViewChild('wrapperBodyTag', { static: false }) private wrapperBodyTag: ElementRef;
