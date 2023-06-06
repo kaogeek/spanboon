@@ -69,35 +69,26 @@ export class IsReadSectionProcessor extends AbstractSeparateSectionProcessor {
                 // const today = moment().add(month, 'month').toDate();
                 const postIds = [];
                 let mapIds = undefined;
-                if(isReadPostIds.length>0){
-                    for(let i = 0 ; i<isReadPostIds.length;i++){
+                if (isReadPostIds.length > 0) {
+                    for (let i = 0; i < isReadPostIds.length; i++) {
                         postIds.push(isReadPostIds[i].postId);
                     }
                 }
-                if(postIds.length>0){
-                    for(let j = 0 ; j<postIds.length;j++){
+                console.log('postIds',postIds);
+                if (postIds.length > 0) {
+                    for (let j = 0; j < postIds.length; j++) {
                         mapIds = postIds.flat().map(id => new ObjectID(id));
                     }
                 }
-                const today = moment().toDate();
-
                 const postMatchStmt:any = {
                     isDraft: false,
                     deleted: false,
                     hidden: false,
+                    startDateTime: { $lte: startDateTime },
                     _id: { $nin: mapIds }
                 };
-                const dateTimeAndArray = [];
-                if (startDateTime !== undefined && startDateTime !== null) {
-                    dateTimeAndArray.push({ startDateTime: { $lte: startDateTime } });
-                }
-
-                if (dateTimeAndArray.length > 0) {
-                    postMatchStmt['$and'] = dateTimeAndArray;
-                } else {
-                    // default if startDateTime and endDateTime is not defined.
-                    postMatchStmt.startDateTime = { $lte: today };
-                }
+                console.log('postMatchStmt',postMatchStmt);
+                console.log('startDateTime',startDateTime);
                 const postStmt = [
                     { $match: postMatchStmt },
                     {

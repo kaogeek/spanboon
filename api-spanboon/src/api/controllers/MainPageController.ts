@@ -513,38 +513,6 @@ export class MainPageController {
         const objIds = new ObjectID(userId);
         const user = await this.userService.findOne({ _id: objIds });
         // check is read
-        const checkIsRead = await this.isReadPostService.aggregate
-            (
-                [
-                    {
-                        $match:
-                        {
-                            userId: objIds,
-                            postId: { $in: data.postId }
-                        }
-                    },
-                    {
-                        $limit: 1
-                    }
-                ]
-            );
-        if (checkIsRead.length > 0) {
-            const postIds = data.postId.map(ids => new ObjectID(ids));
-            const isRead = await this.postsService.aggregate(
-                [
-                    {
-                        $match: {
-                            _id: { $in: postIds }
-                        }
-                    }
-                ]
-            );
-            const result: any = {};
-            result.isReadPost = isRead;
-            result.userIds = objIds;
-            const successResponse = ResponseUtil.getSuccessResponse('The content has already been read.', result);
-            return res.status(200).send(successResponse);
-        }
         if (user) {
             // check is read
             if (data.postId.length > 0) {
