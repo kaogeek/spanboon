@@ -354,7 +354,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     // if (this.isLogin) {
     //   this.getSubject();
     // }
-    if (this.isLogin() && !!this.model) {
+    if (this.isLogin()) {
       this.getBottomContent(this.userCloneDatas.id);
     }
     this.showLoading = false;
