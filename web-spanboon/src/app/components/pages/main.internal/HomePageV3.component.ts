@@ -319,6 +319,19 @@ export class HomePageV3 extends AbstractPage implements OnInit {
             if (!!res.linkAnnounceMent || !!res.data.linkAnnounceMent) {
               this.linkAnnounce = res.linkAnnounceMent ? res.linkAnnounceMent : res.data.linkAnnounceMent;
             }
+
+            setTimeout(() => {
+              let list = document.getElementsByClassName("card-content");
+              let leng = list.length;
+              let div = document.getElementsByClassName("idpost");
+              for (let index = 0; index < leng; index++) {
+                if (div[index]) {
+                  let doc = div[index].innerHTML;
+                  this.listContent.push(doc)
+                }
+              }
+            }, 2000);
+
             const dateFormat = new Date();
             const dateReal = dateFormat.setDate(dateFormat.getDate());
             this.dateValues = new Date(dateReal).toISOString(); // convert to ISO string
