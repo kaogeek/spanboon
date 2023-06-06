@@ -13,7 +13,7 @@ import { S3Service } from '../services/S3Service';
 import { ObjectID } from 'mongodb';
 
 export class IsReadSectionProcessor extends AbstractSeparateSectionProcessor {
-    private DEFAULT_SEARCH_LIMIT = 10;
+    private DEFAULT_SEARCH_LIMIT = 8;
     private DEFAULT_SEARCH_OFFSET = 0;
     constructor(
         private postsService: PostsService,
