@@ -129,7 +129,7 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                 let userFollowingContents = undefined;
                 let emergencyFollowingContents = undefined;
                 let objectiveFollowingContents = undefined; */
-                if (pageIds.length > 0) {
+                if (pageIds.length > 0 && postIds !== undefined && postIds.length > 0) {
                     pageFollowingContents = await this.pageService.aggregate(
                         [
                             {
@@ -147,7 +147,98 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                                 $expr: {
                                                     $eq: ['$$id', '$pageId'],
                                                 },
-                                                _id:{$nin:postIds}
+                                                _id: { $nin: postIds }
+                                            },
+                                        },
+                                        {
+                                            $sort: {
+                                                summationScore: -1
+                                            },
+                                        },
+                                        {
+                                            $skip: offset
+                                        },
+                                        {
+                                            $limit: limit,
+
+                                        },
+                                        {
+                                            $lookup: {
+                                                from: 'Page',
+                                                localField: 'pageId',
+                                                foreignField: '_id',
+                                                as: 'page'
+                                            }
+                                        },
+                                        {
+                                            $lookup: {
+                                                from: 'PostsGallery',
+                                                localField: '_id',
+                                                foreignField: 'post',
+                                                as: 'gallery',
+                                            },
+                                        },
+                                        {
+                                            $lookup: {
+                                                from: 'User',
+                                                let: { ownerUser: '$ownerUser' },
+                                                pipeline: [
+                                                    {
+                                                        $match: {
+                                                            $expr: { $eq: ['$$ownerUser', '$_id'] },
+                                                        },
+
+                                                    },
+                                                    { $project: { email: 0, username: 0, password: 0 } }
+                                                ],
+                                                as: 'user'
+                                            }
+                                        },
+                                        {
+                                            $unwind: {
+                                                path: '$user',
+                                                preserveNullAndEmptyArrays: true
+                                            }
+                                        },
+                                        {
+                                            $project: {
+                                                story: 0
+                                            }
+
+                                        },
+                                    ],
+                                    as: 'posts',
+                                },
+                            },
+                            {
+                                $addFields: {
+                                    'page.posts': '$posts',
+                                },
+                            },
+                            {
+                                $project: {
+                                    posts: 0,
+                                },
+                            },
+                        ]);
+                } else {
+                    pageFollowingContents = await this.pageService.aggregate(
+                        [
+                            {
+                                $match: {
+                                    _id: { $in: pageIds },
+                                },
+                            },
+                            {
+                                $lookup: {
+                                    from: 'Posts',
+                                    let: { id: '$_id' },
+                                    pipeline: [
+                                        {
+                                            $match: {
+                                                $expr: {
+                                                    $eq: ['$$id', '$pageId'],
+                                                },
                                             },
                                         },
                                         {
@@ -581,7 +672,7 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                                     $expr: {
                                                         $eq: ['$$id', '$pageId'],
                                                     },
-                                                    _id:{$nin:postIds}
+                                                    _id: { $nin: postIds }
                                                 },
                                             },
                                             {

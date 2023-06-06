@@ -11,7 +11,6 @@ import { PostsService } from '../services/PostsService';
 import { SearchFilter } from '../controllers/requests/SearchFilterRequest';
 import { S3Service } from '../services/S3Service';
 import { ObjectID } from 'mongodb';
-import moment from 'moment';
 
 export class IsReadSectionProcessor extends AbstractSeparateSectionProcessor {
     private DEFAULT_SEARCH_LIMIT = 10;
@@ -69,25 +68,31 @@ export class IsReadSectionProcessor extends AbstractSeparateSectionProcessor {
                 // const today = moment().add(month, 'month').toDate();
                 const postIds = [];
                 let mapIds = undefined;
+                let postMatchStmt: any = undefined;
                 if (isReadPostIds.length > 0) {
                     for (let i = 0; i < isReadPostIds.length; i++) {
                         postIds.push(isReadPostIds[i].postId);
                     }
                 }
                 if (postIds.length > 0) {
-                    for (let j = 0; j < postIds.length; j++) {
-                        mapIds = postIds.flat().map(id => new ObjectID(id));
-                    }
+                    mapIds = postIds.flat().map(id => new ObjectID(id));
                 }
-                const postMatchStmt:any = {
-                    isDraft: false,
-                    deleted: false,
-                    hidden: false,
-                    startDateTime: { $lte: startDateTime },
-                    _id: { $nin: mapIds }
-                };
-                console.log('postMatchStmt',postMatchStmt);
-                console.log('startDateTime',startDateTime);
+                if (mapIds !== undefined && mapIds.length > 0) {
+                    postMatchStmt = {
+                        isDraft: false,
+                        deleted: false,
+                        hidden: false,
+                        startDateTime: { $lte: startDateTime },
+                        _id: { $nin: mapIds }
+                    };
+                } else {
+                    postMatchStmt = {
+                        isDraft: false,
+                        deleted: false,
+                        hidden: false,
+                        startDateTime: { $lte: startDateTime },
+                    };
+                }
                 const postStmt = [
                     { $match: postMatchStmt },
                     {

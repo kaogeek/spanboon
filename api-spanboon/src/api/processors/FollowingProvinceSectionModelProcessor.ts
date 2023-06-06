@@ -24,7 +24,7 @@ export class FollowingProvinceSectionModelProcessor extends AbstractSeparateSect
         private postsService: PostsService,
         private s3Service: S3Service,
         private userLikeService: UserLikeService,
-        private userService:UserService,
+        private userService: UserService,
         private pageService: PageService
     ) {
         super();
@@ -90,30 +90,30 @@ export class FollowingProvinceSectionModelProcessor extends AbstractSeparateSect
                 const userProvince = await this.userService.aggregate(
                     [
                         {
-                            $match:{
-                                _id:objIds,
+                            $match: {
+                                _id: objIds,
                             }
                         },
                         {
-                            $project:{
-                                province:1,
-                                _id:0
+                            $project: {
+                                province: 1,
+                                _id: 0
                             }
                         }
                     ]
                 );
                 let pageProvince = undefined;
-                if(userProvince.length>0){
+                if (userProvince.length > 0) {
                     pageProvince = await this.pageService.aggregate([
                         {
-                            $match:{
-                                isOfficial:true,
-                                province:userProvince[0].province
+                            $match: {
+                                isOfficial: true,
+                                province: userProvince[0].province
                             }
                         },
                     ]);
-                    if(pageProvince.length>0){
-                        for(let i = 0;i<pageProvince.length;i++){
+                    if (pageProvince.length > 0) {
+                        for (let i = 0; i < pageProvince.length; i++) {
                             pageId.push(new ObjectID(pageProvince[i]._id));
                         }
                     }
@@ -122,14 +122,25 @@ export class FollowingProvinceSectionModelProcessor extends AbstractSeparateSect
                 // PAGE
                 // EMERGENCY_EVENT
                 // OBJECTIVE
-                const postMatchStmt: any = {
-                    isDraft: false,
-                    deleted: false,
-                    hidden: false,
-                    startDateTime: { $lte: endDateTime},
-                    pageId: { $in: pageId },
-                    _id:{$nin:postIds}
-                };
+                let postMatchStmt: any = undefined;
+                if (postIds !== undefined && postIds.length > 0) {
+                    postMatchStmt = {
+                        isDraft: false,
+                        deleted: false,
+                        hidden: false,
+                        startDateTime: { $lte: endDateTime },
+                        pageId: { $in: pageId },
+                        _id: { $nin: postIds }
+                    };
+                } else {
+                    postMatchStmt = {
+                        isDraft: false,
+                        deleted: false,
+                        hidden: false,
+                        startDateTime: { $lte: endDateTime },
+                        pageId: { $in: pageId },
+                    };
+                }
                 const postStmt = [
                     { $match: postMatchStmt },
                     { $sort: { summationScore: -1 } },
@@ -201,7 +212,7 @@ export class FollowingProvinceSectionModelProcessor extends AbstractSeparateSect
                 const postAggregate = await this.postsService.aggregate(postStmt);
                 const lastestDate = null;
                 const result: SectionModel = new SectionModel();
-                result.title = (this.config === undefined || this.config.title === undefined) ? 'ก้าวไกล'+userProvince[0].province : this.config.title;
+                result.title = (this.config === undefined || this.config.title === undefined) ? 'ก้าวไกล' + userProvince[0].province : this.config.title;
                 result.subtitle = '';
                 result.description = '';
                 result.iconUrl = '';
