@@ -74,7 +74,6 @@ export class IsReadSectionProcessor extends AbstractSeparateSectionProcessor {
                         postIds.push(isReadPostIds[i].postId);
                     }
                 }
-                console.log('postIds',postIds);
                 if (postIds.length > 0) {
                     for (let j = 0; j < postIds.length; j++) {
                         mapIds = postIds.flat().map(id => new ObjectID(id));

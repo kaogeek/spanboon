@@ -508,17 +508,51 @@ export class MainPageController {
 
     @Post('/is/read')
     public async isRead(@Body({ validate: true }) data: IsRead, @Res() res: any, @Req() req: any): Promise<any> {
-
         const userId = req.headers.userid;
         const objIds = new ObjectID(userId);
         const user = await this.userService.findOne({ _id: objIds });
+        const findPostIds = await this.isReadPostService.aggregate([
+            {
+                $match:{userId:objIds}
+            },
+            {
+                $unwind: {
+                    path: '$user',
+                    preserveNullAndEmptyArrays: true
+                }
+            },   
+        ]);
         // check is read
         if (user) {
+            const stackPostIds = [];
+            const postObjString = [];
+            if(findPostIds.length>0){
+                for(let i = 0 ; i<findPostIds.length;i++){
+                    stackPostIds.push(findPostIds[i].postId);
+                }
+            }
+            if(data.postId.length>0){
+                for(let j = 0 ; j<data.postId.length;j++){
+                    if(data.postId[j] !== undefined && data.postId[j] !== null){
+                        postObjString.push(String(data.postId[j]));
+                    }else{
+                        continue;
+                    }
+                }
+            }
+            if(stackPostIds.flat().length>0){
+                for(let z = 0 ;z<stackPostIds.flat().length;z++){
+                    postObjString.push(String(stackPostIds.flat()[z]));
+                }
+            }
+            const postIdFilter = postObjString.filter((element, index) => {
+                return postObjString.indexOf(element) === index;
+            }); 
             // check is read
-            if (data.postId.length > 0) {
+            if (postIdFilter.length > 0) {
                 const isRead: IsRead = new IsRead();
                 isRead.userId = objIds;
-                isRead.postId = data.postId;
+                isRead.postId = postIdFilter;
                 isRead.isRead = data.isRead;
                 const isReadPost = await this.isReadPostService.create(isRead);
                 if (isReadPost) {
