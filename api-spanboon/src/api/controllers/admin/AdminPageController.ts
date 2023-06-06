@@ -16,7 +16,6 @@ import { BanRequest } from './requests/BanRequest';
 import { AdminUserActionLogsService } from '../../services/AdminUserActionLogsService';
 import { AdminUserActionLogs } from '../../models/AdminUserActionLogs';
 import { LOG_TYPE, PAGE_LOG_ACTION } from '../../../constants/LogsAction';
-import { DeletePageService } from '../../services/DeletePageService';
 import { PostsService } from '../../services/PostsService';
 import { KaokaiToday } from '../../models/KaokaiToday';
 import { SearchFilter } from '../requests/SearchFilterRequest';
@@ -37,7 +36,6 @@ export class AdminPageController {
     constructor(
         private pageService: PageService,
         private actionLogService: AdminUserActionLogsService,
-        private deletePageService: DeletePageService,
         private kaokaiTodayService: KaokaiTodayService,
         private pageObjectiveService: PageObjectiveService,
         private emergencyEventService: EmergencyEventService,
@@ -661,11 +659,10 @@ export class AdminPageController {
 
     @Delete('/:id/delete/page')
     @Authorized()
-    public async deletePageAd(@Param('id') pageId: string, @Res() res: any, @Req() req: any): Promise<any> {
-        const pageObjId = new ObjectID(pageId);
-        const findPage = await this.pageService.findOne({ _id: ObjectID(pageObjId) });
-        if (findPage !== undefined) {
-            await this.deletePageService.deletePage(pageObjId);
+    public async deleteGroup(@Param('id') groupId: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const groupObjId = new ObjectID(groupId);
+        if (groupObjId !== undefined) {
+            await this.pageGroupService.delete({_id:groupObjId});
             return res.status(200).send(ResponseUtil.getSuccessResponse('Delete page is successfully.', true));
         } else {
             const errorResponse: any = { status: 0, message: 'Sorry cannnot delete page.' };
@@ -675,8 +672,8 @@ export class AdminPageController {
 
     @Put('/:id/roundrobin')
     @Authorized()
-    public async editPageRoundRobin(@Param('id') pageId: string, @Res() res: any, @Req() req: any): Promise<any> {
-        const pageObjId = new ObjectID(pageId);
+    public async editPageRoundRobin(@Param('id') groupId: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const groupObjId = new ObjectID(groupId);
         const body = req.body;
         if (body.roundRobin < 0) {
             const errorResponse: any = { status: 0, message: 'RoundRobin must greater than 0 ' };
@@ -686,14 +683,14 @@ export class AdminPageController {
             const errorResponse: any = { status: 0, message: 'RoundRobin must less than 3 ' };
             return res.status(400).send(errorResponse);
         }
-        if (pageObjId === undefined && pageObjId === null) {
+        if (groupObjId === undefined && groupObjId === null) {
             const errorResponse: any = { status: 0, message: 'Page was not found.' };
             return res.status(400).send(errorResponse);
         }
         if (body !== undefined) {
-            const query = { _id: pageObjId };
-            const newValues = { $set: { group: body.group, province: body.province } };
-            const update = await this.pageService.update(query, newValues);
+            const query = { _id: groupObjId };
+            const newValues = { $set: { name: body.name, detail: body.detail } };
+            const update = await this.pageGroupService.update(query, newValues);
             if (update) {
                 return res.status(200).send(ResponseUtil.getSuccessResponse('Delete page is successfully.', true));
             } else {
