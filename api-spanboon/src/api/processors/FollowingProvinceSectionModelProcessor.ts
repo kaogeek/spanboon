@@ -24,7 +24,7 @@ export class FollowingProvinceSectionModelProcessor extends AbstractSeparateSect
         private postsService: PostsService,
         private s3Service: S3Service,
         private userLikeService: UserLikeService,
-        private userService:UserService,
+        private userService: UserService,
         private pageService: PageService
     ) {
         super();
@@ -36,11 +36,14 @@ export class FollowingProvinceSectionModelProcessor extends AbstractSeparateSect
                 // get config
                 let searchOfficialOnly: number = undefined;
                 let userId = undefined;
+                let isReadPostIds = undefined;
                 // get startDateTime, endDateTime
                 let endDateTime: Date = undefined;
                 if (this.data !== undefined && this.data !== null) {
                     endDateTime = this.data.endDateTime;
                     userId = this.data.userId;
+                    isReadPostIds = this.data.postIds;
+
                 }
                 const objIds = new ObjectID(userId);
                 let limit: number = undefined;
@@ -75,35 +78,42 @@ export class FollowingProvinceSectionModelProcessor extends AbstractSeparateSect
                 searchCountFilter.whereConditions = {
                     isClose: false
                 };
+                let postIds = undefined;
+                if (isReadPostIds.length > 0) {
+                    for (let i = 0; i < isReadPostIds.length; i++) {
+                        const mapIds = isReadPostIds[i].postId.map(ids => new ObjectID(ids));
+                        postIds = mapIds;
+                    }
+                }
                 // const today = moment().add(month, 'month').toDate();
                 const pageId = [];
                 const userProvince = await this.userService.aggregate(
                     [
                         {
-                            $match:{
-                                _id:objIds,
+                            $match: {
+                                _id: objIds,
                             }
                         },
                         {
-                            $project:{
-                                province:1,
-                                _id:0
+                            $project: {
+                                province: 1,
+                                _id: 0
                             }
                         }
                     ]
                 );
                 let pageProvince = undefined;
-                if(userProvince.length>0){
+                if (userProvince.length > 0) {
                     pageProvince = await this.pageService.aggregate([
                         {
-                            $match:{
-                                isOfficial:true,
-                                province:userProvince[0].province
+                            $match: {
+                                isOfficial: true,
+                                province: userProvince[0].province
                             }
                         },
                     ]);
-                    if(pageProvince.length>0){
-                        for(let i = 0;i<pageProvince.length;i++){
+                    if (pageProvince.length > 0) {
+                        for (let i = 0; i < pageProvince.length; i++) {
                             pageId.push(new ObjectID(pageProvince[i]._id));
                         }
                     }
@@ -112,13 +122,25 @@ export class FollowingProvinceSectionModelProcessor extends AbstractSeparateSect
                 // PAGE
                 // EMERGENCY_EVENT
                 // OBJECTIVE
-                const postMatchStmt: any = {
-                    isDraft: false,
-                    deleted: false,
-                    hidden: false,
-                    startDateTime: { $lte: endDateTime},
-                    pageId: { $in: pageId }
-                };
+                let postMatchStmt: any = undefined;
+                if (postIds !== undefined && postIds.length > 0) {
+                    postMatchStmt = {
+                        isDraft: false,
+                        deleted: false,
+                        hidden: false,
+                        startDateTime: { $lte: endDateTime },
+                        pageId: { $in: pageId },
+                        _id: { $nin: postIds }
+                    };
+                } else {
+                    postMatchStmt = {
+                        isDraft: false,
+                        deleted: false,
+                        hidden: false,
+                        startDateTime: { $lte: endDateTime },
+                        pageId: { $in: pageId },
+                    };
+                }
                 const postStmt = [
                     { $match: postMatchStmt },
                     { $sort: { summationScore: -1 } },
@@ -190,7 +212,7 @@ export class FollowingProvinceSectionModelProcessor extends AbstractSeparateSect
                 const postAggregate = await this.postsService.aggregate(postStmt);
                 const lastestDate = null;
                 const result: SectionModel = new SectionModel();
-                result.title = (this.config === undefined || this.config.title === undefined) ? 'ก้าวไกล'+userProvince[0].province : this.config.title;
+                result.title = (this.config === undefined || this.config.title === undefined) ? 'ก้าวไกล' + userProvince[0].province : this.config.title;
                 result.subtitle = '';
                 result.description = '';
                 result.iconUrl = '';

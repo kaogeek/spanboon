@@ -841,6 +841,7 @@ export class PostsController {
         const space = ' ';
         const xToday = DEFAULT_POST_WEIGHT_SCORE.X;
         const likeToday = DEFAULT_POST_WEIGHT_SCORE.Lot;
+        const now = new Date(); // Get the current time
 
         const xTodayScore = await this.configService.getConfig(POST_WEIGHT_SCORE.X);
         const scorelikeFacebook = await this.configService.getConfig(POST_WEIGHT_SCORE.Lof);
@@ -951,7 +952,7 @@ export class PostsController {
             userLike.userId = userObjId;
             userLike.subjectId = postObjId;
             userLike.subjectType = LIKE_TYPE.POST;
-
+            userLike.startDateTime = now;
             if (likeAsPage !== null && likeAsPage !== undefined && likeAsPage !== '') {
                 userLike.likeAsPage = likeAsPageObjId;
             } else {
@@ -962,6 +963,24 @@ export class PostsController {
             if (likeCreate) {
                 result = likeCreate;
                 action = ENGAGEMENT_ACTION.LIKE;
+                /* 
+                const likeAggregate = await this.userLikeService.aggregate(
+                    [
+                        {
+                            $match:{
+                                subjectId:likeCreate.subjectId
+                            }
+                        },
+                        {
+                            $sort:{
+                                startDateTime:-1
+                            }
+                        },
+                        {
+                            $limit:2
+                        }
+                    ]
+                ); */
                 // page to page 
                 // post by page ?
                 // who_post.pageId !== null
@@ -1052,9 +1071,9 @@ export class PostsController {
                 else {
                     // user to page
                     if (post_who.pageId !== null && post_who.pageId !== undefined) {
-                        // const user_ownerPage = await this.userService.findOne({_id:page.ownerUser});
+                        let notificationText = undefined;
                         // const tokenFCMId = await this.deviceTokenService.find({ userId: post_who.ownerUser });
-                        const notificationText = userLikeId.displayName + space + 'กดถูกใจโพสต์ของเพจ' + space + page.name;
+                        notificationText = userLikeId.displayName + space + 'กดถูกใจโพสต์ของเพจ' + space + page.name;
                         const link = `/page/${page.id}/post/` + post_who.id;
                         await this.pageNotificationService.notifyToPageUserFcm
                             (
@@ -1070,25 +1089,27 @@ export class PostsController {
                             );
                         /* 
                         for (const tokenFCM of tokenFCMId) {
-                            if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
-                                await this.notificationService.sendNotificationFCM
-                                    (
-                                        post_who.pageId + '',
-                                        undefined,
-                                        req.user.id + '',
-                                        USER_TYPE.PAGE,
-                                        NOTIFICATION_TYPE.LIKE,
-                                        notificationText,
-                                        link,
-                                        tokenFCM.Tokens,
-                                        userLikeId.displayName,
-                                        userLikeId.imageURL
-                                    );
+                            if(ownerPost.likeCount >= 0 && ownerPost.likeCount <= 10){
+                                if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
+                                    await this.notificationService.sendNotificationFCM
+                                        (
+                                            post_who.pageId + '',
+                                            undefined,
+                                            req.user.id + '',
+                                            USER_TYPE.PAGE,
+                                            NOTIFICATION_TYPE.LIKE,
+                                            notificationText,
+                                            link,
+                                            tokenFCM.Tokens,
+                                            userLikeId.displayName,
+                                            userLikeId.imageURL
+                                        );
+                                }
+                                else {
+                                    continue;
+                                }
                             }
-                            else {
-                                continue;
-                            }
-                        } */
+                        }  */
                     }
                     // user to user 
                     else {

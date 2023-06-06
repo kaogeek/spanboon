@@ -95,7 +95,7 @@ export class TodayPageFacade extends AbstractFacade {
                 body = Object.assign(searchFilter)
             }
             let options = this.getDefaultOptions();
-            this.http.post(url, body).toPromise().then((response: any) => {
+            this.http.post(url, body,options).toPromise().then((response: any) => {
                 for (let r of response.data) {
                     if (r.coverPageURL != null && r.coverPageURL != undefined) {
                         this.getPathFile(r.coverPageURL).then((res: any) => {

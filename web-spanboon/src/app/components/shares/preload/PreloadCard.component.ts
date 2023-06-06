@@ -33,6 +33,8 @@ export class PreloadCard implements OnInit {
   @Input()
   public isShowCard5: boolean = false;
   @Input()
+  public isShowCard6: boolean = false;
+  @Input()
   public isShow: boolean = false;
   public windowWidth: any;
   public isRes: boolean = false;

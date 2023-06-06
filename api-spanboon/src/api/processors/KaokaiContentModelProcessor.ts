@@ -53,7 +53,6 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                 }
 
                 let userId = undefined;
-                let limits = undefined;
                 let filterContentsRobin = undefined;
                 let filterContentsMajor = undefined;
                 let filterContentsProvince = undefined;
@@ -62,6 +61,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                 let checkPosition2 = undefined;
                 let checkPosition3 = undefined;
                 let checkPosition4 = undefined;
+                let configLimit = undefined;
                 // get startDateTime, endDateTime
                 let startDateTime: Date = undefined;
                 let endDateTime: Date = undefined;
@@ -77,8 +77,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                     checkPosition2 = this.data.checkPosition2;
                     checkPosition3 = this.data.checkPosition3;
                     checkPosition4 = this.data.checkPosition4;
-                    limits = this.data.configLimit;
-
+                    configLimit = this.data.configLimit;
                 }
                 const postId = [];
                 const sortV = [];
@@ -238,7 +237,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
 
                         },
                         {
-                            '$limit': limits
+                            '$limit': configLimit
                         }
                     ];
                     if (searchOfficialOnly) {
@@ -461,7 +460,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
 
                                 },
                                 {
-                                    '$limit': limits
+                                    '$limit': configLimit
                                 }
                             ];
                             if (searchOfficialOnly) {
@@ -725,7 +724,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
 
                                 },
                                 {
-                                    '$limit': limits
+                                    '$limit': configLimit
                                 }
                             ];
                             if (searchOfficialOnly) {
@@ -992,7 +991,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
 
                                 },
                                 {
-                                    '$limit': limits
+                                    '$limit': configLimit
                                 }
                             ];
                             if (searchOfficialOnly) {
@@ -1221,7 +1220,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
 
                         },
                         {
-                            '$limit': limits
+                            '$limit': configLimit
                         }
 
                     ];
@@ -1338,9 +1337,6 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                                             $match: { isOfficial: true, banned: false, group: { $in: bucketSAll[i] } }
                                         },
                                         {
-                                            $limit: ContentProcessor.limit
-                                        },
-                                        {
                                             $project: {
                                                 _id: 1
                                             }
@@ -1414,6 +1410,19 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                                 },
                                 {
                                     $lookup: {
+                                        from: 'PostsGallery',
+                                        localField: '_id',
+                                        foreignField: 'post',
+                                        as: 'gallery'
+                                    }
+                                },
+                                {
+                                    $match: {
+                                        gallery: { $ne: [] }
+                                    }
+                                },
+                                {
+                                    $lookup: {
                                         from: 'SocialPost',
                                         localField: '_id',
                                         foreignField: 'postId',
@@ -1433,14 +1442,6 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                                 },
                                 {
                                     $lookup: {
-                                        from: 'PostsGallery',
-                                        localField: '_id',
-                                        foreignField: 'post',
-                                        as: 'gallery'
-                                    }
-                                },
-                                {
-                                    $lookup: {
                                         from: 'User',
                                         localField: 'ownerUser',
                                         foreignField: '_id',
@@ -1454,7 +1455,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
 
                                 },
                                 {
-                                    '$limit': limits
+                                    '$limit': configLimit
                                 }
                             ];
                             if (searchOfficialOnly) {
@@ -1498,7 +1499,6 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                             }
                         }
                     }
-                    const slice = stackPage.slice(0, limit);
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
                     result.title = (this.config === undefined || this.config.title === undefined) ? ContentProcessor.title : ContentProcessor.title;
@@ -1507,7 +1507,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
                     result.position = ContentProcessor.position;
-                    for (const row of slice) {
+                    for (const row of stackPage) {
                         if (postPics === false) {
                             const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                             const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
@@ -1586,6 +1586,8 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                             }
                         }
                     }
+                    const slice = result.contents.slice(0, limit);
+                    result.contents = slice;
                     result.dateTime = lastestDate;
 
                     resolve(result);
@@ -1721,7 +1723,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
 
                                 },
                                 {
-                                    '$limit': limits
+                                    '$limit': configLimit
                                 }
                             ];
                             if (searchOfficialOnly) {
@@ -1990,7 +1992,7 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
 
                                 },
                                 {
-                                    '$limit': limits
+                                    '$limit': configLimit
                                 }
                             ];
                             if (searchOfficialOnly) {

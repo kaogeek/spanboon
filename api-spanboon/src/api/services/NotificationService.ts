@@ -148,8 +148,7 @@ export class NotificationService {
                 count_data
             }
         };
-        console.log('token', token);
-        console.log('payload', payload);
+
         if (String(notification.toUser) !== String(notification.fromUser)) {
             Promise.all([await admin.messaging().sendToDevice(token, payload)]);
         } else {

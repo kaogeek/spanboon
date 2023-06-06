@@ -45,7 +45,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                 }
                 const sorts = position.sort((a, b) => Math.abs(a) - Math.abs(b) || a - b);
                 let checkPosition = undefined;
-                let limits = undefined;
+                let configLimit = undefined;
                 let userId = undefined;
                 let filterContentsRobin = undefined;
                 // get startDateTime, endDateTime
@@ -57,7 +57,8 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     userId = this.data.userId;
                     filterContentsRobin = this.data.filterContentsRobin;
                     checkPosition = this.data.checkPosition1;
-                    limits = this.data.configLimit;
+                    configLimit = this.data.configLimit;
+
                 }
                 const postId = [];
                 const sortV = [];
@@ -214,6 +215,11 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                             }
                         },
                         {
+                            $match: {
+                                gallery: { $ne: [] }
+                            }
+                        },
+                        {
                             $lookup: {
                                 from: 'User',
                                 localField: 'ownerUser',
@@ -228,14 +234,13 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
 
                         },
                         {
-                            '$limit': limits
+                            '$limit': configLimit
                         }
                     ];
                     if (searchOfficialOnly) {
                         postStmt.splice(3, 0, { $match: { 'page.isOfficial': true, 'page.banned': false } });
                     }
                     const postAggregate = await this.postsService.aggregate(postStmt);
-                    const slice = postAggregate.slice(0, majorTrend.limit);
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
                     result.title = (this.config === undefined || this.config.title === undefined) ? majorTrend.title : this.config.title;
@@ -245,7 +250,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
                     result.position = majorTrend.position;
-                    for (const row of slice) {
+                    for (const row of postAggregate) {
                         if (postPics === false) {
                             const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                             const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
@@ -324,6 +329,8 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                             }
                         }
                     }
+                    const slice = result.contents.slice(0, limit);
+                    result.contents = slice;
                     result.dateTime = lastestDate;
 
                     resolve(result);
@@ -453,7 +460,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
 
                                 },
                                 {
-                                    '$limit': limits
+                                    '$limit': limit
                                 }
                             ];
                             if (searchOfficialOnly) {
@@ -717,7 +724,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
 
                                 },
                                 {
-                                    '$limit': limits
+                                    '$limit': limit
                                 }
                             ];
                             if (searchOfficialOnly) {
@@ -984,7 +991,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
 
                                 },
                                 {
-                                    '$limit': limits
+                                    '$limit': limit
                                 }
                             ];
                             if (searchOfficialOnly) {
@@ -1213,7 +1220,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
 
                         },
                         {
-                            '$limit': limits
+                            '$limit': limit
                         }
 
                     ];
@@ -1446,7 +1453,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
 
                                 },
                                 {
-                                    '$limit': limits
+                                    '$limit': limit
                                 }
                             ];
                             if (searchOfficialOnly) {
@@ -1713,7 +1720,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
 
                                 },
                                 {
-                                    '$limit': limits
+                                    '$limit': limit
                                 }
                             ];
                             if (searchOfficialOnly) {
@@ -1977,7 +1984,7 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
 
                                 },
                                 {
-                                    '$limit': limits
+                                    '$limit': limit
                                 }
                             ];
                             if (searchOfficialOnly) {

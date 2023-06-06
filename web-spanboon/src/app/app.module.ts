@@ -42,6 +42,7 @@ import { initializeApp } from "firebase/app";
 import { CommonModule } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ToastrModule } from 'ngx-toastr';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 
 initializeApp(environment.firebase);
 
@@ -555,6 +556,7 @@ registerLocaleData(localeFr, 'th-TH', localeFrExtra);
 
   imports: [
     CountdownModule,
+    InfiniteScrollModule,
     BrowserModule,
     FontAwesomeModule,
     NgOtpInputModule,

@@ -433,7 +433,7 @@ export class MainPageController {
         const mainPageSearchConfig = await this.pageService.searchPageOfficialConfig();
         const searchOfficialOnly = mainPageSearchConfig.searchOfficialOnly;
         const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 7);
-        const isReadSectionProcessor: IsReadSectionProcessor = new IsReadSectionProcessor(this.postsService, this.s3Service, this.userLikeService, this.isReadPostService);
+        const isReadSectionProcessor: IsReadSectionProcessor = new IsReadSectionProcessor(this.postsService, this.s3Service);
         isReadSectionProcessor.setData({
             userId,
             startDateTime: monthRange[0],
@@ -451,10 +451,6 @@ export class MainPageController {
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
             postIds: isRead,
-            limitFollows: limitFollow,
-            offsetFollows: offsetFollow,
-            limits: limit,
-            offsets: offset,
         });
 
         followingPostSectionModelProcessor.setConfig({
@@ -473,7 +469,17 @@ export class MainPageController {
         });
         const followingProvince = await followingProvinceSectionModelProcessor.process();
 
-        const followingContentsModelProcessor: FollowingContentsModelProcessor = new FollowingContentsModelProcessor(/* this.postsService */this.s3Service, this.userLikeService,/* this.emergencyEventService, this.pageObjectiveService,*/ this.userFollowService,/*  this.userService,*/ this.pageService);
+        const followingContentsModelProcessor: FollowingContentsModelProcessor = new FollowingContentsModelProcessor(
+            /* this.postsService */
+            this.s3Service,
+            this.userLikeService,
+            this.userFollowService,
+            this.pageService,
+            /* 
+            this.emergencyEventService,
+            this.pageObjectiveService,
+            this.userService, */
+        );
         followingContentsModelProcessor.setData({
             userId,
             contentPost: isFollowing.contents,
@@ -502,49 +508,51 @@ export class MainPageController {
 
     @Post('/is/read')
     public async isRead(@Body({ validate: true }) data: IsRead, @Res() res: any, @Req() req: any): Promise<any> {
-
         const userId = req.headers.userid;
         const objIds = new ObjectID(userId);
         const user = await this.userService.findOne({ _id: objIds });
+        const findPostIds = await this.isReadPostService.aggregate([
+            {
+                $match:{userId:objIds}
+            },
+            {
+                $unwind: {
+                    path: '$user',
+                    preserveNullAndEmptyArrays: true
+                }
+            },   
+        ]);
         // check is read
-        const checkIsRead = await this.isReadPostService.aggregate
-            (
-                [
-                    {
-                        $match:
-                        {
-                            userId: objIds,
-                            postId: { $in: data.postId }
-                        }
-                    },
-                    {
-                        $limit: 1
-                    }
-                ]
-            );
-        if (checkIsRead.length > 0) {
-            const postIds = data.postId.map(ids => new ObjectID(ids));
-            const isRead = await this.postsService.aggregate(
-                [
-                    {
-                        $match: {
-                            _id: { $in: postIds }
-                        }
-                    }
-                ]
-            );
-            const result: any = {};
-            result.isReadPost = isRead;
-            result.userIds = objIds;
-            const successResponse = ResponseUtil.getSuccessResponse('The content has already been read.', result);
-            return res.status(200).send(successResponse);
-        }
         if (user) {
+            const stackPostIds = [];
+            const postObjString = [];
+            if(findPostIds.length>0){
+                for(let i = 0 ; i<findPostIds.length;i++){
+                    stackPostIds.push(findPostIds[i].postId);
+                }
+            }
+            if(data.postId.length>0){
+                for(let j = 0 ; j<data.postId.length;j++){
+                    if(data.postId[j] !== undefined && data.postId[j] !== null){
+                        postObjString.push(String(data.postId[j]));
+                    }else{
+                        continue;
+                    }
+                }
+            }
+            if(stackPostIds.flat().length>0){
+                for(let z = 0 ;z<stackPostIds.flat().length;z++){
+                    postObjString.push(String(stackPostIds.flat()[z]));
+                }
+            }
+            const postIdFilter = postObjString.filter((element, index) => {
+                return postObjString.indexOf(element) === index;
+            }); 
             // check is read
-            if (data.postId.length > 0) {
+            if (postIdFilter.length > 0) {
                 const isRead: IsRead = new IsRead();
                 isRead.userId = objIds;
-                isRead.postId = data.postId;
+                isRead.postId = postIdFilter;
                 isRead.isRead = data.isRead;
                 const isReadPost = await this.isReadPostService.create(isRead);
                 if (isReadPost) {
@@ -2058,7 +2066,7 @@ export class MainPageController {
                             continue;
                         }
                     }
-                    if (number === limitSends) {
+                    if (parseInt(number, 10) === limitSends) {
                         const mergeArray = notiNews[0].tokenFCM.concat(stackTokenFCM);
                         query = { _id: new ObjectID(notiNews[0]._id) };
                         update = {
@@ -2110,11 +2118,6 @@ export class MainPageController {
 
     public async snapShotToday(data: any, startDateRange: Date, endDateTimeToday: Date, jobscheduler: string): Promise<any> {
         // check before create
-        const sendNotiNewsLimit = await this.configService.getConfig(SEND_NOTIFICATION_NEWS);
-        let limitSends = DEFAULT_SEND_NOTIFICATION_NEWS;
-        if (sendNotiNewsLimit) {
-            limitSends = parseInt(sendNotiNewsLimit.value, 10);
-        }
         let pid = undefined;
         let idPm2 = undefined;
         pm2.list((err: Error | null, processList: pm2.ProcessDescription[]) => {
@@ -2292,36 +2295,16 @@ export class MainPageController {
                     }
                 }
                 if (fireBaseToken.length > 0) {
-                    let number = undefined;
-                    const stackTokenFCM = [];
                     const token = fireBaseToken.filter((element, index) => {
                         return fireBaseToken.indexOf(element) === index;
                     });
                     if (token.length > 0 && snapshot) {
                         for (let z = 0; z < token.length; z++) {
-                            if (token[z] !== undefined && z <= limitSends) {
-                                number = z;
-                                stackTokenFCM.push(token[z]);
+                            if (token[z] !== undefined) {
                                 await this.notificationService.pushNotificationMessage(snapshot.data, token[z], endDateTimeToday);
                             } else {
                                 continue;
                             }
-                        }
-                        if (number === limitSends) {
-                            await this.notificationNewsService.create(
-                                {
-                                    kaokaiTodaySnapShotId: snapshot.id,
-                                    data: snapshot.data,
-                                    tokenFCM: stackTokenFCM,
-                                    startDateTime: endDateTimeToday,
-                                    endDateTime: endDateTimeToday,
-                                    total: token.length,
-                                    send: number,
-                                    finish: false,
-                                    type: 'notification_news',
-                                    status: true
-                                }
-                            );
                         }
                     }
                 }

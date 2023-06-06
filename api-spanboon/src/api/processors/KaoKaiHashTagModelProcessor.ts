@@ -967,6 +967,11 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                                     }
                                 },
                                 {
+                                    $match: {
+                                        gallery: { $ne: [] }
+                                    }
+                                },
+                                {
                                     $lookup: {
                                         from: 'User',
                                         localField: 'ownerUser',
@@ -1696,6 +1701,11 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                                     }
                                 },
                                 {
+                                    $match: {
+                                        gallery: { $ne: [] }
+                                    }
+                                },
+                                {
                                     $lookup: {
                                         from: 'User',
                                         localField: 'ownerUser',
@@ -1762,7 +1772,6 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                             }
                         }
                     }
-                    const slice = stackPage.slice(0, limit);
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
                     result.title = (this.config === undefined || this.config.title === undefined) ? hashTagProcessor.title : hashTagProcessor.title;
@@ -1771,7 +1780,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
                     result.position = hashTagProcessor.position;
-                    for (const row of slice) {
+                    for (const row of stackPage) {
                         if (postPics === false) {
                             const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                             const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
@@ -1850,6 +1859,8 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                             }
                         }
                     }
+                    const slice = result.contents.slice(0, limit);
+                    result.contents = slice;
                     result.dateTime = lastestDate;
 
                     resolve(result);

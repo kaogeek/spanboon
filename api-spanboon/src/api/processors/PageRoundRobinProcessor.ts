@@ -30,6 +30,10 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
         return new Promise(async (resolve, reject) => {
             try {
                 // get config
+                let configLimit = undefined;
+                if (this.data !== undefined && this.data !== null) {
+                    configLimit = this.data.configLimit;
+                }
                 const position = [];
                 const sortV = [];
                 const negative = [];
@@ -91,7 +95,6 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                 limit = (limit === undefined || limit === null) ? roundRobin.limit : this.DEFAULT_SEARCH_LIMIT;
                 offset = (offset === undefined || offset === null) ? this.DEFAULT_SEARCH_OFFSET : offset;
                 let userId = undefined;
-                let limits = undefined;
                 // get startDateTime, endDateTime
                 let startDateTime: Date = undefined;
                 let endDateTime: Date = undefined;
@@ -99,7 +102,6 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     startDateTime = this.data.startDateTime;
                     endDateTime = this.data.endDateTime;
                     userId = this.data.userId;
-                    limits = this.data.configLimit;
                 }
                 const searchFilter: SearchFilter = new SearchFilter();
                 searchFilter.limit = limit;
@@ -202,7 +204,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
 
                         },
                         {
-                            '$limit': limits
+                            '$limit': limit
                         }
                     ];
                     if (searchOfficialOnly) {
@@ -415,7 +417,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
 
                                 },
                                 {
-                                    '$limit': limits
+                                    '$limit': limit
                                 }
                             ];
                             if (searchOfficialOnly) {
@@ -667,7 +669,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
 
                                 },
                                 {
-                                    '$limit': limits
+                                    '$limit': limit
                                 }
                             ];
                             if (searchOfficialOnly) {
@@ -933,7 +935,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
 
                                 },
                                 {
-                                    '$limit': limits
+                                    '$limit': limit
                                 }
                             ];
                             if (searchOfficialOnly) {
@@ -1160,7 +1162,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
 
                         },
                         {
-                            '$limit': limits
+                            '$limit': limit
                         }
 
                     ];
@@ -1391,7 +1393,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
 
                                 },
                                 {
-                                    '$limit': limits
+                                    '$limit': limit
                                 }
                             ];
                             if (searchOfficialOnly) {
@@ -1658,7 +1660,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
 
                                 },
                                 {
-                                    '$limit': limits
+                                    '$limit': limit
                                 }
                             ];
                             if (searchOfficialOnly) {
@@ -1903,6 +1905,11 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                                     }
                                 },
                                 {
+                                    $match: {
+                                        gallery: { $ne: [] }
+                                    }
+                                },
+                                {
                                     $lookup: {
                                         from: 'User',
                                         localField: 'ownerUser',
@@ -1917,7 +1924,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
 
                                 },
                                 {
-                                    '$limit': limits
+                                    '$limit': configLimit
                                 }
                             ];
                             if (searchOfficialOnly) {
@@ -1960,7 +1967,6 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                             }
                         }
                     }
-                    const slice = stackPage.slice(0, limit);
                     const lastestDate = null;
                     const result: SectionModel = new SectionModel();
                     result.title = (this.config === undefined || this.config.title === undefined) ? roundRobin.title : roundRobin.title;
@@ -1970,7 +1976,7 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                     result.contents = [];
                     result.type = this.getType(); // set type by processor type
                     result.position = roundRobin.position;
-                    for (const row of slice) {
+                    for (const row of stackPage) {
                         if (postPics === false) {
                             const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                             const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
@@ -2049,9 +2055,9 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                             }
                         }
                     }
-
+                    const slice = result.contents.slice(0, limit);
+                    result.contents = slice;
                     result.dateTime = lastestDate;
-
                     resolve(result);
                 } else {
                     const result: SectionModel = new SectionModel();

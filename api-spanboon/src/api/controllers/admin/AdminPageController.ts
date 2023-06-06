@@ -16,7 +16,6 @@ import { BanRequest } from './requests/BanRequest';
 import { AdminUserActionLogsService } from '../../services/AdminUserActionLogsService';
 import { AdminUserActionLogs } from '../../models/AdminUserActionLogs';
 import { LOG_TYPE, PAGE_LOG_ACTION } from '../../../constants/LogsAction';
-import { DeletePageService } from '../../services/DeletePageService';
 import { PostsService } from '../../services/PostsService';
 import { KaokaiToday } from '../../models/KaokaiToday';
 import { SearchFilter } from '../requests/SearchFilterRequest';
@@ -31,16 +30,20 @@ import { SEARCH_TYPE } from '../../../constants/SearchType';
 import { EmergencyEventService } from '../../services/EmergencyEventService';
 import { HashTagService } from '../../services/HashTagService';
 import { KaokaiTodaySnapShotService } from '../../services/KaokaiTodaySnapShot';
+import { NotificationNewsService } from '../../services/NotificationNewsService';
 @JsonController('/admin/page')
 export class AdminPageController {
-    constructor(private pageService: PageService, private actionLogService: AdminUserActionLogsService, private deletePageService: DeletePageService,
+    constructor(
+        private pageService: PageService,
+        private actionLogService: AdminUserActionLogsService,
         private kaokaiTodayService: KaokaiTodayService,
         private pageObjectiveService: PageObjectiveService,
         private emergencyEventService: EmergencyEventService,
         private hashTagService: HashTagService,
         private postsService: PostsService,
         private pageGroupService: PageGroupService,
-        private kaokaiTodaySnapShotService: KaokaiTodaySnapShotService
+        private kaokaiTodaySnapShotService: KaokaiTodaySnapShotService,
+        private notificationNewsService: NotificationNewsService
     ) { }
 
     /**
@@ -199,6 +202,7 @@ export class AdminPageController {
         }
     }
     @Post('/request/search')
+    @Authorized()
     public async searchAll(@Body({ validate: true }) data: SearchRequest, @Res() res: any, @Req() req: any): Promise<any> {
         const search: any = {};
         const keywords = data.keyword;
@@ -472,6 +476,7 @@ export class AdminPageController {
     }
 
     @Post('/receive/bucket')
+    @Authorized()
     public async receiveBucket(@Body({ validate: true }) filter: SearchFilter, @Res() res: any, @Req() req: any): Promise<any> {
         const bucketAll = await this.kaokaiTodayService.search(filter);
         if (bucketAll.length > 0) {
@@ -556,47 +561,47 @@ export class AdminPageController {
             if (kaoKaiToday) {
                 const query = { _id: objId };
                 const newValues = {
-                  $unset: {
-                  }
+                    $unset: {
+                    }
                 };
                 for (let i = 0; i < createKaokaiTodayRequest.deleteIndex.length; i++) {
-                  const bucketNameProp = `buckets.${createKaokaiTodayRequest.deleteIndex[i]}`;
-                  newValues.$unset[bucketNameProp] = createKaokaiTodayRequest.deleteIndex[i];
+                    const bucketNameProp = `buckets.${createKaokaiTodayRequest.deleteIndex[i]}`;
+                    newValues.$unset[bucketNameProp] = createKaokaiTodayRequest.deleteIndex[i];
                 }
                 const update = await this.kaokaiTodayService.update(query, newValues);
-            
+
                 if (update) {
-                  // check if bucket is null
-                  const kaokaiTodayNull = await this.kaokaiTodayService.findOne({ _id: objId });
-                  if (kaokaiTodayNull) {
-                    const queryNull = { _id: kaokaiTodayNull.id };
-                    const newValuesNull = {
-                      $set: {
-                        title: createKaokaiTodayRequest.title,
-                        type: createKaokaiTodayRequest.type,
-                        field: createKaokaiTodayRequest.field,
-                        position: createKaokaiTodayRequest.position,
-                        limit: createKaokaiTodayRequest.limit,
-                        flag: createKaokaiTodayRequest.flag,
-                        pics:createKaokaiTodayRequest.pics
-                      },
-                      $pull: {
-                        buckets: null,
-                      },
-                    };
-                    const updateNull = await this.kaokaiTodayService.update(queryNull, newValuesNull);
-            
-                    if (updateNull) {
-                      const successResponse = ResponseUtil.getSuccessResponse('Update KaokaiToday is successfully.', updateNull);
-                      return res.status(200).send(successResponse);
+                    // check if bucket is null
+                    const kaokaiTodayNull = await this.kaokaiTodayService.findOne({ _id: objId });
+                    if (kaokaiTodayNull) {
+                        const queryNull = { _id: kaokaiTodayNull.id };
+                        const newValuesNull = {
+                            $set: {
+                                title: createKaokaiTodayRequest.title,
+                                type: createKaokaiTodayRequest.type,
+                                field: createKaokaiTodayRequest.field,
+                                position: createKaokaiTodayRequest.position,
+                                limit: createKaokaiTodayRequest.limit,
+                                flag: createKaokaiTodayRequest.flag,
+                                pics: createKaokaiTodayRequest.pics
+                            },
+                            $pull: {
+                                buckets: null,
+                            },
+                        };
+                        const updateNull = await this.kaokaiTodayService.update(queryNull, newValuesNull);
+
+                        if (updateNull) {
+                            const successResponse = ResponseUtil.getSuccessResponse('Update KaokaiToday is successfully.', updateNull);
+                            return res.status(200).send(successResponse);
+                        }
                     }
-                  }
                 }
-              } else {
+            } else {
                 const errorResponse = ResponseUtil.getErrorResponse('Cannot find object ID.', undefined);
                 return res.status(400).send(errorResponse);
-              }
-            
+            }
+
         } else {
             if (kaoKaiToday) {
                 const query = { _id: objId };
@@ -654,11 +659,10 @@ export class AdminPageController {
 
     @Delete('/:id/delete/page')
     @Authorized()
-    public async deletePageAd(@Param('id') pageId: string, @Res() res: any, @Req() req: any): Promise<any> {
-        const pageObjId = new ObjectID(pageId);
-        const findPage = await this.pageService.findOne({ _id: ObjectID(pageObjId) });
-        if (findPage !== undefined) {
-            await this.deletePageService.deletePage(pageObjId);
+    public async deleteGroup(@Param('id') groupId: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const groupObjId = new ObjectID(groupId);
+        if (groupObjId !== undefined) {
+            await this.pageGroupService.delete({_id:groupObjId});
             return res.status(200).send(ResponseUtil.getSuccessResponse('Delete page is successfully.', true));
         } else {
             const errorResponse: any = { status: 0, message: 'Sorry cannnot delete page.' };
@@ -668,8 +672,8 @@ export class AdminPageController {
 
     @Put('/:id/roundrobin')
     @Authorized()
-    public async editPageRoundRobin(@Param('id') pageId: string, @Res() res: any, @Req() req: any): Promise<any> {
-        const pageObjId = new ObjectID(pageId);
+    public async editPageRoundRobin(@Param('id') groupId: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const groupObjId = new ObjectID(groupId);
         const body = req.body;
         if (body.roundRobin < 0) {
             const errorResponse: any = { status: 0, message: 'RoundRobin must greater than 0 ' };
@@ -679,14 +683,14 @@ export class AdminPageController {
             const errorResponse: any = { status: 0, message: 'RoundRobin must less than 3 ' };
             return res.status(400).send(errorResponse);
         }
-        if (pageObjId === undefined && pageObjId === null) {
+        if (groupObjId === undefined && groupObjId === null) {
             const errorResponse: any = { status: 0, message: 'Page was not found.' };
             return res.status(400).send(errorResponse);
         }
         if (body !== undefined) {
-            const query = { _id: pageObjId };
-            const newValues = { $set: { group: body.group, province: body.province } };
-            const update = await this.pageService.update(query, newValues);
+            const query = { _id: groupObjId };
+            const newValues = { $set: { name: body.name, detail: body.detail } };
+            const update = await this.pageGroupService.update(query, newValues);
             if (update) {
                 return res.status(200).send(ResponseUtil.getSuccessResponse('Delete page is successfully.', true));
             } else {
@@ -695,6 +699,19 @@ export class AdminPageController {
             }
         } else {
             const errorResponse: any = { status: 0, message: 'Sorry cannnot delete page.' };
+            return res.status(400).send(errorResponse);
+        }
+    }
+
+    @Post('/notification/news/search')
+    @Authorized()
+    public async notificationNews(@Body({ validate: true }) filter: SearchFilter,@Res() res: any, @Req() req: any): Promise<any> {
+        const notificationNews = await this.notificationNewsService.search(filter.limit, filter.offset, filter.select, filter.relation, filter.whereConditions, filter.orderBy, filter.count);
+        if (notificationNews.length > 0) {
+            const successResponse = ResponseUtil.getSuccessResponse('Get notification news is sucessfully.', notificationNews);
+            return res.status(200).send(successResponse);
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('There are no notification news.', undefined);
             return res.status(400).send(errorResponse);
         }
     }
