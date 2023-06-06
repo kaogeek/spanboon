@@ -38,9 +38,12 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                 // get config
                 // let searchOfficialOnly: number = undefined;
                 let userId = undefined;
+                let isReadPostIds = undefined;
                 // get startDateTime, endDateTime
                 if (this.data !== undefined && this.data !== null) {
                     userId = this.data.userId;
+                    isReadPostIds = this.data.postIds;
+
                 }
                 const objIds = new ObjectID(userId);
                 const limit = this.DEFAULT_SEARCH_LIMIT;
@@ -60,6 +63,13 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                 searchCountFilter.whereConditions = {
                     isClose: false
                 };
+                let postIds = undefined;
+                if (isReadPostIds.length > 0) {
+                    for (let i = 0; i < isReadPostIds.length; i++) {
+                        const mapIds = isReadPostIds[i].postId.map(ids => new ObjectID(ids));
+                        postIds = mapIds;
+                    }
+                }
                 // const today = moment().add(month, 'month').toDate();
                 const isFollowing = await this.userFollowService.aggregate([
                     {
@@ -129,6 +139,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                                 $expr: {
                                                     $eq: ['$$id', '$pageId'],
                                                 },
+                                                _id:{$nin:postIds}
                                             },
                                         },
                                         {
@@ -221,6 +232,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                                 $expr: {
                                                     $eq: ['$$id', '$ownerUser']
                                                 },
+                                                _id:{$nin:postIds}
                                             }
                                         },
                                         {
@@ -310,7 +322,8 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                     pipeline: [
                                         {
                                             $match: {
-                                                $expr: { $eq: ['$$id', '$emergencyEvent'] }
+                                                $expr: { $eq: ['$$id', '$emergencyEvent'] },
+                                                _id:{$nin:postIds}
                                             }
                                         },
                                         {
@@ -391,7 +404,8 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                     pipeline: [
                                         {
                                             $match: {
-                                                $expr: { $eq: ['$$id', '$objective'] }
+                                                $expr: { $eq: ['$$id', '$objective'] },
+                                                _id:{$nin:postIds}
                                             }
                                         },
                                         {

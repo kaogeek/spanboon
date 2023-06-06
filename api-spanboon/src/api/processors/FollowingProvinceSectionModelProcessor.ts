@@ -36,11 +36,14 @@ export class FollowingProvinceSectionModelProcessor extends AbstractSeparateSect
                 // get config
                 let searchOfficialOnly: number = undefined;
                 let userId = undefined;
+                let isReadPostIds = undefined;
                 // get startDateTime, endDateTime
                 let endDateTime: Date = undefined;
                 if (this.data !== undefined && this.data !== null) {
                     endDateTime = this.data.endDateTime;
                     userId = this.data.userId;
+                    isReadPostIds = this.data.postIds;
+
                 }
                 const objIds = new ObjectID(userId);
                 let limit: number = undefined;
@@ -75,6 +78,13 @@ export class FollowingProvinceSectionModelProcessor extends AbstractSeparateSect
                 searchCountFilter.whereConditions = {
                     isClose: false
                 };
+                let postIds = undefined;
+                if (isReadPostIds.length > 0) {
+                    for (let i = 0; i < isReadPostIds.length; i++) {
+                        const mapIds = isReadPostIds[i].postId.map(ids => new ObjectID(ids));
+                        postIds = mapIds;
+                    }
+                }
                 // const today = moment().add(month, 'month').toDate();
                 const pageId = [];
                 const userProvince = await this.userService.aggregate(
@@ -117,7 +127,8 @@ export class FollowingProvinceSectionModelProcessor extends AbstractSeparateSect
                     deleted: false,
                     hidden: false,
                     startDateTime: { $lte: endDateTime},
-                    pageId: { $in: pageId }
+                    pageId: { $in: pageId },
+                    _id:{$nin:postIds}
                 };
                 const postStmt = [
                     { $match: postMatchStmt },

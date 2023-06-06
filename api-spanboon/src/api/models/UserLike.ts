@@ -28,4 +28,7 @@ export class UserLike {
 
     @Column({ name: 'likeAsPage' })
     public likeAsPage: ObjectID;
+
+    @Column({ name: 'startDateTime'})
+    public startDateTime:Date;
 }

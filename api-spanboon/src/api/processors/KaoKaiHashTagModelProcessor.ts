@@ -967,6 +967,11 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                                     }
                                 },
                                 {
+                                    $match: {
+                                        gallery: { $ne: [] } 
+                                    }
+                                },
+                                {
                                     $lookup: {
                                         from: 'User',
                                         localField: 'ownerUser',

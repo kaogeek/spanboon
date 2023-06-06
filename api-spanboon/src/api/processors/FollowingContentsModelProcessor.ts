@@ -9,14 +9,14 @@ import { AbstractSeparateSectionProcessor } from './AbstractSeparateSectionProce
 import { SectionModel } from '../models/SectionModel';
 import { SearchFilter } from '../controllers/requests/SearchFilterRequest';
 import { S3Service } from '../services/S3Service';
-import { UserService } from '../services/UserService';
+// import { UserService } from '../services/UserService';
 import { UserFollowService } from '../services/UserFollowService';
-import { PageObjectiveService } from '../services/PageObjectiveService';
+// import { PageObjectiveService } from '../services/PageObjectiveService';
 import { UserLikeService } from '../services/UserLikeService';
 import { UserLike } from '../models/UserLike';
 import { ObjectID } from 'mongodb';
 import { PageService } from '../services/PageService';
-import { EmergencyEventService } from '../services/EmergencyEventService';
+// import { EmergencyEventService } from '../services/EmergencyEventService';
 import { LIKE_TYPE } from '../../constants/LikeType';
 // import { EmergencyEventService } from '../services/EmergencyEventService';
 export class FollowingContentsModelProcessor extends AbstractSeparateSectionProcessor {
@@ -26,11 +26,11 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
         // private postsService: PostsService,
         private s3Service: S3Service,
         private userLikeService: UserLikeService,
-        private emergencyEventService: EmergencyEventService,
-        private pageObjectiveService: PageObjectiveService,
         private userFollowService: UserFollowService,
-        private userService: UserService,
         private pageService: PageService
+        // private emergencyEventService: EmergencyEventService,
+        // private pageObjectiveService: PageObjectiveService,
+        // private userService: UserService,
     ) {
         super();
     }
@@ -46,10 +46,12 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                     userId = this.data.userId;
                 }
                 const objIds = new ObjectID(userId);
+                let isReadPostIds = undefined;
                 let limit: number = undefined;
                 let offset: number = undefined;
                 if (this.data !== undefined && this.data !== null) {
                     offset = this.data.offsets;
+                    isReadPostIds = this.data.postIds;
                 }
                 limit = (limit === undefined || limit === null) ? this.data.limits : this.DEFAULT_SEARCH_LIMIT;
                 offset = this.data.offsets ? this.data.offsets : this.DEFAULT_SEARCH_OFFSET;
@@ -69,7 +71,13 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                     isClose: false
                 };
                 // const today = moment().add(month, 'month').toDate();
-
+                let postIds = undefined;
+                if (isReadPostIds.length > 0) {
+                    for (let i = 0; i < isReadPostIds.length; i++) {
+                        const mapIds = isReadPostIds[i].postId.map(ids => new ObjectID(ids));
+                        postIds = mapIds;
+                    }
+                }
                 const isFollowing = await this.userFollowService.aggregate([
                     {
                         $match: {
@@ -102,24 +110,25 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                 if (isFollowing.length > 0) {
                     for (let i = 0; i < isFollowing.length; i++) {
                         if (isFollowing[i].subjectType === 'USER') {
-                            // userIds.push((new ObjectID(isFollowing[i].subjectId)));
+                            userIds.push((new ObjectID(isFollowing[i].subjectId)));
                         }
                         if (isFollowing[i].subjectType === 'PAGE') {
                             pageIds.push((new ObjectID(isFollowing[i].subjectId)));
                         }
                         if (isFollowing[i].subjectType === 'EMERGENCY_EVENT') {
-                            // emegencyIds.push((new ObjectID(isFollowing[i].subjectId)));
+                            emegencyIds.push((new ObjectID(isFollowing[i].subjectId)));
                         } if (isFollowing[i].subjectType === 'OBJECTIVE') {
-                            // objectiveIds.push((new ObjectID(isFollowing[i].subjectId)));
+                            objectiveIds.push((new ObjectID(isFollowing[i].subjectId)));
                         } else {
                             continue;
                         }
                     }
                 }
                 let pageFollowingContents = undefined;
+                /* 
                 let userFollowingContents = undefined;
                 let emergencyFollowingContents = undefined;
-                let objectiveFollowingContents = undefined;
+                let objectiveFollowingContents = undefined; */
                 if (pageIds.length > 0) {
                     pageFollowingContents = await this.pageService.aggregate(
                         [
@@ -138,6 +147,7 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                                 $expr: {
                                                     $eq: ['$$id', '$pageId'],
                                                 },
+                                                _id:{$nin:postIds}
                                             },
                                         },
                                         {
@@ -212,6 +222,7 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                             },
                         ]);
                 }
+                /* 
                 if (userIds.length > 0) {
                     userFollowingContents = await this.userService.aggregate(
                         [
@@ -441,7 +452,7 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                             }
                         ]
                     );
-                }
+                } */
                 if (pageFollowingContents === undefined) {
                     const pageIdsState = [];
                     let limitState = 2;
@@ -570,6 +581,7 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                                     $expr: {
                                                         $eq: ['$$id', '$pageId'],
                                                     },
+                                                    _id:{$nin:postIds}
                                                 },
                                             },
                                             {

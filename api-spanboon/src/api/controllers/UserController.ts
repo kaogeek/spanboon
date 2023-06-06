@@ -340,6 +340,8 @@ export class UserController {
         let result = {};
         let userFollowerStmt;
         const space = ' ';
+        // const now = new Date();
+        // const hours = now.getHours();
         // find page
         const user = await this.userService.findOne({ _id: userObjId });
         if (user === undefined) {
@@ -414,7 +416,7 @@ export class UserController {
                 );
                 /* 
                 for (const tokenFCM of tokenFCMId) {
-                    if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
+                    if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '' && hours%3 === 0) {
                         await this.notificationService.sendNotificationFCM(
                             followCreate.subjectId,
                             USER_TYPE.USER,
@@ -431,7 +433,7 @@ export class UserController {
                     else {
                         continue;
                     }
-                } */
+                }  */
                 // USER TO USER
                 const engagement: UserEngagement = await this.userEngagementService.findOne({ where: { contentId: followUserObjId, userId: userObjId, contentType: ENGAGEMENT_CONTENT_TYPE.USER, action: ENGAGEMENT_ACTION.FOLLOW } });
                 if (engagement) {

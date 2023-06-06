@@ -433,7 +433,7 @@ export class MainPageController {
         const mainPageSearchConfig = await this.pageService.searchPageOfficialConfig();
         const searchOfficialOnly = mainPageSearchConfig.searchOfficialOnly;
         const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 7);
-        const isReadSectionProcessor: IsReadSectionProcessor = new IsReadSectionProcessor(this.postsService, this.s3Service, this.userLikeService, this.isReadPostService);
+        const isReadSectionProcessor: IsReadSectionProcessor = new IsReadSectionProcessor(this.postsService, this.s3Service);
         isReadSectionProcessor.setData({
             userId,
             startDateTime: monthRange[0],
@@ -473,11 +473,13 @@ export class MainPageController {
             /* this.postsService */
             this.s3Service,
             this.userLikeService,
+            this.userFollowService,
+            this.pageService,
+            /* 
             this.emergencyEventService,
             this.pageObjectiveService,
-            this.userFollowService,
-            this.userService,
-            this.pageService);
+            this.userService, */
+        );
         followingContentsModelProcessor.setData({
             userId,
             contentPost: isFollowing.contents,
