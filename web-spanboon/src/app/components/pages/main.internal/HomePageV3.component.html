@@ -1136,7 +1136,8 @@
         </div>
     </section>
     <ng-container *ngFor="let owner of modelBottom && modelBottom.isFollowing.contents; let ownerI=index">
-        <section class="section-follow" *ngIf="isLogin() && hidebar && !!modelBottom">
+        <section class="section-follow"
+            *ngIf="isLogin() && hidebar && !!modelBottom && owner.owner.posts.length > 0 && owner.owner.posts[0].post.deleted !== true">
             <div class="container">
                 <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '60px' : '0'}">
                     <div class="wrapper-title">
@@ -1207,38 +1208,40 @@
             </div>
         </div>
     </section>
-    <section class="section-8" *ngIf="isLogin() && hidebar && !!modelBottom">
-        <div class="container">
-            <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '60px' : '0'}">
-                <div class="wrapper-title">
-                    <span [innerHTML]="modelBottom && modelBottom.followingContents.title"></span>
+    <div infinite-scroll [infiniteScrollDistance]="scrollDistance" [infiniteScrollThrottle]="throttle"
+        (scrolled)="onScrollDown($event)">
+        <section class="section-8"
+            *ngIf="isLogin() && hidebar && !!modelBottom && modelBottom.followingContents.contents.length > 0">
+            <div class="container">
+                <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '60px' : '0'}">
+                    <div class="wrapper-title">
+                        <span [innerHTML]="modelBottom && modelBottom.followingContents.title"></span>
+                    </div>
+                    <div class="wrapper-title">
+                        <hr>
+                    </div>
                 </div>
-                <div class="wrapper-title">
-                    <hr>
-                </div>
-            </div>
-            <div class="wrapper-content" infinite-scroll [infiniteScrollDistance]="scrollDistance"
-                [infiniteScrollThrottle]="throttle" (scrolled)="onScrollDown($event)">
-                <ng-container
-                    *ngFor="let followingContents of modelBottom && modelBottom.followingContents.contents; let i=index">
-                    <ng-container *ngIf="followingContents.post.type !== 'NEEDS'">
-                        <card-content-home [titlepost]="followingContents.post.title" [itempost]="followingContents"
-                            [pageId]="followingContents.post.pageId ? followingContents.post.pageId : null"
-                            [ownerid]="followingContents.owner.id ? followingContents.owner.id : null"
-                            [signUrl]="followingContents.coverPageSignUrl ? true : false" [isDialog]="isPostNewTab"
-                            [image]="followingContents.coverPageSignUrl ? followingContents.coverPageSignUrl : followingContents.coverPageUrl ? followingContents.coverPageUrl : null"
-                            [idpost]="followingContents.post._id" [comment]="followingContents.post.commentCount"
-                            [repost]="followingContents.post.repostCount" [like]="followingContents.post.likeCount"
-                            [share]="followingContents.post.shareCount" [ownername]="followingContents.owner.name"
-                            [postdate]="followingContents.post.createdDate | thformatdatetime"
-                            (clickToPost)="clickToPost($event)" (clickToPage)="clickToPageUser($event)"
-                            (openDialog)="openDilogPost($event)"></card-content-home>
+                <div class="wrapper-content">
+                    <ng-container
+                        *ngFor="let followingContents of modelBottom && modelBottom.followingContents.contents; let i=index">
+                        <ng-container *ngIf="followingContents.post.type !== 'NEEDS'">
+                            <card-content-home [titlepost]="followingContents.post.title" [itempost]="followingContents"
+                                [pageId]="followingContents.post.pageId ? followingContents.post.pageId : null"
+                                [ownerid]="followingContents.owner.id ? followingContents.owner.id : null"
+                                [signUrl]="followingContents.coverPageSignUrl ? true : false" [isDialog]="isPostNewTab"
+                                [image]="followingContents.coverPageSignUrl ? followingContents.coverPageSignUrl : followingContents.coverPageUrl ? followingContents.coverPageUrl : null"
+                                [idpost]="followingContents.post._id" [comment]="followingContents.post.commentCount"
+                                [repost]="followingContents.post.repostCount" [like]="followingContents.post.likeCount"
+                                [share]="followingContents.post.shareCount" [ownername]="followingContents.owner.name"
+                                [postdate]="followingContents.post.createdDate | thformatdatetime"
+                                (clickToPost)="clickToPost($event)" (clickToPage)="clickToPageUser($event)"
+                                (openDialog)="openDilogPost($event)"></card-content-home>
+                        </ng-container>
                     </ng-container>
-                </ng-container>
+                </div>
             </div>
-        </div>
-    </section>
-
+        </section>
+    </div>
 </div>
 
 <Preload-card *ngIf="isLoadingPost" [isShowCard6]="true">

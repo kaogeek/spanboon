@@ -158,9 +158,6 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     const formattedDate = `${day}-${month}-${year}`;
     this.mainPageModelFacade.getMainPageModelV3(this.user, this.startDateLong).then((res) => {
       this.model = res;
-      if (this.model) {
-        this.isReadPost(this.user, this.model);
-      }
       if (!!res.announcement) {
         this.announcement = res.announcement;
       }
@@ -262,9 +259,6 @@ export class HomePageV3 extends AbstractPage implements OnInit {
       this.mainPageModelFacade.getMainPageModelV3(userId, (this.queryParamsUrl ? this.queryParamsUrl : null)).then((res) => {
         this.dateValues = new Date(this.queryParamsUrl).toISOString();
         this.model = res;
-        if (this.model) {
-          this.isReadPost(this.user, this.model);
-        }
         if (!!res.announcement) {
           this.announcement = res.announcement;
         }
@@ -310,9 +304,6 @@ export class HomePageV3 extends AbstractPage implements OnInit {
         await this.mainPageModelFacade.getMainPageModelV3(userId, this.startDateLong).then((res) => {
           if (res) {
             this.model = res.data ? res.data : res;
-            if (this.model) {
-              this.isReadPost(this.user, this.model);
-            }
             if (!!res.announcement || !!res.data.announcement) {
               this.announcement = res.announcement ? res.announcement : res.data.announcement;
             }
@@ -374,45 +365,6 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     }).catch(error => {
       console.log(error);
     });
-  }
-
-  public async isReadPost(userId, data) {
-    if (userId) {
-      // id post !!!
-      const postIds = [];
-      const PostSection = data;
-      const objIds = userId;
-      const isReadPost = true;
-      if (PostSection.pageRoundRobin.contents.length > 0) {
-        for (let i = 0; i < PostSection.pageRoundRobin.contents.length; i++) {
-          postIds.push(PostSection.pageRoundRobin.contents[i].post._id);
-
-        }
-      }
-      if (PostSection.majorTrend.contents.length > 0) {
-        for (let j = 0; j < PostSection.majorTrend.contents.length; j++) {
-          postIds.push(PostSection.majorTrend.contents[j].post._id);
-        }
-      }
-      if (PostSection.kaokaiProvince.contents.length > 0) {
-        for (let z = 0; z < PostSection.kaokaiProvince.contents.length; z++) {
-          postIds.push(PostSection.kaokaiProvince.contents[z].post._id);
-        }
-      }
-      if (PostSection.kaokaiHashTag.contents.length > 0) {
-        for (let a = 0; a < PostSection.kaokaiHashTag.contents.length; a++) {
-          postIds.push(PostSection.kaokaiHashTag.contents[a].post._id);
-        }
-      }
-      if (PostSection.kaokaiContent.contents.length > 0) {
-        for (let b = 0; b < PostSection.kaokaiContent.contents.length; b++) {
-          postIds.push(PostSection.kaokaiContent.contents[b].post._id);
-        }
-      }
-      // if (postIds.length > 0) {
-      //   await this.postFacade.isReadPost(objIds, postIds, isReadPost);
-      // }
-    }
   }
 
   public async searchPageInUser(userId?) {
