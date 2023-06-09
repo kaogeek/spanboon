@@ -430,7 +430,6 @@ export class MainPageController {
         const userId = req.headers.userid;
         const objIds = new ObjectID(userId);
         const isRead = await this.isReadPostService.find({ userId: objIds });
-        console.log('isReadPost', isReadPost);
         const mainPageSearchConfig = await this.pageService.searchPageOfficialConfig();
         const searchOfficialOnly = mainPageSearchConfig.searchOfficialOnly;
         const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 7);
