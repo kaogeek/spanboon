@@ -426,13 +426,18 @@ export class MainPageController {
     }
 
     @Post('/bottom/trend')
-    public async mirrorTrends(@QueryParam('limitFollow') limitFollow: number, @QueryParam('offsetFollow') offsetFollow: number, @QueryParam('limit') limit: number, @QueryParam('offset') offset: number, @QueryParam('section') section: string, @QueryParam('date') date: any, @Res() res: any, @Req() req: any): Promise<any> {
+    public async mirrorTrends(@QueryParam('limitFollow') limitFollow: number, @QueryParam('offsetFollow') offsetFollow: number, @QueryParam('limit') limit: number, @QueryParam('offset') offset: number, @QueryParam('isReadPost') isReadPost: boolean, @QueryParam('isFollowings') isFollowings: boolean, @QueryParam('followingProvinces') followingProvinces: boolean, @QueryParam('followingContent') followingContent: boolean, @QueryParam('section') section: string, @QueryParam('date') date: any, @Res() res: any, @Req() req: any): Promise<any> {
         const userId = req.headers.userid;
         const objIds = new ObjectID(userId);
         const isRead = await this.isReadPostService.find({ userId: objIds });
+        console.log('isReadPost', isReadPost);
         const mainPageSearchConfig = await this.pageService.searchPageOfficialConfig();
         const searchOfficialOnly = mainPageSearchConfig.searchOfficialOnly;
         const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 7);
+        let isReadPosts = undefined;
+        let isFollowing = undefined;
+        let followingProvince = undefined;
+        let followingContents = undefined;
         const isReadSectionProcessor: IsReadSectionProcessor = new IsReadSectionProcessor(this.postsService, this.s3Service);
         isReadSectionProcessor.setData({
             userId,
@@ -444,7 +449,9 @@ export class MainPageController {
         isReadSectionProcessor.setConfig({
             searchOfficialOnly
         });
-        const isReadPosts = await isReadSectionProcessor.process();
+        if (isReadPost === true) {
+            isReadPosts = await isReadSectionProcessor.process();
+        }
         const followingPostSectionModelProcessor: FollowingPostSectionModelProcessor = new FollowingPostSectionModelProcessor(this.s3Service, this.userFollowService);
         followingPostSectionModelProcessor.setData({
             userId,
@@ -456,7 +463,9 @@ export class MainPageController {
         followingPostSectionModelProcessor.setConfig({
             searchOfficialOnly
         });
-        const isFollowing = await followingPostSectionModelProcessor.process();
+        if (isFollowings === true) {
+            isFollowing = await followingPostSectionModelProcessor.process();
+        }
         const followingProvinceSectionModelProcessor: FollowingProvinceSectionModelProcessor = new FollowingProvinceSectionModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.userService, this.pageService);
         followingProvinceSectionModelProcessor.setData({
             userId,
@@ -467,14 +476,14 @@ export class MainPageController {
         followingProvinceSectionModelProcessor.setConfig({
             searchOfficialOnly
         });
-        const followingProvince = await followingProvinceSectionModelProcessor.process();
-
+        if (followingProvinces === true) {
+            followingProvince = await followingProvinceSectionModelProcessor.process();
+        }
         const followingContentsModelProcessor: FollowingContentsModelProcessor = new FollowingContentsModelProcessor(
             this.s3Service, this.userFollowService, this.userLikeService
         );
         followingContentsModelProcessor.setData({
             userId,
-            contentPost: isFollowing.contents,
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
             postIds: isRead,
@@ -487,7 +496,9 @@ export class MainPageController {
         followingContentsModelProcessor.setConfig({
             searchOfficialOnly
         });
-        const followingContents = await followingContentsModelProcessor.process();
+        if (followingContent === true) {
+            followingContents = await followingContentsModelProcessor.process();
+        }
         const result: any = {};
         result.isReadPosts = isReadPosts;
         result.isFollowing = isFollowing;
