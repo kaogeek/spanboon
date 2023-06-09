@@ -183,7 +183,7 @@
                                 {{resDataPage && resDataPage.pageUsername ? '@'+resDataPage.pageUsername : ''}}
                             </div>
                             <ng-container
-                                *ngIf="resDataPage.websiteURL !== '' && resDataPage.websiteURL !== undefined && resDataPage.websiteURL !== null">
+                                *ngIf="!!resDataPage!.websiteURL && resDataPage.websiteURL !== '' && resDataPage.websiteURL !== undefined && resDataPage.websiteURL !== null">
                                 <a [href]="checkPathValidation(resDataPage.websiteURL)" target="_blank" class="btn-web">
                                     ไปหน้าเว็บไซต์
                                 </a>

@@ -82,6 +82,11 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   public followOffset: number = 0;
   public followLimit: number = 2;
   public isOnLoad: boolean;
+  public loadingCount: number = 0;
+  public followingContent: any;
+  public followingProvinces: any;
+  public isFollowings: any;
+  public isReadPost: any;
 
   maxDate = new Date();
 
@@ -199,36 +204,62 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     const filter: any = {};
     filter.whereConditions = {};
     filter.orderBy = {};
-    this.mainPageModelFacade.bottomContent(userId, filter, this.offset, this.limit, this.followOffset, this.followLimit).then((res) => {
+    let post;
+    if (this.loadingCount === 0) {
+      post = 'isReadPost';
+    } else if (this.loadingCount === 1) {
+      post = 'isFollowings';
+    } else if (this.loadingCount === 2) {
+      post = 'followingProvinces';
+    } else {
+      post = 'followingContent';
+    }
+    this.mainPageModelFacade.bottomContent(userId, filter, this.offset, this.limit, this.followOffset, this.followLimit, post).then((res) => {
       if (res) {
+        let data;
+        let model: any;
         if (this.isOnLoad === true) {
-          let data = []; let arr = [];
-          for (let model of this.modelBottom.followingContents.contents) {
-            arr.push(model);
+          data = res;
+          // model = {
+          //   post: data,
+          // };
+          if (this.loadingCount === 0) {
+            this.isReadPost = res;
+          } else if (this.loadingCount === 1) {
+            this.isFollowings = res;
+          } else if (this.loadingCount === 2) {
+            this.followingProvinces = res;
+          } else if (this.loadingCount === 3) {
+            this.followingContent = res;
           }
-          for (let model of res.followingContents.contents) {
-            data.push(model);
-          }
-          let model = arr.concat(data);
-          this.modelBottom.followingContents.contents = model;
+          this.loadingCount++;
           this.isOnLoad = false;
           this.isLoadingPost = false;
+          // let data = []; let arr = [];
+          // for (let model of this.modelBottom.followingContents.contents) {
+          //   arr.push(model);
+          // }
+          // for (let model of res.followingContents.contents) {
+          //   data.push(model);
+          // }
+          // let model = arr.concat(data);
+          // this.modelBottom.followingContents.contents = model;
         } else {
           let dataPost = [];
           let model: any = {};
-          for (let data of res.isFollowing.contents) {
-            if (data.owner.posts.length > 0) {
-              dataPost.push(data);
-            }
-          }
-          model = {
-            followingContents: res.followingContents,
-            followingProvince: res.followingProvince,
-            isReadPosts: res.isReadPosts,
-            isFollowing: res.isFollowing
-          };
-          model.isFollowing.contents = dataPost;
-          this.modelBottom = model;
+          // for (let data of res.isFollowing.contents) {
+          //   if (data.owner.posts.length > 0) {
+          //     dataPost.push(data);
+          //   }
+          // }
+          // model = {
+          //   followingContents: res.followingContents,
+          //   followingProvince: res.followingProvince,
+          //   isReadPosts: res.isReadPosts,
+          //   isFollowing: res.isFollowing
+          // };
+          // model.isFollowing.contents = dataPost;
+          this.modelBottom = res;
 
           setTimeout(() => {
             let list = document.getElementsByClassName("card-content");
@@ -345,9 +376,9 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     // if (this.isLogin) {
     //   this.getSubject();
     // }
-    if (this.isLogin()) {
-      this.getBottomContent(this.userCloneDatas.id);
-    }
+    // if (this.isLogin()) {
+    //   this.getBottomContent(this.userCloneDatas.id);
+    // }
     this.showLoading = false;
     this.seoService.updateTitle(PLATFORM_NAME_TH);
     let filter: SearchFilter = new SearchFilter();
@@ -616,13 +647,13 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     }
   }
 
-  public onScrollDown(ev) {
+  public async onScrollDown(ev) {
     if (this.isLogin()) {
       this.offset += this.limit;
       this.followOffset += this.followLimit;
       this.isOnLoad = true;
       this.isLoadingPost = true;
-      this.getBottomContent(this.userCloneDatas.id);
+      await this.getBottomContent(this.userCloneDatas.id);
     }
 
   }
