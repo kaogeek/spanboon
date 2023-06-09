@@ -1617,9 +1617,6 @@ export class KaokaiContentModelProcessor extends AbstractSeparateSectionProcesso
                                             $match: { isOfficial: true, banned: false, province: { $in: bucketAll[i] } }
                                         },
                                         {
-                                            $limit: ContentProcessor.limit
-                                        },
-                                        {
                                             $project: {
                                                 _id: 1
                                             }

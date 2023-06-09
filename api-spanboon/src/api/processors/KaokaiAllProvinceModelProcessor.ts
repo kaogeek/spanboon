@@ -1574,9 +1574,6 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                                             $match: { isOfficial: true, banned: false, province: { $in: bucketAll[i] } }
                                         },
                                         {
-                                            $limit: provincePage.limit
-                                        },
-                                        {
                                             $project: {
                                                 _id: 1
                                             }

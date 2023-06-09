@@ -445,7 +445,7 @@ export class MainPageController {
             searchOfficialOnly
         });
         const isReadPosts = await isReadSectionProcessor.process();
-        const followingPostSectionModelProcessor: FollowingPostSectionModelProcessor = new FollowingPostSectionModelProcessor(/* this.postsService */ this.s3Service,/* this.userLikeService*/this.emergencyEventService, this.pageObjectiveService, this.userFollowService, this.userService, this.pageService);
+        const followingPostSectionModelProcessor: FollowingPostSectionModelProcessor = new FollowingPostSectionModelProcessor(this.s3Service, this.userFollowService);
         followingPostSectionModelProcessor.setData({
             userId,
             startDateTime: monthRange[0],
@@ -470,15 +470,7 @@ export class MainPageController {
         const followingProvince = await followingProvinceSectionModelProcessor.process();
 
         const followingContentsModelProcessor: FollowingContentsModelProcessor = new FollowingContentsModelProcessor(
-            /* this.postsService */
-            this.s3Service,
-            this.userLikeService,
-            this.userFollowService,
-            this.pageService,
-            /* 
-            this.emergencyEventService,
-            this.pageObjectiveService,
-            this.userService, */
+            this.s3Service, this.userFollowService, this.userLikeService
         );
         followingContentsModelProcessor.setData({
             userId,
@@ -513,41 +505,41 @@ export class MainPageController {
         const user = await this.userService.findOne({ _id: objIds });
         const findPostIds = await this.isReadPostService.aggregate([
             {
-                $match:{userId:objIds}
+                $match: { userId: objIds }
             },
             {
                 $unwind: {
                     path: '$user',
                     preserveNullAndEmptyArrays: true
                 }
-            },   
+            },
         ]);
         // check is read
         if (user) {
             const stackPostIds = [];
             const postObjString = [];
-            if(findPostIds.length>0){
-                for(let i = 0 ; i<findPostIds.length;i++){
+            if (findPostIds.length > 0) {
+                for (let i = 0; i < findPostIds.length; i++) {
                     stackPostIds.push(findPostIds[i].postId);
                 }
             }
-            if(data.postId.length>0){
-                for(let j = 0 ; j<data.postId.length;j++){
-                    if(data.postId[j] !== undefined && data.postId[j] !== null){
+            if (data.postId.length > 0) {
+                for (let j = 0; j < data.postId.length; j++) {
+                    if (data.postId[j] !== undefined && data.postId[j] !== null) {
                         postObjString.push(String(data.postId[j]));
-                    }else{
+                    } else {
                         continue;
                     }
                 }
             }
-            if(stackPostIds.flat().length>0){
-                for(let z = 0 ;z<stackPostIds.flat().length;z++){
+            if (stackPostIds.flat().length > 0) {
+                for (let z = 0; z < stackPostIds.flat().length; z++) {
                     postObjString.push(String(stackPostIds.flat()[z]));
                 }
             }
             const postIdFilter = postObjString.filter((element, index) => {
                 return postObjString.indexOf(element) === index;
-            }); 
+            });
             // check is read
             if (postIdFilter.length > 0) {
                 const isRead: IsRead = new IsRead();

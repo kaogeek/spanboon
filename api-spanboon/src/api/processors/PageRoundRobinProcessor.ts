@@ -1554,9 +1554,6 @@ export class PageRoundRobinProcessor extends AbstractSeparateSectionProcessor {
                                             $match: { isOfficial: true, banned: false, province: { $in: bucketAll[i] } }
                                         },
                                         {
-                                            $limit: roundRobin.limit
-                                        },
-                                        {
                                             $project: {
                                                 _id: 1
                                             }

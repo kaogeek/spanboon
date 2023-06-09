@@ -18,7 +18,7 @@ import { LIKE_TYPE } from '../../constants/LikeType';
 import { ObjectID } from 'mongodb';
 
 export class FollowingProvinceSectionModelProcessor extends AbstractSeparateSectionProcessor {
-    private DEFAULT_SEARCH_LIMIT = 10;
+    private DEFAULT_SEARCH_LIMIT = 8;
     private DEFAULT_SEARCH_OFFSET = 0;
     constructor(
         private postsService: PostsService,
