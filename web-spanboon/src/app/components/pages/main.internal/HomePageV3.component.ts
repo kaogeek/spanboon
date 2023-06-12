@@ -83,6 +83,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   public followLimit: number = 2;
   public isOnLoad: boolean;
   public loadingCount: number = 0;
+  public loadContentCount: number = 0;
   public followingContent: any;
   public followingProvinces: any;
   public isFollowings: any;
@@ -233,6 +234,9 @@ export class HomePageV3 extends AbstractPage implements OnInit {
             this.followingProvinces = res;
           } else if (this.loadingCount === 3) {
             this.followingContent = res;
+            if (this.followingContent.contents.length !== 0) {
+              this.loadContentCount++;
+            }
           }
           if (post === 'followingContent') {
             this.loadingCount === 3;
@@ -241,43 +245,8 @@ export class HomePageV3 extends AbstractPage implements OnInit {
           }
           this.isOnLoad = false;
           this.isLoadingPost = false;
-          // let data = []; let arr = [];
-          // for (let model of this.modelBottom.followingContents.contents) {
-          //   arr.push(model);
-          // }
-          // for (let model of res.followingContents.contents) {
-          //   data.push(model);
-          // }
-          // let model = arr.concat(data);
-          // this.modelBottom.followingContents.contents = model;
         } else {
-          let dataPost = [];
-          let model: any = {};
-          // for (let data of res.isFollowing.contents) {
-          //   if (data.owner.posts.length > 0) {
-          //     dataPost.push(data);
-          //   }
-          // }
-          // model = {
-          //   followingContents: res.followingContents,
-          //   followingProvince: res.followingProvince,
-          //   isReadPosts: res.isReadPosts,
-          //   isFollowing: res.isFollowing
-          // };
-          // model.isFollowing.contents = dataPost;
           this.modelBottom = res;
-
-          setTimeout(() => {
-            let list = document.getElementsByClassName("card-content");
-            let leng = list.length;
-            let div = document.getElementsByClassName("idpost");
-            for (let index = 0; index < leng; index++) {
-              if (div[index]) {
-                let doc = div[index].innerHTML;
-                this.listContent.push(doc)
-              }
-            }
-          }, 2000);
         }
       }
     }).catch((err) => {
@@ -347,18 +316,6 @@ export class HomePageV3 extends AbstractPage implements OnInit {
             if (!!res.linkAnnounceMent || !!res.data.linkAnnounceMent) {
               this.linkAnnounce = res.linkAnnounceMent ? res.linkAnnounceMent : res.data.linkAnnounceMent;
             }
-
-            setTimeout(() => {
-              let list = document.getElementsByClassName("card-content");
-              let leng = list.length;
-              let div = document.getElementsByClassName("idpost");
-              for (let index = 0; index < leng; index++) {
-                if (div[index]) {
-                  let doc = div[index].innerHTML;
-                  this.listContent.push(doc)
-                }
-              }
-            }, 2000);
 
             const dateFormat = new Date();
             const dateReal = dateFormat.setDate(dateFormat.getDate());
@@ -622,7 +579,25 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     this._readHomeContent();
     window.addEventListener('scroll', (event) => {
       this._scrollIsRead();
+      this._scrollAddPost();
+
     });
+  }
+
+  private _scrollAddPost() {
+    setTimeout(() => {
+      let list = document.getElementsByClassName("card-content");
+      let leng = list.length;
+      let div = document.getElementsByClassName("idpost");
+      for (let index = 0; index < leng; index++) {
+        if (div[index]) {
+          let doc = div[index].innerHTML;
+          this.listContent.push(doc)
+          let array = this.listContent.filter((item, index) => this.listContent.indexOf(item) === index);
+          this.listContent = array;
+        }
+      }
+    }, 2000);
   }
 
   private _scrollIsRead() {

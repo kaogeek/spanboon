@@ -1212,7 +1212,7 @@
         </div>
     </section>
     <section class="section-8"
-        *ngIf="isLogin() && hidebar && loadingCount >=2 && !!followingContent && followingContent.followingContents.contents.length !== 0">
+        *ngIf="isLogin() && hidebar && loadingCount >=2 && !!followingContent && followingContent.followingContents.contents.length !== 0 && loadContentCount !== 0">
         <div class="container">
             <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '60px' : '0'}">
                 <div class="wrapper-title">
