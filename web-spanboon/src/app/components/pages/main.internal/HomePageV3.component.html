@@ -1176,7 +1176,7 @@
             </section>
         </ng-container>
     </ng-container>
-    <section class="section-7" *ngIf="isLogin() && hidebar && loadingCount > 0 && !!followingProvinces">
+    <section class="section-7" *ngIf="isLogin() && hidebar && loadingCount >=2 && !!followingProvinces">
         <div class="container">
             <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '60px' : '0'}">
                 <div class="wrapper-title">
@@ -1211,7 +1211,7 @@
             </div>
         </div>
     </section>
-    <section class="section-8" *ngIf="isLogin() && hidebar && !!followingContent && loadingCount > 0">
+    <section class="section-8" *ngIf="isLogin() && hidebar && !!followingContent && loadingCount >= 3">
         <div class="container">
             <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '60px' : '0'}">
                 <div class="wrapper-title">
