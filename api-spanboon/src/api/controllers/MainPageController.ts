@@ -128,8 +128,8 @@ export class MainPageController {
         const objIds = new ObjectID(userId);
         const isRead = await this.isReadPostService.find({ userId: objIds });
         const postIds = [];
-        if(userId !== undefined && isRead !== undefined && isRead.length>0){
-            for(let i = 0 ;i<isRead.length;i++){
+        if (userId !== undefined && isRead !== undefined && isRead.length > 0) {
+            for (let i = 0; i < isRead.length; i++) {
                 postIds.push(isRead.postId);
             }
         }
@@ -435,7 +435,7 @@ export class MainPageController {
     }
 
     @Post('/bottom/trend')
-    public async mirrorTrends(@QueryParam('limitFollow') limitFollow: number, @QueryParam('offsetFollow') offsetFollow: number,@QueryParam('limit') limit: number, @QueryParam('offset') offset: number, @QueryParam('isReadPost') isReadPost: boolean, @QueryParam('isFollowings') isFollowings: boolean, @QueryParam('followingProvinces') followingProvinces: boolean, @QueryParam('followingContent') followingContent: boolean, @QueryParam('section') section: string, @QueryParam('date') date: any, @Res() res: any, @Req() req: any): Promise<any> {
+    public async mirrorTrends(@QueryParam('limitFollow') limitFollow: number, @QueryParam('offsetFollow') offsetFollow: number, @QueryParam('limit') limit: number, @QueryParam('offset') offset: number, @QueryParam('isReadPost') isReadPost: boolean, @QueryParam('isFollowings') isFollowings: boolean, @QueryParam('followingProvinces') followingProvinces: boolean, @QueryParam('followingContent') followingContent: boolean, @QueryParam('section') section: string, @QueryParam('date') date: any, @Res() res: any, @Req() req: any): Promise<any> {
         const userId = req.headers.userid;
         const objIds = new ObjectID(userId);
         const isRead = await this.isReadPostService.find({ userId: objIds });
@@ -519,7 +519,6 @@ export class MainPageController {
 
     @Post('/is/read')
     public async isRead(@Body({ validate: true }) data: IsRead, @Res() res: any, @Req() req: any): Promise<any> {
-        console.log('data.post',data.postId);
         const userId = req.headers.userid;
         const objIds = new ObjectID(userId);
         const user = await this.userService.findOne({ _id: objIds });
