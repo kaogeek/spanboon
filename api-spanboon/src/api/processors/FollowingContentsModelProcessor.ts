@@ -73,7 +73,6 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                     }
                 }]);
                 // const today = moment().add(month, 'month').toDate();
-                console.log('postIds', postIds);
                 let isFollowing = undefined;
                 if (postIds !== undefined && postIds.length > 0) {
                     if (following.length > 1) {
