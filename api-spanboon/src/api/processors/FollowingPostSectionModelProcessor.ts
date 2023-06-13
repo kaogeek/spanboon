@@ -469,10 +469,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                                     },
                                                 },
                                                 {
-                                                    $skip: offset
-                                                },
-                                                {
-                                                    $limit: limit + offset,
+                                                    $limit: 8
 
                                                 },
                                                 {
@@ -556,10 +553,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                                     },
                                                 },
                                                 {
-                                                    $skip: offset
-                                                },
-                                                {
-                                                    $limit: limit + offset,
+                                                    $limit: 8
 
                                                 },
                                                 {
@@ -639,10 +633,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                                     },
                                                 },
                                                 {
-                                                    $skip: offset
-                                                },
-                                                {
-                                                    $limit: limit + offset,
+                                                    $limit: 8
 
                                                 },
                                                 {
@@ -725,10 +716,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                                     },
                                                 },
                                                 {
-                                                    $skip: offset
-                                                },
-                                                {
-                                                    $limit: limit + offset,
+                                                    $limit: 8
 
                                                 },
                                                 {
@@ -783,7 +771,6 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                         },
                     ]);
                 }
-                console.log('isFollowing', isFollowing[2]);
                 const result: SectionModel = new SectionModel();
                 result.title = (this.config === undefined || this.config.title === undefined) ? 'เพราะคุณติดตาม' : this.config.title;
                 result.subtitle = '';
