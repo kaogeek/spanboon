@@ -214,18 +214,10 @@ export class HomePageV3 extends AbstractPage implements OnInit {
       post = 'followingProvinces';
     } else {
       post = 'followingContent';
-      this.offset += this.limit;
-      this.followOffset += this.followLimit;
     }
     this.mainPageModelFacade.bottomContent(userId, filter, this.offset, this.limit, this.followOffset, this.followLimit, post).then((res) => {
       if (res) {
-        let data;
-        let model: any;
         if (this.isOnLoad === true) {
-          data = res;
-          // model = {
-          //   post: data,
-          // };
           if (this.loadingCount === 0) {
             this.isReadPost = res;
           } else if (this.loadingCount === 1) {
@@ -240,17 +232,23 @@ export class HomePageV3 extends AbstractPage implements OnInit {
           }
           if (post === 'followingContent') {
             this.loadingCount === 3;
+            this.isOnLoad = false;
+            this.isLoadingPost = false;
+            this.offset += this.limit;
+            this.followOffset += this.followLimit;
           } else {
             this.loadingCount++;
+            this.isOnLoad = false;
+            this.isLoadingPost = false;
           }
-          this.isOnLoad = false;
-          this.isLoadingPost = false;
         } else {
           this.modelBottom = res;
         }
       }
     }).catch((err) => {
       if (err) {
+        this.isOnLoad = false;
+        this.isLoadingPost = false;
       }
     })
   }
