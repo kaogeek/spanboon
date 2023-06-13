@@ -4,7 +4,7 @@
 </div>
 
 <div class="home-page" infinite-scroll [infiniteScrollDistance]="scrollDistance" [infiniteScrollThrottle]="throttle"
-    (scrolled)="onScrollDown($event)">
+    [alwaysCallback]="true" (scrolled)="onScrollDown($event)">
     <section class="section-0" *ngIf="!showLoading">
         <div class="container">
             <div class="header-announcement">

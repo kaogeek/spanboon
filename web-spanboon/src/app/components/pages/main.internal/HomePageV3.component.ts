@@ -214,6 +214,8 @@ export class HomePageV3 extends AbstractPage implements OnInit {
       post = 'followingProvinces';
     } else {
       post = 'followingContent';
+      this.offset += this.limit;
+      this.followOffset += this.followLimit;
     }
     this.mainPageModelFacade.bottomContent(userId, filter, this.offset, this.limit, this.followOffset, this.followLimit, post).then((res) => {
       if (res) {
@@ -225,7 +227,9 @@ export class HomePageV3 extends AbstractPage implements OnInit {
           } else if (this.loadingCount === 2) {
             this.followingProvinces = res;
           } else if (this.loadingCount === 3) {
-            this.followingContent = res;
+            if (res.followingContents.contents.length !== 0) {
+              this.followingContent = res;
+            }
             if (this.followingContent.contents.length !== 0) {
               this.loadContentCount++;
             }
@@ -234,8 +238,6 @@ export class HomePageV3 extends AbstractPage implements OnInit {
             this.loadingCount === 3;
             this.isOnLoad = false;
             this.isLoadingPost = false;
-            this.offset += this.limit;
-            this.followOffset += this.followLimit;
           } else {
             this.loadingCount++;
             this.isOnLoad = false;
@@ -631,7 +633,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   }
 
   public async onScrollDown(ev) {
-    if (this.isLogin()) {
+    if (this.isLogin() && !this.isLoadingPost) {
       this.isOnLoad = true;
       this.isLoadingPost = true;
       await this.getBottomContent(this.userCloneDatas.id);
