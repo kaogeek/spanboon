@@ -206,6 +206,10 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     filter.whereConditions = {};
     filter.orderBy = {};
     let post;
+    if (this.loadContentCount > 0) {
+      this.offset += this.limit;
+      this.followOffset += this.followLimit;
+    }
     if (this.loadingCount === 0) {
       post = 'isReadPost';
     } else if (this.loadingCount === 1) {
@@ -214,8 +218,6 @@ export class HomePageV3 extends AbstractPage implements OnInit {
       post = 'followingProvinces';
     } else {
       post = 'followingContent';
-      this.offset += this.limit;
-      this.followOffset += this.followLimit;
     }
     this.mainPageModelFacade.bottomContent(userId, filter, this.offset, this.limit, this.followOffset, this.followLimit, post).then((res) => {
       if (res) {
@@ -228,10 +230,13 @@ export class HomePageV3 extends AbstractPage implements OnInit {
             this.followingProvinces = res;
           } else if (this.loadingCount === 3) {
             if (res.followingContents.contents.length !== 0) {
-              this.followingContent = res;
-            }
-            if (this.followingContent.contents.length !== 0) {
-              this.loadContentCount++;
+              if (this.loadContentCount > 0) {
+                let data = this.followingContent.followingContents.contents.concat(res.followingContents.contents);
+                this.followingContent.followingContents.contents = data;
+              } else {
+                this.followingContent = res;
+                this.loadContentCount++;
+              }
             }
           }
           if (post === 'followingContent') {
