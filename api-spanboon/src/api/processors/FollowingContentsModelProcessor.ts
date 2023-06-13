@@ -75,6 +75,7 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                 // const today = moment().add(month, 'month').toDate();
                 let isFollowing = undefined;
                 if (following.length > 1) {
+                    console.log('pass1');
                     isFollowing = await this.userFollowService.aggregate([
                         {
                             $match: {
@@ -186,6 +187,7 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                         },
                     ]);
                 } else {
+                    console.log('pass2');
                     isFollowing = await this.userFollowService.aggregate([
                         {
                             $match: {
@@ -291,7 +293,6 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                         },
                     ]);
                 }
-                console.log('isFollowing', isFollowing);
                 const result: SectionModel = new SectionModel();
                 result.title = (this.config === undefined || this.config.title === undefined) ? 'ข่าวสารก่อนหน้านี้' : this.config.title;
                 result.subtitle = '';
@@ -335,7 +336,37 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                             contents.post = row.page.posts;
                             result.contents.push(contents);
                         } else if (row.subjectType === 'USER') {
-                            console.log('row', row);
+                            const firstImage = (row.page.posts.gallery.length > 0) ? row.page.posts.gallery[0] : undefined;
+
+                            const contents: any = {};
+                            contents.coverPageUrl = (row.page.posts.gallery.length > 0) ? row.page.posts.gallery[0].imageURL : undefined;
+                            if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
+                                try {
+                                    const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
+                                    contents.coverPageSignUrl = signUrl;
+                                } catch (error) {
+                                    console.log('PostSectionProcessor: ' + error);
+                                }
+                            }
+
+                            // search isLike
+                            row.page.posts.isLike = false;
+                            if (userId !== undefined && userId !== undefined && userId !== '') {
+                                const userLikes: UserLike[] = await this.userLikeService.find({ userId: new ObjectID(userId), subjectId: row._id, subjectType: LIKE_TYPE.POST });
+                                if (userLikes.length > 0) {
+                                    row.isLike = true;
+                                }
+                            }
+
+                            contents.owner = {};
+                            if (row.page !== undefined) {
+                                contents.owner = this.parseUserField(row.page);
+                            }
+                            // remove page agg
+                            // delete row.page;
+                            delete row.user;
+                            contents.post = row.page.posts;
+                            result.contents.push(contents);
                         }
                     }
                 }
@@ -533,7 +564,7 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                     const posting = await checkPost(findFollowNextState);
                     if (posting !== 'end') {
                         stateMachine = machine.transition(posting);
-
+                        console.log('stateMachine',stateMachine);
                     } else {
                         limitState += 2;
                         offsetState += 2;
