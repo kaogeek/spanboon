@@ -1140,7 +1140,7 @@
         <section class="section-follow" *ngIf="isLogin() && hidebar">
             <ng-container *ngFor="let owner of isFollowings.isFollowing.contents; let ownerI=index">
                 <div class="container"
-                    *ngIf="owner.owner.posts.length > 0 && owner.owner.posts[0].post.deleted !== true">
+                    *ngIf="!isEmptyObject(owner.owner) && owner.owner.posts.length > 0 && owner.owner.posts[0].post.deleted !== true">
                     <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '60px' : '0'}">
                         <div class="wrapper-title">
                             <span style="margin-right: 10px;" [innerHTML]="isFollowings.isFollowing.title"></span>
@@ -1211,7 +1211,7 @@
             </div>
         </div>
     </section>
-    <section class="section-8" *ngIf="isLogin() && hidebar && loadingCount > 0">
+    <section class="section-8" *ngIf="isLogin() && hidebar && loadingCount > 0 && !!followingContent">
         <div class="container">
             <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '60px' : '0'}">
                 <div class="wrapper-title">

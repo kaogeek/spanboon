@@ -75,8 +75,8 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   public readContent: any[] = [];
   public hidebar: boolean = true;
   public isLoadingPost: boolean;
-  public throttle = 300;
-  public scrollDistance = 1;
+  public throttle = 150;
+  public scrollDistance = 2;
   public offset: number = 0;
   public limit: number = 8;
   public followOffset: number = 0;
@@ -455,6 +455,10 @@ export class HomePageV3 extends AbstractPage implements OnInit {
         console.log("err", err)
       }
     })
+  }
+
+  private isEmptyObject(obj) {
+    return (obj && (Object.keys(obj).length === 0));
   }
 
   public openDilogPost($event) {
