@@ -73,121 +73,232 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                     }
                 }]);
                 // const today = moment().add(month, 'month').toDate();
+                console.log('postIds', postIds);
                 let isFollowing = undefined;
-                if (following.length > 1) {
-                    isFollowing = await this.userFollowService.aggregate([
-                        {
-                            $match: {
-                                userId: objIds
-                            }
-                        },
-                        {
-                            $skip: this.data.offsetFollows
-                        },
-                        {
-                            $limit: this.data.limitFollows
-                        },
-                        {
-                            $lookup: {
-                                from: 'Page',
-                                let: { subjectId: '$subjectId' },
-                                pipeline: [
-                                    {
-                                        $match: {
-                                            $expr: {
-                                                $eq: ['$$subjectId', '$_id']
-                                            }
+                if (postIds !== undefined && postIds.length > 0) {
+                    if (following.length > 1) {
+                        isFollowing = await this.userFollowService.aggregate([
+                            {
+                                $match: {
+                                    userId: objIds
+                                }
+                            },
+                            {
+                                $skip: this.data.offsetFollows
+                            },
+                            {
+                                $limit: this.data.limitFollows
+                            },
+                            {
+                                $lookup: {
+                                    from: 'Page',
+                                    let: { subjectId: '$subjectId' },
+                                    pipeline: [
+                                        {
+                                            $match: {
+                                                $expr: {
+                                                    $eq: ['$$subjectId', '$_id']
+                                                }
+                                            },
                                         },
-                                    },
-                                    {
-                                        $lookup: {
-                                            from: 'Posts',
-                                            let: { id: '$_id' },
-                                            pipeline: [
-                                                {
-                                                    $match: {
-                                                        $expr: {
-                                                            $eq: ['$$id', '$pageId']
+                                        {
+                                            $lookup: {
+                                                from: 'Posts',
+                                                let: { id: '$_id' },
+                                                pipeline: [
+                                                    {
+                                                        $match: {
+                                                            $expr: {
+                                                                $eq: ['$$id', '$pageId']
+                                                            },
                                                         },
                                                     },
-                                                },
-                                                {
-                                                    $match: {
-                                                        _id: { $nin: postIds },
-                                                        isDraft: false,
-                                                        deleted: false,
-                                                        hidden: false,
-                                                    }
-                                                },
-                                                {
-                                                    $sort: {
-                                                        summationScore: -1,
+                                                    {
+                                                        $match: {
+                                                            _id: { $nin: postIds },
+                                                            isDraft: false,
+                                                            deleted: false,
+                                                            hidden: false,
+                                                        }
                                                     },
-                                                },
-                                                {
-                                                    $skip: offset
-                                                },
-                                                {
-                                                    $limit: limit + offset,
+                                                    {
+                                                        $sort: {
+                                                            summationScore: -1,
+                                                        },
+                                                    },
+                                                    {
+                                                        $skip: offset
+                                                    },
+                                                    {
+                                                        $limit: limit + offset,
 
-                                                },
-                                                {
-                                                    $lookup: {
-                                                        from: 'PostsGallery',
-                                                        localField: '_id',
-                                                        foreignField: 'post',
-                                                        as: 'gallery',
                                                     },
-                                                },
-                                                {
-                                                    $lookup: {
-                                                        from: 'User',
-                                                        let: { ownerUser: '$ownerUser' },
-                                                        pipeline: [
-                                                            {
-                                                                $match: {
-                                                                    $expr: { $eq: ['$$ownerUser', '$_id'] },
+                                                    {
+                                                        $lookup: {
+                                                            from: 'PostsGallery',
+                                                            localField: '_id',
+                                                            foreignField: 'post',
+                                                            as: 'gallery',
+                                                        },
+                                                    },
+                                                    {
+                                                        $lookup: {
+                                                            from: 'User',
+                                                            let: { ownerUser: '$ownerUser' },
+                                                            pipeline: [
+                                                                {
+                                                                    $match: {
+                                                                        $expr: { $eq: ['$$ownerUser', '$_id'] },
+                                                                    },
+
                                                                 },
+                                                                { $project: { email: 0, username: 0, password: 0 } }
+                                                            ],
+                                                            as: 'user'
+                                                        }
+                                                    },
+                                                    {
+                                                        $unwind: {
+                                                            path: '$user',
+                                                            preserveNullAndEmptyArrays: true
+                                                        }
+                                                    },
+                                                    {
+                                                        $project: {
+                                                            story: 0
+                                                        }
 
-                                                            },
-                                                            { $project: { email: 0, username: 0, password: 0 } }
-                                                        ],
-                                                        as: 'user'
-                                                    }
-                                                },
-                                                {
-                                                    $unwind: {
-                                                        path: '$user',
-                                                        preserveNullAndEmptyArrays: true
-                                                    }
-                                                },
-                                                {
-                                                    $project: {
-                                                        story: 0
-                                                    }
-
-                                                },
-                                            ],
-                                            as: 'posts'
-                                        }
-                                    },
-                                    {
-                                        $unwind: {
-                                            path: '$posts',
-                                            preserveNullAndEmptyArrays: true
-                                        }
-                                    },
-                                ],
-                                as: 'page'
+                                                    },
+                                                ],
+                                                as: 'posts'
+                                            }
+                                        },
+                                        {
+                                            $unwind: {
+                                                path: '$posts',
+                                                preserveNullAndEmptyArrays: true
+                                            }
+                                        },
+                                    ],
+                                    as: 'page'
+                                },
                             },
-                        },
-                        {
-                            $unwind: {
-                                path: '$page',
-                                preserveNullAndEmptyArrays: true
-                            }
-                        },
-                    ]);
+                            {
+                                $unwind: {
+                                    path: '$page',
+                                    preserveNullAndEmptyArrays: true
+                                }
+                            },
+                        ]);
+                    } else {
+                        isFollowing = await this.userFollowService.aggregate([
+                            {
+                                $match: {
+                                    userId: objIds
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'Page',
+                                    let: { subjectId: '$subjectId' },
+                                    pipeline: [
+                                        {
+                                            $match: {
+                                                $expr: {
+                                                    $eq: ['$$subjectId', '$_id']
+                                                }
+                                            },
+                                        },
+                                        {
+                                            $lookup: {
+                                                from: 'Posts',
+                                                let: { id: '$_id' },
+                                                pipeline: [
+                                                    {
+                                                        $match: {
+                                                            $expr: {
+                                                                $eq: ['$$id', '$pageId']
+                                                            },
+                                                        },
+                                                    },
+                                                    {
+                                                        $match: {
+                                                            _id: { $nin: postIds },
+                                                            isDraft: false,
+                                                            deleted: false,
+                                                            hidden: false,
+                                                        }
+                                                    },
+                                                    {
+                                                        $sort: {
+                                                            summationScore: -1,
+                                                        },
+                                                    },
+                                                    {
+                                                        $skip: offset
+                                                    },
+                                                    {
+                                                        $limit: limit + offset,
+
+                                                    },
+                                                    {
+                                                        $lookup: {
+                                                            from: 'PostsGallery',
+                                                            localField: '_id',
+                                                            foreignField: 'post',
+                                                            as: 'gallery',
+                                                        },
+                                                    },
+                                                    {
+                                                        $lookup: {
+                                                            from: 'User',
+                                                            let: { ownerUser: '$ownerUser' },
+                                                            pipeline: [
+                                                                {
+                                                                    $match: {
+                                                                        $expr: { $eq: ['$$ownerUser', '$_id'] },
+                                                                    },
+
+                                                                },
+                                                                { $project: { email: 0, username: 0, password: 0 } }
+                                                            ],
+                                                            as: 'user'
+                                                        }
+                                                    },
+                                                    {
+                                                        $unwind: {
+                                                            path: '$user',
+                                                            preserveNullAndEmptyArrays: true
+                                                        }
+                                                    },
+                                                    {
+                                                        $project: {
+                                                            story: 0
+                                                        }
+
+                                                    },
+                                                ],
+                                                as: 'posts'
+                                            }
+                                        },
+                                        {
+                                            $unwind: {
+                                                path: '$posts',
+                                                preserveNullAndEmptyArrays: true
+                                            }
+                                        },
+                                    ],
+                                    as: 'page'
+                                },
+                            },
+                            {
+                                $unwind: {
+                                    path: '$page',
+                                    preserveNullAndEmptyArrays: true
+                                }
+                            },
+                        ]);
+                    }
                 } else {
                     isFollowing = await this.userFollowService.aggregate([
                         {
@@ -221,7 +332,6 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                                 },
                                                 {
                                                     $match: {
-                                                        _id: { $nin: postIds },
                                                         isDraft: false,
                                                         deleted: false,
                                                         hidden: false,
