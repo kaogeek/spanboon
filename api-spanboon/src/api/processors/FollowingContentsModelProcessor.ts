@@ -75,7 +75,6 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                 // const today = moment().add(month, 'month').toDate();
                 let isFollowing = undefined;
                 if (following.length > 1) {
-                    console.log('pass1');
                     isFollowing = await this.userFollowService.aggregate([
                         {
                             $match: {
@@ -114,7 +113,10 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                                 },
                                                 {
                                                     $match: {
-                                                        _id: { $nin: postIds }
+                                                        _id: { $nin: postIds },
+                                                        isDraft: false,
+                                                        deleted: false,
+                                                        hidden: false,
                                                     }
                                                 },
                                                 {
@@ -187,7 +189,6 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                         },
                     ]);
                 } else {
-                    console.log('pass2');
                     isFollowing = await this.userFollowService.aggregate([
                         {
                             $match: {
@@ -220,7 +221,10 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                                 },
                                                 {
                                                     $match: {
-                                                        _id: { $nin: postIds }
+                                                        _id: { $nin: postIds },
+                                                        isDraft: false,
+                                                        deleted: false,
+                                                        hidden: false,
                                                     }
                                                 },
                                                 {
@@ -564,7 +568,7 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                     const posting = await checkPost(findFollowNextState);
                     if (posting !== 'end') {
                         stateMachine = machine.transition(posting);
-                        console.log('stateMachine',stateMachine);
+                        console.log('stateMachine', stateMachine);
                     } else {
                         limitState += 2;
                         offsetState += 2;
