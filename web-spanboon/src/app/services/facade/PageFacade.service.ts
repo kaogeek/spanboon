@@ -57,8 +57,8 @@ export class PageFacade extends AbstractFacade {
     });
   }
 
-  public groups(): Promise<any>{
-    return new Promise((resolve,reject) =>{
+  public groups(): Promise<any> {
+    return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/page';
       let body: any = {}
     })
@@ -192,6 +192,24 @@ export class PageFacade extends AbstractFacade {
     });
   }
 
+  public getProvince() {
+    return new Promise((resolve, reject) => {
+      let url: string = "https://raw.githubusercontent.com/earthchie/jquery.Thailand.js/master/jquery.Thailand.js/database/raw_database/raw_database.json";
+      let data = [];
+      this.http.get(url).toPromise().then((response: any) => {
+        for (let index = 0; index < response.length; index++) {
+          const element = response[index].province;
+          data.push(element)
+        }
+        var dataProvince = data.filter(function (elem, index, self) {
+          return index === self.indexOf(elem);
+        });
+        resolve(dataProvince);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
 
   public saveImagePage(id: string, data: any): Promise<any> {
     if (id === undefined || id === null || id === '') {

@@ -464,7 +464,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     })
   }
 
-  private isEmptyObject(obj) {
+  public isEmptyObject(obj) {
     return (obj && (Object.keys(obj).length === 0));
   }
 

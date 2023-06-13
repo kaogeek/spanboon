@@ -83,8 +83,8 @@
             <div for="province" class="title-label">จังหวัด</div>
             <mat-form-field appearance="none">
                 <mat-select [(ngModel)]="data.province" name="province" placeholder='จังหวัด' required>
-                    <mat-option *ngFor="let province of provinces" [value]="province.value">
-                        {{province.viewValue}}
+                    <mat-option *ngFor="let province of provinces" [value]="province">
+                        {{province}}
                     </mat-option>
                 </mat-select>
             </mat-form-field>

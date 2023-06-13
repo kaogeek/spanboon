@@ -1139,7 +1139,7 @@
     <ng-container *ngIf="!!isFollowings">
         <section class="section-follow" *ngIf="isLogin() && hidebar">
             <ng-container *ngFor="let owner of isFollowings.isFollowing.contents; let ownerI=index">
-                <div class="container"
+                <div class="container" style="margin-top: 15px"
                     *ngIf="!isEmptyObject(owner.owner) && owner.owner.posts.length > 0 && owner.owner.posts[0].post.deleted !== true">
                     <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '60px' : '0'}">
                         <div class="wrapper-title">
@@ -1195,18 +1195,20 @@
             <div class="wrapper-content">
                 <ng-container
                     *ngFor="let followingProvince of followingProvinces.followingProvince.contents; let i=index">
-                    <card-content-home [titlepost]="followingProvince.post.title"
-                        [ownername]="followingProvince.owner.name" [itempost]="followingProvince"
-                        [pageId]="followingProvince.post.pageId ? followingProvince.post.pageId : null"
-                        [ownerid]="followingProvince.post.ownerUser ? followingProvince.post.ownerUser : null"
-                        [signUrl]="followingProvince.coverPageSignUrl ? true : false" [isDialog]="isPostNewTab"
-                        [image]="followingProvince.coverPageSignUrl ? followingProvince.coverPageSignUrl : followingProvince.coverPageUrl ? followingProvince.coverPageUrl : null"
-                        [idpost]="followingProvince.post._id" [comment]="followingProvince.post.commentCount"
-                        [repost]="followingProvince.post.repostCount" [like]="followingProvince.post.likeCount"
-                        [share]="followingProvince.post.shareCount"
-                        [postdate]="followingProvince.post.createdDate | thformatdatetime"
-                        (clickToPost)="clickToPost($event)" (clickToPage)="clickToPageUser($event)"
-                        (openDialog)="openDilogPost($event)"></card-content-home>
+                    <ng-container *ngIf="followingProvince.post.deleted === false">
+                        <card-content-home [titlepost]="followingProvince.post.title"
+                            [ownername]="followingProvince.owner.name" [itempost]="followingProvince"
+                            [pageId]="followingProvince.post.pageId ? followingProvince.post.pageId : null"
+                            [ownerid]="followingProvince.post.ownerUser ? followingProvince.post.ownerUser : null"
+                            [signUrl]="followingProvince.coverPageSignUrl ? true : false" [isDialog]="isPostNewTab"
+                            [image]="followingProvince.coverPageSignUrl ? followingProvince.coverPageSignUrl : followingProvince.coverPageUrl ? followingProvince.coverPageUrl : null"
+                            [idpost]="followingProvince.post._id" [comment]="followingProvince.post.commentCount"
+                            [repost]="followingProvince.post.repostCount" [like]="followingProvince.post.likeCount"
+                            [share]="followingProvince.post.shareCount"
+                            [postdate]="followingProvince.post.createdDate | thformatdatetime"
+                            (clickToPost)="clickToPost($event)" (clickToPage)="clickToPageUser($event)"
+                            (openDialog)="openDilogPost($event)"></card-content-home>
+                    </ng-container>
                 </ng-container>
             </div>
         </div>
@@ -1224,7 +1226,8 @@
             <div class="wrapper-content">
                 <ng-container
                     *ngFor="let followingContents of followingContent.followingContents.contents; let i=index">
-                    <ng-container *ngIf="followingContents.post.type !== 'NEEDS'">
+                    <ng-container
+                        *ngIf="followingContents.post.type !== 'NEEDS' && followingContent.post.deleted === false">
                         <card-content-home [titlepost]="followingContents.post.title" [itempost]="followingContents"
                             [pageId]="followingContents.post.pageId ? followingContents.post.pageId : null"
                             [ownerid]="followingContents.owner.id ? followingContents.owner.id : null"

@@ -36,7 +36,7 @@ export class EditProfileCard extends AbstractPage implements OnInit {
   public dataUser: any;
   public formProfile: FormGroup;
   public authenManager: AuthenManager;
-  public provinces = PROVINCE_LIST;
+  public provinces;
 
   @Input()
   public dataProfile: any;
@@ -82,6 +82,7 @@ export class EditProfileCard extends AbstractPage implements OnInit {
     if (this.data !== '' && this.data !== undefined && this.data !== null) {
       this.getDataUser();
     }
+    this.getProvince();
     this._formEditProfile();
     this._setDataFormEditProfile();
   }
@@ -103,6 +104,14 @@ export class EditProfileCard extends AbstractPage implements OnInit {
         pageUser.subscribeEmail = email;
         pageUser.subscribeNoti = noti;
         localStorage.setItem('pageUser', JSON.stringify(pageUser));
+      }
+    })
+  }
+
+  public getProvince() {
+    this.profileFacade.getProvince().then((res) => {
+      if (res) {
+        this.provinces = res;
       }
     })
   }
