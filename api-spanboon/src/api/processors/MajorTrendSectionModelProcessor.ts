@@ -1614,9 +1614,6 @@ export class MajorTrendSectionModelProcessor extends AbstractSeparateSectionProc
                                             $match: { isOfficial: true, banned: false, province: { $in: bucketAll[i] } }
                                         },
                                         {
-                                            $limit: majorTrend.limit
-                                        },
-                                        {
                                             $project: {
                                                 _id: 1
                                             }

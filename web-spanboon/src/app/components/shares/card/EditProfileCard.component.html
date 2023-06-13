@@ -47,8 +47,8 @@
         <div class="dropdown-province">
             <mat-form-field appearance="none">
                 <mat-select name="province" placeholder='จังหวัด' formControlName="province">
-                    <mat-option *ngFor="let province of provinces" [value]="province.value">
-                        {{province.value}}
+                    <mat-option *ngFor="let province of provinces" [value]="province">
+                        {{province}}
                     </mat-option>
                 </mat-select>
             </mat-form-field>

@@ -51,11 +51,22 @@ export class MainPageSlideFacade extends AbstractFacade {
     });
   }
 
-  public bottomContent(userId: string, filter: string, offset?: number, limit?: number, foffset?: number, flimit?: number): Promise<any> {
+  public bottomContent(userId: string, filter: string, offset?: number, limit?: number, foffset?: number, flimit?: number, ReadPost?: 'isReadPost' | 'isFollowings' | 'followingProvinces' | 'followingContent'): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/main/bottom/trend';
+      let read: string;
+      if (ReadPost === 'isReadPost') {
+        read = 'isReadPost=true&isFollowings=false&followingProvinces=false&followingContent=false';
+      } else if (ReadPost === 'isFollowings') {
+        read = 'isReadPost=false&isFollowings=true&followingProvinces=false&followingContent=false';
+      } else if (ReadPost === 'followingProvinces') {
+        read = 'isReadPost=false&isFollowings=false&followingProvinces=true&followingContent=false';
+      } else if (ReadPost === 'followingContent') {
+        read = 'isReadPost=false&isFollowings=false&followingProvinces=false&followingContent=true';
+      }
+
       if (offset !== undefined) {
-        url += `?limitFollow=${flimit}&offsetFollow=${foffset}&limit=${limit}&offset=${offset}`;
+        url += `?limitFollow=${flimit}&offsetFollow=${foffset}&limit=${limit}&offset=${offset}&${read}`;
       }
 
       let body;

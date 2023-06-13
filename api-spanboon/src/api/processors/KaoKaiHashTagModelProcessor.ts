@@ -1609,9 +1609,6 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
                                             $match: { isOfficial: true, banned: false, province: { $in: bucketAll[i] } }
                                         },
                                         {
-                                            $limit: hashTagProcessor.limit
-                                        },
-                                        {
                                             $project: {
                                                 _id: 1
                                             }

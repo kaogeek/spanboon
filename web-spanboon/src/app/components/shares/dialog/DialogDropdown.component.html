@@ -36,8 +36,8 @@
                     <mat-select [(ngModel)]="selectedProvince" name="province"
                         (selectionChange)="selectType($event,'province')" [ngModelOptions]="{standalone: true}"
                         placeholder='จังหวัด'>
-                        <mat-option *ngFor="let province of provinces" [value]="province.value">
-                            {{province.value}}
+                        <mat-option *ngFor="let province of provinces" [value]="province">
+                            {{province}}
                         </mat-option>
                     </mat-select>
                 </mat-form-field>

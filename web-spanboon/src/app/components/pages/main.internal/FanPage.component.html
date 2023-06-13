@@ -182,10 +182,12 @@
                             <div class="fan-page-tag" [phxPreload]="resDataPage" [preloadClass]="'fan-page-tag'">
                                 {{resDataPage && resDataPage.pageUsername ? '@'+resDataPage.pageUsername : ''}}
                             </div>
-                            <a [href]="checkPathValidation(resDataPage.websiteURL)" target="_blank" class="btn-web"
-                                *ngIf="!!resDataPage!.websiteURL">
-                                ไปหน้าเว็บไซต์
-                            </a>
+                            <ng-container
+                                *ngIf="!!resDataPage!.websiteURL && resDataPage.websiteURL !== '' && resDataPage.websiteURL !== undefined && resDataPage.websiteURL !== null">
+                                <a [href]="checkPathValidation(resDataPage.websiteURL)" target="_blank" class="btn-web">
+                                    ไปหน้าเว็บไซต์
+                                </a>
+                            </ng-container>
                         </div>
                         <div class="wrapper-btn-action" [phxPreload]="resDataPage"
                             [ngStyle]="{'justify-content': !isLogin() ? 'center' : 'space-between','column-gap': !isLogin() ? '35px' : 'unsent'}"

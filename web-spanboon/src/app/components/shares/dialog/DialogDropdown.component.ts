@@ -27,7 +27,7 @@ export class DialogDropdown {
     public selectedGroup: string;
     public pageId: string;
     public groups: any = [];
-    public provinces = PROVINCE_LIST;
+    public provinces;
 
     constructor(public dialogRef: MatDialogRef<DialogDropdown>,
         @Inject(MAT_DIALOG_DATA) public data: DialogData, aboutPageFacade: AboutPageFacade,
@@ -74,6 +74,7 @@ export class DialogDropdown {
     public ngOnInit(): void {
         this.groups = this.data.group;
         this.pageId = this.data.pageId;
+        this.getProvince();
     }
 
     public selectType($event, text: string) {
@@ -82,5 +83,13 @@ export class DialogDropdown {
         } else if (text === 'group') {
             this.selectedGroup = $event.value;
         }
+    }
+
+    public getProvince() {
+        this.pageFacade.getProvince().then((res) => {
+            if (res) {
+                this.provinces = res;
+            }
+        })
     }
 }

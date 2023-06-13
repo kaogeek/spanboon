@@ -75,13 +75,19 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   public readContent: any[] = [];
   public hidebar: boolean = true;
   public isLoadingPost: boolean;
-  public throttle = 300;
-  public scrollDistance = 1;
+  public throttle = 150;
+  public scrollDistance = 2;
   public offset: number = 0;
   public limit: number = 8;
   public followOffset: number = 0;
   public followLimit: number = 2;
   public isOnLoad: boolean;
+  public loadingCount: number = 0;
+  public loadContentCount: number = 0;
+  public followingContent: any;
+  public followingProvinces: any;
+  public isFollowings: any;
+  public isReadPost: any;
 
   maxDate = new Date();
 
@@ -158,9 +164,6 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     const formattedDate = `${day}-${month}-${year}`;
     this.mainPageModelFacade.getMainPageModelV3(this.user, this.startDateLong).then((res) => {
       this.model = res;
-      if (this.model) {
-        this.isReadPost(this.user, this.model);
-      }
       if (!!res.announcement) {
         this.announcement = res.announcement;
       }
@@ -202,52 +205,57 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     const filter: any = {};
     filter.whereConditions = {};
     filter.orderBy = {};
-    this.mainPageModelFacade.bottomContent(userId, filter, this.offset, this.limit, this.followOffset, this.followLimit).then((res) => {
+    let post;
+    if (this.loadContentCount > 0) {
+      this.offset += this.limit;
+      this.followOffset += this.followLimit;
+    }
+    if (this.loadingCount === 0) {
+      post = 'isReadPost';
+    } else if (this.loadingCount === 1) {
+      post = 'isFollowings';
+    } else if (this.loadingCount === 2) {
+      post = 'followingProvinces';
+    } else {
+      post = 'followingContent';
+    }
+    this.mainPageModelFacade.bottomContent(userId, filter, this.offset, this.limit, this.followOffset, this.followLimit, post).then((res) => {
       if (res) {
         if (this.isOnLoad === true) {
-          let data = []; let arr = [];
-          for (let model of this.modelBottom.followingContents.contents) {
-            arr.push(model);
-          }
-          for (let model of res.followingContents.contents) {
-            data.push(model);
-          }
-          let model = arr.concat(data);
-          this.modelBottom.followingContents.contents = model;
-          this.isOnLoad = false;
-          this.isLoadingPost = false;
-        } else {
-          let dataPost = [];
-          let model: any = {};
-          for (let data of res.isFollowing.contents) {
-            if (data.owner.posts.length > 0) {
-              dataPost.push(data);
-            }
-          }
-          model = {
-            followingContents: res.followingContents,
-            followingProvince: res.followingProvince,
-            isReadPosts: res.isReadPosts,
-            isFollowing: res.isFollowing
-          };
-          model.isFollowing.contents = dataPost;
-          this.modelBottom = model;
-
-          setTimeout(() => {
-            let list = document.getElementsByClassName("card-content");
-            let leng = list.length;
-            let div = document.getElementsByClassName("idpost");
-            for (let index = 0; index < leng; index++) {
-              if (div[index]) {
-                let doc = div[index].innerHTML;
-                this.listContent.push(doc)
+          if (this.loadingCount === 0) {
+            this.isReadPost = res;
+          } else if (this.loadingCount === 1) {
+            this.isFollowings = res;
+          } else if (this.loadingCount === 2) {
+            this.followingProvinces = res;
+          } else if (this.loadingCount === 3) {
+            if (res.followingContents.contents.length !== 0) {
+              if (this.loadContentCount > 0) {
+                let data = this.followingContent.followingContents.contents.concat(res.followingContents.contents);
+                this.followingContent.followingContents.contents = data;
+              } else {
+                this.followingContent = res;
+                this.loadContentCount++;
               }
             }
-          }, 2000);
+          }
+          if (post === 'followingContent') {
+            this.loadingCount === 3;
+            this.isOnLoad = false;
+            this.isLoadingPost = false;
+          } else {
+            this.loadingCount++;
+            this.isOnLoad = false;
+            this.isLoadingPost = false;
+          }
+        } else {
+          this.modelBottom = res;
         }
       }
     }).catch((err) => {
       if (err) {
+        this.isOnLoad = false;
+        this.isLoadingPost = false;
       }
     })
   }
@@ -262,9 +270,6 @@ export class HomePageV3 extends AbstractPage implements OnInit {
       this.mainPageModelFacade.getMainPageModelV3(userId, (this.queryParamsUrl ? this.queryParamsUrl : null)).then((res) => {
         this.dateValues = new Date(this.queryParamsUrl).toISOString();
         this.model = res;
-        if (this.model) {
-          this.isReadPost(this.user, this.model);
-        }
         if (!!res.announcement) {
           this.announcement = res.announcement;
         }
@@ -310,27 +315,12 @@ export class HomePageV3 extends AbstractPage implements OnInit {
         await this.mainPageModelFacade.getMainPageModelV3(userId, this.startDateLong).then((res) => {
           if (res) {
             this.model = res.data ? res.data : res;
-            if (this.model) {
-              this.isReadPost(this.user, this.model);
-            }
             if (!!res.announcement || !!res.data.announcement) {
               this.announcement = res.announcement ? res.announcement : res.data.announcement;
             }
             if (!!res.linkAnnounceMent || !!res.data.linkAnnounceMent) {
               this.linkAnnounce = res.linkAnnounceMent ? res.linkAnnounceMent : res.data.linkAnnounceMent;
             }
-
-            setTimeout(() => {
-              let list = document.getElementsByClassName("card-content");
-              let leng = list.length;
-              let div = document.getElementsByClassName("idpost");
-              for (let index = 0; index < leng; index++) {
-                if (div[index]) {
-                  let doc = div[index].innerHTML;
-                  this.listContent.push(doc)
-                }
-              }
-            }, 2000);
 
             const dateFormat = new Date();
             const dateReal = dateFormat.setDate(dateFormat.getDate());
@@ -354,9 +344,9 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     // if (this.isLogin) {
     //   this.getSubject();
     // }
-    if (this.isLogin()) {
-      this.getBottomContent(this.userCloneDatas.id);
-    }
+    // if (this.isLogin()) {
+    //   this.getBottomContent(this.userCloneDatas.id);
+    // }
     this.showLoading = false;
     this.seoService.updateTitle(PLATFORM_NAME_TH);
     let filter: SearchFilter = new SearchFilter();
@@ -374,45 +364,6 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     }).catch(error => {
       console.log(error);
     });
-  }
-
-  public async isReadPost(userId, data) {
-    if (userId) {
-      // id post !!!
-      const postIds = [];
-      const PostSection = data;
-      const objIds = userId;
-      const isReadPost = true;
-      if (PostSection.pageRoundRobin.contents.length > 0) {
-        for (let i = 0; i < PostSection.pageRoundRobin.contents.length; i++) {
-          postIds.push(PostSection.pageRoundRobin.contents[i].post._id);
-
-        }
-      }
-      if (PostSection.majorTrend.contents.length > 0) {
-        for (let j = 0; j < PostSection.majorTrend.contents.length; j++) {
-          postIds.push(PostSection.majorTrend.contents[j].post._id);
-        }
-      }
-      if (PostSection.kaokaiProvince.contents.length > 0) {
-        for (let z = 0; z < PostSection.kaokaiProvince.contents.length; z++) {
-          postIds.push(PostSection.kaokaiProvince.contents[z].post._id);
-        }
-      }
-      if (PostSection.kaokaiHashTag.contents.length > 0) {
-        for (let a = 0; a < PostSection.kaokaiHashTag.contents.length; a++) {
-          postIds.push(PostSection.kaokaiHashTag.contents[a].post._id);
-        }
-      }
-      if (PostSection.kaokaiContent.contents.length > 0) {
-        for (let b = 0; b < PostSection.kaokaiContent.contents.length; b++) {
-          postIds.push(PostSection.kaokaiContent.contents[b].post._id);
-        }
-      }
-      // if (postIds.length > 0) {
-      //   await this.postFacade.isReadPost(objIds, postIds, isReadPost);
-      // }
-    }
   }
 
   public async searchPageInUser(userId?) {
@@ -511,6 +462,10 @@ export class HomePageV3 extends AbstractPage implements OnInit {
         console.log("err", err)
       }
     })
+  }
+
+  public isEmptyObject(obj) {
+    return (obj && (Object.keys(obj).length === 0));
   }
 
   public openDilogPost($event) {
@@ -633,7 +588,25 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     this._readHomeContent();
     window.addEventListener('scroll', (event) => {
       this._scrollIsRead();
+      this._scrollAddPost();
+
     });
+  }
+
+  private _scrollAddPost() {
+    setTimeout(() => {
+      let list = document.getElementsByClassName("card-content");
+      let leng = list.length;
+      let div = document.getElementsByClassName("idpost");
+      for (let index = 0; index < leng; index++) {
+        if (div[index]) {
+          let doc = div[index].innerHTML;
+          this.listContent.push(doc)
+          let array = this.listContent.filter((item, index) => this.listContent.indexOf(item) === index);
+          this.listContent = array;
+        }
+      }
+    }, 2000);
   }
 
   private _scrollIsRead() {
@@ -664,13 +637,11 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     }
   }
 
-  public onScrollDown(ev) {
-    if (this.isLogin()) {
-      this.offset += this.limit;
-      this.followOffset += this.followLimit;
+  public async onScrollDown(ev) {
+    if (this.isLogin() && !this.isLoadingPost) {
       this.isOnLoad = true;
       this.isLoadingPost = true;
-      this.getBottomContent(this.userCloneDatas.id);
+      await this.getBottomContent(this.userCloneDatas.id);
     }
 
   }

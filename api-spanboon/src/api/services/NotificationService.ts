@@ -86,7 +86,7 @@ export class NotificationService {
 
     public async pushNotificationMessage(data: any, tokenId: any, date: any): Promise<any> {
         const title = 'ก้าวไกลหน้าหนึ่ง';
-        let body = String(data.majorTrend.contents[0].post.title);
+        let body = data.majorTrend.contents[0].post.title ? String(data.majorTrend.contents[0].post.title) : 'ก้าวไกลหน้าหนึ่ง' ;
         if (body.length > 60) {
             body = body.substring(0, 60) + '...';
         }

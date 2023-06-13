@@ -49,7 +49,7 @@ export class AboutPage extends AbstractPage implements OnInit {
     private aboutPageFacade: AboutPageFacade;
 
     public groupAbout!: FormGroup;
-    public provinces = PROVINCE_LIST;
+    public provinces;
     public groups: any = [];
     public isCard1: boolean = false;
     public isCard2: boolean = false;
@@ -203,6 +203,7 @@ export class AboutPage extends AbstractPage implements OnInit {
 
     public ngOnInit(): void {
         this.crateValueAbout();
+        this.getProvince();
         this.getGroupList();
         if (!!this.dataPage.group) {
             this.selectedGroup = this.dataPage.group
@@ -254,6 +255,14 @@ export class AboutPage extends AbstractPage implements OnInit {
                 this.groups = res.data;
                 this.checkGroup();
                 this.checkProvince();
+            }
+        })
+    }
+
+    public getProvince() {
+        this.pageFacade.getProvince().then((res) => {
+            if (res) {
+                this.provinces = res;
             }
         })
     }

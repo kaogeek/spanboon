@@ -77,7 +77,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
   public password: string = '';
   public birthday: Date;
 
-  public provinces = PROVINCE_LIST;
+  public provinces;
 
   public user: SocialUser;
   public loggedIn: boolean;
@@ -174,6 +174,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
 
   ngOnInit(): void {
     super.ngOnInit();
+    this.getProvince();
     this.checkLoginAndRedirection();
   }
 
@@ -204,6 +205,15 @@ export class RegisterPage extends AbstractPage implements OnInit {
     // throw new Error('Method not implemented.');
     return;
   }
+
+  public getProvince() {
+    this.userFacade.getProvince().then((res) => {
+      if (res) {
+        this.provinces = res;
+      }
+    })
+  }
+
   public fbLibrary() {
     (window as any).fbAsyncInit = function () {
       window['FB'].init({
