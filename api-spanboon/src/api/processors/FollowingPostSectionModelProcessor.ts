@@ -95,7 +95,10 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                                 },
                                                 {
                                                     $match: {
-                                                        _id: { $nin: postIds }
+                                                        _id: { $nin: postIds },
+                                                        isDraft: false,
+                                                        deleted: false,
+                                                        hidden: false,
                                                     }
                                                 },
                                                 {
@@ -187,7 +190,10 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                                 },
                                                 {
                                                     $match: {
-                                                        _id: { $nin: postIds }
+                                                        _id: { $nin: postIds },
+                                                        isDraft: false,
+                                                        deleted: false,
+                                                        hidden: false,
                                                     }
                                                 },
                                                 {
@@ -275,7 +281,10 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                                 },
                                                 {
                                                     $match: {
-                                                        _id: { $nin: postIds }
+                                                        _id: { $nin: postIds },
+                                                        isDraft: false,
+                                                        deleted: false,
+                                                        hidden: false,
                                                     }
                                                 },
                                                 {
@@ -366,7 +375,10 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                                 },
                                                 {
                                                     $match: {
-                                                        _id: { $nin: postIds }
+                                                        _id: { $nin: postIds },
+                                                        isDraft: false,
+                                                        deleted: false,
+                                                        hidden: false,
                                                     }
                                                 },
                                                 {
@@ -464,6 +476,13 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                                     },
                                                 },
                                                 {
+                                                    $match: {
+                                                        isDraft: false,
+                                                        deleted: false,
+                                                        hidden: false,
+                                                    }
+                                                },
+                                                {
                                                     $sort: {
                                                         summationScore: -1,
                                                     },
@@ -548,6 +567,13 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                                     }
                                                 },
                                                 {
+                                                    $match: {
+                                                        isDraft: false,
+                                                        deleted: false,
+                                                        hidden: false,
+                                                    }
+                                                },
+                                                {
                                                     $sort: {
                                                         createdDate: -1,
                                                     },
@@ -625,6 +651,13 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                                 {
                                                     $match: {
                                                         $expr: { $eq: ['$$id', '$emergencyEvent'] }
+                                                    }
+                                                },
+                                                {
+                                                    $match: {
+                                                        isDraft: false,
+                                                        deleted: false,
+                                                        hidden: false,
                                                     }
                                                 },
                                                 {
@@ -708,6 +741,13 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                                         $expr: {
                                                             $eq: ['$$id', '$objective']
                                                         }
+                                                    }
+                                                },
+                                                {
+                                                    $match: {
+                                                        isDraft: false,
+                                                        deleted: false,
+                                                        hidden: false,
                                                     }
                                                 },
                                                 {
