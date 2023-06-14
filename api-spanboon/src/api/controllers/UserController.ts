@@ -341,7 +341,7 @@ export class UserController {
         let userFollowerStmt;
         const space = ' ';
         const now = new Date();
-        // const hours = now.getHours();
+        const hours = now.getHours();
         const minutes = now.getMinutes();
         const interval = 30;
         // find page
@@ -439,7 +439,7 @@ export class UserController {
                             );
                         }
                     }
-                } else if (userFollows.length > 5 && userFollows.length <= 20 && minutes % interval === 30) {
+                } else if (userFollows.length > 5 && userFollows.length <= 20 && minutes % interval === 0) {
                     firstObj = userFollows[userFollows.length].subjectId;
                     secondObj = userFollows[userFollows.length - 1].subjectId;
                     firstPerson = await this.userService.findOne({ _id: new ObjectID(firstObj) });
@@ -456,8 +456,52 @@ export class UserController {
                                 notification_follower,
                                 link,
                                 tokenFCM.Tokens,
-                                whoFollowYou.displayName,
-                                whoFollowYou.imageURL,
+                                firstPerson.displayName,
+                                firstPerson.imageURL,
+                            );
+                        }
+                    }
+                } else if (userFollows.length > 20 && userFollows.length <= 500 && hours % 3 === 0) {
+                    firstObj = userFollows[userFollows.length].subjectId;
+                    secondObj = userFollows[userFollows.length - 1].subjectId;
+                    firstPerson = await this.userService.findOne({ _id: new ObjectID(firstObj) });
+                    secondPerson = await this.userService.findOne({ _id: new ObjectID(secondObj) });
+                    notification_follower = firstPerson.displayName + space + 'และ' + space + secondPerson.displayName + 'กดติดตามคุณ' + space + 'และอื่น' + space + userFollows.length;
+                    for (const tokenFCM of tokenFCMId) {
+                        if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
+                            await this.notificationService.sendNotificationFCM(
+                                followCreate.subjectId,
+                                USER_TYPE.USER,
+                                req.user.id + '',
+                                USER_TYPE.USER,
+                                NOTIFICATION_TYPE.FOLLOW,
+                                notification_follower,
+                                link,
+                                tokenFCM.Tokens,
+                                firstPerson.displayName,
+                                firstPerson.imageURL,
+                            );
+                        }
+                    }
+                } else if (userFollows.length > 500 && hours % 5 === 0) {
+                    firstObj = userFollows[userFollows.length].subjectId;
+                    secondObj = userFollows[userFollows.length - 1].subjectId;
+                    firstPerson = await this.userService.findOne({ _id: new ObjectID(firstObj) });
+                    secondPerson = await this.userService.findOne({ _id: new ObjectID(secondObj) });
+                    notification_follower = firstPerson.displayName + space + 'และ' + space + secondPerson.displayName + 'กดติดตามคุณ' + space + 'และอื่น' + space + userFollows.length;
+                    for (const tokenFCM of tokenFCMId) {
+                        if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
+                            await this.notificationService.sendNotificationFCM(
+                                followCreate.subjectId,
+                                USER_TYPE.USER,
+                                req.user.id + '',
+                                USER_TYPE.USER,
+                                NOTIFICATION_TYPE.FOLLOW,
+                                notification_follower,
+                                link,
+                                tokenFCM.Tokens,
+                                firstPerson.displayName,
+                                firstPerson.imageURL,
                             );
                         }
                     }
