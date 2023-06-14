@@ -1213,7 +1213,7 @@
             </div>
         </div>
     </section>
-    <section class="section-8" *ngIf="isLogin() && hidebar && loadingCount > 0 && !!followingContent">
+    <section class="section-8" *ngIf="isLogin() && hidebar && loadingCount === 3 && !!followingContent">
         <div class="container">
             <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '60px' : '0'}">
                 <div class="wrapper-title">
@@ -1226,8 +1226,7 @@
             <div class="wrapper-content">
                 <ng-container
                     *ngFor="let followingContents of followingContent.followingContents.contents; let i=index">
-                    <ng-container
-                        *ngIf="followingContents.post.type !== 'NEEDS' && followingContent.post.deleted === false">
+                    <ng-container *ngIf="followingContents.post.type !== 'NEEDS'">
                         <card-content-home [titlepost]="followingContents.post.title" [itempost]="followingContents"
                             [pageId]="followingContents.post.pageId ? followingContents.post.pageId : null"
                             [ownerid]="followingContents.owner.id ? followingContents.owner.id : null"
