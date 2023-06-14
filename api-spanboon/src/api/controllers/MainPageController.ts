@@ -120,6 +120,7 @@ export class MainPageController {
     @Get('/content/v3')
     public async getContentListV2(@QueryParam('offset') offset: number, @QueryParam('section') section: string, @QueryParam('date') date: any, @Res() res: any, @Req() req: any): Promise<any> {
         const jobscheduler = req.headers.jobscheduler;
+        console.log('jobscheduler',jobscheduler);
         const dateFormat = new Date(date);
         const dateReal = dateFormat.setDate(dateFormat.getDate() + 1);
         const toDate = new Date(dateReal);

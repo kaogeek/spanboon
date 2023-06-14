@@ -188,6 +188,96 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                     preserveNullAndEmptyArrays: true
                                 }
                             },
+                            {
+                                $lookup: {
+                                    from: 'User',
+                                    let: { subjectId: '$subjectId' },
+                                    pipeline: [
+                                        {
+                                            $match: {
+                                                $expr: {
+                                                    $eq: ['$$subjectId', '$_id']
+                                                }
+                                            },
+                                        },
+                                        {
+                                            $lookup: {
+                                                from: 'Posts',
+                                                let: { id: '$_id' },
+                                                pipeline: [
+                                                    {
+                                                        $match: {
+                                                            $expr: {
+                                                                $eq: ['$$id', '$ownerUser']
+                                                            }
+                                                        }
+                                                    },
+                                                    {
+                                                        $match: {
+                                                            isDraft: false,
+                                                            deleted: false,
+                                                            hidden: false,
+                                                        }
+                                                    },
+                                                    {
+                                                        $sort: {
+                                                            createdDate: -1,
+                                                        },
+                                                    },
+                                                    {
+                                                        $limit: 8
+
+                                                    },
+                                                    {
+                                                        $lookup: {
+                                                            from: 'PostsGallery',
+                                                            localField: '_id',
+                                                            foreignField: 'post',
+                                                            as: 'gallery',
+                                                        },
+                                                    },
+                                                    {
+                                                        $lookup: {
+                                                            from: 'User',
+                                                            let: { ownerUser: '$ownerUser' },
+                                                            pipeline: [
+                                                                {
+                                                                    $match: {
+                                                                        $expr: { $eq: ['$$ownerUser', '$_id'] },
+                                                                    },
+
+                                                                },
+                                                                { $project: { email: 0, username: 0, password: 0 } }
+                                                            ],
+                                                            as: 'user'
+                                                        }
+                                                    },
+                                                    {
+                                                        $unwind: {
+                                                            path: '$user',
+                                                            preserveNullAndEmptyArrays: true
+                                                        }
+                                                    },
+                                                    {
+                                                        $project: {
+                                                            story: 0
+                                                        }
+
+                                                    },
+                                                ],
+                                                as: 'posts'
+                                            }
+                                        },
+                                    ],
+                                    as: 'user'
+                                }
+                            },
+                            {
+                                $unwind: {
+                                    path: '$user',
+                                    preserveNullAndEmptyArrays: true
+                                }
+                            },
                         ]);
                     } else {
                         isFollowing = await this.userFollowService.aggregate([
@@ -448,37 +538,10 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                             delete row.user;
                             contents.post = row.page.posts;
                             result.contents.push(contents);
-                        } else if (row.subjectType === 'USER') {
-                            const firstImage = (row.page.posts.gallery.length > 0) ? row.page.posts.gallery[0] : undefined;
-
+                        } else if (row.subjectType === 'USER' && row.user !== undefined) {
                             const contents: any = {};
-                            contents.coverPageUrl = (row.page.posts.gallery.length > 0) ? row.page.posts.gallery[0].imageURL : undefined;
-                            if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
-                                try {
-                                    const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
-                                    contents.coverPageSignUrl = signUrl;
-                                } catch (error) {
-                                    console.log('PostSectionProcessor: ' + error);
-                                }
-                            }
-
-                            // search isLike
-                            row.page.posts.isLike = false;
-                            if (userId !== undefined && userId !== undefined && userId !== '') {
-                                const userLikes: UserLike[] = await this.userLikeService.find({ userId: new ObjectID(userId), subjectId: row._id, subjectType: LIKE_TYPE.POST });
-                                if (userLikes.length > 0) {
-                                    row.isLike = true;
-                                }
-                            }
-
                             contents.owner = {};
-                            if (row.page !== undefined) {
-                                contents.owner = this.parseUserField(row.page);
-                            }
-                            // remove page agg
-                            // delete row.page;
-                            delete row.user;
-                            contents.post = row.page.posts;
+                            contents.owner = await this.parseUserField(row.user);
                             result.contents.push(contents);
                         }
                     }
@@ -685,7 +748,6 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                     if (findFollowNextState.length > 0) {
                         for (const row of findFollowNextState) {
                             if (row.subjectType === 'PAGE' && row.page.posts !== undefined && row.page !== undefined) {
-                                const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                                 const firstImage = (row.page.posts.gallery.length > 0) ? row.page.posts.gallery[0] : undefined;
 
                                 const contents: any = {};
@@ -711,13 +773,16 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                 contents.owner = {};
                                 if (row.page !== undefined) {
                                     contents.owner = this.parsePageField(row.page);
-                                } else {
-                                    contents.owner = this.parseUserField(user);
                                 }
                                 // remove page agg
                                 // delete row.page;
                                 delete row.user;
                                 contents.post = row.page.posts;
+                                result.contents.push(contents);
+                            } else if (row.subjectType === 'USER' && row.page !== undefined) {
+                                const contents: any = {};
+                                contents.owner = {};
+                                contents.owner = await this.parseUserField(row.user);
                                 result.contents.push(contents);
                             }
                         }
@@ -745,7 +810,8 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
         return pageResult;
     }
 
-    private parseUserField(user: any): any {
+    private async parseUserField(user: any): Promise<any> {
+        console.log('user', user.posts);
         const userResult: any = {};
 
         if (user !== undefined) {
@@ -756,6 +822,23 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
             userResult.isAdmin = user.isAdmin;
             userResult.uniqueId = user.uniqueId;
             userResult.type = 'USER';
+            userResult.posts = [];
+        }
+        for (const row of user.posts) {
+            const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
+            const contents: any = {};
+            contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
+            if (firstImage !== undefined && firstImage.s3ImageURL !== undefined) {
+                try {
+                    const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
+                    contents.coverPageSignUrl = signUrl;
+                } catch (error) {
+                    console.log('PostSectionProcessor: ' + error);
+                }
+            }
+            row.isLike = false;
+            contents.post = row;
+            userResult.posts.push(contents);
         }
 
         return userResult;

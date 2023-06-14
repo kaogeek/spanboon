@@ -340,8 +340,10 @@ export class UserController {
         let result = {};
         let userFollowerStmt;
         const space = ' ';
-        // const now = new Date();
+        const now = new Date();
         // const hours = now.getHours();
+        const minutes = now.getMinutes();
+        const interval = 30;
         // find page
         const user = await this.userService.findOne({ _id: userObjId });
         if (user === undefined) {
@@ -400,8 +402,13 @@ export class UserController {
                 userEngagement.userId = userObjId;
                 userEngagement.action = ENGAGEMENT_ACTION.FOLLOW;
                 const whoFollowYou = await this.userService.findOne({ _id: userFollow.userId });
-                // const tokenFCMId = await this.deviceTokenService.find({ userId: userFollow.subjectId });
-                const notification_follower = whoFollowYou.displayName + space + 'กดติดตามคุณ';
+                const userFollows = await this.userFollowService.find({ userId: userObjId, subjectType: SUBJECT_TYPE.USER });
+                let firstPerson = undefined;
+                let secondPerson = undefined;
+                let firstObj = undefined;
+                let secondObj = undefined;
+                const tokenFCMId = await this.deviceTokenService.find({ userId: userFollow.subjectId });
+                let notification_follower = undefined;
                 const link = `/profile/${whoFollowYou.id}`;
                 await this.notificationService.createNotificationFCM(
                     followCreate.subjectId,
@@ -414,27 +421,47 @@ export class UserController {
                     whoFollowYou.displayName,
                     whoFollowYou.imageURL
                 );
-                /* 
-                for (const tokenFCM of tokenFCMId) {
-                    if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '' && hours%3 === 0) {
-                        await this.notificationService.sendNotificationFCM(
-                            followCreate.subjectId,
-                            USER_TYPE.USER,
-                            req.user.id + '',
-                            USER_TYPE.USER,
-                            NOTIFICATION_TYPE.FOLLOW,
-                            notification_follower,
-                            link,
-                            tokenFCM.Tokens,
-                            whoFollowYou.displayName,
-                            whoFollowYou.imageURL,
-                        );
+                if (userFollows.length > 0 && userFollows.length < 5) {
+                    notification_follower = whoFollowYou.displayName + space + 'กดติดตามคุณ';
+                    for (const tokenFCM of tokenFCMId) {
+                        if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
+                            await this.notificationService.sendNotificationFCM(
+                                followCreate.subjectId,
+                                USER_TYPE.USER,
+                                req.user.id + '',
+                                USER_TYPE.USER,
+                                NOTIFICATION_TYPE.FOLLOW,
+                                notification_follower,
+                                link,
+                                tokenFCM.Tokens,
+                                whoFollowYou.displayName,
+                                whoFollowYou.imageURL,
+                            );
+                        }
                     }
-                    else {
-                        continue;
+                } else if (userFollows.length > 5 && userFollows.length <= 20 && minutes % interval === 30) {
+                    firstObj = userFollows[userFollows.length].subjectId;
+                    secondObj = userFollows[userFollows.length - 1].subjectId;
+                    firstPerson = await this.userService.findOne({ _id: new ObjectID(firstObj) });
+                    secondPerson = await this.userService.findOne({ _id: new ObjectID(secondObj) });
+                    notification_follower = firstPerson.displayName + space + 'และ' + space + secondPerson.displayName + 'กดติดตามคุณ' + space + 'และอื่น' + space + userFollows.length;
+                    for (const tokenFCM of tokenFCMId) {
+                        if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
+                            await this.notificationService.sendNotificationFCM(
+                                followCreate.subjectId,
+                                USER_TYPE.USER,
+                                req.user.id + '',
+                                USER_TYPE.USER,
+                                NOTIFICATION_TYPE.FOLLOW,
+                                notification_follower,
+                                link,
+                                tokenFCM.Tokens,
+                                whoFollowYou.displayName,
+                                whoFollowYou.imageURL,
+                            );
+                        }
                     }
-                }  */
-                // USER TO USER
+                }
                 const engagement: UserEngagement = await this.userEngagementService.findOne({ where: { contentId: followUserObjId, userId: userObjId, contentType: ENGAGEMENT_CONTENT_TYPE.USER, action: ENGAGEMENT_ACTION.FOLLOW } });
                 if (engagement) {
                     userEngagement.isFirst = false;
