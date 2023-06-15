@@ -1063,8 +1063,8 @@ export class PostsController {
                                 }
                             }
                         } else if (likePosts.length > 20 && likePosts.length <= 500 && hours % 1 === 0) {
-                            firstPerson = await this.pageService.findOne({ _id: new ObjectID(likePosts[likePosts.length].likeAsPage) });
-                            secondPerson = await this.pageService.findOne({ _id: new ObjectID(likePosts[likePosts.length - 1].likeAsPage) });
+                            firstPerson = await this.pageService.findOne({ _id: new ObjectID(likePosts[likePosts.length -1].likeAsPage) });
+                            secondPerson = await this.pageService.findOne({ _id: new ObjectID(likePosts[likePosts.length - 2].likeAsPage) });
                             const tokenFCMId = await this.deviceTokenService.find({ userId: post_who.ownerUser });
                             const notificationText = firstPerson.name + space + 'และ' + space + secondPerson.name + space + 'กดถูกใจโพสต์ของเพจ' + space + page.name + space + 'และอื่นๆอีก' + likePosts.length;
                             const link = `/page/${page.id}/post/` + post_who.id;
@@ -1100,8 +1100,8 @@ export class PostsController {
                                 }
                             }
                         } else if (likePosts.length > 500 && hours % 3 === 0) {
-                            firstPerson = await this.pageService.findOne({ _id: new ObjectID(likePosts[likePosts.length].likeAsPage) });
-                            secondPerson = await this.pageService.findOne({ _id: new ObjectID(likePosts[likePosts.length - 1].likeAsPage) });
+                            firstPerson = await this.pageService.findOne({ _id: new ObjectID(likePosts[likePosts.length - 1].likeAsPage) });
+                            secondPerson = await this.pageService.findOne({ _id: new ObjectID(likePosts[likePosts.length - 2].likeAsPage) });
                             const tokenFCMId = await this.deviceTokenService.find({ userId: post_who.ownerUser });
                             const notificationText = firstPerson.name + space + 'และ' + space + secondPerson.name + space + 'กดถูกใจโพสต์ของเพจ' + space + page.name + space + 'และอื่นๆอีก' + likePosts.length;
                             const link = `/page/${page.id}/post/` + post_who.id;
