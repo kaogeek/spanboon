@@ -78,9 +78,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   public throttle = 150;
   public scrollDistance = 2;
   public offset: number = 0;
-  public limit: number = 8;
-  public followOffset: number = 0;
-  public followLimit: number = 2;
+  public limit: number = 4;
   public isOnLoad: boolean;
   public loadingCount: number = 0;
   public loadContentCount: number = 0;
@@ -208,7 +206,6 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     let post;
     if (this.loadContentCount > 0) {
       this.offset += this.limit;
-      this.followOffset += this.followLimit;
     }
     if (this.loadingCount === 0) {
       post = 'isReadPost';
@@ -219,7 +216,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     } else {
       post = 'followingContent';
     }
-    this.mainPageModelFacade.bottomContent(userId, filter, this.offset, this.limit, this.followOffset, this.followLimit, post).then((res) => {
+    this.mainPageModelFacade.bottomContent(userId, filter, this.offset, this.limit, post).then((res) => {
       if (res) {
         if (this.isOnLoad === true) {
           if (this.loadingCount === 0) {
@@ -520,8 +517,12 @@ export class HomePageV3 extends AbstractPage implements OnInit {
         window.open('/objective/' + pageId);
       } else if (owner === 'post') {
         window.open('/post/' + pageId);
-      } else if (owner === 'USER') {
-        window.open('/profile/' + pageId);
+      } else if (owner === 'USER' || pageId.type === 'USER') {
+        if (pageId.type) {
+          window.open('/profile/' + pageId.ownerid);
+        } else {
+          window.open('/profile/' + pageId);
+        }
       } else if (owner === 'EMERGENCY') {
         window.open('/emergencyevent/' + pageId);
       } else if (owner === 'OBJECTIVE') {
