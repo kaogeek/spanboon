@@ -523,7 +523,7 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                             contents.post = row.page.posts;
                             result.contents.push(contents);
                         } else if (row.subjectType === 'USER' && row.user !== undefined) {
-                            const firstImage = (row.user.posts.gallery.length > 0) ? row.user.posts.gallery.gallery[0] : undefined;
+                            const firstImage = (row.user.posts.gallery.length > 0) ? row.user.posts.gallery[0] : undefined;
 
                             const contents: any = {};
                             contents.coverPageUrl = (row.user.posts.gallery.length > 0) ? row.user.posts.gallery[0].imageURL : undefined;
