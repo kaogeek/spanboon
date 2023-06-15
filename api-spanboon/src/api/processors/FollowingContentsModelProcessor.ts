@@ -630,10 +630,10 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                 }
                             },
                             {
-                                $skip: this.data.offsetFollows + offsetState
+                                $skip: offsetState
                             },
                             {
-                                $limit: this.data.limitFollows + limitState
+                                $limit: limitState
                             },
                             {
                                 $lookup: {
