@@ -237,28 +237,6 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                                         },
                                                     },
                                                     {
-                                                        $lookup: {
-                                                            from: 'User',
-                                                            let: { ownerUser: '$ownerUser' },
-                                                            pipeline: [
-                                                                {
-                                                                    $match: {
-                                                                        $expr: { $eq: ['$$ownerUser', '$_id'] },
-                                                                    },
-
-                                                                },
-                                                                { $project: { email: 0, username: 0, password: 0 } }
-                                                            ],
-                                                            as: 'user'
-                                                        }
-                                                    },
-                                                    {
-                                                        $unwind: {
-                                                            path: '$user',
-                                                            preserveNullAndEmptyArrays: true
-                                                        }
-                                                    },
-                                                    {
                                                         $project: {
                                                             story: 0
                                                         }
@@ -266,6 +244,12 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                                     },
                                                 ],
                                                 as: 'posts'
+                                            },
+                                        },
+                                        {
+                                            $unwind: {
+                                                path: '$posts',
+                                                preserveNullAndEmptyArrays: true
                                             }
                                         },
                                     ],
@@ -539,9 +523,35 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                             contents.post = row.page.posts;
                             result.contents.push(contents);
                         } else if (row.subjectType === 'USER' && row.user !== undefined) {
+                            const firstImage = (row.user.posts.gallery.length > 0) ? row.user.posts.gallery.gallery[0] : undefined;
+
                             const contents: any = {};
+                            contents.coverPageUrl = (row.user.posts.gallery.length > 0) ? row.user.posts.gallery[0].imageURL : undefined;
+                            if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
+                                try {
+                                    const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
+                                    contents.coverPageSignUrl = signUrl;
+                                } catch (error) {
+                                    console.log('PostSectionProcessor: ' + error);
+                                }
+                            }
+
+                            // search isLike
+                            row.user.posts.isLike = false;
+                            if (userId !== undefined && userId !== undefined && userId !== '') {
+                                const userLikes: UserLike[] = await this.userLikeService.find({ userId: new ObjectID(userId), subjectId: row._id, subjectType: LIKE_TYPE.POST });
+                                if (userLikes.length > 0) {
+                                    row.isLike = true;
+                                }
+                            }
+
                             contents.owner = {};
-                            contents.owner = await this.parseUserField(row.user);
+                            if (row.user !== undefined) {
+                                contents.owner = await this.parseUserField(row.user);
+                            }
+                            // remove page agg
+                            // delete row.page;
+                            contents.post = row.user.posts;
                             result.contents.push(contents);
                         }
                     }
@@ -779,10 +789,36 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                 delete row.user;
                                 contents.post = row.page.posts;
                                 result.contents.push(contents);
-                            } else if (row.subjectType === 'USER' && row.page !== undefined) {
+                            } else if (row.subjectType === 'USER') {
+                                const firstImage = (row.user.posts.gallery.length > 0) ? row.user.posts.gallery.gallery[0] : undefined;
+
                                 const contents: any = {};
+                                contents.coverPageUrl = (row.user.posts.gallery.length > 0) ? row.user.posts.gallery[0].imageURL : undefined;
+                                if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
+                                    try {
+                                        const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
+                                        contents.coverPageSignUrl = signUrl;
+                                    } catch (error) {
+                                        console.log('PostSectionProcessor: ' + error);
+                                    }
+                                }
+
+                                // search isLike
+                                row.user.posts.isLike = false;
+                                if (userId !== undefined && userId !== undefined && userId !== '') {
+                                    const userLikes: UserLike[] = await this.userLikeService.find({ userId: new ObjectID(userId), subjectId: row._id, subjectType: LIKE_TYPE.POST });
+                                    if (userLikes.length > 0) {
+                                        row.isLike = true;
+                                    }
+                                }
+
                                 contents.owner = {};
-                                contents.owner = await this.parseUserField(row.user);
+                                if (row.user !== undefined) {
+                                    contents.owner = await this.parseUserField(row.user);
+                                }
+                                // remove page agg
+                                // delete row.page;
+                                contents.post = row.user.posts;
                                 result.contents.push(contents);
                             }
                         }
@@ -811,9 +847,7 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
     }
 
     private async parseUserField(user: any): Promise<any> {
-        console.log('user', user.posts);
         const userResult: any = {};
-
         if (user !== undefined) {
             userResult.id = user._id;
             userResult.displayName = user.displayName;
@@ -822,25 +856,7 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
             userResult.isAdmin = user.isAdmin;
             userResult.uniqueId = user.uniqueId;
             userResult.type = 'USER';
-            userResult.posts = [];
         }
-        for (const row of user.posts) {
-            const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
-            const contents: any = {};
-            contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-            if (firstImage !== undefined && firstImage.s3ImageURL !== undefined) {
-                try {
-                    const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
-                    contents.coverPageSignUrl = signUrl;
-                } catch (error) {
-                    console.log('PostSectionProcessor: ' + error);
-                }
-            }
-            row.isLike = false;
-            contents.post = row;
-            userResult.posts.push(contents);
-        }
-
         return userResult;
     }
 
