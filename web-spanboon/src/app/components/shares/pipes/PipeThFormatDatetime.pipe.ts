@@ -18,13 +18,14 @@ export class PipeThFormatDatetime implements PipeTransform {
             const seconds = new Date(value);
 
             const date = seconds.toLocaleDateString('th-TH', {
+                year: 'numeric',
                 month: 'long',
                 day: 'numeric',
             })
 
             const time = seconds.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })
 
-            const dateTime = (date + " เวลา " + time + " น.")
+            const dateTime = (date + ' ' + time + " น.")
 
             return dateTime;
         }

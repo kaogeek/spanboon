@@ -51,7 +51,7 @@ export class MainPageSlideFacade extends AbstractFacade {
     });
   }
 
-  public bottomContent(userId: string, filter: string, offset?: number, limit?: number, foffset?: number, flimit?: number, ReadPost?: 'isReadPost' | 'isFollowings' | 'followingProvinces' | 'followingContent'): Promise<any> {
+  public bottomContent(userId: string, filter: string, offset?: number, limit?: number, ReadPost?: 'isReadPost' | 'isFollowings' | 'followingProvinces' | 'followingContent'): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/main/bottom/trend';
       let read: string;
@@ -66,7 +66,7 @@ export class MainPageSlideFacade extends AbstractFacade {
       }
 
       if (offset !== undefined) {
-        url += `?limitFollow=${flimit}&offsetFollow=${foffset}&limit=${limit}&offset=${offset}&${read}`;
+        url += `?limit=${limit}&offset=${offset}&${read}`;
       }
 
       let body;
