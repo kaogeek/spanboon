@@ -83,12 +83,6 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                 }
                             },
                             {
-                                $skip: this.data.offsetFollows
-                            },
-                            {
-                                $limit: this.data.limitFollows
-                            },
-                            {
                                 $lookup: {
                                     from: 'Page',
                                     let: { subjectId: '$subjectId' },

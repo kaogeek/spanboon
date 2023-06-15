@@ -82,7 +82,9 @@ import {
     DEFAULT_SEARCH_CONFIG_VALUE,
     SEARCH_CONFIG_VALUES,
     DEFAULT_SEND_NOTIFICATION_NEWS,
-    SEND_NOTIFICATION_NEWS
+    SEND_NOTIFICATION_NEWS,
+    DEFAULT_RETROSPECT,
+    RETROSPECT
 } from '../../constants/SystemConfig';
 import { ConfigService } from '../services/ConfigService';
 import { KaokaiTodaySnapShotService } from '../services/KaokaiTodaySnapShot';
@@ -440,9 +442,14 @@ export class MainPageController {
         const userId = req.headers.userid;
         const objIds = new ObjectID(userId);
         const isRead = await this.isReadPostService.find({ userId: objIds });
+        const configRetrospect = await this.configService.getConfig(RETROSPECT);
+        let retrospects = DEFAULT_RETROSPECT;
+        if(configRetrospect){
+            retrospects = parseInt(configRetrospect.value,10);
+        }
         const mainPageSearchConfig = await this.pageService.searchPageOfficialConfig();
         const searchOfficialOnly = mainPageSearchConfig.searchOfficialOnly;
-        const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 7);
+        const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), retrospects);
         let isReadPosts = undefined;
         let isFollowing = undefined;
         let followingProvince = undefined;
