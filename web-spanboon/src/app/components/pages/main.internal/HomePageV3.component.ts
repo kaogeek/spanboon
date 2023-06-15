@@ -27,6 +27,7 @@ import { DialogCheckBox } from '../../shares/dialog/DialogCheckBox.component';
 import { DialogPostCrad } from '../../shares/dialog/DialogPostCrad.component';
 import { debounce } from '../../shares/directive/DebounceScroll.directive';
 import { ObservableManager } from 'src/app/services/ObservableManager.service';
+import { DialogDropdown } from '../../shares/dialog/DialogDropdown.component';
 
 declare var $: any;
 
@@ -344,6 +345,9 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     // if (this.isLogin()) {
     //   this.getBottomContent(this.userCloneDatas.id);
     // }
+    if (this.isLogin() && this.hidebar) {
+      this.getProvince();
+    }
     this.showLoading = false;
     this.seoService.updateTitle(PLATFORM_NAME_TH);
     let filter: SearchFilter = new SearchFilter();
@@ -408,6 +412,21 @@ export class HomePageV3 extends AbstractPage implements OnInit {
         }
       }
     }
+
+  public getProvince() {
+    let pageUser = JSON.parse(localStorage.getItem('pageUser'));
+    if (!pageUser!.province) {
+      let dialog = this.dialog.open(DialogDropdown, {
+        disableClose: true,
+        data: {
+          text: 'กรุณาเลือกจังหวัด',
+          pageId: pageUser.id,
+          type: 'USER',
+          bottomColorText2: "black"
+        }
+      });
+    }
+  }
 
   public getDateFilter() {
     this.mainPageModelFacade.getDate().then((res) => {
