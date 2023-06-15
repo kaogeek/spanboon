@@ -409,19 +409,21 @@ export class UserController {
                 let secondObj = undefined;
                 const tokenFCMId = await this.deviceTokenService.find({ userId: userFollow.subjectId });
                 let notification_follower = undefined;
-                const link = `/profile/${whoFollowYou.id}`;
-                await this.notificationService.createNotificationFCM(
-                    followCreate.subjectId,
-                    USER_TYPE.USER,
-                    req.user.id + '',
-                    USER_TYPE.USER,
-                    NOTIFICATION_TYPE.FOLLOW,
-                    notification_follower,
-                    link,
-                    whoFollowYou.displayName,
-                    whoFollowYou.imageURL
-                );
+                let link = undefined;
+
                 if (userFollows.length > 0 && userFollows.length < 5) {
+                    link = `/profile/${whoFollowYou.id}`;
+                    await this.notificationService.createNotificationFCM(
+                        followCreate.subjectId,
+                        USER_TYPE.USER,
+                        req.user.id + '',
+                        USER_TYPE.USER,
+                        NOTIFICATION_TYPE.FOLLOW,
+                        notification_follower,
+                        link,
+                        whoFollowYou.displayName,
+                        whoFollowYou.imageURL
+                    );
                     notification_follower = whoFollowYou.displayName + space + 'กดติดตามคุณ';
                     for (const tokenFCM of tokenFCMId) {
                         if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
@@ -440,11 +442,23 @@ export class UserController {
                         }
                     }
                 } else if (userFollows.length > 5 && userFollows.length <= 20 && minutes % interval === 0) {
-                    firstObj = userFollows[userFollows.length].subjectId;
-                    secondObj = userFollows[userFollows.length - 1].subjectId;
+                    firstObj = userFollows[userFollows.length - 1].subjectId;
+                    secondObj = userFollows[userFollows.length - 2].subjectId;
                     firstPerson = await this.userService.findOne({ _id: new ObjectID(firstObj) });
                     secondPerson = await this.userService.findOne({ _id: new ObjectID(secondObj) });
-                    notification_follower = firstPerson.displayName + space + 'และ' + space + secondPerson.displayName + 'กดติดตามคุณ' + space + 'และอื่น' + space + userFollows.length;
+                    notification_follower = firstPerson.displayName + space + 'และ' + space + secondPerson.displayName + space + 'กดติดตามคุณ' + space + 'และอื่น' + space + userFollows.length;
+                    link = `/profile/${firstPerson.id}`;
+                    await this.notificationService.createNotificationFCM(
+                        followCreate.subjectId,
+                        USER_TYPE.USER,
+                        req.user.id + '',
+                        USER_TYPE.USER,
+                        NOTIFICATION_TYPE.FOLLOW,
+                        notification_follower,
+                        link,
+                        firstPerson.displayName,
+                        firstPerson.imageURL
+                    );
                     for (const tokenFCM of tokenFCMId) {
                         if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
                             await this.notificationService.sendNotificationFCM(
@@ -462,11 +476,23 @@ export class UserController {
                         }
                     }
                 } else if (userFollows.length > 20 && userFollows.length <= 500 && hours % 3 === 0) {
-                    firstObj = userFollows[userFollows.length].subjectId;
-                    secondObj = userFollows[userFollows.length - 1].subjectId;
+                    firstObj = userFollows[userFollows.length - 1].subjectId;
+                    secondObj = userFollows[userFollows.length - 2].subjectId;
                     firstPerson = await this.userService.findOne({ _id: new ObjectID(firstObj) });
                     secondPerson = await this.userService.findOne({ _id: new ObjectID(secondObj) });
-                    notification_follower = firstPerson.displayName + space + 'และ' + space + secondPerson.displayName + 'กดติดตามคุณ' + space + 'และอื่น' + space + userFollows.length;
+                    notification_follower = firstPerson.displayName + space + 'และ' + space + secondPerson.displayName + space + 'กดติดตามคุณ' + space + 'และอื่น' + space + userFollows.length;
+                    link = `/profile/${firstPerson.id}`;
+                    await this.notificationService.createNotificationFCM(
+                        followCreate.subjectId,
+                        USER_TYPE.USER,
+                        req.user.id + '',
+                        USER_TYPE.USER,
+                        NOTIFICATION_TYPE.FOLLOW,
+                        notification_follower,
+                        link,
+                        firstPerson.displayName,
+                        firstPerson.imageURL
+                    );
                     for (const tokenFCM of tokenFCMId) {
                         if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
                             await this.notificationService.sendNotificationFCM(
@@ -484,11 +510,23 @@ export class UserController {
                         }
                     }
                 } else if (userFollows.length > 500 && hours % 5 === 0) {
-                    firstObj = userFollows[userFollows.length].subjectId;
-                    secondObj = userFollows[userFollows.length - 1].subjectId;
+                    firstObj = userFollows[userFollows.length - 1].subjectId;
+                    secondObj = userFollows[userFollows.length - 2].subjectId;
                     firstPerson = await this.userService.findOne({ _id: new ObjectID(firstObj) });
                     secondPerson = await this.userService.findOne({ _id: new ObjectID(secondObj) });
-                    notification_follower = firstPerson.displayName + space + 'และ' + space + secondPerson.displayName + 'กดติดตามคุณ' + space + 'และอื่น' + space + userFollows.length;
+                    notification_follower = firstPerson.displayName + space + 'และ' + space + secondPerson.displayName + space + 'กดติดตามคุณ' + space + 'และอื่น' + space + userFollows.length;
+                    link = `/profile/${firstPerson.id}`;
+                    await this.notificationService.createNotificationFCM(
+                        followCreate.subjectId,
+                        USER_TYPE.USER,
+                        req.user.id + '',
+                        USER_TYPE.USER,
+                        NOTIFICATION_TYPE.FOLLOW,
+                        notification_follower,
+                        link,
+                        firstPerson.displayName,
+                        firstPerson.imageURL
+                    );
                     for (const tokenFCM of tokenFCMId) {
                         if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
                             await this.notificationService.sendNotificationFCM(

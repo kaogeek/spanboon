@@ -2320,6 +2320,10 @@ export class PageController {
         const ipAddress = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress).split(',')[0];
         const pageFollow: UserFollow = await this.userFollowService.findOne({ where: { userId: userObjId, subjectId: pageObjId, subjectType: SUBJECT_TYPE.PAGE } });
         const space = ' ';
+        const now = new Date();
+        const hours = now.getHours();
+        const minutes = now.getMinutes();
+        const interval = 30;
         const contentType = ENGAGEMENT_CONTENT_TYPE.PAGE;
         let userEngagementAction: UserEngagement;
         let userFollowed: UserFollow[];
@@ -2391,41 +2395,150 @@ export class PageController {
 
                 const engagement: UserEngagement = await this.getPageEnagagement(pageObjId, userObjId, action, contentType);
                 const whoFollowYou = await this.userService.findOne({ _id: userFollow.userId });
-                // const pageOwnerNoti = await this.userService.findOne({ _id: page.ownerUser });
+                const pageFollows = await this.userFollowService.find({ userId: userObjId, subjectType: SUBJECT_TYPE.PAGE });
+                let firstPerson = undefined;
+                let secondPerson = undefined;
+                let firstObj = undefined;
+                let secondObj = undefined;
+                const pageOwnerNoti = await this.pageService.findOne({ _id: pageObjId });
                 // user to page 
-                // const tokenFCMId = await this.deviceTokenService.find({ userId: pageOwnerNoti.id });
-                const notificationFollower = whoFollowYou.displayName + space + 'กดติดตามเพจ' + space + page.name;
-                const link = `/profile/${whoFollowYou.id}`;
-                await this.pageNotificationService.notifyToPageUserFcm(
-                    followCreate.subjectId,
-                    undefined,
-                    req.user.id + '',
-                    USER_TYPE.USER,
-                    NOTIFICATION_TYPE.FOLLOW,
-                    notificationFollower,
-                    link,
-                    whoFollowYou.displayName,
-                    whoFollowYou.imageURL
-                );
-                /*
-                for (const tokenFCM of tokenFCMId) {
-                    if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
-                        await this.notificationService.sendNotificationFCM(
-                            followCreate.subjectId,
-                            undefined,
-                            req.user.id + '',
-                            USER_TYPE.PAGE,
-                            NOTIFICATION_TYPE.FOLLOW,
-                            notificationFollower,
-                            link,
-                            tokenFCM.Tokens,
-                            whoFollowYou.displayName,
-                            whoFollowYou.imageURL
-                        );
-                    } else {
-                        continue;
+                const tokenFCMId = await this.deviceTokenService.find({ userId: pageOwnerNoti.ownerUser });
+                let notification_follower = undefined;
+                let link = undefined;
+                // whoFollowYou.displayName + space + 'กดติดตามเพจ' + space + page.name
+                if (pageFollows.length > 0 && pageFollows.length < 5) {
+                    link = `/profile/${whoFollowYou.id}`;
+                    notification_follower = whoFollowYou.displayName + space + 'กดติดตามเพจของคุณ';
+                    await this.pageNotificationService.notifyToPageUserFcm(
+                        followCreate.subjectId,
+                        undefined,
+                        req.user.id + '',
+                        USER_TYPE.USER,
+                        NOTIFICATION_TYPE.FOLLOW,
+                        notification_follower,
+                        link,
+                        whoFollowYou.displayName,
+                        whoFollowYou.imageURL
+                    );
+                    for (const tokenFCM of tokenFCMId) {
+                        if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
+                            await this.notificationService.sendNotificationFCM(
+                                followCreate.subjectId,
+                                USER_TYPE.USER,
+                                req.user.id + '',
+                                USER_TYPE.USER,
+                                NOTIFICATION_TYPE.FOLLOW,
+                                notification_follower,
+                                link,
+                                tokenFCM.Tokens,
+                                whoFollowYou.displayName,
+                                whoFollowYou.imageURL,
+                            );
+                        }
                     }
-                } */
+                } else if (pageFollows.length > 5 && pageFollows.length <= 20 && minutes % interval === 0) {
+                    firstObj = pageFollows[pageFollows.length-1].subjectId;
+                    secondObj = pageFollows[pageFollows.length - 2].subjectId;
+                    firstPerson = await this.userService.findOne({ _id: new ObjectID(firstObj) });
+                    secondPerson = await this.userService.findOne({ _id: new ObjectID(secondObj) });
+                    notification_follower = firstPerson.displayName + space + 'และ' + space + secondPerson.displayName + 'กดติดตามเพจของคุณ' + space + 'และอื่น' + space + pageFollows.length;
+                    link = `/profile/${firstPerson.id}`;
+                    await this.notificationService.createNotificationFCM(
+                        followCreate.subjectId,
+                        USER_TYPE.USER,
+                        req.user.id + '',
+                        USER_TYPE.USER,
+                        NOTIFICATION_TYPE.FOLLOW,
+                        notification_follower,
+                        link,
+                        firstPerson.displayName,
+                        firstPerson.imageURL
+                    );
+                    for (const tokenFCM of tokenFCMId) {
+                        if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
+                            await this.notificationService.sendNotificationFCM(
+                                followCreate.subjectId,
+                                USER_TYPE.USER,
+                                req.user.id + '',
+                                USER_TYPE.USER,
+                                NOTIFICATION_TYPE.FOLLOW,
+                                notification_follower,
+                                link,
+                                tokenFCM.Tokens,
+                                firstPerson.displayName,
+                                firstPerson.imageURL,
+                            );
+                        }
+                    }
+                } else if (pageFollows.length > 20 && pageFollows.length <= 500 && hours % 3 === 0) {
+                    firstObj = pageFollows[pageFollows.length-1].subjectId;
+                    secondObj = pageFollows[pageFollows.length - 2].subjectId;
+                    firstPerson = await this.userService.findOne({ _id: new ObjectID(firstObj) });
+                    secondPerson = await this.userService.findOne({ _id: new ObjectID(secondObj) });
+                    notification_follower = firstPerson.displayName + space + 'และ' + space + secondPerson.displayName + 'กดติดตามเพจของคุณ' + space + 'และอื่น' + space + pageFollows.length;
+                    link = `/profile/${firstPerson.id}`;
+                    await this.notificationService.createNotificationFCM(
+                        followCreate.subjectId,
+                        USER_TYPE.USER,
+                        req.user.id + '',
+                        USER_TYPE.USER,
+                        NOTIFICATION_TYPE.FOLLOW,
+                        notification_follower,
+                        link,
+                        firstPerson.displayName,
+                        firstPerson.imageURL
+                    );
+                    for (const tokenFCM of tokenFCMId) {
+                        if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
+                            await this.notificationService.sendNotificationFCM(
+                                followCreate.subjectId,
+                                USER_TYPE.USER,
+                                req.user.id + '',
+                                USER_TYPE.USER,
+                                NOTIFICATION_TYPE.FOLLOW,
+                                notification_follower,
+                                link,
+                                tokenFCM.Tokens,
+                                firstPerson.displayName,
+                                firstPerson.imageURL,
+                            );
+                        }
+                    }
+                } else if (pageFollows.length > 500 && hours % 5 === 0) {
+                    firstObj = pageFollows[pageFollows.length - 1].subjectId;
+                    secondObj = pageFollows[pageFollows.length - 2].subjectId;
+                    firstPerson = await this.userService.findOne({ _id: new ObjectID(firstObj) });
+                    secondPerson = await this.userService.findOne({ _id: new ObjectID(secondObj) });
+                    notification_follower = firstPerson.displayName + space + 'และ' + space + secondPerson.displayName + 'กดติดตามเพจของคุณ' + space + 'และอื่น' + space + pageFollows.length;
+                    link = `/profile/${firstPerson.id}`;
+                    await this.notificationService.createNotificationFCM(
+                        followCreate.subjectId,
+                        USER_TYPE.USER,
+                        req.user.id + '',
+                        USER_TYPE.USER,
+                        NOTIFICATION_TYPE.FOLLOW,
+                        notification_follower,
+                        link,
+                        firstPerson.displayName,
+                        firstPerson.imageURL
+                    );
+                    for (const tokenFCM of tokenFCMId) {
+                        if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
+                            await this.notificationService.sendNotificationFCM(
+                                followCreate.subjectId,
+                                USER_TYPE.USER,
+                                req.user.id + '',
+                                USER_TYPE.USER,
+                                NOTIFICATION_TYPE.FOLLOW,
+                                notification_follower,
+                                link,
+                                tokenFCM.Tokens,
+                                firstPerson.displayName,
+                                firstPerson.imageURL,
+                            );
+                        }
+                    }
+                }
                 if (engagement) {
                     userEngagement.isFirst = false;
                 } else {
@@ -2450,7 +2563,7 @@ export class PageController {
             }
         }
     }
-
+    /* 
     @Get('/follow/notification')
     public async pagefollowingNotification(@Res() res: any, @Req() req: any): Promise<any> {
         const space = ' ';
@@ -2528,7 +2641,7 @@ export class PageController {
                 }
             }
         }
-    }
+    } */
 
     @Get('/group/receive')
     public async getPageGroup(@Res() res: any, @Req() req: any): Promise<any> {

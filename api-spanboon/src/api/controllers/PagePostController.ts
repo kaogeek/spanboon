@@ -59,7 +59,7 @@ import { PageAccessLevelService } from '../services/PageAccessLevelService';
 import { SearchFilter } from './requests/SearchFilterRequest';
 import { PageSocialAccountService } from '../services/PageSocialAccountService';
 import { PostUtil } from '../../utils/PostUtil';
-// import { DeviceTokenService } from '../services/DeviceToken';
+import { DeviceTokenService } from '../services/DeviceToken';
 import { UserFollowService } from '../services/UserFollowService';
 @JsonController('/page')
 export class PagePostController {
@@ -85,7 +85,7 @@ export class PagePostController {
         private notificationService: NotificationService,
         private pageSocialAccountService: PageSocialAccountService,
         private s3Service: S3Service,
-        // private deviceToken: DeviceTokenService,
+        private deviceToken: DeviceTokenService,
         private userFollowService: UserFollowService
     ) { }
     // @Get('/test/post')
@@ -332,6 +332,10 @@ export class PagePostController {
         let isPostTwitter = false;
         let isPostFacebook = false;
         const space = ' ';
+        const now = new Date();
+        const hours = now.getHours();
+        const minutes = now.getMinutes();
+        const interval = 30;
         if (options !== undefined) {
             if (options.twitterPost !== undefined && typeof options.twitterPost === 'string') {
                 if ('TRUE' === options.twitterPost.toUpperCase()) {
@@ -593,13 +597,16 @@ export class PagePostController {
                 engagement.isFirst = true;
                 await this.userEngagementService.create(engagement);
                 // page to user /// 
+                let tokenFCMId = undefined;
+                let notificationTextPOST = undefined;
+                let link = undefined;
                 const pagePostId = await this.pageService.findOne({ _id: createPostPageData.pageId });
                 if (createPostPageData.pageId !== null) {
-                    const notificationTextPOST = 'มีโพสต์ใหม่จากเพจ' + space + pagePostId.name;
+                    notificationTextPOST = 'มีโพสต์ใหม่จากเพจ' + space + pagePostId.name;
                     const userFollow = await this.userFollowService.find({ subjectType: 'PAGE', subjectId: createPostPageData.pageId });
                     for (let i = 0; i < userFollow.length; i++) {
-                        // const tokenFCMId = await this.deviceToken.find({ userId: userFollow[i].userId, token: { $ne: null } });
-                        const link = `/page/${pagePostId.id}/post/` + createPostPageData.id;
+                        tokenFCMId = await this.deviceToken.find({ userId: userFollow[i].userId });
+                        link = `/page/${pagePostId.id}/post/` + createPostPageData.id;
                         await this.notificationService.createNotificationFCM(
                             userFollow[i].userId,
                             USER_TYPE.PAGE,
@@ -611,37 +618,100 @@ export class PagePostController {
                             pagePostId.pageUsername,
                             pagePostId.imageURL
                         );
-                        /* 
-                        for (const tokenFCM of tokenFCMId) {
-                            if (tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== null && tokenFCM.Tokens !== '') {
-                                await this.notificationService.sendNotificationFCM(
-                                    tokenFCM.userId,
-                                    USER_TYPE.PAGE,
-                                    req.user.id + '',
-                                    USER_TYPE.USER,
-                                    NOTIFICATION_TYPE.POST,
-                                    notificationTextPOST,
-                                    link,
-                                    tokenFCM.Tokens,
-                                    pagePostId.pageUsername,
-                                    pagePostId.imageURL
-                                );
+                    }
+                    if (tokenFCMId.length > 0) {
+                        if (userFollow.length > 0 && userFollow.length <= 5) {
+                            for (const tokenFCM of tokenFCMId) {
+                                if (tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== null && tokenFCM.Tokens !== '') {
+                                    await this.notificationService.sendNotificationFCM(
+                                        tokenFCM.userId,
+                                        USER_TYPE.PAGE,
+                                        req.user.id + '',
+                                        USER_TYPE.USER,
+                                        NOTIFICATION_TYPE.POST,
+                                        notificationTextPOST,
+                                        link,
+                                        tokenFCM.Tokens,
+                                        pagePostId.pageUsername,
+                                        pagePostId.imageURL
+                                    );
+                                }
+                                else {
+                                    continue;
+                                }
                             }
-                            else {
-                                continue;
+                        } else if (userFollow.length > 5 && userFollow.length <= 20 && minutes % interval === 0) {
+                            for (const tokenFCM of tokenFCMId) {
+                                if (tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== null && tokenFCM.Tokens !== '') {
+                                    await this.notificationService.sendNotificationFCM(
+                                        tokenFCM.userId,
+                                        USER_TYPE.PAGE,
+                                        req.user.id + '',
+                                        USER_TYPE.USER,
+                                        NOTIFICATION_TYPE.POST,
+                                        notificationTextPOST,
+                                        link,
+                                        tokenFCM.Tokens,
+                                        pagePostId.pageUsername,
+                                        pagePostId.imageURL
+                                    );
+                                }
+                                else {
+                                    continue;
+                                }
                             }
-                        } */
+                        } else if (userFollow.length > 20 && userFollow.length <= 500 && hours % 3 === 0) {
+                            for (const tokenFCM of tokenFCMId) {
+                                if (tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== null && tokenFCM.Tokens !== '') {
+                                    await this.notificationService.sendNotificationFCM(
+                                        tokenFCM.userId,
+                                        USER_TYPE.PAGE,
+                                        req.user.id + '',
+                                        USER_TYPE.USER,
+                                        NOTIFICATION_TYPE.POST,
+                                        notificationTextPOST,
+                                        link,
+                                        tokenFCM.Tokens,
+                                        pagePostId.pageUsername,
+                                        pagePostId.imageURL
+                                    );
+                                }
+                                else {
+                                    continue;
+                                }
+                            }
+                        } else if (userFollow.length > 500 && hours % 5 === 0) {
+                            for (const tokenFCM of tokenFCMId) {
+                                if (tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== null && tokenFCM.Tokens !== '') {
+                                    await this.notificationService.sendNotificationFCM(
+                                        tokenFCM.userId,
+                                        USER_TYPE.PAGE,
+                                        req.user.id + '',
+                                        USER_TYPE.USER,
+                                        NOTIFICATION_TYPE.POST,
+                                        notificationTextPOST,
+                                        link,
+                                        tokenFCM.Tokens,
+                                        pagePostId.pageUsername,
+                                        pagePostId.imageURL
+                                    );
+                                }
+                                else {
+                                    continue;
+                                }
+                            }
+                        }
                     }
 
                 }
                 else {
                     // user to user
                     const userPost = await this.userService.findOne({ _id: createPostPageData.ownerUser });
-                    const notificationTextPOST = 'มีโพสต์ใหม่จาก' + space + userPost.displayName;
+                    notificationTextPOST = 'มีโพสต์ใหม่จาก' + space + userPost.displayName;
                     const userFollow = await this.userFollowService.find({ subjectType: 'USER', subjectId: createPostPageData.ownerUser });
-                    const link = `/profile/${userPost.id}/post/` + createPostPageData.id;
-
+                    link = `/profile/${userPost.id}/post/` + createPostPageData.id;
                     for (let i = 0; i < userFollow.length; i++) {
+                        tokenFCMId = await this.deviceToken.find({ userId: userFollow[i].userId });
                         await this.notificationService.createNotificationFCM(
                             userFollow[i].userId,
                             USER_TYPE.USER,
@@ -653,28 +723,89 @@ export class PagePostController {
                             userPost.displayName,
                             userPost.imageURL
                         );
-                        // const tokenFCMId = await this.deviceToken.find({ userId: userFollow[i].userId, token: { $ne: null } });
-                        /* 
-                        for (const tokenFCM of tokenFCMId) {
-                            if (tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== null && tokenFCM.Tokens !== '') {
-                                await this.notificationService.sendNotificationFCM(
-                                    tokenFCM.userId,
-                                    USER_TYPE.USER,
-                                    req.user.id + '',
-                                    USER_TYPE.USER,
-                                    NOTIFICATION_TYPE.POST,
-                                    notificationTextPOST,
-                                    link,
-                                    tokenFCM.Tokens,
-                                    userPost.displayName,
-                                    userPost.imageURL
-                                );
+                    }
+                    if (tokenFCMId.length > 0) {
+                        if (userFollow.length > 0 && userFollow.length <= 5) {
+                            for (const tokenFCM of tokenFCMId) {
+                                if (tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== null && tokenFCM.Tokens !== '') {
+                                    await this.notificationService.sendNotificationFCM(
+                                        tokenFCM.userId,
+                                        USER_TYPE.PAGE,
+                                        req.user.id + '',
+                                        USER_TYPE.USER,
+                                        NOTIFICATION_TYPE.POST,
+                                        notificationTextPOST,
+                                        link,
+                                        tokenFCM.Tokens,
+                                        pagePostId.pageUsername,
+                                        pagePostId.imageURL
+                                    );
+                                }
+                                else {
+                                    continue;
+                                }
                             }
-                            else {
-                                continue;
+                        } else if (userFollow.length > 5 && userFollow.length <= 20 && minutes % interval === 0) {
+                            for (const tokenFCM of tokenFCMId) {
+                                if (tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== null && tokenFCM.Tokens !== '') {
+                                    await this.notificationService.sendNotificationFCM(
+                                        tokenFCM.userId,
+                                        USER_TYPE.PAGE,
+                                        req.user.id + '',
+                                        USER_TYPE.USER,
+                                        NOTIFICATION_TYPE.POST,
+                                        notificationTextPOST,
+                                        link,
+                                        tokenFCM.Tokens,
+                                        pagePostId.pageUsername,
+                                        pagePostId.imageURL
+                                    );
+                                }
+                                else {
+                                    continue;
+                                }
                             }
-                        } */
-
+                        } else if (userFollow.length > 20 && userFollow.length <= 500 && hours % 3 === 0) {
+                            for (const tokenFCM of tokenFCMId) {
+                                if (tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== null && tokenFCM.Tokens !== '') {
+                                    await this.notificationService.sendNotificationFCM(
+                                        tokenFCM.userId,
+                                        USER_TYPE.PAGE,
+                                        req.user.id + '',
+                                        USER_TYPE.USER,
+                                        NOTIFICATION_TYPE.POST,
+                                        notificationTextPOST,
+                                        link,
+                                        tokenFCM.Tokens,
+                                        pagePostId.pageUsername,
+                                        pagePostId.imageURL
+                                    );
+                                }
+                                else {
+                                    continue;
+                                }
+                            }
+                        } else if (userFollow.length > 500 && hours % 5 === 0) {
+                            for (const tokenFCM of tokenFCMId) {
+                                if (tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== null && tokenFCM.Tokens !== '') {
+                                    await this.notificationService.sendNotificationFCM(
+                                        tokenFCM.userId,
+                                        USER_TYPE.PAGE,
+                                        req.user.id + '',
+                                        USER_TYPE.USER,
+                                        NOTIFICATION_TYPE.POST,
+                                        notificationTextPOST,
+                                        link,
+                                        tokenFCM.Tokens,
+                                        pagePostId.pageUsername,
+                                        pagePostId.imageURL
+                                    );
+                                }
+                                else {
+                                    continue;
+                                }
+                            }
+                        }
                     }
                 }
                 let needsCreate: Needs;
@@ -1587,11 +1718,11 @@ export class PagePostController {
                     UpdateGalleryList.push(image);
                 }
                 // find post have not in image  
-                await this.postGalleryService.deleteMany({ $and: [ { post: postIdGallery }, { fileId: { $nin: deleteGalleryList }}]});
-                for( const deleteGallery of deleteGalleryList){
-                    const deleteGallerySuc = await this.postGalleryService.delete({fileId: deleteGallery});
-                    if(deleteGallerySuc){
-                        await this.assetService.delete({_id:deleteGallery});
+                await this.postGalleryService.deleteMany({ $and: [{ post: postIdGallery }, { fileId: { $nin: deleteGalleryList } }] });
+                for (const deleteGallery of deleteGalleryList) {
+                    const deleteGallerySuc = await this.postGalleryService.delete({ fileId: deleteGallery });
+                    if (deleteGallerySuc) {
+                        await this.assetService.delete({ _id: deleteGallery });
                     }
                 }
                 for (const data of UpdateGalleryList) {
@@ -2059,7 +2190,7 @@ export class PagePostController {
                 // test['data']['postGallery'] = editPost,postGalleryP;
                 return res.status(200).send(PostEdit);
             } else {
-                
+
                 return res.status(400).send(ResponseUtil.getErrorResponse('Cannot Update PagePost', undefined));
             }
         } catch (error) {

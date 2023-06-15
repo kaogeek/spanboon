@@ -46,8 +46,8 @@ import { ConfigService } from '../services/ConfigService';
 import { AssetService } from '../services/AssetService';
 import { PostUtil } from '../../utils/PostUtil';
 import { POST_TYPE } from '../../constants/PostType';
-import { UserService } from '../services/UserService';
-// import { DeviceTokenService } from '../services/DeviceToken';
+// import { UserService } from '../services/UserService';
+import { DeviceTokenService } from '../services/DeviceToken';
 import { POST_WEIGHT_SCORE, DEFAULT_POST_WEIGHT_SCORE } from '../../constants/SystemConfig';
 @JsonController('/post')
 export class PostsController {
@@ -67,8 +67,8 @@ export class PostsController {
         private s3Service: S3Service,
         private configService: ConfigService,
         private assetService: AssetService,
-        // private deviceTokenService: DeviceTokenService,
-        private userService: UserService
+        private deviceTokenService: DeviceTokenService,
+        // private userService: UserService
     ) { }
 
     // New Post API
@@ -839,22 +839,10 @@ export class PostsController {
         let likeAsPageObjId;
         let likeStmt;
         const space = ' ';
-        const xToday = DEFAULT_POST_WEIGHT_SCORE.X;
-        const likeToday = DEFAULT_POST_WEIGHT_SCORE.Lot;
-        const now = new Date(); // Get the current time
-
-        const xTodayScore = await this.configService.getConfig(POST_WEIGHT_SCORE.X);
-        const scorelikeFacebook = await this.configService.getConfig(POST_WEIGHT_SCORE.Lof);
-        let xTodayxScore = xToday;
-        let sTodayLike = likeToday;
-
-        if (xTodayScore) {
-            xTodayxScore = xTodayScore.value;
-        }
-
-        if (scorelikeFacebook) {
-            sTodayLike = scorelikeFacebook.value;
-        }
+        const now = new Date();
+        const hours = now.getHours();
+        const minutes = now.getMinutes();
+        const interval = 30;
 
         if (likeAsPage !== null && likeAsPage !== undefined && likeAsPage !== '') {
             likeAsPageObjId = new ObjectID(likeAsPage);
@@ -986,52 +974,173 @@ export class PostsController {
                 // who_post.pageId !== null
                 // เพิ่มฟิลด์
                 // displayName
+                let firstPerson = undefined;
+                let secondPerson = undefined;
+                // let firstObj = undefined;
+                // let secondObj = undefined;
+
                 const post_who = await this.postsService.findOne({ _id: likeCreate.subjectId });
-                const ownerPost = await this.postsService.findOne({ _id: likeCreate.subjectId });
-                const userLikeId = await this.userService.findOne({ _id: likeCreate.userId });
-                const pageLike = await this.pageService.findOne({ _id: likeCreate.likeAsPage });
                 const page = await this.pageService.findOne({ ownerUser: post_who.ownerUser });
-                const userOwnerPage = await this.userService.findOne({ _id: likeCreate.userId });
                 if (likeCreate.likeAsPage !== null) {
                     // page to page
+                    const likePosts = await this.userLikeService.aggregate(
+                        [
+                            {$match:{ subjectId: postObjId, subjectType: LIKE_TYPE.POST,likeAsPage:{$ne:null} }}
+                        ]
+                    );
                     if (post_who.pageId !== null && post_who.pageId !== undefined) {
-                        // const tokenFCMId = await this.deviceTokenService.find({ userId: post_who.ownerUser });
-                        const notificationText = pageLike.name + space + 'กดถูกใจโพสต์ของเพจ' + space + page.name;
-                        const link = `/page/${page.id}/post/` + post_who.id;
-                        await this.pageNotificationService.notifyToPageUserFcm(
-                            page.id,
-                            undefined,
-                            req.user.id + '',
-                            USER_TYPE.PAGE,
-                            NOTIFICATION_TYPE.LIKE,
-                            notificationText,
-                            link,
-                            pageLike.name,
-                            pageLike.imageURL,
-                        );
-                        /* 
-                        for (const tokenFCM of tokenFCMId) {
-                            if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
-                                await this.notificationService.sendNotificationFCM(
-                                    page.id,
-                                    undefined,
-                                    req.user.id + '',
-                                    USER_TYPE.PAGE,
-                                    NOTIFICATION_TYPE.LIKE,
-                                    notificationText,
-                                    link,
-                                    tokenFCM.Tokens,
-                                    pageLike.name,
-                                    pageLike.imageURL,
-                                );
+                        if (likePosts.length > 0 && likePosts.length <= 5) {
+                            firstPerson = await this.pageService.findOne({ _id: new ObjectID(likePosts[likePosts.length -1].likeAsPage) });
+                            const tokenFCMId = await this.deviceTokenService.find({ userId: post_who.ownerUser });
+                            const notificationText = firstPerson.name + space + 'กดถูกใจโพสต์ของเพจ' + space + page.name;
+                            const link = `/page/${page.id}/post/` + post_who.id;
+                            await this.pageNotificationService.notifyToPageUserFcm(
+                                page.id,
+                                undefined,
+                                req.user.id + '',
+                                USER_TYPE.PAGE,
+                                NOTIFICATION_TYPE.LIKE,
+                                notificationText,
+                                link,
+                                firstPerson.name,
+                                firstPerson.imageURL,
+                            );
+
+                            for (const tokenFCM of tokenFCMId) {
+                                if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
+                                    await this.notificationService.sendNotificationFCM(
+                                        page.id,
+                                        undefined,
+                                        req.user.id + '',
+                                        USER_TYPE.PAGE,
+                                        NOTIFICATION_TYPE.LIKE,
+                                        notificationText,
+                                        link,
+                                        tokenFCM.Tokens,
+                                        firstPerson.name,
+                                        firstPerson.imageURL,
+                                    );
+                                }
+                                else {
+                                    continue;
+                                }
                             }
-                            else {
-                                continue;
+                        } else if (likePosts.length > 5 && likePosts.length <= 20 && minutes % interval === 0) {
+                            firstPerson = await this.pageService.findOne({ _id: new ObjectID(likePosts[likePosts.length-1].likeAsPage) });
+                            secondPerson = await this.pageService.findOne({ _id: new ObjectID(likePosts[likePosts.length - 2].likeAsPage) });
+                            const tokenFCMId = await this.deviceTokenService.find({ userId: post_who.ownerUser });
+                            const notificationText = firstPerson.name + space + 'และ' + space + secondPerson.name + space + 'กดถูกใจโพสต์ของเพจ' + space + page.name + space + 'และอื่นๆอีก' + likePosts.length;
+                            const link = `/page/${page.id}/post/` + post_who.id;
+                            await this.pageNotificationService.notifyToPageUserFcm(
+                                page.id,
+                                undefined,
+                                req.user.id + '',
+                                USER_TYPE.PAGE,
+                                NOTIFICATION_TYPE.LIKE,
+                                notificationText,
+                                link,
+                                firstPerson.name,
+                                firstPerson.imageURL,
+                            );
+
+                            for (const tokenFCM of tokenFCMId) {
+                                if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
+                                    await this.notificationService.sendNotificationFCM(
+                                        page.id,
+                                        undefined,
+                                        req.user.id + '',
+                                        USER_TYPE.PAGE,
+                                        NOTIFICATION_TYPE.LIKE,
+                                        notificationText,
+                                        link,
+                                        tokenFCM.Tokens,
+                                        firstPerson.name,
+                                        firstPerson.imageURL,
+                                    );
+                                }
+                                else {
+                                    continue;
+                                }
                             }
-                        } */
+                        } else if (likePosts.length > 20 && likePosts.length <= 500 && hours % 1 === 0) {
+                            firstPerson = await this.pageService.findOne({ _id: new ObjectID(likePosts[likePosts.length].likeAsPage) });
+                            secondPerson = await this.pageService.findOne({ _id: new ObjectID(likePosts[likePosts.length - 1].likeAsPage) });
+                            const tokenFCMId = await this.deviceTokenService.find({ userId: post_who.ownerUser });
+                            const notificationText = firstPerson.name + space + 'และ' + space + secondPerson.name + space + 'กดถูกใจโพสต์ของเพจ' + space + page.name + space + 'และอื่นๆอีก' + likePosts.length;
+                            const link = `/page/${page.id}/post/` + post_who.id;
+                            await this.pageNotificationService.notifyToPageUserFcm(
+                                page.id,
+                                undefined,
+                                req.user.id + '',
+                                USER_TYPE.PAGE,
+                                NOTIFICATION_TYPE.LIKE,
+                                notificationText,
+                                link,
+                                firstPerson.name,
+                                firstPerson.imageURL,
+                            );
+
+                            for (const tokenFCM of tokenFCMId) {
+                                if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
+                                    await this.notificationService.sendNotificationFCM(
+                                        page.id,
+                                        undefined,
+                                        req.user.id + '',
+                                        USER_TYPE.PAGE,
+                                        NOTIFICATION_TYPE.LIKE,
+                                        notificationText,
+                                        link,
+                                        tokenFCM.Tokens,
+                                        firstPerson.name,
+                                        firstPerson.imageURL,
+                                    );
+                                }
+                                else {
+                                    continue;
+                                }
+                            }
+                        } else if (likePosts.length > 500 && hours % 3 === 0) {
+                            firstPerson = await this.pageService.findOne({ _id: new ObjectID(likePosts[likePosts.length].likeAsPage) });
+                            secondPerson = await this.pageService.findOne({ _id: new ObjectID(likePosts[likePosts.length - 1].likeAsPage) });
+                            const tokenFCMId = await this.deviceTokenService.find({ userId: post_who.ownerUser });
+                            const notificationText = firstPerson.name + space + 'และ' + space + secondPerson.name + space + 'กดถูกใจโพสต์ของเพจ' + space + page.name + space + 'และอื่นๆอีก' + likePosts.length;
+                            const link = `/page/${page.id}/post/` + post_who.id;
+                            await this.pageNotificationService.notifyToPageUserFcm(
+                                page.id,
+                                undefined,
+                                req.user.id + '',
+                                USER_TYPE.PAGE,
+                                NOTIFICATION_TYPE.LIKE,
+                                notificationText,
+                                link,
+                                firstPerson.name,
+                                firstPerson.imageURL,
+                            );
+
+                            for (const tokenFCM of tokenFCMId) {
+                                if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
+                                    await this.notificationService.sendNotificationFCM(
+                                        page.id,
+                                        undefined,
+                                        req.user.id + '',
+                                        USER_TYPE.PAGE,
+                                        NOTIFICATION_TYPE.LIKE,
+                                        notificationText,
+                                        link,
+                                        tokenFCM.Tokens,
+                                        firstPerson.name,
+                                        firstPerson.imageURL,
+                                    );
+                                }
+                                else {
+                                    continue;
+                                }
+                            }
+                        }
                     }
+
                     // page to user
-                    else {
+                    /* else {
                         // const tokenFCMId = await this.deviceTokenService.find({ userId: post_who.ownerUser });
                         const notificationText = pageLike.name + space + 'กดถูกใจโพสต์ของคุณ';
                         const link = `/profile/${userOwnerPage.id}/post/` + post_who.id;
@@ -1065,7 +1174,7 @@ export class PostsController {
                             else {
                                 continue;
                             }
-                        } */
+                        } 
                     }
                 }
                 else {
@@ -1073,7 +1182,7 @@ export class PostsController {
                     if (post_who.pageId !== null && post_who.pageId !== undefined) {
                         let notificationText = undefined;
                         // const tokenFCMId = await this.deviceTokenService.find({ userId: post_who.ownerUser });
-                        notificationText = userLikeId.displayName + space + 'กดถูกใจโพสต์ของเพจ' + space + page.name;
+                        // notificationText = userLikeId.displayName + space + 'กดถูกใจโพสต์ของเพจ' + space + page.name;
                         const link = `/page/${page.id}/post/` + post_who.id;
                         await this.pageNotificationService.notifyToPageUserFcm
                             (
@@ -1109,18 +1218,19 @@ export class PostsController {
                                     continue;
                                 }
                             }
-                        }  */
-                    }
+                        }  
+                    } */
                     // user to user 
+                    /* 
                     else {
                         // owner post 
                         // FCM device token owner post
                         // const tokenFCMId = await this.deviceTokenService.find({ userId: ownerPost.ownerUser });
-                        const notificationText = userLikeId.displayName + space + 'กดถูกใจโพสต์ของคุณ';
-                        const link = `/profile/${userLikeId.id}/post/` + post_who.id;
+                        // const notificationText = userLikeId.displayName + space + 'กดถูกใจโพสต์ของคุณ';
+                        // const link = `/profile/${userLikeId.id}/post/` + post_who.id;
                         await this.notificationService.createNotificationFCM
                             (
-                                ownerPost.ownerUser + '',
+                                // ownerPost.ownerUser + '',
                                 USER_TYPE.USER,
                                 req.user.id + '',
                                 USER_TYPE.USER,
@@ -1130,7 +1240,7 @@ export class PostsController {
                                 userLikeId.displayName,
                                 userLikeId.imageURL
                             );
-                        /* 
+
                         for (const tokenFCM of tokenFCMId) {
                             if (tokenFCM.Tokens !== null && tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== '') {
                                 await this.notificationService.sendNotificationFCM
@@ -1149,8 +1259,9 @@ export class PostsController {
                             } else {
                                 continue;
                             }
-                        } */
+                        } 
                     }
+                    */
                 }
                 const userEngagement = new UserEngagement();
                 userEngagement.clientId = clientId;
@@ -1194,12 +1305,11 @@ export class PostsController {
                 } else {
                     likeCount = 0;
                 }
-                const scoreLikeToday = (xTodayxScore * (sTodayLike * (likeCount + postObj.likeCount)));
                 result['isLike'] = true;
                 result['likeCount'] = likeCount;
 
                 if (userEngagementAction) {
-                    await this.postsService.update({ _id: postObjId }, { $set: { likeCount, summationScore: scoreLikeToday } });
+                    await this.postsService.update({ _id: postObjId }, { $set: { likeCount } });
                     const likedPost = await this.postsService.findOne({ where: { _id: postObjId } });
                     result['posts'] = likedPost;
                     const successResponse = ResponseUtil.getSuccessResponse('Like Post Success', result);
