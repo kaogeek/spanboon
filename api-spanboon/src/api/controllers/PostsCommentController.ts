@@ -205,7 +205,7 @@ export class PostsCommentController {
                                     continue;
                                 }
                             }
-                        } else if (commentPost.length > 5 && commentPost.length <= 20  && minutes % interval === 0) {
+                        } else if (commentPost.length > 5 && commentPost.length <= 20 && minutes % interval === 0) {
                             secondPerson = await this.pageService.findOne({ _id: new ObjectID(commentPost[commentPost.length - 2].commentAsPage) });
                             link = `/page/${pageName.id}/post/` + postWho.id;
                             notificationComment = 'เพจ' + firstPerson.name + space + 'และเพจ' + space + secondPerson.name + space + 'ได้แสดงความคิดเห็นต่อโพสต์ของเพจ' + space + page.name + space + 'และอื่น' + space + commentPost.length;
@@ -460,7 +460,7 @@ export class PostsCommentController {
                         const userName = await this.userService.findOne({ _id: postsComment.user });
                         const tokenFCMId = await this.deviceTokenService.find({ userId: ownerPosts.ownerUser });
                         if (commentPost.length > 0 && commentPost.length <= 5) {
-                            link = `/post/` + postWho.id;
+                            link = `/page/${page.id}/post/` + postWho.id;
                             notificationComment = `${userName.displayName}${space}ได้แสดงความคิดเห็นต่อโพสต์ของเพจ${space}${page.name}`;
                             await this.pageNotificationService.notifyToPageUserFcm(
                                 page.id,
@@ -493,7 +493,7 @@ export class PostsCommentController {
                                 }
                             }
                         } else if (commentPost.length > 5 && commentPost.length <= 20 && minutes % interval === 0) {
-                            link = `/post/` + postWho.id;
+                            link = `/page/${page.id}/post/` + postWho.id;
                             notificationComment = `${userName.displayName}${space}ได้แสดงความคิดเห็นต่อโพสต์ของเพจ${space}${page.name}` + space + 'และอื่น' + space + commentPost.length;
                             await this.pageNotificationService.notifyToPageUserFcm(
                                 page.id,
@@ -526,7 +526,7 @@ export class PostsCommentController {
                                 }
                             }
                         } else if (commentPost.length > 20 && commentPost.length <= 500 && hours % 3 === 0) {
-                            link = `/post/` + postWho.id;
+                            link = `/page/${page.id}/post/` + postWho.id;
                             notificationComment = `${userName.displayName}${space}ได้แสดงความคิดเห็นต่อโพสต์ของเพจ${space}${page.name}` + space + 'และอื่น' + space + commentPost.length;
                             await this.pageNotificationService.notifyToPageUserFcm(
                                 page.id,
@@ -559,7 +559,7 @@ export class PostsCommentController {
                                 }
                             }
                         } else if (commentPost.length > 500 && hours % 3 === 0) {
-                            link = `/post/` + postWho.id;
+                            link = `/page/${page.id}/post/` + postWho.id;
                             notificationComment = `${userName.displayName}${space}ได้แสดงความคิดเห็นต่อโพสต์ของเพจ${space}${page.name}` + space + 'และอื่น' + space + commentPost.length;
                             await this.pageNotificationService.notifyToPageUserFcm(
                                 page.id,
