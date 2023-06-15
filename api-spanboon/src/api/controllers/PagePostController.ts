@@ -737,8 +737,8 @@ export class PagePostController {
                                         notificationTextPOST,
                                         link,
                                         tokenFCM.Tokens,
-                                        pagePostId.pageUsername,
-                                        pagePostId.imageURL
+                                        userPost.displayName,
+                                        userPost.imageURL
                                     );
                                 }
                                 else {
@@ -757,8 +757,8 @@ export class PagePostController {
                                         notificationTextPOST,
                                         link,
                                         tokenFCM.Tokens,
-                                        pagePostId.pageUsername,
-                                        pagePostId.imageURL
+                                        userPost.displayName,
+                                        userPost.imageURL
                                     );
                                 }
                                 else {
@@ -777,8 +777,8 @@ export class PagePostController {
                                         notificationTextPOST,
                                         link,
                                         tokenFCM.Tokens,
-                                        pagePostId.pageUsername,
-                                        pagePostId.imageURL
+                                        userPost.displayName,
+                                        userPost.imageURL
                                     );
                                 }
                                 else {
@@ -797,8 +797,8 @@ export class PagePostController {
                                         notificationTextPOST,
                                         link,
                                         tokenFCM.Tokens,
-                                        pagePostId.pageUsername,
-                                        pagePostId.imageURL
+                                        userPost.displayName,
+                                        userPost.imageURL
                                     );
                                 }
                                 else {
