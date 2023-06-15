@@ -84,7 +84,11 @@ export class CardPostContentHome implements OnInit {
     }
 
     public clickUser(ownerid) {
-        this.clickToPage.emit(ownerid);
+        if (!!this.pageId) {
+            this.clickToPage.emit(ownerid);
+        } else {
+            this.clickToPage.emit({ ownerid: ownerid, type: 'USER' });
+        }
     }
 
     public clickDialog(itempost) {

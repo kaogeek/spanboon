@@ -82,7 +82,9 @@ import {
     DEFAULT_SEARCH_CONFIG_VALUE,
     SEARCH_CONFIG_VALUES,
     DEFAULT_SEND_NOTIFICATION_NEWS,
-    SEND_NOTIFICATION_NEWS
+    SEND_NOTIFICATION_NEWS,
+    DEFAULT_RETROSPECT,
+    RETROSPECT
 } from '../../constants/SystemConfig';
 import { ConfigService } from '../services/ConfigService';
 import { KaokaiTodaySnapShotService } from '../services/KaokaiTodaySnapShot';
@@ -120,6 +122,7 @@ export class MainPageController {
     @Get('/content/v3')
     public async getContentListV2(@QueryParam('offset') offset: number, @QueryParam('section') section: string, @QueryParam('date') date: any, @Res() res: any, @Req() req: any): Promise<any> {
         const jobscheduler = req.headers.jobscheduler;
+        console.log('jobscheduler',jobscheduler);
         const dateFormat = new Date(date);
         const dateReal = dateFormat.setDate(dateFormat.getDate() + 1);
         const toDate = new Date(dateReal);
@@ -435,13 +438,18 @@ export class MainPageController {
     }
 
     @Post('/bottom/trend')
-    public async mirrorTrends(@QueryParam('limitFollow') limitFollow: number, @QueryParam('offsetFollow') offsetFollow: number, @QueryParam('limit') limit: number, @QueryParam('offset') offset: number, @QueryParam('isReadPost') isReadPost: boolean, @QueryParam('isFollowings') isFollowings: boolean, @QueryParam('followingProvinces') followingProvinces: boolean, @QueryParam('followingContent') followingContent: boolean, @QueryParam('section') section: string, @QueryParam('date') date: any, @Res() res: any, @Req() req: any): Promise<any> {
+    public async mirrorTrends( @QueryParam('limit') limit: number, @QueryParam('offset') offset: number, @QueryParam('isReadPost') isReadPost: boolean, @QueryParam('isFollowings') isFollowings: boolean, @QueryParam('followingProvinces') followingProvinces: boolean, @QueryParam('followingContent') followingContent: boolean, @QueryParam('section') section: string, @QueryParam('date') date: any, @Res() res: any, @Req() req: any): Promise<any> {
         const userId = req.headers.userid;
         const objIds = new ObjectID(userId);
         const isRead = await this.isReadPostService.find({ userId: objIds });
+        const configRetrospect = await this.configService.getConfig(RETROSPECT);
+        let retrospects = DEFAULT_RETROSPECT;
+        if(configRetrospect){
+            retrospects = parseInt(configRetrospect.value,10);
+        }
         const mainPageSearchConfig = await this.pageService.searchPageOfficialConfig();
         const searchOfficialOnly = mainPageSearchConfig.searchOfficialOnly;
-        const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 7);
+        const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), retrospects);
         let isReadPosts = undefined;
         let isFollowing = undefined;
         let followingProvince = undefined;
@@ -495,8 +503,6 @@ export class MainPageController {
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
             postIds: isRead,
-            limitFollows: limitFollow,
-            offsetFollows: offsetFollow,
             limits: limit,
             offsets: offset,
         });

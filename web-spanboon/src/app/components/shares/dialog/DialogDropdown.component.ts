@@ -7,7 +7,7 @@
 
 import { Component, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { AboutPageFacade, ObservableManager, PageFacade } from 'src/app/services/services';
+import { AboutPageFacade, ObservableManager, PageFacade, ProfileFacade } from 'src/app/services/services';
 import { DialogData } from '../../../models/models';
 import { PROVINCE_LIST } from "../../../constants/Province";
 
@@ -22,19 +22,22 @@ export class DialogDropdown {
     protected observManager: ObservableManager;
     private pageFacade: PageFacade;
     private aboutPageFacade: AboutPageFacade;
+    private profileFacade: ProfileFacade;
     private isbottom: boolean
     public selectedProvince: string;
     public selectedGroup: string;
     public pageId: string;
     public groups: any = [];
     public provinces;
+    public type: any;
 
     constructor(public dialogRef: MatDialogRef<DialogDropdown>,
         @Inject(MAT_DIALOG_DATA) public data: DialogData, aboutPageFacade: AboutPageFacade,
-        pageFacade: PageFacade,
+        pageFacade: PageFacade, profileFacade: ProfileFacade,
         observManager: ObservableManager) {
         this.aboutPageFacade = aboutPageFacade;
         this.pageFacade = pageFacade;
+        this.profileFacade = profileFacade;
         this.observManager = observManager;
     }
 
@@ -50,15 +53,34 @@ export class DialogDropdown {
             }
         }
         if (!!this.selectedGroup || !!this.selectedProvince) {
-            this.pageFacade.updateProfilePage(this.pageId, body).then((res) => {
-                if (res.data) {
-                    this.observManager.publish('page.about', res);
-                    this.isbottom = true
-                    this.dialogRef.close(this.isbottom);
+            if (this.data.type === 'USER') {
+                let data = {
+                    province: this.selectedProvince ? this.selectedProvince : null
                 }
-            }).catch((err) => {
-                console.log('error ', err)
-            });
+                this.profileFacade.edit(this.pageId, data).then((res: any) => {
+                    if (res) {
+                        let pageUser = JSON.parse(localStorage.getItem('pageUser'));
+                        pageUser.province = res.province;
+                        localStorage.setItem('pageUser', JSON.stringify(pageUser));
+                        this.isbottom = true
+                        this.dialogRef.close(this.isbottom);
+                    }
+                }).catch((err) => {
+                    if (err) {
+                        console.log("err", err);
+                    }
+                });
+            } else {
+                this.pageFacade.updateProfilePage(this.pageId, body).then((res) => {
+                    if (res.data) {
+                        this.observManager.publish('page.about', res);
+                        this.isbottom = true
+                        this.dialogRef.close(this.isbottom);
+                    }
+                }).catch((err) => {
+                    console.log('error ', err)
+                });
+            }
         }
     }
 

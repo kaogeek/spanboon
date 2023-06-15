@@ -90,3 +90,6 @@ export const DEFAULT_KAOKAITODAY_RANGE_OF_POPULAR_HASHTAGS=5;
 
 export const DEFAULT_SEND_NOTIFICATION_NEWS = 5000;
 export const SEND_NOTIFICATION_NEWS = 'send.notification.news';
+
+export const DEFAULT_RETROSPECT = 7;
+export const RETROSPECT = 'RETROSPECT';

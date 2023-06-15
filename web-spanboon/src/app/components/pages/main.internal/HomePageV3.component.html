@@ -992,7 +992,7 @@
                 <ng-container *ngFor="let majorTrend of model && model.majorTrend.contents; let i=index">
                     <card-content-home [titlepost]="majorTrend.post.title" [ownername]="majorTrend.owner.name"
                         [pageId]="majorTrend.post.pageId ? majorTrend.post.pageId : null"
-                        [ownerid]="majorTrend.post.ownerUser ? majorTrend.post.ownerUser : null" [itempost]="majorTrend"
+                        [ownerid]="majorTrend.owner.id ? majorTrend.owner.id : null" [itempost]="majorTrend"
                         [signUrl]="majorTrend.coverPageSignUrl ? true : false" [isDialog]="isPostNewTab"
                         [image]="majorTrend.coverPageSignUrl ? majorTrend.coverPageSignUrl : majorTrend.coverPageUrl ? majorTrend.coverPageUrl : null"
                         [idpost]="majorTrend.post._id" [comment]="majorTrend.post.commentCount"
@@ -1019,9 +1019,8 @@
                 <ng-container *ngFor="let kaokaiProvince of model && model.kaokaiProvince.contents; let i=index">
                     <card-content-home [titlepost]="kaokaiProvince.post.title" [ownername]="kaokaiProvince.owner.name"
                         [pageId]="kaokaiProvince.post.pageId ? kaokaiProvince.post.pageId : null"
-                        [ownerid]="kaokaiProvince.post.ownerUser ? kaokaiProvince.post.ownerUser : null"
-                        [itempost]="kaokaiProvince" [signUrl]="kaokaiProvince.coverPageSignUrl ? true : false"
-                        [isDialog]="isPostNewTab"
+                        [ownerid]="kaokaiProvince.owner.id ? kaokaiProvince.owner.id : null" [itempost]="kaokaiProvince"
+                        [signUrl]="kaokaiProvince.coverPageSignUrl ? true : false" [isDialog]="isPostNewTab"
                         [image]="kaokaiProvince.coverPageSignUrl ? kaokaiProvince.coverPageSignUrl : kaokaiProvince.coverPageUrl ? kaokaiProvince.coverPageUrl : null"
                         [idpost]="kaokaiProvince.post._id" [comment]="kaokaiProvince.post.commentCount"
                         [repost]="kaokaiProvince.post.repostCount" [like]="kaokaiProvince.post.likeCount"
@@ -1048,9 +1047,8 @@
                 <ng-container *ngFor="let kaokaiHashTag of model && model.kaokaiHashTag.contents; let i=index">
                     <card-content-home [titlepost]="kaokaiHashTag.post.title" [ownername]="kaokaiHashTag.owner.name"
                         [pageId]="kaokaiHashTag.post.pageId ? kaokaiHashTag.post.pageId : null"
-                        [ownerid]="kaokaiHashTag.post.ownerUser ? kaokaiHashTag.post.ownerUser : null"
-                        [itempost]="kaokaiHashTag" [signUrl]="kaokaiHashTag.coverPageSignUrl ? true : false"
-                        [isDialog]="isPostNewTab"
+                        [ownerid]="kaokaiHashTag.owner.id ? kaokaiHashTag.owner.id : null" [itempost]="kaokaiHashTag"
+                        [signUrl]="kaokaiHashTag.coverPageSignUrl ? true : false" [isDialog]="isPostNewTab"
                         [image]="kaokaiHashTag.coverPageSignUrl ? kaokaiHashTag.coverPageSignUrl : kaokaiHashTag.coverPageUrl ? kaokaiHashTag.coverPageUrl : null"
                         [idpost]="kaokaiHashTag.post._id" [comment]="kaokaiHashTag.post.commentCount"
                         [repost]="kaokaiHashTag.post.repostCount" [like]="kaokaiHashTag.post.likeCount"
@@ -1077,9 +1075,8 @@
                 <ng-container *ngFor="let kaokaiContent of model && model.kaokaiContent.contents; let i=index">
                     <card-content-home [titlepost]="kaokaiContent.post.title" [ownername]="kaokaiContent.owner.name"
                         [pageId]="kaokaiContent.post.pageId ? kaokaiContent.post.pageId : null"
-                        [ownerid]="kaokaiContent.post.ownerUser ? kaokaiContent.post.ownerUser : null"
-                        [itempost]="kaokaiContent" [signUrl]="kaokaiContent.coverPageSignUrl ? true : false"
-                        [isDialog]="isPostNewTab"
+                        [ownerid]="kaokaiContent.owner.id ? kaokaiContent.owner.id : null" [itempost]="kaokaiContent"
+                        [signUrl]="kaokaiContent.coverPageSignUrl ? true : false" [isDialog]="isPostNewTab"
                         [image]="kaokaiContent.coverPageSignUrl ? kaokaiContent.coverPageSignUrl : kaokaiContent.coverPageUrl ? kaokaiContent.coverPageUrl : null"
                         [idpost]="kaokaiContent.post._id" [comment]="kaokaiContent.post.commentCount"
                         [repost]="kaokaiContent.post.repostCount" [like]="kaokaiContent.post.likeCount"
@@ -1092,7 +1089,7 @@
         </div>
     </section>
 
-    <section class="section-5" *ngIf="isLogin() && hidebar && loadingCount > 0">
+    <section class="section-5" *ngIf="hidebar && loadingCount > 0">
         <div class="container">
             <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '60px' : '0'}" style="
             grid-template-columns: 1fr auto 1fr;">
@@ -1100,7 +1097,7 @@
                     <hr>
                 </div>
                 <div class="wrapper-title">
-                    <span>ข่าวสารสำหรับคุณ</span>
+                    <span>{{isLogin() ? 'ข่าวสารสำหรับคุณ' : 'ข่าวสารอื่นๆ'}}</span>
                 </div>
                 <div class="wrapper-title">
                     <hr>
@@ -1108,7 +1105,7 @@
             </div>
         </div>
     </section>
-    <section class="section-6" *ngIf="isLogin() && hidebar && loadingCount > 0">
+    <section class="section-6" *ngIf="hidebar && loadingCount > 0">
         <div class="container">
             <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '60px' : '0'}">
                 <div class="wrapper-title">
@@ -1122,9 +1119,8 @@
                 <ng-container *ngFor="let isReadPosts of isReadPost.isReadPosts.contents; let i=index">
                     <card-content-home [titlepost]="isReadPosts.post.title" [ownername]="isReadPosts.owner.name"
                         [pageId]="isReadPosts.post.pageId ? isReadPosts.post.pageId : null"
-                        [ownerid]="isReadPosts.post.ownerUser ? isReadPosts.post.ownerUser : null"
-                        [itempost]="isReadPosts" [signUrl]="isReadPosts.coverPageSignUrl ? true : false"
-                        [isDialog]="isPostNewTab"
+                        [ownerid]="isReadPosts.owner.id ? isReadPosts.owner.id : null" [itempost]="isReadPosts"
+                        [signUrl]="isReadPosts.coverPageSignUrl ? true : false" [isDialog]="isPostNewTab"
                         [image]="isReadPosts.coverPageSignUrl ? isReadPosts.coverPageSignUrl : isReadPosts.coverPageUrl ? isReadPosts.coverPageUrl : null"
                         [idpost]="isReadPosts.post._id" [comment]="isReadPosts.post.commentCount"
                         [repost]="isReadPosts.post.repostCount" [like]="isReadPosts.post.likeCount"
@@ -1137,7 +1133,7 @@
         </div>
     </section>
     <ng-container *ngIf="!!isFollowings">
-        <section class="section-follow" *ngIf="isLogin() && hidebar">
+        <section class="section-follow" *ngIf="hidebar">
             <ng-container *ngFor="let owner of isFollowings.isFollowing.contents; let ownerI=index">
                 <div class="container" style="margin-top: 15px"
                     *ngIf="!isEmptyObject(owner.owner) && owner.owner.posts.length > 0 && owner.owner.posts[0].post.deleted !== true">
@@ -1176,7 +1172,7 @@
             </ng-container>
         </section>
     </ng-container>
-    <section class="section-7" *ngIf="isLogin() && hidebar && loadingCount >=2 && !!followingProvinces">
+    <section class="section-7" *ngIf="hidebar && loadingCount >=2 && !!followingProvinces">
         <div class="container">
             <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '60px' : '0'}">
                 <div class="wrapper-title">
@@ -1199,7 +1195,7 @@
                         <card-content-home [titlepost]="followingProvince.post.title"
                             [ownername]="followingProvince.owner.name" [itempost]="followingProvince"
                             [pageId]="followingProvince.post.pageId ? followingProvince.post.pageId : null"
-                            [ownerid]="followingProvince.post.ownerUser ? followingProvince.post.ownerUser : null"
+                            [ownerid]="followingProvince.owner.id ? followingProvince.owner.id : null"
                             [signUrl]="followingProvince.coverPageSignUrl ? true : false" [isDialog]="isPostNewTab"
                             [image]="followingProvince.coverPageSignUrl ? followingProvince.coverPageSignUrl : followingProvince.coverPageUrl ? followingProvince.coverPageUrl : null"
                             [idpost]="followingProvince.post._id" [comment]="followingProvince.post.commentCount"
@@ -1213,7 +1209,7 @@
             </div>
         </div>
     </section>
-    <section class="section-8" *ngIf="isLogin() && hidebar && loadingCount > 0 && !!followingContent">
+    <section class="section-8" *ngIf="hidebar && loadingCount === 3 && !!followingContent">
         <div class="container">
             <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '60px' : '0'}">
                 <div class="wrapper-title">
@@ -1226,8 +1222,7 @@
             <div class="wrapper-content">
                 <ng-container
                     *ngFor="let followingContents of followingContent.followingContents.contents; let i=index">
-                    <ng-container
-                        *ngIf="followingContents.post.type !== 'NEEDS' && followingContent.post.deleted === false">
+                    <ng-container *ngIf="followingContents.post.type !== 'NEEDS'">
                         <card-content-home [titlepost]="followingContents.post.title" [itempost]="followingContents"
                             [pageId]="followingContents.post.pageId ? followingContents.post.pageId : null"
                             [ownerid]="followingContents.owner.id ? followingContents.owner.id : null"
@@ -1235,7 +1230,8 @@
                             [image]="followingContents.coverPageSignUrl ? followingContents.coverPageSignUrl : followingContents.coverPageUrl ? followingContents.coverPageUrl : null"
                             [idpost]="followingContents.post._id" [comment]="followingContents.post.commentCount"
                             [repost]="followingContents.post.repostCount" [like]="followingContents.post.likeCount"
-                            [share]="followingContents.post.shareCount" [ownername]="followingContents.owner.name"
+                            [share]="followingContents.post.shareCount"
+                            [ownername]="followingContents.owner.name ? followingContents.owner.name : followingContents.owner.displayName"
                             [postdate]="followingContents.post.createdDate | thformatdatetime"
                             (clickToPost)="clickToPost($event)" (clickToPage)="clickToPageUser($event)"
                             (openDialog)="openDilogPost($event)"></card-content-home>

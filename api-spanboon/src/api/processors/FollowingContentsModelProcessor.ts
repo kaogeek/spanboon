@@ -83,12 +83,6 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                 }
                             },
                             {
-                                $skip: this.data.offsetFollows
-                            },
-                            {
-                                $limit: this.data.limitFollows
-                            },
-                            {
                                 $lookup: {
                                     from: 'Page',
                                     let: { subjectId: '$subjectId' },
@@ -185,6 +179,80 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                             {
                                 $unwind: {
                                     path: '$page',
+                                    preserveNullAndEmptyArrays: true
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'User',
+                                    let: { subjectId: '$subjectId' },
+                                    pipeline: [
+                                        {
+                                            $match: {
+                                                $expr: {
+                                                    $eq: ['$$subjectId', '$_id']
+                                                }
+                                            },
+                                        },
+                                        {
+                                            $lookup: {
+                                                from: 'Posts',
+                                                let: { id: '$_id' },
+                                                pipeline: [
+                                                    {
+                                                        $match: {
+                                                            $expr: {
+                                                                $eq: ['$$id', '$ownerUser']
+                                                            }
+                                                        }
+                                                    },
+                                                    {
+                                                        $match: {
+                                                            isDraft: false,
+                                                            deleted: false,
+                                                            hidden: false,
+                                                        }
+                                                    },
+                                                    {
+                                                        $sort: {
+                                                            createdDate: -1,
+                                                        },
+                                                    },
+                                                    {
+                                                        $limit: 8
+
+                                                    },
+                                                    {
+                                                        $lookup: {
+                                                            from: 'PostsGallery',
+                                                            localField: '_id',
+                                                            foreignField: 'post',
+                                                            as: 'gallery',
+                                                        },
+                                                    },
+                                                    {
+                                                        $project: {
+                                                            story: 0
+                                                        }
+
+                                                    },
+                                                ],
+                                                as: 'posts'
+                                            },
+                                        },
+                                        {
+                                            $unwind: {
+                                                path: '$posts',
+                                                preserveNullAndEmptyArrays: true
+                                            }
+                                        },
+                                    ],
+                                    as: 'user'
+                                }
+                            },
+                            {
+                                $unwind: {
+                                    path: '$user',
                                     preserveNullAndEmptyArrays: true
                                 }
                             },
@@ -448,11 +516,11 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                             delete row.user;
                             contents.post = row.page.posts;
                             result.contents.push(contents);
-                        } else if (row.subjectType === 'USER') {
-                            const firstImage = (row.page.posts.gallery.length > 0) ? row.page.posts.gallery[0] : undefined;
+                        } else if (row.subjectType === 'USER' && row.user !== undefined) {
+                            const firstImage = (row.user.posts.gallery.length > 0) ? row.user.posts.gallery[0] : undefined;
 
                             const contents: any = {};
-                            contents.coverPageUrl = (row.page.posts.gallery.length > 0) ? row.page.posts.gallery[0].imageURL : undefined;
+                            contents.coverPageUrl = (row.user.posts.gallery.length > 0) ? row.user.posts.gallery[0].imageURL : undefined;
                             if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
                                 try {
                                     const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
@@ -463,7 +531,7 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                             }
 
                             // search isLike
-                            row.page.posts.isLike = false;
+                            row.user.posts.isLike = false;
                             if (userId !== undefined && userId !== undefined && userId !== '') {
                                 const userLikes: UserLike[] = await this.userLikeService.find({ userId: new ObjectID(userId), subjectId: row._id, subjectType: LIKE_TYPE.POST });
                                 if (userLikes.length > 0) {
@@ -472,13 +540,12 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                             }
 
                             contents.owner = {};
-                            if (row.page !== undefined) {
-                                contents.owner = this.parseUserField(row.page);
+                            if (row.user !== undefined) {
+                                contents.owner = await this.parseUserField(row.user);
                             }
                             // remove page agg
                             // delete row.page;
-                            delete row.user;
-                            contents.post = row.page.posts;
+                            contents.post = row.user.posts;
                             result.contents.push(contents);
                         }
                     }
@@ -563,10 +630,10 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                 }
                             },
                             {
-                                $skip: this.data.offsetFollows + offsetState
+                                $skip: offsetState
                             },
                             {
-                                $limit: this.data.limitFollows + limitState
+                                $limit: limitState
                             },
                             {
                                 $lookup: {
@@ -685,7 +752,6 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                     if (findFollowNextState.length > 0) {
                         for (const row of findFollowNextState) {
                             if (row.subjectType === 'PAGE' && row.page.posts !== undefined && row.page !== undefined) {
-                                const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
                                 const firstImage = (row.page.posts.gallery.length > 0) ? row.page.posts.gallery[0] : undefined;
 
                                 const contents: any = {};
@@ -711,13 +777,42 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                 contents.owner = {};
                                 if (row.page !== undefined) {
                                     contents.owner = this.parsePageField(row.page);
-                                } else {
-                                    contents.owner = this.parseUserField(user);
                                 }
                                 // remove page agg
                                 // delete row.page;
                                 delete row.user;
                                 contents.post = row.page.posts;
+                                result.contents.push(contents);
+                            } else if (row.subjectType === 'USER') {
+                                const firstImage = (row.user.posts.gallery.length > 0) ? row.user.posts.gallery.gallery[0] : undefined;
+
+                                const contents: any = {};
+                                contents.coverPageUrl = (row.user.posts.gallery.length > 0) ? row.user.posts.gallery[0].imageURL : undefined;
+                                if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
+                                    try {
+                                        const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
+                                        contents.coverPageSignUrl = signUrl;
+                                    } catch (error) {
+                                        console.log('PostSectionProcessor: ' + error);
+                                    }
+                                }
+
+                                // search isLike
+                                row.user.posts.isLike = false;
+                                if (userId !== undefined && userId !== undefined && userId !== '') {
+                                    const userLikes: UserLike[] = await this.userLikeService.find({ userId: new ObjectID(userId), subjectId: row._id, subjectType: LIKE_TYPE.POST });
+                                    if (userLikes.length > 0) {
+                                        row.isLike = true;
+                                    }
+                                }
+
+                                contents.owner = {};
+                                if (row.user !== undefined) {
+                                    contents.owner = await this.parseUserField(row.user);
+                                }
+                                // remove page agg
+                                // delete row.page;
+                                contents.post = row.user.posts;
                                 result.contents.push(contents);
                             }
                         }
@@ -745,9 +840,8 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
         return pageResult;
     }
 
-    private parseUserField(user: any): any {
+    private async parseUserField(user: any): Promise<any> {
         const userResult: any = {};
-
         if (user !== undefined) {
             userResult.id = user._id;
             userResult.displayName = user.displayName;
@@ -757,7 +851,6 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
             userResult.uniqueId = user.uniqueId;
             userResult.type = 'USER';
         }
-
         return userResult;
     }
 

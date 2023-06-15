@@ -86,7 +86,7 @@ export class NotificationService {
 
     public async pushNotificationMessage(data: any, tokenId: any, date: any): Promise<any> {
         const title = 'ก้าวไกลหน้าหนึ่ง';
-        let body = data.majorTrend.contents[0].post.title ? String(data.majorTrend.contents[0].post.title) : 'ก้าวไกลหน้าหนึ่ง' ;
+        let body = data.majorTrend.contents[0].post.title ? String(data.majorTrend.contents[0].post.title) : 'ก้าวไกลหน้าหนึ่ง';
         if (body.length > 60) {
             body = body.substring(0, 60) + '...';
         }
@@ -129,11 +129,8 @@ export class NotificationService {
         const token = String(data);
         const toUser = String(toUserId);
         const fromUser = String(fromUserId);
-        const displayNameFCM = String(displayName);
         const link_noti = String(link);
         const image_url = String(image);
-        const count_data = String(count);
-        const notification_id = String(id);
         const payload =
         {
             data: {
@@ -142,13 +139,9 @@ export class NotificationService {
                 title,
                 link_noti,
                 notificationType,
-                displayNameFCM,
                 image_url,
-                notification_id,
-                count_data
             }
         };
-
         if (String(notification.toUser) !== String(notification.fromUser)) {
             Promise.all([await admin.messaging().sendToDevice(token, payload)]);
         } else {
