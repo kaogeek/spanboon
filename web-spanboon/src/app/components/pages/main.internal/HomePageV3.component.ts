@@ -394,8 +394,8 @@ export class HomePageV3 extends AbstractPage implements OnInit {
       search.count = false;
       search.whereConditions = { ownerUser: userId };
       await this.pageFacade.search(search).then((pages: any) => {
-        this.pageUser = pages
-        this.pageUser.push(this.userCloneDatas)
+        this.pageUser = pages;
+        this.pageUser.push(this.userCloneDatas);
         this.pageUser.reverse();
       }).catch((err: any) => {
         console.log("err", err);
@@ -404,7 +404,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
         for (let p of this.pageUser) {
           if (!p.signURL) {
             await this.assetFacade.getPathFile(p.imageURL).then((res: any) => {
-              p.img64 = res.data
+              p.img64 = res.data;
             }).catch((err: any) => {
               console.log("err", err);
             });
