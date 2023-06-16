@@ -24,6 +24,9 @@ export class DeviceToken extends BaseModel {
     @Column({ name: 'userId' })
     public userId: ObjectID;
 
+    @Column({ name: 'os'})
+    public os: string;
+
     @BeforeInsert()
     public createDetails(): any {
         this.createdDate = moment().toDate();

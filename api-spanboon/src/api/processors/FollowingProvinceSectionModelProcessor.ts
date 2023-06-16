@@ -143,7 +143,7 @@ export class FollowingProvinceSectionModelProcessor extends AbstractSeparateSect
                 }
                 const postStmt = [
                     { $match: postMatchStmt },
-                    { $sort: { summationScore: -1 } },
+                    { $sort: { createdDate: -1 } },
                     {
                         $lookup:
                         {

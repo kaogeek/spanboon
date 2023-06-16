@@ -42,7 +42,9 @@ import { ObjectUtil } from '../../utils/Utils';
 import { DeviceTokenService } from '../services/DeviceToken';
 import { CheckUser } from './requests/CheckUser';
 import { AutoSynz } from './requests/AutoSynz';
+import { FirebaseGuestUser } from './requests/FirebaseGuestUsers';
 import { OtpService } from '../services/OtpService';
+import { DeviceToken } from '../models/DeviceToken';
 @JsonController()
 export class GuestController {
     constructor(
@@ -1766,7 +1768,7 @@ export class GuestController {
     }
     // send otp
     @Post('/send_otp')
-    public async sendOTP(@Body({ validate: true }) otpRequest: OtpRequest,@Res() res: any, @Req() req: any): Promise<any> {
+    public async sendOTP(@Body({ validate: true }) otpRequest: OtpRequest, @Res() res: any, @Req() req: any): Promise<any> {
         // const ipAddress = req.clientIp;
         // IpAddressEvent.emit(process.env.EVENT_LISTENNER, {ipAddress});
         const username = otpRequest.email;
@@ -2103,6 +2105,21 @@ export class GuestController {
                 const errorResponse = ResponseUtil.getErrorResponse('The OTP is not correct.', undefined);
                 return res.status(400).send(errorResponse);
             }
+        }
+    }
+    @Post('/guest/users')
+    public async guestUsers(@Body({ validate: true }) firebaseGuestUser: FirebaseGuestUser, @Res() res: any, @Req() req: any): Promise<any> {
+        const result: DeviceToken = new DeviceToken();
+        result.DeviceName = firebaseGuestUser.deviceName;
+        result.Tokens = firebaseGuestUser.token;
+        result.os = firebaseGuestUser.os;
+        const createToken = await this.deviceToken.createDeviceToken(result);
+        if (createToken) {
+            const successResponse = ResponseUtil.getSuccessResponse('Create Guest User Firebase', createToken);
+            return res.status(200).send(successResponse);
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot Create Guest User Firebase.', undefined);
+            return res.status(400).send(errorResponse);
         }
     }
     // autoSyncPage
