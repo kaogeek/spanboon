@@ -388,7 +388,6 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
             pageResult.isOfficial = page.isOfficial;
             pageResult.uniqueId = page.pageUsername;
             pageResult.type = 'PAGE';
-            pageResult.posts = [];
             const firstImage = (posts.gallery.length > 0) ? posts.gallery[0] : undefined;
 
             const contents: any = {};
@@ -402,8 +401,7 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                 }
             }
             posts.isLike = false;
-            contents.post = posts;
-            pageResult.posts.push(contents);
+            pageResult.posts = posts;
         }
 
         return pageResult;
