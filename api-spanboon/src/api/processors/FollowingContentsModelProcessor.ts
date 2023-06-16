@@ -170,8 +170,8 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                                             then: {
                                                                 $slice: [
                                                                     '$$this.posts', // Specify the array to slice
-                                                                    limit, // Number of elements to return
-                                                                    offset // Starting position (optional)
+                                                                    0, // Number of elements to return
+                                                                    limit // Starting position (optional)
                                                                 ]
                                                             },
                                                             else: '$$this.posts'
