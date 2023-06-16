@@ -443,6 +443,9 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                 preserveNullAndEmptyArrays: true
                             }
                         },
+                        {
+                            $limit:5
+                        }
                     ]);
                 } else {
                     isFollowing = await this.userFollowService.aggregate([
@@ -809,6 +812,9 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                 preserveNullAndEmptyArrays: true
                             }
                         },
+                        {
+                            $limit:5
+                        }
                     ]);
                 }
                 const result: SectionModel = new SectionModel();
