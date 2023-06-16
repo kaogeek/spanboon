@@ -365,9 +365,20 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                         if (rows.subjectType === 'PAGE' && rows.page !== undefined && rows.page.posts !== undefined) {
                             const contents: any = {};
                             contents.owner = {};
-                            if (rows.page !== undefined) {
-                                contents.owner = await this.parsePageField(rows.page, rows.page.posts);
+                            const firstImage = (rows.page.posts.gallery.length > 0) ? rows.page.posts.gallery[0] : undefined;
+                            contents.coverPageUrl = (rows.page.posts.gallery.length > 0) ? rows.page.posts.gallery[0].imageURL : undefined;
+                            if (firstImage !== undefined && firstImage.s3ImageURL !== undefined) {
+                                try {
+                                    const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
+                                    contents.coverPageSignUrl = signUrl;
+                                } catch (error) {
+                                    console.log('PostSectionProcessor: ' + error);
+                                }
                             }
+                            if (rows.page !== undefined) {
+                                contents.owner = await this.parsePageField(rows.page);
+                            }
+                            contents.post = rows.page.posts;
                             result.contents.push(contents);
                         }
                     }
@@ -379,7 +390,7 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
             }
         });
     }
-    private async parsePageField(page: any, posts: any): Promise<any> {
+    private async parsePageField(page: any): Promise<any> {
         const pageResult: any = {};
         if (page !== undefined) {
             pageResult.id = page._id;
@@ -388,20 +399,6 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
             pageResult.isOfficial = page.isOfficial;
             pageResult.uniqueId = page.pageUsername;
             pageResult.type = 'PAGE';
-            const firstImage = (posts.gallery.length > 0) ? posts.gallery[0] : undefined;
-
-            const contents: any = {};
-            contents.coverPageUrl = (posts.gallery.length > 0) ? posts.gallery[0].imageURL : undefined;
-            if (firstImage !== undefined && firstImage.s3ImageURL !== undefined) {
-                try {
-                    const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
-                    contents.coverPageSignUrl = signUrl;
-                } catch (error) {
-                    console.log('PostSectionProcessor: ' + error);
-                }
-            }
-            posts.isLike = false;
-            pageResult.posts = posts;
         }
 
         return pageResult;
