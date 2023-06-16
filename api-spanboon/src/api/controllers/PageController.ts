@@ -2437,7 +2437,7 @@ export class PageController {
                         }
                     }
                 } else if (pageFollows.length > 5 && pageFollows.length <= 20 && minutes % interval === 0) {
-                    firstObj = pageFollows[pageFollows.length-1].subjectId;
+                    firstObj = pageFollows[pageFollows.length - 1].subjectId;
                     secondObj = pageFollows[pageFollows.length - 2].subjectId;
                     firstPerson = await this.userService.findOne({ _id: new ObjectID(firstObj) });
                     secondPerson = await this.userService.findOne({ _id: new ObjectID(secondObj) });
@@ -2471,7 +2471,7 @@ export class PageController {
                         }
                     }
                 } else if (pageFollows.length > 20 && pageFollows.length <= 500 && hours % 3 === 0) {
-                    firstObj = pageFollows[pageFollows.length-1].subjectId;
+                    firstObj = pageFollows[pageFollows.length - 1].subjectId;
                     secondObj = pageFollows[pageFollows.length - 2].subjectId;
                     firstPerson = await this.userService.findOne({ _id: new ObjectID(firstObj) });
                     secondPerson = await this.userService.findOne({ _id: new ObjectID(secondObj) });
@@ -2769,10 +2769,8 @@ export class PageController {
                 pageEmail = pageUpdate.email;
             }
 
-            if (pageProvince === null || pageProvince === undefined) {
+            if (pageProvince === null || pageProvince === undefined || pageGroup === null || pageGroup === undefined) {
                 pageProvince = pageUpdate.province;
-            }
-            if (pageGroup === null || pageGroup === undefined) {
                 pageGroup = pageUpdate.group;
             }
 
