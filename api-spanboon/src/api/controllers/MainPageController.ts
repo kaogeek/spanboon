@@ -496,7 +496,7 @@ export class MainPageController {
             followingProvince = await followingProvinceSectionModelProcessor.process();
         }
         const followingContentsModelProcessor: FollowingContentsModelProcessor = new FollowingContentsModelProcessor(
-            this.s3Service, this.userFollowService, this.userLikeService
+            this.s3Service, this.userFollowService
         );
         followingContentsModelProcessor.setData({
             userId,

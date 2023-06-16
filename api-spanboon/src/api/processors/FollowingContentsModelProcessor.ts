@@ -10,17 +10,13 @@ import { SectionModel } from '../models/SectionModel';
 import { SearchFilter } from '../controllers/requests/SearchFilterRequest';
 import { S3Service } from '../services/S3Service';
 import { UserFollowService } from '../services/UserFollowService';
-import { UserLike } from '../models/UserLike';
 import { ObjectID } from 'mongodb';
-import { LIKE_TYPE } from '../../constants/LikeType';
-import { UserLikeService } from '../services/UserLikeService';
 export class FollowingContentsModelProcessor extends AbstractSeparateSectionProcessor {
     private DEFAULT_SEARCH_LIMIT = 10;
     private DEFAULT_SEARCH_OFFSET = 0;
     constructor(
         private s3Service: S3Service,
         private userFollowService: UserFollowService,
-        private userLikeService: UserLikeService,
     ) {
         super();
     }
@@ -366,7 +362,7 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                 const lastestDate = null;
                 if (isFollowing.length > 0) {
                     for (const rows of isFollowing) {
-                        if (rows.subjectType === 'PAGE') {
+                        if (rows.subjectType === 'PAGE' && rows.page !== undefined && rows.page.posts !== undefined) {
                             const contents: any = {};
                             contents.owner = {};
                             if (rows.page !== undefined) {
@@ -394,6 +390,7 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
             pageResult.type = 'PAGE';
             pageResult.posts = [];
             const firstImage = (posts.gallery.length > 0) ? posts.gallery[0] : undefined;
+
             const contents: any = {};
             contents.coverPageUrl = (posts.gallery.length > 0) ? posts.gallery[0].imageURL : undefined;
             if (firstImage !== undefined && firstImage.s3ImageURL !== undefined) {
