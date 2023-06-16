@@ -30,6 +30,8 @@ export class DialogDropdown {
     public groups: any = [];
     public provinces;
     public type: any;
+    public page: any[] = [];
+    public nextPage: number = 0;
 
     constructor(public dialogRef: MatDialogRef<DialogDropdown>,
         @Inject(MAT_DIALOG_DATA) public data: DialogData, aboutPageFacade: AboutPageFacade,
@@ -47,12 +49,13 @@ export class DialogDropdown {
             body = {
                 province: this.selectedProvince
             }
-        } else if (!!this.selectedGroup) {
+        }
+        if (!!this.selectedGroup) {
             body = {
                 group: this.selectedGroup
             }
         }
-        if (!!this.selectedGroup || !!this.selectedProvince) {
+        if ((!!this.selectedGroup || this.selectedGroup === undefined) || (!!this.selectedProvince || this.selectedProvince === undefined)) {
             if (this.data.type === 'USER') {
                 let data = {
                     province: this.selectedProvince ? this.selectedProvince : null
@@ -71,15 +74,20 @@ export class DialogDropdown {
                     }
                 });
             } else {
-                this.pageFacade.updateProfilePage(this.pageId, body).then((res) => {
+                this.pageFacade.updateProfilePage(this.page[this.nextPage].id, this.selectedProvince, this.selectedGroup).then((res) => {
                     if (res.data) {
                         this.observManager.publish('page.about', res);
                         this.isbottom = true
-                        this.dialogRef.close(this.isbottom);
+                        this.selectedGroup = null;
+                        this.selectedProvince = null;
                     }
                 }).catch((err) => {
                     console.log('error ', err)
                 });
+            }
+            this.nextPage++;
+            if (this.nextPage === this.page.length) {
+                this.dialogRef.close(this.isbottom);
             }
         }
     }
@@ -94,17 +102,33 @@ export class DialogDropdown {
     }
 
     public ngOnInit(): void {
-        this.groups = this.data.group;
+        this._getGroupList();
         this.pageId = this.data.pageId;
         this.getProvince();
+        if (this.data.type !== 'USER') {
+            this.dataPage();
+        }
     }
 
-    public selectType($event, text: string) {
-        if (text === 'province') {
-            this.selectedProvince = $event.value;
-        } else if (text === 'group') {
-            this.selectedGroup = $event.value;
+    private _getGroupList() {
+        this.aboutPageFacade.getGroups().then((res) => {
+            if (res) {
+                this.groups = res.data;
+            }
+        })
+    }
+
+    public dataPage() {
+        for (let index = 0; index < this.data.data.length; index++) {
+            this.page.push(this.data.data[index]);
         }
+    }
+
+    public selectProv($event) {
+        this.selectedProvince = $event.value;
+    }
+    public selectGroup($event) {
+        this.selectedGroup = $event.value;
     }
 
     public getProvince() {

@@ -57,11 +57,15 @@
         }
 
         >.edit-input {
-            display: flex;
-            justify-content: center;
-            padding: 15px;
+            margin: 0 auto;
+            text-align: center;
+            margin-top: 10px;
 
             >span {
+                @include font-size-8($font-head-500);
+            }
+
+            >p {
                 @include font-size-8($font-head-500);
             }
         }
@@ -69,6 +73,10 @@
         >.dropdown-province {
             justify-content: center;
             display: flex;
+            flex-direction: column;
+            width: 50%;
+            margin: 0 auto;
+            margin-top: 5px;
 
             >mat-form-field {
                 >.mat-form-field-wrapper {
@@ -133,6 +141,11 @@
             .but-submit {
                 color: $brandcolor;
                 background-color: $brandcolor2;
+
+                &.disable {
+                    opacity: 0.5;
+                    pointer-events: none;
+                }
             }
         }
     }

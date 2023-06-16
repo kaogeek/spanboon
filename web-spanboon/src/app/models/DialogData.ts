@@ -24,6 +24,8 @@ export class DialogData extends BaseModel {
   placeholder: string;
   subject: string;
   type: string;
+  isProvince: boolean;
+  isGroup: boolean;
 
   //bottom
   bottomText1: string;
@@ -47,4 +49,5 @@ export class DialogData extends BaseModel {
 
   // options
   options: any;
+  data: any[];
 }

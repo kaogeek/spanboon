@@ -83,7 +83,7 @@ export class AboutPageFacade extends AbstractFacade {
         return this.search(searchFilter);
     }
 
-    public getGroups(pageId: string): Promise<any> {
+    public getGroups(): Promise<any> {
         return new Promise((resolve, reject) => {
             let url: string = this.baseURL + '/page/group/receive';
             let option = this.authMgr.getDefaultOptions();
