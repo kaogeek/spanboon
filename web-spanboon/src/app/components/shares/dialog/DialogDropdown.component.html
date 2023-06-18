@@ -15,39 +15,74 @@
                 </i>
             </div>
         </div>
-        <div class="edit-input">
-            <span>{{data.text}}</span>
-            <p>{{data.text2}}</p>
-        </div>
+        <ng-container *ngIf="data.type === 'USER'; else elseText">
+            <div class="edit-input">
+                <span>{{data.text}}</span>
+            </div>
+        </ng-container>
+        <ng-template #elseText>
+            <div class="edit-input">
+                <span>กรุณาเลือก </span>
+                <ng-container *ngFor="let item of page; let i = index">
+                    <ng-container *ngIf="page[i].province === false && nextPage === i">
+                        <span>จังหวัด </span>
+                    </ng-container>
+                    <ng-container *ngIf="page[i].group === false && nextPage === i">
+                        <span>กลุ่ม</span>
+                    </ng-container>
+                    <ng-container *ngIf="nextPage === i">
+                        <p>{{'ของเพจ ' + item.name}}</p>
+                    </ng-container>
+                </ng-container>
+            </div>
+        </ng-template>
         <div class="dropdown-province">
-            <ng-container *ngIf="data.text === 'กรุณาเลือกกลุ่ม'; else elseTemplate">
+            <ng-container *ngIf="data.type === 'USER'; else elseTemplate">
                 <mat-form-field appearance="none">
-                    <mat-select [(ngModel)]="selectedGroup" name="province"
-                        (selectionChange)="selectType($event,'group')" [ngModelOptions]="{standalone: true}"
-                        placeholder='กลุ่ม'>
-                        <mat-option *ngFor="let group of groups" [value]="group.detail">
-                            {{group.detail}}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-            </ng-container>
-            <ng-template #elseTemplate>
-                <mat-form-field appearance="none">
-                    <mat-select [(ngModel)]="selectedProvince" name="province"
-                        (selectionChange)="selectType($event,'province')" [ngModelOptions]="{standalone: true}"
-                        placeholder='จังหวัด'>
+                    <mat-select [(ngModel)]="selectedProvince" name="province" (selectionChange)="selectProv($event)"
+                        [ngModelOptions]="{standalone: true}" placeholder='จังหวัด'>
                         <mat-option *ngFor="let province of provinces" [value]="province">
                             {{province}}
                         </mat-option>
                     </mat-select>
                 </mat-form-field>
+            </ng-container>
+            <ng-template #elseTemplate>
+                <ng-container *ngFor="let item of page; let i = index">
+                    <ng-container *ngIf="page[i].province === false && nextPage === i">
+                        <mat-form-field appearance="none">
+                            <mat-select [(ngModel)]="selectedProvince" name="province"
+                                (selectionChange)="selectProv($event)" [ngModelOptions]="{standalone: true}"
+                                placeholder='จังหวัด'>
+                                <mat-option *ngFor="let province of provinces" [value]="province">
+                                    {{province}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </ng-container>
+                    <ng-container *ngIf="page[i].group === false && nextPage === i">
+                        <mat-form-field appearance="none">
+                            <mat-select [(ngModel)]="selectedGroup" name="group" (selectionChange)="selectGroup($event)"
+                                [ngModelOptions]="{standalone: true}" placeholder='กลุ่ม'>
+                                <mat-option *ngFor="let group of groups" [value]="group.detail">
+                                    {{group.detail}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </ng-container>
+                </ng-container>
             </ng-template>
         </div>
         <div class="dialog-footer">
             <div class="butt but-cancel" [ngStyle]="{'display': data.btDisplay1}" (click)="onClose() ">
                 {{data.bottomText1 ? data.bottomText1 : "ปิด"}}</div>
-            <div class="butt but-submit" [ngStyle]="{'display': data.btDisplay2}" appDebounceClick
-                (debounceClick)="onConfirm() ">{{data.bottomText2 ? data.bottomText2 : "ยืนยัน"}}</div>
+
+            <div class=" butt but-submit" [ngClass]="{'disable': !selectedGroup && !selectedProvince}"
+                [ngStyle]="{'display': data.btDisplay2}" appDebounceClick (debounceClick)="onConfirm()">
+                {{data.bottomText2 ?
+                data.bottomText2 : "ยืนยัน"}}
+            </div>
+
         </div>
     </div>
 </div>

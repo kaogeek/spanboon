@@ -274,6 +274,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
         if (!!res.linkAnnounceMent) {
           this.linkAnnounce = res.linkAnnounceMent;
         }
+        this._selectProvince();
         for (let index = 0; index < this.model.postSectionModel.contents.length; index++) {
           if (this.model.postSectionModel.contents[index].post.type === "FULFILLMENT") {
             this.model.postSectionModel.contents.splice(index, 1);
@@ -319,7 +320,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
             if (!!res.linkAnnounceMent || !!res.data.linkAnnounceMent) {
               this.linkAnnounce = res.linkAnnounceMent ? res.linkAnnounceMent : res.data.linkAnnounceMent;
             }
-
+            this._selectProvince();
             const dateFormat = new Date();
             const dateReal = dateFormat.setDate(dateFormat.getDate());
             this.dateValues = new Date(dateReal).toISOString(); // convert to ISO string
@@ -345,9 +346,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     // if (this.isLogin()) {
     //   this.getBottomContent(this.userCloneDatas.id);
     // }
-    if (this.isLogin() && this.hidebar) {
-      this.getProvince();
-    }
+
     this.showLoading = false;
     this.seoService.updateTitle(PLATFORM_NAME_TH);
     let filter: SearchFilter = new SearchFilter();
@@ -367,6 +366,27 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     });
   }
 
+  private _selectProvince() {
+    if (this.isLogin() && this.hidebar && !!this.model) {
+      this._getProvince();
+      let array = [];
+      for (let page of this.pageUser) {
+        if ((!page.province || !page.group) && page.ownerUser) {
+          let data = {
+            id: page.id,
+            name: page.pageUsername ? page.pageUsername : page.name,
+            province: page.province ? true : false,
+            group: page.group ? true : false,
+          }
+          array.push(data);
+        }
+      }
+      if (array.length > 0) {
+        this._getProvince(array);
+      }
+    }
+  }
+
   public async searchPageInUser(userId?) {
     if (userId) {
       let search: SearchFilter = new SearchFilter();
@@ -374,8 +394,8 @@ export class HomePageV3 extends AbstractPage implements OnInit {
       search.count = false;
       search.whereConditions = { ownerUser: userId };
       await this.pageFacade.search(search).then((pages: any) => {
-        this.pageUser = pages
-        this.pageUser.push(this.userCloneDatas)
+        this.pageUser = pages;
+        this.pageUser.push(this.userCloneDatas);
         this.pageUser.reverse();
       }).catch((err: any) => {
         console.log("err", err);
@@ -384,7 +404,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
         for (let p of this.pageUser) {
           if (!p.signURL) {
             await this.assetFacade.getPathFile(p.imageURL).then((res: any) => {
-              p.img64 = res.data
+              p.img64 = res.data;
             }).catch((err: any) => {
               console.log("err", err);
             });
@@ -413,16 +433,26 @@ export class HomePageV3 extends AbstractPage implements OnInit {
       }
     }
 
-  public getProvince() {
-    let pageUser = JSON.parse(localStorage.getItem('pageUser'));
-    if (!pageUser!.province) {
+  private _getProvince(data?) {
+    if (!data) {
+      let pageUser = JSON.parse(localStorage.getItem('pageUser'));
+      if (!pageUser!.province) {
+        let dialog = this.dialog.open(DialogDropdown, {
+          disableClose: true,
+          data: {
+            text: 'กรุณาเลือกจังหวัดของคุณ',
+            pageId: pageUser.id,
+            type: 'USER',
+            isProvince: false,
+            bottomColorText2: "black"
+          }
+        });
+      }
+    } else {
       let dialog = this.dialog.open(DialogDropdown, {
         disableClose: true,
         data: {
-          text: 'กรุณาเลือกจังหวัด',
-          pageId: pageUser.id,
-          type: 'USER',
-          bottomColorText2: "black"
+          data
         }
       });
     }

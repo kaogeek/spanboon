@@ -359,13 +359,13 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   }
 
   public getGroupList() {
-    this.aboutPageFacade.getGroups(this.pageId).then((res) => {
-      if (res) {
-        this.groups = res.data;
-        this.checkGroup();
-        this.checkProvince();
-      }
-    })
+    // this.aboutPageFacade.getGroups().then((res) => {
+    //   if (res) {
+    //     this.groups = res.data;
+    //     this.checkGroup();
+    //     this.checkProvince();
+    //   }
+    // })
   }
 
   public checkGroup() {

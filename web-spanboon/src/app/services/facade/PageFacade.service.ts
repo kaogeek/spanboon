@@ -175,13 +175,13 @@ export class PageFacade extends AbstractFacade {
     });
   }
 
-  public updateProfilePage(pageId: string, data: any): Promise<any> {
+  public updateProfilePage(pageId: string, province?: string, group?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/page/' + pageId;
-      let body: any = {};
-      if (data !== null && data !== undefined) {
-        body = Object.assign(data)
-      }
+      let body: any = {
+        province: province,
+        group: group
+      };
 
       let option = this.authMgr.getDefaultOptions();
       this.http.put(url, body, option).toPromise().then((response: any) => {
