@@ -433,9 +433,20 @@ export class MainPageController {
             {
                 $match: { userId: objIds }
             },
+            {
+                $project:{
+                    postId:1,
+                }
+            }
         ]);
+        const postIds = [];
+        if(findPostIds.length>0){
+            for(let i = 0 ; i <findPostIds.length;i++){
+                postIds.push(findPostIds[i].postId);
+            }
+        }
         if (objIds) {
-            const successResponse = ResponseUtil.getSuccessResponse('Search IsRead Is sucessfully.', findPostIds);
+            const successResponse = ResponseUtil.getSuccessResponse('Search IsRead Is sucessfully.', postIds.flat());
             return res.status(200).send(successResponse);
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Unable Search IsRead.', undefined);
