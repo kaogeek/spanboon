@@ -30,13 +30,11 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                 let userId = undefined;
                 let isReadPostIds = undefined;
                 let startDateTime: Date = undefined;
-                let retrospect: number = undefined;
                 // get startDateTime, endDateTime
                 if (this.data !== undefined && this.data !== null) {
                     userId = this.data.userId;
                     startDateTime = this.data.startDateTime;
                     isReadPostIds = this.data.postIds;
-                    retrospect = this.data.retrospects;
 
                 }
                 const objIds = new ObjectID(userId);
@@ -57,9 +55,6 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                 searchCountFilter.whereConditions = {
                     isClose: false
                 };
-                const dateFormat = new Date(startDateTime);
-                const dateReal = dateFormat.setDate(dateFormat.getDate() - retrospect);
-                const toDate = new Date(dateReal);
                 const postIds = [];
                 if (isReadPostIds.length > 0) {
                     for (let i = 0; i < isReadPostIds.length; i++) {
@@ -109,7 +104,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                                         isDraft: false,
                                                         deleted: false,
                                                         hidden: false,
-                                                        startDateTime: { $lte: startDateTime, $gte: toDate },
+                                                        startDateTime: { $lte: startDateTime },
                                                     }
                                                 },
                                                 {
@@ -205,7 +200,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                                         isDraft: false,
                                                         deleted: false,
                                                         hidden: false,
-                                                        startDateTime: { $lte: startDateTime, $gte: toDate },
+                                                        startDateTime: { $lte: startDateTime },
                                                     }
                                                 },
                                                 {
@@ -297,7 +292,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                                         isDraft: false,
                                                         deleted: false,
                                                         hidden: false,
-                                                        startDateTime: { $lte: startDateTime, $gte: toDate },
+                                                        startDateTime: { $lte: startDateTime },
                                                     }
                                                 },
                                                 {
@@ -392,7 +387,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                                         isDraft: false,
                                                         deleted: false,
                                                         hidden: false,
-                                                        startDateTime: { $lte: startDateTime, $gte: toDate },
+                                                        startDateTime: { $lte: startDateTime },
                                                     }
                                                 },
                                                 {
@@ -497,7 +492,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                                         isDraft: false,
                                                         deleted: false,
                                                         hidden: false,
-                                                        startDateTime: { $lte: startDateTime, $gte: toDate },
+                                                        startDateTime: { $lte: startDateTime },
                                                     }
                                                 },
                                                 {
@@ -589,7 +584,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                                         isDraft: false,
                                                         deleted: false,
                                                         hidden: false,
-                                                        startDateTime: { $lte: startDateTime, $gte: toDate },
+                                                        startDateTime: { $lte: startDateTime },
                                                     }
                                                 },
                                                 {
@@ -677,7 +672,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                                         isDraft: false,
                                                         deleted: false,
                                                         hidden: false,
-                                                        startDateTime: { $lte: startDateTime, $gte: toDate },
+                                                        startDateTime: { $lte: startDateTime },
                                                     }
                                                 },
                                                 {
@@ -768,7 +763,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                                         isDraft: false,
                                                         deleted: false,
                                                         hidden: false,
-                                                        startDateTime: { $lte: startDateTime, $gte: toDate },
+                                                        startDateTime: { $lte: startDateTime },
                                                     }
                                                 },
                                                 {
