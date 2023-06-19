@@ -30,11 +30,14 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                 let userId = undefined;
                 let isReadPostIds = undefined;
                 let startDateTime: Date = undefined;
+                let retrospect: number = undefined;
                 // get startDateTime, endDateTime
                 if (this.data !== undefined && this.data !== null) {
                     userId = this.data.userId;
                     startDateTime = this.data.startDateTime;
                     isReadPostIds = this.data.postIds;
+                    retrospect = this.data.retrospects;
+
                 }
                 const objIds = new ObjectID(userId);
                 const limit = this.DEFAULT_SEARCH_LIMIT;
@@ -55,7 +58,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                     isClose: false
                 };
                 const dateFormat = new Date(startDateTime);
-                const dateReal = dateFormat.setDate(dateFormat.getDate() - 7);
+                const dateReal = dateFormat.setDate(dateFormat.getDate() - retrospect);
                 const toDate = new Date(dateReal);
                 const postIds = [];
                 if (isReadPostIds.length > 0) {

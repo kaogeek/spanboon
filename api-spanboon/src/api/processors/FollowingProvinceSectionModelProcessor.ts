@@ -39,16 +39,16 @@ export class FollowingProvinceSectionModelProcessor extends AbstractSeparateSect
                 let isReadPostIds = undefined;
                 // get startDateTime, endDateTime
                 let startDateTime: Date = undefined;
-
+                let retrospect: number = undefined;
                 if (this.data !== undefined && this.data !== null) {
                     startDateTime = this.data.startDateTime;
                     userId = this.data.userId;
                     isReadPostIds = this.data.postIds;
-
+                    retrospect = this.data.retrospects;
                 }
                 const objIds = new ObjectID(userId);
                 const dateFormat = new Date(startDateTime);
-                const dateReal = dateFormat.setDate(dateFormat.getDate() - 7);
+                const dateReal = dateFormat.setDate(dateFormat.getDate() - 120);
                 const toDate = new Date(dateReal);
                 let limit: number = undefined;
                 let offset: number = undefined;

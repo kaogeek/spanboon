@@ -30,9 +30,11 @@ export class IsReadSectionProcessor extends AbstractSeparateSectionProcessor {
                 let isReadPostIds = undefined;
                 // get startDateTime, endDateTime
                 let startDateTime: Date = undefined;
+                let retrospect: number = undefined;
                 if (this.data !== undefined && this.data !== null) {
                     startDateTime = this.data.startDateTime;
                     isReadPostIds = this.data.postIds;
+                    retrospect = this.data.retrospects;
                 }
                 let limit: number = undefined;
                 let offset: number = undefined;
@@ -66,7 +68,7 @@ export class IsReadSectionProcessor extends AbstractSeparateSectionProcessor {
                     isClose: false
                 };
                 const dateFormat = new Date(startDateTime);
-                const dateReal = dateFormat.setDate(dateFormat.getDate() - 7);
+                const dateReal = dateFormat.setDate(dateFormat.getDate() - retrospect);
                 const toDate = new Date(dateReal);
                 // const today = moment().add(month, 'month').toDate();
                 const postIds = [];
