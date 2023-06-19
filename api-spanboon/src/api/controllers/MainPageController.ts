@@ -126,6 +126,7 @@ export class MainPageController {
         const toDate = new Date(dateReal);
         let content = undefined;
         const userId = req.headers.userid;
+        const isRead = await this.isReadPostService.find({userId:new ObjectID(userId)});
         const mainPageSearchConfig = await this.pageService.searchPageOfficialConfig();
         const searchOfficialOnly = mainPageSearchConfig.searchOfficialOnly;
         const assetTodayDateGap = await this.configService.getConfig(TODAY_DATETIME_GAP);
@@ -405,6 +406,7 @@ export class MainPageController {
         result.kaokaiContent = kaokaiContent;
         result.announcement = announcements;
         result.linkAnnounceMent = linkAnnouncements;
+        result.isRead = isRead;
         content = await this.snapShotToday(result, monthRange[0], monthRange[1], jobscheduler);
         // const noti = await this.pushNotification(result, monthRange[0], monthRange[1]);
         if (date !== undefined && date !== null) {

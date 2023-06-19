@@ -81,7 +81,7 @@ export class FollowingProvinceSectionModelProcessor extends AbstractSeparateSect
                 if (isReadPostIds.length > 0) {
                     for (let i = 0; i < isReadPostIds.length; i++) {
                         if (isReadPostIds[i].postId !== undefined && isReadPostIds[i].postId !== null && isReadPostIds.length > 0) {
-                            postIds.push(isReadPostIds[0].postId.map(id => new ObjectID(id)));
+                            postIds.push(isReadPostIds[i].postId.map(id => new ObjectID(id)));
                         } else {
                             continue;
                         }
