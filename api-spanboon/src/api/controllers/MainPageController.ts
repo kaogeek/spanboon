@@ -126,7 +126,6 @@ export class MainPageController {
         const toDate = new Date(dateReal);
         let content = undefined;
         const userId = req.headers.userid;
-        const isRead = await this.isReadPostService.find({userId:new ObjectID(userId)});
         const mainPageSearchConfig = await this.pageService.searchPageOfficialConfig();
         const searchOfficialOnly = mainPageSearchConfig.searchOfficialOnly;
         const assetTodayDateGap = await this.configService.getConfig(TODAY_DATETIME_GAP);
@@ -406,7 +405,6 @@ export class MainPageController {
         result.kaokaiContent = kaokaiContent;
         result.announcement = announcements;
         result.linkAnnounceMent = linkAnnouncements;
-        result.isRead = isRead;
         content = await this.snapShotToday(result, monthRange[0], monthRange[1], jobscheduler);
         // const noti = await this.pushNotification(result, monthRange[0], monthRange[1]);
         if (date !== undefined && date !== null) {
@@ -427,7 +425,24 @@ export class MainPageController {
             return res.status(400).send(errorResponse);
         }
     }
+    @Get('/user/readed')
+    public async userReaded(@Res() res: any, @Req() req: any): Promise<any> {
+        const userId = req.headers.userid;
+        const objIds = new ObjectID(userId);
+        const findPostIds = await this.isReadPostService.aggregate([
+            {
+                $match: { userId: objIds }
+            },
+        ]);
+        if (objIds) {
+            const successResponse = ResponseUtil.getSuccessResponse('Search IsRead Is sucessfully.', findPostIds);
+            return res.status(200).send(successResponse);
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Unable Search IsRead.', undefined);
+            return res.status(400).send(errorResponse);
+        }
 
+    }
     @Post('/bottom/trend')
     public async mirrorTrends(@QueryParam('limit') limit: number, @QueryParam('offset') offset: number, @QueryParam('isReadPost') isReadPost: boolean, @QueryParam('isFollowings') isFollowings: boolean, @QueryParam('followingProvinces') followingProvinces: boolean, @QueryParam('followingContent') followingContent: boolean, @QueryParam('section') section: string, @QueryParam('date') date: any, @Res() res: any, @Req() req: any): Promise<any> {
         const userId = req.headers.userid;
