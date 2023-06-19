@@ -70,23 +70,24 @@ export class IsReadSectionProcessor extends AbstractSeparateSectionProcessor {
                 const toDate = new Date(dateReal);
                 // const today = moment().add(month, 'month').toDate();
                 const postIds = [];
-                let mapIds = undefined;
                 let postMatchStmt: any = undefined;
                 if (isReadPostIds.length > 0) {
                     for (let i = 0; i < isReadPostIds.length; i++) {
-                        postIds.push(isReadPostIds[i].postId);
+                        if (isReadPostIds[i].postId !== undefined && isReadPostIds[i].postId !== null && isReadPostIds.length > 0) {
+                            postIds.push(new ObjectID(isReadPostIds[i].postId.shift()));
+                        } else {
+                            continue;
+                        }
                     }
                 }
-                if (postIds.length > 0) {
-                    mapIds = postIds.flat().map(id => new ObjectID(id));
-                }
-                if (mapIds !== undefined && mapIds.length > 0) {
+                // console.log('postIds', postIds.flat().map(id => console.log('id',id)));
+                if (postIds !== undefined && postIds.length > 0) {
                     postMatchStmt = {
                         isDraft: false,
                         deleted: false,
                         hidden: false,
                         startDateTime: { $lte: startDateTime, $gte: toDate },
-                        _id: { $nin: mapIds }
+                        _id: { $nin: postIds }
                     };
                 } else {
                     postMatchStmt = {
