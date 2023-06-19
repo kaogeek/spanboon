@@ -128,14 +128,6 @@ export class MainPageController {
         const toDate = new Date(dateReal);
         let content = undefined;
         const userId = req.headers.userid;
-        const objIds = new ObjectID(userId);
-        const isRead = await this.isReadPostService.find({ userId: objIds });
-        const postIds = [];
-        if (userId !== undefined && isRead !== undefined && isRead.length > 0) {
-            for (let i = 0; i < isRead.length; i++) {
-                postIds.push(isRead.postId);
-            }
-        }
         const mainPageSearchConfig = await this.pageService.searchPageOfficialConfig();
         const searchOfficialOnly = mainPageSearchConfig.searchOfficialOnly;
         const assetTodayDateGap = await this.configService.getConfig(TODAY_DATETIME_GAP);
@@ -415,7 +407,6 @@ export class MainPageController {
         result.kaokaiContent = kaokaiContent;
         result.announcement = announcements;
         result.linkAnnounceMent = linkAnnouncements;
-        result.postIds = postIds;
         content = await this.snapShotToday(result, monthRange[0], monthRange[1], jobscheduler);
         // const noti = await this.pushNotification(result, monthRange[0], monthRange[1]);
         if (date !== undefined && date !== null) {
@@ -526,9 +517,6 @@ export class MainPageController {
 
     @Post('/is/read')
     public async isRead(@Body({ validate: true }) data: IsRead, @Res() res: any, @Req() req: any): Promise<any> {
-        const successResponse = ResponseUtil.getSuccessResponse('The content has already been read.', undefined);
-        return res.status(200).send(successResponse);
-        /* 
         const userId = req.headers.userid;
         const objIds = new ObjectID(userId);
         const user = await this.userService.findOne({ _id: objIds });
@@ -597,7 +585,7 @@ export class MainPageController {
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find User.', undefined);
             return res.status(400).send(errorResponse);
-        } */
+        } 
     }
     @Post('/days/check')
     public async daysCheck(@Res() res: any, @Req() req: any): Promise<any> {
