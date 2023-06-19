@@ -39,17 +39,12 @@ export class FollowingProvinceSectionModelProcessor extends AbstractSeparateSect
                 let isReadPostIds = undefined;
                 // get startDateTime, endDateTime
                 let startDateTime: Date = undefined;
-                let retrospect: number = undefined;
                 if (this.data !== undefined && this.data !== null) {
                     startDateTime = this.data.startDateTime;
                     userId = this.data.userId;
                     isReadPostIds = this.data.postIds;
-                    retrospect = this.data.retrospects;
                 }
                 const objIds = new ObjectID(userId);
-                const dateFormat = new Date(startDateTime);
-                const dateReal = dateFormat.setDate(dateFormat.getDate() - 120);
-                const toDate = new Date(dateReal);
                 let limit: number = undefined;
                 let offset: number = undefined;
                 if (this.config !== undefined && this.config !== null) {
@@ -134,7 +129,7 @@ export class FollowingProvinceSectionModelProcessor extends AbstractSeparateSect
                         isDraft: false,
                         deleted: false,
                         hidden: false,
-                        startDateTime: { $lte: startDateTime, $gte: toDate },
+                        startDateTime: { $lte: startDateTime },
                         pageId: { $in: pageId },
                         _id: { $nin: postIds.flat() }
                     };
@@ -143,7 +138,7 @@ export class FollowingProvinceSectionModelProcessor extends AbstractSeparateSect
                         isDraft: false,
                         deleted: false,
                         hidden: false,
-                        startDateTime: { $lte: startDateTime, $gte: toDate },
+                        startDateTime: { $lte: startDateTime },
                         pageId: { $in: pageId },
                     };
                 }

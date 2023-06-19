@@ -81,8 +81,6 @@ import {
     DEFAULT_SWITCH_CASE_SEND_NOTI,
     DEFAULT_SEARCH_CONFIG_VALUE,
     SEARCH_CONFIG_VALUES,
-    DEFAULT_SEND_NOTIFICATION_NEWS,
-    SEND_NOTIFICATION_NEWS,
     DEFAULT_RETROSPECT,
     RETROSPECT
 } from '../../constants/SystemConfig';
@@ -465,7 +463,8 @@ export class MainPageController {
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
             postIds: isRead,
-            retrospects        });
+            retrospects
+        });
 
         isReadSectionProcessor.setConfig({
             searchOfficialOnly
@@ -479,7 +478,7 @@ export class MainPageController {
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
             postIds: isRead,
-            retrospects        });
+        });
 
         followingPostSectionModelProcessor.setConfig({
             searchOfficialOnly
@@ -493,7 +492,7 @@ export class MainPageController {
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
             postIds: isRead,
-            retrospects
+
         });
 
         followingProvinceSectionModelProcessor.setConfig({
