@@ -452,7 +452,6 @@ export class MainPageController {
             const errorResponse = ResponseUtil.getErrorResponse('Unable Search IsRead.', undefined);
             return res.status(400).send(errorResponse);
         }
-
     }
     @Post('/bottom/trend')
     public async mirrorTrends(@QueryParam('limit') limit: number, @QueryParam('offset') offset: number, @QueryParam('isReadPost') isReadPost: boolean, @QueryParam('isFollowings') isFollowings: boolean, @QueryParam('followingProvinces') followingProvinces: boolean, @QueryParam('followingContent') followingContent: boolean, @QueryParam('section') section: string, @QueryParam('date') date: any, @Res() res: any, @Req() req: any): Promise<any> {
@@ -559,6 +558,9 @@ export class MainPageController {
 
     @Post('/is/read')
     public async isRead(@Body({ validate: true }) data: IsRead, @Res() res: any, @Req() req: any): Promise<any> {
+        const successResponse = ResponseUtil.getSuccessResponse('The content has already been read.', undefined);
+        return res.status(200).send(successResponse);
+        /*
         const userId = req.headers.userid;
         const objIds = new ObjectID(userId);
         const user = await this.userService.findOne({ _id: objIds });
@@ -622,6 +624,7 @@ export class MainPageController {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find User.', undefined);
             return res.status(400).send(errorResponse);
         }
+        */
     }
     @Post('/days/check')
     public async daysCheck(@Res() res: any, @Req() req: any): Promise<any> {
