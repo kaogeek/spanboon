@@ -85,7 +85,7 @@ export class IsReadSectionProcessor extends AbstractSeparateSectionProcessor {
                         isDraft: false,
                         deleted: false,
                         hidden: false,
-                        startDateTime: { $lte: startDateTime },
+                        startDateTime: { $lte: startDateTime, $gte: toDate },
                         _id: { $nin: mapIds }
                     };
                 } else {

@@ -485,6 +485,7 @@ export class MainPageController {
         const followingProvinceSectionModelProcessor: FollowingProvinceSectionModelProcessor = new FollowingProvinceSectionModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.userService, this.pageService);
         followingProvinceSectionModelProcessor.setData({
             userId,
+            startDateTime: monthRange[0],
             endDateTime: monthRange[1],
             postIds: isRead,
         });
