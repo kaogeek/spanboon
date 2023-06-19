@@ -38,14 +38,18 @@ export class FollowingProvinceSectionModelProcessor extends AbstractSeparateSect
                 let userId = undefined;
                 let isReadPostIds = undefined;
                 // get startDateTime, endDateTime
-                let endDateTime: Date = undefined;
+                let startDateTime: Date = undefined;
+
                 if (this.data !== undefined && this.data !== null) {
-                    endDateTime = this.data.endDateTime;
+                    startDateTime = this.data.startDateTime;
                     userId = this.data.userId;
                     isReadPostIds = this.data.postIds;
 
                 }
                 const objIds = new ObjectID(userId);
+                const dateFormat = new Date(startDateTime);
+                const dateReal = dateFormat.setDate(dateFormat.getDate() - 7);
+                const toDate = new Date(dateReal);
                 let limit: number = undefined;
                 let offset: number = undefined;
                 if (this.config !== undefined && this.config !== null) {
@@ -85,6 +89,7 @@ export class FollowingProvinceSectionModelProcessor extends AbstractSeparateSect
                         postIds = mapIds;
                     }
                 }
+                
                 // const today = moment().add(month, 'month').toDate();
                 const pageId = [];
                 const userProvince = await this.userService.aggregate(
@@ -128,7 +133,7 @@ export class FollowingProvinceSectionModelProcessor extends AbstractSeparateSect
                         isDraft: false,
                         deleted: false,
                         hidden: false,
-                        startDateTime: { $lte: endDateTime },
+                        startDateTime: { $lte: startDateTime, $gte: toDate },
                         pageId: { $in: pageId },
                         _id: { $nin: postIds }
                     };
@@ -137,7 +142,7 @@ export class FollowingProvinceSectionModelProcessor extends AbstractSeparateSect
                         isDraft: false,
                         deleted: false,
                         hidden: false,
-                        startDateTime: { $lte: endDateTime },
+                        startDateTime: { $lte: startDateTime, $gte: toDate },
                         pageId: { $in: pageId },
                     };
                 }

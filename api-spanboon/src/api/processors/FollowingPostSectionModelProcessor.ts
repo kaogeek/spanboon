@@ -29,11 +29,12 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                 // let searchOfficialOnly: number = undefined;
                 let userId = undefined;
                 let isReadPostIds = undefined;
+                let startDateTime: Date = undefined;
                 // get startDateTime, endDateTime
                 if (this.data !== undefined && this.data !== null) {
                     userId = this.data.userId;
+                    startDateTime = this.data.startDateTime;
                     isReadPostIds = this.data.postIds;
-
                 }
                 const objIds = new ObjectID(userId);
                 const limit = this.DEFAULT_SEARCH_LIMIT;
@@ -53,6 +54,9 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                 searchCountFilter.whereConditions = {
                     isClose: false
                 };
+                const dateFormat = new Date(startDateTime);
+                const dateReal = dateFormat.setDate(dateFormat.getDate() - 7);
+                const toDate = new Date(dateReal);
                 let postIds = undefined;
                 if (isReadPostIds.length > 0) {
                     for (let i = 0; i < isReadPostIds.length; i++) {
@@ -99,6 +103,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                                         isDraft: false,
                                                         deleted: false,
                                                         hidden: false,
+                                                        startDateTime: { $lte: startDateTime, $gte: toDate },
                                                     }
                                                 },
                                                 {
@@ -194,6 +199,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                                         isDraft: false,
                                                         deleted: false,
                                                         hidden: false,
+                                                        startDateTime: { $lte: startDateTime, $gte: toDate },
                                                     }
                                                 },
                                                 {
@@ -285,6 +291,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                                         isDraft: false,
                                                         deleted: false,
                                                         hidden: false,
+                                                        startDateTime: { $lte: startDateTime, $gte: toDate },
                                                     }
                                                 },
                                                 {
@@ -379,6 +386,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                                         isDraft: false,
                                                         deleted: false,
                                                         hidden: false,
+                                                        startDateTime: { $lte: startDateTime, $gte: toDate },
                                                     }
                                                 },
                                                 {
@@ -444,7 +452,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                             }
                         },
                         {
-                            $limit:5
+                            $limit: 5
                         }
                     ]);
                 } else {
@@ -483,6 +491,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                                         isDraft: false,
                                                         deleted: false,
                                                         hidden: false,
+                                                        startDateTime: { $lte: startDateTime, $gte: toDate },
                                                     }
                                                 },
                                                 {
@@ -574,6 +583,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                                         isDraft: false,
                                                         deleted: false,
                                                         hidden: false,
+                                                        startDateTime: { $lte: startDateTime, $gte: toDate },
                                                     }
                                                 },
                                                 {
@@ -661,6 +671,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                                         isDraft: false,
                                                         deleted: false,
                                                         hidden: false,
+                                                        startDateTime: { $lte: startDateTime, $gte: toDate },
                                                     }
                                                 },
                                                 {
@@ -751,6 +762,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                                         isDraft: false,
                                                         deleted: false,
                                                         hidden: false,
+                                                        startDateTime: { $lte: startDateTime, $gte: toDate },
                                                     }
                                                 },
                                                 {
@@ -813,7 +825,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                             }
                         },
                         {
-                            $limit:5
+                            $limit: 5
                         }
                     ]);
                 }

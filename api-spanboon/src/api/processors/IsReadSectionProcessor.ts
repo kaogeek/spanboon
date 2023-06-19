@@ -65,6 +65,9 @@ export class IsReadSectionProcessor extends AbstractSeparateSectionProcessor {
                 searchCountFilter.whereConditions = {
                     isClose: false
                 };
+                const dateFormat = new Date(startDateTime);
+                const dateReal = dateFormat.setDate(dateFormat.getDate() - 7);
+                const toDate = new Date(dateReal);
                 // const today = moment().add(month, 'month').toDate();
                 const postIds = [];
                 let mapIds = undefined;
@@ -82,7 +85,7 @@ export class IsReadSectionProcessor extends AbstractSeparateSectionProcessor {
                         isDraft: false,
                         deleted: false,
                         hidden: false,
-                        startDateTime: { $lte: startDateTime },
+                        startDateTime: { $lte: startDateTime, $gte: toDate },
                         _id: { $nin: mapIds }
                     };
                 } else {
@@ -90,7 +93,7 @@ export class IsReadSectionProcessor extends AbstractSeparateSectionProcessor {
                         isDraft: false,
                         deleted: false,
                         hidden: false,
-                        startDateTime: { $lte: startDateTime },
+                        startDateTime: { $lte: startDateTime, $gte: toDate },
                     };
                 }
                 const postStmt = [
@@ -107,6 +110,9 @@ export class IsReadSectionProcessor extends AbstractSeparateSectionProcessor {
                         }
                     },
                     { $sort: { summationScore: -1 } },
+                    {
+                        '$limit': limit
+                    },
                     {
                         $unwind: {
                             path: '$page',
@@ -154,9 +160,6 @@ export class IsReadSectionProcessor extends AbstractSeparateSectionProcessor {
                         }
 
                     },
-                    {
-                        '$limit': limit
-                    }
                 ];
                 if (searchOfficialOnly) {
                     postStmt.splice(3, 0, { $match: { 'page.isOfficial': true, 'page.banned': false } });
