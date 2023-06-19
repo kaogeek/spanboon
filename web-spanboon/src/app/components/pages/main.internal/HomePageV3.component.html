@@ -980,7 +980,7 @@
     <section class="section-2"
         *ngIf="!showLoading && (model && !!model.majorTrend && model.majorTrend.contents.length !== 0)">
         <div class="container">
-            <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '60px' : '0'}">
+            <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '59px' : '0'}">
                 <div class="wrapper-title">
                     <span>เกาะกระแส</span>
                 </div>
@@ -1007,7 +1007,7 @@
     <section class="section-3"
         *ngIf="!showLoading && (model && !!model.kaokaiProvince && model.kaokaiProvince.contents.length !== 0)">
         <div class="container">
-            <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '60px' : '0'}">
+            <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '59px' : '0'}">
                 <div class="wrapper-title">
                     <span [innerHTML]="model && model.kaokaiProvince.title"></span>
                 </div>
@@ -1035,7 +1035,7 @@
     <section class="section-4"
         *ngIf="!showLoading && (model && !!model.kaokaiHashTag && model.kaokaiHashTag.contents.length !== 0)">
         <div class="container">
-            <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '60px' : '0'}">
+            <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '59px' : '0'}">
                 <div class="wrapper-title">
                     <span [innerHTML]="model && model.kaokaiHashTag.title"></span>
                 </div>
@@ -1063,7 +1063,7 @@
     <section class="section-4"
         *ngIf="!showLoading && (model && !!model.kaokaiContent && model.kaokaiContent.contents.length !== 0)">
         <div class="container">
-            <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '60px' : '0'}">
+            <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '59px' : '0'}">
                 <div class="wrapper-title">
                     <span [innerHTML]="model && model.kaokaiContent.title"></span>
                 </div>
@@ -1091,7 +1091,7 @@
 
     <section class="section-5" *ngIf="hidebar && loadingCount > 0">
         <div class="container">
-            <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '60px' : '0'}" style="
+            <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '59px' : '0'}" style="
             grid-template-columns: 1fr auto 1fr;">
                 <div class="wrapper-title">
                     <hr>
@@ -1107,7 +1107,7 @@
     </section>
     <section class="section-6" *ngIf="hidebar && loadingCount > 0">
         <div class="container">
-            <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '60px' : '0'}">
+            <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '59px' : '0'}">
                 <div class="wrapper-title">
                     <span [innerHTML]="isReadPost.isReadPosts.title"></span>
                 </div>
@@ -1137,7 +1137,7 @@
             <ng-container *ngFor="let owner of isFollowings.isFollowing.contents; let ownerI=index">
                 <div class="container" style="margin-top: 15px"
                     *ngIf="!isEmptyObject(owner.owner) && owner.owner.posts.length > 0 && owner.owner.posts[0].post.deleted !== true">
-                    <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '60px' : '0'}">
+                    <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '59px' : '0'}">
                         <div class="wrapper-title">
                             <span style="margin-right: 10px;" [innerHTML]="isFollowings.isFollowing.title"></span>
                             <ng-container *ngIf="owner.owner.type !== 'EMERGENCY'; else elseEmerName">
@@ -1175,7 +1175,7 @@
     <section class="section-7"
         *ngIf="hidebar && loadingCount >=2 && !!followingProvinces && followingProvinces.followingProvince.contents.length !== 0">
         <div class="container">
-            <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '60px' : '0'}">
+            <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '59px' : '0'}">
                 <div class="wrapper-title">
                     <ng-container
                         *ngIf="followingProvinces.followingProvince.title !== 'ก้าวไกลundefined'; else elseProvince">
@@ -1212,7 +1212,7 @@
     </section>
     <section class="section-8" *ngIf="hidebar && loadingCount === 3 && !!followingContent">
         <div class="container">
-            <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '60px' : '0'}">
+            <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '59px' : '0'}">
                 <div class="wrapper-title">
                     <span [innerHTML]="followingContent.followingContents.title"></span>
                 </div>
