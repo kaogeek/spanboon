@@ -39,16 +39,16 @@ export class FollowingProvinceSectionModelProcessor extends AbstractSeparateSect
                 let isReadPostIds = undefined;
                 // get startDateTime, endDateTime
                 let startDateTime: Date = undefined;
-
+                let retrospect: number = undefined;
                 if (this.data !== undefined && this.data !== null) {
                     startDateTime = this.data.startDateTime;
                     userId = this.data.userId;
                     isReadPostIds = this.data.postIds;
-
+                    retrospect = this.data.retrospects;
                 }
                 const objIds = new ObjectID(userId);
                 const dateFormat = new Date(startDateTime);
-                const dateReal = dateFormat.setDate(dateFormat.getDate() - 7);
+                const dateReal = dateFormat.setDate(dateFormat.getDate() - 120);
                 const toDate = new Date(dateReal);
                 let limit: number = undefined;
                 let offset: number = undefined;
@@ -86,7 +86,7 @@ export class FollowingProvinceSectionModelProcessor extends AbstractSeparateSect
                 if (isReadPostIds.length > 0) {
                     for (let i = 0; i < isReadPostIds.length; i++) {
                         if (isReadPostIds[i].postId !== undefined && isReadPostIds[i].postId !== null && isReadPostIds.length > 0) {
-                            postIds.push(new ObjectID(isReadPostIds[i].postId.shift()));
+                            postIds.push(isReadPostIds[0].postId.map(id => new ObjectID(id)));
                         } else {
                             continue;
                         }
@@ -136,7 +136,7 @@ export class FollowingProvinceSectionModelProcessor extends AbstractSeparateSect
                         hidden: false,
                         startDateTime: { $lte: startDateTime, $gte: toDate },
                         pageId: { $in: pageId },
-                        _id: { $nin: postIds }
+                        _id: { $nin: postIds.flat() }
                     };
                 } else {
                     postMatchStmt = {

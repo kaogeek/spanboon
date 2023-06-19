@@ -30,9 +30,11 @@ export class IsReadSectionProcessor extends AbstractSeparateSectionProcessor {
                 let isReadPostIds = undefined;
                 // get startDateTime, endDateTime
                 let startDateTime: Date = undefined;
+                let retrospect: number = undefined;
                 if (this.data !== undefined && this.data !== null) {
                     startDateTime = this.data.startDateTime;
                     isReadPostIds = this.data.postIds;
+                    retrospect = this.data.retrospects;
                 }
                 let limit: number = undefined;
                 let offset: number = undefined;
@@ -66,7 +68,7 @@ export class IsReadSectionProcessor extends AbstractSeparateSectionProcessor {
                     isClose: false
                 };
                 const dateFormat = new Date(startDateTime);
-                const dateReal = dateFormat.setDate(dateFormat.getDate() - 7);
+                const dateReal = dateFormat.setDate(dateFormat.getDate() - retrospect);
                 const toDate = new Date(dateReal);
                 // const today = moment().add(month, 'month').toDate();
                 const postIds = [];
@@ -74,7 +76,7 @@ export class IsReadSectionProcessor extends AbstractSeparateSectionProcessor {
                 if (isReadPostIds.length > 0) {
                     for (let i = 0; i < isReadPostIds.length; i++) {
                         if (isReadPostIds[i].postId !== undefined && isReadPostIds[i].postId !== null && isReadPostIds.length > 0) {
-                            postIds.push(new ObjectID(isReadPostIds[i].postId.shift()));
+                            postIds.push(isReadPostIds[0].postId.map(id => new ObjectID(id)));
                         } else {
                             continue;
                         }
@@ -87,7 +89,7 @@ export class IsReadSectionProcessor extends AbstractSeparateSectionProcessor {
                         deleted: false,
                         hidden: false,
                         startDateTime: { $lte: startDateTime, $gte: toDate },
-                        _id: { $nin: postIds }
+                        _id: { $nin: postIds.flat() }
                     };
                 } else {
                     postMatchStmt = {

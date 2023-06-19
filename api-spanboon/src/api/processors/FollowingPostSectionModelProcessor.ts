@@ -30,11 +30,14 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                 let userId = undefined;
                 let isReadPostIds = undefined;
                 let startDateTime: Date = undefined;
+                let retrospect: number = undefined;
                 // get startDateTime, endDateTime
                 if (this.data !== undefined && this.data !== null) {
                     userId = this.data.userId;
                     startDateTime = this.data.startDateTime;
                     isReadPostIds = this.data.postIds;
+                    retrospect = this.data.retrospects;
+
                 }
                 const objIds = new ObjectID(userId);
                 const limit = this.DEFAULT_SEARCH_LIMIT;
@@ -55,13 +58,13 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                     isClose: false
                 };
                 const dateFormat = new Date(startDateTime);
-                const dateReal = dateFormat.setDate(dateFormat.getDate() - 7);
+                const dateReal = dateFormat.setDate(dateFormat.getDate() - retrospect);
                 const toDate = new Date(dateReal);
                 const postIds = [];
                 if (isReadPostIds.length > 0) {
                     for (let i = 0; i < isReadPostIds.length; i++) {
                         if (isReadPostIds[i].postId !== undefined && isReadPostIds[i].postId !== null && isReadPostIds.length > 0) {
-                            postIds.push(new ObjectID(isReadPostIds[i].postId.shift()));
+                            postIds.push(isReadPostIds[0].postId.map(id => new ObjectID(id)));
                         } else {
                             continue;
                         }
@@ -102,7 +105,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                                 },
                                                 {
                                                     $match: {
-                                                        _id: { $nin: postIds },
+                                                        _id: { $nin: postIds.flat() },
                                                         isDraft: false,
                                                         deleted: false,
                                                         hidden: false,
