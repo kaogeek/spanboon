@@ -87,6 +87,9 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   public followingProvinces: any;
   public isFollowings: any;
   public isReadPost: any;
+  public readPost: any = [];
+  public readedPost: any = [];
+  public isConfirmTosUa: boolean = false;
 
   maxDate = new Date();
 
@@ -126,6 +129,17 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     this.userSubject = userSubject;
     this.showLoading = true;
     this.observManager = observManager;
+
+    this.observManager.subscribe('tos_ua_check', (result: any) => {
+      if (result === true) {
+        let pageUser = JSON.parse(localStorage.getItem('pageUser'));
+        pageUser.tosVersion = 'v2';
+        pageUser.uaVersion = 'v2';
+        localStorage.setItem('pageUser', JSON.stringify(pageUser));
+        this.isConfirmTosUa = true;
+        this._selectProvince();
+      }
+    });
   }
 
   public ngOnInit(): void {
@@ -138,6 +152,9 @@ export class HomePageV3 extends AbstractPage implements OnInit {
       this.getMainPageModelV3();
       this.searchPageInUser();
     }
+    if (this.isLogin()) {
+      this._getReadPost();
+    }
     this._scrollIsRead();
     this._readHomeContent();
     this.stopIsloading();
@@ -148,6 +165,17 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   }
 
   public ngOnDestroy(): void {
+    this.observManager.complete('tos_ua_check');
+  }
+
+  private _getReadPost() {
+    this.mainPageModelFacade.getReadPost().then((res) => {
+      if (res) {
+        this.readedPost = res;
+      }
+    }).catch((err) => {
+      if (err) { }
+    })
   }
 
   public async saveDate(event: any) {
@@ -261,6 +289,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   public async getMainPageModelV3(userId?) {
     // 1678726800000
     let testDate = JSON.parse(localStorage.getItem('datetime'));
+    let pageUser = JSON.parse(localStorage.getItem('pageUser'));
     if (testDate !== null) {
       this.dateValues = testDate;
     }
@@ -274,7 +303,11 @@ export class HomePageV3 extends AbstractPage implements OnInit {
         if (!!res.linkAnnounceMent) {
           this.linkAnnounce = res.linkAnnounceMent;
         }
-        this._selectProvince();
+        setTimeout(() => {
+          if (!!pageUser.tosVersion && !!pageUser.uaVersion && !this.isConfirmTosUa) {
+            this._selectProvince();
+          }
+        }, 2000);
         for (let index = 0; index < this.model.postSectionModel.contents.length; index++) {
           if (this.model.postSectionModel.contents[index].post.type === "FULFILLMENT") {
             this.model.postSectionModel.contents.splice(index, 1);
@@ -320,7 +353,11 @@ export class HomePageV3 extends AbstractPage implements OnInit {
             if (!!res.linkAnnounceMent || !!res.data.linkAnnounceMent) {
               this.linkAnnounce = res.linkAnnounceMent ? res.linkAnnounceMent : res.data.linkAnnounceMent;
             }
-            this._selectProvince();
+            setTimeout(() => {
+              if (!!pageUser.tosVersion && !!pageUser.uaVersion && !this.isConfirmTosUa) {
+                this._selectProvince();
+              }
+            }, 2000);
             const dateFormat = new Date();
             const dateReal = dateFormat.setDate(dateFormat.getDate());
             this.dateValues = new Date(dateReal).toISOString(); // convert to ISO string
@@ -367,7 +404,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   }
 
   private _selectProvince() {
-    if (this.isLogin() && this.hidebar && !!this.model) {
+    if (this.isLogin() && this.hidebar) {
       this._getProvince();
       let array = [];
       for (let page of this.pageUser) {
@@ -667,7 +704,9 @@ export class HomePageV3 extends AbstractPage implements OnInit {
         if (classCard[index].getBoundingClientRect().top <= winH) {
           const result = this.readContent.filter(res => res === this.listContent[index]);
           if (result.length <= 0) {
-            this.readContent.push(this.listContent[index]);
+            if (this.listContent[index] !== undefined) {
+              this.readContent.push(this.listContent[index]);
+            }
           }
         }
       }
@@ -678,10 +717,34 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     if (this.isLogin()) {
       let userId = this.userCloneDatas.id;
       if (this.readContent.length > 0) {
-        try {
-          await this.mainPageModelFacade.readContent(userId, this.readContent);
-        } catch (error) {
-          console.log("err", error);
+        if (this.readPost.length !== 0) {
+          for (var i = this.readContent.length - 1; i >= 0; i--) {
+            for (var j = 0; j < this.readPost.length; j++) {
+              if (this.readContent[i] === this.readPost[j]) {
+                this.readContent.splice(i, 1);
+              }
+            }
+          }
+          for (var i = this.readContent.length - 1; i >= 0; i--) {
+            for (var j = 0; j < this.readedPost.length; j++) {
+              if (this.readContent[i] === this.readedPost[j]) {
+                this.readContent.splice(i, 1);
+              }
+            }
+          }
+        }
+        if (this.readContent.length > 0) {
+          await this.mainPageModelFacade.readContent(userId, this.readContent).then((res: any) => {
+            if (res) {
+              for (let index = 0; index < res.isReadPost.length; index++) {
+                this.readPost.push(res.isReadPost[index]._id);
+                let array = this.readPost.filter((item, index) => this.readPost.indexOf(item) === index);
+                this.readPost = array;
+              }
+            }
+          }).catch((err) => {
+            if (err) { }
+          });
         }
       }
     }

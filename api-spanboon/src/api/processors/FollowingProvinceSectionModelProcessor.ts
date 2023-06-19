@@ -39,17 +39,12 @@ export class FollowingProvinceSectionModelProcessor extends AbstractSeparateSect
                 let isReadPostIds = undefined;
                 // get startDateTime, endDateTime
                 let startDateTime: Date = undefined;
-
                 if (this.data !== undefined && this.data !== null) {
                     startDateTime = this.data.startDateTime;
                     userId = this.data.userId;
                     isReadPostIds = this.data.postIds;
-
                 }
                 const objIds = new ObjectID(userId);
-                const dateFormat = new Date(startDateTime);
-                const dateReal = dateFormat.setDate(dateFormat.getDate() - 7);
-                const toDate = new Date(dateReal);
                 let limit: number = undefined;
                 let offset: number = undefined;
                 if (this.config !== undefined && this.config !== null) {
@@ -82,15 +77,16 @@ export class FollowingProvinceSectionModelProcessor extends AbstractSeparateSect
                 searchCountFilter.whereConditions = {
                     isClose: false
                 };
-                let postIds = undefined;
+                const postIds = [];
                 if (isReadPostIds.length > 0) {
                     for (let i = 0; i < isReadPostIds.length; i++) {
-                        const mapIds = isReadPostIds[i].postId.map(ids => new ObjectID(ids));
-                        postIds = mapIds;
+                        if (isReadPostIds[i].postId !== undefined && isReadPostIds[i].postId !== null && isReadPostIds.length > 0) {
+                            postIds.push(isReadPostIds[i].postId.map(id => new ObjectID(id)));
+                        } else {
+                            continue;
+                        }
                     }
                 }
-                
-                // const today = moment().add(month, 'month').toDate();
                 const pageId = [];
                 const userProvince = await this.userService.aggregate(
                     [
@@ -133,16 +129,16 @@ export class FollowingProvinceSectionModelProcessor extends AbstractSeparateSect
                         isDraft: false,
                         deleted: false,
                         hidden: false,
-                        startDateTime: { $lte: startDateTime, $gte: toDate },
+                        startDateTime: { $lte: startDateTime },
                         pageId: { $in: pageId },
-                        _id: { $nin: postIds }
+                        _id: { $nin: postIds.flat() }
                     };
                 } else {
                     postMatchStmt = {
                         isDraft: false,
                         deleted: false,
                         hidden: false,
-                        startDateTime: { $lte: startDateTime, $gte: toDate },
+                        startDateTime: { $lte: startDateTime },
                         pageId: { $in: pageId },
                     };
                 }

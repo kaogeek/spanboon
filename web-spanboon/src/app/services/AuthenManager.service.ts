@@ -56,6 +56,7 @@ export class AuthenManager {
     this.routeActivated = routeActivated;
     // create obsvr subject
     this.observManager.createSubject(REGISTERED_SUBJECT);
+    this.observManager.createSubject('tos_ua_check');
   }
 
   public myBrowser() {
@@ -666,6 +667,7 @@ export class AuthenManager {
     if (!!tos && !!plc) {
       this.UserUA(tos, plc, date).then((res) => {
         if (res) {
+          this.observManager.publish('tos_ua_check', true);
         }
       }).catch((err) => {
         if (err) {

@@ -17,6 +17,10 @@
         transition: 0.3s;
         overflow: hidden;
 
+        @media (max-width: $small) {
+            width: 100%;
+        }
+
         >.edit-h {
             width: auto;
             height: 20pt;
@@ -115,6 +119,17 @@
             justify-content: flex-end;
             align-items: center;
             overflow: hidden;
+
+            >span {
+                color: gray;
+                font-size: x-large;
+                line-height: 16px;
+                margin-right: 8px;
+
+                &.select {
+                    color: $brandcolor2;
+                }
+            }
 
             >.butt {
                 width: 20%;

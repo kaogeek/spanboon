@@ -81,8 +81,6 @@ import {
     DEFAULT_SWITCH_CASE_SEND_NOTI,
     DEFAULT_SEARCH_CONFIG_VALUE,
     SEARCH_CONFIG_VALUES,
-    DEFAULT_SEND_NOTIFICATION_NEWS,
-    SEND_NOTIFICATION_NEWS,
     DEFAULT_RETROSPECT,
     RETROSPECT
 } from '../../constants/SystemConfig';
@@ -128,14 +126,6 @@ export class MainPageController {
         const toDate = new Date(dateReal);
         let content = undefined;
         const userId = req.headers.userid;
-        const objIds = new ObjectID(userId);
-        const isRead = await this.isReadPostService.find({ userId: objIds });
-        const postIds = [];
-        if (userId !== undefined && isRead !== undefined && isRead.length > 0) {
-            for (let i = 0; i < isRead.length; i++) {
-                postIds.push(isRead.postId);
-            }
-        }
         const mainPageSearchConfig = await this.pageService.searchPageOfficialConfig();
         const searchOfficialOnly = mainPageSearchConfig.searchOfficialOnly;
         const assetTodayDateGap = await this.configService.getConfig(TODAY_DATETIME_GAP);
@@ -415,7 +405,6 @@ export class MainPageController {
         result.kaokaiContent = kaokaiContent;
         result.announcement = announcements;
         result.linkAnnounceMent = linkAnnouncements;
-        result.postIds = postIds;
         content = await this.snapShotToday(result, monthRange[0], monthRange[1], jobscheduler);
         // const noti = await this.pushNotification(result, monthRange[0], monthRange[1]);
         if (date !== undefined && date !== null) {
@@ -436,12 +425,54 @@ export class MainPageController {
             return res.status(400).send(errorResponse);
         }
     }
+    @Get('/user/readed')
+    public async userReaded(@Res() res: any, @Req() req: any): Promise<any> {
+        const userId = req.headers.userid;
+        const objIds = new ObjectID(userId);
+        const findPostIds = await this.isReadPostService.aggregate([
+            {
+                $match: { userId: objIds }
+            },
+            {
+                $project:{
+                    postId:1,
+                }
+            }
+        ]);
+        const postIds = [];
+        if(findPostIds.length>0){
+            for(let i = 0 ; i <findPostIds.length;i++){
+                postIds.push(findPostIds[i].postId);
+            }
+        }
+        if (objIds) {
+            const successResponse = ResponseUtil.getSuccessResponse('Search IsRead Is sucessfully.', postIds.flat());
+            return res.status(200).send(successResponse);
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Unable Search IsRead.', undefined);
+            return res.status(400).send(errorResponse);
+        }
 
+    }
     @Post('/bottom/trend')
     public async mirrorTrends(@QueryParam('limit') limit: number, @QueryParam('offset') offset: number, @QueryParam('isReadPost') isReadPost: boolean, @QueryParam('isFollowings') isFollowings: boolean, @QueryParam('followingProvinces') followingProvinces: boolean, @QueryParam('followingContent') followingContent: boolean, @QueryParam('section') section: string, @QueryParam('date') date: any, @Res() res: any, @Req() req: any): Promise<any> {
         const userId = req.headers.userid;
         const objIds = new ObjectID(userId);
-        const isRead = await this.isReadPostService.find({ userId: objIds });
+        const isRead = await this.isReadPostService.aggregate(
+            [
+                {
+                    $match: {
+                        userId: objIds
+                    }
+                },
+                {
+                    $unwind: {
+                        path: '$IsReadPost',
+                        preserveNullAndEmptyArrays: true
+                    }
+                },
+            ]
+        );
         const configRetrospect = await this.configService.getConfig(RETROSPECT);
         let retrospects = DEFAULT_RETROSPECT;
         if (configRetrospect) {
@@ -460,6 +491,7 @@ export class MainPageController {
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
             postIds: isRead,
+            retrospects
         });
 
         isReadSectionProcessor.setConfig({
@@ -488,6 +520,7 @@ export class MainPageController {
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
             postIds: isRead,
+
         });
 
         followingProvinceSectionModelProcessor.setConfig({
@@ -526,21 +559,12 @@ export class MainPageController {
 
     @Post('/is/read')
     public async isRead(@Body({ validate: true }) data: IsRead, @Res() res: any, @Req() req: any): Promise<any> {
-        const successResponse = ResponseUtil.getSuccessResponse('The content has already been read.', undefined);
-        return res.status(200).send(successResponse);
-        /* 
         const userId = req.headers.userid;
         const objIds = new ObjectID(userId);
         const user = await this.userService.findOne({ _id: objIds });
         const findPostIds = await this.isReadPostService.aggregate([
             {
                 $match: { userId: objIds }
-            },
-            {
-                $unwind: {
-                    path: '$user',
-                    preserveNullAndEmptyArrays: true
-                }
             },
         ]);
         // check is read
@@ -597,7 +621,7 @@ export class MainPageController {
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find User.', undefined);
             return res.status(400).send(errorResponse);
-        } */
+        }
     }
     @Post('/days/check')
     public async daysCheck(@Res() res: any, @Req() req: any): Promise<any> {
@@ -2016,20 +2040,11 @@ export class MainPageController {
 
     @Get('/notification/news')
     public async notificationNews(@Res() res: any, @Req() req: any): Promise<any> {
-        let query = undefined;
-        let update = undefined;
-        let updated = undefined;
         const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 1);
-        const sendNotiNewsLimit = await this.configService.getConfig(SEND_NOTIFICATION_NEWS);
-        let limitSends = DEFAULT_SEND_NOTIFICATION_NEWS;
-        if (sendNotiNewsLimit) {
-            limitSends = parseInt(sendNotiNewsLimit.value, 10);
-        }
-        const fireBaseToken = [];
         const notiNews = await this.notificationNewsService.aggregate
             ([
                 {
-                    $match: { startDateTime: monthRange[1], finish: false, status: true }
+                    $match: { startDateTime: monthRange[1], finish: true, status: true }
                 },
                 {
                     $sort: { startDateTime: -1 }
@@ -2039,98 +2054,8 @@ export class MainPageController {
                 }
             ]);
         if (notiNews) {
-            const deviceToken = await this.deviceTokenService.aggregate(
-                [
-                    {
-                        $match: {
-                            token: { $ne: null, $nin: notiNews[0].tokenFCM }
-                        }
-                    },
-                    {
-                        $lookup: {
-                            from: 'User',
-                            localField: 'userId',
-                            foreignField: '_id',
-                            as: 'User'
-                        }
-                    },
-                    {
-                        $unwind: {
-                            path: '$User',
-                            preserveNullAndEmptyArrays: true
-                        }
-                    }
-                ]
-            );
-            if (deviceToken.length > 0) {
-                for (let j = 0; j < deviceToken.length; j++) {
-                    if (deviceToken[0].User.subscribeNoti === true && deviceToken[0].User !== undefined && deviceToken[j].token !== undefined && deviceToken[j].token !== null && deviceToken[j].token !== '') {
-                        fireBaseToken.push(deviceToken[j].token);
-                    } else {
-                        continue;
-                    }
-                }
-            }
-            if (fireBaseToken.length > 0) {
-                let number = undefined;
-                const stackTokenFCM = [];
-                const token = fireBaseToken.filter((element, index) => {
-                    return fireBaseToken.indexOf(element) === index;
-                });
-                if (token.length > 0) {
-                    for (let z = 0; z < token.length; z++) {
-                        if (token[z] !== undefined && z <= limitSends) {
-                            number = z;
-                            stackTokenFCM.push(token[z]);
-                            await this.notificationService.pushNotificationMessage(notiNews[0].data, token[z], monthRange[1]);
-                        } else {
-                            continue;
-                        }
-                    }
-                    if (parseInt(number, 10) === limitSends) {
-                        const mergeArray = notiNews[0].tokenFCM.concat(stackTokenFCM);
-                        query = { _id: new ObjectID(notiNews[0]._id) };
-                        update = {
-                            $set: {
-                                tokenFCM: mergeArray,
-                                send: number + notiNews[0].tokenFCM.length,
-                                finish: false,
-                                status: true
-                            }
-                        };
-                        updated = await this.notificationNewsService.update(query, update);
-                        if (updated) {
-                            return res.status(200).send(ResponseUtil.getSuccessResponse('Update is Successfully.', false));
-                        }
-                    } else {
-                        const mergeArray = notiNews[0].tokenFCM.concat(stackTokenFCM);
-                        query = { _id: new ObjectID(notiNews[0]._id) };
-                        update = {
-                            $set: {
-                                tokenFCM: mergeArray,
-                                send: token.length + notiNews[0].tokenFCM.length,
-                                finish: false
-                            }
-                        };
-                        updated = await this.notificationNewsService.update(query, update);
-                        if (updated) {
-                            return res.status(200).send(ResponseUtil.getSuccessResponse('Update is Successfully.', false));
-                        }
-                    }
-                }
-            } else {
-                query = { _id: new ObjectID(notiNews[0]._id) };
-                update = {
-                    $set: {
-                        finish: true,
-                        status: false
-                    }
-                };
-                updated = await this.notificationNewsService.update(query, update);
-                if (updated) {
-                    return res.status(200).send(ResponseUtil.getSuccessResponse('Search Success', true));
-                }
-            }
+            const successResponse = ResponseUtil.getSuccessResponse('Search Success', notiNews);
+            return res.status(200).send(successResponse);
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Search Error cannot find noti news', undefined);
             return res.status(400).send(errorResponse);
@@ -2267,6 +2192,7 @@ export class MainPageController {
                         }
                     }
                 }
+                let number = undefined;
                 if (fireBaseToken.length > 0) {
                     const token = fireBaseToken.filter((element, index) => {
                         return fireBaseToken.indexOf(element) === index;
@@ -2274,12 +2200,26 @@ export class MainPageController {
                     if (token.length > 0) {
                         for (let z = 0; z < token.length; z++) {
                             if (token[z] !== undefined) {
+                                number = z;
                                 await this.notificationService.pushNotificationMessage(snapshot.data, token[z], endDateTimeToday);
                             } else {
                                 continue;
                             }
                         }
-
+                        await this.notificationNewsService.create(
+                            {
+                                kaokaiTodaySnapShotId: snapshot.id,
+                                data: snapshot.data,
+                                tokenFCM: undefined,
+                                startDateTime: endDateTimeToday,
+                                endDateTime: endDateTimeToday,
+                                total: token.length,
+                                send: number + 1,
+                                finish: true,
+                                type: 'notification_news',
+                                status: true
+                            }
+                        );
                     }
                 }
             } else {
@@ -2315,6 +2255,7 @@ export class MainPageController {
                         }
                     }
                 }
+                let number = undefined;
                 if (fireBaseToken.length > 0) {
                     const token = fireBaseToken.filter((element, index) => {
                         return fireBaseToken.indexOf(element) === index;
@@ -2322,11 +2263,26 @@ export class MainPageController {
                     if (token.length > 0 && snapshot) {
                         for (let z = 0; z < token.length; z++) {
                             if (token[z] !== undefined) {
+                                number = z;
                                 await this.notificationService.pushNotificationMessage(snapshot.data, token[z], endDateTimeToday);
                             } else {
                                 continue;
                             }
                         }
+                        await this.notificationNewsService.create(
+                            {
+                                kaokaiTodaySnapShotId: snapshot.id,
+                                data: snapshot.data,
+                                tokenFCM: undefined,
+                                startDateTime: endDateTimeToday,
+                                endDateTime: endDateTimeToday,
+                                total: token.length,
+                                send: number + 1,
+                                finish: true,
+                                type: 'notification_news',
+                                status: true
+                            }
+                        );
                     }
                 }
             }
