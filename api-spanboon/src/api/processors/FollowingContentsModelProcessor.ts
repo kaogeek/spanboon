@@ -56,11 +56,14 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                 searchCountFilter.whereConditions = {
                     isClose: false
                 };
-                let postIds = undefined;
+                const postIds = [];
                 if (isReadPostIds.length > 0) {
                     for (let i = 0; i < isReadPostIds.length; i++) {
-                        const mapIds = isReadPostIds[i].postId.map(ids => new ObjectID(ids));
-                        postIds = mapIds;
+                        if (isReadPostIds[i].postId !== undefined && isReadPostIds[i].postId !== null && isReadPostIds.length > 0) {
+                            postIds.push(new ObjectID(isReadPostIds[i].postId.shift()));
+                        } else {
+                            continue;
+                        }
                     }
                 }
 

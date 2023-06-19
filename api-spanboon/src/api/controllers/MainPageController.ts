@@ -432,13 +432,26 @@ export class MainPageController {
     public async mirrorTrends(@QueryParam('limit') limit: number, @QueryParam('offset') offset: number, @QueryParam('isReadPost') isReadPost: boolean, @QueryParam('isFollowings') isFollowings: boolean, @QueryParam('followingProvinces') followingProvinces: boolean, @QueryParam('followingContent') followingContent: boolean, @QueryParam('section') section: string, @QueryParam('date') date: any, @Res() res: any, @Req() req: any): Promise<any> {
         const userId = req.headers.userid;
         const objIds = new ObjectID(userId);
-        const isRead = await this.isReadPostService.find({ userId: objIds });
+        const isRead = await this.isReadPostService.aggregate(
+            [
+                {
+                    $match:{
+                        userId: objIds 
+                    }
+                },
+                {
+                    $unwind: {
+                        path: '$IsReadPost',
+                        preserveNullAndEmptyArrays: true
+                    }
+                },
+            ]
+        );
         const configRetrospect = await this.configService.getConfig(RETROSPECT);
         let retrospects = DEFAULT_RETROSPECT;
         if (configRetrospect) {
             retrospects = parseInt(configRetrospect.value, 10);
         }
-        console.log('isRead',isRead);
         const mainPageSearchConfig = await this.pageService.searchPageOfficialConfig();
         const searchOfficialOnly = mainPageSearchConfig.searchOfficialOnly;
         const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), retrospects);
