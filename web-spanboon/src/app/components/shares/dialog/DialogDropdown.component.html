@@ -74,6 +74,10 @@
             </ng-template>
         </div>
         <div class="dialog-footer">
+            <ng-container *ngFor="let item of page; let i=index">
+                <span class="point-page" [ngClass]="{'select': i === nextPage}">●</span>
+            </ng-container>
+
             <div class="butt but-cancel" [ngStyle]="{'display': data.btDisplay1}" (click)="onClose() ">
                 {{data.bottomText1 ? data.bottomText1 : "ปิด"}}</div>
 

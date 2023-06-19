@@ -120,6 +120,17 @@
             align-items: center;
             overflow: hidden;
 
+            >span {
+                color: gray;
+                font-size: x-large;
+                line-height: 16px;
+                margin-right: 8px;
+
+                &.select {
+                    color: $brandcolor2;
+                }
+            }
+
             >.butt {
                 width: 20%;
                 border-radius: 5px;

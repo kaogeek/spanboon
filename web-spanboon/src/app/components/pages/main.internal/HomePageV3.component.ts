@@ -88,6 +88,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   public isFollowings: any;
   public isReadPost: any;
   public readPost: any = [];
+  public readedPost: any = [];
   public isConfirmTosUa: boolean = false;
 
   maxDate = new Date();
@@ -151,6 +152,9 @@ export class HomePageV3 extends AbstractPage implements OnInit {
       this.getMainPageModelV3();
       this.searchPageInUser();
     }
+    if (this.isLogin()) {
+      this._getReadPost();
+    }
     this._scrollIsRead();
     this._readHomeContent();
     this.stopIsloading();
@@ -162,6 +166,16 @@ export class HomePageV3 extends AbstractPage implements OnInit {
 
   public ngOnDestroy(): void {
     this.observManager.complete('tos_ua_check');
+  }
+
+  private _getReadPost() {
+    this.mainPageModelFacade.getReadPost().then((res) => {
+      if (res) {
+        this.readedPost = res;
+      }
+    }).catch((err) => {
+      if (err) { }
+    })
   }
 
   public async saveDate(event: any) {
@@ -289,9 +303,11 @@ export class HomePageV3 extends AbstractPage implements OnInit {
         if (!!res.linkAnnounceMent) {
           this.linkAnnounce = res.linkAnnounceMent;
         }
-        if (!!pageUser.tosVersion && !!pageUser.uaVersion && this.isConfirmTosUa === false) {
-          this._selectProvince();
-        }
+        setTimeout(() => {
+          if (!!pageUser.tosVersion && !!pageUser.uaVersion && !this.isConfirmTosUa) {
+            this._selectProvince();
+          }
+        }, 2000);
         for (let index = 0; index < this.model.postSectionModel.contents.length; index++) {
           if (this.model.postSectionModel.contents[index].post.type === "FULFILLMENT") {
             this.model.postSectionModel.contents.splice(index, 1);
@@ -337,9 +353,11 @@ export class HomePageV3 extends AbstractPage implements OnInit {
             if (!!res.linkAnnounceMent || !!res.data.linkAnnounceMent) {
               this.linkAnnounce = res.linkAnnounceMent ? res.linkAnnounceMent : res.data.linkAnnounceMent;
             }
-            if (!!pageUser.tosVersion && !!pageUser.uaVersion && this.isConfirmTosUa === false) {
-              this._selectProvince();
-            }
+            setTimeout(() => {
+              if (!!pageUser.tosVersion && !!pageUser.uaVersion && !this.isConfirmTosUa) {
+                this._selectProvince();
+              }
+            }, 2000);
             const dateFormat = new Date();
             const dateReal = dateFormat.setDate(dateFormat.getDate());
             this.dateValues = new Date(dateReal).toISOString(); // convert to ISO string
@@ -652,7 +670,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   }
 
   @HostListener('window:scroll', ['$event'])
-  @debounce(1200)
+  @debounce(1000)
   scroll(event) {
     this._readHomeContent();
     window.addEventListener('scroll', (event) => {
@@ -707,17 +725,22 @@ export class HomePageV3 extends AbstractPage implements OnInit {
               }
             }
           }
+          for (var i = this.readContent.length - 1; i >= 0; i--) {
+            for (var j = 0; j < this.readedPost.length; j++) {
+              if (this.readContent[i] === this.readedPost[j]) {
+                this.readContent.splice(i, 1);
+              }
+            }
+          }
         }
         if (this.readContent.length > 0) {
           await this.mainPageModelFacade.readContent(userId, this.readContent).then((res: any) => {
             if (res) {
-              console.log("res", res)
               for (let index = 0; index < res.isReadPost.length; index++) {
                 this.readPost.push(res.isReadPost[index]._id);
                 let array = this.readPost.filter((item, index) => this.readPost.indexOf(item) === index);
                 this.readPost = array;
               }
-              console.log("readPost", this.readPost)
             }
           }).catch((err) => {
             if (err) { }

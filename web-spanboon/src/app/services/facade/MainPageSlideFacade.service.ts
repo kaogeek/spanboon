@@ -141,6 +141,19 @@ export class MainPageSlideFacade extends AbstractFacade {
     });
   }
 
+  public getReadPost(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/main/user/readed';
+      let options = this.authMgr.getDefaultOptions();
+
+      this.http.get(url, options).toPromise().then((response: any) => {
+        resolve(response.data);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
   // search obj pattern
   /*
   * {
