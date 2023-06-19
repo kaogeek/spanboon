@@ -698,22 +698,30 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   private async _readHomeContent() {
     if (this.isLogin()) {
       let userId = this.userCloneDatas.id;
-      if (this.readPost.length !== 0 && this.readContent.length !== 0) {
-        var array = this.readContent.concat(this.readPost.filter((item) => this.readContent.indexOf(item) < 0));
-        this.readContent = array;
-      }
       if (this.readContent.length > 0) {
-        // this.listContent = array;
-        try {
-          await this.mainPageModelFacade.readContent(userId, this.readContent);
-          if (this.readContent.length > 0) {
-            for (let post of this.readContent) {
-              this.readPost.push(post)
+        if (this.readPost.length !== 0) {
+          for (var i = this.readContent.length - 1; i >= 0; i--) {
+            for (var j = 0; j < this.readPost.length; j++) {
+              if (this.readContent[i] === this.readPost[j]) {
+                this.readContent.splice(i, 1);
+              }
             }
-            this.readContent = [];
           }
-        } catch (error) {
-          console.log("err", error);
+        }
+        if (this.readContent.length > 0) {
+          await this.mainPageModelFacade.readContent(userId, this.readContent).then((res: any) => {
+            if (res) {
+              console.log("res", res)
+              for (let index = 0; index < res.isReadPost.length; index++) {
+                this.readPost.push(res.isReadPost[index]._id);
+                let array = this.readPost.filter((item, index) => this.readPost.indexOf(item) === index);
+                this.readPost = array;
+              }
+              console.log("readPost", this.readPost)
+            }
+          }).catch((err) => {
+            if (err) { }
+          });
         }
       }
     }
