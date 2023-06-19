@@ -2109,6 +2109,11 @@ export class GuestController {
     }
     @Post('/guest/users')
     public async guestUsers(@Body({ validate: true }) firebaseGuestUser: FirebaseGuestUser, @Res() res: any, @Req() req: any): Promise<any> {
+        const checkTokenFcm = await this.deviceToken.find({ token: firebaseGuestUser.token });
+        if (checkTokenFcm.length > 0) {
+            const errorResponse = ResponseUtil.getErrorResponse('Token already exist.', undefined);
+            return res.status(400).send(errorResponse);
+        }
         const result: DeviceToken = new DeviceToken();
         result.DeviceName = firebaseGuestUser.deviceName;
         result.Tokens = firebaseGuestUser.token;

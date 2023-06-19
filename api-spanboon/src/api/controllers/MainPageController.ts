@@ -525,6 +525,9 @@ export class MainPageController {
 
     @Post('/is/read')
     public async isRead(@Body({ validate: true }) data: IsRead, @Res() res: any, @Req() req: any): Promise<any> {
+        const successResponse = ResponseUtil.getSuccessResponse('The content has already been read.', undefined);
+        return res.status(200).send(successResponse);
+        /* 
         const userId = req.headers.userid;
         const objIds = new ObjectID(userId);
         const user = await this.userService.findOne({ _id: objIds });
@@ -593,7 +596,7 @@ export class MainPageController {
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find User.', undefined);
             return res.status(400).send(errorResponse);
-        }
+        } */
     }
     @Post('/days/check')
     public async daysCheck(@Res() res: any, @Req() req: any): Promise<any> {
