@@ -69,6 +69,7 @@ export class IsReadSectionProcessor extends AbstractSeparateSectionProcessor {
                 const dateReal = dateFormat.setDate(dateFormat.getDate() - 7);
                 const toDate = new Date(dateReal);
                 // const today = moment().add(month, 'month').toDate();
+                console.log('isReadPostIds', isReadPostIds);
                 const postIds = [];
                 let mapIds = undefined;
                 let postMatchStmt: any = undefined;

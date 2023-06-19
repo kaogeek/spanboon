@@ -438,6 +438,7 @@ export class MainPageController {
         if (configRetrospect) {
             retrospects = parseInt(configRetrospect.value, 10);
         }
+        console.log('isRead',isRead);
         const mainPageSearchConfig = await this.pageService.searchPageOfficialConfig();
         const searchOfficialOnly = mainPageSearchConfig.searchOfficialOnly;
         const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), retrospects);
