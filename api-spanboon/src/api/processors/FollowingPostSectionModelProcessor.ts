@@ -61,7 +61,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                 if (isReadPostIds.length > 0) {
                     for (let i = 0; i < isReadPostIds.length; i++) {
                         if (isReadPostIds[i].postId !== undefined && isReadPostIds[i].postId !== null && isReadPostIds.length > 0) {
-                            postIds.push(new ObjectID(isReadPostIds[i].postId.shift()));
+                            postIds.push(isReadPostIds[0].postId.map(id => new ObjectID(id)));
                         } else {
                             continue;
                         }
@@ -102,7 +102,7 @@ export class FollowingPostSectionModelProcessor extends AbstractSeparateSectionP
                                                 },
                                                 {
                                                     $match: {
-                                                        _id: { $nin: postIds },
+                                                        _id: { $nin: postIds.flat() },
                                                         isDraft: false,
                                                         deleted: false,
                                                         hidden: false,

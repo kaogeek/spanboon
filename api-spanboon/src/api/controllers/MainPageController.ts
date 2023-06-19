@@ -538,12 +538,6 @@ export class MainPageController {
             {
                 $match: { userId: objIds }
             },
-            {
-                $unwind: {
-                    path: '$user',
-                    preserveNullAndEmptyArrays: true
-                }
-            },
         ]);
         // check is read
         if (user) {
