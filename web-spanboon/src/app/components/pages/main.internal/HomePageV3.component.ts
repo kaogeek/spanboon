@@ -289,7 +289,6 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   public async getMainPageModelV3(userId?) {
     // 1678726800000
     let testDate = JSON.parse(localStorage.getItem('datetime'));
-    let pageUser = JSON.parse(localStorage.getItem('pageUser'));
     if (testDate !== null) {
       this.dateValues = testDate;
     }
@@ -303,11 +302,9 @@ export class HomePageV3 extends AbstractPage implements OnInit {
         if (!!res.linkAnnounceMent) {
           this.linkAnnounce = res.linkAnnounceMent;
         }
-        setTimeout(() => {
-          if (!!pageUser.tosVersion && !!pageUser.uaVersion && !this.isConfirmTosUa) {
-            this._selectProvince();
-          }
-        }, 2000);
+        if (!this.isConfirmTosUa) {
+          this._selectProvince();
+        }
         for (let index = 0; index < this.model.postSectionModel.contents.length; index++) {
           if (this.model.postSectionModel.contents[index].post.type === "FULFILLMENT") {
             this.model.postSectionModel.contents.splice(index, 1);
@@ -353,11 +350,9 @@ export class HomePageV3 extends AbstractPage implements OnInit {
             if (!!res.linkAnnounceMent || !!res.data.linkAnnounceMent) {
               this.linkAnnounce = res.linkAnnounceMent ? res.linkAnnounceMent : res.data.linkAnnounceMent;
             }
-            setTimeout(() => {
-              if (!!pageUser.tosVersion && !!pageUser.uaVersion && !this.isConfirmTosUa) {
-                this._selectProvince();
-              }
-            }, 2000);
+            if (!this.isConfirmTosUa) {
+              this._selectProvince();
+            }
             const dateFormat = new Date();
             const dateReal = dateFormat.setDate(dateFormat.getDate());
             this.dateValues = new Date(dateReal).toISOString(); // convert to ISO string
@@ -404,22 +399,42 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   }
 
   private _selectProvince() {
+    let pageUser = JSON.parse(localStorage.getItem('pageUser'));
     if (this.isLogin() && this.hidebar) {
-      this._getProvince();
-      let array = [];
-      for (let page of this.pageUser) {
-        if ((!page.province || !page.group) && page.ownerUser) {
-          let data = {
-            id: page.id,
-            name: page.pageUsername ? page.pageUsername : page.name,
-            province: page.province ? true : false,
-            group: page.group ? true : false,
+      if (!!pageUser.tosVersion && !!pageUser.uaVersion && !this.isConfirmTosUa) {
+        this._getProvince();
+        let array = [];
+        for (let page of this.pageUser) {
+          if ((!page.province || !page.group) && page.ownerUser) {
+            let data = {
+              id: page.id,
+              name: page.pageUsername ? page.pageUsername : page.name,
+              province: page.province ? true : false,
+              group: page.group ? true : false,
+            }
+            array.push(data);
           }
-          array.push(data);
         }
-      }
-      if (array.length > 0) {
-        this._getProvince(array);
+        if (array.length > 0) {
+          this._getProvince(array);
+        }
+      } else if (this.isConfirmTosUa) {
+        this._getProvince();
+        let array = [];
+        for (let page of this.pageUser) {
+          if ((!page.province || !page.group) && page.ownerUser) {
+            let data = {
+              id: page.id,
+              name: page.pageUsername ? page.pageUsername : page.name,
+              province: page.province ? true : false,
+              group: page.group ? true : false,
+            }
+            array.push(data);
+          }
+        }
+        if (array.length > 0) {
+          this._getProvince(array);
+        }
       }
     }
   }
