@@ -124,6 +124,10 @@ export class DialogDropdown {
         }
     }
 
+    public changePage(index) {
+        this.nextPage = index;
+    }
+
     public selectProv($event) {
         this.selectedProvince = $event.value;
     }
