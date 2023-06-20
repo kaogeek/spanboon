@@ -14,5 +14,5 @@ export class IsRead {
     public userId: ObjectID;
     public postId: any;
     public isRead: boolean;
-
+    public createdDate: Date;
 }

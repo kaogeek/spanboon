@@ -45,4 +45,7 @@ export class IsReadPostService {
     public async aggregate(query: any, options?: any): Promise<any[]> {
         return await this.isReadPostRepository.aggregate(query, options).toArray();
     }
+    public async findOneAndUpdate(query: any, update: any, options?: any): Promise<any> {
+        return await this.isReadPostRepository.findOneAndUpdate(query, update, options);
+    }
 }

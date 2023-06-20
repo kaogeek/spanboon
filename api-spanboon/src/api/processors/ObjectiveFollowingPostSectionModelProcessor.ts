@@ -10,9 +10,10 @@ import { SectionModel } from '../models/SectionModel';
 import { SearchFilter } from '../controllers/requests/SearchFilterRequest';
 import { S3Service } from '../services/S3Service';
 import { UserFollowService } from '../services/UserFollowService';
+// import { UserLike } from '../models/UserLike';
 import { ObjectID } from 'mongodb';
-export class FollowingContentsModelProcessor extends AbstractSeparateSectionProcessor {
-    private DEFAULT_SEARCH_LIMIT = 10;
+export class ObjectiveFollowingPostSectionModelProcessor extends AbstractSeparateSectionProcessor {
+    private DEFAULT_SEARCH_LIMIT = 8;
     private DEFAULT_SEARCH_OFFSET = 0;
     constructor(
         private s3Service: S3Service,
@@ -27,20 +28,18 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                 // get config
                 // let searchOfficialOnly: number = undefined;
                 let userId = undefined;
+                let isReadPostIds = undefined;
+                let startDateTime: Date = undefined;
                 // get startDateTime, endDateTime
                 if (this.data !== undefined && this.data !== null) {
                     userId = this.data.userId;
+                    startDateTime = this.data.startDateTime;
+                    isReadPostIds = this.data.postIds;
+
                 }
                 const objIds = new ObjectID(userId);
-                let isReadPostIds = undefined;
-                let limit: number = undefined;
-                let offset: number = undefined;
-                if (this.data !== undefined && this.data !== null) {
-                    offset = this.data.offsets;
-                    isReadPostIds = this.data.postIds;
-                }
-                limit = (limit === undefined || limit === null) ? this.data.limits : this.DEFAULT_SEARCH_LIMIT;
-                offset = this.data.offsets ? this.data.offsets : this.DEFAULT_SEARCH_OFFSET;
+                const limit = this.DEFAULT_SEARCH_LIMIT;
+                const offset = this.DEFAULT_SEARCH_OFFSET;
                 const searchFilter: SearchFilter = new SearchFilter();
                 searchFilter.limit = limit;
                 searchFilter.offset = offset;
@@ -66,18 +65,19 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                     }
                 }
 
-                // const today = moment().add(month, 'month').toDate();
                 let isFollowing = undefined;
+                // const today = moment().add(month, 'month').toDate();
                 if (postIds !== undefined && postIds.length > 0) {
                     isFollowing = await this.userFollowService.aggregate([
                         {
                             $match: {
-                                userId: objIds
+                                userId: objIds,
+                                subjectType: 'OBJECTIVE'
                             }
                         },
                         {
                             $lookup: {
-                                from: 'Page',
+                                from: 'PageObjective',
                                 let: { subjectId: '$subjectId' },
                                 pipeline: [
                                     {
@@ -95,32 +95,35 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                                 {
                                                     $match: {
                                                         $expr: {
-                                                            $eq: ['$$id', '$pageId']
-                                                        },
+                                                            $eq: ['$$id', '$objective']
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    $match: {
                                                         _id: { $nin: postIds.flat() },
                                                         isDraft: false,
                                                         deleted: false,
-                                                        hidden: false
+                                                        hidden: false,
+                                                        startDateTime: { $lte: startDateTime },
                                                     }
                                                 },
                                                 {
                                                     $sort: {
-                                                        summationScore: -1
-                                                    }
+                                                        summationScore: -1,
+                                                    },
                                                 },
                                                 {
-                                                    $skip: offset
-                                                },
-                                                {
-                                                    $limit: limit
+                                                    $limit: 8,
+
                                                 },
                                                 {
                                                     $lookup: {
                                                         from: 'PostsGallery',
                                                         localField: '_id',
                                                         foreignField: 'post',
-                                                        as: 'gallery'
-                                                    }
+                                                        as: 'gallery',
+                                                    },
                                                 },
                                                 {
                                                     $lookup: {
@@ -129,8 +132,9 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                                         pipeline: [
                                                             {
                                                                 $match: {
-                                                                    $expr: { $eq: ['$$ownerUser', '$_id'] }
-                                                                }
+                                                                    $expr: { $eq: ['$$ownerUser', '$_id'] },
+                                                                },
+
                                                             },
                                                             { $project: { email: 0, username: 0, password: 0 } }
                                                         ],
@@ -147,68 +151,21 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                                     $project: {
                                                         story: 0
                                                     }
-                                                }
+
+                                                },
                                             ],
                                             as: 'posts'
                                         }
-                                    },
-                                ],
-                                as: 'page'
-                            },
-
-                        },
-                        {
-                            $addFields: {
-                                page: {
-                                    $map: {
-                                        input: '$page',
-                                        in: {
-                                            $mergeObjects: [
-                                                '$$this',
-                                                {
-                                                    posts: {
-                                                        $cond: {
-                                                            if: { $isArray: '$$this.posts' },
-                                                            then: {
-                                                                $slice: [
-                                                                    '$$this.posts', // Specify the array to slice
-                                                                    0, // Number of elements to return
-                                                                    limit // Starting position (optional)
-                                                                ]
-                                                            },
-                                                            else: '$$this.posts'
-                                                        }
-                                                    }
-                                                }
-                                            ]
-                                        }
                                     }
-                                }
+                                ],
+                                as: 'pageObjective'
                             }
                         },
-
                         {
                             $unwind: {
-                                path: '$page',
+                                path: '$pageObjective',
                                 preserveNullAndEmptyArrays: true
                             }
-                        },
-
-                        {
-                            $unwind: {
-                                path: '$page.posts',
-                                preserveNullAndEmptyArrays: true
-                            }
-                        },
-
-                        {
-                            $sort: {
-                                'page.posts.summationScore': -1 // Sort in descending order
-                            }
-                        },
-
-                        {
-                            $limit: 5
                         }
                     ]);
                 } else {
@@ -220,7 +177,7 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                         },
                         {
                             $lookup: {
-                                from: 'Page',
+                                from: 'PageObjective',
                                 let: { subjectId: '$subjectId' },
                                 pipeline: [
                                     {
@@ -238,11 +195,16 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                                 {
                                                     $match: {
                                                         $expr: {
-                                                            $eq: ['$$id', '$pageId']
-                                                        },
+                                                            $eq: ['$$id', '$objective']
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    $match: {
                                                         isDraft: false,
                                                         deleted: false,
-                                                        hidden: false
+                                                        hidden: false,
+                                                        startDateTime: { $lte: startDateTime },
                                                     }
                                                 },
                                                 {
@@ -251,10 +213,7 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                                     },
                                                 },
                                                 {
-                                                    $skip: offset
-                                                },
-                                                {
-                                                    $limit: limit,
+                                                    $limit: 8
 
                                                 },
                                                 {
@@ -262,8 +221,8 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                                         from: 'PostsGallery',
                                                         localField: '_id',
                                                         foreignField: 'post',
-                                                        as: 'gallery'
-                                                    }
+                                                        as: 'gallery',
+                                                    },
                                                 },
                                                 {
                                                     $lookup: {
@@ -272,8 +231,9 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                                         pipeline: [
                                                             {
                                                                 $match: {
-                                                                    $expr: { $eq: ['$$ownerUser', '$_id'] }
-                                                                }
+                                                                    $expr: { $eq: ['$$ownerUser', '$_id'] },
+                                                                },
+
                                                             },
                                                             { $project: { email: 0, username: 0, password: 0 } }
                                                         ],
@@ -290,97 +250,45 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                                     $project: {
                                                         story: 0
                                                     }
-                                                }
+
+                                                },
                                             ],
                                             as: 'posts'
                                         }
                                     }
                                 ],
-                                as: 'page'
+                                as: 'pageObjective'
                             }
                         },
-                        {
-                            $addFields: {
-                                page: {
-                                    $map: {
-                                        input: '$page',
-                                        in: {
-                                            $mergeObjects: [
-                                                '$$this',
-                                                {
-                                                    posts: {
-                                                        $cond: {
-                                                            if: { $isArray: '$$this.posts' },
-                                                            then: {
-                                                                $slice: [
-                                                                    '$$this.posts', // Specify the array to slice
-                                                                    0, // Number of elements to return
-                                                                    limit // Starting position (optional)
-                                                                ]
-                                                            },
-                                                            else: '$$this.posts'
-                                                        }
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    }
-                                }
-                            }
-                        },
-
                         {
                             $unwind: {
-                                path: '$page',
+                                path: '$pageObjective',
                                 preserveNullAndEmptyArrays: true
                             }
-                        },
-
-                        {
-                            $unwind: {
-                                path: '$page.posts',
-                                preserveNullAndEmptyArrays: true
-                            }
-                        },
-
-                        {
-                            $sort: {
-                                'page.posts.summationScore': -1 // Sort in descending order
-                            }
-                        },
-
-                        {
-                            $limit: 5
                         }
                     ]);
                 }
+                let summationScore = undefined;
+                if (isFollowing.length > 0) {
+                    summationScore = isFollowing.sort((a, b) => b.pageObjective.posts[0].summationScore - a.pageObjective.posts[0].summationScore);
+                } else {
+                    summationScore = isFollowing;
+                }
+                const sliceArray = summationScore.slice(0, 1);
                 const result: SectionModel = new SectionModel();
-                result.title = (this.config === undefined || this.config.title === undefined) ? 'ข่าวสารก่อนหน้านี้' : this.config.title;
+                result.title = (this.config === undefined || this.config.title === undefined) ? 'เพราะคุณติดตาม' : this.config.title;
                 result.subtitle = '';
                 result.description = '';
                 result.iconUrl = '';
                 result.contents = [];
-                result.type = 'ข่าวสารก่อนหน้านี้'; // set type by processor type
+                result.type = 'เพราะคุณติดตาม'; // set type by processor type
                 const lastestDate = null;
                 if (isFollowing.length > 0) {
-                    for (const rows of isFollowing) {
-                        if (rows.subjectType === 'PAGE' && rows.page !== undefined && rows.page.posts !== undefined) {
+                    for (const rows of sliceArray) {
+                        if (rows.subjectType === 'OBJECTIVE') {
                             const contents: any = {};
                             contents.owner = {};
-                            const firstImage = (rows.page.posts.gallery.length > 0) ? rows.page.posts.gallery[0] : undefined;
-                            contents.coverPageUrl = (rows.page.posts.gallery.length > 0) ? rows.page.posts.gallery[0].imageURL : undefined;
-                            if (firstImage !== undefined && firstImage.s3ImageURL !== undefined) {
-                                try {
-                                    const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
-                                    contents.coverPageSignUrl = signUrl;
-                                } catch (error) {
-                                    console.log('PostSectionProcessor: ' + error);
-                                }
-                            }
-                            if (rows.page !== undefined) {
-                                contents.owner = await this.parsePageField(rows.page);
-                            }
-                            contents.post = rows.page.posts;
+                            contents.owner = await this.parseObjectiveField(rows.pageObjective);
                             result.contents.push(contents);
                         }
                     }
@@ -392,17 +300,38 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
             }
         });
     }
-    private async parsePageField(page: any): Promise<any> {
-        const pageResult: any = {};
-        if (page !== undefined) {
-            pageResult.id = page._id;
-            pageResult.name = page.name;
-            pageResult.imageURL = page.imageURL;
-            pageResult.isOfficial = page.isOfficial;
-            pageResult.uniqueId = page.pageUsername;
-            pageResult.type = 'PAGE';
-        }
 
-        return pageResult;
+    private async parseObjectiveField(objective: any): Promise<any> {
+        const objectiveResult: any = {};
+        if (objective !== undefined) {
+            objectiveResult.id = objective._id;
+            objectiveResult.pageId = objective.pageId;
+            objectiveResult.title = objective.title;
+            objectiveResult.detail = objective.detail;
+            objectiveResult.iconURL = objective.iconURL;
+            objectiveResult.category = objective.category;
+            objectiveResult.hashTag = objective.hashTag;
+            objectiveResult.s3IconURL = objective.s3IconURL;
+            objectiveResult.type = 'OBJECTIVE';
+            objectiveResult.posts = [];
+            for (const row of objective.posts) {
+                const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
+                const contents: any = {};
+                contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
+                if (firstImage !== undefined && firstImage.s3ImageURL !== undefined) {
+                    try {
+                        const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
+                        contents.coverPageSignUrl = signUrl;
+                    } catch (error) {
+                        console.log('PostSectionProcessor: ' + error);
+                    }
+                }
+                row.isLike = false;
+                contents.post = row;
+                objectiveResult.posts.push(contents);
+
+            }
+        }
+        return objectiveResult;
     }
 }
