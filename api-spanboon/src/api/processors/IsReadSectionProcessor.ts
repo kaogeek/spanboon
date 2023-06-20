@@ -72,32 +72,24 @@ export class IsReadSectionProcessor extends AbstractSeparateSectionProcessor {
                 const toDate = new Date(dateReal);
                 // const today = moment().add(month, 'month').toDate();
                 const postIds = [];
-                let postMatchStmt: any = undefined;
                 if (isReadPostIds.length > 0) {
                     for (let i = 0; i < isReadPostIds.length; i++) {
-                        if (isReadPostIds[i].postId !== undefined && isReadPostIds[i].postId !== null && isReadPostIds.length > 0) {
-                            postIds.push(isReadPostIds[i].postId.map(id => new ObjectID(id)));
-                        } else {
-                            continue;
+                        const postId = isReadPostIds[i].postId;
+                        if (postId !== undefined && postId !== null && postId.length > 0) {
+                            postIds.push(...postId.map(id => new ObjectID(id)));
                         }
                     }
                 }
+
                 // console.log('postIds', postIds.flat().map(id => console.log('id',id)));
-                if (postIds !== undefined && postIds.length > 0) {
-                    postMatchStmt = {
-                        isDraft: false,
-                        deleted: false,
-                        hidden: false,
-                        startDateTime: { $lte: startDateTime, $gte: toDate },
-                        _id: { $nin: postIds.flat() }
-                    };
-                } else {
-                    postMatchStmt = {
-                        isDraft: false,
-                        deleted: false,
-                        hidden: false,
-                        startDateTime: { $lte: startDateTime, $gte: toDate },
-                    };
+                const postMatchStmt: any = {
+                    isDraft: false,
+                    deleted: false,
+                    hidden: false,
+                    startDateTime: { $lte: startDateTime, $gte: toDate },
+                };
+                if (postIds.length > 0) {
+                    postMatchStmt._id = { $nin: postIds.flat() };
                 }
                 const postStmt = [
                     { $match: postMatchStmt },

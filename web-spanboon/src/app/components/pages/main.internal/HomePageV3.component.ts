@@ -85,7 +85,10 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   public loadContentCount: number = 0;
   public followingContent: any;
   public followingProvinces: any;
-  public isFollowings: any;
+  public pageFollowings: any;
+  public emergencyFollowings: any;
+  public objectiveFollowings: any;
+  public userFollowings: any;
   public isReadPost: any;
   public readPost: any = [];
   public readedPost: any = [];
@@ -239,8 +242,14 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     if (this.loadingCount === 0) {
       post = 'isReadPost';
     } else if (this.loadingCount === 1) {
-      post = 'isFollowings';
+      post = 'pageFollowings';
     } else if (this.loadingCount === 2) {
+      post = 'emergencyFollowings';
+    } else if (this.loadingCount === 3) {
+      post = 'objectiveFollowings';
+    } else if (this.loadingCount === 4) {
+      post = 'userFollowings';
+    } else if (this.loadingCount === 5) {
       post = 'followingProvinces';
     } else {
       post = 'followingContent';
@@ -251,10 +260,16 @@ export class HomePageV3 extends AbstractPage implements OnInit {
           if (this.loadingCount === 0) {
             this.isReadPost = res;
           } else if (this.loadingCount === 1) {
-            this.isFollowings = res;
+            this.pageFollowings = res;
           } else if (this.loadingCount === 2) {
-            this.followingProvinces = res;
+            this.emergencyFollowings = res;
           } else if (this.loadingCount === 3) {
+            this.objectiveFollowings = res;
+          } else if (this.loadingCount === 4) {
+            this.userFollowings = res;
+          } else if (this.loadingCount === 5) {
+            this.followingProvinces = res;
+          } else if (this.loadingCount === 6) {
             if (res.followingContents.contents.length !== 0) {
               if (this.loadContentCount > 0) {
                 let data = this.followingContent.followingContents.contents.concat(res.followingContents.contents);
@@ -266,7 +281,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
             }
           }
           if (post === 'followingContent') {
-            this.loadingCount === 3;
+            this.loadingCount === 6;
             this.isOnLoad = false;
             this.isLoadingPost = false;
           } else {
@@ -289,7 +304,6 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   public async getMainPageModelV3(userId?) {
     // 1678726800000
     let testDate = JSON.parse(localStorage.getItem('datetime'));
-    let pageUser = JSON.parse(localStorage.getItem('pageUser'));
     if (testDate !== null) {
       this.dateValues = testDate;
     }
@@ -303,11 +317,9 @@ export class HomePageV3 extends AbstractPage implements OnInit {
         if (!!res.linkAnnounceMent) {
           this.linkAnnounce = res.linkAnnounceMent;
         }
-        setTimeout(() => {
-          if (!!pageUser.tosVersion && !!pageUser.uaVersion && !this.isConfirmTosUa) {
-            this._selectProvince();
-          }
-        }, 2000);
+        if (!this.isConfirmTosUa) {
+          this._selectProvince();
+        }
         for (let index = 0; index < this.model.postSectionModel.contents.length; index++) {
           if (this.model.postSectionModel.contents[index].post.type === "FULFILLMENT") {
             this.model.postSectionModel.contents.splice(index, 1);
@@ -353,11 +365,9 @@ export class HomePageV3 extends AbstractPage implements OnInit {
             if (!!res.linkAnnounceMent || !!res.data.linkAnnounceMent) {
               this.linkAnnounce = res.linkAnnounceMent ? res.linkAnnounceMent : res.data.linkAnnounceMent;
             }
-            setTimeout(() => {
-              if (!!pageUser.tosVersion && !!pageUser.uaVersion && !this.isConfirmTosUa) {
-                this._selectProvince();
-              }
-            }, 2000);
+            if (!this.isConfirmTosUa) {
+              this._selectProvince();
+            }
             const dateFormat = new Date();
             const dateReal = dateFormat.setDate(dateFormat.getDate());
             this.dateValues = new Date(dateReal).toISOString(); // convert to ISO string
@@ -404,22 +414,42 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   }
 
   private _selectProvince() {
+    let pageUser = JSON.parse(localStorage.getItem('pageUser'));
     if (this.isLogin() && this.hidebar) {
-      this._getProvince();
-      let array = [];
-      for (let page of this.pageUser) {
-        if ((!page.province || !page.group) && page.ownerUser) {
-          let data = {
-            id: page.id,
-            name: page.pageUsername ? page.pageUsername : page.name,
-            province: page.province ? true : false,
-            group: page.group ? true : false,
+      if (!!pageUser.tosVersion && !!pageUser.uaVersion && !this.isConfirmTosUa) {
+        this._getProvince();
+        let array = [];
+        for (let page of this.pageUser) {
+          if ((!page.province || !page.group) && page.ownerUser) {
+            let data = {
+              id: page.id,
+              name: page.pageUsername ? page.pageUsername : page.name,
+              province: page.province ? true : false,
+              group: page.group ? true : false,
+            }
+            array.push(data);
           }
-          array.push(data);
         }
-      }
-      if (array.length > 0) {
-        this._getProvince(array);
+        if (array.length > 0) {
+          this._getProvince(array);
+        }
+      } else if (this.isConfirmTosUa) {
+        this._getProvince();
+        let array = [];
+        for (let page of this.pageUser) {
+          if ((!page.province || !page.group) && page.ownerUser) {
+            let data = {
+              id: page.id,
+              name: page.pageUsername ? page.pageUsername : page.name,
+              province: page.province ? true : false,
+              group: page.group ? true : false,
+            }
+            array.push(data);
+          }
+        }
+        if (array.length > 0) {
+          this._getProvince(array);
+        }
       }
     }
   }

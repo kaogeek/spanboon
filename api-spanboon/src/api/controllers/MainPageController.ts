@@ -59,7 +59,10 @@ import { IsReadPostService } from '../services/IsReadPostService';
 import { KaokaiTodayService } from '../services/KaokaiTodayService';
 import { NotificationService } from '../services/NotificationService';
 import { IsReadSectionProcessor } from '../processors/IsReadSectionProcessor';
-import { FollowingPostSectionModelProcessor } from '../processors/FollowingPostSectionModelProcessor';
+import { PageFollowingPostSectionModelProcessor } from '../processors/PageFollowingPostSectionModelProcessor';
+import { EmergencyFollowingPostSectionModelProcessor } from '../processors/EmergencyFollowingPostSectionModelProcessor';
+import { ObjectiveFollowingPostSectionModelProcessor } from '../processors/ObjectiveFollowingPostSectionModelProcessor';
+import { UserFollowingPostSectionModelProcessor } from '../processors/UserFollowingPostSectionModelProcessor';
 import { FollowingProvinceSectionModelProcessor } from '../processors/FollowingProvinceSectionModelProcessor';
 import {
     TODAY_DATETIME_GAP,
@@ -92,6 +95,7 @@ import { DeviceTokenService } from '../services/DeviceToken';
 import { NotificationNewsService } from '../services/NotificationNewsService';
 import pm2 from 'pm2';
 import { FollowingContentsModelProcessor } from '../processors/FollowingContentsModelProcessor';
+import moment from 'moment';
 @JsonController('/main')
 export class MainPageController {
     constructor(
@@ -434,14 +438,14 @@ export class MainPageController {
                 $match: { userId: objIds }
             },
             {
-                $project:{
-                    postId:1,
+                $project: {
+                    postId: 1,
                 }
             }
         ]);
         const postIds = [];
-        if(findPostIds.length>0){
-            for(let i = 0 ; i <findPostIds.length;i++){
+        if (findPostIds.length > 0) {
+            for (let i = 0; i < findPostIds.length; i++) {
                 postIds.push(findPostIds[i].postId);
             }
         }
@@ -454,7 +458,7 @@ export class MainPageController {
         }
     }
     @Post('/bottom/trend')
-    public async mirrorTrends(@QueryParam('limit') limit: number, @QueryParam('offset') offset: number, @QueryParam('isReadPost') isReadPost: boolean, @QueryParam('isFollowings') isFollowings: boolean, @QueryParam('followingProvinces') followingProvinces: boolean, @QueryParam('followingContent') followingContent: boolean, @QueryParam('section') section: string, @QueryParam('date') date: any, @Res() res: any, @Req() req: any): Promise<any> {
+    public async mirrorTrends(@QueryParam('limit') limit: number, @QueryParam('offset') offset: number, @QueryParam('isReadPost') isReadPost: boolean, @QueryParam('pageFollowings') pageFollowings: boolean, @QueryParam('emergencyFollowings') emergencyFollowings: boolean, @QueryParam('objectiveFollowings') objectiveFollowings: boolean, @QueryParam('userFollowings') userFollowings: boolean, @QueryParam('followingProvinces') followingProvinces: boolean, @QueryParam('followingContent') followingContent: boolean, @QueryParam('section') section: string, @QueryParam('date') date: any, @Res() res: any, @Req() req: any): Promise<any> {
         const userId = req.headers.userid;
         const objIds = new ObjectID(userId);
         const isRead = await this.isReadPostService.aggregate(
@@ -481,7 +485,10 @@ export class MainPageController {
         const searchOfficialOnly = mainPageSearchConfig.searchOfficialOnly;
         const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), retrospects);
         let isReadPosts = undefined;
-        let isFollowing = undefined;
+        let pageFollowing = undefined;
+        let emergenFollowing = undefined;
+        let objectiveFollowing = undefined;
+        let userFollowing = undefined;
         let followingProvince = undefined;
         let followingContents = undefined;
         const isReadSectionProcessor: IsReadSectionProcessor = new IsReadSectionProcessor(this.postsService, this.s3Service);
@@ -499,19 +506,62 @@ export class MainPageController {
         if (isReadPost === true) {
             isReadPosts = await isReadSectionProcessor.process();
         }
-        const followingPostSectionModelProcessor: FollowingPostSectionModelProcessor = new FollowingPostSectionModelProcessor(this.s3Service, this.userFollowService);
-        followingPostSectionModelProcessor.setData({
+        const pageFollowingPostSectionModelProcessor: PageFollowingPostSectionModelProcessor = new PageFollowingPostSectionModelProcessor(this.s3Service, this.userFollowService);
+        pageFollowingPostSectionModelProcessor.setData({
             userId,
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
             postIds: isRead,
         });
 
-        followingPostSectionModelProcessor.setConfig({
+        pageFollowingPostSectionModelProcessor.setConfig({
             searchOfficialOnly
         });
-        if (isFollowings === true) {
-            isFollowing = await followingPostSectionModelProcessor.process();
+        if (pageFollowings === true) {
+            pageFollowing = await pageFollowingPostSectionModelProcessor.process();
+        }
+
+        const emerFollowingPostSectionModelProcessor: EmergencyFollowingPostSectionModelProcessor = new EmergencyFollowingPostSectionModelProcessor(this.s3Service, this.userFollowService);
+        emerFollowingPostSectionModelProcessor.setData({
+            userId,
+            startDateTime: monthRange[0],
+            endDateTime: monthRange[1],
+            postIds: isRead,
+        });
+
+        emerFollowingPostSectionModelProcessor.setConfig({
+            searchOfficialOnly
+        });
+        if (emergencyFollowings === true) {
+            emergenFollowing = await emerFollowingPostSectionModelProcessor.process();
+        }
+        const objectiveFollowingPostSectionModelProcessor: ObjectiveFollowingPostSectionModelProcessor = new ObjectiveFollowingPostSectionModelProcessor(this.s3Service, this.userFollowService);
+        objectiveFollowingPostSectionModelProcessor.setData({
+            userId,
+            startDateTime: monthRange[0],
+            endDateTime: monthRange[1],
+            postIds: isRead,
+        });
+
+        objectiveFollowingPostSectionModelProcessor.setConfig({
+            searchOfficialOnly
+        });
+        if (objectiveFollowings === true) {
+            objectiveFollowing = await objectiveFollowingPostSectionModelProcessor.process();
+        }
+        const userFollowingPostSectionModelProcessor: UserFollowingPostSectionModelProcessor = new UserFollowingPostSectionModelProcessor(this.s3Service, this.userFollowService);
+        userFollowingPostSectionModelProcessor.setData({
+            userId,
+            startDateTime: monthRange[0],
+            endDateTime: monthRange[1],
+            postIds: isRead,
+        });
+
+        userFollowingPostSectionModelProcessor.setConfig({
+            searchOfficialOnly
+        });
+        if (userFollowings === true) {
+            userFollowing = await userFollowingPostSectionModelProcessor.process();
         }
         const followingProvinceSectionModelProcessor: FollowingProvinceSectionModelProcessor = new FollowingProvinceSectionModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.userService, this.pageService);
         followingProvinceSectionModelProcessor.setData({
@@ -548,7 +598,10 @@ export class MainPageController {
         }
         const result: any = {};
         result.isReadPosts = isReadPosts;
-        result.isFollowing = isFollowing;
+        result.pageFollowing = pageFollowing;
+        result.emergenFollowing = emergenFollowing;
+        result.objectiveFollowing = objectiveFollowing;
+        result.userFollowing = userFollowing;
         result.followingProvince = followingProvince;
         result.followingContents = followingContents;
         const successResponse = ResponseUtil.getSuccessResponse('Successfully create isRead.', result);
@@ -558,73 +611,30 @@ export class MainPageController {
 
     @Post('/is/read')
     public async isRead(@Body({ validate: true }) data: IsRead, @Res() res: any, @Req() req: any): Promise<any> {
-        const successResponse = ResponseUtil.getSuccessResponse('The content has already been read.', undefined);
-        return res.status(200).send(successResponse);
-        /*
         const userId = req.headers.userid;
         const objIds = new ObjectID(userId);
-        const user = await this.userService.findOne({ _id: objIds });
-        const findPostIds = await this.isReadPostService.aggregate([
-            {
-                $match: { userId: objIds }
-            },
-        ]);
         // check is read
-        if (user) {
-            const stackPostIds = [];
-            const postObjString = [];
-            if (findPostIds.length > 0) {
-                for (let i = 0; i < findPostIds.length; i++) {
-                    stackPostIds.push(findPostIds[i].postId);
-                }
-            }
-            if (data.postId.length > 0) {
-                for (let j = 0; j < data.postId.length; j++) {
-                    if (data.postId[j] !== undefined && data.postId[j] !== null) {
-                        postObjString.push(String(data.postId[j]));
-                    } else {
-                        continue;
-                    }
-                }
-            }
-            if (stackPostIds.flat().length > 0) {
-                for (let z = 0; z < stackPostIds.flat().length; z++) {
-                    postObjString.push(String(stackPostIds.flat()[z]));
-                }
-            }
-            const postIdFilter = postObjString.filter((element, index) => {
-                return postObjString.indexOf(element) === index;
-            });
+        if (objIds) {
             // check is read
-            if (postIdFilter.length > 0) {
-                const isRead: IsRead = new IsRead();
-                isRead.userId = objIds;
-                isRead.postId = postIdFilter;
-                isRead.isRead = data.isRead;
-                const isReadPost = await this.isReadPostService.create(isRead);
-                if (isReadPost) {
-                    const postIds = data.postId.map(ids => new ObjectID(ids));
-                    const isReaded = await this.postsService.aggregate(
-                        [
-                            {
-                                $match: {
-                                    _id: { $in: postIds }
-                                }
-                            }
-                        ]
-                    );
-                    const result: any = {};
-                    result.isReadPost = isReaded;
-                    result.userIds = objIds;
-                    const successResponse = ResponseUtil.getSuccessResponse('The content has already been read.', result);
-                    return res.status(200).send(successResponse);
-                }
+            const isRead: IsRead = new IsRead();
+            isRead.userId = objIds;
+            isRead.postId = data.postId;
+            isRead.isRead = data.isRead;
+            isRead.createdDate = moment().toDate();
+            const isReadPost = await this.isReadPostService.findOneAndUpdate(
+                { userId: objIds },
+                { $set: { postId: data.postId, isRead: data.isRead } },
+                { upsert: true, new: true }
+            );
+            if (isReadPost) {
+                const successResponse = ResponseUtil.getSuccessResponse('The content has already been read.', isReadPost);
+                return res.status(200).send(successResponse);
             }
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find User.', undefined);
             return res.status(400).send(errorResponse);
         }
-        */
+
     }
     @Post('/days/check')
     public async daysCheck(@Res() res: any, @Req() req: any): Promise<any> {

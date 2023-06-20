@@ -1041,7 +1041,7 @@ export class GuestController {
                         const newValuesFcm = { $set: { token: tokenFcmFB } };
                         await this.deviceToken.updateToken(queryFcm, newValuesFcm);
                     } else {
-                        await this.deviceToken.createDeviceToken({ deviceName: deviceFB, userId: updatedAuth.user });
+                        await this.deviceToken.createDeviceToken({ deviceName: deviceFB, token: tokenFcmFB, userId: updatedAuth.user });
                     }
                     loginUser = await this.userService.findOne({ where: { _id: ObjectID(updatedAuth.user) } });
                     loginToken = updatedAuth.storedCredentials;
@@ -2109,17 +2109,22 @@ export class GuestController {
     }
     @Post('/guest/users')
     public async guestUsers(@Body({ validate: true }) firebaseGuestUser: FirebaseGuestUser, @Res() res: any, @Req() req: any): Promise<any> {
-        const checkTokenFcm = await this.deviceToken.find({ token: firebaseGuestUser.token });
+        console.log('firebaseGuestUser', firebaseGuestUser);
+        const tokenFCM = String(firebaseGuestUser.token);
+        const checkTokenFcm = await this.deviceToken.find({ token: tokenFCM });
         if (checkTokenFcm.length > 0) {
+            console.log('pass2 guest firebase user.');
             const errorResponse = ResponseUtil.getErrorResponse('Token already exist.', undefined);
             return res.status(400).send(errorResponse);
         }
         const result: DeviceToken = new DeviceToken();
         result.DeviceName = firebaseGuestUser.deviceName;
-        result.Tokens = firebaseGuestUser.token;
+        result.token = tokenFCM;
         result.os = firebaseGuestUser.os;
         const createToken = await this.deviceToken.createDeviceToken(result);
+        console.log('createToken', createToken);
         if (createToken) {
+            console.log('pass1 guest firebase user.');
             const successResponse = ResponseUtil.getSuccessResponse('Create Guest User Firebase', createToken);
             return res.status(200).send(successResponse);
         } else {
