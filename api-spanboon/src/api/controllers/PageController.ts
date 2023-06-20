@@ -2769,11 +2769,13 @@ export class PageController {
                 pageEmail = pageUpdate.email;
             }
 
-            if (pageProvince === null || pageProvince === undefined || pageGroup === null || pageGroup === undefined) {
+            if (pageProvince === null || pageProvince === undefined) {
                 pageProvince = pageUpdate.province;
-                pageGroup = pageUpdate.group;
             }
+            if (pageGroup === null || pageGroup === undefined) {
+                pageGroup = pageUpdate.group;
 
+            }
             // let updateImageAsset;
             // let updatedImageAsset;
             // let assetId;
