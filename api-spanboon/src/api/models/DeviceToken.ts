@@ -19,7 +19,7 @@ export class DeviceToken extends BaseModel {
     public DeviceName: string;
 
     @Column({ name: 'token' })
-    public Tokens: string;
+    public token: string;
 
     @Column({ name: 'userId' })
     public userId: ObjectID;
