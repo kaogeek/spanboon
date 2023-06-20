@@ -85,7 +85,10 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   public loadContentCount: number = 0;
   public followingContent: any;
   public followingProvinces: any;
-  public isFollowings: any;
+  public pageFollowings: any;
+  public emergencyFollowings: any;
+  public objectiveFollowings: any;
+  public userFollowings: any;
   public isReadPost: any;
   public readPost: any = [];
   public readedPost: any = [];
@@ -239,8 +242,14 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     if (this.loadingCount === 0) {
       post = 'isReadPost';
     } else if (this.loadingCount === 1) {
-      post = 'isFollowings';
+      post = 'pageFollowings';
     } else if (this.loadingCount === 2) {
+      post = 'emergencyFollowings';
+    } else if (this.loadingCount === 3) {
+      post = 'objectiveFollowings';
+    } else if (this.loadingCount === 4) {
+      post = 'userFollowings';
+    } else if (this.loadingCount === 5) {
       post = 'followingProvinces';
     } else {
       post = 'followingContent';
@@ -251,10 +260,16 @@ export class HomePageV3 extends AbstractPage implements OnInit {
           if (this.loadingCount === 0) {
             this.isReadPost = res;
           } else if (this.loadingCount === 1) {
-            this.isFollowings = res;
+            this.pageFollowings = res;
           } else if (this.loadingCount === 2) {
-            this.followingProvinces = res;
+            this.emergencyFollowings = res;
           } else if (this.loadingCount === 3) {
+            this.objectiveFollowings = res;
+          } else if (this.loadingCount === 4) {
+            this.userFollowings = res;
+          } else if (this.loadingCount === 5) {
+            this.followingProvinces = res;
+          } else if (this.loadingCount === 6) {
             if (res.followingContents.contents.length !== 0) {
               if (this.loadContentCount > 0) {
                 let data = this.followingContent.followingContents.contents.concat(res.followingContents.contents);
@@ -266,7 +281,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
             }
           }
           if (post === 'followingContent') {
-            this.loadingCount === 3;
+            this.loadingCount === 6;
             this.isOnLoad = false;
             this.isLoadingPost = false;
           } else {
