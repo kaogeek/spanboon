@@ -260,11 +260,21 @@ export class EmergencyFollowingPostSectionModelProcessor extends AbstractSeparat
                         },
                     ]);
                 }
-                let summationScore = undefined;
+                const postFilter = [];
                 if (isFollowing.length > 0) {
-                    summationScore = isFollowing.sort((a, b) => b.emergencyEvent.posts[0].summationScore - a.emergencyEvent.posts[0].summationScore);
+                    for (let j = 0; j < isFollowing.length; j++) {
+                        if(isFollowing[j].page !== undefined){
+                            postFilter.push(isFollowing[j]);
+                        }else{
+                            continue;
+                        }
+                    }
+                }
+                let summationScore = undefined;
+                if (postFilter.length > 1) {
+                    summationScore = postFilter.sort((a, b) => b.page.posts[0].summationScore - a.page.posts[0].summationScore);
                 } else {
-                    summationScore = isFollowing;
+                    summationScore = postFilter;
                 }
                 const sliceArray = summationScore.slice(0, 1);
                 const result: SectionModel = new SectionModel();

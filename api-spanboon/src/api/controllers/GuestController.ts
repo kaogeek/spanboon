@@ -1041,7 +1041,7 @@ export class GuestController {
                         const newValuesFcm = { $set: { token: tokenFcmFB } };
                         await this.deviceToken.updateToken(queryFcm, newValuesFcm);
                     } else {
-                        await this.deviceToken.createDeviceToken({ deviceName: deviceFB, userId: updatedAuth.user });
+                        await this.deviceToken.createDeviceToken({ deviceName: deviceFB, token: tokenFcmFB, userId: updatedAuth.user });
                     }
                     loginUser = await this.userService.findOne({ where: { _id: ObjectID(updatedAuth.user) } });
                     loginToken = updatedAuth.storedCredentials;
@@ -2111,7 +2111,7 @@ export class GuestController {
     public async guestUsers(@Body({ validate: true }) firebaseGuestUser: FirebaseGuestUser, @Res() res: any, @Req() req: any): Promise<any> {
         console.log('firebaseGuestUser', firebaseGuestUser);
         const tokenFCM = String(firebaseGuestUser.token);
-        const checkTokenFcm = await this.deviceToken.find({token: tokenFCM});
+        const checkTokenFcm = await this.deviceToken.find({ token: tokenFCM });
         if (checkTokenFcm.length > 0) {
             console.log('pass2 guest firebase user.');
             const errorResponse = ResponseUtil.getErrorResponse('Token already exist.', undefined);

@@ -88,6 +88,11 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                         }
                                     },
                                     {
+                                        $match: {
+                                            isOfficial: true
+                                        }
+                                    },
+                                    {
                                         $lookup: {
                                             from: 'Posts',
                                             let: { id: '$_id' },
@@ -231,6 +236,11 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                         }
                                     },
                                     {
+                                        $match: {
+                                            isOfficial: true
+                                        }
+                                    },
+                                    {
                                         $lookup: {
                                             from: 'Posts',
                                             let: { id: '$_id' },
@@ -354,6 +364,7 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                         }
                     ]);
                 }
+
                 const result: SectionModel = new SectionModel();
                 result.title = (this.config === undefined || this.config.title === undefined) ? 'ข่าวสารก่อนหน้านี้' : this.config.title;
                 result.subtitle = '';

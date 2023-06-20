@@ -88,6 +88,11 @@ export class PageFollowingPostSectionModelProcessor extends AbstractSeparateSect
                                         },
                                     },
                                     {
+                                        $match: {
+                                            isOfficial: true
+                                        }
+                                    },
+                                    {
                                         $lookup: {
                                             from: 'Posts',
                                             let: { id: '$_id' },
@@ -156,8 +161,12 @@ export class PageFollowingPostSectionModelProcessor extends AbstractSeparateSect
                                             ],
                                             as: 'posts'
                                         }
-
-                                    }
+                                    },
+                                    {
+                                        $match: {
+                                            posts: { $ne: [] }
+                                        }
+                                    },
                                 ],
                                 as: 'page'
                             },
@@ -187,6 +196,11 @@ export class PageFollowingPostSectionModelProcessor extends AbstractSeparateSect
                                                 $eq: ['$$subjectId', '$_id']
                                             }
                                         },
+                                    },
+                                    {
+                                        $match: {
+                                            isOfficial: true
+                                        }
                                     },
                                     {
                                         $lookup: {
@@ -256,8 +270,13 @@ export class PageFollowingPostSectionModelProcessor extends AbstractSeparateSect
                                             ],
                                             as: 'posts'
                                         }
+                                    },
+                                    {
+                                        $match: {
+                                            posts: { $ne: [] }
+                                        }
+                                    },
 
-                                    }
                                 ],
                                 as: 'page'
                             },
@@ -270,11 +289,21 @@ export class PageFollowingPostSectionModelProcessor extends AbstractSeparateSect
                         },
                     ]);
                 }
+                const postFilter = [];
+                if (isFollowing.length > 0) {
+                    for (let j = 0; j < isFollowing.length; j++) {
+                        if(isFollowing[j].page !== undefined){
+                            postFilter.push(isFollowing[j]);
+                        }else{
+                            continue;
+                        }
+                    }
+                }
                 let summationScore = undefined;
-                if (isFollowing.length > 1) {
-                    summationScore = isFollowing.sort((a, b) => b.page.posts[0].summationScore - a.page.posts[0].summationScore);
+                if (postFilter.length > 1) {
+                    summationScore = postFilter.sort((a, b) => b.page.posts[0].summationScore - a.page.posts[0].summationScore);
                 } else {
-                    summationScore = isFollowing;
+                    summationScore = postFilter;
                 }
                 const sliceArray = summationScore.slice(0, 1);
                 const result: SectionModel = new SectionModel();
