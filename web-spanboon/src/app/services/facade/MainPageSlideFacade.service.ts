@@ -51,18 +51,24 @@ export class MainPageSlideFacade extends AbstractFacade {
     });
   }
 
-  public bottomContent(userId: string, filter: string, offset?: number, limit?: number, ReadPost?: 'isReadPost' | 'isFollowings' | 'followingProvinces' | 'followingContent'): Promise<any> {
+  public bottomContent(userId: string, filter: string, offset?: number, limit?: number, ReadPost?: 'isReadPost' | 'pageFollowings' | 'emergencyFollowings' | 'objectiveFollowings' | 'userFollowings' | 'followingProvinces' | 'followingContent'): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/main/bottom/trend';
       let read: string;
       if (ReadPost === 'isReadPost') {
-        read = 'isReadPost=true&isFollowings=false&followingProvinces=false&followingContent=false';
-      } else if (ReadPost === 'isFollowings') {
-        read = 'isReadPost=false&isFollowings=true&followingProvinces=false&followingContent=false';
+        read = 'isReadPost=true&pageFollowings=false&emergencyFollowings=false&objectiveFollowings=false&userFollowings=false&followingProvinces=false&followingContent=false';
+      } else if (ReadPost === 'pageFollowings') {
+        read = 'isReadPost=false&pageFollowings=true&emergencyFollowings=false&objectiveFollowings=false&userFollowings=false&followingProvinces=false&followingContent=false';
+      } else if (ReadPost === 'emergencyFollowings') {
+        read = 'isReadPost=false&pageFollowings=false&emergencyFollowings=true&objectiveFollowings=false&userFollowings=false&followingProvinces=false&followingContent=false';
+      } else if (ReadPost === 'objectiveFollowings') {
+        read = 'isReadPost=false&pageFollowings=false&emergencyFollowings=false&objectiveFollowings=true&userFollowings=false&followingProvinces=false&followingContent=false';
+      } else if (ReadPost === 'userFollowings') {
+        read = 'isReadPost=false&pageFollowings=false&emergencyFollowings=false&objectiveFollowings=false&userFollowings=true&followingProvinces=false&followingContent=false';
       } else if (ReadPost === 'followingProvinces') {
-        read = 'isReadPost=false&isFollowings=false&followingProvinces=true&followingContent=false';
+        read = 'isReadPost=false&pageFollowings=false&emergencyFollowings=false&objectiveFollowings=false&userFollowings=false&followingProvinces=true&followingContent=false';
       } else if (ReadPost === 'followingContent') {
-        read = 'isReadPost=false&isFollowings=false&followingProvinces=false&followingContent=true';
+        read = 'isReadPost=false&pageFollowings=false&emergencyFollowings=false&objectiveFollowings=false&userFollowings=false&followingProvinces=false&followingContent=true';
       }
 
       if (offset !== undefined) {

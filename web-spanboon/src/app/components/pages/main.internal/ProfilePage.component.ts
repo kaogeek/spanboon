@@ -241,7 +241,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     this.setTab();
     this.checkLoginAndRedirection();
     this.getRecommend();
-    this.openLoading();
+    // this.openLoading();
     if (this.isLogin()) {
       this.getProfileImage();
     }
@@ -412,6 +412,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
             }
             this.boxPost.clearDataAll();
             this.isClickPostPreLoad = false;
+            this.isPostLoading = false;
           }
         }
       }).catch((err: any) => {
@@ -461,11 +462,15 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     this.profileFacade.getProfile(url).then((res) => {
       if (res) {
         this.seoService.updateTitle(res.data.name ? res.data.name : res.data.displayName);
-        if (this.resPost.posts.length === 1) {
-          this.meta.updateTag({ name: 'title', content: this.resPost.posts[0].title });
-          this.meta.updateTag({ name: 'description', content: this.resPost.posts[0].detail });
+        if (this.resPost.length > 0) {
+          if (this.resPost.posts.length === 1) {
+            this.meta.updateTag({ name: 'title', content: this.resPost.posts[0].title });
+            this.meta.updateTag({ name: 'description', content: this.resPost.posts[0].detail });
+          }
         }
-        if (res.status === 1 && res.data) {
+        if (!!res.data) {
+          this.position = res.data.coverPosition;
+          this.resProfile = res.data;
           let user = {
             displayName: res.data.displayName,
             firstName: res.data.firstName,
@@ -476,8 +481,6 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
             username: res.data.username
           }
           this.resEditProfile = user;
-          this.position = res.data.coverPosition;
-          this.resProfile = res.data;
           if (this.resProfile && this.resProfile.name) {
             this.name = this.resProfile.name
           } else if (this.resProfile && this.resProfile.uniqueId) {
@@ -505,11 +508,14 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
         }, 2000);
       }
 
-    }).catch((err: any) => {
-      this.isLoading = false;
-      if (err.error.status === 0) {
-        if (err.error.message === 'Unable to Get UserProfile') {
-          this.msgUserNotFound = true;
+    }).catch((err) => {
+      if (err) {
+        console.log("err", err)
+        this.isLoading = false;
+        if (err.error.status === 0) {
+          if (err.error.message === 'Unable to Get UserProfile') {
+            this.msgUserNotFound = true;
+          }
         }
       }
     })
