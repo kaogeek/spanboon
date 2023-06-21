@@ -29,9 +29,11 @@ export class IsReadSectionProcessor extends AbstractSeparateSectionProcessor {
                 let searchOfficialOnly: number = undefined;
                 let isReadPostIds = undefined;
                 // get startDateTime, endDateTime
+                let objIds = undefined;
                 let startDateTime: Date = undefined;
                 let retrospect: number = undefined;
                 if (this.data !== undefined && this.data !== null) {
+                    objIds = this.data.userId;
                     startDateTime = this.data.startDateTime;
                     isReadPostIds = this.data.postIds;
                     retrospect = this.data.retrospects;
@@ -71,136 +73,256 @@ export class IsReadSectionProcessor extends AbstractSeparateSectionProcessor {
                 const dateReal = dateFormat.setDate(dateFormat.getDate() - retrospect);
                 const toDate = new Date(dateReal);
                 // const today = moment().add(month, 'month').toDate();
-                const postIds = [];
                 if (isReadPostIds.length > 0) {
-                    for (let i = 0; i < isReadPostIds.length; i++) {
-                        const postId = isReadPostIds[i].postId;
-                        if (postId !== undefined && postId !== null && postId.length > 0) {
-                            postIds.push(...postId.map(id => new ObjectID(id)));
-                        }
-                    }
-                }
-
-                // console.log('postIds', postIds.flat().map(id => console.log('id',id)));
-                const postMatchStmt: any = {
-                    isDraft: false,
-                    deleted: false,
-                    hidden: false,
-                    startDateTime: { $lte: startDateTime, $gte: toDate },
-                };
-                if (postIds.length > 0) {
-                    postMatchStmt._id = { $nin: postIds.flat() };
-                }
-                const postStmt = [
-                    { $match: postMatchStmt },
-                    {
-                        $lookup:
-                        {
-                            from: 'Page',
-                            let: { 'pageId': '$pageId' },
-                            pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] } } },
-                            { $project: { email: 0 } }
-                            ],
-                            as: 'page'
-                        }
-                    },
-                    { $sort: { summationScore: -1 } },
-                    {
-                        '$limit': limit
-                    },
-                    {
-                        $unwind: {
-                            path: '$page',
-                            preserveNullAndEmptyArrays: true
-                        }
-                    },
-                    {
-                        $lookup: {
-                            from: 'SocialPost',
-                            localField: '_id',
-                            foreignField: 'postId',
-                            as: 'socialPosts'
-                        }
-                    },
-                    {
-                        $project: {
-                            'socialPosts': {
-                                '_id': 0,
-                                'pageId': 0,
-                                'postId': 0,
-                                'postBy': 0,
-                                'postByType': 0
+                    const postIds = [];
+                    if (isReadPostIds.length > 0) {
+                        for (let i = 0; i < isReadPostIds.length; i++) {
+                            const postId = isReadPostIds[i].postId;
+                            if (postId !== undefined && postId !== null && postId.length > 0) {
+                                postIds.push(...postId.map(id => new ObjectID(id)));
                             }
                         }
-                    },
-                    {
-                        $lookup: {
-                            from: 'PostsGallery',
-                            localField: '_id',
-                            foreignField: 'post',
-                            as: 'gallery'
-                        }
-                    },
-                    {
-                        $lookup: {
-                            from: 'User',
-                            localField: 'ownerUser',
-                            foreignField: '_id',
-                            as: 'user'
-                        }
-                    },
-                    {
-                        $project: {
-                            story: 0
-                        }
-
-                    },
-                ];
-                if (searchOfficialOnly) {
-                    postStmt.splice(3, 0, { $match: { 'page.isOfficial': true, 'page.banned': false } });
-                }
-                const postAggregate = await this.postsService.aggregate(postStmt);
-                const lastestDate = null;
-                const result: SectionModel = new SectionModel();
-                result.title = (this.config === undefined || this.config.title === undefined) ? 'เรื่องราวที่คุณอาจพลาดไป' : this.config.title;
-                result.subtitle = '';
-                result.description = '';
-                result.iconUrl = '';
-                result.contents = [];
-                result.type = 'IsRead'; // set type by processor type
-                for (const row of postAggregate) {
-                    const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
-                    const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
-
-                    const contents: any = {};
-                    contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
-                    if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
-                        try {
-                            const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
-                            contents.coverPageSignUrl = signUrl;
-                        } catch (error) {
-                            console.log('PostSectionProcessor: ' + error);
-                        }
                     }
 
-                    // search isLike
-                    row.isLike = false;
-
-                    contents.owner = {};
-                    if (row.page !== undefined) {
-                        contents.owner = this.parsePageField(row.page);
-                    } else {
-                        contents.owner = this.parseUserField(user);
+                    // console.log('postIds', postIds.flat().map(id => console.log('id',id)));
+                    const postMatchStmt: any = {
+                        isDraft: false,
+                        deleted: false,
+                        hidden: false,
+                        startDateTime: { $lte: startDateTime, $gte: toDate },
+                    };
+                    if (postIds.length > 0) {
+                        postMatchStmt._id = { $nin: postIds.flat() };
                     }
-                    // remove page agg
-                    // delete row.page;
-                    delete row.user;
-                    contents.post = row;
-                    result.contents.push(contents);
-                }
-                result.dateTime = lastestDate;
+                    const postStmt = [
+                        { $match: postMatchStmt },
+                        {
+                            $lookup:
+                            {
+                                from: 'Page',
+                                let: { 'pageId': '$pageId' },
+                                pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] } } },
+                                { $project: { email: 0 } }
+                                ],
+                                as: 'page'
+                            }
+                        },
+                        { $sort: { summationScore: -1 } },
+                        {
+                            '$limit': limit
+                        },
+                        {
+                            $unwind: {
+                                path: '$page',
+                                preserveNullAndEmptyArrays: true
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'SocialPost',
+                                localField: '_id',
+                                foreignField: 'postId',
+                                as: 'socialPosts'
+                            }
+                        },
+                        {
+                            $project: {
+                                'socialPosts': {
+                                    '_id': 0,
+                                    'pageId': 0,
+                                    'postId': 0,
+                                    'postBy': 0,
+                                    'postByType': 0
+                                }
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'PostsGallery',
+                                localField: '_id',
+                                foreignField: 'post',
+                                as: 'gallery'
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'User',
+                                localField: 'ownerUser',
+                                foreignField: '_id',
+                                as: 'user'
+                            }
+                        },
+                        {
+                            $project: {
+                                story: 0
+                            }
 
-                resolve(result);
+                        },
+                    ];
+                    if (searchOfficialOnly) {
+                        postStmt.splice(3, 0, { $match: { 'page.isOfficial': true, 'page.banned': false } });
+                    }
+                    const postAggregate = await this.postsService.aggregate(postStmt);
+                    const lastestDate = null;
+                    const result: SectionModel = new SectionModel();
+                    result.title = (this.config === undefined || this.config.title === undefined) ? 'เรื่องราวที่คุณอาจพลาดไป' : this.config.title;
+                    result.subtitle = '';
+                    result.description = '';
+                    result.iconUrl = '';
+                    result.contents = [];
+                    result.type = 'IsRead'; // set type by processor type
+                    for (const row of postAggregate) {
+                        const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
+                        const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
+
+                        const contents: any = {};
+                        contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
+                        if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
+                            try {
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
+                                contents.coverPageSignUrl = signUrl;
+                            } catch (error) {
+                                console.log('PostSectionProcessor: ' + error);
+                            }
+                        }
+
+                        // search isLike
+                        row.isLike = false;
+
+                        contents.owner = {};
+                        if (row.page !== undefined) {
+                            contents.owner = this.parsePageField(row.page);
+                        } else {
+                            contents.owner = this.parseUserField(user);
+                        }
+                        // remove page agg
+                        // delete row.page;
+                        delete row.user;
+                        contents.post = row;
+                        result.contents.push(contents);
+                    }
+                    result.dateTime = lastestDate;
+
+                    resolve(result);
+                } else {
+                    // console.log('postIds', postIds.flat().map(id => console.log('id',id)));
+                    const postMatchStmt: any = {
+                        isDraft: false,
+                        deleted: false,
+                        hidden: false,
+                        startDateTime: { $lte: startDateTime, $gte: toDate },
+                    };
+                    const postStmt = [
+                        { $match: postMatchStmt },
+                        {
+                            $lookup:
+                            {
+                                from: 'Page',
+                                let: { 'pageId': '$pageId' },
+                                pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$pageId'] } } },
+                                { $project: { email: 0 } }
+                                ],
+                                as: 'page'
+                            }
+                        },
+                        { $sort: { summationScore: -1 } },
+                        {
+                            '$limit': limit
+                        },
+                        {
+                            $unwind: {
+                                path: '$page',
+                                preserveNullAndEmptyArrays: true
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'SocialPost',
+                                localField: '_id',
+                                foreignField: 'postId',
+                                as: 'socialPosts'
+                            }
+                        },
+                        {
+                            $project: {
+                                'socialPosts': {
+                                    '_id': 0,
+                                    'pageId': 0,
+                                    'postId': 0,
+                                    'postBy': 0,
+                                    'postByType': 0
+                                }
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'PostsGallery',
+                                localField: '_id',
+                                foreignField: 'post',
+                                as: 'gallery'
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'User',
+                                localField: 'ownerUser',
+                                foreignField: '_id',
+                                as: 'user'
+                            }
+                        },
+                        {
+                            $project: {
+                                story: 0
+                            }
+
+                        },
+                    ];
+                    if (searchOfficialOnly) {
+                        postStmt.splice(3, 0, { $match: { 'page.isOfficial': true, 'page.banned': false } });
+                    }
+                    const postAggregate = await this.postsService.aggregate(postStmt);
+                    const lastestDate = null;
+                    const result: SectionModel = new SectionModel();
+                    result.title = (this.config === undefined || this.config.title === undefined) ? 'เรื่องราวที่คุณอาจพลาดไป' : this.config.title;
+                    result.subtitle = '';
+                    result.description = '';
+                    result.iconUrl = '';
+                    result.contents = [];
+                    result.type = 'IsRead'; // set type by processor type
+                    for (const row of postAggregate) {
+                        const user = (row.user !== undefined && row.user.length > 0) ? row.user[0] : undefined;
+                        const firstImage = (row.gallery.length > 0) ? row.gallery[0] : undefined;
+
+                        const contents: any = {};
+                        contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
+                        if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
+                            try {
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
+                                contents.coverPageSignUrl = signUrl;
+                            } catch (error) {
+                                console.log('PostSectionProcessor: ' + error);
+                            }
+                        }
+
+                        // search isLike
+                        row.isLike = false;
+
+                        contents.owner = {};
+                        if (row.page !== undefined) {
+                            contents.owner = this.parsePageField(row.page);
+                        } else {
+                            contents.owner = this.parseUserField(user);
+                        }
+                        // remove page agg
+                        // delete row.page;
+                        delete row.user;
+                        contents.post = row;
+                        result.contents.push(contents);
+                    }
+                    result.dateTime = lastestDate;
+
+                    resolve(result);
+                }
             } catch (error) {
                 reject(error);
             }
