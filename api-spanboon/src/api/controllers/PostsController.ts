@@ -105,7 +105,7 @@ export class PostsController {
             manipulatePost.detail = manipulatePostRequest.detail;
             create = await this.manipulatePostService.create(manipulatePost);
             if (create !== undefined) {
-                const successResponse = ResponseUtil.getSuccessResponse('Successfully got New Post', create);
+                const successResponse = ResponseUtil.getSuccessResponse('Successfully Hide Post', create);
                 return res.status(200).send(successResponse);
             } else {
                 const errorResponse = ResponseUtil.getErrorResponse('Cannot Create Manipulate Post.', undefined);
@@ -121,7 +121,7 @@ export class PostsController {
             manipulatePost.detail = manipulatePostRequest.detail;
             create = await this.manipulatePostService.create(manipulatePost);
             if (create !== undefined) {
-                const successResponse = ResponseUtil.getSuccessResponse('Successfully got New Post', create);
+                const successResponse = ResponseUtil.getSuccessResponse('Successfully Report Post', create);
                 return res.status(200).send(successResponse);
             } else {
                 const errorResponse = ResponseUtil.getErrorResponse('Cannot Create Manipulate Post.', undefined);
@@ -137,7 +137,7 @@ export class PostsController {
             manipulatePost.detail = manipulatePostRequest.detail;
             create = await this.manipulatePostService.create(manipulatePost);
             if (create !== undefined) {
-                const successResponse = ResponseUtil.getSuccessResponse('Successfully got New Post', create);
+                const successResponse = ResponseUtil.getSuccessResponse('Successfully Block Page Post', create);
                 return res.status(200).send(successResponse);
             } else {
                 const errorResponse = ResponseUtil.getErrorResponse('Cannot Create Manipulate Post.', undefined);
@@ -153,7 +153,7 @@ export class PostsController {
             manipulatePost.detail = manipulatePostRequest.detail;
             create = await this.manipulatePostService.create(manipulatePost);
             if (create !== undefined) {
-                const successResponse = ResponseUtil.getSuccessResponse('Successfully Create Manipulate Post', create);
+                const successResponse = ResponseUtil.getSuccessResponse('Successfully Report Page.', create);
                 return res.status(200).send(successResponse);
             } else {
                 const errorResponse = ResponseUtil.getErrorResponse('Cannot Create Manipulate Post.', undefined);
