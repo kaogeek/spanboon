@@ -1332,7 +1332,7 @@
             </div>
         </div>
     </section>
-    <section class="section-8" *ngIf="hidebar && loadingCount === 6 && !!followingContent">
+    <section class="section-8" *ngIf="hidebar && (loadingCount === 6 || loadingCount === 1) && !!followingContent">
         <div class="container">
             <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '59px' : '0'}">
                 <div class="wrapper-title">

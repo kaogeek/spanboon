@@ -77,7 +77,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   public hidebar: boolean = true;
   public isLoadingPost: boolean;
   public throttle = 150;
-  public scrollDistance = 2;
+  public scrollDistance = 3;
   public offset: number = 0;
   public limit: number = 4;
   public isOnLoad: boolean;
@@ -236,69 +236,115 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     filter.whereConditions = {};
     filter.orderBy = {};
     let post;
-    if (this.loadContentCount > 0) {
-      this.offset += this.limit;
-    }
-    if (this.loadingCount === 0) {
-      post = 'isReadPost';
-    } else if (this.loadingCount === 1) {
-      post = 'pageFollowings';
-    } else if (this.loadingCount === 2) {
-      post = 'emergencyFollowings';
-    } else if (this.loadingCount === 3) {
-      post = 'objectiveFollowings';
-    } else if (this.loadingCount === 4) {
-      post = 'userFollowings';
-    } else if (this.loadingCount === 5) {
-      post = 'followingProvinces';
-    } else {
-      post = 'followingContent';
-    }
-    this.mainPageModelFacade.bottomContent(userId, filter, this.offset, this.limit, post).then((res) => {
-      if (res) {
-        if (this.isOnLoad === true) {
-          if (this.loadingCount === 0) {
-            this.isReadPost = res;
-          } else if (this.loadingCount === 1) {
-            this.pageFollowings = res;
-          } else if (this.loadingCount === 2) {
-            this.emergencyFollowings = res;
-          } else if (this.loadingCount === 3) {
-            this.objectiveFollowings = res;
-          } else if (this.loadingCount === 4) {
-            this.userFollowings = res;
-          } else if (this.loadingCount === 5) {
-            this.followingProvinces = res;
-          } else if (this.loadingCount === 6) {
-            if (res.followingContents.contents.length !== 0) {
-              if (this.loadContentCount > 0) {
-                let data = this.followingContent.followingContents.contents.concat(res.followingContents.contents);
-                this.followingContent.followingContents.contents = data;
-              } else {
-                this.followingContent = res;
-                this.loadContentCount++;
+    if (userId) {
+      if (this.loadContentCount > 0) {
+        this.offset += this.limit;
+      }
+      if (this.loadingCount === 0) {
+        post = 'isReadPost';
+      } else if (this.loadingCount === 1) {
+        post = 'pageFollowings';
+      } else if (this.loadingCount === 2) {
+        post = 'emergencyFollowings';
+      } else if (this.loadingCount === 3) {
+        post = 'objectiveFollowings';
+      } else if (this.loadingCount === 4) {
+        post = 'userFollowings';
+      } else if (this.loadingCount === 5) {
+        post = 'followingProvinces';
+      } else {
+        post = 'followingContent';
+      }
+      this.mainPageModelFacade.bottomContent(userId, this.offset, this.limit, post, filter).then((res) => {
+        if (res) {
+          if (this.isOnLoad === true) {
+            if (this.loadingCount === 0) {
+              this.isReadPost = res;
+            } else if (this.loadingCount === 1) {
+              this.pageFollowings = res;
+            } else if (this.loadingCount === 2) {
+              this.emergencyFollowings = res;
+            } else if (this.loadingCount === 3) {
+              this.objectiveFollowings = res;
+            } else if (this.loadingCount === 4) {
+              this.userFollowings = res;
+            } else if (this.loadingCount === 5) {
+              this.followingProvinces = res;
+            } else if (this.loadingCount === 6) {
+              if (res.followingContents.contents.length !== 0) {
+                if (this.loadContentCount > 0) {
+                  let data = this.followingContent.followingContents.contents.concat(res.followingContents.contents);
+                  this.followingContent.followingContents.contents = data;
+                } else {
+                  this.followingContent = res;
+                  this.loadContentCount++;
+                }
               }
             }
-          }
-          if (post === 'followingContent') {
-            this.loadingCount === 6;
-            this.isOnLoad = false;
-            this.isLoadingPost = false;
+            if (post === 'followingContent') {
+              this.loadingCount === 6;
+              this.isOnLoad = false;
+              this.isLoadingPost = false;
+            } else {
+              this.loadingCount++;
+              this.isOnLoad = false;
+              this.isLoadingPost = false;
+            }
           } else {
-            this.loadingCount++;
-            this.isOnLoad = false;
-            this.isLoadingPost = false;
+            this.modelBottom = res;
           }
-        } else {
-          this.modelBottom = res;
         }
+      }).catch((err) => {
+        if (err) {
+          this.isOnLoad = false;
+          this.isLoadingPost = false;
+        }
+      })
+    } else {
+      if (this.loadContentCount > 0) {
+        this.offset += this.limit;
       }
-    }).catch((err) => {
-      if (err) {
-        this.isOnLoad = false;
-        this.isLoadingPost = false;
+      if (this.loadingCount === 0) {
+        post = 'isReadPost';
+      } else {
+        post = 'followingContent';
       }
-    })
+      this.mainPageModelFacade.bottomContent(null, this.offset, this.limit, post).then((res) => {
+        if (res) {
+          if (this.isOnLoad === true) {
+            if (this.loadingCount === 0) {
+              this.isReadPost = res;
+            } else if (this.loadingCount === 1) {
+              if (res.followingContents.contents.length !== 0) {
+                if (this.loadContentCount > 0) {
+                  let data = this.followingContent.followingContents.contents.concat(res.followingContents.contents);
+                  this.followingContent.followingContents.contents = data;
+                } else {
+                  this.followingContent = res;
+                  this.loadContentCount++;
+                }
+              }
+            }
+            if (post === 'followingContent') {
+              this.loadingCount === 1;
+              this.isOnLoad = false;
+              this.isLoadingPost = false;
+            } else {
+              this.loadingCount++;
+              this.isOnLoad = false;
+              this.isLoadingPost = false;
+            }
+          } else {
+            this.modelBottom = res;
+          }
+        }
+      }).catch((err) => {
+        if (err) {
+          this.isOnLoad = false;
+          this.isLoadingPost = false;
+        }
+      })
+    }
   }
 
   public async getMainPageModelV3(userId?) {
@@ -785,6 +831,10 @@ export class HomePageV3 extends AbstractPage implements OnInit {
       this.isOnLoad = true;
       this.isLoadingPost = true;
       await this.getBottomContent(this.userCloneDatas.id);
+    } else if (!this.isLogin() && !this.isLoadingPost) {
+      this.isOnLoad = true;
+      this.isLoadingPost = true;
+      await this.getBottomContent();
     }
 
   }
