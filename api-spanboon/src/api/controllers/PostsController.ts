@@ -99,8 +99,8 @@ export class PostsController {
             const manipulatePost: ManipulatePostRequest = new ManipulatePostRequest();
             manipulatePost.userId = userObjId;
             manipulatePost.postId = manipulatePostRequest.postId;
-            manipulatePost.pageIdOwnerPost = manipulatePostRequest.pageIdOwnerPost;
-            manipulatePost.userIdOwnerPost = manipulatePostRequest.userIdOwnerPost;
+            manipulatePost.pageIdOwner = manipulatePostRequest.pageIdOwner;
+            manipulatePost.userIdOwner = manipulatePostRequest.userIdOwner;
             manipulatePost.type = manipulatePostRequest.type;
             manipulatePost.detail = manipulatePostRequest.detail;
             create = await this.manipulatePostService.create(manipulatePost);
@@ -115,8 +115,8 @@ export class PostsController {
             const manipulatePost: ManipulatePostRequest = new ManipulatePostRequest();
             manipulatePost.userId = userObjId;
             manipulatePost.postId = manipulatePostRequest.postId;
-            manipulatePost.pageIdOwnerPost = manipulatePostRequest.pageIdOwnerPost;
-            manipulatePost.userIdOwnerPost = manipulatePostRequest.userIdOwnerPost;
+            manipulatePost.pageIdOwner = manipulatePostRequest.pageIdOwner;
+            manipulatePost.userIdOwner = manipulatePostRequest.userIdOwner;
             manipulatePost.type = manipulatePostRequest.type;
             manipulatePost.detail = manipulatePostRequest.detail;
             create = await this.manipulatePostService.create(manipulatePost);
@@ -131,8 +131,8 @@ export class PostsController {
             const manipulatePost: ManipulatePostRequest = new ManipulatePostRequest();
             manipulatePost.userId = userObjId;
             manipulatePost.postId = manipulatePostRequest.postId;
-            manipulatePost.pageIdOwnerPost = manipulatePostRequest.pageIdOwnerPost;
-            manipulatePost.userIdOwnerPost = manipulatePostRequest.userIdOwnerPost;
+            manipulatePost.pageIdOwner = manipulatePostRequest.pageIdOwner;
+            manipulatePost.userIdOwner = manipulatePostRequest.userIdOwner;
             manipulatePost.type = manipulatePostRequest.type;
             manipulatePost.detail = manipulatePostRequest.detail;
             create = await this.manipulatePostService.create(manipulatePost);
@@ -147,8 +147,8 @@ export class PostsController {
             const manipulatePost: ManipulatePostRequest = new ManipulatePostRequest();
             manipulatePost.userId = userObjId;
             manipulatePost.postId = manipulatePostRequest.postId;
-            manipulatePost.pageIdOwnerPost = manipulatePostRequest.pageIdOwnerPost;
-            manipulatePost.userIdOwnerPost = manipulatePostRequest.userIdOwnerPost;
+            manipulatePost.pageIdOwner = manipulatePostRequest.pageIdOwner;
+            manipulatePost.userIdOwner = manipulatePostRequest.userIdOwner;
             manipulatePost.type = manipulatePostRequest.type;
             manipulatePost.detail = manipulatePostRequest.detail;
             create = await this.manipulatePostService.create(manipulatePost);

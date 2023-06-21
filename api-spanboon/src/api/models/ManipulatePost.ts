@@ -18,11 +18,11 @@ export class ManipulatePost extends BaseModel {
     @Column({ name: 'postId' })
     public postId: any;
 
-    @Column({ name: 'pageIdOwnerPost' })
-    public pageIdOwnerPost: ObjectID;
+    @Column({ name: 'pageIdOwner' })
+    public pageIdOwner: ObjectID;
 
-    @Column({ name: 'userIdOwnerPost' })
-    public userIdOwnerPost: ObjectID;
+    @Column({ name: 'userIdOwner' })
+    public userIdOwner: ObjectID;
 
     @Column({ name: 'type' })
     public type: ObjectID;

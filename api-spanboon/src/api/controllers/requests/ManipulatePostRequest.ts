@@ -5,8 +5,8 @@ export class ManipulatePostRequest {
 
     public userId: string;
     public postId:ObjectID;
-    public pageIdOwnerPost:ObjectID;
-    public userIdOwnerPost:ObjectID;
+    public pageIdOwner:ObjectID;
+    public userIdOwner:ObjectID;
     public type: string;
     public detail: string;
 }
