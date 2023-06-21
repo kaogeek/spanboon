@@ -29,11 +29,9 @@ export class IsReadSectionProcessor extends AbstractSeparateSectionProcessor {
                 let searchOfficialOnly: number = undefined;
                 let isReadPostIds = undefined;
                 // get startDateTime, endDateTime
-                let objIds = undefined;
                 let startDateTime: Date = undefined;
                 let retrospect: number = undefined;
                 if (this.data !== undefined && this.data !== null) {
-                    objIds = this.data.userId;
                     startDateTime = this.data.startDateTime;
                     isReadPostIds = this.data.postIds;
                     retrospect = this.data.retrospects;
