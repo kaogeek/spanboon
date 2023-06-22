@@ -2265,7 +2265,7 @@ export class PageController {
      * HTTP/1.1 500 Internal Server Error
      */
     @Post('/search')
-    public async searchPage(@Body({ validate: true }) filter: SearchFilter, @Res() res: any): Promise<any> {
+    public async searchPage(@QueryParam('limit') limit: number, @QueryParam('offset') offset: number, @Body({ validate: true }) filter: SearchFilter, @Res() res: any): Promise<any> {
         if (ObjectUtil.isObjectEmpty(filter)) {
             return res.status(200).send([]);
         }
@@ -2282,8 +2282,22 @@ export class PageController {
             filter.whereConditions = {};
         }
 
-        const pageLists: any = await this.pageService.search(filter, { signURL: true });
-
+        // const pageLists: any = await this.pageService.search(filter, { signURL: true });
+        const pageLists: any = await this.pageService.aggregate(
+            [
+                {
+                    $match: {
+                        createdDate: -1
+                    }
+                },
+                {
+                    $offset: offset
+                },
+                {
+                    $limit: limit
+                }
+            ]
+        );
         if (pageLists) {
             const successResponse = ResponseUtil.getSuccessResponse('Successfully Search Page', pageLists);
             return res.status(200).send(successResponse);
