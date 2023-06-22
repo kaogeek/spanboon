@@ -237,7 +237,6 @@ export class AdminUserController {
     @Authorized()
     public async searchUsers(@Body({ validate: true }) filter: SearchFilter, @Res() res: any): Promise<any> {
         let userLists: any = await this.userService.search(filter.limit, filter.offset, filter.select, filter.relation, filter.whereConditions, filter.orderBy, filter.count);
-
         if (userLists) {
             userLists = await this.userService.cleanAdminField(userLists);
             const successResponse = ResponseUtil.getSuccessResponse('Search User Success', userLists);

@@ -48,8 +48,8 @@ import { PostUtil } from '../../utils/PostUtil';
 import { POST_TYPE } from '../../constants/PostType';
 import { UserService } from '../services/UserService';
 import { DeviceTokenService } from '../services/DeviceToken';
-import { MANIPULATE_POST } from '../../constants/ManipulatePost';
-import { ManipulatePostRequest } from './requests/ManipulatePostRequest';
+import { MANIPULATE } from '../../constants/Manipulate';
+import { ManipulateRequest } from './requests/ManipulateRequest';
 import { ManipulatePostService } from '../services/ManipulatePostService';
 @JsonController('/post')
 export class PostsController {
@@ -90,19 +90,19 @@ export class PostsController {
      * HTTP/1.1 500 Internal Server Error
      */
 
-    @Post('/manipulate/post')
+    @Post('/manipulate')
     @Authorized('user')
-    public async maniPuLatePost(@Body({ validate: true }) manipulatePostRequest: ManipulatePostRequest, @Res() res: any, @Req() req: any): Promise<any> {
+    public async maniPuLatePost(@Body({ validate: true }) manipulateRequest: ManipulateRequest, @Res() res: any, @Req() req: any): Promise<any> {
         const userObjId = new ObjectID(req.user.id);
         let create = undefined;
-        if (MANIPULATE_POST.HIDE && manipulatePostRequest.type === 'hide_post') {
-            const manipulatePost: ManipulatePostRequest = new ManipulatePostRequest();
+        if (MANIPULATE.HIDE && manipulateRequest.type === 'hide_post') {
+            const manipulatePost: ManipulateRequest = new ManipulateRequest();
             manipulatePost.userId = userObjId;
-            manipulatePost.postId = manipulatePostRequest.postId;
-            manipulatePost.pageIdOwner = manipulatePostRequest.pageIdOwner;
-            manipulatePost.userIdOwner = manipulatePostRequest.userIdOwner;
-            manipulatePost.type = manipulatePostRequest.type;
-            manipulatePost.detail = manipulatePostRequest.detail;
+            manipulatePost.postId = manipulateRequest.postId;
+            manipulatePost.pageIdOwner = manipulateRequest.pageIdOwner;
+            manipulatePost.userIdOwner = manipulateRequest.userIdOwner;
+            manipulatePost.type = manipulateRequest.type;
+            manipulatePost.detail = manipulateRequest.detail;
             create = await this.manipulatePostService.create(manipulatePost);
             if (create !== undefined) {
                 const successResponse = ResponseUtil.getSuccessResponse('Successfully Hide Post', create);
@@ -111,14 +111,14 @@ export class PostsController {
                 const errorResponse = ResponseUtil.getErrorResponse('Cannot Create Manipulate Post.', undefined);
                 return res.status(400).send(errorResponse);
             }
-        } else if (MANIPULATE_POST.REPORT_POST && manipulatePostRequest.type === 'report_post') {
-            const manipulatePost: ManipulatePostRequest = new ManipulatePostRequest();
+        } else if (MANIPULATE.REPORT_POST && manipulateRequest.type === 'report_post') {
+            const manipulatePost: ManipulateRequest = new ManipulateRequest();
             manipulatePost.userId = userObjId;
-            manipulatePost.postId = manipulatePostRequest.postId;
-            manipulatePost.pageIdOwner = manipulatePostRequest.pageIdOwner;
-            manipulatePost.userIdOwner = manipulatePostRequest.userIdOwner;
-            manipulatePost.type = manipulatePostRequest.type;
-            manipulatePost.detail = manipulatePostRequest.detail;
+            manipulatePost.postId = manipulateRequest.postId;
+            manipulatePost.pageIdOwner = manipulateRequest.pageIdOwner;
+            manipulatePost.userIdOwner = manipulateRequest.userIdOwner;
+            manipulatePost.type = manipulateRequest.type;
+            manipulatePost.detail = manipulateRequest.detail;
             create = await this.manipulatePostService.create(manipulatePost);
             if (create !== undefined) {
                 const successResponse = ResponseUtil.getSuccessResponse('Successfully Report Post', create);
@@ -127,39 +127,7 @@ export class PostsController {
                 const errorResponse = ResponseUtil.getErrorResponse('Cannot Create Manipulate Post.', undefined);
                 return res.status(400).send(errorResponse);
             }
-        } else if (MANIPULATE_POST.BLOCKPAGE && manipulatePostRequest.type === 'block_page') {
-            const manipulatePost: ManipulatePostRequest = new ManipulatePostRequest();
-            manipulatePost.userId = userObjId;
-            manipulatePost.postId = manipulatePostRequest.postId;
-            manipulatePost.pageIdOwner = manipulatePostRequest.pageIdOwner;
-            manipulatePost.userIdOwner = manipulatePostRequest.userIdOwner;
-            manipulatePost.type = manipulatePostRequest.type;
-            manipulatePost.detail = manipulatePostRequest.detail;
-            create = await this.manipulatePostService.create(manipulatePost);
-            if (create !== undefined) {
-                const successResponse = ResponseUtil.getSuccessResponse('Successfully Block Page Post', create);
-                return res.status(200).send(successResponse);
-            } else {
-                const errorResponse = ResponseUtil.getErrorResponse('Cannot Create Manipulate Post.', undefined);
-                return res.status(400).send(errorResponse);
-            }
-        } else if (MANIPULATE_POST.REPORT_PAGE && manipulatePostRequest.type === 'report_page') {
-            const manipulatePost: ManipulatePostRequest = new ManipulatePostRequest();
-            manipulatePost.userId = userObjId;
-            manipulatePost.postId = manipulatePostRequest.postId;
-            manipulatePost.pageIdOwner = manipulatePostRequest.pageIdOwner;
-            manipulatePost.userIdOwner = manipulatePostRequest.userIdOwner;
-            manipulatePost.type = manipulatePostRequest.type;
-            manipulatePost.detail = manipulatePostRequest.detail;
-            create = await this.manipulatePostService.create(manipulatePost);
-            if (create !== undefined) {
-                const successResponse = ResponseUtil.getSuccessResponse('Successfully Report Page.', create);
-                return res.status(200).send(successResponse);
-            } else {
-                const errorResponse = ResponseUtil.getErrorResponse('Cannot Create Manipulate Post.', undefined);
-                return res.status(400).send(errorResponse);
-            }
-        } else {
+        }  else {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot Manipulate post because type does not match.', undefined);
             return res.status(400).send(errorResponse);
         }

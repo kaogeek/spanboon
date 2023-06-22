@@ -5,7 +5,7 @@
  * Author:  shiorin <junsuda.s@absolute.co.th>, chalucks <chaluck.s@absolute.co.th>
  */
 
-export const MANIPULATE_POST = {
+export const MANIPULATE = {
     HIDE:'hide_post',
     REPORT_POST:'report_post',
     BLOCKPAGE:'block_page',

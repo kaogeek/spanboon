@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import { ObjectID } from 'typeorm';
 
-export class ManipulatePostRequest {
+export class ManipulateRequest {
 
     public userId: string;
     public postId:ObjectID;

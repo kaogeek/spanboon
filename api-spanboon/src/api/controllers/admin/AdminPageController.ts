@@ -31,6 +31,7 @@ import { EmergencyEventService } from '../../services/EmergencyEventService';
 import { HashTagService } from '../../services/HashTagService';
 import { KaokaiTodaySnapShotService } from '../../services/KaokaiTodaySnapShot';
 import { NotificationNewsService } from '../../services/NotificationNewsService';
+import { ManipulatePostService } from '../../services/ManipulatePostService';
 @JsonController('/admin/page')
 export class AdminPageController {
     constructor(
@@ -43,7 +44,8 @@ export class AdminPageController {
         private postsService: PostsService,
         private pageGroupService: PageGroupService,
         private kaokaiTodaySnapShotService: KaokaiTodaySnapShotService,
-        private notificationNewsService: NotificationNewsService
+        private notificationNewsService: NotificationNewsService,
+        private manipulatePostService: ManipulatePostService
     ) { }
 
     /**
@@ -662,7 +664,7 @@ export class AdminPageController {
     public async deleteGroup(@Param('id') groupId: string, @Res() res: any, @Req() req: any): Promise<any> {
         const groupObjId = new ObjectID(groupId);
         if (groupObjId !== undefined) {
-            await this.pageGroupService.delete({_id:groupObjId});
+            await this.pageGroupService.delete({ _id: groupObjId });
             return res.status(200).send(ResponseUtil.getSuccessResponse('Delete page is successfully.', true));
         } else {
             const errorResponse: any = { status: 0, message: 'Sorry cannnot delete page.' };
@@ -705,13 +707,39 @@ export class AdminPageController {
 
     @Post('/notification/news/search')
     @Authorized()
-    public async notificationNews(@Body({ validate: true }) filter: SearchFilter,@Res() res: any, @Req() req: any): Promise<any> {
+    public async notificationNews(@Body({ validate: true }) filter: SearchFilter, @Res() res: any, @Req() req: any): Promise<any> {
         const notificationNews = await this.notificationNewsService.search(filter.limit, filter.offset, filter.select, filter.relation, filter.whereConditions, filter.orderBy, filter.count);
         if (notificationNews.length > 0) {
             const successResponse = ResponseUtil.getSuccessResponse('Get notification news is sucessfully.', notificationNews);
             return res.status(200).send(successResponse);
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('There are no notification news.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+
+    @Post('/post/report/search')
+    @Authorized()
+    public async postReport(@Body({ validate: true }) filter: SearchFilter, @Res() res: any, @Req() req: any): Promise<any> {
+        const postReport = await this.manipulatePostService.search(filter.limit, filter.offset, filter.select, filter.relation, filter.whereConditions, filter.orderBy, filter.count);
+        if (postReport.length > 0) {
+            const successResponse = ResponseUtil.getSuccessResponse('Search report post successfully.', postReport);
+            return res.status(200).send(successResponse);
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('There are no report posts.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+
+    @Post('/page/report/search')
+    @Authorized()
+    public async pageReport(@Body({ validate: true }) filter: SearchFilter, @Res() res: any, @Req() req: any): Promise<any> {
+        const pageReport = await this.manipulatePostService.search(filter.limit, filter.offset, filter.select, filter.relation, filter.whereConditions, filter.orderBy, filter.count);
+        if (pageReport.length > 0) {
+            const successResponse = ResponseUtil.getSuccessResponse('Search report page is sucessfully.', pageReport);
+            return res.status(200).send(successResponse);
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('There are no report page.', undefined);
             return res.status(400).send(errorResponse);
         }
     }
