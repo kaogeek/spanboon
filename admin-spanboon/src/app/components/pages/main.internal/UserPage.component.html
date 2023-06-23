@@ -108,7 +108,7 @@
         <div class="main-content">
             <admin-table-component [isUser]="true" #table [fieldSearch]="fieldSearch" [user]="'true'"
                 [orderBy]="orderBy" [facade]="pageUserFacade" [title]="'ผู้ใช้งาน'" (create)="clickCreateForm()"
-                [fieldTable]="fieldTable" [actions]="actions" (ban)="clickBan($event)"
+                [manipulate]="true" [fieldTable]="fieldTable" [actions]="actions" (ban)="clickBan($event)"
                 (delete)="clickDelete($event)"></admin-table-component>
         </div>
     </mat-drawer-content>

@@ -40,7 +40,7 @@
                 </mat-select>
             </mat-form-field>
             <mat-form-field class="input-search">
-                <input matInput (keyup.enter)="searchData()" placeholder="ค้นหาข้อมูล" [(ngModel)]="search"
+                <input matInput (keyup.enter)="keyUp()" placeholder="ค้นหาข้อมูล" [(ngModel)]="search"
                     disabled="{{filters.value.length === 0 ? true : false}}">
                 <button mat-button *ngIf="search" matSuffix mat-icon-button aria-label="Clear" (click)="clearSerach()">
                     <mat-icon>close</mat-icon>
@@ -208,7 +208,7 @@
                 </ng-template>
             </table>
         </div>
-        <mat-paginator [pageSizeOptions]="[25, 50, 100]" [length]="data ? data.length : 0" showFirstLastButtons>
+        <mat-paginator [pageSizeOptions]="[25, 50, 100]" [pageSize]="25" showFirstLastButtons>
         </mat-paginator>
     </div>
 </div>
