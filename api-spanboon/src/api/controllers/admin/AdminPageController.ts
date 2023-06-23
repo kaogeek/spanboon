@@ -32,6 +32,7 @@ import { HashTagService } from '../../services/HashTagService';
 import { KaokaiTodaySnapShotService } from '../../services/KaokaiTodaySnapShot';
 import { NotificationNewsService } from '../../services/NotificationNewsService';
 import { ManipulatePostService } from '../../services/ManipulatePostService';
+import { UserBlockContentService } from '../../services/UserBlockContentService';
 @JsonController('/admin/page')
 export class AdminPageController {
     constructor(
@@ -45,7 +46,8 @@ export class AdminPageController {
         private pageGroupService: PageGroupService,
         private kaokaiTodaySnapShotService: KaokaiTodaySnapShotService,
         private notificationNewsService: NotificationNewsService,
-        private manipulatePostService: ManipulatePostService
+        private manipulatePostService: ManipulatePostService,
+        private userBlockContentService:UserBlockContentService
     ) { }
 
     /**
@@ -718,22 +720,22 @@ export class AdminPageController {
         }
     }
 
-    @Post('/post/report/search')
-    @Authorized()
-    public async postReport(@Body({ validate: true }) filter: SearchFilter, @Res() res: any, @Req() req: any): Promise<any> {
-        const postReport = await this.manipulatePostService.search(filter.limit, filter.offset, filter.select, filter.relation, filter.whereConditions, filter.orderBy, filter.count);
-        if (postReport.length > 0) {
-            const successResponse = ResponseUtil.getSuccessResponse('Search report post successfully.', postReport);
-            return res.status(200).send(successResponse);
-        } else {
-            const errorResponse = ResponseUtil.getErrorResponse('There are no report posts.', undefined);
-            return res.status(400).send(errorResponse);
-        }
-    }
-
-    @Post('/page/report/search')
+    @Post('/report/search')
     @Authorized()
     public async pageReport(@Body({ validate: true }) filter: SearchFilter, @Res() res: any, @Req() req: any): Promise<any> {
+        const pageReport = await this.userBlockContentService.search(filter.limit, filter.offset, filter.select, filter.relation, filter.whereConditions, filter.orderBy, filter.count);
+        if (pageReport.length > 0) {
+            const successResponse = ResponseUtil.getSuccessResponse('Search report page is sucessfully.', pageReport);
+            return res.status(200).send(successResponse);
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('There are no report page.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    } 
+
+    @Post('/manipulate/search')
+    @Authorized()
+    public async manipulateSearch(@Body({ validate: true }) filter: SearchFilter, @Res() res: any, @Req() req: any): Promise<any> {
         const pageReport = await this.manipulatePostService.search(filter.limit, filter.offset, filter.select, filter.relation, filter.whereConditions, filter.orderBy, filter.count);
         if (pageReport.length > 0) {
             const successResponse = ResponseUtil.getSuccessResponse('Search report page is sucessfully.', pageReport);

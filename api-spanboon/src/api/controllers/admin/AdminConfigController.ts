@@ -113,7 +113,18 @@ export class AdminConfigController {
             return res.status(400).send(errorResponse);
         }
     }
-
+    /* 
+    @Post('/page/report')
+    @Authorized()
+    public async createPageReport(@Res() res: any, @Req() req: any): Promise<any> {
+        const title = req.body.title;
+        if(title !== undefined && title !== null){
+            
+        }else{
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot create Page report type missing the title.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    } */
     /**
      * @api {put} /api/admin/config/:name Edit config API
      * @apiGroup Admin Config

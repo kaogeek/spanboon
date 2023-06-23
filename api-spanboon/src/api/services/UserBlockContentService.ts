@@ -7,7 +7,6 @@
 
 import { Service } from 'typedi';
 import { OrmRepository } from 'typeorm-typedi-extensions';
-import { UserBlockContent } from '../models/UserBlockContent';
 import { UserBlockContentRepository } from '../repositories/UserBlockContentRepository';
 import { SearchUtil } from '../../utils/SearchUtil';
 import { UserService } from './UserService';
@@ -16,7 +15,7 @@ import { CONTENT_TYPE } from '../../constants/ContentAction';
 import { User } from '../models/User';
 import { Page } from '../models/Page';
 import { ObjectID } from 'mongodb';
-
+import { UserBlockContent } from '../models/UserBlockContent';
 @Service()
 export class UserBlockContentService {
 

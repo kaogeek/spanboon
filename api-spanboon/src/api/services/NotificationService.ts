@@ -84,6 +84,59 @@ export class NotificationService {
             return this.notificationRepository.find(condition);
         }
     }
+    public async testMultiDevice(token: any): Promise<any> {
+        console.log('token',token);
+        const registrationTokens = token;
+        const title = 'Hello World ชาวก้าวไกล!';
+        const image = 'https://scontent.fbkk2-3.fna.fbcdn.net/v/t39.30808-6/355437853_834984011524286_2620245563691529882_n.jpg?_nc_cat=111&cb=99be929b-59f725be&ccb=1-7&_nc_sid=730e14&_nc_eui2=AeHulsSGw1aykmm2mWaVr7ui84g9AOew56vziD0A57Dnq_ebcZYEz2lyh_ZTBRdkA_Uhh-I0e2lyIMNgTYvbZ6a8&_nc_ohc=zOqkiqXob2wAX_HQUSs&_nc_ht=scontent.fbkk2-3.fna&oh=00_AfBTww5j0wwsoi2AMVVlLnrJ1SG3x1A-JlI97O2YaqKS_g&oe=649AD4E3';
+        const payload =
+        {
+            notification: {
+                title,
+                image,
+            }
+        };
+        if (String(registrationTokens) !== undefined) {
+            Promise.all([await admin.messaging().sendToDevice(registrationTokens, payload)]).then((res) => {
+                console.log('res',res);
+            });
+        } else {
+            return;
+        }
+    }
+    public async multiPushNotificationMessage(data: any, tokenId: any, date: any): Promise<any> {
+        const title = 'ก้าวไกลหน้าหนึ่ง';
+        let body = data.majorTrend.contents[0].post.title ? String(data.majorTrend.contents[0].post.title) : 'ก้าวไกลหน้าหนึ่ง';
+        if (body.length > 60) {
+            body = body.substring(0, 60) + '...';
+        }
+        const image = data.majorTrend.contents[0].coverPageSignUrl ? data.majorTrend.contents[0].coverPageSignUrl : 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png';
+        const thaiDate = String(date);
+        const token = tokenId;
+        const notificationType = 'TODAY_NEWS';
+        const link = process.env.APP_HOME + `?date=${thaiDate}`;
+        const payload =
+        {
+            tokens:token,
+            notification: {
+                title,
+                body,
+                image,
+            },
+            data: {
+                notificationType,
+                link
+            }
+        };
+        if (String(token) !== undefined) {
+            Promise.all([await admin.messaging().sendMulticast(payload)])
+            .then((res) => {
+                console.log('res',res);
+            });
+        } else {
+            return;
+        }
+    }
 
     public async pushNotificationMessage(data: any, tokenId: any, date: any): Promise<any> {
         const title = 'ก้าวไกลหน้าหนึ่ง';
