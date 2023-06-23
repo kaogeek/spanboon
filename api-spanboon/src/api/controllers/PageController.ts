@@ -79,9 +79,6 @@ import { NotificationService } from '../services/NotificationService';
 import { DeletePageService } from '../services/DeletePageService';
 import axios from 'axios';
 import { PageGroupService } from '../services/PageGroupService';
-import { MANIPULATE } from '../../constants/Manipulate';
-import { ManipulateRequest } from './requests/ManipulateRequest';
-import { ManipulatePageService } from '../services/ManipulatePageService';
 // import { IpAddressEvent } from '../middlewares/IpAddressesMiddleware';
 @JsonController('/page')
 export class PageController {
@@ -114,7 +111,6 @@ export class PageController {
         private notificationService: NotificationService,
         private deletePageService: DeletePageService,
         private pageGroupService: PageGroupService,
-        private manipulatePageService:ManipulatePageService
     ) { }
 
     // Find Page API
@@ -336,48 +332,7 @@ export class PageController {
             return res.status(400).send(errorResponse);
         }
     }
-    @Post('/manipulate')
-    @Authorized('user')
-    public async maniPuLatePage(@Body({ validate: true }) manipulateRequest: ManipulateRequest, @Res() res: any, @Req() req: any): Promise<any> {
-        const userObjId = new ObjectID(req.user.id);
-        let create = undefined;
-         if (MANIPULATE.BLOCKPAGE && manipulateRequest.type === 'block_page') {
-            const manipulatePost: ManipulateRequest = new ManipulateRequest();
-            manipulatePost.userId = userObjId;
-            manipulatePost.postId = manipulateRequest.postId;
-            manipulatePost.pageIdOwner = manipulateRequest.pageIdOwner;
-            manipulatePost.userIdOwner = manipulateRequest.userIdOwner;
-            manipulatePost.type = manipulateRequest.type;
-            manipulatePost.detail = manipulateRequest.detail;
-            create = await this.manipulatePageService.create(manipulatePost);
-            if (create !== undefined) {
-                const successResponse = ResponseUtil.getSuccessResponse('Successfully Block Page Post', create);
-                return res.status(200).send(successResponse);
-            } else {
-                const errorResponse = ResponseUtil.getErrorResponse('Cannot Create Manipulate Post.', undefined);
-                return res.status(400).send(errorResponse);
-            }
-        } else if (MANIPULATE.REPORT_PAGE && manipulateRequest.type === 'report_page') {
-            const manipulatePost: ManipulateRequest = new ManipulateRequest();
-            manipulatePost.userId = userObjId;
-            manipulatePost.postId = manipulateRequest.postId;
-            manipulatePost.pageIdOwner = manipulateRequest.pageIdOwner;
-            manipulatePost.userIdOwner = manipulateRequest.userIdOwner;
-            manipulatePost.type = manipulateRequest.type;
-            manipulatePost.detail = manipulateRequest.detail;
-            create = await this.manipulatePageService.create(manipulatePost);
-            if (create !== undefined) {
-                const successResponse = ResponseUtil.getSuccessResponse('Successfully Report Page.', create);
-                return res.status(200).send(successResponse);
-            } else {
-                const errorResponse = ResponseUtil.getErrorResponse('Cannot Create Manipulate Post.', undefined);
-                return res.status(400).send(errorResponse);
-            }
-        } else {
-            const errorResponse = ResponseUtil.getErrorResponse('Cannot Manipulate post because type does not match.', undefined);
-            return res.status(400).send(errorResponse);
-        }
-    }
+
     // autoSyncPageTW
     @Post('/sync/tw')
     @Authorized('user')
@@ -2329,21 +2284,8 @@ export class PageController {
         }
 
         // const pageLists: any = await this.pageService.search(filter, { signURL: true });
-        const pageLists: any = await this.pageService.aggregate(
-            [
-                {
-                    $match: {
-                        createdDate: -1
-                    }
-                },
-                {
-                    $offset: offset
-                },
-                {
-                    $limit: limit
-                }
-            ]
-        );
+        const pageLists: any = await this.pageService.search(filter, { signURL: true });
+
         if (pageLists) {
             const successResponse = ResponseUtil.getSuccessResponse('Successfully Search Page', pageLists);
             return res.status(200).send(successResponse);

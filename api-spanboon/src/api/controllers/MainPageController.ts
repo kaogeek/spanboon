@@ -2205,34 +2205,28 @@ export class MainPageController {
                         }
                     }
                 }
-                let number = undefined;
                 if (fireBaseToken.length > 0) {
                     const token = fireBaseToken.filter((element, index) => {
                         return fireBaseToken.indexOf(element) === index;
                     });
                     if (token.length > 0) {
-                        for (let z = 0; z < token.length; z++) {
-                            if (token[z] !== undefined) {
-                                number = z;
-                                await this.notificationService.pushNotificationMessage(snapshot.data, token[z], endDateTimeToday);
-                            } else {
-                                continue;
-                            }
+                        const sendMulticast = await this.notificationService.multiPushNotificationMessage(snapshot.data, token, endDateTimeToday);
+                        if (sendMulticast) {
+                            await this.notificationNewsService.create(
+                                {
+                                    kaokaiTodaySnapShotId: snapshot.id,
+                                    data: snapshot.data,
+                                    tokenFCM: undefined,
+                                    startDateTime: endDateTimeToday,
+                                    endDateTime: endDateTimeToday,
+                                    total: token.length,
+                                    send: token.length + 1,
+                                    finish: true,
+                                    type: 'notification_news',
+                                    status: true
+                                }
+                            );
                         }
-                        await this.notificationNewsService.create(
-                            {
-                                kaokaiTodaySnapShotId: snapshot.id,
-                                data: snapshot.data,
-                                tokenFCM: undefined,
-                                startDateTime: endDateTimeToday,
-                                endDateTime: endDateTimeToday,
-                                total: token.length,
-                                send: number + 1,
-                                finish: true,
-                                type: 'notification_news',
-                                status: true
-                            }
-                        );
                     }
                 }
             } else {
@@ -2268,34 +2262,28 @@ export class MainPageController {
                         }
                     }
                 }
-                let number = undefined;
                 if (fireBaseToken.length > 0) {
                     const token = fireBaseToken.filter((element, index) => {
                         return fireBaseToken.indexOf(element) === index;
                     });
-                    if (token.length > 0 && snapshot) {
-                        for (let z = 0; z < token.length; z++) {
-                            if (token[z] !== undefined) {
-                                number = z;
-                                await this.notificationService.pushNotificationMessage(snapshot.data, token[z], endDateTimeToday);
-                            } else {
-                                continue;
-                            }
+                    if (token.length > 0) {
+                        const sendMulticast = await this.notificationService.multiPushNotificationMessage(snapshot.data, token, endDateTimeToday);
+                        if (sendMulticast) {
+                            await this.notificationNewsService.create(
+                                {
+                                    kaokaiTodaySnapShotId: snapshot.id,
+                                    data: snapshot.data,
+                                    tokenFCM: undefined,
+                                    startDateTime: endDateTimeToday,
+                                    endDateTime: endDateTimeToday,
+                                    total: token.length,
+                                    send: token.length + 1,
+                                    finish: true,
+                                    type: 'notification_news',
+                                    status: true
+                                }
+                            );
                         }
-                        await this.notificationNewsService.create(
-                            {
-                                kaokaiTodaySnapShotId: snapshot.id,
-                                data: snapshot.data,
-                                tokenFCM: undefined,
-                                startDateTime: endDateTimeToday,
-                                endDateTime: endDateTimeToday,
-                                total: token.length,
-                                send: number + 1,
-                                finish: true,
-                                type: 'notification_news',
-                                status: true
-                            }
-                        );
                     }
                 }
             }
