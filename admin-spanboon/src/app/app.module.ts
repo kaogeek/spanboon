@@ -82,7 +82,8 @@ import {
   PageGroupFacade,
   PageUserFacade,
   PageUserAdminFacade,
-  NewsPaperFacade
+  NewsPaperFacade,
+  ManipulateFacade
   ,
 } from './services/services';
 import { UserFacade } from './services/facade/UserFacade.service';
@@ -171,6 +172,7 @@ const SERVICE_CLASSES: any[] = [
   UserFacade,
   PageUserAdminFacade,
   NewsPaperFacade,
+  ManipulateFacade,
   // other 
   {
     provide: SWIPER_CONFIG,
