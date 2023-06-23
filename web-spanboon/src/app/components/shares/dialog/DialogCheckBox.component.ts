@@ -31,6 +31,8 @@ export class DialogCheckBox extends AbstractPage {
     private isbottom: boolean;
     public isPreLoadIng: boolean;
     public isLoading: boolean;
+    public spamTopic: any;
+    public spamDetail: any;
 
     constructor(public dialogRef: MatDialogRef<DialogCheckBox>,
         dialog: MatDialog, authenManager: AuthenManager, router: Router,
@@ -54,8 +56,18 @@ export class DialogCheckBox extends AbstractPage {
 
     onConfirm(): void {
         this.isbottom = false
-        this.dialogRef.close(this.isbottom);
-        this.authenManager.userIsSyncPage(this.isbottom);
+        let detail: any = document.getElementsByClassName('text-detail');
+        let data;
+        if (detail.length > 0) {
+            this.spamDetail = detail[0].value;
+        }
+        if (!!this.spamTopic) {
+            data = {
+                topic: this.spamTopic,
+                detail: this.spamDetail
+            }
+        }
+        this.dialogRef.close(data);
         if (this.data !== undefined && this.data !== null && this.data.confirmClickedEvent !== undefined) {
             this.data.confirmClickedEvent.emit(true);
         }
@@ -64,7 +76,6 @@ export class DialogCheckBox extends AbstractPage {
     onClose(): void {
         this.isbottom = false
         this.dialogRef.close(this.isbottom);
-        this.authenManager.userIsSyncPage(this.isbottom);
         if (this.data !== undefined && this.data !== null && this.data.cancelClickedEvent !== undefined) {
             this.data.cancelClickedEvent.emit(false);
         }
@@ -80,6 +91,10 @@ export class DialogCheckBox extends AbstractPage {
     onDirtyDialogCancelButtonClick(): EventEmitter<any> {
         // throw new Error('Method not implemented.');
         return;
+    }
+
+    public selectTopic(topic: string, detail: string) {
+        this.spamTopic = topic;
     }
 
 }

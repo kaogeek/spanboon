@@ -20,7 +20,7 @@ import { ValidBase64ImageUtil } from '../../../utils/ValidBase64ImageUtil';
 import { SearchFilter } from '../../../models/SearchFilter';
 import { BoxPost } from '../../shares/BoxPost.component';
 import { DialogMedia } from '../../shares/dialog/DialogMedia.component';
-import { DialogAlert, DialogDropdown, DialogPost, DialogShare } from '../../shares/shares';
+import { DialogAlert, DialogCheckBox, DialogConfirmInput, DialogDropdown, DialogPost, DialogShare } from '../../shares/shares';
 import { UserEngagement } from '../../../models/models';
 import { DirtyComponent } from 'src/app/dirty-component';
 import { filter } from 'rxjs/internal/operators/filter';
@@ -1201,6 +1201,35 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     });
   }
 
+  public reportPost(post: any, index: number) {
+    let option = ['สแปม', 'ภาพโป๊เปลือย', 'การขายที่ไม่ได้รับอนุญาต', 'ความรุนแรง', 'การก่อการร้าย', 'คำพูดที่แสดงความเกลียดชัง', 'ข้อมูลเท็จ', 'การคุกคาม'];
+    let dialog = this.dialog.open(DialogCheckBox, {
+      disableClose: false,
+      data: {
+        title: 'รายงาน',
+        subject: option,
+        bottomText2: 'ตกลง',
+        bottomColorText2: "black",
+      }
+    });
+    dialog.afterClosed().subscribe((res) => {
+      if (res) {
+        let data = {
+          typeId: post._id,
+          type: 'POST',
+          topic: res.topic,
+          message: res.detail ? res.detail : '',
+        }
+        this.pageFacade.reportPage(data).then((res) => {
+          if (res) {
+          }
+        }).catch((err) => {
+          if (err) { }
+        })
+      }
+    });
+  }
+
   public hidePost(post: any, index: number) {
     const confirmEventEmitter = new EventEmitter<any>();
     confirmEventEmitter.subscribe(() => {
@@ -1214,7 +1243,18 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     let dialog = this.showDialogWarming("คุณต้องการซ่อนโพสต์นี้ใช่หรือไม่ ", "ยกเลิก", "ตกลง", confirmEventEmitter, canCelEventEmitter);
     dialog.afterClosed().subscribe((res) => {
       if (res) {
-        this.resPost.posts.splice(index, 1);
+        let data = {
+          postId: post._id,
+          pageIdOwner: post.pageId,
+          type: 'hide_post'
+        }
+        this.pageFacade.manipulatePost(data).then((res) => {
+          if (res) {
+            this.resPost.posts.splice(index, 1);
+          }
+        }).catch((err) => {
+          if (err) { }
+        })
       }
     });
   }
@@ -1621,30 +1661,54 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     })
   }
 
-  public blockUser() {
+  public blockUser(page) {
     let dialog = this.dialog.open(DialogAlert, {
       disableClose: true,
       data: {
-        text: 'คุณต้องการบล็อกผู้ใช้นี้ใช่หรือไม่',
+        text: 'คุณต้องการบล็อกเพจนี้ใช่หรือไม่',
       },
     });
     dialog.afterClosed().subscribe((res) => {
       if (res) {
-        // this.showAlertDialog('ระบบอยู่ในระหว่างการพัฒนา');
+        let data = {
+          subjectId: page.id,
+          subjectType: 'PAGE',
+        }
+        this.pageFacade.blockPage(data).then((res) => {
+          if (res) {
+          }
+        }).catch((err) => {
+          if (err) { }
+        })
       }
     });
   }
 
-  public reportUser() {
-    let dialog = this.dialog.open(DialogAlert, {
-      disableClose: true,
+  public reportUser(page) {
+    let option = ['คำพูดที่แสดงความเกลียดชัง', 'ภาพโป๊เปลือยหรือเนื้อหาทางเพศ', 'ความรุนแรง', 'การคุกคาม', 'การขายที่ไม่ได้รับอนุญาต', 'แอบอ้างว่าเป็นบางสิ่ง', 'เพจปลอม', 'หลอกลวงหรือต้มตุ๋น', 'ทรัพย์สินทางปัญญา'];
+    let dialog = this.dialog.open(DialogCheckBox, {
+      disableClose: false,
       data: {
-        text: 'คุณต้องการรายงานผู้ใช้นี้ใช่หรือไม่',
-      },
+        title: 'รายงาน',
+        subject: option,
+        bottomText2: 'ตกลง',
+        bottomColorText2: "black",
+      }
     });
     dialog.afterClosed().subscribe((res) => {
       if (res) {
-        // this.showAlertDialog('ระบบอยู่ในระหว่างการพัฒนา');
+        let data = {
+          typeId: page.id,
+          type: 'PAGE',
+          topic: res.topic,
+          message: res.detail ? res.detail : '',
+        }
+        this.pageFacade.reportPage(data).then((res) => {
+          if (res) {
+          }
+        }).catch((err) => {
+          if (err) { }
+        })
       }
     });
   }

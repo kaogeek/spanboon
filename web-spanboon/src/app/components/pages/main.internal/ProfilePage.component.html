@@ -337,12 +337,12 @@
                                 <mat-menu #menu="matMenu" xPosition="before">
                                     <div>
                                         <button mat-menu-item [disableRipple]="'true'" class="list-dropdown"
-                                            (click)="reportUser()">
+                                            (click)="reportUser(resProfile)">
                                             <mat-icon>warning</mat-icon>
                                             <span>รายงานผู้ใช้นี้</span>
                                         </button>
                                         <button mat-menu-item [disableRipple]="'true'" class="list-dropdown"
-                                            (click)="blockUser()">
+                                            (click)="blockUser(resProfile)">
                                             <mat-icon>block</mat-icon>
                                             <span>บล็อกผู้ใช้นี้</span>
                                         </button>
@@ -372,7 +372,8 @@
                                     (comment)="createComment($event,index)" [pageUser]="pageUser" [isPage]="isNotAccess"
                                     [isNotAccess]="isNotAccess" (userpage)="getAaaPost($event,index)"
                                     (delete)="deletePost($event,index)" (update)="editPost($event,index)"
-                                    (engagement)="engagement($event)"></post-data>
+                                    (engagement)="engagement($event)" (hide)="hidePost($event,index)"
+                                    (report)="reportPost($event,index)"></post-data>
                             </ng-container>
                             <Preload-card *ngIf="isLoadingPost" [isShowCard1]="true" [isShowCard2]="true">
                             </Preload-card>

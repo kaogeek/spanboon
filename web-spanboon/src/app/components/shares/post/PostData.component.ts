@@ -99,6 +99,8 @@ export class PostData {
   public engagement: EventEmitter<any> = new EventEmitter();
   @Output()
   public hide: EventEmitter<any> = new EventEmitter();
+  @Output()
+  public report: EventEmitter<any> = new EventEmitter();
 
   public value: any
   public isLoading: Boolean;
@@ -543,21 +545,11 @@ export class PostData {
     this.hide.emit(post);
   }
 
-  public reportPost() {
-    let dialog = this.dialog.open(DialogAlert, {
-      disableClose: true,
-      data: {
-        text: 'คุณต้องการรายงานโพสต์นี้ใช่หรือไม่',
-      },
-    });
-    dialog.afterClosed().subscribe((res) => {
-      if (res) {
-        this.showAlertDialog();
-      }
-    });
+  public reportPost(post) {
+    this.report.emit(post);
   }
 
-  public blockUser() {
+  public blockUser(post) {
     let dialog = this.dialog.open(DialogAlert, {
       disableClose: true,
       data: {
@@ -566,7 +558,39 @@ export class PostData {
     });
     dialog.afterClosed().subscribe((res) => {
       if (res) {
-        this.showAlertDialog();
+        let data = {
+          subjectId: post.ownerUser,
+          subjectType: 'USER',
+        }
+        this.pageFacade.blockPage(data).then((res) => {
+          if (res) {
+          }
+        }).catch((err) => {
+          if (err) { }
+        })
+      }
+    });
+  }
+
+  public blockPage(post) {
+    let dialog = this.dialog.open(DialogAlert, {
+      disableClose: true,
+      data: {
+        text: 'คุณต้องการบล็อกเพจนี้ใช่หรือไม่',
+      },
+    });
+    dialog.afterClosed().subscribe((res) => {
+      if (res) {
+        let data = {
+          subjectId: post.pageId,
+          subjectType: 'PAGE',
+        }
+        this.pageFacade.blockPage(data).then((res) => {
+          if (res) {
+          }
+        }).catch((err) => {
+          if (err) { }
+        })
       }
     });
   }

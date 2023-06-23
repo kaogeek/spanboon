@@ -28,14 +28,23 @@
                     <mat-icon>close</mat-icon>
                     <span>ซ่อนโพสต์นี้</span>
                 </button>
-                <button mat-menu-item [disableRipple]="'true'" class="list-dropdown" (click)="reportPost()">
+                <button mat-menu-item [disableRipple]="'true'" class="list-dropdown" (click)="reportPost(itemPost)">
                     <mat-icon>warning</mat-icon>
                     <span>รายงานโพสต์นี้</span>
                 </button>
-                <button mat-menu-item [disableRipple]="'true'" class="list-dropdown" (click)="blockUser()">
-                    <mat-icon>block</mat-icon>
-                    <span>บล็อกผู้ใช้นี้</span>
-                </button>
+                <ng-container *ngIf="itemPost.pageId !== null; else elseBlockUser">
+                    <button mat-menu-item [disableRipple]="'true'" class="list-dropdown" (click)="blockPage(itemPost)">
+                        <mat-icon>block</mat-icon>
+                        <span>บล็อกเพจนี้</span>
+                    </button>
+                </ng-container>
+                <ng-template #elseBlockUser>
+                    <button mat-menu-item [disableRipple]="'true'" class="list-dropdown" (click)="blockUser(itemPost)">
+                        <mat-icon>block</mat-icon>
+                        <span>บล็อกผู้ใช้นี้</span>
+                    </button>
+                </ng-template>
+
             </ng-template>
         </mat-menu>
     </ng-container>

@@ -73,14 +73,28 @@
                 margin: 5px;
                 align-items: center;
                 display: flex;
+                transition: 0.5s;
+                cursor: pointer;
+
+                &:hover {
+                    transform: scale(1.06);
+                    -webkit-transform: scale(1.06);
+                    -moz-transform: scale(1.06);
+                    -ms-transform: scale(1.06);
+                    -o-transform: scale(1.06);
+                    background-color: $brandcolor2;
+                    color: white;
+                }
 
                 >.section-subject {
                     margin-left: 10px;
                     width: 100%;
                     display: flex;
-                    justify-content: space-between;
+                    justify-content: center;
 
-                    >.item-subject {}
+                    >.item-subject {
+                        @include font-size-9($font-head-500);
+                    }
 
                     >.icon-subject {
                         justify-content: center;
@@ -95,6 +109,19 @@
 
                     }
                 }
+            }
+        }
+
+        >.detail-message {
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            width: 92%;
+            margin: 0 auto;
+
+            >span {
+                @include font-size-9($font-head-500);
+                color: $brandcolor2;
             }
         }
 
