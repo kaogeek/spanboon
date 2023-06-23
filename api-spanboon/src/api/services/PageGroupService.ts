@@ -20,7 +20,7 @@ export class PageGroupService {
 
     // create Device token and find the user who is login !!!!!
     public async create(data: any): Promise<any> {
-        this.log.info('Send OTP.');
+        this.log.info('Create Page group.');
         return await this.pageGroupRespository.save(data);
     }
 
@@ -33,12 +33,12 @@ export class PageGroupService {
     }
 
     public async delete(query: any, options?: any): Promise<any> {
-        this.log.info('Delete a token');
+        this.log.info('Delete a page group');
         return await this.pageGroupRespository.deleteOne(query, options);
     }
 
     public async update(query: any, newValue: any): Promise<any> {
-        this.log.info('Update a token');
+        this.log.info('Update a page group');
 
         return await this.pageGroupRespository.updateOne(query, newValue);
     }

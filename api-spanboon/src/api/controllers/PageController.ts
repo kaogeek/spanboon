@@ -3323,8 +3323,9 @@ export class PageController {
         const userId = new ObjectID(req.user.id);
         const pageObjId = new ObjectID(pageId);
         const findPage = await this.pageService.findOne({ _id: pageObjId, ownerUser: userId });
-        if (findPage !== undefined && findPage !== null) {
-            const deletePage = await this.deletePageService.deletePage(findPage.id);
+        const accessPage = await this.pageAccessLevelService.findOne({page:findPage.id});
+        if (findPage !== undefined && findPage !== null && accessPage.level === 'OWNER' && accessPage !== undefined && accessPage !== null) {
+           const deletePage = await this.deletePageService.deletePage(findPage.id,findPage.ownerUser);
             if (deletePage) {
                 return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully delete Page ', undefined));
             } else {

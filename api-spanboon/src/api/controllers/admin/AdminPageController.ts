@@ -31,8 +31,9 @@ import { EmergencyEventService } from '../../services/EmergencyEventService';
 import { HashTagService } from '../../services/HashTagService';
 import { KaokaiTodaySnapShotService } from '../../services/KaokaiTodaySnapShot';
 import { NotificationNewsService } from '../../services/NotificationNewsService';
-import { ManipulatePostService } from '../../services/ManipulatePostService';
+import { ManipulateService } from '../../services/ManipulateService';
 import { UserBlockContentService } from '../../services/UserBlockContentService';
+import { ManipulateRequest } from '../requests/ManipulateRequest';
 @JsonController('/admin/page')
 export class AdminPageController {
     constructor(
@@ -46,8 +47,8 @@ export class AdminPageController {
         private pageGroupService: PageGroupService,
         private kaokaiTodaySnapShotService: KaokaiTodaySnapShotService,
         private notificationNewsService: NotificationNewsService,
-        private manipulatePostService: ManipulatePostService,
-        private userBlockContentService:UserBlockContentService
+        private manipulateService: ManipulateService,
+        private userBlockContentService: UserBlockContentService
     ) { }
 
     /**
@@ -731,17 +732,67 @@ export class AdminPageController {
             const errorResponse = ResponseUtil.getErrorResponse('There are no report page.', undefined);
             return res.status(400).send(errorResponse);
         }
-    } 
+    }
 
     @Post('/manipulate/search')
     @Authorized()
     public async manipulateSearch(@Body({ validate: true }) filter: SearchFilter, @Res() res: any, @Req() req: any): Promise<any> {
-        const pageReport = await this.manipulatePostService.search(filter.limit, filter.offset, filter.select, filter.relation, filter.whereConditions, filter.orderBy, filter.count);
-        if (pageReport.length > 0) {
-            const successResponse = ResponseUtil.getSuccessResponse('Search report page is sucessfully.', pageReport);
+        const pageReport = await this.manipulateService.search(filter.limit, filter.offset, filter.select, filter.relation, filter.whereConditions, filter.orderBy, filter.count);
+        if (pageReport) {
+            const successResponse = ResponseUtil.getSuccessResponse('Search manipulate is sucessfully.', pageReport);
+            return res.status(200).send(successResponse);
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('There are no manipulate page.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+
+    @Post('/manipulate/')
+    @Authorized()
+    public async createManipulate(@Body({ validate: true }) manipulateRequest: ManipulateRequest, @Res() res: any, @Req() req: any): Promise<any> {
+        const manipulatePost: ManipulateRequest = new ManipulateRequest();
+        manipulatePost.type = manipulateRequest.type;
+        manipulatePost.detail = manipulateRequest.detail;
+        const create = await this.manipulateService.create(manipulatePost);
+        if (create) {
+            const successResponse = ResponseUtil.getSuccessResponse('Create Manipulate is sucessfully.', create);
             return res.status(200).send(successResponse);
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('There are no report page.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+
+    @Put('/:id/manipulate')
+    @Authorized()
+    public async updateManipulate(@Body({ validate: true }) manipulateRequest: ManipulateRequest, @Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const objId = new ObjectID(id);
+        if (objId) {
+            const query = { _id: objId };
+            const newValues = { $set: { type: manipulateRequest.type, detail: manipulateRequest.detail } };
+            const updateManipulate = await this.manipulateService.update(query, newValues);
+            if (updateManipulate) {
+                const successResponse = ResponseUtil.getSuccessResponse('Update Manipulate is sucessfully.', updateManipulate);
+                return res.status(200).send(successResponse);
+            }
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot update manipulate.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+
+    @Delete('/:id/manipulate')
+    @Authorized()
+    public async deleteManipulate(@Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const objId = new ObjectID(id);
+        if (objId) {
+            const deleteManipulate = await this.manipulateService.delete({ _id: objId });
+            if (deleteManipulate) {
+                const successResponse = ResponseUtil.getSuccessResponse('Delete Manipulate is sucessfully.', deleteManipulate);
+                return res.status(200).send(successResponse);
+            }
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot delete manipulate.', undefined);
             return res.status(400).send(errorResponse);
         }
     }

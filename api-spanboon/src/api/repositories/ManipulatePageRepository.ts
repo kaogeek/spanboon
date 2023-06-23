@@ -6,9 +6,9 @@
  */
 
 import { EntityRepository, MongoRepository } from 'typeorm';
-import { ManipulatePage } from '../models/ManipulatePage';
+import { Manipulate } from '../models/Manipulate';
 
-@EntityRepository(ManipulatePage)
-export class ManipulatePageRepository extends MongoRepository<ManipulatePage>{
+@EntityRepository(Manipulate)
+export class ManipulateRepository extends MongoRepository<Manipulate>{
 
 }
