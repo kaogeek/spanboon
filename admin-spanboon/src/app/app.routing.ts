@@ -31,6 +31,8 @@ import {
   NewsPaperPage
 } from './components/components';
 import { TodayPageV2 } from './components/pages/main.internal/TodayPageV2.component';
+import { ManipulatePage } from './components/pages/main.internal/ManipulatePage.component';
+import { ManipulatePost } from './components/pages/main.internal/ManipulatePost.component';
 const routes: Routes = [
   {
     path: '',
@@ -91,6 +93,14 @@ const routes: Routes = [
       {
         path: ConfigPage.PAGE_NAME,
         component: ConfigPage
+      },
+      {
+        path: ManipulatePage.PAGE_NAME,
+        component: ManipulatePage
+      },
+      {
+        path: ManipulatePost.PAGE_NAME,
+        component: ManipulatePost
       },
       {
         path: StandardItemPage.PAGE_NAME,

@@ -92,6 +92,8 @@ import {
   PrefixNumberPipe,
   PipeThDatetimePipe
 } from './components/shares/pipes/pipes';
+import { ManipulatePage } from './components/pages/main.internal/ManipulatePage.component';
+import { ManipulatePost } from './components/pages/main.internal/ManipulatePost.component';
 
 const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
   direction: 'horizontal',
@@ -135,6 +137,8 @@ const COMPONENTS: any[] = [
   DialogAlert,
   TableComponent,
   PageGroup,
+  ManipulatePage,
+  ManipulatePost,
   NewsPaperPage
 ];
 
