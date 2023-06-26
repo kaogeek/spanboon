@@ -78,6 +78,7 @@ import { PageNotificationService } from '../services/PageNotificationService';
 import { NotificationService } from '../services/NotificationService';
 import { DeletePageService } from '../services/DeletePageService';
 import axios from 'axios';
+import { ManipulateService } from '../services/ManipulateService';
 import { PageGroupService } from '../services/PageGroupService';
 // import { IpAddressEvent } from '../middlewares/IpAddressesMiddleware';
 @JsonController('/page')
@@ -111,8 +112,28 @@ export class PageController {
         private notificationService: NotificationService,
         private deletePageService: DeletePageService,
         private pageGroupService: PageGroupService,
+        private manipulateService:ManipulateService
     ) { }
 
+    @Get('/report/manipulate')
+    public async getReportUser(@Res() res: any, @Req() req: any): Promise<any> {
+        const getUserReport = await this.manipulateService.aggregate(
+            [
+                {
+                    $match: {
+                        type: 'REPORT_PAGE'
+                    }
+                }
+            ]
+        );
+        if (getUserReport.length > 0) {
+            const successResponse = ResponseUtil.getSuccessResponse('Successfully get manipulate report page.', getUserReport);
+            return res.status(200).send(successResponse);
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot get manipulate report page.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
     // Find Page API
     /**
      * @api {get} /api/page/:id Find Page API
@@ -3323,9 +3344,9 @@ export class PageController {
         const userId = new ObjectID(req.user.id);
         const pageObjId = new ObjectID(pageId);
         const findPage = await this.pageService.findOne({ _id: pageObjId, ownerUser: userId });
-        const accessPage = await this.pageAccessLevelService.findOne({page:findPage.id});
+        const accessPage = await this.pageAccessLevelService.findOne({ page: findPage.id });
         if (findPage !== undefined && findPage !== null && accessPage.level === 'OWNER' && accessPage !== undefined && accessPage !== null) {
-           const deletePage = await this.deletePageService.deletePage(findPage.id,findPage.ownerUser);
+            const deletePage = await this.deletePageService.deletePage(findPage.id, findPage.ownerUser);
             if (deletePage) {
                 return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully delete Page ', undefined));
             } else {

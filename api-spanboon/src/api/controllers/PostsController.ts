@@ -48,6 +48,7 @@ import { PostUtil } from '../../utils/PostUtil';
 import { POST_TYPE } from '../../constants/PostType';
 import { UserService } from '../services/UserService';
 import { DeviceTokenService } from '../services/DeviceToken';
+import { ManipulateService } from '../services/ManipulateService';
 @JsonController('/post')
 export class PostsController {
     constructor(
@@ -68,8 +69,28 @@ export class PostsController {
         private assetService: AssetService,
         private deviceTokenService: DeviceTokenService,
         private userService: UserService,
+        private manipulateService: ManipulateService
     ) { }
 
+    @Get('/report/manipulate')
+    public async getReportUser(@Res() res: any, @Req() req: any): Promise<any> {
+        const getUserReport = await this.manipulateService.aggregate(
+            [
+                {
+                    $match: {
+                        type: 'REPORT_POST'
+                    }
+                }
+            ]
+        );
+        if (getUserReport.length > 0) {
+            const successResponse = ResponseUtil.getSuccessResponse('Successfully get manipulate report page.', getUserReport);
+            return res.status(200).send(successResponse);
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot get manipulate report page.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
     // New Post API
     /**
      * @api {get} /api/post/new New PostPage API

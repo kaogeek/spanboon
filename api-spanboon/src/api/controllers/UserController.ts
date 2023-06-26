@@ -46,6 +46,8 @@ import { SocialPostLogs } from '../models/SocialPostLogs';
 import { NotificationService } from '../services/NotificationService';
 import { USER_TYPE, NOTIFICATION_TYPE } from '../../constants/NotificationType';
 import { DeviceTokenService } from '../services/DeviceToken';
+import { PageAccessLevelService } from '../services/PageAccessLevelService';
+import { ManipulateService } from '../services/ManipulateService';
 @JsonController('/user')
 export class UserController {
     constructor(
@@ -62,6 +64,8 @@ export class UserController {
         private socialPostLogsService: SocialPostLogsService,
         private notificationService: NotificationService,
         private deviceTokenService: DeviceTokenService,
+        private pageAccessLevelService: PageAccessLevelService,
+        private manipulateService: ManipulateService
     ) { }
 
     // Logout API
@@ -172,6 +176,47 @@ export class UserController {
             return res.status(400).send(errorResponse);
         }
     }
+
+    @Post('/delete/user')
+    @Authorized('user')
+    public async deleteUser(@Res() res: any, @Req() req: any): Promise<any> {
+        const userId = new ObjectID(req.user.id);
+        const user = await this.userService.findOne({ _id: userId });
+        let queryUser = undefined;
+        let newValuesUser = undefined;
+        let updateUser = undefined;
+        if (user) {
+            // access page 
+            const pageAccess = await this.pageService.findOne({ ownerUser: user.id });
+            if (pageAccess !== undefined) {
+                const permission = await this.pageAccessLevelService.findOne({ page: pageAccess.id, user: pageAccess.ownerUser, level: 'OWNER' });
+                if (permission) {
+                    queryUser = { _id: user.id };
+                    newValuesUser = { $set: { delete: req.body.delete } };
+                    const queryPage = { _id: permission.page };
+                    const newValuesPage = { $set: { banned: true } };
+                    updateUser = await this.userService.update(queryUser, newValuesUser);
+                    const updatePage = await this.pageService.update(queryPage, newValuesPage);
+                    if (updateUser && updatePage) {
+                        const successResponseF = ResponseUtil.getSuccessResponse('Update delete user is sucess.', undefined);
+                        return res.status(200).send(successResponseF);
+                    }
+                }
+            } else {
+                queryUser = { _id: user.id };
+                newValuesUser = { $set: { delete: req.body.delete } };
+                updateUser = await this.userService.update(queryUser, newValuesUser);
+                if (updateUser) {
+                    const successResponseF = ResponseUtil.getSuccessResponse('Update delete user is sucess.', undefined);
+                    return res.status(200).send(successResponseF);
+                }
+            }
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot Find User.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+
     @Post('/ua')
     @Authorized('user')
     public async uaVersion(@Res() res: any, @Req() req: any): Promise<any> {
@@ -927,7 +972,25 @@ export class UserController {
             return res.status(400).send(errorResponse);
         }
     }
-
+    @Get('/report/manipulate')
+    public async getReportUser(@Res() res: any, @Req() req: any): Promise<any> {
+        const getUserReport = await this.manipulateService.aggregate(
+            [
+                {
+                    $match: {
+                        type: 'REPORT_USER'
+                    }
+                }
+            ]
+        );
+        if (getUserReport.length > 0) {
+            const successResponse = ResponseUtil.getSuccessResponse('Successfully get manipulate report user.', getUserReport);
+            return res.status(200).send(successResponse);
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot get manipulate report user.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
     /**
      * @api {put} /api/user/:id/item Update UserProvideItems API
      * @apiGroup UserProvideItems
