@@ -62,8 +62,14 @@ export class AdminReportController {
                 }
             ]
         );
-        if (searchReported.length > 0) {
-            const successResponseGroup = ResponseUtil.getSuccessResponse('Search report is successful.', searchReported);
+        const result: any = [];
+        result.post = undefined;
+        result.title = undefined;
+        result.detail = undefined;
+        result.type = undefined;
+        result.count = searchReported.length;
+        if (result) {
+            const successResponseGroup = ResponseUtil.getSuccessResponse('Search report is successful.', result);
             return res.status(200).send(successResponseGroup);
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('There are no reports yet.', undefined);
