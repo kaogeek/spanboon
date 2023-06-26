@@ -13,7 +13,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { DialogWarningComponent } from '../../shares/DialogWarningComponent.component';
 import { AuthenManager } from '../../../services/AuthenManager.service';
 import { Router } from '@angular/router';
-import { PageGroupFacade } from '../../../services/facade/PageGroupFacade.service';
+import { ManipulateFacade } from '../../../services/facade/ManipulateFacade.service';
 
 const PAGE_NAME: string = "manipulatepost";
 
@@ -29,12 +29,11 @@ export class ManipulatePost extends AbstractPage implements OnInit {
     public static readonly PAGE_NAME: string = PAGE_NAME;
 
     public pageFacade: PageFacade;
-    public pageGroupFacade: PageGroupFacade;
+    public manipulateFacade: ManipulateFacade;
     private authenManager: AuthenManager;
     private router: Router;
     public isSave: boolean = false;
 
-    public dataForm: Page;
     public valueBool: boolean;
     public valuetring: string;
     public valueNum: number;
@@ -42,11 +41,12 @@ export class ManipulatePost extends AbstractPage implements OnInit {
     public submitted = false;
     public isOfficialPage: {};
     public orderBy: any = {};
+    public edit: boolean = false;
 
-    constructor(pageFacade: PageFacade, pageGroupFacade: PageGroupFacade, router: Router, dialog: MatDialog, authenManager: AuthenManager) {
+    constructor(pageFacade: PageFacade, manipulateFacade: ManipulateFacade, router: Router, dialog: MatDialog, authenManager: AuthenManager) {
         super(PAGE_NAME, dialog);
         this.pageFacade = pageFacade;
-        this.pageGroupFacade = pageGroupFacade;
+        this.manipulateFacade = manipulateFacade;
         this.router = router;
         this.authenManager = authenManager;
         // if (!this.authenManager.isCurrentUserType()) {
@@ -55,8 +55,8 @@ export class ManipulatePost extends AbstractPage implements OnInit {
         this.orderBy = { createdDate: -1 };
         this.fieldTable = [
             {
-                name: "name",
-                label: "รายละเอียด",
+                name: "type",
+                label: "ประเภท",
                 width: "330pt",
                 class: "", formatColor: false, formatImage: false,
                 link: [],
@@ -66,7 +66,7 @@ export class ManipulatePost extends AbstractPage implements OnInit {
             },
             {
                 name: "detail",
-                label: "ประเภทกลุ่ม",
+                label: "รายละเอียด",
                 width: "150pt",
                 class: "", formatColor: false, formatImage: false,
                 link: [],
@@ -91,42 +91,26 @@ export class ManipulatePost extends AbstractPage implements OnInit {
     }
 
     public ngOnInit() {
-        this.search();
     }
 
     private setFields(): void {
-        this.dataForm = new Page();
-        this.dataForm.name = "";
-        this.dataForm.detail = "";
         this.valueBool = true;
         this.valuetring = "";
         this.valueNum = 0;
-        this.orinalDataForm = JSON.parse(JSON.stringify(this.dataForm));
     }
 
     public clickCloseDrawer(): void {
-        let pass = true;
-        for (const key in this.orinalDataForm) {
-            if (this.orinalDataForm[key] !== this.dataForm[key]) {
-                pass = false;
-                break;
+        let dialogRef = this.dialog.open(DialogWarningComponent, {
+            data: {
+                title: "คุณมีข้อมูลที่ยังไม่ได้บันทึกต้องการปิดหรือไม่"
             }
-        }
-        if (!pass) {
-            let dialogRef = this.dialog.open(DialogWarningComponent, {
-                data: {
-                    title: "คุณมีข้อมูลที่ยังไม่ได้บันทึกต้องการปิดหรือไม่"
-                }
-            });
-            dialogRef.afterClosed().subscribe(result => {
-                if (result) {
-                    this.submitted = false;
-                    this.drawer.toggle();
-                }
-            });
-        } else {
-            this.drawer.toggle();
-        }
+        });
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                this.submitted = false;
+                this.drawer.toggle();
+            }
+        });
     }
 
     public clickCreateForm(): void {
@@ -134,24 +118,17 @@ export class ManipulatePost extends AbstractPage implements OnInit {
         this.drawer.toggle();
     }
 
-    public search() {
-        this.pageGroupFacade.find().then((res: any) => {
-        }).catch((err: any) => {
-        })
-    }
-
     public clickEditForm(data: any): void {
         this.drawer.toggle();
         this.valueBool = true;
         this.valuetring = "";
         this.valueNum = 0;
-        this.dataForm = JSON.parse(JSON.stringify(data));
         this.orinalDataForm = JSON.parse(JSON.stringify(data));
     }
 
 
     public clickDelete(data: any): void {
-        this.pageGroupFacade.delete(data.id).then((res) => {
+        this.manipulateFacade.delete(data.id).then((res) => {
             let index = 0;
             let dataTable = this.table.data;
             for (let d of dataTable) {
@@ -169,31 +146,6 @@ export class ManipulatePost extends AbstractPage implements OnInit {
         });
     }
     public clickSave() {
-        if (!this.isSave) {
-            this.isSave = true;
-            this.submitted = true;
-            if (this.orinalDataForm.name !== "" && this.orinalDataForm.name !== undefined) {
-                this.pageGroupFacade.edit(this.dataForm.id, this.dataForm).then((res: any) => {
-                    this.table.searchData();
-                    this.submitted = false;
-                    this.isSave = false;
-                    this.drawer.toggle();
-                }).catch((err: any) => {
-                    this.isSave = false;
-                    this.dialogWarning(err.error.message);
-                });
-            } else {
 
-                this.pageGroupFacade.create(this.dataForm).then((res: any) => {
-                    this.table.searchData();
-                    this.submitted = false;
-                    this.isSave = false;
-                    this.drawer.toggle();
-                }).catch((err: any) => {
-                    this.isSave = false;
-                    this.dialogWarning(err.error.message);
-                });
-            }
-        }
     }
 }

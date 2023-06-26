@@ -11,7 +11,7 @@
             <div class="form-admin">
                 <div class="wrapper">
                     <div class="form-header">
-                        <ng-container *ngIf="orinalDataForm.name.trim() === ''; else elseTitle">
+                        <ng-container *ngIf="!edit; else elseTitle">
                             <h5 class="title">สร้าง{{title | titlecase}}</h5>
                         </ng-container>
                         <ng-template #elseTitle>
@@ -19,24 +19,7 @@
                         </ng-template>
                     </div>
                     <div class="form-body">
-                        <form>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label>รายละเอียด *</label>
-                                        <input type="text" class="form-control" [(ngModel)]="dataForm.name"
-                                            [ngModelOptions]="{standalone: true}">
-                                        <div class="alert alert-danger" style="margin-top: 5pt;"
-                                            *ngIf="submitted && dataForm.name.trim() === ''">
-                                            กรุณาใส่ ชื่อ
-                                        </div>
-                                        <label style="margin-top: 5pt;">ประเภทกลุ่ม *</label>
-                                        <input type="text" class="form-control" [(ngModel)]="dataForm.detail"
-                                            [ngModelOptions]="{standalone: true}">
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
+
                     </div>
                     <div class="wrapper-action">
                         <button mat-raised-button class="btn-close" (click)="clickCloseDrawer()">ปิด</button>
@@ -47,7 +30,7 @@
         </mat-drawer>
         <mat-drawer-content>
             <div class="main-content">
-                <admin-table-component #table [orderBy]="orderBy" [facade]="pageGroupFacade" [isApprovePage]="'true'"
+                <admin-table-component #table [orderBy]="orderBy" [facade]="manipulateFacade" [isApprovePage]="'true'"
                     [title]="'รายงานโพสต์'" [fieldTable]="fieldTable" [actions]="actions"
                     [isOfficialPage]="isOfficialPage" (edit)="clickEditForm($event)" (create)="clickCreateForm()"
                     (delete)="clickDelete($event)"></admin-table-component>
