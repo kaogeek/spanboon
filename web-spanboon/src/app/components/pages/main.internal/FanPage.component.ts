@@ -1202,12 +1202,22 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   }
 
   public reportPost(post: any, index: number) {
-    let option = ['สแปม', 'ภาพโป๊เปลือย', 'การขายที่ไม่ได้รับอนุญาต', 'ความรุนแรง', 'การก่อการร้าย', 'คำพูดที่แสดงความเกลียดชัง', 'ข้อมูลเท็จ', 'การคุกคาม'];
+    let typeReport = 'post';
+    let type;
+    let detail = [];
+    this.pageFacade.getManipulate(typeReport).then((res) => {
+      if (res) {
+        type = res.data[0].type;
+        for (let data of res.data) {
+          detail.push(data.detail);
+        }
+      }
+    })
     let dialog = this.dialog.open(DialogCheckBox, {
       disableClose: false,
       data: {
         title: 'รายงาน',
-        subject: option,
+        subject: detail,
         bottomText2: 'ตกลง',
         bottomColorText2: "black",
       }
@@ -1216,7 +1226,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
       if (res) {
         let data = {
           typeId: post._id,
-          type: 'POST',
+          type: type,
           topic: res.topic,
           message: res.detail ? res.detail : '',
         }
@@ -1685,12 +1695,22 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   }
 
   public reportUser(page) {
-    let option = ['คำพูดที่แสดงความเกลียดชัง', 'ภาพโป๊เปลือยหรือเนื้อหาทางเพศ', 'ความรุนแรง', 'การคุกคาม', 'การขายที่ไม่ได้รับอนุญาต', 'แอบอ้างว่าเป็นบางสิ่ง', 'เพจปลอม', 'หลอกลวงหรือต้มตุ๋น', 'ทรัพย์สินทางปัญญา'];
+    let typeReport = 'page';
+    let type;
+    let detail = [];
+    this.pageFacade.getManipulate(typeReport).then((res) => {
+      if (res) {
+        type = res.data[0].type;
+        for (let data of res.data) {
+          detail.push(data.detail);
+        }
+      }
+    })
     let dialog = this.dialog.open(DialogCheckBox, {
       disableClose: false,
       data: {
         title: 'รายงาน',
-        subject: option,
+        subject: detail,
         bottomText2: 'ตกลง',
         bottomColorText2: "black",
       }
@@ -1699,7 +1719,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
       if (res) {
         let data = {
           typeId: page.id,
-          type: 'PAGE',
+          type: type,
           topic: res.topic,
           message: res.detail ? res.detail : '',
         }

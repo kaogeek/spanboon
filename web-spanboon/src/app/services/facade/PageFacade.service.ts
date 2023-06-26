@@ -400,6 +400,25 @@ export class PageFacade extends AbstractFacade {
     });
   }
 
+  public getManipulate(type: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string;
+      if (type === 'user') {
+        url = this.baseURL + '/user/report/manipulate';
+      } else if (type === 'page') {
+        url = this.baseURL + '/page/report/manipulate';
+      } else if (type === 'post') {
+        url = this.baseURL + '/post/report/manipulate';
+      }
+
+      this.http.get(url).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
   public blockPage(data: any): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/user/content/block';
