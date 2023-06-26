@@ -65,7 +65,7 @@ export class UserController {
         private notificationService: NotificationService,
         private deviceTokenService: DeviceTokenService,
         private pageAccessLevelService: PageAccessLevelService,
-        private manipulateService: ManipulateService
+        private manipulateService: ManipulateService,
     ) { }
 
     // Logout API
@@ -991,6 +991,7 @@ export class UserController {
             return res.status(400).send(errorResponse);
         }
     }
+
     /**
      * @api {put} /api/user/:id/item Update UserProvideItems API
      * @apiGroup UserProvideItems

@@ -93,3 +93,6 @@ export const SEND_NOTIFICATION_NEWS = 'send.notification.news';
 
 export const DEFAULT_RETROSPECT = 7;
 export const RETROSPECT = 'RETROSPECT';
+
+export const DEFAULT_FILTER_NEWS = true;
+export const FILTER_NEWS = 'filter.news';
