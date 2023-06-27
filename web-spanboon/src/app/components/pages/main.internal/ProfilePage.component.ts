@@ -1276,11 +1276,9 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
 
   public reportUser(profile) {
     let typeReport = 'user';
-    let type;
     let detail = [];
     this.pageFacade.getManipulate(typeReport).then((res) => {
       if (res) {
-        type = res.data[0].type;
         for (let data of res.data) {
           detail.push(data.detail);
         }
@@ -1299,7 +1297,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
       if (res) {
         let data = {
           typeId: profile.id,
-          type: type,
+          type: typeReport.toUpperCase(),
           topic: res.topic,
           message: res.detail ? res.detail : '',
         }
@@ -1344,11 +1342,9 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
 
   public reportPost(post: any, index: number) {
     let typeReport = 'post';
-    let type;
     let detail = [];
     this.pageFacade.getManipulate(typeReport).then((res) => {
       if (res) {
-        type = res.data[0].type;
         for (let data of res.data) {
           detail.push(data.detail);
         }
@@ -1367,7 +1363,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
       if (res) {
         let data = {
           typeId: post._id,
-          type: type,
+          type: typeReport.toUpperCase(),
           topic: res.topic,
           message: res.detail ? res.detail : '',
         }

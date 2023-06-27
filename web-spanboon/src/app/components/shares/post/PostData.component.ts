@@ -21,6 +21,7 @@ import { MESSAGE } from '../../../../custom/variable';
 import { Router } from '@angular/router';
 import Glightbox from 'glightbox';
 import { DialogShare } from '../dialog/DialogShare.component';
+import { DialogCheckBox } from '../dialog/DialogCheckBox.component';
 
 @Component({
   selector: 'post-data',
@@ -542,11 +543,56 @@ export class PostData {
   }
 
   public hidePost(post) {
+    // const url: string = decodeURI(this.router.url);
+    // const path = url.split('/')[1];
+    // if (path === 'post') {
+
+    // } else {
     this.hide.emit(post);
+    // }
   }
 
   public reportPost(post) {
-    this.report.emit(post);
+    const url: string = decodeURI(this.router.url);
+    const path = url.split('/')[1];
+    if (path === 'post') {
+      let typeReport = 'post';
+      let detail = [];
+      this.pageFacade.getManipulate(typeReport).then((res) => {
+        if (res) {
+          for (let data of res.data) {
+            detail.push(data.detail);
+          }
+        }
+      })
+      let dialog = this.dialog.open(DialogCheckBox, {
+        disableClose: false,
+        data: {
+          title: 'รายงาน',
+          subject: detail,
+          bottomText2: 'ตกลง',
+          bottomColorText2: "black",
+        }
+      });
+      dialog.afterClosed().subscribe((res) => {
+        if (res) {
+          let data = {
+            typeId: post._id,
+            type: typeReport.toUpperCase(),
+            topic: res.topic,
+            message: res.detail ? res.detail : '',
+          }
+          this.pageFacade.reportPage(data).then((res) => {
+            if (res) {
+            }
+          }).catch((err) => {
+            if (err) { }
+          })
+        }
+      });
+    } else {
+      this.report.emit(post);
+    }
   }
 
   public blockUser(post) {

@@ -1203,11 +1203,9 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
 
   public reportPost(post: any, index: number) {
     let typeReport = 'post';
-    let type;
     let detail = [];
     this.pageFacade.getManipulate(typeReport).then((res) => {
       if (res) {
-        type = res.data[0].type;
         for (let data of res.data) {
           detail.push(data.detail);
         }
@@ -1226,7 +1224,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
       if (res) {
         let data = {
           typeId: post._id,
-          type: type,
+          type: typeReport.toUpperCase(),
           topic: res.topic,
           message: res.detail ? res.detail : '',
         }
@@ -1696,11 +1694,9 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
 
   public reportUser(page) {
     let typeReport = 'page';
-    let type;
     let detail = [];
     this.pageFacade.getManipulate(typeReport).then((res) => {
       if (res) {
-        type = res.data[0].type;
         for (let data of res.data) {
           detail.push(data.detail);
         }
@@ -1719,7 +1715,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
       if (res) {
         let data = {
           typeId: page.id,
-          type: type,
+          type: typeReport.toUpperCase(),
           topic: res.topic,
           message: res.detail ? res.detail : '',
         }
