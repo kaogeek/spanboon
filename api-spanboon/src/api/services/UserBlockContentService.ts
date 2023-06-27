@@ -50,6 +50,10 @@ export class UserBlockContentService {
         return await this.contentBlockRepository.deleteOne(query, options);
     }
 
+    // deleteMany
+    public async deleteMany(query: any, options?: any): Promise<any> {
+        return await this.contentBlockRepository.deleteMany(query, options);
+    }
     // aggregate UserBlockContent
     public async aggregate(query: any, options?: any): Promise<any[]> {
         return await this.contentBlockRepository.aggregate(query, options).toArray();
