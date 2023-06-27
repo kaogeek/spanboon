@@ -110,6 +110,8 @@ export class TableComponent implements OnInit {
     public isBanfilter: boolean;
     @Input()
     public isOfficialPage: {};
+    @Input()
+    public manipulate: boolean;
     public fieldSearchs: string[];
     @Output() official: EventEmitter<any> = new EventEmitter();
     @Output() ban: EventEmitter<any> = new EventEmitter();
@@ -150,6 +152,9 @@ export class TableComponent implements OnInit {
     public selected: any
     public selectItem: any;
     public item: any[];
+    public offsetUser: number = 100;
+    public limitUser: number = 100;
+
     emergencyEventFacade: EmergencyEventFacade;
     constructor(dialog: MatDialog, emergencyEventFacade: EmergencyEventFacade) {
         this.emergencyEventFacade = emergencyEventFacade;
@@ -255,7 +260,11 @@ export class TableComponent implements OnInit {
         });
     }
 
-    public searchData(isNextPage?: boolean, isSort?: boolean): void {
+    public keyUp() {
+        this.searchData(null, null, 'search');
+    }
+
+    public searchData(isNextPage?: boolean, isSort?: boolean, data?: any): void {
         this.isLoading = true;
         this.seletc = [];
         this.arr = [];
@@ -266,11 +275,19 @@ export class TableComponent implements OnInit {
                 search.whereConditions[field] = { $regex: this.search };
             }
         }
-        search.limit = SEARCH_LIMIT;
+        search.limit = this.manipulate ? this.limitUser : SEARCH_LIMIT;
         search.orderBy = this.orderBy;
-        search.offset = isNextPage ? this.paginator.length : SEARCH_OFFSET;
+        search.offset = this.manipulate ? this.offsetUser : (isNextPage ? this.paginator.length : SEARCH_OFFSET);
         search.relation = this.relation;
         search.count = false;
+        if (data === 'search') {
+            search.offset = 0;
+            search.limit = 0;
+        }
+        if (isNextPage) {
+            search.offset = this.offsetUser + 100;
+            this.offsetUser + 100;
+        }
         let stack = [];
         this.facade.search(search).then((res: any) => {
             const o: any[] = [];
@@ -311,7 +328,13 @@ export class TableComponent implements OnInit {
                 }
                 res = o;
             }
-            if (isNextPage) {
+            if (isNextPage && this.manipulate) {
+                let array = this.data;
+                for (let data of res) {
+                    array.push(data);
+                }
+                this.data = array;
+            } else if (isNextPage && !this.manipulate) {
                 this.data = res;
             } else {
                 this.paginator.pageIndex = 0;

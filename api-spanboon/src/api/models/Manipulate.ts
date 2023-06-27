@@ -4,8 +4,8 @@ import { ObjectID } from 'mongodb';
 import { BaseModel } from './BaseModel';
 import moment from 'moment';
 
-@Entity('ManipulatePost')
-export class ManipulatePost extends BaseModel {
+@Entity('Manipulate')
+export class Manipulate extends BaseModel {
 
     @ObjectIdColumn({ name: '_id' })
     @IsNotEmpty()

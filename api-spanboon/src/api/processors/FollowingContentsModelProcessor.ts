@@ -424,7 +424,7 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                                 as: 'page'
                             }
                         },
-                        { $sort: { summationScore: -1 } },
+                        { $sort: { createdDate: -1 } },
                         {
                             $skip: offset
                         },

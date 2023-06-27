@@ -85,7 +85,9 @@ import {
     DEFAULT_SEARCH_CONFIG_VALUE,
     SEARCH_CONFIG_VALUES,
     DEFAULT_RETROSPECT,
-    RETROSPECT
+    RETROSPECT,
+    DEFAULT_FILTER_NEWS,
+    FILTER_NEWS,
 } from '../../constants/SystemConfig';
 import { ConfigService } from '../services/ConfigService';
 import { KaokaiTodaySnapShotService } from '../services/KaokaiTodaySnapShot';
@@ -2109,6 +2111,11 @@ export class MainPageController {
         if (switchSendNoti) {
             sendNotification = switchSendNoti.value;
         }
+        let filterNews = DEFAULT_FILTER_NEWS;
+        const configFilterNews = await this.configService.getConfig(FILTER_NEWS);
+        if(configFilterNews){
+            filterNews = configFilterNews.value;
+        }
         let splitComma = undefined;
         const emailStack = [];
         const listEmail = await this.configService.getConfig(SEND_EMAIL_TO_USER);
@@ -2205,34 +2212,28 @@ export class MainPageController {
                         }
                     }
                 }
-                let number = undefined;
                 if (fireBaseToken.length > 0) {
                     const token = fireBaseToken.filter((element, index) => {
                         return fireBaseToken.indexOf(element) === index;
                     });
                     if (token.length > 0) {
-                        for (let z = 0; z < token.length; z++) {
-                            if (token[z] !== undefined) {
-                                number = z;
-                                await this.notificationService.pushNotificationMessage(snapshot.data, token[z], endDateTimeToday);
-                            } else {
-                                continue;
-                            }
+                        const sendMulticast = await this.notificationService.multiPushNotificationMessage(snapshot.data, token, endDateTimeToday,filterNews);
+                        if (sendMulticast) {
+                            await this.notificationNewsService.create(
+                                {
+                                    kaokaiTodaySnapShotId: snapshot.id,
+                                    data: snapshot.data,
+                                    tokenFCM: undefined,
+                                    startDateTime: endDateTimeToday,
+                                    endDateTime: endDateTimeToday,
+                                    total: token.length,
+                                    send: token.length + 1,
+                                    finish: true,
+                                    type: 'notification_news',
+                                    status: true
+                                }
+                            );
                         }
-                        await this.notificationNewsService.create(
-                            {
-                                kaokaiTodaySnapShotId: snapshot.id,
-                                data: snapshot.data,
-                                tokenFCM: undefined,
-                                startDateTime: endDateTimeToday,
-                                endDateTime: endDateTimeToday,
-                                total: token.length,
-                                send: number + 1,
-                                finish: true,
-                                type: 'notification_news',
-                                status: true
-                            }
-                        );
                     }
                 }
             } else {
@@ -2268,34 +2269,28 @@ export class MainPageController {
                         }
                     }
                 }
-                let number = undefined;
                 if (fireBaseToken.length > 0) {
                     const token = fireBaseToken.filter((element, index) => {
                         return fireBaseToken.indexOf(element) === index;
                     });
-                    if (token.length > 0 && snapshot) {
-                        for (let z = 0; z < token.length; z++) {
-                            if (token[z] !== undefined) {
-                                number = z;
-                                await this.notificationService.pushNotificationMessage(snapshot.data, token[z], endDateTimeToday);
-                            } else {
-                                continue;
-                            }
+                    if (token.length > 0) {
+                        const sendMulticast = await this.notificationService.multiPushNotificationMessage(snapshot.data, token, endDateTimeToday,filterNews);
+                        if (sendMulticast) {
+                            await this.notificationNewsService.create(
+                                {
+                                    kaokaiTodaySnapShotId: snapshot.id,
+                                    data: snapshot.data,
+                                    tokenFCM: undefined,
+                                    startDateTime: endDateTimeToday,
+                                    endDateTime: endDateTimeToday,
+                                    total: token.length,
+                                    send: token.length + 1,
+                                    finish: true,
+                                    type: 'notification_news',
+                                    status: true
+                                }
+                            );
                         }
-                        await this.notificationNewsService.create(
-                            {
-                                kaokaiTodaySnapShotId: snapshot.id,
-                                data: snapshot.data,
-                                tokenFCM: undefined,
-                                startDateTime: endDateTimeToday,
-                                endDateTime: endDateTimeToday,
-                                total: token.length,
-                                send: number + 1,
-                                finish: true,
-                                type: 'notification_news',
-                                status: true
-                            }
-                        );
                     }
                 }
             }

@@ -48,9 +48,7 @@ import { PostUtil } from '../../utils/PostUtil';
 import { POST_TYPE } from '../../constants/PostType';
 import { UserService } from '../services/UserService';
 import { DeviceTokenService } from '../services/DeviceToken';
-import { MANIPULATE_POST } from '../../constants/ManipulatePost';
-import { ManipulatePostRequest } from './requests/ManipulatePostRequest';
-import { ManipulatePostService } from '../services/ManipulatePostService';
+import { ManipulateService } from '../services/ManipulateService';
 @JsonController('/post')
 export class PostsController {
     constructor(
@@ -71,9 +69,28 @@ export class PostsController {
         private assetService: AssetService,
         private deviceTokenService: DeviceTokenService,
         private userService: UserService,
-        private manipulatePostService: ManipulatePostService
+        private manipulateService: ManipulateService
     ) { }
 
+    @Get('/report/manipulate')
+    public async getReportUser(@Res() res: any, @Req() req: any): Promise<any> {
+        const getUserReport = await this.manipulateService.aggregate(
+            [
+                {
+                    $match: {
+                        type: 'REPORT_POST'
+                    }
+                }
+            ]
+        );
+        if (getUserReport.length > 0) {
+            const successResponse = ResponseUtil.getSuccessResponse('Successfully get manipulate report page.', getUserReport);
+            return res.status(200).send(successResponse);
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot get manipulate report page.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
     // New Post API
     /**
      * @api {get} /api/post/new New PostPage API
@@ -89,81 +106,6 @@ export class PostsController {
      * @apiErrorExample {json} Get New Post Error
      * HTTP/1.1 500 Internal Server Error
      */
-
-    @Post('/manipulate/post')
-    @Authorized('user')
-    public async maniPuLatePost(@Body({ validate: true }) manipulatePostRequest: ManipulatePostRequest, @Res() res: any, @Req() req: any): Promise<any> {
-        const userObjId = new ObjectID(req.user.id);
-        let create = undefined;
-        if (MANIPULATE_POST.HIDE && manipulatePostRequest.type === 'hide_post') {
-            const manipulatePost: ManipulatePostRequest = new ManipulatePostRequest();
-            manipulatePost.userId = userObjId;
-            manipulatePost.postId = manipulatePostRequest.postId;
-            manipulatePost.pageIdOwner = manipulatePostRequest.pageIdOwner;
-            manipulatePost.userIdOwner = manipulatePostRequest.userIdOwner;
-            manipulatePost.type = manipulatePostRequest.type;
-            manipulatePost.detail = manipulatePostRequest.detail;
-            create = await this.manipulatePostService.create(manipulatePost);
-            if (create !== undefined) {
-                const successResponse = ResponseUtil.getSuccessResponse('Successfully got New Post', create);
-                return res.status(200).send(successResponse);
-            } else {
-                const errorResponse = ResponseUtil.getErrorResponse('Cannot Create Manipulate Post.', undefined);
-                return res.status(400).send(errorResponse);
-            }
-        } else if (MANIPULATE_POST.REPORT_POST && manipulatePostRequest.type === 'report_post') {
-            const manipulatePost: ManipulatePostRequest = new ManipulatePostRequest();
-            manipulatePost.userId = userObjId;
-            manipulatePost.postId = manipulatePostRequest.postId;
-            manipulatePost.pageIdOwner = manipulatePostRequest.pageIdOwner;
-            manipulatePost.userIdOwner = manipulatePostRequest.userIdOwner;
-            manipulatePost.type = manipulatePostRequest.type;
-            manipulatePost.detail = manipulatePostRequest.detail;
-            create = await this.manipulatePostService.create(manipulatePost);
-            if (create !== undefined) {
-                const successResponse = ResponseUtil.getSuccessResponse('Successfully got New Post', create);
-                return res.status(200).send(successResponse);
-            } else {
-                const errorResponse = ResponseUtil.getErrorResponse('Cannot Create Manipulate Post.', undefined);
-                return res.status(400).send(errorResponse);
-            }
-        } else if (MANIPULATE_POST.BLOCKPAGE && manipulatePostRequest.type === 'block_page') {
-            const manipulatePost: ManipulatePostRequest = new ManipulatePostRequest();
-            manipulatePost.userId = userObjId;
-            manipulatePost.postId = manipulatePostRequest.postId;
-            manipulatePost.pageIdOwner = manipulatePostRequest.pageIdOwner;
-            manipulatePost.userIdOwner = manipulatePostRequest.userIdOwner;
-            manipulatePost.type = manipulatePostRequest.type;
-            manipulatePost.detail = manipulatePostRequest.detail;
-            create = await this.manipulatePostService.create(manipulatePost);
-            if (create !== undefined) {
-                const successResponse = ResponseUtil.getSuccessResponse('Successfully got New Post', create);
-                return res.status(200).send(successResponse);
-            } else {
-                const errorResponse = ResponseUtil.getErrorResponse('Cannot Create Manipulate Post.', undefined);
-                return res.status(400).send(errorResponse);
-            }
-        } else if (MANIPULATE_POST.REPORT_PAGE && manipulatePostRequest.type === 'report_page') {
-            const manipulatePost: ManipulatePostRequest = new ManipulatePostRequest();
-            manipulatePost.userId = userObjId;
-            manipulatePost.postId = manipulatePostRequest.postId;
-            manipulatePost.pageIdOwner = manipulatePostRequest.pageIdOwner;
-            manipulatePost.userIdOwner = manipulatePostRequest.userIdOwner;
-            manipulatePost.type = manipulatePostRequest.type;
-            manipulatePost.detail = manipulatePostRequest.detail;
-            create = await this.manipulatePostService.create(manipulatePost);
-            if (create !== undefined) {
-                const successResponse = ResponseUtil.getSuccessResponse('Successfully Create Manipulate Post', create);
-                return res.status(200).send(successResponse);
-            } else {
-                const errorResponse = ResponseUtil.getErrorResponse('Cannot Create Manipulate Post.', undefined);
-                return res.status(400).send(errorResponse);
-            }
-        } else {
-            const errorResponse = ResponseUtil.getErrorResponse('Cannot Manipulate post because type does not match.', undefined);
-            return res.status(400).send(errorResponse);
-        }
-    }
 
     @Get('/new')
     public async getNewPost(@Res() res: any): Promise<any> {

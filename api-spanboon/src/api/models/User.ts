@@ -126,10 +126,10 @@ export class User extends BaseModel {
     @Column({ name: 'province' })
     public province: string;
 
-    @Column({ name: 'subscribeEmail'})
+    @Column({ name: 'subscribeEmail' })
     public subscribeEmail: boolean;
 
-    @Column({ name: 'subscribeNoti'})
+    @Column({ name: 'subscribeNoti' })
     public subscribeNoti: boolean;
 
     @Column({ name: 'ua' })
@@ -146,6 +146,12 @@ export class User extends BaseModel {
 
     @Column({ name: 'subjectAttention' })
     public subjectAttention: any;
+
+    @Column({ name: 'delete' })
+    public delete: boolean;
+
+    @Column({ name: 'isOfficial' })
+    public isOfficial: boolean;
 
     // @Column(type => AuthenticationId)
     // public authenticationId: AuthenticationId;

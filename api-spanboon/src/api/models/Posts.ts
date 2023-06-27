@@ -135,6 +135,9 @@ export class Posts extends BaseModel {
     @Column({ name: 'reachCount' })
     public reachCount: number;
 
+    @Column({ name: 'banned' })
+    public banned: boolean;
+
     @BeforeInsert()
     public createDetails(): any {
         this.createdDate = moment().toDate();

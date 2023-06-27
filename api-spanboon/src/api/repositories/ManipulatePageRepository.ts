@@ -5,9 +5,10 @@
  * Author:  shiorin <junsuda.s@absolute.co.th>, chalucks <chaluck.s@absolute.co.th>
  */
 
-export const MANIPULATE_POST = {
-    HIDE:'hide_post',
-    REPORT_POST:'report_post',
-    BLOCKPAGE:'block_page',
-    REPORT_PAGE:'report_page'
-};
+import { EntityRepository, MongoRepository } from 'typeorm';
+import { Manipulate } from '../models/Manipulate';
+
+@EntityRepository(Manipulate)
+export class ManipulateRepository extends MongoRepository<Manipulate>{
+
+}

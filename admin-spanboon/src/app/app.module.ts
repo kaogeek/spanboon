@@ -82,7 +82,8 @@ import {
   PageGroupFacade,
   PageUserFacade,
   PageUserAdminFacade,
-  NewsPaperFacade
+  NewsPaperFacade,
+  ManipulateFacade
   ,
 } from './services/services';
 import { UserFacade } from './services/facade/UserFacade.service';
@@ -92,6 +93,8 @@ import {
   PrefixNumberPipe,
   PipeThDatetimePipe
 } from './components/shares/pipes/pipes';
+import { ManipulatePage } from './components/pages/main.internal/ManipulatePage.component';
+import { ManipulatePost } from './components/pages/main.internal/ManipulatePost.component';
 
 const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
   direction: 'horizontal',
@@ -135,6 +138,8 @@ const COMPONENTS: any[] = [
   DialogAlert,
   TableComponent,
   PageGroup,
+  ManipulatePage,
+  ManipulatePost,
   NewsPaperPage
 ];
 
@@ -167,6 +172,7 @@ const SERVICE_CLASSES: any[] = [
   UserFacade,
   PageUserAdminFacade,
   NewsPaperFacade,
+  ManipulateFacade,
   // other 
   {
     provide: SWIPER_CONFIG,

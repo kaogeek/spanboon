@@ -1154,7 +1154,7 @@
                     </div>
                     <div class="wrapper-content">
                         <ng-container *ngFor="let post of owner.owner.posts; let i=index">
-                            <ng-container *ngIf="post.post.deleted === false">
+                            <ng-container *ngIf="post.post.deleted === false && post.post.type !== 'NEEDS'">
                                 <card-content-home [itempost]="post" [signUrl]="post.coverPageSignUrl ? true : false"
                                     [pageId]="post.post.pageId ? post.post.pageId : null"
                                     [ownerid]="post.post.ownerUser ? post.post.ownerUser : null"
@@ -1195,7 +1195,7 @@
                     </div>
                     <div class="wrapper-content">
                         <ng-container *ngFor="let post of owner.owner.posts; let i=index">
-                            <ng-container *ngIf="post.post.deleted === false">
+                            <ng-container *ngIf="post.post.deleted === false && post.post.type !== 'NEEDS'">
                                 <card-content-home [itempost]="post" [signUrl]="post.coverPageSignUrl ? true : false"
                                     [pageId]="post.post.pageId ? post.post.pageId : null"
                                     [ownerid]="post.post.ownerUser ? post.post.ownerUser : null"
@@ -1236,7 +1236,7 @@
                     </div>
                     <div class="wrapper-content">
                         <ng-container *ngFor="let post of owner.owner.posts; let i=index">
-                            <ng-container *ngIf="post.post.deleted === false">
+                            <ng-container *ngIf="post.post.deleted === false && post.post.type !== 'NEEDS'">
                                 <card-content-home [itempost]="post" [signUrl]="post.coverPageSignUrl ? true : false"
                                     [pageId]="post.post.pageId ? post.post.pageId : null"
                                     [ownerid]="post.post.ownerUser ? post.post.ownerUser : null"
@@ -1255,7 +1255,8 @@
         </section>
     </ng-container>
     <ng-container *ngIf="!!userFollowings">
-        <section class="section-follow" *ngIf="hidebar && userFollowings.userFollowing.contents.length > 0">
+        <section class="section-follow" *ngIf="hidebar && userFollowings.userFollowing.contents.length > 0 && userFollowings.userFollowing.contents[0].owner.posts[0].post.type !== 'NEEDS'
+            && userFollowings.userFollowing.contents[0].owner.posts[0].post.deleted !== true">
             <ng-container *ngFor="let owner of userFollowings.userFollowing.contents; let ownerI=index">
                 <div class="container" style="margin-top: 15px"
                     *ngIf="!isEmptyObject(owner.owner) && owner.owner.posts.length > 0 && owner.owner.posts[0].post.deleted !== true">
@@ -1276,7 +1277,7 @@
                     </div>
                     <div class="wrapper-content">
                         <ng-container *ngFor="let post of owner.owner.posts; let i=index">
-                            <ng-container *ngIf="post.post.deleted === false">
+                            <ng-container *ngIf="post.post.deleted === false && post.post.type !== 'NEEDS'">
                                 <card-content-home [itempost]="post" [signUrl]="post.coverPageSignUrl ? true : false"
                                     [pageId]="post.post.pageId ? post.post.pageId : null"
                                     [ownerid]="post.post.ownerUser ? post.post.ownerUser : null"
@@ -1314,7 +1315,8 @@
             <div class="wrapper-content">
                 <ng-container
                     *ngFor="let followingProvince of followingProvinces.followingProvince.contents; let i=index">
-                    <ng-container *ngIf="followingProvince.post.deleted === false">
+                    <ng-container
+                        *ngIf="followingProvince.post.deleted === false && followingProvince.post.type !== 'NEEDS'">
                         <card-content-home [titlepost]="followingProvince.post.title"
                             [ownername]="followingProvince.owner.name" [itempost]="followingProvince"
                             [pageId]="followingProvince.post.pageId ? followingProvince.post.pageId : null"

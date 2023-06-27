@@ -21,6 +21,7 @@ import { MESSAGE } from '../../../../custom/variable';
 import { Router } from '@angular/router';
 import Glightbox from 'glightbox';
 import { DialogShare } from '../dialog/DialogShare.component';
+import { DialogCheckBox } from '../dialog/DialogCheckBox.component';
 
 @Component({
   selector: 'post-data',
@@ -99,6 +100,8 @@ export class PostData {
   public engagement: EventEmitter<any> = new EventEmitter();
   @Output()
   public hide: EventEmitter<any> = new EventEmitter();
+  @Output()
+  public report: EventEmitter<any> = new EventEmitter();
 
   public value: any
   public isLoading: Boolean;
@@ -540,24 +543,59 @@ export class PostData {
   }
 
   public hidePost(post) {
+    // const url: string = decodeURI(this.router.url);
+    // const path = url.split('/')[1];
+    // if (path === 'post') {
+
+    // } else {
     this.hide.emit(post);
+    // }
   }
 
-  public reportPost() {
-    let dialog = this.dialog.open(DialogAlert, {
-      disableClose: true,
-      data: {
-        text: 'คุณต้องการรายงานโพสต์นี้ใช่หรือไม่',
-      },
-    });
-    dialog.afterClosed().subscribe((res) => {
-      if (res) {
-        this.showAlertDialog();
-      }
-    });
+  public reportPost(post) {
+    const url: string = decodeURI(this.router.url);
+    const path = url.split('/')[1];
+    if (path === 'post') {
+      let typeReport = 'post';
+      let detail = [];
+      this.pageFacade.getManipulate(typeReport).then((res) => {
+        if (res) {
+          for (let data of res.data) {
+            detail.push(data.detail);
+          }
+        }
+      })
+      let dialog = this.dialog.open(DialogCheckBox, {
+        disableClose: false,
+        data: {
+          title: 'รายงาน',
+          subject: detail,
+          bottomText2: 'ตกลง',
+          bottomColorText2: "black",
+        }
+      });
+      dialog.afterClosed().subscribe((res) => {
+        if (res) {
+          let data = {
+            typeId: post._id,
+            type: typeReport.toUpperCase(),
+            topic: res.topic,
+            message: res.detail ? res.detail : '',
+          }
+          this.pageFacade.reportPage(data).then((res) => {
+            if (res) {
+            }
+          }).catch((err) => {
+            if (err) { }
+          })
+        }
+      });
+    } else {
+      this.report.emit(post);
+    }
   }
 
-  public blockUser() {
+  public blockUser(post) {
     let dialog = this.dialog.open(DialogAlert, {
       disableClose: true,
       data: {
@@ -566,7 +604,39 @@ export class PostData {
     });
     dialog.afterClosed().subscribe((res) => {
       if (res) {
-        this.showAlertDialog();
+        let data = {
+          subjectId: post.ownerUser,
+          subjectType: 'USER',
+        }
+        this.pageFacade.blockPage(data).then((res) => {
+          if (res) {
+          }
+        }).catch((err) => {
+          if (err) { }
+        })
+      }
+    });
+  }
+
+  public blockPage(post) {
+    let dialog = this.dialog.open(DialogAlert, {
+      disableClose: true,
+      data: {
+        text: 'คุณต้องการบล็อกเพจนี้ใช่หรือไม่',
+      },
+    });
+    dialog.afterClosed().subscribe((res) => {
+      if (res) {
+        let data = {
+          subjectId: post.pageId,
+          subjectType: 'PAGE',
+        }
+        this.pageFacade.blockPage(data).then((res) => {
+          if (res) {
+          }
+        }).catch((err) => {
+          if (err) { }
+        })
       }
     });
   }

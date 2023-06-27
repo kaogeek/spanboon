@@ -382,6 +382,79 @@ export class PageFacade extends AbstractFacade {
     });
   }
 
+  public manipulatePost(data: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/post/manipulate';
+      let options = this.authMgr.getDefaultOptions();
+      let body: any = {};
+
+      if (data !== null && data !== undefined) {
+        body = Object.assign(data)
+      }
+
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public getManipulate(type: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string;
+      if (type === 'user') {
+        url = this.baseURL + '/user/report/manipulate';
+      } else if (type === 'page') {
+        url = this.baseURL + '/page/report/manipulate';
+      } else if (type === 'post') {
+        url = this.baseURL + '/post/report/manipulate';
+      }
+
+      this.http.get(url).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public blockPage(data: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/user/content/block';
+      let options = this.authMgr.getDefaultOptions();
+      let body: any = {};
+
+      if (data !== null && data !== undefined) {
+        body = Object.assign(data)
+      }
+
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public reportPage(data: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/user/report';
+      let options = this.authMgr.getDefaultOptions();
+      let body: any = {};
+
+      if (data !== null && data !== undefined) {
+        body = Object.assign(data)
+      }
+
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
   public checkPageUsername(pageUsername: any): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/page/uniqueid/check';

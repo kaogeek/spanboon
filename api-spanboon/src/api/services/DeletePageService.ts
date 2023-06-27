@@ -35,7 +35,7 @@ export class DeletePageService {
         private fulfillmentCaseService: FulfillmentCaseService,
         private needsService: NeedsService,
         private postsCommentService: PostsCommentService,
-        private userLikeService:UserLikeService
+        private userLikeService: UserLikeService
     ) {
     }
 
@@ -51,16 +51,16 @@ export class DeletePageService {
     // PageConfig
     // PageObjective
 
-    public deletePage(pageId: string): Promise<any> {
+    public deletePage(pageId: string, User: string): Promise<any> {
         return new Promise(async (resolve, reject) => {
-            const testQuery = await this.pageService.aggregate([
-                { $match: { '_id': pageId } },
+            const Query = await this.pageService.aggregate([
+                { $match: { '_id': pageId, 'ownerUser': User } },
                 { $lookup: { from: 'Posts', localField: '_id', foreignField: 'pageId', as: 'Posts' } },
                 { $unwind: { path: '$Posts', preserveNullAndEmptyArrays: true } },
                 { $lookup: { from: 'PostsComment', localField: '_id', foreignField: 'commentAsPage', as: 'PostsComment' } },
                 { $unwind: { path: '$PostComment', preserveNullAndEmptyArrays: true } },
-                { $lookup: { from: 'UserLike', localField: '_id', foreignField:'likeAsPage', as: 'UserLike'}},
-                { $unwind: { path: '$UserLike', preserveNullAndEmptyArrays: true}},
+                { $lookup: { from: 'UserLike', localField: '_id', foreignField: 'likeAsPage', as: 'UserLike' } },
+                { $unwind: { path: '$UserLike', preserveNullAndEmptyArrays: true } },
                 { $lookup: { from: 'SocialPostLogs', localField: '_id', foreignField: 'pageId', as: 'SocialPostLogs' } },
                 { $unwind: { path: '$SocialPostLogs', preserveNullAndEmptyArrays: true } },
                 { $lookup: { from: 'SocialPost', localField: '_id', foreignField: 'pageId', as: 'SocialPost' } },
@@ -82,8 +82,8 @@ export class DeletePageService {
                 { $limit: 1 },
             ]);
             const pageObjId = [];
-            for (const test of testQuery) {
-                pageObjId.push(test);
+            for (const pageData of Query) {
+                pageObjId.push(pageData);
             }
             for (const pageTest of pageObjId) {
                 const findPageObjective = await this.pageObjectiveService.findOne({ pageId: pageTest._id });
@@ -106,7 +106,7 @@ export class DeletePageService {
                 if (findPageAbout !== undefined) {
                     await this.pageAboutService.deleteMany({ pageId: pageTest._id });
                 }
-                const findPageAccess = await this.pageAccessLevelService.findOne({ page: pageTest._id });
+                const findPageAccess = await this.pageAccessLevelService.findOne({ page: pageTest._id, level: 'OWNER' });
                 if (findPageAccess !== undefined) {
                     await this.pageAccessLevelService.deleteMany({ page: pageTest._id });
                 }
@@ -126,9 +126,9 @@ export class DeletePageService {
                 if (findPostsComment !== undefined) {
                     await this.postsCommentService.deleteMany({ commentAsPage: pageTest._id });
                 }
-                const findLikePage = await this.userLikeService.findOne({likeAsPage:pageTest._id });
-                if( findLikePage !== undefined){
-                    await this.userLikeService.deleteMany({likeAsPage:pageTest._id });
+                const findLikePage = await this.userLikeService.findOne({ likeAsPage: pageTest._id });
+                if (findLikePage !== undefined) {
+                    await this.userLikeService.deleteMany({ likeAsPage: pageTest._id });
                 }
                 const findPostPage = await this.postsService.findOne({ pageId: pageTest._id });
                 if (findPostPage !== undefined) {

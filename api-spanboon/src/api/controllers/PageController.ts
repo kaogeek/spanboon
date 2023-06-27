@@ -78,6 +78,7 @@ import { PageNotificationService } from '../services/PageNotificationService';
 import { NotificationService } from '../services/NotificationService';
 import { DeletePageService } from '../services/DeletePageService';
 import axios from 'axios';
+import { ManipulateService } from '../services/ManipulateService';
 import { PageGroupService } from '../services/PageGroupService';
 // import { IpAddressEvent } from '../middlewares/IpAddressesMiddleware';
 @JsonController('/page')
@@ -110,9 +111,29 @@ export class PageController {
         private pageNotificationService: PageNotificationService,
         private notificationService: NotificationService,
         private deletePageService: DeletePageService,
-        private pageGroupService: PageGroupService
+        private pageGroupService: PageGroupService,
+        private manipulateService:ManipulateService
     ) { }
 
+    @Get('/report/manipulate')
+    public async getReportUser(@Res() res: any, @Req() req: any): Promise<any> {
+        const getUserReport = await this.manipulateService.aggregate(
+            [
+                {
+                    $match: {
+                        type: 'REPORT_PAGE'
+                    }
+                }
+            ]
+        );
+        if (getUserReport.length > 0) {
+            const successResponse = ResponseUtil.getSuccessResponse('Successfully get manipulate report page.', getUserReport);
+            return res.status(200).send(successResponse);
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot get manipulate report page.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
     // Find Page API
     /**
      * @api {get} /api/page/:id Find Page API
@@ -332,6 +353,7 @@ export class PageController {
             return res.status(400).send(errorResponse);
         }
     }
+
     // autoSyncPageTW
     @Post('/sync/tw')
     @Authorized('user')
@@ -2265,7 +2287,7 @@ export class PageController {
      * HTTP/1.1 500 Internal Server Error
      */
     @Post('/search')
-    public async searchPage(@Body({ validate: true }) filter: SearchFilter, @Res() res: any): Promise<any> {
+    public async searchPage(@QueryParam('limit') limit: number, @QueryParam('offset') offset: number, @Body({ validate: true }) filter: SearchFilter, @Res() res: any): Promise<any> {
         if (ObjectUtil.isObjectEmpty(filter)) {
             return res.status(200).send([]);
         }
@@ -2282,6 +2304,7 @@ export class PageController {
             filter.whereConditions = {};
         }
 
+        // const pageLists: any = await this.pageService.search(filter, { signURL: true });
         const pageLists: any = await this.pageService.search(filter, { signURL: true });
 
         if (pageLists) {
@@ -3321,8 +3344,9 @@ export class PageController {
         const userId = new ObjectID(req.user.id);
         const pageObjId = new ObjectID(pageId);
         const findPage = await this.pageService.findOne({ _id: pageObjId, ownerUser: userId });
-        if (findPage !== undefined && findPage !== null) {
-            const deletePage = await this.deletePageService.deletePage(findPage.id);
+        const accessPage = await this.pageAccessLevelService.findOne({ page: findPage.id });
+        if (findPage !== undefined && findPage !== null && accessPage.level === 'OWNER' && accessPage !== undefined && accessPage !== null) {
+            const deletePage = await this.deletePageService.deletePage(findPage.id, findPage.ownerUser);
             if (deletePage) {
                 return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully delete Page ', undefined));
             } else {

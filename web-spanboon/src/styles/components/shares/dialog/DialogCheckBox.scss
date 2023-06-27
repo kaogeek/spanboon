@@ -5,197 +5,229 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
  */
 .customize-checkbox {
-    width: 500pt !important;
+  width: 500pt !important;
 
-    >.newcon-checkbox-dialog {
-        position: relative;
-        max-width: 500pt;
-        width: 90vw;
-        height: auto;
-        background-color: $white;
-        box-shadow: 0px 1px 3px 0px #d3d3d4;
-        transition: 0.3s;
-        overflow: hidden;
+  > .newcon-checkbox-dialog {
+    position: relative;
+    max-width: 500pt;
+    width: 90vw;
+    height: auto;
+    background-color: $white;
+    box-shadow: 0px 1px 3px 0px #d3d3d4;
+    transition: 0.3s;
+    overflow: hidden;
 
-        >.edit-h {
-            width: auto;
-            height: 20pt;
-            background-color: $brandcolor2;
-            border-bottom: whitesmoke 2px solid;
-            padding: 10pt;
-            display: flex;
-            position: relative;
-            overflow: hidden;
-            align-items: unset;
-            flex-direction: unset;
+    > .edit-h {
+      width: auto;
+      height: 20pt;
+      background-color: $brandcolor2;
+      border-bottom: whitesmoke 2px solid;
+      padding: 10pt;
+      display: flex;
+      position: relative;
+      overflow: hidden;
+      align-items: unset;
+      flex-direction: unset;
 
-            >.edit-head-one {
-                @include font-size-8($font-head-500);
-                height: 20px;
-                color: white;
-                margin-left: 10px;
-            }
+      > .edit-head-one {
+        @include font-size-8($font-head-500);
+        height: 20px;
+        color: white;
+        margin-left: 10px;
+      }
 
-            >.dialog-image-title-right {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                position: absolute;
-                right: 10pt;
+      > .dialog-image-title-right {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        right: 10pt;
 
-                >.material-icons {
-                    font-family: 'Material Icons' !important;
-                    cursor: pointer;
-                    opacity: 0.4;
-                    color: $white;
+        > .material-icons {
+          font-family: "Material Icons" !important;
+          cursor: pointer;
+          opacity: 0.4;
+          color: $white;
 
-                    &:hover {
-                        opacity: 0.8;
-                    }
-                }
-            }
+          &:hover {
+            opacity: 0.8;
+          }
         }
-
-        >.wrapper-page-create {
-            padding: 20pt 15pt 10pt 15pt;
-            flex: 0 0 auto;
-            position: sticky;
-            bottom: 0;
-            z-index: 99;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            background: #fff;
-
-            .wrapper-subject {
-                border: 1px solid black;
-                border-radius: 20px;
-                height: 40px;
-                margin: 5px;
-                align-items: center;
-                display: flex;
-
-                >.section-subject {
-                    margin-left: 10px;
-                    width: 100%;
-                    display: flex;
-                    justify-content: space-between;
-
-                    >.item-subject {}
-
-                    >.icon-subject {
-                        justify-content: center;
-                        display: flex;
-                        align-items: center;
-                        gap: 10px;
-                        margin-right: 10px;
-
-                        >svg:hover {
-                            fill: red;
-                        }
-
-                    }
-                }
-            }
-        }
-
-        ckeditor {
-            width: 100%;
-        }
-
-        >.dialog-footer {
-            height: 20pt;
-            padding: 10pt;
-            border-top: 1px solid $bg-color1;
-            display: flex;
-            flex-direction: row;
-            justify-content: flex-end;
-            align-items: center;
-            overflow: hidden;
-
-            >.butt {
-                width: 20%;
-                border-radius: 5px;
-                padding: 5px 0px;
-                cursor: pointer;
-                border: $width-border solid #e0e0e0;
-                text-align: center;
-                @include font-size-9($font-head-500);
-                margin: 0 0.25rem;
-                transition: 0.5s;
-
-                &:hover {
-                    transform: scale(1.06);
-                    -webkit-transform: scale(1.06);
-                    -moz-transform: scale(1.06);
-                    -ms-transform: scale(1.06);
-                    -o-transform: scale(1.06);
-                }
-            }
-
-            .but-cancel {}
-
-            .but-submit {
-                color: $brandcolor;
-                background-color: $brandcolor2;
-            }
-        }
+      }
     }
+
+    > .wrapper-page-create {
+      padding: 20pt 15pt 10pt 15pt;
+      flex: 0 0 auto;
+      position: sticky;
+      bottom: 0;
+      z-index: 99;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: #fff;
+
+      .wrapper-subject {
+        border: 1px solid black;
+        border-radius: 20px;
+        height: 40px;
+        margin: 5px;
+        align-items: center;
+        display: flex;
+        transition: 0.5s;
+        padding: 10px;
+        cursor: pointer;
+
+        &:hover {
+          transform: scale(1.06);
+          -webkit-transform: scale(1.06);
+          -moz-transform: scale(1.06);
+          -ms-transform: scale(1.06);
+          -o-transform: scale(1.06);
+          background-color: $brandcolor2;
+          color: white;
+        }
+
+        > .section-subject {
+          margin-left: 10px;
+          width: 100%;
+          display: flex;
+          justify-content: center;
+
+          > .item-subject {
+            @include font-size-9($font-head-100);
+            word-break: break-word;
+            line-height: 1.2;
+            text-align: center;
+          }
+
+          > .icon-subject {
+            justify-content: center;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-right: 10px;
+
+            > svg:hover {
+              fill: red;
+            }
+          }
+        }
+      }
+    }
+
+    > .detail-message {
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+      width: 92%;
+      margin: 0 auto;
+
+      > span {
+        @include font-size-9($font-head-500);
+        color: $brandcolor2;
+      }
+    }
+
+    ckeditor {
+      width: 100%;
+    }
+
+    > .dialog-footer {
+      height: 20pt;
+      padding: 10pt;
+      border-top: 1px solid $bg-color1;
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+      align-items: center;
+      overflow: hidden;
+
+      > .butt {
+        width: 20%;
+        border-radius: 5px;
+        padding: 5px 0px;
+        cursor: pointer;
+        border: $width-border solid #e0e0e0;
+        text-align: center;
+        @include font-size-9($font-head-500);
+        margin: 0 0.25rem;
+        transition: 0.5s;
+
+        &:hover {
+          transform: scale(1.06);
+          -webkit-transform: scale(1.06);
+          -moz-transform: scale(1.06);
+          -ms-transform: scale(1.06);
+          -o-transform: scale(1.06);
+        }
+      }
+
+      .but-cancel {
+      }
+
+      .but-submit {
+        color: $brandcolor;
+        background-color: $brandcolor2;
+      }
+    }
+  }
 }
 
 @media (max-width: $xxlarge) {
-    .newcon-alert-dialog {
-        max-width: 480px;
+  .newcon-alert-dialog {
+    max-width: 480px;
 
-        >.edit-input {
-            padding: 18pt;
-            max-height: calc(55vh - 36pt - 20pt - 20pt);
-        }
+    > .edit-input {
+      padding: 18pt;
+      max-height: calc(55vh - 36pt - 20pt - 20pt);
     }
+  }
 }
 
 @media (max-width: $xlarge) {
-    .newcon-alert-dialog {
-        max-width: 470px;
+  .newcon-alert-dialog {
+    max-width: 470px;
 
-        >.edit-h,
-        >.dialog-footer {
-            height: 18pt;
-        }
-
-        >.edit-input {
-            max-height: calc(55vh - 36pt - 18pt - 18pt);
-        }
+    > .edit-h,
+    > .dialog-footer {
+      height: 18pt;
     }
+
+    > .edit-input {
+      max-height: calc(55vh - 36pt - 18pt - 18pt);
+    }
+  }
 }
 
 @media (max-width: $large) {
-    .newcon-alert-dialog {
-        max-width: 460px;
+  .newcon-alert-dialog {
+    max-width: 460px;
 
-        >.edit-h,
-        >.dialog-footer {
-            height: 16pt;
-        }
-
-        >.edit-input {
-            max-height: calc(55vh - 36pt - 16pt - 16pt);
-        }
+    > .edit-h,
+    > .dialog-footer {
+      height: 16pt;
     }
+
+    > .edit-input {
+      max-height: calc(55vh - 36pt - 16pt - 16pt);
+    }
+  }
 }
 
 @media (max-width: $medium) {
-    .newcon-alert-dialog {
-        max-width: 440px;
+  .newcon-alert-dialog {
+    max-width: 440px;
 
-        >.edit-h,
-        >.dialog-footer {
-            height: 14pt;
-        }
-
-        >.edit-input {
-            max-height: calc(55vh - 36pt - 14pt - 14pt);
-        }
+    > .edit-h,
+    > .dialog-footer {
+      height: 14pt;
     }
+
+    > .edit-input {
+      max-height: calc(55vh - 36pt - 14pt - 14pt);
+    }
+  }
 }
 
-@media (max-width: $small) {}
+@media (max-width: $small) {
+}

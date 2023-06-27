@@ -93,6 +93,8 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   public readPost: any = [];
   public readedPost: any = [];
   public isConfirmTosUa: boolean = false;
+  public isGetBottom: boolean = false;
+  public countBlockBottom: number = 0;
 
   maxDate = new Date();
 
@@ -271,6 +273,12 @@ export class HomePageV3 extends AbstractPage implements OnInit {
             } else if (this.loadingCount === 5) {
               this.followingProvinces = res;
             } else if (this.loadingCount === 6) {
+              if (res.followingContents.contents.length === 0) {
+                this.countBlockBottom++;
+              }
+              if (this.countBlockBottom === 3) {
+                this.isGetBottom = true;
+              }
               if (res.followingContents.contents.length !== 0) {
                 if (this.loadContentCount > 0) {
                   let data = this.followingContent.followingContents.contents.concat(res.followingContents.contents);
@@ -827,11 +835,11 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   }
 
   public async onScrollDown(ev) {
-    if (this.isLogin() && !this.isLoadingPost) {
+    if (this.isLogin() && !this.isLoadingPost && !this.isGetBottom) {
       this.isOnLoad = true;
       this.isLoadingPost = true;
       await this.getBottomContent(this.userCloneDatas.id);
-    } else if (!this.isLogin() && !this.isLoadingPost) {
+    } else if (!this.isLogin() && !this.isLoadingPost && !this.isGetBottom) {
       this.isOnLoad = true;
       this.isLoadingPost = true;
       await this.getBottomContent();
