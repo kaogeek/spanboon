@@ -85,7 +85,9 @@ import {
     DEFAULT_SEARCH_CONFIG_VALUE,
     SEARCH_CONFIG_VALUES,
     DEFAULT_RETROSPECT,
-    RETROSPECT
+    RETROSPECT,
+    DEFAULT_FILTER_NEWS,
+    FILTER_NEWS,
 } from '../../constants/SystemConfig';
 import { ConfigService } from '../services/ConfigService';
 import { KaokaiTodaySnapShotService } from '../services/KaokaiTodaySnapShot';
@@ -2109,6 +2111,11 @@ export class MainPageController {
         if (switchSendNoti) {
             sendNotification = switchSendNoti.value;
         }
+        let filterNews = DEFAULT_FILTER_NEWS;
+        const configFilterNews = await this.configService.getConfig(FILTER_NEWS);
+        if(configFilterNews){
+            filterNews = configFilterNews.value;
+        }
         let splitComma = undefined;
         const emailStack = [];
         const listEmail = await this.configService.getConfig(SEND_EMAIL_TO_USER);
@@ -2210,7 +2217,7 @@ export class MainPageController {
                         return fireBaseToken.indexOf(element) === index;
                     });
                     if (token.length > 0) {
-                        const sendMulticast = await this.notificationService.multiPushNotificationMessage(snapshot.data, token, endDateTimeToday);
+                        const sendMulticast = await this.notificationService.multiPushNotificationMessage(snapshot.data, token, endDateTimeToday,filterNews);
                         if (sendMulticast) {
                             await this.notificationNewsService.create(
                                 {
@@ -2267,7 +2274,7 @@ export class MainPageController {
                         return fireBaseToken.indexOf(element) === index;
                     });
                     if (token.length > 0) {
-                        const sendMulticast = await this.notificationService.multiPushNotificationMessage(snapshot.data, token, endDateTimeToday);
+                        const sendMulticast = await this.notificationService.multiPushNotificationMessage(snapshot.data, token, endDateTimeToday,filterNews);
                         if (sendMulticast) {
                             await this.notificationNewsService.create(
                                 {
