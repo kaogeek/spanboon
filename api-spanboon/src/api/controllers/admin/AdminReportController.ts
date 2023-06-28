@@ -18,7 +18,7 @@ export class AdminReportController {
     @Post('/')
     @Authorized()
     public async searchReport(@Res() res: any, @Req() req: any): Promise<any> {
-        const pageReport = await this.pageService.aggregate(
+        const pageReport: any = await this.pageService.aggregate(
             [
                 {
                     $lookup: {
@@ -43,7 +43,7 @@ export class AdminReportController {
                 }
             ]
         );
-        const userReport = await this.userService.aggregate(
+        const userReport: any = await this.userService.aggregate(
             [
                 {
                     $lookup: {
@@ -68,7 +68,7 @@ export class AdminReportController {
                 }
             ]
         );
-        const postReport = await this.postsService.aggregate(
+        const postReport: any = await this.postsService.aggregate(
             [
                 {
                     $lookup: {
@@ -96,6 +96,7 @@ export class AdminReportController {
         const result: any = [];
         for (let i = 0; i < pageReport.length; i++) {
             const reports: any = {};
+            reports._id = pageReport[i]._id;
             reports.page = pageReport[i].name;
             reports.type = 'PAGE';
             reports.count = await this.countReport(pageReport[i], reports.type);
@@ -103,6 +104,7 @@ export class AdminReportController {
         }
         for (let j = 0; j < userReport.length; j++) {
             const reports: any = {};
+            reports._id = userReport[j]._id;
             reports.page = userReport[j].displayName;
             reports.type = 'USER';
             reports.count = await this.countReport(userReport[j], reports.type);
@@ -110,6 +112,7 @@ export class AdminReportController {
         }
         for (let z = 0; z < postReport.length; z++) {
             const reports: any = {};
+            reports._id = postReport[z]._id;
             reports.page = postReport[z].title;
             reports.type = 'POST';
             reports.count = await this.countReport(postReport[z], reports.type);
