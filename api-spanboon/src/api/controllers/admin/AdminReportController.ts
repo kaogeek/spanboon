@@ -97,6 +97,7 @@ export class AdminReportController {
         for (let i = 0; i < pageReport.length; i++) {
             const reports: any = {};
             reports._id = pageReport[i]._id;
+            reports.ban = pageReport[i].banned;
             reports.page = pageReport[i].name;
             reports.type = 'PAGE';
             reports.count = await this.countReport(pageReport[i], reports.type);
@@ -105,6 +106,7 @@ export class AdminReportController {
         for (let j = 0; j < userReport.length; j++) {
             const reports: any = {};
             reports._id = userReport[j]._id;
+            reports.ban = userReport[j].banned;
             reports.page = userReport[j].displayName;
             reports.type = 'USER';
             reports.count = await this.countReport(userReport[j], reports.type);
@@ -113,6 +115,7 @@ export class AdminReportController {
         for (let z = 0; z < postReport.length; z++) {
             const reports: any = {};
             reports._id = postReport[z]._id;
+            reports.ban = postReport[z].banned;
             reports.page = postReport[z].title;
             reports.type = 'POST';
             reports.count = await this.countReport(postReport[z], reports.type);
