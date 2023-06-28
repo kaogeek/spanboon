@@ -42,6 +42,10 @@ export class ManipulatePage extends AbstractPage implements OnInit {
     public isOfficialPage: {};
     public orderBy: any = {};
     public edit: boolean = false;
+    public typeReport: any;
+    public detailReport: any;
+    public report = ['REPORT_PAGE', 'REPORT_POST', 'REPORT_USER'];
+    public _id: string;
 
     constructor(pageFacade: PageFacade, manipulateFacade: ManipulateFacade, router: Router, dialog: MatDialog, authenManager: AuthenManager) {
         super(PAGE_NAME, dialog);
@@ -57,7 +61,7 @@ export class ManipulatePage extends AbstractPage implements OnInit {
             {
                 name: "type",
                 label: "ประเภท",
-                width: "330pt",
+                width: "150pt",
                 class: "", formatColor: false, formatImage: false,
                 link: [],
                 formatDate: false,
@@ -108,6 +112,9 @@ export class ManipulatePage extends AbstractPage implements OnInit {
         dialogRef.afterClosed().subscribe(result => {
             if (result) {
                 this.submitted = false;
+                this.edit = false;
+                this.typeReport = undefined;
+                this.detailReport = undefined;
                 this.drawer.toggle();
             }
         });
@@ -120,9 +127,10 @@ export class ManipulatePage extends AbstractPage implements OnInit {
 
     public clickEditForm(data: any): void {
         this.drawer.toggle();
-        this.valueBool = true;
-        this.valuetring = "";
-        this.valueNum = 0;
+        this.edit = true;
+        this._id = data.id;
+        this.typeReport = data.type;
+        this.detailReport = data.detail;
         this.orinalDataForm = JSON.parse(JSON.stringify(data));
     }
 
@@ -146,6 +154,25 @@ export class ManipulatePage extends AbstractPage implements OnInit {
         });
     }
     public clickSave() {
-
+        const result: any = {};
+        result.type = this.typeReport;
+        result.detail = this.detailReport;
+        if (!this.edit) {
+            this.manipulateFacade.create(result).then((res) => {
+                this.table.searchData();
+                this.typeReport = undefined;
+                this.detailReport = undefined;
+                this.edit = false;
+                this.drawer.toggle();
+            });
+        } else {
+            this.manipulateFacade.edit(this._id, result).then((res) => {
+                this.table.searchData();
+                this.typeReport = undefined;
+                this.detailReport = undefined;
+                this.edit = false;
+                this.drawer.toggle();
+            });
+        }
     }
 }

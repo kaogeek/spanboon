@@ -13,7 +13,7 @@ import { Hashtag } from "../../models/Hashtag";
 import { SearchFilter } from "../../models/SearchFilter";
 
 @Injectable()
-export class ManipulateFacade extends AbstractFacade {
+export class ManipulatePostFacade extends AbstractFacade {
 
     constructor(http: HttpClient, authMgr: AuthenManager) {
         super(http, authMgr);
@@ -24,7 +24,7 @@ export class ManipulateFacade extends AbstractFacade {
             new Error("body is required.");
         }
         return new Promise((resolve, reject) => {
-            let url: string = this.baseURL + '/admin/page/manipulate/';
+            let url: string = this.baseURL + '/admin/hashtag';
             let options = this.getDefaultOptions();
             this.http.post(url, body, options).toPromise().then((response: any) => {
                 resolve(response.data);
@@ -39,7 +39,7 @@ export class ManipulateFacade extends AbstractFacade {
             new Error("Id is required.");
         }
         return new Promise((resolve, reject) => {
-            let url: string = this.baseURL + '/admin/page/' + id + '/manipulate/';
+            let url: string = this.baseURL + '/admin/hashtag/' + id;
             let options = this.getDefaultOptions();
             this.http.put(url, body, options).toPromise().then((response: any) => {
                 resolve(response.data);
@@ -49,9 +49,25 @@ export class ManipulateFacade extends AbstractFacade {
         });
     }
 
+    public find(name: string): Promise<Hashtag> {
+        if (name === undefined || name === null || name === '') {
+            new Error("Name is required.");
+        }
+
+        return new Promise((resolve, reject) => {
+            let url: string = this.baseURL + '/admin/hashtag/' + name;
+
+            this.http.get(url).toPromise().then((response: any) => {
+                resolve(response.data);
+            }).catch((error: any) => {
+                reject(error);
+            });
+        });
+    }
+
     public search(searchFilter: SearchFilter): Promise<Hashtag[]> {
         return new Promise((resolve, reject) => {
-            let url: string = this.baseURL + '/admin/page/manipulate/search';
+            let url: string = this.baseURL + '/admin/report/';
             let body: any = {};
             if (searchFilter !== null && searchFilter !== undefined) {
                 body = Object.assign(searchFilter)
@@ -70,7 +86,7 @@ export class ManipulateFacade extends AbstractFacade {
             new Error("Id is required.");
         }
         return new Promise((resolve, reject) => {
-            let url: string = this.baseURL + '/admin/page/' + id + '/manipulate/';
+            let url: string = this.baseURL + '/admin/hashtag/' + id;
             let options = this.getDefaultOptions();
             this.http.delete(url, options).toPromise().then((response: any) => {
                 resolve(response.data as Hashtag[]);
