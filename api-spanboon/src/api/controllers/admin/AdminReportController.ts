@@ -196,6 +196,8 @@ export class AdminReportController {
                     newValues = { $set: { banned: ban } };
                     const update = await this.pageService.update(query, newValues);
                     const reset = await this.userReportContentService.deleteMany({ _id: objIds, type: types });
+                    const type_report = 'เพจของคุณ';
+                    await this.sendAlertBanned(page.email, type_report, 'เพจของคุณถูกแบนจาก Today');
                     if (update && reset) {
                         const successResponse = ResponseUtil.getSuccessResponse('Your approve is sucessful.', update);
                         return res.status(200).send(successResponse);
@@ -208,6 +210,8 @@ export class AdminReportController {
                     newValues = { $set: { banned: ban } };
                     const update = await this.userService.update(query, newValues);
                     const reset = await this.userReportContentService.deleteMany({ _id: objIds, type: types });
+                    const type_report = 'บัญชีของคุณ';
+                    await this.sendAlertBanned(user.email, type_report, 'บัชญีของคุณถูกแบนจาก Today');
                     if (update && reset) {
                         const successResponse = ResponseUtil.getSuccessResponse('Your approve is sucessful.', update);
                         return res.status(200).send(successResponse);
@@ -215,11 +219,14 @@ export class AdminReportController {
                 }
             } else if (types === 'POST') {
                 const post = await this.postsService.findOne({ _id: objIds });
+                const user = await this.userService.findOne({ _id: post.ownerUser });
                 if (post) {
                     query = { _id: post.id };
                     newValues = { $set: { banned: ban } };
                     const update = await this.postsService.update(query, newValues);
                     const reset = await this.userReportContentService.deleteMany({ _id: objIds, type: types });
+                    const type_report = 'โพสต์ของคุณ';
+                    await this.sendAlertBanned(user.email, type_report, 'บัชญีของคุณถูกแบนจาก Today');
                     if (update && reset) {
                         const successResponse = ResponseUtil.getSuccessResponse('Your approve is sucessful.', update);
                         return res.status(200).send(successResponse);
@@ -247,6 +254,17 @@ export class AdminReportController {
     private async sendReportToAdmin(email: string, type: string, subject: string): Promise<any> {
         const message = '<p> มีการ Report ของ' + type + 'อาจจะมีการละเมิดกฏการใช้งานของ Platform </p>';
 
+        const sendMail = MAILService.pushNotification(message, email, subject);
+
+        if (sendMail) {
+            return ResponseUtil.getSuccessResponse('Your report has been sent to your email inbox.', '');
+        } else {
+            return ResponseUtil.getErrorResponse('error in sending email', '');
+        }
+    }
+
+    private async sendAlertBanned(email: string, type: string, subject: string): Promise<any> {
+        const message = '<p>' + type + 'ถูกแบนจากระบบ </p>';
         const sendMail = MAILService.pushNotification(message, email, subject);
 
         if (sendMail) {

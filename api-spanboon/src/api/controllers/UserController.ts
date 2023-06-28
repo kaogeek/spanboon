@@ -177,7 +177,7 @@ export class UserController {
         }
     }
 
-    @Post('/delete/user')
+    @Post('/delete')
     @Authorized('user')
     public async deleteUser(@Res() res: any, @Req() req: any): Promise<any> {
         const userId = new ObjectID(req.user.id);
@@ -192,7 +192,7 @@ export class UserController {
                 const permission = await this.pageAccessLevelService.findOne({ page: pageAccess.id, user: pageAccess.ownerUser, level: 'OWNER' });
                 if (permission) {
                     queryUser = { _id: user.id };
-                    newValuesUser = { $set: { delete: req.body.delete } };
+                    newValuesUser = { $set: { banned: req.body.ban } };
                     const queryPage = { _id: permission.page };
                     const newValuesPage = { $set: { banned: true } };
                     updateUser = await this.userService.update(queryUser, newValuesUser);
@@ -204,7 +204,7 @@ export class UserController {
                 }
             } else {
                 queryUser = { _id: user.id };
-                newValuesUser = { $set: { delete: req.body.delete } };
+                newValuesUser = { $set: { banned: req.body.ban } };
                 updateUser = await this.userService.update(queryUser, newValuesUser);
                 if (updateUser) {
                     const successResponseF = ResponseUtil.getSuccessResponse('Update delete user is sucess.', undefined);
