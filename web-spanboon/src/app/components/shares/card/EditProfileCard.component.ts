@@ -20,6 +20,7 @@ import { DialogAlert } from '../dialog/DialogAlert.component';
 
 const PAGE_NAME: string = 'editprofilecard';
 const REFRESH_DATA: string = 'refresh_page';
+const REDIRECT_PATH: string = '/home';
 
 @Component({
   selector: 'edit-profile-card',
@@ -42,6 +43,8 @@ export class EditProfileCard extends AbstractPage implements OnInit {
   public dataProfile: any;
   @Output()
   public success: EventEmitter<any> = new EventEmitter();
+  @Output()
+  public logout: EventEmitter<any> = new EventEmitter();
 
   minDate = new Date(1800, 0, 1);
   maxDate = new Date();
@@ -124,6 +127,7 @@ export class EditProfileCard extends AbstractPage implements OnInit {
     this.data.birthdate = user.birthdate;
     this.data.gender = user.gender;
     this.data.province = user.province;
+    this.data.id = user.id;
   }
 
   public editProfile() {
@@ -247,6 +251,37 @@ export class EditProfileCard extends AbstractPage implements OnInit {
     } else {
       this.success.emit(false);
     }
+  }
+
+  public deleteUser() {
+    let body = {
+      user: this.getCurrentUserId()
+    }
+    let dialog = this.dialog.open(DialogAlert, {
+      disableClose: true,
+      data: {
+        text: "ยืนยันที่จะลบบัญชีผู้ใช้นี้",
+      }
+    });
+    dialog.afterClosed().subscribe((res) => {
+      if (res) {
+        this.profileFacade.delete().then((res) => {
+          if (res) {
+            this.authenManager.logout(body).then((res: any) => {
+              if (res.message === "Successfully Logout") {
+                this.authenManager.clearStorage();
+                this.logout.emit(true);
+                this.router.navigateByUrl(REDIRECT_PATH);
+              }
+            }).catch((err: any) => {
+              alert(err.error.message);
+              this.authenManager.clearStorage();
+              this.router.navigateByUrl(REDIRECT_PATH);
+            })
+          }
+        });
+      }
+    });
   }
 
   isPageDirty(): boolean {
