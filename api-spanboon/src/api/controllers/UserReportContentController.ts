@@ -29,7 +29,6 @@ export class UserReportContentController {
             const message: string = body.message;
             const reporter: string = req.user['id'];
             const reporterUsername: string = req.user['username'];
-
             const typeObjId: ObjectID = new ObjectID(typeId);
             const reporterObjId: ObjectID = new ObjectID(reporter);
             const reportStmt: any = { typeId: typeObjId, reporter: reporterObjId };

@@ -2113,7 +2113,7 @@ export class MainPageController {
         }
         let filterNews = DEFAULT_FILTER_NEWS;
         const configFilterNews = await this.configService.getConfig(FILTER_NEWS);
-        if(configFilterNews){
+        if (configFilterNews) {
             filterNews = configFilterNews.value;
         }
         let splitComma = undefined;
@@ -2216,8 +2216,18 @@ export class MainPageController {
                     const token = fireBaseToken.filter((element, index) => {
                         return fireBaseToken.indexOf(element) === index;
                     });
-                    if (token.length > 0) {
-                        const sendMulticast = await this.notificationService.multiPushNotificationMessage(snapshot.data, token, endDateTimeToday,filterNews);
+                    const originalArray = Array.from({ length: token.length }, (_, i) => i + 1); // Create the original array [1, 2, 3, ..., 50000]
+                    const slicedArrays = [];
+                    const batchSize = 499;
+                    let sendMulticast = undefined;
+                    for (let i = 0; i < originalArray.length; i += batchSize) {
+                        const slicedArray = token.slice(i, i + batchSize);
+                        slicedArrays.push(slicedArray);
+                    }
+                    if (slicedArrays.length > 0) {
+                        for (let j = 0; j < slicedArrays.length; j++) {
+                            sendMulticast = await this.notificationService.multiPushNotificationMessage(snapshot.data, slicedArrays[j], endDateTimeToday, filterNews);
+                        }
                         if (sendMulticast) {
                             await this.notificationNewsService.create(
                                 {
@@ -2273,8 +2283,18 @@ export class MainPageController {
                     const token = fireBaseToken.filter((element, index) => {
                         return fireBaseToken.indexOf(element) === index;
                     });
-                    if (token.length > 0) {
-                        const sendMulticast = await this.notificationService.multiPushNotificationMessage(snapshot.data, token, endDateTimeToday,filterNews);
+                    const originalArray = Array.from({ length: token.length }, (_, i) => i + 1); // Create the original array [1, 2, 3, ..., 50000]
+                    const slicedArrays = [];
+                    const batchSize = 499;
+                    let sendMulticast = undefined;
+                    for (let i = 0; i < originalArray.length; i += batchSize) {
+                        const slicedArray = token.slice(i, i + batchSize);
+                        slicedArrays.push(slicedArray);
+                    }
+                    if (slicedArrays.length > 0) {
+                        for (let j = 0; j < slicedArrays.length; j++) {
+                            sendMulticast = await this.notificationService.multiPushNotificationMessage(snapshot.data, slicedArrays[j], endDateTimeToday, filterNews);
+                        }
                         if (sendMulticast) {
                             await this.notificationNewsService.create(
                                 {
