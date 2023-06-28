@@ -57,7 +57,7 @@ export class ManipulatePost extends AbstractPage implements OnInit {
             {
                 name: "page",
                 label: "ชื่อ",
-                width: "330pt",
+                width: "270pt",
                 class: "", formatColor: false, formatImage: false,
                 link: [],
                 formatDate: false,
@@ -72,7 +72,7 @@ export class ManipulatePost extends AbstractPage implements OnInit {
                 link: [],
                 formatDate: false,
                 formatId: false,
-                align: "left"
+                align: "center"
             },
             {
                 name: "count",
@@ -82,18 +82,18 @@ export class ManipulatePost extends AbstractPage implements OnInit {
                 link: [],
                 formatDate: false,
                 formatId: false,
-                align: "left"
-            }
+                align: "center"
+            },
         ];
         this.actions = {
             isOfficial: false,
             isBan: false,
-            isApprove: false,
-            isUnApprove: false,
+            isApprove: true,
+            isUnApprove: true,
             isSelect: false,
-            isCreate: true,
-            isEdit: true,
-            isDelete: true,
+            isCreate: false,
+            isEdit: false,
+            isDelete: false,
             isComment: false,
             isBack: false
         };
@@ -101,6 +101,7 @@ export class ManipulatePost extends AbstractPage implements OnInit {
     }
 
     public ngOnInit() {
+        this.table.isReport = true;
     }
 
     private setFields(): void {
@@ -109,53 +110,33 @@ export class ManipulatePost extends AbstractPage implements OnInit {
         this.valueNum = 0;
     }
 
-    public clickCloseDrawer(): void {
+    public clickApprove(data) {
         let dialogRef = this.dialog.open(DialogWarningComponent, {
             data: {
-                title: "คุณมีข้อมูลที่ยังไม่ได้บันทึกต้องการปิดหรือไม่"
+                title: "คุณต้องการอนุมัติหรือไม่"
             }
         });
         dialogRef.afterClosed().subscribe(result => {
             if (result) {
-                this.submitted = false;
-                this.drawer.toggle();
+                this.manipulatePostFacade.approve(data).then((res) => {
+                    this.table.searchData();
+                });
             }
         });
     }
 
-    public clickCreateForm(): void {
-        this.setFields();
-        this.drawer.toggle();
-    }
-
-    public clickEditForm(data: any): void {
-        this.drawer.toggle();
-        this.valueBool = true;
-        this.valuetring = "";
-        this.valueNum = 0;
-        this.orinalDataForm = JSON.parse(JSON.stringify(data));
-    }
-
-
-    public clickDelete(data: any): void {
-        this.manipulatePostFacade.delete(data.id).then((res) => {
-            let index = 0;
-            let dataTable = this.table.data;
-            for (let d of dataTable) {
-                if (d.id == data.id) {
-                    dataTable.splice(index, 1);
-                    this.table.setTableConfig(dataTable);
-                    // alert("success");
-                    this.dialogWarning("ลบข้อมูลสำเร็จ");
-                    break;
-                }
-                index++;
+    public clickUnApprove(data) {
+        let dialogRef = this.dialog.open(DialogWarningComponent, {
+            data: {
+                title: "คุณต้องการไม่อนุมัติหรือไม่"
             }
-        }).catch((err) => {
-            this.dialogWarning(err.error.message);
         });
-    }
-    public clickSave() {
-
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                this.manipulatePostFacade.unapprove(data).then((res) => {
+                    this.table.searchData();
+                });
+            }
+        });
     }
 }

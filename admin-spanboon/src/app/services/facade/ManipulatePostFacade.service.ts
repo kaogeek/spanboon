@@ -19,51 +19,7 @@ export class ManipulatePostFacade extends AbstractFacade {
         super(http, authMgr);
     }
 
-    public create(body: Hashtag): Promise<Hashtag> {
-        if (body === undefined || body === null) {
-            new Error("body is required.");
-        }
-        return new Promise((resolve, reject) => {
-            let url: string = this.baseURL + '/admin/hashtag';
-            let options = this.getDefaultOptions();
-            this.http.post(url, body, options).toPromise().then((response: any) => {
-                resolve(response.data);
-            }).catch((error: any) => {
-                reject(error);
-            });
-        });
-    }
 
-    public edit(id: any, body: Hashtag): Promise<Hashtag> {
-        if (id === undefined || id === null) {
-            new Error("Id is required.");
-        }
-        return new Promise((resolve, reject) => {
-            let url: string = this.baseURL + '/admin/hashtag/' + id;
-            let options = this.getDefaultOptions();
-            this.http.put(url, body, options).toPromise().then((response: any) => {
-                resolve(response.data);
-            }).catch((error: any) => {
-                reject(error);
-            });
-        });
-    }
-
-    public find(name: string): Promise<Hashtag> {
-        if (name === undefined || name === null || name === '') {
-            new Error("Name is required.");
-        }
-
-        return new Promise((resolve, reject) => {
-            let url: string = this.baseURL + '/admin/hashtag/' + name;
-
-            this.http.get(url).toPromise().then((response: any) => {
-                resolve(response.data);
-            }).catch((error: any) => {
-                reject(error);
-            });
-        });
-    }
 
     public search(searchFilter: SearchFilter): Promise<Hashtag[]> {
         return new Promise((resolve, reject) => {
@@ -81,14 +37,35 @@ export class ManipulatePostFacade extends AbstractFacade {
         });
     }
 
-    public delete(id: any): Promise<Hashtag[]> {
-        if (id === undefined || id === null) {
-            new Error("Id is required.");
-        }
+    public approve(data: any): Promise<Hashtag[]> {
         return new Promise((resolve, reject) => {
-            let url: string = this.baseURL + '/admin/hashtag/' + id;
+            let url: string = this.baseURL + '/admin/report/' + data._id + '/approve';
+            let body: any = {
+                id: data._id,
+                type: data.type,
+                ban: true,
+            };
+
             let options = this.getDefaultOptions();
-            this.http.delete(url, options).toPromise().then((response: any) => {
+            this.http.post(url, body, options).toPromise().then((response: any) => {
+                resolve(response.data as Hashtag[]);
+            }).catch((error: any) => {
+                reject(error);
+            });
+        });
+    }
+
+    public unapprove(data: any): Promise<Hashtag[]> {
+        return new Promise((resolve, reject) => {
+            let url: string = this.baseURL + '/admin/report/' + data._id + '/unapprove';
+            let body: any = {
+                id: data._id,
+                type: data.type,
+                ban: false,
+            };
+
+            let options = this.getDefaultOptions();
+            this.http.post(url, body, options).toPromise().then((response: any) => {
                 resolve(response.data as Hashtag[]);
             }).catch((error: any) => {
                 reject(error);
