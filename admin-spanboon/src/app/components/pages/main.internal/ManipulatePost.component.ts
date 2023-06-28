@@ -13,7 +13,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { DialogWarningComponent } from '../../shares/DialogWarningComponent.component';
 import { AuthenManager } from '../../../services/AuthenManager.service';
 import { Router } from '@angular/router';
-import { ManipulateFacade } from '../../../services/facade/ManipulateFacade.service';
+import { ManipulatePostFacade } from '../../../services/facade/ManipulatePostFacade.service';
 
 const PAGE_NAME: string = "manipulatepost";
 
@@ -29,7 +29,7 @@ export class ManipulatePost extends AbstractPage implements OnInit {
     public static readonly PAGE_NAME: string = PAGE_NAME;
 
     public pageFacade: PageFacade;
-    public manipulateFacade: ManipulateFacade;
+    public manipulatePostFacade: ManipulatePostFacade;
     private authenManager: AuthenManager;
     private router: Router;
     public isSave: boolean = false;
@@ -43,10 +43,10 @@ export class ManipulatePost extends AbstractPage implements OnInit {
     public orderBy: any = {};
     public edit: boolean = false;
 
-    constructor(pageFacade: PageFacade, manipulateFacade: ManipulateFacade, router: Router, dialog: MatDialog, authenManager: AuthenManager) {
+    constructor(pageFacade: PageFacade, manipulatePostFacade: ManipulatePostFacade, router: Router, dialog: MatDialog, authenManager: AuthenManager) {
         super(PAGE_NAME, dialog);
         this.pageFacade = pageFacade;
-        this.manipulateFacade = manipulateFacade;
+        this.manipulatePostFacade = manipulatePostFacade;
         this.router = router;
         this.authenManager = authenManager;
         // if (!this.authenManager.isCurrentUserType()) {
@@ -55,8 +55,8 @@ export class ManipulatePost extends AbstractPage implements OnInit {
         this.orderBy = { createdDate: -1 };
         this.fieldTable = [
             {
-                name: "type",
-                label: "ประเภท",
+                name: "page",
+                label: "ชื่อ",
                 width: "330pt",
                 class: "", formatColor: false, formatImage: false,
                 link: [],
@@ -65,8 +65,18 @@ export class ManipulatePost extends AbstractPage implements OnInit {
                 align: "left"
             },
             {
-                name: "detail",
-                label: "รายละเอียด",
+                name: "type",
+                label: "ประเภท",
+                width: "150pt",
+                class: "", formatColor: false, formatImage: false,
+                link: [],
+                formatDate: false,
+                formatId: false,
+                align: "left"
+            },
+            {
+                name: "count",
+                label: "จำนวนที่รายงาน",
                 width: "150pt",
                 class: "", formatColor: false, formatImage: false,
                 link: [],
@@ -128,7 +138,7 @@ export class ManipulatePost extends AbstractPage implements OnInit {
 
 
     public clickDelete(data: any): void {
-        this.manipulateFacade.delete(data.id).then((res) => {
+        this.manipulatePostFacade.delete(data.id).then((res) => {
             let index = 0;
             let dataTable = this.table.data;
             for (let d of dataTable) {

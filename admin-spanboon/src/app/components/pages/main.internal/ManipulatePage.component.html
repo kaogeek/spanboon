@@ -19,7 +19,28 @@
                         </ng-template>
                     </div>
                     <div class="form-body">
-
+                        <form>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <mat-form-field>
+                                            <mat-label>ประเภทรายงาน</mat-label>
+                                            <mat-select [(ngModel)]="typeReport" name="type"
+                                                (selectionChange)="seleceType($event);changeData()">
+                                                <mat-option *ngFor="let data of report" [value]="data">
+                                                    {{data}}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                        <mat-form-field>
+                                            <mat-label>รายละเอียด</mat-label>
+                                            <input matInput type="text" name="detailReport" id="detailReport"
+                                                [(ngModel)]="detailReport">
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
                     </div>
                     <div class="wrapper-action">
                         <button mat-raised-button class="btn-close" (click)="clickCloseDrawer()">ปิด</button>
