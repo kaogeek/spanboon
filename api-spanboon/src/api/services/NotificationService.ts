@@ -143,6 +143,7 @@ export class NotificationService {
                 link
             }
         };
+
         if (String(token) !== undefined) {
             Promise.all([await admin.messaging().sendMulticast(payload)]);
         } else {

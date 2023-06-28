@@ -24,7 +24,7 @@ export class ManipulateFacade extends AbstractFacade {
             new Error("body is required.");
         }
         return new Promise((resolve, reject) => {
-            let url: string = this.baseURL + '/admin/hashtag';
+            let url: string = this.baseURL + '/admin/page/manipulate/';
             let options = this.getDefaultOptions();
             this.http.post(url, body, options).toPromise().then((response: any) => {
                 resolve(response.data);
@@ -39,25 +39,9 @@ export class ManipulateFacade extends AbstractFacade {
             new Error("Id is required.");
         }
         return new Promise((resolve, reject) => {
-            let url: string = this.baseURL + '/admin/hashtag/' + id;
+            let url: string = this.baseURL + '/admin/page/' + id + '/manipulate/';
             let options = this.getDefaultOptions();
             this.http.put(url, body, options).toPromise().then((response: any) => {
-                resolve(response.data);
-            }).catch((error: any) => {
-                reject(error);
-            });
-        });
-    }
-
-    public find(name: string): Promise<Hashtag> {
-        if (name === undefined || name === null || name === '') {
-            new Error("Name is required.");
-        }
-
-        return new Promise((resolve, reject) => {
-            let url: string = this.baseURL + '/admin/hashtag/' + name;
-
-            this.http.get(url).toPromise().then((response: any) => {
                 resolve(response.data);
             }).catch((error: any) => {
                 reject(error);
@@ -86,7 +70,7 @@ export class ManipulateFacade extends AbstractFacade {
             new Error("Id is required.");
         }
         return new Promise((resolve, reject) => {
-            let url: string = this.baseURL + '/admin/hashtag/' + id;
+            let url: string = this.baseURL + '/admin/page/' + id + '/manipulate/';
             let options = this.getDefaultOptions();
             this.http.delete(url, options).toPromise().then((response: any) => {
                 resolve(response.data as Hashtag[]);

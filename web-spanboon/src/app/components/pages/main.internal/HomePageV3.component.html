@@ -80,7 +80,7 @@
             <div class="wrapper-1">
                 <ng-container *ngIf="model && model!.emergencyEvents!.contents[0]">
                     <div class="wrapper-1-left"
-                        *ngIf="model && model.emergencyEvents.contents.length > 0 && model.emergencyEvents.type === 'EMERGENCYEVENT'"
+                        *ngIf="model && model.emergencyEvents.contents.length > 0 && model.emergencyEvents.type === 'EMERGENCYEVENT' && hidebar"
                         [ngStyle]="{'width': !isRes && (model && model.postSectionModel.contents.length > 0) && (model && model.pageRoundRobin.contents.length > 0) ? '100%' : '100%'}">
                         <div>
                             <ng-container
@@ -204,7 +204,7 @@
                         </ng-container>
                     </div>
                     <div class="wrapper-1-left"
-                        *ngIf="model && model.emergencyEvents.contents.length > 0 && model.emergencyEvents.type === 'RangeOfHashTags'"
+                        *ngIf="model && model.emergencyEvents.contents.length > 0 && model.emergencyEvents.type === 'RangeOfHashTags' && hidebar"
                         [ngStyle]="{'width': !isRes && (model && model.postSectionModel.contents.length > 0) && (model && model.pageRoundRobin.contents.length > 0) ? '100%' : '100%'}">
                         <div class="wrapper-hastags"
                             *ngIf="(model && model.emergencyEvents.contents.length > 0) && ((model && model.postSectionModel.contents.length > 0) || (model && model.pageRoundRobin.contents.length > 0))"

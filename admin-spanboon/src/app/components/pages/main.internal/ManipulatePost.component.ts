@@ -13,7 +13,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { DialogWarningComponent } from '../../shares/DialogWarningComponent.component';
 import { AuthenManager } from '../../../services/AuthenManager.service';
 import { Router } from '@angular/router';
-import { ManipulateFacade } from '../../../services/facade/ManipulateFacade.service';
+import { ManipulatePostFacade } from '../../../services/facade/ManipulatePostFacade.service';
 
 const PAGE_NAME: string = "manipulatepost";
 
@@ -29,7 +29,7 @@ export class ManipulatePost extends AbstractPage implements OnInit {
     public static readonly PAGE_NAME: string = PAGE_NAME;
 
     public pageFacade: PageFacade;
-    public manipulateFacade: ManipulateFacade;
+    public manipulatePostFacade: ManipulatePostFacade;
     private authenManager: AuthenManager;
     private router: Router;
     public isSave: boolean = false;
@@ -43,10 +43,10 @@ export class ManipulatePost extends AbstractPage implements OnInit {
     public orderBy: any = {};
     public edit: boolean = false;
 
-    constructor(pageFacade: PageFacade, manipulateFacade: ManipulateFacade, router: Router, dialog: MatDialog, authenManager: AuthenManager) {
+    constructor(pageFacade: PageFacade, manipulatePostFacade: ManipulatePostFacade, router: Router, dialog: MatDialog, authenManager: AuthenManager) {
         super(PAGE_NAME, dialog);
         this.pageFacade = pageFacade;
-        this.manipulateFacade = manipulateFacade;
+        this.manipulatePostFacade = manipulatePostFacade;
         this.router = router;
         this.authenManager = authenManager;
         // if (!this.authenManager.isCurrentUserType()) {
@@ -55,9 +55,9 @@ export class ManipulatePost extends AbstractPage implements OnInit {
         this.orderBy = { createdDate: -1 };
         this.fieldTable = [
             {
-                name: "type",
-                label: "ประเภท",
-                width: "330pt",
+                name: "page",
+                label: "ชื่อ",
+                width: "270pt",
                 class: "", formatColor: false, formatImage: false,
                 link: [],
                 formatDate: false,
@@ -65,25 +65,35 @@ export class ManipulatePost extends AbstractPage implements OnInit {
                 align: "left"
             },
             {
-                name: "detail",
-                label: "รายละเอียด",
+                name: "type",
+                label: "ประเภท",
                 width: "150pt",
                 class: "", formatColor: false, formatImage: false,
                 link: [],
                 formatDate: false,
                 formatId: false,
-                align: "left"
-            }
+                align: "center"
+            },
+            {
+                name: "count",
+                label: "จำนวนที่รายงาน",
+                width: "150pt",
+                class: "", formatColor: false, formatImage: false,
+                link: [],
+                formatDate: false,
+                formatId: false,
+                align: "center"
+            },
         ];
         this.actions = {
             isOfficial: false,
             isBan: false,
-            isApprove: false,
-            isUnApprove: false,
+            isApprove: true,
+            isUnApprove: true,
             isSelect: false,
-            isCreate: true,
-            isEdit: true,
-            isDelete: true,
+            isCreate: false,
+            isEdit: false,
+            isDelete: false,
             isComment: false,
             isBack: false
         };
@@ -91,6 +101,7 @@ export class ManipulatePost extends AbstractPage implements OnInit {
     }
 
     public ngOnInit() {
+        this.table.isReport = true;
     }
 
     private setFields(): void {
@@ -99,53 +110,33 @@ export class ManipulatePost extends AbstractPage implements OnInit {
         this.valueNum = 0;
     }
 
-    public clickCloseDrawer(): void {
+    public clickApprove(data) {
         let dialogRef = this.dialog.open(DialogWarningComponent, {
             data: {
-                title: "คุณมีข้อมูลที่ยังไม่ได้บันทึกต้องการปิดหรือไม่"
+                title: "คุณต้องการอนุมัติหรือไม่"
             }
         });
         dialogRef.afterClosed().subscribe(result => {
             if (result) {
-                this.submitted = false;
-                this.drawer.toggle();
+                this.manipulatePostFacade.approve(data).then((res) => {
+                    this.table.searchData();
+                });
             }
         });
     }
 
-    public clickCreateForm(): void {
-        this.setFields();
-        this.drawer.toggle();
-    }
-
-    public clickEditForm(data: any): void {
-        this.drawer.toggle();
-        this.valueBool = true;
-        this.valuetring = "";
-        this.valueNum = 0;
-        this.orinalDataForm = JSON.parse(JSON.stringify(data));
-    }
-
-
-    public clickDelete(data: any): void {
-        this.manipulateFacade.delete(data.id).then((res) => {
-            let index = 0;
-            let dataTable = this.table.data;
-            for (let d of dataTable) {
-                if (d.id == data.id) {
-                    dataTable.splice(index, 1);
-                    this.table.setTableConfig(dataTable);
-                    // alert("success");
-                    this.dialogWarning("ลบข้อมูลสำเร็จ");
-                    break;
-                }
-                index++;
+    public clickUnApprove(data) {
+        let dialogRef = this.dialog.open(DialogWarningComponent, {
+            data: {
+                title: "คุณต้องการไม่อนุมัติหรือไม่"
             }
-        }).catch((err) => {
-            this.dialogWarning(err.error.message);
         });
-    }
-    public clickSave() {
-
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                this.manipulatePostFacade.unapprove(data).then((res) => {
+                    this.table.searchData();
+                });
+            }
+        });
     }
 }

@@ -123,21 +123,37 @@
                                     <img src="../../../assets/img/maps-and-flags.png" alt="">
                                 </ng-template>
                             </button>
-                            <button mat-raised-button *ngIf="actions.isApprove" (click)="clickApprove(element)">
-                                <ng-container *ngIf="!element.approveUser; else elseApprove">
+
+                            <ng-container *ngIf="isReport; else elseReportApprove">
+                                <button mat-raised-button
+                                    *ngIf="actions.isApprove && element.count >= 2 && !element.ban"
+                                    (click)="clickApprove(element)">
                                     <img src="../../../assets/img/maps-and-flags.png" alt="">
-                                </ng-container>
-                                <ng-template #elseApprove>
+                                </button>
+                                <button mat-raised-button
+                                    *ngIf="actions.isUnApprove && element.count >= 2 && !element.ban"
+                                    (click)="clickUnApprove(element)">
                                     <img src="../../../assets/img/cancel.png" alt="">
-                                </ng-template>
-                            </button>
-                            <button mat-raised-button *ngIf="actions.isUnApprove" (click)="clickUnApprove(element)">
-                                <ng-container *ngIf="!element.approveUser; else elseUnapprove">
-                                    <img src="../../../assets/img/cancel.png" alt="">
-                                </ng-container>
-                                <ng-template #elseUnapprove>
-                                </ng-template>
-                            </button>
+                                </button>
+                            </ng-container>
+                            <ng-template #elseReportApprove>
+                                <button mat-raised-button *ngIf="actions.isApprove" (click)="clickApprove(element)">
+                                    <ng-container *ngIf="!element.approveUser; else elseApprove">
+                                        <img src="../../../assets/img/maps-and-flags.png" alt="">
+                                    </ng-container>
+                                    <ng-template #elseApprove>
+                                        <img src="../../../assets/img/cancel.png" alt="">
+                                    </ng-template>
+                                </button>
+                                <button mat-raised-button *ngIf="actions.isUnApprove" (click)="clickUnApprove(element)">
+                                    <ng-container *ngIf="!element.approveUser; else elseUnapprove">
+                                        <img src="../../../assets/img/cancel.png" alt="">
+                                    </ng-container>
+                                    <ng-template #elseUnapprove>
+                                    </ng-template>
+                                </button>
+                            </ng-template>
+
                             <ng-container *ngIf="actions.isBan">
                                 <button mat-raised-button class="btn-user"
                                     [class.btn-ban-user]="element.banned === true"
