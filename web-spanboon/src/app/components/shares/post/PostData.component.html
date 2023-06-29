@@ -4,8 +4,11 @@
     License: MIT. https://opensource.org/licenses/MIT
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
+<div class="not-found-post" *ngIf="!itemPost">
+    <span>ไม่พบเรื่องราว</span>
+</div>
 
-<div class="card-feed-post">
+<div class="card-feed-post" *ngIf="!!itemPost">
     <ng-container *ngIf="itemPost && isLogin()">
         <button mat-icon-button [matMenuTriggerFor]="menu" [disableRipple]="'false'" class="dropdown">
             <span class="material-icons">

@@ -543,13 +543,27 @@ export class PostData {
   }
 
   public hidePost(post) {
-    // const url: string = decodeURI(this.router.url);
-    // const path = url.split('/')[1];
-    // if (path === 'post') {
-
-    // } else {
-    this.hide.emit(post);
-    // }
+    const url: string = decodeURI(this.router.url);
+    const path = url.split('/')[1];
+    if (path === 'post') {
+      let dialog = this.dialog.open(DialogAlert, {
+        disableClose: false,
+        data: {
+          text: 'คุณต้องการซ่อนโพสต์นี้ใช่หรือไม่',
+        }
+      });
+      dialog.afterClosed().subscribe((res) => {
+        if (res) {
+          this.pageFacade.hidePost(post._id).then((res) => {
+            if (res) {
+              this.itemPost = undefined;
+            }
+          });
+        }
+      });
+    } else {
+      this.hide.emit(post);
+    }
   }
 
   public reportPost(post) {
@@ -593,7 +607,7 @@ export class PostData {
     dialog.afterClosed().subscribe((res) => {
       if (res) {
         let data = {
-          typeId: page.id,
+          typeId: page._id,
           type: typeReport.toUpperCase(),
           topic: res.topic,
           message: res.detail ? res.detail : '',
