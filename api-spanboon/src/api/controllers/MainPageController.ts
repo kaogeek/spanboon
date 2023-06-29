@@ -1320,12 +1320,15 @@ export class MainPageController {
         try {
             const uId = req.headers.userid;
             const postIds = [];
-            const hidePost = await this.hidePostService.find({ userId: new ObjectID(uId) });
-            if (hidePost.length > 0) {
-                for (let j = 0; j < hidePost.length; j++) {
-                    const postId = hidePost[j].postId;
-                    if (postId !== undefined && postId !== null && postId.length > 0) {
-                        postIds.push(...postId.map(id => new ObjectID(id)));
+            if (uId) {
+                const objIds = new ObjectID(uId);
+                const hidePost = await this.hidePostService.find({ userId: new ObjectID(objIds) });
+                if (hidePost.length > 0) {
+                    for (let j = 0; j < hidePost.length; j++) {
+                        const postId = hidePost[j].postId;
+                        if (postId !== undefined && postId !== null && postId.length > 0) {
+                            postIds.push(...postId.map(id => new ObjectID(id)));
+                        }
                     }
                 }
             }

@@ -174,12 +174,13 @@ export class UserProfileController {
             if (isHideStory === null || isHideStory === undefined) {
                 isHideStory = true;
             }
+
+            const objIdsUser = new ObjectID(req.headers.userid);
             const postType = search.type;
             let userObjId;
             const result: any = {};
             let userStmt;
             let userPostStmt;
-            const objIdsUser = ObjectID(req.headers.userid);
 
             try {
                 userObjId = new ObjectID(uId);
@@ -202,15 +203,18 @@ export class UserProfileController {
                 let limit = search.limit;
                 let offset = search.offset;
                 const postIds = [];
-                const hidePost = await this.hidePostService.find({ userId: objIdsUser });
-                if (hidePost.length > 0) {
-                    for (let j = 0; j < hidePost.length; j++) {
-                        const postId = hidePost[j].postId;
-                        if (postId !== undefined && postId !== null && postId.length > 0) {
-                            postIds.push(...postId.map(id => new ObjectID(id)));
+                if (objIdsUser) {
+                    const hidePost = await this.hidePostService.find({ userId: objIdsUser });
+                    if (hidePost.length > 0) {
+                        for (let j = 0; j < hidePost.length; j++) {
+                            const postId = hidePost[j].postId;
+                            if (postId !== undefined && postId !== null && postId.length > 0) {
+                                postIds.push(...postId.map(id => new ObjectID(id)));
+                            }
                         }
                     }
                 }
+
                 if (limit === null || limit === undefined || limit <= 0) {
                     limit = MAX_SEARCH_ROWS;
                 }
@@ -218,65 +222,43 @@ export class UserProfileController {
                 if (offset === null || offset === undefined) {
                     offset = 0;
                 }
-
+                let postStmtN: any = undefined;
                 if (postType !== null && postType !== undefined && postType !== '') {
-                    userPostStmt = [
-                        { $match: { _id: { $nin: postIds }, pageId: null, ownerUser: usrObjId, type: postType, hidden: false, deleted: false, isDraft: false, startDateTime: { $lte: today } } },
-                        { $sort: { startDateTime: -1 } },
-                        { $skip: offset },
-                        { $limit: limit },
-                        {
-                            $lookup: {
-                                from: 'PostsGallery',
-                                localField: '_id',
-                                foreignField: 'post',
-                                as: 'gallery'
-                            }
-                        },
-                        {
-                            $lookup: {
-                                from: 'EmergencyEvent',
-                                localField: 'emergencyEvent',
-                                foreignField: '_id',
-                                as: 'emergencyEvent'
-                            },
-                        },
-                        {
-                            $unwind: {
-                                path: '$emergencyEvent',
-                                preserveNullAndEmptyArrays: true
-                            }
-                        }
-                    ];
+                    postStmtN = { pageId: null, ownerUser: usrObjId, type: postType, hidden: false, deleted: false, isDraft: false, startDateTime: { $lte: today } };
                 } else {
-                    userPostStmt = [
-                        { $match: { _id: { $nin: postIds }, pageId: null, ownerUser: usrObjId, hidden: false, deleted: false, isDraft: false, startDateTime: { $lte: today } } },
-                        { $sort: { startDateTime: -1 } },
-                        { $skip: offset },
-                        { $limit: limit },
-                        {
-                            $lookup: {
-                                from: 'PostsGallery',
-                                localField: '_id',
-                                foreignField: 'post',
-                                as: 'gallery'
-                            }
-                        }, {
-                            $lookup: {
-                                from: 'EmergencyEvent',
-                                localField: 'emergencyEvent',
-                                foreignField: '_id',
-                                as: 'emergencyEvent'
-                            },
-                        },
-                        {
-                            $unwind: {
-                                path: '$emergencyEvent',
-                                preserveNullAndEmptyArrays: true
-                            }
-                        }
-                    ];
+                    postStmtN = { pageId: null, ownerUser: usrObjId, hidden: false, deleted: false, isDraft: false, startDateTime: { $lte: today } };
                 }
+                if (postIds.length > 0) {
+                    postStmtN._id = { $nin: postIds };
+                }
+                userPostStmt = [
+                    { $match: postStmtN },
+                    { $sort: { startDateTime: -1 } },
+                    { $skip: offset },
+                    { $limit: limit },
+                    {
+                        $lookup: {
+                            from: 'PostsGallery',
+                            localField: '_id',
+                            foreignField: 'post',
+                            as: 'gallery'
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'EmergencyEvent',
+                            localField: 'emergencyEvent',
+                            foreignField: '_id',
+                            as: 'emergencyEvent'
+                        },
+                    },
+                    {
+                        $unwind: {
+                            path: '$emergencyEvent',
+                            preserveNullAndEmptyArrays: true
+                        }
+                    }
+                ];
 
                 const userPostLists: any[] = await this.postsService.aggregate(userPostStmt);
 
