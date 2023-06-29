@@ -455,6 +455,22 @@ export class PageFacade extends AbstractFacade {
     });
   }
 
+  public hidePost(postId: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/user/report/hide';
+      let options = this.authMgr.getDefaultOptions();
+      let body: any = {
+        postId: [postId],
+      }
+
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
   public checkPageUsername(pageUsername: any): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/page/uniqueid/check';

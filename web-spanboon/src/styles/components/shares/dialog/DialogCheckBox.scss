@@ -5,11 +5,11 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
  */
 .customize-checkbox {
-  width: 500pt !important;
+  width: 440pt !important;
 
   > .newcon-checkbox-dialog {
     position: relative;
-    max-width: 500pt;
+    max-width: 440pt;
     width: 90vw;
     height: auto;
     background-color: $white;
@@ -28,6 +28,7 @@
       overflow: hidden;
       align-items: unset;
       flex-direction: unset;
+      z-index: 100;
 
       > .edit-head-one {
         @include font-size-8($font-head-500);
@@ -67,15 +68,18 @@
       background: #fff;
 
       .wrapper-subject {
-        border: 1px solid black;
-        border-radius: 20px;
+        border: 1px solid #dadada;
+        border-radius: 7px;
         height: 40px;
-        margin: 5px;
+        margin: 10px auto;
         align-items: center;
         display: flex;
         transition: 0.5s;
-        padding: 10px;
+        padding: 5px;
         cursor: pointer;
+        position: sticky;
+        z-index: 5;
+        width: 90%;
 
         &:hover {
           transform: scale(1.06);
@@ -91,13 +95,12 @@
           margin-left: 10px;
           width: 100%;
           display: flex;
-          justify-content: center;
+          padding-left: 15px;
 
           > .item-subject {
             @include font-size-9($font-head-100);
             word-break: break-word;
             line-height: 1.2;
-            text-align: center;
           }
 
           > .icon-subject {
@@ -122,9 +125,55 @@
       width: 92%;
       margin: 0 auto;
 
+      > .topic-select {
+        border: 1px solid #dadada;
+        border-radius: 7px;
+        height: 40px;
+        margin: 10px auto;
+        align-items: center;
+        display: flex;
+        transition: 0.5s;
+        padding: 5px;
+        cursor: pointer;
+        position: sticky;
+        z-index: 5;
+        width: 90%;
+        background-color: $brandcolor2;
+        color: white;
+
+        &:hover {
+          transform: scale(1.06);
+          -webkit-transform: scale(1.06);
+          -moz-transform: scale(1.06);
+          -ms-transform: scale(1.06);
+          -o-transform: scale(1.06);
+          background-color: white;
+          color: black;
+        }
+
+        > .section-subject {
+          margin-left: 10px;
+          width: 100%;
+          display: flex;
+          padding-left: 15px;
+
+          > .item-subject {
+            @include font-size-9($font-head-100);
+            word-break: break-word;
+            line-height: 1.2;
+          }
+        }
+      }
+
       > span {
         @include font-size-9($font-head-500);
         color: $brandcolor2;
+      }
+
+      > textarea {
+        @include font-size-10($font-head-100);
+        border-radius: 7px;
+        padding: 10px 0 0 10px;
       }
     }
 
