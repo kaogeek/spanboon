@@ -96,3 +96,6 @@ export const RETROSPECT = 'RETROSPECT';
 
 export const DEFAULT_FILTER_NEWS = true;
 export const FILTER_NEWS = 'filter.news';
+
+export const DEFAULT_ADMIN_EMAIL = 'example@hotmail.com';
+export const ADMIN_EMAIL = 'admin.email';

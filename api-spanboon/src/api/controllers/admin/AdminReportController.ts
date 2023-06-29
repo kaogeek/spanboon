@@ -6,13 +6,19 @@ import { PageService } from '../../services/PageService';
 import { UserService } from '../../services/UserService';
 import { PostsService } from '../../services/PostsService';
 import { MAILService } from '../../../auth/mail.services';
+import {
+    DEFAULT_ADMIN_EMAIL,
+    ADMIN_EMAIL
+} from '../../../constants/SystemConfig';
+import { ConfigService } from '../../services/ConfigService';
 @JsonController('/admin/report')
 export class AdminReportController {
     constructor(
         private userReportContentService: UserReportContentService,
         private pageService: PageService,
         private userService: UserService,
-        private postsService: PostsService
+        private postsService: PostsService,
+        private configService: ConfigService
     ) { }
 
     @Post('/')
@@ -250,7 +256,11 @@ export class AdminReportController {
 
     private async countReport(countLength: any, type: string): Promise<any> {
         if (countLength.userReportContent.length === 1000) {
-            const email = 'example@hotmail.com';
+            let email = DEFAULT_ADMIN_EMAIL;
+            const configEmail = await this.configService.getConfig(ADMIN_EMAIL);
+            if (configEmail) {
+                email = configEmail.value;
+            }
             const type_report = type;
             await this.sendReportToAdmin(email, type_report, 'Report ละเมิดการใช้งาน platform');
         }
