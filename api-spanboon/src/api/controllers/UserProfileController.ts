@@ -31,7 +31,7 @@ import { SUBJECT_TYPE } from '../../constants/FollowType';
 import { PostsCommentService } from '../services/PostsCommentService';
 import { AuthenticationId } from '../models/AuthenticationId';
 import { AuthenticationIdService } from '../services/AuthenticationIdService';
-
+import { HidePostService } from '../services/HidePostService';
 @JsonController('/profile')
 export class UserProfileController {
     constructor(
@@ -41,7 +41,8 @@ export class UserProfileController {
         private userFollowService: UserFollowService,
         private postsService: PostsService,
         private postsCommentService: PostsCommentService,
-        private assetService: AssetService
+        private assetService: AssetService,
+        private hidePostService: HidePostService
     ) { }
 
     // Get UserProfile API
@@ -178,6 +179,7 @@ export class UserProfileController {
             const result: any = {};
             let userStmt;
             let userPostStmt;
+            const objIdsUser = ObjectID(req.headers.userid);
 
             try {
                 userObjId = new ObjectID(uId);
@@ -199,7 +201,16 @@ export class UserProfileController {
                 const today = moment().toDate();
                 let limit = search.limit;
                 let offset = search.offset;
-
+                const postIds = [];
+                const hidePost = await this.hidePostService.find({ userId: objIdsUser });
+                if (hidePost.length > 0) {
+                    for (let j = 0; j < hidePost.length; j++) {
+                        const postId = hidePost[j].postId;
+                        if (postId !== undefined && postId !== null && postId.length > 0) {
+                            postIds.push(...postId.map(id => new ObjectID(id)));
+                        }
+                    }
+                }
                 if (limit === null || limit === undefined || limit <= 0) {
                     limit = MAX_SEARCH_ROWS;
                 }
@@ -210,7 +221,7 @@ export class UserProfileController {
 
                 if (postType !== null && postType !== undefined && postType !== '') {
                     userPostStmt = [
-                        { $match: { pageId: null, ownerUser: usrObjId, type: postType, hidden: false, deleted: false, isDraft: false, startDateTime: { $lte: today } } },
+                        { $match: { _id: { $nin: postIds }, pageId: null, ownerUser: usrObjId, type: postType, hidden: false, deleted: false, isDraft: false, startDateTime: { $lte: today } } },
                         { $sort: { startDateTime: -1 } },
                         { $skip: offset },
                         { $limit: limit },
@@ -239,7 +250,7 @@ export class UserProfileController {
                     ];
                 } else {
                     userPostStmt = [
-                        { $match: { pageId: null, ownerUser: usrObjId, hidden: false, deleted: false, isDraft: false, startDateTime: { $lte: today } } },
+                        { $match: { _id: { $nin: postIds }, pageId: null, ownerUser: usrObjId, hidden: false, deleted: false, isDraft: false, startDateTime: { $lte: today } } },
                         { $sort: { startDateTime: -1 } },
                         { $skip: offset },
                         { $limit: limit },

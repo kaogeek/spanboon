@@ -19,7 +19,7 @@ export class HidePostService {
 
     // create Device token and find the user who is login !!!!!
     public async create(data: any): Promise<any> {
-        this.log.info('Create is Read.');
+        this.log.info('Create is hide post.');
         return await this.hidePostRepository.save(data);
     }
 
@@ -32,12 +32,12 @@ export class HidePostService {
     }
 
     public async delete(query: any, options?: any): Promise<any> {
-        this.log.info('Delete a token');
+        this.log.info('Delete a hide post');
         return await this.hidePostRepository.deleteOne(query, options);
     }
 
-    public async updateToken(query: any, newValue: any): Promise<any> {
-        this.log.info('Update a token');
+    public async update(query: any, newValue: any): Promise<any> {
+        this.log.info('Update hide post');
 
         return await this.hidePostRepository.updateOne(query, newValue);
     }

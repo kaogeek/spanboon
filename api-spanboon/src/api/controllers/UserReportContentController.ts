@@ -79,13 +79,14 @@ export class UserReportContentController {
         const userId: string = req.user['id'];
         const userObjId: ObjectID = new ObjectID(userId);
         if (userObjId) {
-            const hidePost = await this.hidePostService.findOneAndUpdate(
-                { userId: userObjId },
-                { $set: { postId: req.body.postId } },
-                { upsert: true, new: true }
-            );
-            if (hidePost) {
-                const successResponse = ResponseUtil.getSuccessResponse('Hide post is successful.', hidePost);
+            const hidePostOne = await this.hidePostService.findOne({ userId: userObjId });
+            const oddArray = hidePostOne.postId;
+            const concat = oddArray.concat(req.body.postId);
+            const query = {_id:hidePostOne.id};
+            const newValue = {$set:{postId:concat}};
+            const update = await this.hidePostService.update(query,newValue);
+            if (update) {
+                const successResponse = ResponseUtil.getSuccessResponse('Hide post is successful.', update);
                 return res.status(200).send(successResponse);
             }
         } else {

@@ -49,6 +49,7 @@ import { POST_TYPE } from '../../constants/PostType';
 import { UserService } from '../services/UserService';
 import { DeviceTokenService } from '../services/DeviceToken';
 import { ManipulateService } from '../services/ManipulateService';
+import { HidePostService } from '../services/HidePostService';
 @JsonController('/post')
 export class PostsController {
     constructor(
@@ -69,7 +70,9 @@ export class PostsController {
         private assetService: AssetService,
         private deviceTokenService: DeviceTokenService,
         private userService: UserService,
-        private manipulateService: ManipulateService
+        private manipulateService: ManipulateService,
+        private hidePostService: HidePostService
+
     ) { }
 
     @Get('/report/manipulate')
@@ -251,16 +254,23 @@ export class PostsController {
      */
     @Post('/search')
     public async searchPost(@QueryParam('isHideStory') isHideStory: boolean, @QueryParam('isNeeds') isNeeds: boolean, @Body({ validate: true }) filter: SearchFilter, @Res() res: any, @Req() req: any): Promise<any> {
+        const objIdsUser = new ObjectID(req.headers.userid);
         const today = moment().toDate();
 
         if (filter.whereConditions !== undefined) {
             if (typeof filter.whereConditions === 'object') {
                 const postId = filter.whereConditions._id;
-
                 if (postId !== null && postId !== undefined && postId !== '') {
                     const postObjId = new ObjectID(postId);
                     filter.whereConditions._id = postObjId;
                 }
+                const postIds = postId;
+                const hidePost = await this.hidePostService.find({ userId: objIdsUser, postId: postIds });
+                if (hidePost.length > 0) {
+                    const errorResponse = ResponseUtil.getErrorResponse('This post Id have been hide.', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+
             }
         } else {
             filter.whereConditions = {};

@@ -61,6 +61,7 @@ import { PageSocialAccountService } from '../services/PageSocialAccountService';
 import { PostUtil } from '../../utils/PostUtil';
 import { DeviceTokenService } from '../services/DeviceToken';
 import { UserFollowService } from '../services/UserFollowService';
+import { HidePostService } from '../services/HidePostService';
 @JsonController('/page')
 export class PagePostController {
     constructor(
@@ -86,7 +87,8 @@ export class PagePostController {
         private pageSocialAccountService: PageSocialAccountService,
         private s3Service: S3Service,
         private deviceToken: DeviceTokenService,
-        private userFollowService: UserFollowService
+        private userFollowService: UserFollowService,
+        private hidePostService: HidePostService
     ) { }
     // @Get('/test/post')
     // public async test(@Req() req:any):Promise<any>{
@@ -1130,7 +1132,17 @@ export class PagePostController {
             if (isHideStory === null || isHideStory === undefined) {
                 isHideStory = true;
             }
-
+            const objIdsUser = ObjectID(req.headers.userid);
+            const postIds = [];
+            const hidePost = await this.hidePostService.find({ userId: objIdsUser });
+            if (hidePost.length > 0) {
+                for (let j = 0; j < hidePost.length; j++) {
+                    const postId = hidePost[j].postId;
+                    if (postId !== undefined && postId !== null && postId.length > 0) {
+                        postIds.push(...postId.map(id => new ObjectID(id)));
+                    }
+                }
+            }
             const postType = search.type;
             let pageObjId;
             let pageStmt;
@@ -1166,6 +1178,9 @@ export class PagePostController {
                 const matchStmt: any = { pageId: postPageObjId, hidden: false, deleted: false, isDraft: false, startDateTime: { $lte: today } };
                 if (postType !== null && postType !== undefined && postType !== '') {
                     matchStmt.type = postType;
+                }
+                if (postIds.length > 0) {
+                    matchStmt._id = { $nin: postIds };
                 }
                 // add some filter
                 const ignoreKey = ['pageId', 'hidden', 'deleted', 'isDraft', 'startDateTime'];

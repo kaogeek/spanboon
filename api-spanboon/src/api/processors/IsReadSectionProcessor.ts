@@ -31,10 +31,12 @@ export class IsReadSectionProcessor extends AbstractSeparateSectionProcessor {
                 // get startDateTime, endDateTime
                 let startDateTime: Date = undefined;
                 let retrospect: number = undefined;
+                let hidePostIds: any = undefined;
                 if (this.data !== undefined && this.data !== null) {
                     startDateTime = this.data.startDateTime;
                     isReadPostIds = this.data.postIds;
                     retrospect = this.data.retrospects;
+                    hidePostIds = this.data.hidePost;
                 }
                 let limit: number = undefined;
                 let offset: number = undefined;
@@ -81,7 +83,14 @@ export class IsReadSectionProcessor extends AbstractSeparateSectionProcessor {
                             }
                         }
                     }
-
+                    if (hidePostIds.length > 0) {
+                        for (let j = 0; j < hidePostIds.length; j++) {
+                            const postId = hidePostIds[j].postId;
+                            if (postId !== undefined && postId !== null && postId.length > 0) {
+                                postIds.push(...postId.map(id => new ObjectID(id)));
+                            }
+                        }
+                    }
                     // console.log('postIds', postIds.flat().map(id => console.log('id',id)));
                     const postMatchStmt: any = {
                         isDraft: false,
