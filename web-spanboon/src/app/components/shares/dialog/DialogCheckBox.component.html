@@ -25,7 +25,7 @@
             </div>
         </div>
         <div class="detail-message" *ngIf="!!spamTopic">
-            <div class="topic-select" (click)="backToSelect()">
+            <div class="topic-select">
                 <section class="section-subject">
                     <span class="item-subject">{{spamTopic}}</span>
                 </section>
@@ -34,13 +34,16 @@
             <textarea class="text-detail" placeholder="คุณสามารถใส่รายละเอียดต่างๆได้ที่นี่ ..." rows="4" cols="65"
                 role="textbox"></textarea>
         </div>
-        <div class="dialog-footer">
-            <div class="butt but-cancel" [ngStyle]="{'display': data.btDisplay1}" (click)="onClose() ">
-                {{data.bottomText1 ? data.bottomText1 : "ปิด"}}</div>
-            <div class="butt but-submit"
-                [ngStyle]="{'display': data.btDisplay2,'opacity': !!spamTopic ? '1' : '0.5','cursor': !!spamTopic ? 'pointer' : 'default'}"
-                appDebounceClick (debounceClick)="!!spamTopic ? onConfirm() : null">{{data.bottomText2 ?
-                data.bottomText2 : "ยืนยัน"}}</div>
+        <div class="dialog-footer" [ngStyle]="{'justify-content': !!spamTopic ? 'space-between':'flex-end'}">
+            <span *ngIf="!!spamTopic" (click)="backToSelect()">กลับ</span>
+            <div class="butt-group">
+                <div class="butt but-cancel" [ngStyle]="{'display': data.btDisplay1}" (click)="onClose() ">
+                    {{data.bottomText1 ? data.bottomText1 : "ปิด"}}</div>
+                <div class="butt but-submit"
+                    [ngStyle]="{'display': data.btDisplay2,'opacity': !!spamTopic ? '1' : '0.5','cursor': !!spamTopic ? 'pointer' : 'default'}"
+                    appDebounceClick (debounceClick)="!!spamTopic ? onConfirm() : null">{{data.bottomText2 ?
+                    data.bottomText2 : "ยืนยัน"}}</div>
+            </div>
         </div>
     </div>
 </div>
