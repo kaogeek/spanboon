@@ -193,16 +193,18 @@ export class UserNotificationController {
         } else {
             filter.whereConditions = { toUser: userObjId, toUserType: USER_TYPE.USER };
         }
-        if (filter.whereConditions.isRead !== undefined && filter.whereConditions.isRead !== null && filter.whereConditions.isRead !== '') {
+        if (filter.whereConditions.isRead !== undefined && filter.whereConditions.isRead !== null && filter.whereConditions.isRead !== '' && filter.whereConditions.deleted !== undefined && filter.whereConditions.deleted !== null && filter.whereConditions.deleted !== '') {
+            findAllCountNotification = await this.notificationService.find({ toUser: userObjId, isRead: filter.whereConditions.isRead, deleted: filter.whereConditions.deleted });
+        } else if (filter.whereConditions.isRead !== undefined && filter.whereConditions.isRead !== null && filter.whereConditions.isRead !== '') {
             findAllCountNotification = await this.notificationService.find({ toUser: userObjId, isRead: filter.whereConditions.isRead });
         } else {
             findAllCountNotification = await this.notificationService.find({ toUser: userObjId });
         }
         const userNotificationsList: any = await this.notificationService.search(filter);
         const notiResp = await this.parseNotificationsToResponses(userNotificationsList);
-        const query = {toUser:userObjId};
-        const newValues = {$set:{isRead:true}};
-        const updateReadNoti = await this.notificationService.updateMany(query,newValues);
+        const query = { toUser: userObjId };
+        const newValues = { $set: { isRead: true } };
+        const updateReadNoti = await this.notificationService.updateMany(query, newValues);
         if (userNotificationsList && updateReadNoti) {
             const successResponse = ResponseUtil.getSuccessResponse('Successfully search UserNotifications', notiResp, findAllCountNotification.length);
             return res.status(200).send(successResponse);
