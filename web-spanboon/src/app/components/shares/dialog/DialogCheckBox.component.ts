@@ -97,4 +97,8 @@ export class DialogCheckBox extends AbstractPage {
         this.spamTopic = topic;
     }
 
+    public backToSelect() {
+        this.spamTopic = undefined;
+    }
+
 }

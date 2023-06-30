@@ -33,10 +33,13 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                 let limit: number = undefined;
                 let offset: number = undefined;
                 let objIds = undefined;
+                let hidePostIds: any = undefined;
                 if (this.data !== undefined && this.data !== null) {
                     objIds = this.data.userId;
                     offset = this.data.offsets;
                     isReadPostIds = this.data.postIds;
+                    hidePostIds = this.data.hidePost;
+
                 }
                 limit = (limit === undefined || limit === null) ? this.data.limits : this.DEFAULT_SEARCH_LIMIT;
                 offset = this.data.offsets ? this.data.offsets : this.DEFAULT_SEARCH_OFFSET;
@@ -59,6 +62,14 @@ export class FollowingContentsModelProcessor extends AbstractSeparateSectionProc
                     if (isReadPostIds.length > 0) {
                         for (let i = 0; i < isReadPostIds.length; i++) {
                             const postId = isReadPostIds[i].postId;
+                            if (postId !== undefined && postId !== null && postId.length > 0) {
+                                postIds.push(...postId.map(id => new ObjectID(id)));
+                            }
+                        }
+                    }
+                    if (hidePostIds.length > 0) {
+                        for (let j = 0; j < hidePostIds.length; j++) {
+                            const postId = hidePostIds[j].postId;
                             if (postId !== undefined && postId !== null && postId.length > 0) {
                                 postIds.push(...postId.map(id => new ObjectID(id)));
                             }

@@ -10,13 +10,14 @@ import { SearchFilter } from './requests/SearchFilterRequest';
 import { ObjectUtil } from '../../utils/ObjectUtil';
 import { DEFAULT_SEARCH_CONFIG_VALUE, LIMIT_USER_REPORT_CONTENT_CONFIG_NAME, DEFAULT_LIMIT_USER_REPORT_CONTENT_CONFIG_VALUE, SEARCH_CONFIG_NAME } from '../../constants/SystemConfig';
 import { ConfigService } from '../services/ConfigService';
-
+import { HidePostService } from '../services/HidePostService';
 @JsonController('/user/report')
 export class UserReportContentController {
 
     constructor(
         private userReportContentService: UserReportContentService,
-        private configService: ConfigService
+        private configService: ConfigService,
+        private hidePostService: HidePostService
     ) { }
 
     @Post()
@@ -69,6 +70,28 @@ export class UserReportContentController {
             }
         } catch (error: any) {
             return res.status(400).send(ResponseUtil.getErrorResponse('Create UserReport Error', error));
+        }
+    }
+
+    @Post('/hide')
+    @Authorized('user')
+    public async userHidePost(@Req() req: Request, @Res() res: Response): Promise<any> {
+        const userId: string = req.user['id'];
+        const userObjId: ObjectID = new ObjectID(userId);
+        if (userObjId) {
+            const hidePostOne = await this.hidePostService.findOne({ userId: userObjId });
+            const oddArray = hidePostOne.postId;
+            const concat = oddArray.concat(req.body.postId);
+            const query = { _id: hidePostOne.id };
+            const newValue = { $set: { postId: concat } };
+            const update = await this.hidePostService.update(query, newValue);
+            if (update) {
+                const successResponse = ResponseUtil.getSuccessResponse('Hide post is successful.', update);
+                return res.status(200).send(successResponse);
+            }
+        } else {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Cannot hide post because not found ObjId.', undefined));
+
         }
     }
 

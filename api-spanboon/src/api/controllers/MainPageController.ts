@@ -98,6 +98,7 @@ import { NotificationNewsService } from '../services/NotificationNewsService';
 import pm2 from 'pm2';
 import { FollowingContentsModelProcessor } from '../processors/FollowingContentsModelProcessor';
 import moment from 'moment';
+import { HidePostService } from '../services/HidePostService';
 @JsonController('/main')
 export class MainPageController {
     constructor(
@@ -120,7 +121,8 @@ export class MainPageController {
         private isReadPostService: IsReadPostService,
         private deviceTokenService: DeviceTokenService,
         private notificationService: NotificationService,
-        private notificationNewsService: NotificationNewsService
+        private notificationNewsService: NotificationNewsService,
+        private hidePostService: HidePostService
     ) { }
     // Home page content V2
     @Get('/content/v3')
@@ -478,6 +480,7 @@ export class MainPageController {
                 },
             ]
         );
+        const hidePost = await this.hidePostService.find({ userId: objIds });
         const configRetrospect = await this.configService.getConfig(RETROSPECT);
         let retrospects = DEFAULT_RETROSPECT;
         if (configRetrospect) {
@@ -499,7 +502,8 @@ export class MainPageController {
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
             postIds: isRead,
-            retrospects
+            retrospects,
+            hidePost
         });
 
         isReadSectionProcessor.setConfig({
@@ -514,6 +518,7 @@ export class MainPageController {
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
             postIds: isRead,
+            hidePost
         });
 
         pageFollowingPostSectionModelProcessor.setConfig({
@@ -529,6 +534,7 @@ export class MainPageController {
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
             postIds: isRead,
+            hidePost
         });
 
         emerFollowingPostSectionModelProcessor.setConfig({
@@ -543,6 +549,7 @@ export class MainPageController {
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
             postIds: isRead,
+            hidePost
         });
 
         objectiveFollowingPostSectionModelProcessor.setConfig({
@@ -557,6 +564,7 @@ export class MainPageController {
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
             postIds: isRead,
+            hidePost
         });
 
         userFollowingPostSectionModelProcessor.setConfig({
@@ -571,6 +579,7 @@ export class MainPageController {
             startDateTime: monthRange[0],
             endDateTime: monthRange[1],
             postIds: isRead,
+            hidePost
 
         });
 
@@ -590,6 +599,7 @@ export class MainPageController {
             postIds: isRead,
             limits: limit,
             offsets: offset,
+            hidePost
         });
 
         followingContentsModelProcessor.setConfig({
@@ -1309,6 +1319,19 @@ export class MainPageController {
     public async searchContentAll(@Body({ validate: true }) data: ContentSearchRequest, @QueryParam('isHideStory') isHideStory: boolean, @Res() res: any, @Req() req: any): Promise<SearchContentResponse> {
         try {
             const uId = req.headers.userid;
+            const postIds = [];
+            if (uId) {
+                const objIds = new ObjectID(uId);
+                const hidePost = await this.hidePostService.find({ userId: new ObjectID(objIds) });
+                if (hidePost.length > 0) {
+                    for (let j = 0; j < hidePost.length; j++) {
+                        const postId = hidePost[j].postId;
+                        if (postId !== undefined && postId !== null && postId.length > 0) {
+                            postIds.push(...postId.map(id => new ObjectID(id)));
+                        }
+                    }
+                }
+            }
             let search: any = {};
             const searchResults = [];
             const postStmt = [];
@@ -1387,7 +1410,9 @@ export class MainPageController {
 
             postStmt.push({ $match: { deleted: false } });
             postStmt.push({ $match: { pageId: { $ne: null } } });
-
+            if (postIds.length > 0) {
+                postStmt.push({ $match: { _id: { $nin: postIds } } });
+            }
             if (keyword !== undefined && keyword.length === 1 && keyword[0] === '') {
                 keyword = undefined;
             }

@@ -1276,37 +1276,18 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
 
   public reportUser(profile) {
     let typeReport = 'user';
-    let detail = [];
+    let detail = ['คุกคามหรือข่มขู่ด้วยความรุนแรง', 'แสดงเนื้อหาล่อแหลมหรือรบกวนจิตใจ', 'ฉันถูกลอกเลียนแบบหรือแสดงตัวตนที่หลอกลวง', 'แสดงเนื้อหาที่เกี่ยวข้องหรือสนับสนุนให้ทำร้ายตัวเอง', 'สแปม'];
     this.pageFacade.getManipulate(typeReport).then((res) => {
       if (res) {
+        detail = [];
         for (let data of res.data) {
           detail.push(data.detail);
         }
+        this._openDialogReport(profile, typeReport, detail)
       }
-    })
-    let dialog = this.dialog.open(DialogCheckBox, {
-      disableClose: false,
-      data: {
-        title: 'รายงาน',
-        subject: detail,
-        bottomText2: 'ตกลง',
-        bottomColorText2: "black",
-      }
-    });
-    dialog.afterClosed().subscribe((res) => {
-      if (res) {
-        let data = {
-          typeId: profile.id,
-          type: typeReport.toUpperCase(),
-          topic: res.topic,
-          message: res.detail ? res.detail : '',
-        }
-        this.pageFacade.reportPage(data).then((res) => {
-          if (res) {
-          }
-        }).catch((err) => {
-          if (err) { }
-        })
+    }).catch((err) => {
+      if (err.error.status === 0) {
+        this._openDialogReport(profile, typeReport, detail)
       }
     });
   }
@@ -1324,12 +1305,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     let dialog = this.showDialogWarming("คุณต้องการซ่อนโพสต์นี้ใช่หรือไม่ ", "ยกเลิก", "ตกลง", confirmEventEmitter, canCelEventEmitter);
     dialog.afterClosed().subscribe((res) => {
       if (res) {
-        let data = {
-          postId: post._id,
-          userIdOwner: post.ownerUser,
-          type: 'hide_post'
-        }
-        this.pageFacade.manipulatePost(data).then((res) => {
+        this.pageFacade.hidePost(post._id).then((res) => {
           if (res) {
             this.resPost.posts.splice(index, 1);
           }
@@ -1340,20 +1316,17 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     });
   }
 
-  public reportPost(post: any, index: number) {
-    let typeReport = 'post';
-    let detail = [];
-    this.pageFacade.getManipulate(typeReport).then((res) => {
-      if (res) {
-        for (let data of res.data) {
-          detail.push(data.detail);
-        }
-      }
-    })
+  private _openDialogReport(page, typeReport, detail) {
+    let title = '';
+    if (typeReport === 'post') {
+      title = 'รายงานโพสต์';
+    } else if (typeReport === 'user') {
+      title = 'รายงานผู้ใช้';
+    }
     let dialog = this.dialog.open(DialogCheckBox, {
       disableClose: false,
       data: {
-        title: 'รายงาน',
+        title: title,
         subject: detail,
         bottomText2: 'ตกลง',
         bottomColorText2: "black",
@@ -1362,7 +1335,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     dialog.afterClosed().subscribe((res) => {
       if (res) {
         let data = {
-          typeId: post._id,
+          typeId: page.id,
           type: typeReport.toUpperCase(),
           topic: res.topic,
           message: res.detail ? res.detail : '',
@@ -1373,6 +1346,24 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
         }).catch((err) => {
           if (err) { }
         })
+      }
+    });
+  }
+
+  public reportPost(post: any, index: any) {
+    let typeReport = 'post';
+    let detail = ['คุกคามหรือข่มขู่ด้วยความรุนแรง', 'แสดงเนื้อหาล่อแหลมหรือรบกวนจิตใจ', 'ฉันถูกลอกเลียนแบบหรือแสดงตัวตนที่หลอกลวง', 'แสดงเนื้อหาที่เกี่ยวข้องหรือสนับสนุนให้ทำร้ายตัวเอง', 'สแปม'];
+    this.pageFacade.getManipulate(typeReport).then((res) => {
+      if (res) {
+        detail = [];
+        for (let data of res.data) {
+          detail.push(data.detail);
+        }
+        this._openDialogReport(post, typeReport, detail)
+      }
+    }).catch((err) => {
+      if (err.error.status === 0) {
+        this._openDialogReport(post, typeReport, detail)
       }
     });
   }

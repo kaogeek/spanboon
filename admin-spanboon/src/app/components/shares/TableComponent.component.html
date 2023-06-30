@@ -126,12 +126,12 @@
 
                             <ng-container *ngIf="isReport; else elseReportApprove">
                                 <button mat-raised-button
-                                    *ngIf="actions.isApprove && element.count >= 2 && !element.ban"
+                                    *ngIf="actions.isApprove && element.count >= 1000 && !element.ban"
                                     (click)="clickApprove(element)">
                                     <img src="../../../assets/img/maps-and-flags.png" alt="">
                                 </button>
                                 <button mat-raised-button
-                                    *ngIf="actions.isUnApprove && element.count >= 2 && !element.ban"
+                                    *ngIf="actions.isUnApprove && element.count >= 1000 && !element.ban"
                                     (click)="clickUnApprove(element)">
                                     <img src="../../../assets/img/cancel.png" alt="">
                                 </button>

@@ -25,8 +25,7 @@
                                     <div class="form-group">
                                         <mat-form-field>
                                             <mat-label>ประเภทรายงาน</mat-label>
-                                            <mat-select [(ngModel)]="typeReport" name="type"
-                                                (selectionChange)="seleceType($event);changeData()">
+                                            <mat-select [(ngModel)]="typeReport" name="type">
                                                 <mat-option *ngFor="let data of report" [value]="data">
                                                     {{data}}
                                                 </mat-option>

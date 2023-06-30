@@ -543,13 +543,27 @@ export class PostData {
   }
 
   public hidePost(post) {
-    // const url: string = decodeURI(this.router.url);
-    // const path = url.split('/')[1];
-    // if (path === 'post') {
-
-    // } else {
-    this.hide.emit(post);
-    // }
+    const url: string = decodeURI(this.router.url);
+    const path = url.split('/')[1];
+    if (path === 'post') {
+      let dialog = this.dialog.open(DialogAlert, {
+        disableClose: false,
+        data: {
+          text: 'คุณต้องการซ่อนโพสต์นี้ใช่หรือไม่',
+        }
+      });
+      dialog.afterClosed().subscribe((res) => {
+        if (res) {
+          this.pageFacade.hidePost(post._id).then((res) => {
+            if (res) {
+              this.itemPost = undefined;
+            }
+          });
+        }
+      });
+    } else {
+      this.hide.emit(post);
+    }
   }
 
   public reportPost(post) {
@@ -557,42 +571,55 @@ export class PostData {
     const path = url.split('/')[1];
     if (path === 'post') {
       let typeReport = 'post';
-      let detail = [];
+      let detail = ['คุกคามหรือข่มขู่ด้วยความรุนแรง', 'แสดงเนื้อหาล่อแหลมหรือรบกวนจิตใจ', 'ฉันถูกลอกเลียนแบบหรือแสดงตัวตนที่หลอกลวง', 'แสดงเนื้อหาที่เกี่ยวข้องหรือสนับสนุนให้ทำร้ายตัวเอง', 'สแปม'];
       this.pageFacade.getManipulate(typeReport).then((res) => {
         if (res) {
+          detail = [];
           for (let data of res.data) {
             detail.push(data.detail);
           }
+          this._openDialogReport(post, typeReport, detail);
         }
-      })
-      let dialog = this.dialog.open(DialogCheckBox, {
-        disableClose: false,
-        data: {
-          title: 'รายงาน',
-          subject: detail,
-          bottomText2: 'ตกลง',
-          bottomColorText2: "black",
-        }
-      });
-      dialog.afterClosed().subscribe((res) => {
-        if (res) {
-          let data = {
-            typeId: post._id,
-            type: typeReport.toUpperCase(),
-            topic: res.topic,
-            message: res.detail ? res.detail : '',
-          }
-          this.pageFacade.reportPage(data).then((res) => {
-            if (res) {
-            }
-          }).catch((err) => {
-            if (err) { }
-          })
+      }).catch((err) => {
+        if (err.error.status === 0) {
+          this._openDialogReport(post, typeReport, detail);
         }
       });
     } else {
       this.report.emit(post);
     }
+  }
+
+  private _openDialogReport(page, typeReport, detail) {
+    let title = '';
+    if (typeReport === 'post') {
+      title = 'รายงานโพสต์';
+    }
+    let dialog = this.dialog.open(DialogCheckBox, {
+      disableClose: false,
+      data: {
+        title: title,
+        subject: detail,
+        bottomText2: 'ตกลง',
+        bottomColorText2: "black",
+      }
+    });
+    dialog.afterClosed().subscribe((res) => {
+      if (res) {
+        let data = {
+          typeId: page._id,
+          type: typeReport.toUpperCase(),
+          topic: res.topic,
+          message: res.detail ? res.detail : '',
+        }
+        this.pageFacade.reportPage(data).then((res) => {
+          if (res) {
+          }
+        }).catch((err) => {
+          if (err) { }
+        })
+      }
+    });
   }
 
   public blockUser(post) {

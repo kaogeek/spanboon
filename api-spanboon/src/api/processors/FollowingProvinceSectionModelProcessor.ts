@@ -37,12 +37,14 @@ export class FollowingProvinceSectionModelProcessor extends AbstractSeparateSect
                 let searchOfficialOnly: number = undefined;
                 let userId = undefined;
                 let isReadPostIds = undefined;
+                let hidePostIds: any = undefined;
                 // get startDateTime, endDateTime
                 let startDateTime: Date = undefined;
                 if (this.data !== undefined && this.data !== null) {
                     startDateTime = this.data.startDateTime;
                     userId = this.data.userId;
                     isReadPostIds = this.data.postIds;
+                    hidePostIds = this.data.hidePost;
                 }
                 const objIds = new ObjectID(userId);
                 let limit: number = undefined;
@@ -81,6 +83,14 @@ export class FollowingProvinceSectionModelProcessor extends AbstractSeparateSect
                 if (isReadPostIds.length > 0) {
                     for (let i = 0; i < isReadPostIds.length; i++) {
                         const postId = isReadPostIds[i].postId;
+                        if (postId !== undefined && postId !== null && postId.length > 0) {
+                            postIds.push(...postId.map(id => new ObjectID(id)));
+                        }
+                    }
+                }
+                if (hidePostIds.length > 0) {
+                    for (let j = 0; j < hidePostIds.length; j++) {
+                        const postId = hidePostIds[j].postId;
                         if (postId !== undefined && postId !== null && postId.length > 0) {
                             postIds.push(...postId.map(id => new ObjectID(id)));
                         }

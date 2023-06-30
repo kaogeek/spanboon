@@ -458,6 +458,9 @@ export class EmergencyEventSectionProcessor extends AbstractSectionModelProcesso
                             }
                         },
                         {
+                            $match: { gallery: { $ne: [] } }
+                        },
+                        {
                             $lookup: {
                                 from: 'User',
                                 localField: 'ownerUser',
@@ -520,7 +523,7 @@ export class EmergencyEventSectionProcessor extends AbstractSectionModelProcesso
                                         }
                                     },
                                     {
-                                        $limit:limit
+                                        $limit: limit
                                     }
                                 ]
                             );
@@ -540,7 +543,7 @@ export class EmergencyEventSectionProcessor extends AbstractSectionModelProcesso
                                     }
                                 },
                                 {
-                                    $limit:limit
+                                    $limit: limit
                                 }
                             ]);
                         }

@@ -1201,39 +1201,20 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     });
   }
 
-  public reportPost(post: any, index: number) {
+  public reportPost(post: any, index: any) {
     let typeReport = 'post';
-    let detail = [];
+    let detail = ['คุกคามหรือข่มขู่ด้วยความรุนแรง', 'แสดงเนื้อหาล่อแหลมหรือรบกวนจิตใจ', 'ฉันถูกลอกเลียนแบบหรือแสดงตัวตนที่หลอกลวง', 'แสดงเนื้อหาที่เกี่ยวข้องหรือสนับสนุนให้ทำร้ายตัวเอง', 'สแปม'];
     this.pageFacade.getManipulate(typeReport).then((res) => {
       if (res) {
+        detail = [];
         for (let data of res.data) {
           detail.push(data.detail);
         }
+        this._openDialogReport(post, typeReport, detail);
       }
-    })
-    let dialog = this.dialog.open(DialogCheckBox, {
-      disableClose: false,
-      data: {
-        title: 'รายงาน',
-        subject: detail,
-        bottomText2: 'ตกลง',
-        bottomColorText2: "black",
-      }
-    });
-    dialog.afterClosed().subscribe((res) => {
-      if (res) {
-        let data = {
-          typeId: post._id,
-          type: typeReport.toUpperCase(),
-          topic: res.topic,
-          message: res.detail ? res.detail : '',
-        }
-        this.pageFacade.reportPage(data).then((res) => {
-          if (res) {
-          }
-        }).catch((err) => {
-          if (err) { }
-        })
+    }).catch((err) => {
+      if (err.error.status === 0) {
+        this._openDialogReport(post, typeReport, detail);
       }
     });
   }
@@ -1251,12 +1232,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     let dialog = this.showDialogWarming("คุณต้องการซ่อนโพสต์นี้ใช่หรือไม่ ", "ยกเลิก", "ตกลง", confirmEventEmitter, canCelEventEmitter);
     dialog.afterClosed().subscribe((res) => {
       if (res) {
-        let data = {
-          postId: post._id,
-          pageIdOwner: post.pageId,
-          type: 'hide_post'
-        }
-        this.pageFacade.manipulatePost(data).then((res) => {
+        this.pageFacade.hidePost(post._id).then((res) => {
           if (res) {
             this.resPost.posts.splice(index, 1);
           }
@@ -1694,18 +1670,33 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
 
   public reportUser(page) {
     let typeReport = 'page';
-    let detail = [];
+    let detail = ['คุกคามหรือข่มขู่ด้วยความรุนแรง', 'แสดงเนื้อหาล่อแหลมหรือรบกวนจิตใจ', 'ฉันถูกลอกเลียนแบบหรือแสดงตัวตนที่หลอกลวง', 'แสดงเนื้อหาที่เกี่ยวข้องหรือสนับสนุนให้ทำร้ายตัวเอง', 'สแปม'];
     this.pageFacade.getManipulate(typeReport).then((res) => {
       if (res) {
+        detail = [];
         for (let data of res.data) {
           detail.push(data.detail);
         }
+        this._openDialogReport(page, typeReport, detail);
       }
-    })
+    }).catch((err) => {
+      if (err.error.status === 0) {
+        this._openDialogReport(page, typeReport, detail);
+      }
+    });
+  }
+
+  private _openDialogReport(page, typeReport, detail) {
+    let title = '';
+    if (typeReport === 'post') {
+      title = 'รายงานโพสต์';
+    } else if (typeReport === 'page') {
+      title = 'รายงานเพจ';
+    }
     let dialog = this.dialog.open(DialogCheckBox, {
       disableClose: false,
       data: {
-        title: 'รายงาน',
+        title: title,
         subject: detail,
         bottomText2: 'ตกลง',
         bottomColorText2: "black",

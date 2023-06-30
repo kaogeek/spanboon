@@ -11,7 +11,7 @@ import { DateAdapter, MatDialog } from '@angular/material';
 import { FileHandle } from '../../shares/directive/directives';
 import * as $ from 'jquery';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
-import { BoxPost, DialogReboonTopic, DialogShare } from '../../shares/shares';
+import { BoxPost, DialogAlert, DialogCheckBox, DialogReboonTopic, DialogShare } from '../../shares/shares';
 import { ChangeContext, LabelType, Options } from 'ng5-slider';
 import { SearchFilter } from '../../../../app/models/SearchFilter';
 import { environment } from '../../../../environments/environment';
@@ -1603,6 +1603,76 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       this.recommendedLeft.nativeElement.scrollTop = 0
     }
     super.clicktotop();
+  }
+
+  public hidePost(post: any, index: number) {
+    let dialog = this.dialog.open(DialogAlert, {
+      disableClose: false,
+      data: {
+        text: 'คุณต้องการซ่อนโพสต์นี้ใช่หรือไม่',
+      }
+    });
+    dialog.afterClosed().subscribe((res) => {
+      if (res) {
+        this.pageFacade.hidePost(post._id).then((res) => {
+          if (res) {
+            this.resPost.splice(index, 1);
+          }
+        }).catch((err) => {
+          if (err) { }
+        })
+      }
+    });
+  }
+
+  public reportPost(post: any, index: any) {
+    let typeReport = 'post';
+    let detail = ['คุกคามหรือข่มขู่ด้วยความรุนแรง', 'แสดงเนื้อหาล่อแหลมหรือรบกวนจิตใจ', 'ฉันถูกลอกเลียนแบบหรือแสดงตัวตนที่หลอกลวง', 'แสดงเนื้อหาที่เกี่ยวข้องหรือสนับสนุนให้ทำร้ายตัวเอง', 'สแปม'];
+    this.pageFacade.getManipulate(typeReport).then((res) => {
+      if (res) {
+        detail = [];
+        for (let data of res.data) {
+          detail.push(data.detail);
+        }
+        this._openDialogReport(post, typeReport, detail)
+      }
+    }).catch((err) => {
+      if (err.error.status === 0) {
+        this._openDialogReport(post, typeReport, detail)
+      }
+    });
+  }
+
+  private _openDialogReport(page, typeReport, detail) {
+    let title = '';
+    if (typeReport === 'post') {
+      title = 'รายงานโพสต์';
+    }
+    let dialog = this.dialog.open(DialogCheckBox, {
+      disableClose: false,
+      data: {
+        title: title,
+        subject: detail,
+        bottomText2: 'ตกลง',
+        bottomColorText2: "black",
+      }
+    });
+    dialog.afterClosed().subscribe((res) => {
+      if (res) {
+        let data = {
+          typeId: page._id,
+          type: typeReport.toUpperCase(),
+          topic: res.topic,
+          message: res.detail ? res.detail : '',
+        }
+        this.pageFacade.reportPage(data).then((res) => {
+          if (res) {
+          }
+        }).catch((err) => {
+          if (err) { }
+        })
+      }
+    });
   }
 
   public getImageSelector(): string[] {
