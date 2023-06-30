@@ -254,9 +254,8 @@ export class PostsController {
      */
     @Post('/search')
     public async searchPost(@QueryParam('isHideStory') isHideStory: boolean, @QueryParam('isNeeds') isNeeds: boolean, @Body({ validate: true }) filter: SearchFilter, @Res() res: any, @Req() req: any): Promise<any> {
-        const objIdsUser = new ObjectID(req.headers.userid);
         const today = moment().toDate();
-
+        console.log('pass25');
         if (filter.whereConditions !== undefined) {
             if (typeof filter.whereConditions === 'object') {
                 const postId = filter.whereConditions._id;
@@ -265,12 +264,18 @@ export class PostsController {
                     filter.whereConditions._id = postObjId;
                 }
                 const postIds = postId;
-                const hidePost = await this.hidePostService.find({ userId: objIdsUser, postId: postIds });
-                if (hidePost.length > 0) {
-                    const errorResponse = ResponseUtil.getErrorResponse('This post Id have been hide.', undefined);
-                    return res.status(400).send(errorResponse);
+                const userId = req.headers.userid;
+                let objIds = undefined;
+                if(userId){
+                    objIds = new ObjectID(userId);
                 }
-
+                if (objIds !== undefined && objIds !== null) {
+                    const hidePost = await this.hidePostService.find({ userId: objIds, postId: postIds });
+                    if (hidePost.length > 0) {
+                        const errorResponse = ResponseUtil.getErrorResponse('This post Id have been hide.', undefined);
+                        return res.status(400).send(errorResponse);
+                    }
+                }
             }
         } else {
             filter.whereConditions = {};
