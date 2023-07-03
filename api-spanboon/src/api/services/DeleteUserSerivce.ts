@@ -184,7 +184,7 @@ export class DeleteUserService {
 
         const authen = await this.authenticationIdService.findOne({ user: objIds });
         if (authen) {
-            await this.authenticationIdService.deleteMany({ _id: authen.id });
+            await this.authenticationIdService.deleteMany({ user: objIds });
         }
         // group letter c
         await this.customItemService.deleteMany({ userId: objIds });
@@ -223,7 +223,6 @@ export class DeleteUserService {
 
             // asset
             await this.assetService.deleteMany({ userId: objIds });
-            await this.authenticationIdService.deleteMany({ user: objIds });
             await this.userService.delete({ _id: objIds });
         }
 
