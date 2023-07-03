@@ -25,6 +25,8 @@ export class CommentPost {
   @Input()
   public commentdata: any;
   @Input()
+  public isNotAccess: boolean
+  @Input()
   public isLogin: boolean;
   @Input()
   public isImgSing: boolean = false;
@@ -38,6 +40,9 @@ export class CommentPost {
 
   constructor(postCommentFacade: PostCommentFacade) {
     this.postCommentFacade = postCommentFacade;
+  }
+
+  public ngOnInit(): void {
   }
 
   public commentAction(action: any, comment: any, index: number) {

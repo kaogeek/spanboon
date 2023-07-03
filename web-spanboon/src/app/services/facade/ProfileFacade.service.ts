@@ -198,7 +198,9 @@ export class ProfileFacade extends AbstractFacade {
   public delete(): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/user/delete';
-      let body: any = {};
+      let body: any = {
+        banned: true
+      };
       let options = this.authMgr.getDefaultOptions();
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response);

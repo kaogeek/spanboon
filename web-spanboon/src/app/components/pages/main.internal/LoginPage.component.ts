@@ -476,7 +476,7 @@ export class LoginPage extends AbstractPage implements OnInit {
               queryParams: { mode: 'google' }
             }
             this.router.navigate(['/register'], navigationExtras);
-          } else if (err.error.message === 'Baned PageUser.') {
+          } else if (err.error.message === 'User Banned') {
             this.dialog.open(DialogAlert, {
               disableClose: true,
               data: {
@@ -510,7 +510,7 @@ export class LoginPage extends AbstractPage implements OnInit {
           queryParams: { mode: 'google' }
         }
         this.router.navigate(['/register'], navigationExtras);
-      } else if (statusMsg === 'Baned PageUser.') {
+      } else if (statusMsg === 'User Banned') {
         this.dialog.open(DialogAlert, {
           disableClose: true,
           data: {
@@ -637,7 +637,7 @@ export class LoginPage extends AbstractPage implements OnInit {
                 queryParams: { mode: 'facebook' }
               }
               this.router.navigate(['/register'], navigationExtras);
-            } else if (err.error.message === 'Baned PageUser.') {
+            } else if (err.error.message === 'User Banned') {
               this.dialog.open(DialogAlert, {
                 disableClose: true,
                 data: {
@@ -723,7 +723,7 @@ export class LoginPage extends AbstractPage implements OnInit {
               })
             }
           });
-        } else if (statusMsg === 'Baned PageUser.') {
+        } else if (statusMsg === 'User Banned') {
           this.dialog.open(DialogAlert, {
             disableClose: true,
             data: {
@@ -846,7 +846,7 @@ export class LoginPage extends AbstractPage implements OnInit {
                 let alertMessages: string;
                 if (err.error.message === "Invalid username") {
                   alertMessages = "กรุณาใส่อีเมลให้ถูกต้อง";
-                } else if (err.error.message === "Baned PageUser.") {
+                } else if (err.error.message === "User Banned") {
                   alertMessages = "บัญชีผู้ใช้ถูกแบน";
                 } else if (err.error.message === "Invalid Password") {
                   alertMessages = "รหัสผ่านไม่ถูกต้อง";
@@ -869,49 +869,62 @@ export class LoginPage extends AbstractPage implements OnInit {
               }
             });
         }
-      })
-        .catch((err) => {
-          if (err.error.message === "Invalid Password" && err.status === 400) {
-            let dialog = this.dialog.open(DialogAlert, {
-              disableClose: true,
-              data: {
-                text: "รหัสผ่านไม่ถูกต้อง",
-                bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-                bottomColorText2: "black",
-                btDisplay1: "none",
-              },
-            });
-            dialog.afterClosed().subscribe((res) => {
+      }).catch((err) => {
+        if (err.error.message === "Invalid Password" && err.status === 400) {
+          let dialog = this.dialog.open(DialogAlert, {
+            disableClose: true,
+            data: {
+              text: "รหัสผ่านไม่ถูกต้อง",
+              bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+              bottomColorText2: "black",
+              btDisplay1: "none",
+            },
+          });
+          dialog.afterClosed().subscribe((res) => {
+            this.login = true;
+          });
+        }
+        if (
+          err.error.message === "User Banned" &&
+          err.error.status === 0) {
+          let dialog = this.dialog.open(DialogAlert, {
+            disableClose: true,
+            data: {
+              text: "บัญชีผู้ใช้ถูกแบน",
+              bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+              bottomColorText2: "black",
+              btDisplay1: "none",
+            },
+          });
+          dialog.afterClosed().subscribe((res) => {
+            if (res) {
               this.login = true;
-            });
-          } else {
-            console.log(err);
-            this.login = true;
-          }
-          if (
-            err.error.message === "User was not found." &&
-            err.status === 400
-          ) {
-            let dialog = this.dialog.open(DialogAlert, {
-              disableClose: true,
-              data: {
-                text: "ไม่พบบัญชีผู้ใช้ในระบบ",
-                bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
-                bottomColorText2: "black",
-                btDisplay1: "none",
-              },
-            });
-            dialog.afterClosed().subscribe((res) => {
-              if (res) {
-                this.router.navigate(["/register"]);
-                this.login = true;
-              }
-            });
-          } else {
-            console.log(err);
-            this.login = true;
-          }
-        });
+            }
+          });
+        }
+        if (
+          err.error.message === "User was not found." &&
+          err.status === 400) {
+          let dialog = this.dialog.open(DialogAlert, {
+            disableClose: true,
+            data: {
+              text: "ไม่พบบัญชีผู้ใช้ในระบบ",
+              bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+              bottomColorText2: "black",
+              btDisplay1: "none",
+            },
+          });
+          dialog.afterClosed().subscribe((res) => {
+            if (res) {
+              this.router.navigate(["/register"]);
+              this.login = true;
+            }
+          });
+        } else {
+          console.log(err);
+          this.login = true;
+        }
+      });
     }
   }
 

@@ -520,7 +520,7 @@
             <ng-container *ngIf="commentpost.length > 0">
                 <div class="post-comment">
                     <comment-post (isLogin)="isComments" (submit)="commentAction($event)" [userId]="usercurrent?.id"
-                        [commentdata]="commentpost">
+                        [commentdata]="commentpost" [isNotAccess]="isNotAccess">
                     </comment-post>
                 </div>
             </ng-container>
