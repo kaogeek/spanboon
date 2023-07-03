@@ -1443,7 +1443,7 @@ export class PostsCommentController {
         const postsObjId = new ObjectID(postId);
         const username = req.user.id;
 
-        const postsCommentData: PostsComment = await this.postsCommentService.findOne({ $and: [{ _id: commentObjId }, { post: postsObjId }, { user: username }, { deleted: false }] });
+        const postsCommentData: PostsComment = await this.postsCommentService.findOne({ $and: [{ _id: commentObjId }, { post: postsObjId }, { deleted: false }] });
 
         if (postsCommentData !== null && postsCommentData !== undefined) {
             const deletePostsComment = await this.postsCommentService.update({ _id: commentObjId, post: postsObjId, user: username }, { $set: { deleted: true } });
