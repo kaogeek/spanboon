@@ -1441,16 +1441,14 @@ export class PostsCommentController {
     public async deletePostsComment(@Param('postId') postId: string, @Param('commentId') commentId: string, @Res() res: any, @Req() req: any): Promise<any> {
         const commentObjId = new ObjectID(commentId);
         const postsObjId = new ObjectID(postId);
-        const username = req.user.id;
 
         const postsCommentData: PostsComment = await this.postsCommentService.findOne({ $and: [{ _id: commentObjId }, { post: postsObjId }, { deleted: false }] });
 
         if (postsCommentData !== null && postsCommentData !== undefined) {
-            const deletePostsComment = await this.postsCommentService.update({ _id: commentObjId, post: postsObjId, user: username }, { $set: { deleted: true } });
+            const deletePostsComment = await this.postsCommentService.update({ _id: commentObjId, post: postsObjId }, { $set: { deleted: true } });
 
             if (deletePostsComment) {
                 const posts: Posts = await this.postsService.findOne({ _id: postsObjId });
-                console.log('posts >>>> ', posts);
                 await this.postsService.update({ _id: postsObjId }, { $set: { commentCount: posts.commentCount - 1 } });
 
                 const successResponse = ResponseUtil.getSuccessResponse('Successfully delete PostsComment', []);
