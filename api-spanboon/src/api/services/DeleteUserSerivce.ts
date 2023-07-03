@@ -169,7 +169,7 @@ export class DeleteUserService {
         const pageAccess = await this.pageAccessLevelService.findOne({ user: objIds, level: 'ADMIN' });
         if (pageAccess) {
             const pageOwner = await this.pageAccessLevelService.findOne({ page: pageAccess.page, level: 'OWNER' });
-            const deletePageAccessAdmin = await this.pageAccessLevelService.deleteMany({ user: objIds });
+            const deletePageAccessAdmin = await this.pageAccessLevelService.deleteMany({ user: objIds, level: 'ADMIN' });
             // update post
             if (pageOwner && deletePageAccessAdmin) {
                 const query = { pageId: pageOwner.page };
