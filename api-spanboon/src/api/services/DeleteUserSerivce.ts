@@ -164,6 +164,24 @@ export class DeleteUserService {
 
     public async deleteUserNoPage(user: string): Promise<any> {
         const objIds = new ObjectID(user);
+
+        // check admin 
+        const pageAccess = await this.pageAccessLevelService.findOne({ user: objIds, level: 'ADMIN' });
+        if (pageAccess) {
+            const pageOwner = await this.pageAccessLevelService.findOne({ page: pageAccess.page, level: 'OWNER' });
+            const deletePageAccessAdmin = await this.pageAccessLevelService.deleteMany({ user: objIds });
+            // update post
+            if (pageOwner && deletePageAccessAdmin) {
+                const query = { pageId: pageOwner.page };
+                const newValues = { $set: { ownerUser: pageOwner.user } };
+                await this.postsService.updateMany(query, newValues);
+            }
+            // update comment 
+            const queryComment = { commnetAsPage: pageOwner.page };
+            const newValueComment = { $set: { user: pageOwner.user } };
+            await this.postsCommentService.updateMany(queryComment, newValueComment);
+        }
+
         const authen = await this.authenticationIdService.findOne({ user: objIds });
         if (authen) {
             await this.authenticationIdService.deleteMany({ _id: authen.id });

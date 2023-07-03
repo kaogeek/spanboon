@@ -36,7 +36,10 @@ export class PostsCommentService {
     public update(query: any, newValue: any): Promise<any> {
         return this.postsCommentRepository.updateOne(query, newValue);
     }
-
+    // update many post
+    public async updateMany(query: any, newValue: any, options?: any): Promise<any> {
+        return await this.postsCommentRepository.updateMany(query, newValue, options);
+    }
     // delete postsComment
     public async delete(query: any, options?: any): Promise<any> {
         return await this.postsCommentRepository.deleteOne(query, options);
