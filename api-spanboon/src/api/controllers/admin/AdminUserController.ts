@@ -22,14 +22,12 @@ import { FileUtil } from '../../../utils/Utils';
 import { Asset } from '../../../api/models/Asset';
 import { ASSET_SCOPE, ASSET_PATH } from '../../../constants/AssetScope';
 import { AssetService } from '../../../api/services/AssetService';
-import { DeleteUserService } from '../../services/DeleteUserSerivce';
 @JsonController('/admin/user')
 export class AdminUserController {
     constructor(
         private userService: UserService,
         private actionLogService: AdminUserActionLogsService,
         private assetService: AssetService,
-        private deleteUserService: DeleteUserService
     ) { }
 
     /**
@@ -135,7 +133,6 @@ export class AdminUserController {
     public async deleteUserAd(@Param('id') userId: string, @Res() res: any, @Req() req: any): Promise<any> {
         const userObjId = new ObjectID(userId);
         if (userObjId !== undefined) {
-            await this.deleteUserService.deleteUser(userObjId);
             return res.status(200).send(ResponseUtil.getSuccessResponse('Delete page is successfully.', true));
         } else {
             const errorResponse: any = { status: 0, message: 'Sorry cannnot delete page.' };

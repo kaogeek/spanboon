@@ -621,7 +621,7 @@ export class PagePostController {
                             pagePostId.imageURL
                         );
                     }
-                    if (tokenFCMId.length > 0) {
+                    if (tokenFCMId !== undefined && tokenFCMId !== null && tokenFCMId.length > 0) {
                         if (userFollow.length > 0 && userFollow.length <= 5) {
                             for (const tokenFCM of tokenFCMId) {
                                 if (tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== null && tokenFCM.Tokens !== '') {

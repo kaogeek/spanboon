@@ -38,6 +38,7 @@ export class EditProfileCard extends AbstractPage implements OnInit {
   public formProfile: FormGroup;
   public authenManager: AuthenManager;
   public provinces;
+  public isLoading: boolean;
 
   @Input()
   public dataProfile: any;
@@ -265,8 +266,10 @@ export class EditProfileCard extends AbstractPage implements OnInit {
     });
     dialog.afterClosed().subscribe((res) => {
       if (res) {
+        this.isLoading = true;
         this.profileFacade.delete().then((res) => {
           if (res) {
+            this.isLoading = false;
             this.authenManager.logout(body).then((res: any) => {
               if (res.message === "Successfully Logout") {
                 this.authenManager.clearStorage();
@@ -274,6 +277,7 @@ export class EditProfileCard extends AbstractPage implements OnInit {
                 this.router.navigateByUrl(REDIRECT_PATH);
               }
             }).catch((err: any) => {
+              this.isLoading = false;
               alert(err.error.message);
               this.authenManager.clearStorage();
               this.router.navigateByUrl(REDIRECT_PATH);

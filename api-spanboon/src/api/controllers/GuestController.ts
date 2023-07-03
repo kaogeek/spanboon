@@ -1193,6 +1193,11 @@ export class GuestController {
                 const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
                 return res.status(400).send(errorUserNameResponse);
             }
+
+            if (data.banned === true) {
+                const errorResponse = ResponseUtil.getErrorResponse('User Banned', undefined);
+                return res.status(400).send(errorResponse);
+            }
             const checkAuth = await this.authenticationIdService.findOne({ where: { user: ObjectID(String(data.id)), providerName: mode } });
 
             const AllAuthen = await this.authenticationIdService.find({ user: data.id });
@@ -1282,6 +1287,10 @@ export class GuestController {
                     const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
                     return res.status(400).send(errorResponse);
                 }
+                if (findUserFb.banned === true) {
+                    const errorResponse = ResponseUtil.getErrorResponse('User Banned', undefined);
+                    return res.status(400).send(errorResponse);
+                }
                 if (findUserFb !== undefined && findAuthenFb === undefined) {
                     const authenAll = await this.authenticationIdService.find({ where: { user: findUserFb.id } });
                     for (authenFB of authenAll) {
@@ -1315,6 +1324,7 @@ export class GuestController {
                     return res.status(200).send(successResponse);
                 } else if (findAuthenFb !== undefined && findUserFb !== undefined) {
                     // find email then -> authentication -> mode FB
+
                     if (findUserFb === null && findAuthenFb === undefined) {
                         const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
                         return res.status(400).send(errorUserNameResponse);
@@ -1372,6 +1382,11 @@ export class GuestController {
                 }
                 if (findUserFb === undefined && findAuthenFb === undefined) {
                     const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+
+                if (findUserFb.banned === true) {
+                    const errorResponse = ResponseUtil.getErrorResponse('User Banned', undefined);
                     return res.status(400).send(errorResponse);
                 }
                 if (findUserFb !== undefined && findAuthenFb === undefined) {
@@ -1468,6 +1483,10 @@ export class GuestController {
                     const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
                     return res.status(400).send(errorUserNameResponse);
                 }
+                if (userApple.banned === true) {
+                    const errorResponse = ResponseUtil.getErrorResponse('User Banned', undefined);
+                    return res.status(400).send(errorResponse);
+                }
                 appleClient = await this.authenticationIdService.findOne({ where: { user: userApple.id, providerName: PROVIDER.APPLE } });
             }
             // authen.providerName === PROVIDER.EMAIL && authen.providerName === PROVIDER.FACEBOOK && authen.providerName === PROVIDER.GOOGLE && authen.providerName === PROVIDER.TWITTER && authen.providerName === PROVIDER.APPLE 
@@ -1554,7 +1573,10 @@ export class GuestController {
                 const errorResponse: any = { status: 0, message: 'Invalid Token.' };
                 return res.status(400).send(errorResponse);
             }
-
+            if (userGG.banned === true) {
+                const errorResponse = ResponseUtil.getErrorResponse('User Banned', undefined);
+                return res.status(400).send(errorResponse);
+            }
             const authenGG = await this.authenticationIdService.findOne({ providerUserId: checkIdToken.userId, providerName: PROVIDER.GOOGLE });
             if (userGG !== undefined && authenGG === undefined) {
                 const stackAuth = [];
@@ -1595,6 +1617,7 @@ export class GuestController {
                     const errorResponse: any = { status: 0, message: 'Invalid Token.' };
                     return res.status(400).send(errorResponse);
                 }
+                
                 // const expiresAt = checkIdToken.expire;
                 // const today = moment().toDate();
                 let googleUser = undefined;

@@ -35,7 +35,10 @@ export class OtpService {
         this.log.info('Delete a token');
         return await this.otpRepository.deleteOne(query, options);
     }
-
+    // delete Needs
+    public async deleteMany(query: any, options?: any): Promise<any> {
+        return await this.otpRepository.deleteMany(query, options);
+    }
     public async updateToken(query: any, newValue: any): Promise<any> {
         this.log.info('Update a token');
 

@@ -82,3 +82,5 @@
     <button mat-button [ngStyle]="{'opacity': formProfile.invalid ? '0.5' : '1'}" [disabled]="formProfile.invalid"
         (click)="formProfile.valid ? editProfile() : null">ยืนยัน</button>
 </div>
+
+<loading *ngIf="isLoading"></loading>

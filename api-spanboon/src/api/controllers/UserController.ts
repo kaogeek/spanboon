@@ -48,6 +48,7 @@ import { USER_TYPE, NOTIFICATION_TYPE } from '../../constants/NotificationType';
 import { DeviceTokenService } from '../services/DeviceToken';
 import { PageAccessLevelService } from '../services/PageAccessLevelService';
 import { ManipulateService } from '../services/ManipulateService';
+import { DeleteUserService } from '../services/DeleteUserSerivce';
 @JsonController('/user')
 export class UserController {
     constructor(
@@ -66,6 +67,7 @@ export class UserController {
         private deviceTokenService: DeviceTokenService,
         private pageAccessLevelService: PageAccessLevelService,
         private manipulateService: ManipulateService,
+        private deleteUserService: DeleteUserService
     ) { }
 
     // Logout API
@@ -182,31 +184,19 @@ export class UserController {
     public async deleteUser(@Res() res: any, @Req() req: any): Promise<any> {
         const userId = new ObjectID(req.user.id);
         const user = await this.userService.findOne({ _id: userId });
-        let queryUser = undefined;
-        let newValuesUser = undefined;
-        let updateUser = undefined;
         if (user) {
             // access page 
             const pageAccess = await this.pageService.findOne({ ownerUser: user.id });
             if (pageAccess !== undefined) {
                 const permission = await this.pageAccessLevelService.findOne({ page: pageAccess.id, user: pageAccess.ownerUser, level: 'OWNER' });
                 if (permission) {
-                    queryUser = { _id: user.id };
-                    newValuesUser = { $set: { banned: req.body.ban } };
-                    const queryPage = { _id: permission.page };
-                    const newValuesPage = { $set: { banned: true } };
-                    updateUser = await this.userService.update(queryUser, newValuesUser);
-                    const updatePage = await this.pageService.update(queryPage, newValuesPage);
-                    if (updateUser && updatePage) {
-                        const successResponseF = ResponseUtil.getSuccessResponse('Update delete user is sucess.', undefined);
-                        return res.status(200).send(successResponseF);
-                    }
+                    await this.deleteUserService.deleteUserPageAccessOwn(permission.user);
+                    const successResponseF = ResponseUtil.getSuccessResponse('Update delete user is sucess.', undefined);
+                    return res.status(200).send(successResponseF);
                 }
             } else {
-                queryUser = { _id: user.id };
-                newValuesUser = { $set: { banned: req.body.ban } };
-                updateUser = await this.userService.update(queryUser, newValuesUser);
-                if (updateUser) {
+                const deleteUser = await this.deleteUserService.deleteUserNoPage(user.id);
+                if (deleteUser) {
                     const successResponseF = ResponseUtil.getSuccessResponse('Update delete user is sucess.', undefined);
                     return res.status(200).send(successResponseF);
                 }
