@@ -46,7 +46,10 @@ export class UserFollowService {
     public async delete(query: any, options?: any): Promise<any> {
         return await this.userFollowRepository.deleteOne(query, options);
     }
-
+    // delete Many
+    public async deleteMany(query: any, options?: any): Promise<any> {
+        return await this.userFollowRepository.deleteMany(query, options);
+    }
     // aggregate userFollow
     public aggregate(query: any, options?: any): Promise<any[]> {
         return this.userFollowRepository.aggregate(query, options).toArray();
