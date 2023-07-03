@@ -192,7 +192,7 @@ export class UserController {
                 const permission = await this.pageAccessLevelService.findOne({ page: pageAccess.id, user: pageAccess.ownerUser, level: 'OWNER' });
                 if (permission) {
                     queryUser = { _id: user.id };
-                    newValuesUser = { $set: { banned: req.body.ban } };
+                    newValuesUser = { $set: { banned: req.body.banned } };
                     const queryPage = { _id: permission.page };
                     const newValuesPage = { $set: { banned: true } };
                     updateUser = await this.userService.update(queryUser, newValuesUser);
