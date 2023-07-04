@@ -166,20 +166,22 @@ export class DeleteUserService {
         const objIds = new ObjectID(user);
 
         // check admin 
-        const pageAccess = await this.pageAccessLevelService.findOne({ user: objIds, level: 'ADMIN' });
-        if (pageAccess !== undefined && pageAccess !== null) {
-            const pageOwner = await this.pageAccessLevelService.findOne({ page: pageAccess.page, level: 'OWNER' });
-            const deletePageAccessAdmin = await this.pageAccessLevelService.deleteMany({ user: objIds, level: 'ADMIN' });
-            // update post
-            if (pageOwner && deletePageAccessAdmin) {
-                const query = { pageId: pageOwner.page, ownerUser: objIds };
-                const newValues = { $set: { ownerUser: pageOwner.user } };
-                await this.postsService.updateMany(query, newValues);
+        const pageAccess = await this.pageAccessLevelService.find({ user: objIds, level: 'ADMIN' });
+        if (pageAccess.length > 0 && pageAccess !== undefined && pageAccess !== null) {
+            for (let i = 0; i < pageAccess.length; i++) {
+                const pageOwner = await this.pageAccessLevelService.findOne({ page: pageAccess[i].page, level: 'OWNER' });
+                const deletePageAccessAdmin = await this.pageAccessLevelService.deleteMany({ user: objIds, level: 'ADMIN' });
+                // update post
+                if (pageOwner && deletePageAccessAdmin) {
+                    const query = { pageId: pageOwner.page, ownerUser: objIds };
+                    const newValues = { $set: { ownerUser: pageOwner.user } };
+                    await this.postsService.updateMany(query, newValues);
+                }
+                // update comment 
+                const queryComment = { commnetAsPage: pageOwner.page, ownerUser: objIds };
+                const newValueComment = { $set: { user: pageOwner.user } };
+                await this.postsCommentService.updateMany(queryComment, newValueComment);
             }
-            // update comment 
-            const queryComment = { commnetAsPage: pageOwner.page };
-            const newValueComment = { $set: { user: pageOwner.user } };
-            await this.postsCommentService.updateMany(queryComment, newValueComment);
         }
 
         // group letter c
