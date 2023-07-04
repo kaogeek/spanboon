@@ -269,22 +269,22 @@ export class EditProfileCard extends AbstractPage implements OnInit {
         this.isLoading = true;
         this.profileFacade.delete().then((res) => {
           if (res) {
-            this.isLoading = false;
-            this.authenManager.logout(body).then((res: any) => {
-              if (res.message === "Successfully Logout") {
-                this.authenManager.clearStorage();
-                this.router.navigateByUrl(REDIRECT_PATH);
-              }
-            }).catch((err: any) => {
-              this.isLoading = false;
-              alert(err.error.message);
-              this.authenManager.clearStorage();
-              this.router.navigateByUrl(REDIRECT_PATH);
-            })
+            this._afterDeleteUser();
+          }
+        }).catch((err) => {
+          if (err) {
+            this._afterDeleteUser();
           }
         });
       }
     });
+  }
+
+  private _afterDeleteUser() {
+    this.isLoading = false;
+    this.formProfile.reset();
+    this.authenManager.clearStorage();
+    this.router.navigate(['/']);
   }
 
   isPageDirty(): boolean {
