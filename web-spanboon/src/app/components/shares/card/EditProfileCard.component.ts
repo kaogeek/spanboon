@@ -273,7 +273,6 @@ export class EditProfileCard extends AbstractPage implements OnInit {
             this.authenManager.logout(body).then((res: any) => {
               if (res.message === "Successfully Logout") {
                 this.authenManager.clearStorage();
-                this.logout.emit(true);
                 this.router.navigateByUrl(REDIRECT_PATH);
               }
             }).catch((err: any) => {
