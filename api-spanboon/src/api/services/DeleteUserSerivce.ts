@@ -159,73 +159,126 @@ export class DeleteUserService {
             await this.userService.delete({ _id: objIds });
         }
 
-        return undefined;
+        return userObjs.id;
     }
 
     public async deleteUserNoPage(user: string): Promise<any> {
         const objIds = new ObjectID(user);
 
         // check admin 
-        const pageAccess = await this.pageAccessLevelService.findOne({ user: objIds, level: 'ADMIN' });
-        if (pageAccess) {
-            const pageOwner = await this.pageAccessLevelService.findOne({ page: pageAccess.page, level: 'OWNER' });
-            const deletePageAccessAdmin = await this.pageAccessLevelService.deleteMany({ user: objIds, level: 'ADMIN' });
-            // update post
-            if (pageOwner && deletePageAccessAdmin) {
-                const query = { pageId: pageOwner.page };
-                const newValues = { $set: { ownerUser: pageOwner.user } };
-                await this.postsService.updateMany(query, newValues);
+        const pageAccess = await this.pageAccessLevelService.find({ user: objIds, level: 'ADMIN' });
+        if (pageAccess.length > 0 && pageAccess !== undefined && pageAccess !== null) {
+            for (let i = 0; i < pageAccess.length; i++) {
+                const pageOwner = await this.pageAccessLevelService.findOne({ page: pageAccess[i].page, level: 'OWNER' });
+                const deletePageAccessAdmin = await this.pageAccessLevelService.deleteMany({ user: objIds, level: 'ADMIN' });
+                // update post
+                if (pageOwner && deletePageAccessAdmin) {
+                    const query = { pageId: pageOwner.page, ownerUser: objIds };
+                    const newValues = { $set: { ownerUser: pageOwner.user } };
+                    await this.postsService.updateMany(query, newValues);
+                }
+                // update comment 
+                const queryComment = { commnetAsPage: pageOwner.page, ownerUser: objIds };
+                const newValueComment = { $set: { user: pageOwner.user } };
+                await this.postsCommentService.updateMany(queryComment, newValueComment);
             }
-            // update comment 
-            const queryComment = { commnetAsPage: pageOwner.page };
-            const newValueComment = { $set: { user: pageOwner.user } };
-            await this.postsCommentService.updateMany(queryComment, newValueComment);
         }
 
-        const authen = await this.authenticationIdService.findOne({ user: objIds });
-        if (authen) {
-            await this.authenticationIdService.deleteMany({ user: objIds });
-        }
         // group letter c
-        await this.customItemService.deleteMany({ userId: objIds });
-        await this.deviceTokenService.deleteMany({ userId: objIds });
+        const findCustomItem = await this.customItemService.findOne({ userId: objIds });
+        if (findCustomItem !== undefined && findCustomItem !== null) {
+            await this.customItemService.deleteMany({ userId: objIds });
+        }
+        const findDeviceToken = await this.deviceTokenService.findOne({ userId: objIds });
+        if (findDeviceToken !== undefined && findDeviceToken !== null) {
+            await this.deviceTokenService.deleteMany({ userId: objIds });
+        }
 
         // group Po
         const postPage = await this.postsService.findOne({ ownerUser: objIds });
-        if (postPage) {
+        if (postPage !== undefined && postPage !== null) {
             await this.postsService.deleteMany({ _id: postPage.id });
-            await this.postsCommentService.deleteMany({ user: objIds });
-            await this.postsGalleryService.deleteMany({ post: postPage.id });
+            const findPostComments = await this.postsCommentService.findOne({ user: objIds });
+            if (findPostComments !== undefined && findPostComments !== null) {
+                await this.postsCommentService.deleteMany({ user: objIds });
+            }
+            const findPostGallerService = await this.postsGalleryService.findOne({ post: postPage.id });
+            if (findPostGallerService !== undefined && findPostGallerService !== null) {
+                await this.postsGalleryService.deleteMany({ post: postPage.id });
+            }
         }
 
-        // group S 
-        await this.searchHistoryService.deleteMany({ userId: objIds });
+        // group S
+        const findSearchHistory = await this.searchHistoryService.findOne({ userId: objIds });
+        if (findSearchHistory) {
+            await this.searchHistoryService.deleteMany({ userId: objIds });
+        }
+
         const socialPostLogs = await this.socialPostLogsService.findOne({ user: objIds });
         if (socialPostLogs) {
             await this.socialPostLogsService.deleteMany({ user: objIds });
         }
-        await this.standardItemRequestService.deleteMany({ user: objIds });
+        const findStandardItem = await this.standardItemRequestService.findOne({ user: objIds });
+        if (findStandardItem !== undefined && findStandardItem !== null) {
+            await this.standardItemRequestService.deleteMany({ user: objIds });
+        }
 
         // group U
 
         // group F
-        await this.fulfillmentService.deleteMany({ user: objIds });
-        await this.fulfillmentCaseService.deleteMany({ requester: objIds });
+        const findfulfillMent = await this.fulfillmentService.findOne({ user: objIds });
+        if (findfulfillMent !== undefined && findfulfillMent !== null) {
+            await this.fulfillmentService.deleteMany({ user: objIds });
+        }
+
+        const findFulfillCase = await this.fulfillmentCaseService.findOne({ requester: objIds });
+        if (findFulfillCase !== undefined && findFulfillCase !== null) {
+            await this.fulfillmentCaseService.deleteMany({ requester: objIds });
+        }
 
         const userObjs = await this.userService.findOne({ _id: objIds });
         if (userObjs) {
-            await this.uniqueIdHistoryService.deleteMany({ user: userObjs.id });
-            await this.userBlockContentService.deleteMany({ userId: objIds });
-            await this.userEngagementService.deleteMany({ userId: userObjs.id });
-            await this.userFollowService.deleteMany({ userId: objIds });
-            await this.userLikeService.deleteMany({ userId: objIds });
-            await this.userReportContentService.deleteMany({ reporter: objIds });
-
-            // asset
-            await this.assetService.deleteMany({ userId: objIds });
             await this.userService.delete({ _id: objIds });
         }
+        const findUniquieHistory = await this.uniqueIdHistoryService.findOne({ user: objIds });
+        if (findUniquieHistory !== undefined && findUniquieHistory !== null) {
+            await this.uniqueIdHistoryService.deleteMany({ user: objIds });
+        }
 
-        return undefined;
+        const findUserBlockContent = await this.userBlockContentService.findOne({ userId: objIds });
+        if (findUserBlockContent !== undefined && findUserBlockContent !== null) {
+            await this.userBlockContentService.deleteMany({ userId: objIds });
+        }
+
+        const findUserEngagement = await this.userEngagementService.findOne({ userId: objIds });
+        if (findUserEngagement !== undefined && findUserEngagement !== null) {
+            await this.userEngagementService.deleteMany({ userId: objIds });
+        }
+
+        const findUserFollow = await this.userFollowService.findOne({ userId: objIds });
+        if (findUserFollow !== undefined && findUserFollow !== null) {
+            await this.userFollowService.deleteMany({ userId: objIds });
+        }
+
+        const findUserLike = await this.userLikeService.findOne({ userId: objIds });
+        if (findUserLike !== undefined && findUserLike !== null) {
+            await this.userLikeService.deleteMany({ userId: objIds });
+        }
+        const findUserReport = await this.userReportContentService.findOne({ reporter: objIds });
+        if (findUserReport !== undefined && findUserReport !== null) {
+            await this.userReportContentService.deleteMany({ reporter: objIds });
+        }
+
+        // asset
+        const findAssets = await this.assetService.findOne({ userId: objIds });
+        if (findAssets !== undefined && findAssets !== null) {
+            await this.assetService.deleteMany({ userId: objIds });
+        }
+        const authen = await this.authenticationIdService.findOne({ user: objIds });
+        if (authen !== undefined && authen !== null) {
+            await this.authenticationIdService.deleteMany({ user: objIds });
+        }
+
+        return authen.user;
     }
 }
