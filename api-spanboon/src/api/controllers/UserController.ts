@@ -49,6 +49,7 @@ import { DeviceTokenService } from '../services/DeviceToken';
 import { PageAccessLevelService } from '../services/PageAccessLevelService';
 import { ManipulateService } from '../services/ManipulateService';
 import { DeleteUserService } from '../services/DeleteUserSerivce';
+import { CheckEmailUserRequest } from './requests/CheckEmailUserRequest';
 @JsonController('/user')
 export class UserController {
     constructor(
@@ -1121,6 +1122,17 @@ export class UserController {
             return res.status(200).send(checkValid);
         }
     }
+    @Post('/email/check')
+    public async checkEmailUser(@Body({ validate: true }) user: CheckEmailUserRequest, @Res() res: any, @Req() req: any): Promise<any> {
+        const email = user.email;
+        const checkValid = await this.checkEmailValid(email);
+        if (checkValid.status === 1) {
+            return res.status(200).send(checkValid);
+        } else {
+            return res.status(200).send(checkValid);
+        }
+    }
+    
     @Get('/:id')
     @Authorized('user')
     public async getLoginUser(@Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
@@ -1279,6 +1291,25 @@ export class UserController {
             }
         } else {
             return ResponseUtil.getErrorResponse('UniqueId is required', undefined);
+        }
+    }
+
+    private async checkEmailValid(email: string): Promise<any> {
+        if (email !== null && email !== undefined && email !== '') {
+            if (email.match(/\s/g)) {
+                return ResponseUtil.getErrorResponse('Spacebar is not allowed', undefined);
+            }
+
+            const checkEmailUserQuey = { email: new RegExp('^' + email + '$', 'i') };
+            const checkEmailUser: User = await this.userService.findOne(checkEmailUserQuey);
+
+            if (checkEmailUser !== null && checkEmailUser !== undefined) {
+                return ResponseUtil.getErrorResponse('email can not use', false);
+            } else {
+                return ResponseUtil.getSuccessResponse('email can use', true);
+            }
+        } else {
+            return ResponseUtil.getErrorResponse('email is required', undefined);
         }
     }
 }
