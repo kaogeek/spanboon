@@ -594,7 +594,7 @@
             gap: 15px;
 
             @media (max-width: $medium) {
-              flex-direction: column;
+              flex-direction: column-reverse;
               gap: 0px;
             }
 

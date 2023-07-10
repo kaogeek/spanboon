@@ -22,7 +22,6 @@ import { SocialAuthService, SocialUser } from 'angularx-social-login';
 import { environment } from 'src/environments/environment';
 import { fromEvent, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { PROVINCE_LIST } from "../../../../constants/Province";
 
 const PAGE_NAME: string = 'register';
 
@@ -415,8 +414,10 @@ export class RegisterPage extends AbstractPage implements OnInit {
 
       if (this.mode === "normal") {
         let modeType = "EMAIL";
+        this.isLoading = true;
         this.authenManager.register(body, modeType).then((res) => {
           if (res.status === 1) {
+            this.isLoading = false;
             this.isRegister = false;
             let alertMessage: string = 'ลงทะเบียนสำเร็จ ' + MESSAGE.TEXT_TITLE_LOGIN;
             let isValid = false;
@@ -442,6 +443,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
             });
           }
         }).catch((err) => {
+          this.isLoading = false;
           if (err.error.status === 0) {
             this.isRegister = false;
             let alertMessages: string;

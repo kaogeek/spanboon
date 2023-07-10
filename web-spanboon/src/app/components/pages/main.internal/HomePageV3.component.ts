@@ -835,11 +835,11 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   }
 
   public async onScrollDown(ev) {
-    if (this.isLogin() && !this.isLoadingPost && !this.isGetBottom) {
+    if (this.isLogin() && !this.isLoadingPost && !this.isGetBottom && this.hidebar) {
       this.isOnLoad = true;
       this.isLoadingPost = true;
       await this.getBottomContent(this.userCloneDatas.id);
-    } else if (!this.isLogin() && !this.isLoadingPost && !this.isGetBottom) {
+    } else if (!this.isLogin() && !this.isLoadingPost && !this.isGetBottom && this.hidebar) {
       this.isOnLoad = true;
       this.isLoadingPost = true;
       await this.getBottomContent();
