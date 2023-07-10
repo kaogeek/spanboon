@@ -17,4 +17,5 @@ export class CreatePageObjectiveRequest {
     public hashTag: string;
     public category: string;
     public asset: any;
+    public personal: boolean;
 }

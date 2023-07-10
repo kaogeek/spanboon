@@ -47,6 +47,13 @@ import { ObjectivePostLikedProcessor } from '../processors/objective/ObjectivePo
 import { DateTimeUtil } from '../../utils/DateTimeUtil';
 import { SearchFilter } from './requests/SearchFilterRequest';
 import { S3Service } from '../services/S3Service';
+import { JoinObjectiveRequest } from './requests/JoinObjectiveRequest';
+import { DeviceTokenService } from '../services/DeviceToken';
+import { NotificationService } from '../services/NotificationService';
+import { NOTIFICATION_TYPE } from '../../constants/NotificationType';
+import { USER_TYPE } from '../../constants/NotificationType';
+import { PageNotificationService } from '../services/PageNotificationService';
+import { PageObjectiveJoinerService } from '../services/PageObjectiveJoinerService';
 @JsonController('/objective')
 export class ObjectiveController {
     constructor(
@@ -61,7 +68,11 @@ export class ObjectiveController {
         private fulfillmentCaseService: FulfillmentCaseService,
         private socialPostService: SocialPostService,
         private userLikeService: UserLikeService,
-        private s3Service: S3Service
+        private s3Service: S3Service,
+        private deviceTokenService: DeviceTokenService,
+        private notificationService: NotificationService,
+        private pageNotificationService: PageNotificationService,
+        private pageObjectiveJoinerService: PageObjectiveJoinerService
     ) { }
 
     // Find PageObjective API
@@ -151,8 +162,21 @@ export class ObjectiveController {
         }
 
         const data: PageObjective = await this.pageObjectiveService.findOne({ pageId, $or: [{ title }, { hashTag }] });
+        /* personal === true meaning objective is public */
+        if (data !== null && data !== undefined && data.personal === true) {
+            if (data.title === title) {
+                const errorResponse = ResponseUtil.getErrorResponse('PageObjective is Exists', title);
+                return res.status(400).send(errorResponse);
+            }
 
-        if (data !== null && data !== undefined) {
+            if (data.hashTag === hashTag) {
+                const errorResponse = ResponseUtil.getErrorResponse('PageObjective HashTag is Exists', hashTag);
+                return res.status(400).send(errorResponse);
+            }
+
+        }
+
+        if (data !== null && data !== undefined && data.personal === false) {
             if (data.title === title) {
                 const errorResponse = ResponseUtil.getErrorResponse('PageObjective is Exists', title);
                 return res.status(400).send(errorResponse);
@@ -186,6 +210,7 @@ export class ObjectiveController {
         objective.title = title;
         objective.detail = detail;
         objective.hashTag = hashTag;
+        objective.personal = objectives.personal;
         objective.iconURL = assetCreate ? ASSET_PATH + assetCreate.id : '';
         objective.s3IconURL = assetCreate ? assetCreate.s3FilePath : '';
 
@@ -207,6 +232,338 @@ export class ObjectiveController {
         }
     }
 
+    @Post('/join')
+    @Authorized()
+    public async joinObjective(@Body({ validate: true }) joinObjectiveRequest: JoinObjectiveRequest, @Res() res: any, @Req() req: any): Promise<any> {
+        const objtiveIds = new ObjectID(joinObjectiveRequest.objectiveId);
+        const pageObjId = new ObjectID(joinObjectiveRequest.pageId);
+        const joinerObjId = new ObjectID(joinObjectiveRequest.joiner);
+        const join = joinObjectiveRequest.join;
+        const approved = joinObjectiveRequest.approve;
+        const space = ' ';
+        const now = new Date();
+        const hours = now.getHours();
+        const minutes = now.getMinutes();
+        const interval_15 = 15;
+        const interval_30 = 30;
+        const searchObjective = await this.pageObjectiveJoinerService.find({ objectiveId: objtiveIds });
+        const pageOwner = await this.pageService.findOne({ _id: pageObjId });
+        const pageJoiner = await this.pageService.findOne({ _id: joinerObjId });
+        let notificationText = undefined;
+        let link = undefined;
+        if (
+            approved !== undefined &&
+            approved !== null &&
+            objtiveIds !== undefined &&
+            objtiveIds !== null &&
+            pageObjId !== undefined &&
+            pageObjId !== null
+        ) {
+            if (approved === true) {
+                const notiJoiners = await this.deviceTokenService.find({ user: pageJoiner.ownerUser });
+                notificationText = 'คุณได้ถูกอนุมัติเข้าร่วมสิ่งที่กำลังทำ';
+                link = `/objective/${objtiveIds}`;
+                await this.pageNotificationService.notifyToPageUserFcm(
+                    pageJoiner.id + '',
+                    undefined,
+                    req.user.id + '',
+                    USER_TYPE.PAGE,
+                    NOTIFICATION_TYPE.OBJECTIVE,
+                    notificationText,
+                    link,
+                    pageJoiner.name,
+                    pageJoiner.imageURL
+                );
+                if (notiJoiners.length > 0) {
+                    for (const notiJoiner of notiJoiners) {
+                        await this.notificationService.sendNotificationFCM
+                            (
+                                pageJoiner.id + '',
+                                USER_TYPE.PAGE,
+                                req.user.id + '',
+                                USER_TYPE.PAGE,
+                                NOTIFICATION_TYPE.OBJECTIVE,
+                                notificationText,
+                                link,
+                                notiJoiner.Tokens,
+                                pageJoiner.name,
+                                pageJoiner.imageURL
+                            );
+                    }
+                }
+                const query = { objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId };
+                const newValues = { $set: { approve: approved } };
+                const update = await this.pageObjectiveJoinerService.update(query, newValues);
+                if (update) {
+                    const successResponse = ResponseUtil.getSuccessResponse('Join objective is sucessful.', []);
+                    return res.status(200).send(successResponse);
+                }
+            } else {
+                const notiJoiners = await this.deviceTokenService.find({ user: pageJoiner.ownerUser });
+                notificationText = 'คุณถูกปฏิเสธการเข้าร่วมสิ่งที่กำลังทำ';
+                link = `/objective/${objtiveIds}`;
+                await this.pageNotificationService.notifyToPageUserFcm(
+                    pageJoiner.id + '',
+                    undefined,
+                    req.user.id + '',
+                    USER_TYPE.PAGE,
+                    NOTIFICATION_TYPE.OBJECTIVE,
+                    notificationText,
+                    link,
+                    pageJoiner.name,
+                    pageJoiner.imageURL
+                );
+                if (notiJoiners.length > 0) {
+                    for (const notiJoiner of notiJoiners) {
+                        await this.notificationService.sendNotificationFCM
+                            (
+                                pageJoiner.id + '',
+                                USER_TYPE.PAGE,
+                                req.user.id + '',
+                                USER_TYPE.PAGE,
+                                NOTIFICATION_TYPE.OBJECTIVE,
+                                notificationText,
+                                link,
+                                notiJoiner.Tokens,
+                                pageJoiner.name,
+                                pageJoiner.imageURL
+                            );
+                    }
+                }
+                const errorResponse = ResponseUtil.getErrorResponse('Reject to join the objective.', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        }
+
+        if (join === true) {
+
+            if (pageJoiner && pageOwner.id) {
+                const notiOwners = await this.deviceTokenService.find({ userId: pageOwner.ownerUser });
+                notificationText = pageJoiner.name + space + 'ขอเข้าร่วมสิ่งที่กำลังทำของเพจคุณ';
+                link = `/page/${pageJoiner.id}/`;
+                if (searchObjective.length > 0 && searchObjective.length <= 10) {
+                    await this.pageNotificationService.notifyToPageUserFcm(
+                        pageOwner.id + '',
+                        undefined,
+                        req.user.id + '',
+                        USER_TYPE.PAGE,
+                        NOTIFICATION_TYPE.OBJECTIVE,
+                        notificationText,
+                        link,
+                        pageJoiner.name,
+                        pageJoiner.imageURL
+                    );
+                    for (const notiOwner of notiOwners) {
+                        if (notiOwner.Tokens !== null && notiOwner.Tokens !== undefined && notiOwner.Tokens !== '') {
+                            await this.notificationService.sendNotificationFCM
+                                (
+                                    pageOwner.id + '',
+                                    USER_TYPE.PAGE,
+                                    req.user.id + '',
+                                    USER_TYPE.PAGE,
+                                    NOTIFICATION_TYPE.OBJECTIVE,
+                                    notificationText,
+                                    link,
+                                    notiOwner.Tokens,
+                                    pageJoiner.name,
+                                    pageJoiner.imageURL
+                                );
+                        } else {
+                            continue;
+                        }
+                    }
+                } else if (searchObjective.length > 10 && searchObjective.length <= 50 && minutes % interval_15 === 0) {
+                    await this.pageNotificationService.notifyToPageUserFcm(
+                        pageOwner.id + '',
+                        undefined,
+                        req.user.id + '',
+                        USER_TYPE.PAGE,
+                        NOTIFICATION_TYPE.LIKE,
+                        notificationText,
+                        link,
+                        pageJoiner.name,
+                        pageJoiner.imageURL
+                    );
+                    for (const notiOwner of notiOwners) {
+                        if (notiOwner.Tokens !== null && notiOwner.Tokens !== undefined && notiOwner.Tokens !== '') {
+                            await this.notificationService.sendNotificationFCM
+                                (
+                                    pageOwner.id + '',
+                                    USER_TYPE.PAGE,
+                                    req.user.id + '',
+                                    USER_TYPE.PAGE,
+                                    NOTIFICATION_TYPE.OBJECTIVE,
+                                    notificationText,
+                                    link,
+                                    notiOwner.Tokens,
+                                    pageJoiner.name,
+                                    pageJoiner.imageURL
+                                );
+                        } else {
+                            continue;
+                        }
+                    }
+                } else if (searchObjective.length > 50 && searchObjective.length <= 300 && minutes % interval_30 === 0) {
+                    await this.pageNotificationService.notifyToPageUserFcm(
+                        pageOwner.id + '',
+                        undefined,
+                        req.user.id + '',
+                        USER_TYPE.PAGE,
+                        NOTIFICATION_TYPE.LIKE,
+                        notificationText,
+                        link,
+                        pageJoiner.name,
+                        pageJoiner.imageURL
+                    );
+                    for (const notiOwner of notiOwners) {
+                        if (notiOwner.Tokens !== null && notiOwner.Tokens !== undefined && notiOwner.Tokens !== '') {
+                            await this.notificationService.sendNotificationFCM
+                                (
+                                    pageOwner.id + '',
+                                    USER_TYPE.PAGE,
+                                    req.user.id + '',
+                                    USER_TYPE.PAGE,
+                                    NOTIFICATION_TYPE.OBJECTIVE,
+                                    notificationText,
+                                    link,
+                                    notiOwner.Tokens,
+                                    pageJoiner.name,
+                                    pageJoiner.imageURL
+                                );
+                        } else {
+                            continue;
+                        }
+                    }
+                } else if (searchObjective.length > 300 && searchObjective.length <= 2000 && hours % 2 === 0) {
+                    await this.pageNotificationService.notifyToPageUserFcm(
+                        pageOwner.id + '',
+                        undefined,
+                        req.user.id + '',
+                        USER_TYPE.PAGE,
+                        NOTIFICATION_TYPE.LIKE,
+                        notificationText,
+                        link,
+                        pageJoiner.name,
+                        pageJoiner.imageURL
+                    );
+                    for (const notiOwner of notiOwners) {
+                        if (notiOwner.Tokens !== null && notiOwner.Tokens !== undefined && notiOwner.Tokens !== '') {
+                            await this.notificationService.sendNotificationFCM
+                                (
+                                    pageOwner.id + '',
+                                    USER_TYPE.PAGE,
+                                    req.user.id + '',
+                                    USER_TYPE.PAGE,
+                                    NOTIFICATION_TYPE.OBJECTIVE,
+                                    notificationText,
+                                    link,
+                                    notiOwner.Tokens,
+                                    pageJoiner.name,
+                                    pageJoiner.imageURL
+                                );
+                        } else {
+                            continue;
+                        }
+                    }
+                } else if (searchObjective.length > 2000 && hours % 3 === 0) {
+                    await this.pageNotificationService.notifyToPageUserFcm(
+                        pageOwner.id + '',
+                        undefined,
+                        req.user.id + '',
+                        USER_TYPE.PAGE,
+                        NOTIFICATION_TYPE.LIKE,
+                        notificationText,
+                        link,
+                        pageJoiner.name,
+                        pageJoiner.imageURL
+                    );
+                    for (const notiOwner of notiOwners) {
+                        if (notiOwner.Tokens !== null && notiOwner.Tokens !== undefined && notiOwner.Tokens !== '') {
+                            await this.notificationService.sendNotificationFCM
+                                (
+                                    pageOwner.id + '',
+                                    USER_TYPE.PAGE,
+                                    req.user.id + '',
+                                    USER_TYPE.PAGE,
+                                    NOTIFICATION_TYPE.OBJECTIVE,
+                                    notificationText,
+                                    link,
+                                    notiOwner.Tokens,
+                                    pageJoiner.name,
+                                    pageJoiner.imageURL
+                                );
+                        } else {
+                            continue;
+                        }
+                    }
+                }
+                const result: any = {};
+                result['objectiveId'] = objtiveIds;
+                result['pageId'] = pageObjId;
+                result['joiner'] = joinerObjId;
+                result['join'] = join;
+                result['approve'] = false;
+                const create = await this.pageObjectiveJoinerService.create(result);
+                if (create) {
+                    const successResponse = ResponseUtil.getSuccessResponse('Send noti is succesful.', []);
+                    return res.status(200).send(successResponse);
+                }
+            } else {
+                const errorResponse = ResponseUtil.getErrorResponse('Error not found page owner objective.', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Unable create join objective', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+
+    @Post('/lists')
+    @Authorized()
+    public async searchListObjectiveJoiner(@Body({ validate: true }) joinObjectiveRequest: JoinObjectiveRequest, @Res() res: any, @Req() req: any): Promise<any> {
+        const objtiveIds = new ObjectID(joinObjectiveRequest.objectiveId);
+        const pageObjId = new ObjectID(joinObjectiveRequest.pageId);
+        if (objtiveIds !== undefined && objtiveIds !== null && pageObjId !== undefined && pageObjId !== null) {
+            const searchObjectives = await this.pageObjectiveJoinerService.aggregate(
+                [
+                    {
+                        $match: {
+                            objectiveId: objtiveIds,
+                            pageId: pageObjId,
+                            join: true,
+                            approve: false
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'Page',
+                            let: { joiner: '$joiner' },
+                            pipeline: [
+                                {
+                                    $match: {
+                                        $expr: {
+                                            $eq: ['$$joiner', '$_id']
+                                        }
+                                    }
+                                }
+                            ],
+                            as: 'page'
+                        }
+                    }
+                ]
+            );
+            if (searchObjectives.length > 0) {
+                const successResponse = ResponseUtil.getSuccessResponse('Search lists objective is succesful.', searchObjectives);
+                return res.status(200).send(successResponse);
+            } else {
+                const errorResponse = ResponseUtil.getErrorResponse('Cannot find any lists objective.', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Unable to get lists objective', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
     // Search PageObjective
     /**
      * @api {post} /api/objective/search Search PageObjective API
@@ -232,7 +589,7 @@ export class ObjectiveController {
      * HTTP/1.1 500 Internal Server Error
      */
     @Post('/search')
-    public async searchObjective(@Body({ validate: true }) search: FindHashTagRequest, @QueryParam('sample') sample: number,@Req() req:any ,@Res() res: any): Promise<any> {
+    public async searchObjective(@Body({ validate: true }) search: FindHashTagRequest, @QueryParam('sample') sample: number, @Req() req: any, @Res() res: any): Promise<any> {
         if (ObjectUtil.isObjectEmpty(search)) {
             return res.status(200).send([]);
         }
@@ -286,7 +643,7 @@ export class ObjectiveController {
         if (filter.whereConditions !== null && filter.whereConditions !== undefined && Object.keys(filter.whereConditions).length > 0 && typeof filter.whereConditions === 'object') {
             const pageId = filter.whereConditions.pageId;
             let pageObjId;
-            if (pageId !== null && pageId !== undefined && pageId !== '' && JSON.stringify(pageId) !== '{}' ) {
+            if (pageId !== null && pageId !== undefined && pageId !== '' && JSON.stringify(pageId) !== '{}') {
                 pageObjId = new ObjectID(filter.whereConditions.pageId);
             }
 

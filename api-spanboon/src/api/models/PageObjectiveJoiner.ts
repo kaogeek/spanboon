@@ -11,37 +11,28 @@ import { ObjectID } from 'mongodb';
 import { BaseModel } from './BaseModel';
 import moment from 'moment';
 
-@Entity('PageObjective')
-export class PageObjective extends BaseModel {
+@Entity('PageObjectiveJoiner')
+export class PageObjectiveJoiner extends BaseModel {
 
     @ObjectIdColumn({ name: '_id' })
     @IsNotEmpty()
     @IsMongoId()
     public id: ObjectID;
 
+    @ObjectIdColumn({name : 'objectiveId'})
+    public objectiveId: ObjectID;
+
     @ObjectIdColumn({ name: 'pageId' })
     public pageId: ObjectID;
 
-    @Column({ name: 'title' })
-    public title: string;
+    @Column({ name: 'joiner' })
+    public joiner: ObjectID;
 
-    @Column({ name: 'detail' })
-    public detail: string;
+    @Column({ name: 'join' })
+    public join: boolean;
 
-    @Column({ name: 'iconURL' })
-    public iconURL: string;
-
-    @Column({ name: 'category' })
-    public category: string;
-
-    @Column({ name: 'hashTag' })
-    public hashTag: ObjectID;
-
-    @Column({ name: 's3IconURL' })
-    public s3IconURL: string;
-
-    @Column({ name: 'personal' })
-    public personal: boolean;
+    @Column({ name: 'approve' })
+    public approve: boolean;
 
     @BeforeInsert()
     public createDetails(): any {
