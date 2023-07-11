@@ -160,7 +160,7 @@ export class ObjectiveController {
             const createHashTag = await this.hashTagService.create(newHashTag);
             hashTag = createHashTag ? new ObjectID(createHashTag.id) : null;
         }
-        const data = await this.pageObjectiveService.findOne({ $or:[{title}, {hashTag}] });
+        const data = await this.pageObjectiveService.findOne({ $or: [{ title }, { hashTag }] });
         /* personal === true meaning objective is public */
         if (data !== null && data !== undefined && data.personal === true) {
             if (data.title === title) {
@@ -252,7 +252,7 @@ export class ObjectiveController {
         let notificationText = undefined;
         let link = undefined;
 
-        if (checkJoinObjective.join === true) {
+        if (checkJoinObjective !== undefined && checkJoinObjective !== null && checkJoinObjective.join === true) {
             const errorResponse = ResponseUtil.getErrorResponse('You have been join this objective.', undefined);
             return res.status(400).send(errorResponse);
         }
