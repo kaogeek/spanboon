@@ -533,15 +533,25 @@ export class ObjectiveController {
         const joinerObjId = new ObjectID(joinObjectiveRequest.joiner);
         const approved = joinObjectiveRequest.approved;
         const pageJoiner = await this.pageService.findOne({ _id: joinerObjId });
+        const checkPublicObjective = await this.pageObjectiveService.findOne({ _id: objtiveIds, pageId: pageObjId });
         let notificationText = undefined;
         let link = undefined;
+
+        const checkApprove = await this.pageObjectiveJoinerService.findOne({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId });
+
+        if (checkApprove !== undefined && checkApprove !== null && checkApprove.approve === true) {
+            const errorResponse = ResponseUtil.getErrorResponse('You have been approved.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
         if (
             approved !== undefined &&
             approved !== null &&
             objtiveIds !== undefined &&
             objtiveIds !== null &&
             pageObjId !== undefined &&
-            pageObjId !== null
+            pageObjId !== null &&
+            checkPublicObjective.personal === true
         ) {
             if (approved === true) {
                 const notiJoiners = await this.deviceTokenService.find({ user: pageJoiner.ownerUser });
