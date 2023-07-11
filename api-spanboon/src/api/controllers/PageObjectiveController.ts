@@ -160,7 +160,8 @@ export class ObjectiveController {
             const createHashTag = await this.hashTagService.create(newHashTag);
             hashTag = createHashTag ? new ObjectID(createHashTag.id) : null;
         }
-        const data = await this.pageObjectiveService.findOne({ title: 'test2', hashTag: hashTag });
+        const hashTagIds = hashTag;
+        const data = await this.pageObjectiveService.findOne({ title: String(objectives.title), hashTag: hashTagIds });
         /* personal === true meaning objective is public */
         if (data !== null && data !== undefined && data.personal === true) {
             if (data.title === title) {
