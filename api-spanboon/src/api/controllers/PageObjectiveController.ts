@@ -246,11 +246,18 @@ export class ObjectiveController {
         const interval_15 = 15;
         const interval_30 = 30;
         const searchObjective = await this.pageObjectiveJoinerService.find({ objectiveId: objtiveIds });
+        const checkJoinObjective = await this.pageObjectiveJoinerService.findOne({ objectiveId: objtiveIds, pageId: pageObjId });
         const checkPublicObjective = await this.pageObjectiveService.findOne({ _id: objtiveIds });
         const pageOwner = await this.pageService.findOne({ _id: pageObjId });
         const pageJoiner = await this.pageService.findOne({ _id: joinerObjId });
         let notificationText = undefined;
         let link = undefined;
+
+        if (checkJoinObjective.join === true) {
+            const errorResponse = ResponseUtil.getErrorResponse('You have been join this objective.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
         if (join === true && checkPublicObjective.personal === true) {
             if (pageJoiner && pageOwner.id) {
                 const notiOwners = await this.deviceTokenService.find({ userId: pageOwner.ownerUser });
