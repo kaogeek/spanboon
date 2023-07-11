@@ -164,12 +164,12 @@ export class ObjectiveController {
         /* personal === true meaning objective is public */
         if (data !== null && data !== undefined && data.personal === true) {
             if (data.title === title) {
-                const errorResponse = ResponseUtil.getErrorResponse('PageObjective is Exists', title);
+                const errorResponse = ResponseUtil.getErrorResponse('PageObjective is Exists', data);
                 return res.status(400).send(errorResponse);
             }
 
             if (data.hashTag === hashTag) {
-                const errorResponse = ResponseUtil.getErrorResponse('PageObjective HashTag is Exists', hashTag);
+                const errorResponse = ResponseUtil.getErrorResponse('PageObjective HashTag is Exists', data);
                 return res.status(400).send(errorResponse);
             }
 
@@ -177,12 +177,12 @@ export class ObjectiveController {
 
         if (data !== null && data !== undefined && data.personal === false) {
             if (data.title === title) {
-                const errorResponse = ResponseUtil.getErrorResponse('PageObjective is Exists', title);
+                const errorResponse = ResponseUtil.getErrorResponse('PageObjective is Exists', data);
                 return res.status(400).send(errorResponse);
             }
 
             if (data.hashTag === hashTag) {
-                const errorResponse = ResponseUtil.getErrorResponse('PageObjective HashTag is Exists', hashTag);
+                const errorResponse = ResponseUtil.getErrorResponse('PageObjective HashTag is Exists', data);
                 return res.status(400).send(errorResponse);
             }
         }
