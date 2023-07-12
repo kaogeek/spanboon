@@ -29,7 +29,7 @@ import { EmergencyEventService } from '../services/EmergencyEventService';
 import { ResponseUtil } from '../../utils/ResponseUtil';
 import { POST_WEIGHT_SCORE, DEFAULT_POST_WEIGHT_SCORE } from '../../constants/SystemConfig';
 import { ConfigService } from '../services/ConfigService';
-import { PageObjectiveJoinerService } from '../services/PageObjectiveJoinerService';
+// import { PageObjectiveJoinerService } from '../services/PageObjectiveJoinerService';
 @JsonController('/fb_webhook')
 export class FacebookWebhookController {
     constructor(
@@ -43,7 +43,7 @@ export class FacebookWebhookController {
         private pageObjectiveService: PageObjectiveService,
         private emergencyEventService: EmergencyEventService,
         private configService: ConfigService,
-        private pageObjectiveJoinerService: PageObjectiveJoinerService
+        // private pageObjectiveJoinerService: PageObjectiveJoinerService
 
     ) {
     }
@@ -457,8 +457,8 @@ export class FacebookWebhookController {
                     }
 
                     /* joiner objective !!!  */
-
-                    const joinerObjective = await this.pageObjectiveJoinerService.aggregate(
+                    /* 
+                    const joinerObjective: any = await this.pageObjectiveJoinerService.aggregate(
                         [
                             {
                                 $match: { joiner: pageSubscribe.pageId, join: true, approve: true }
@@ -479,11 +479,30 @@ export class FacebookWebhookController {
                                     ],
                                     as: 'pageObjective'
                                 }
-                            }
+                            },
+                            {
+                                $unwind: {
+                                    path: '$pageObjective',
+                                    preserveNullAndEmptyArrays: true
+                                }
+                            },
                         ]
                     );
-                    console.log('joinerObjective', joinerObjective);
 
+                    if (joinerObjective.length > 0) {
+                        for (const pageObjectiveJoin of joinerObjective) {
+                            const objectiveIds = new ObjectID(pageObjectiveJoin.pageObjective._id);
+                            const titleObjective = pageObjectiveJoin.pageObjective.title;
+
+                            const query = { _id: createPostPageData.id };
+                            const newValues = {
+                                $set: {
+                                    objective: objectiveIds, objectiveTag: titleObjective
+                                }
+                            };
+                            await this.postsService.update(query, newValues);
+                        }
+                    } */
                     await this.postsService.update(queryTag, newValuesTag);
                     const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
                     return res.status(200).send(successResponse);
