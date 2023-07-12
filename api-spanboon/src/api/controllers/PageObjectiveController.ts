@@ -145,6 +145,11 @@ export class ObjectiveController {
         const name = objectives.hashTag;
         const today = moment().toDate();
         let hashTag;
+        let fileName = undefined;
+        let assets = undefined;
+        let assetCreate;
+        const objective: PageObjective = new PageObjective();
+        let result: any;
         const masterHashTag: HashTag = await this.hashTagService.findOne({ name });
         if (masterHashTag !== null && masterHashTag !== undefined) {
             hashTag = new ObjectID(masterHashTag.id);
@@ -162,6 +167,61 @@ export class ObjectiveController {
         const data = await this.pageObjectiveService.findOne({ $or: [{ title }, { hashTag: hashTagIds }] });
         /* personal === true meaning objective is public */
         if (data !== null && data !== undefined && data.personal === true) {
+            if (objectives.personal === false) {
+                const pageObjIds = pageId;
+                const pageOwnerPrivate = await this.pageObjectiveService.findOne({ pageId: pageObjIds, $or: [{ title }, { hashTag: hashTagIds }] });
+
+                if (pageOwnerPrivate !== undefined && pageOwnerPrivate.title === title) {
+                    const errorResponse = ResponseUtil.getErrorResponse('PageObjective is Exists', data);
+                    return res.status(400).send(errorResponse);
+                }
+                if (pageOwnerPrivate !== undefined && String(pageOwnerPrivate.hashTag) === String(hashTagIds)) {
+                    const errorResponse = ResponseUtil.getErrorResponse('PageObjective HashTag is Exists', data);
+                    return res.status(400).send(errorResponse);
+                }
+
+                fileName = userObjId + FileUtil.renameFile();
+                assets = objectives.asset;
+
+                if (assets !== null && assets !== undefined) {
+                    const asset = new Asset();
+                    asset.userId = userObjId;
+                    asset.fileName = fileName;
+                    asset.scope = ASSET_SCOPE.PUBLIC;
+                    asset.data = assets.data;
+                    asset.size = assets.size;
+                    asset.mimeType = assets.mimeType;
+                    asset.expirationDate = null;
+
+                    assetCreate = await this.assetService.create(asset);
+                }
+
+                objective.pageId = pageId;
+                objective.title = title;
+                objective.detail = detail;
+                objective.hashTag = hashTag;
+                objective.personal = objectives.personal;
+                objective.iconURL = assetCreate ? ASSET_PATH + assetCreate.id : '';
+                objective.s3IconURL = assetCreate ? assetCreate.s3FilePath : '';
+
+                result = await this.pageObjectiveService.create(objective);
+                if (result) {
+                    const query = { _id: assetCreate.id };
+                    const newValues = { $set: { pageObjectiveId: ObjectID(result.id) } };
+                    await this.assetService.update(query, newValues);
+                    const newObjectiveHashTag = new ObjectID(result.hashTag);
+
+                    const objectiveHashTag: HashTag = await this.hashTagService.findOne({ _id: newObjectiveHashTag });
+                    result.hashTag = objectiveHashTag.name;
+
+                    const successResponse = ResponseUtil.getSuccessResponse('Successfully create PageObjective', result);
+                    return res.status(200).send(successResponse);
+                } else {
+                    const errorResponse = ResponseUtil.getErrorResponse('Unable create PageObjective', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+            }
+
             if (data.title === title) {
                 const errorResponse = ResponseUtil.getErrorResponse('PageObjective is Exists', data);
                 return res.status(400).send(errorResponse);
@@ -174,20 +234,72 @@ export class ObjectiveController {
         }
 
         if (data !== null && data !== undefined && data.personal === false) {
+            if (objectives.personal === false) {
+                const pageObjIds = pageId;
+                const pageOwnerPrivate = await this.pageObjectiveService.findOne({ pageId: pageObjIds, $or: [{ title }, { hashTag: hashTagIds }] });
+
+                if (pageOwnerPrivate !== undefined && pageOwnerPrivate.title === title) {
+                    const errorResponse = ResponseUtil.getErrorResponse('PageObjective is Exists', data);
+                    return res.status(400).send(errorResponse);
+                }
+                if (pageOwnerPrivate !== undefined && String(pageOwnerPrivate.hashTag) === String(hashTagIds)) {
+                    const errorResponse = ResponseUtil.getErrorResponse('PageObjective HashTag is Exists', data);
+                    return res.status(400).send(errorResponse);
+                }
+
+                fileName = userObjId + FileUtil.renameFile();
+                assets = objectives.asset;
+                if (assets !== null && assets !== undefined) {
+                    const asset = new Asset();
+                    asset.userId = userObjId;
+                    asset.fileName = fileName;
+                    asset.scope = ASSET_SCOPE.PUBLIC;
+                    asset.data = assets.data;
+                    asset.size = assets.size;
+                    asset.mimeType = assets.mimeType;
+                    asset.expirationDate = null;
+
+                    assetCreate = await this.assetService.create(asset);
+                }
+
+                objective.pageId = pageId;
+                objective.title = title;
+                objective.detail = detail;
+                objective.hashTag = hashTag;
+                objective.personal = objectives.personal;
+                objective.iconURL = assetCreate ? ASSET_PATH + assetCreate.id : '';
+                objective.s3IconURL = assetCreate ? assetCreate.s3FilePath : '';
+
+                result = await this.pageObjectiveService.create(objective);
+                if (result) {
+                    const query = { _id: assetCreate.id };
+                    const newValues = { $set: { pageObjectiveId: ObjectID(result.id) } };
+                    await this.assetService.update(query, newValues);
+                    const newObjectiveHashTag = new ObjectID(result.hashTag);
+
+                    const objectiveHashTag: HashTag = await this.hashTagService.findOne({ _id: newObjectiveHashTag });
+                    result.hashTag = objectiveHashTag.name;
+
+                    const successResponse = ResponseUtil.getSuccessResponse('Successfully create PageObjective', result);
+                    return res.status(200).send(successResponse);
+                } else {
+                    const errorResponse = ResponseUtil.getErrorResponse('Unable create PageObjective', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+            }
+
             if (data.title === title) {
                 const errorResponse = ResponseUtil.getErrorResponse('PageObjective is Exists', data);
                 return res.status(400).send(errorResponse);
             }
-
             if (String(data.hashTag) === String(hashTagIds)) {
                 const errorResponse = ResponseUtil.getErrorResponse('PageObjective HashTag is Exists', data);
                 return res.status(400).send(errorResponse);
             }
         }
 
-        const fileName = userObjId + FileUtil.renameFile();
-        const assets = objectives.asset;
-        let assetCreate;
+        fileName = userObjId + FileUtil.renameFile();
+        assets = objectives.asset;
 
         if (assets !== null && assets !== undefined) {
             const asset = new Asset();
@@ -202,7 +314,6 @@ export class ObjectiveController {
             assetCreate = await this.assetService.create(asset);
         }
 
-        const objective: PageObjective = new PageObjective();
         objective.pageId = pageId;
         objective.title = title;
         objective.detail = detail;
@@ -211,7 +322,7 @@ export class ObjectiveController {
         objective.iconURL = assetCreate ? ASSET_PATH + assetCreate.id : '';
         objective.s3IconURL = assetCreate ? assetCreate.s3FilePath : '';
 
-        const result: any = await this.pageObjectiveService.create(objective);
+        result = await this.pageObjectiveService.create(objective);
         if (result) {
             const query = { _id: assetCreate.id };
             const newValues = { $set: { pageObjectiveId: ObjectID(result.id) } };
