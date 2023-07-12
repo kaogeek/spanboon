@@ -354,7 +354,7 @@ export class ObjectiveController {
         const interval_15 = 15;
         const interval_30 = 30;
         const searchObjective = await this.pageObjectiveJoinerService.find({ objectiveId: objtiveIds });
-        const checkJoinObjective = await this.pageObjectiveJoinerService.findOne({ objectiveId: objtiveIds, pageId: pageObjId });
+        const checkJoinObjective = await this.pageObjectiveJoinerService.findOne({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId });
         const checkPublicObjective = await this.pageObjectiveService.findOne({ _id: objtiveIds });
         const pageOwner = await this.pageService.findOne({ _id: pageObjId });
         const pageJoiner = await this.pageService.findOne({ _id: joinerObjId });
@@ -700,12 +700,17 @@ export class ObjectiveController {
                             );
                     }
                 }
-                const query = { objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId };
-                const newValues = { $set: { approve: approved } };
-                const update = await this.pageObjectiveJoinerService.update(query, newValues);
-                if (update) {
-                    const successResponse = ResponseUtil.getSuccessResponse('Join objective is sucessful.', []);
-                    return res.status(200).send(successResponse);
+                if (checkApprove) {
+                    const query = { objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId, join: joinObjectiveRequest.join };
+                    const newValues = { $set: { approve: approved } };
+                    const update = await this.pageObjectiveJoinerService.update(query, newValues);
+                    if (update) {
+                        const successResponse = ResponseUtil.getSuccessResponse('Join objective is sucessful.', newValues);
+                        return res.status(200).send(successResponse);
+                    }
+                } else {
+                    const errorResponse = ResponseUtil.getErrorResponse('Approve is not success.', undefined);
+                    return res.status(400).send(errorResponse);
                 }
             } else {
                 const notiJoiners = await this.deviceTokenService.find({ user: pageJoiner.ownerUser });
