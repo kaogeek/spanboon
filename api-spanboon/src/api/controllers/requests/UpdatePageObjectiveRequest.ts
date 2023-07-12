@@ -16,4 +16,5 @@ export class UpdatePageObjectiveRequest {
     public detail: string;
     public hashTag: string;
     public asset: any;
+    public personal:boolean;
 }

@@ -915,6 +915,7 @@ export class ObjectiveController {
         const objId = new ObjectID(id);
         const userObjId = new ObjectID(req.user.id);
         const pageId = new ObjectID(objectives.pageId);
+        const personal = objectives.personal;
         const newFileName = userObjId + FileUtil.renameFile() + objId;
         const assetFileName = newFileName;
         const today = moment().toDate();
@@ -1002,7 +1003,7 @@ export class ObjectiveController {
         }
 
         const updateQuery = { _id: objId, pageId };
-        const newValue = { $set: { title, detail, iconURL, hashTag, s3IconURL } };
+        const newValue = { $set: { title, detail, iconURL, hashTag, s3IconURL, personal } };
         const objectiveSave = await this.pageObjectiveService.update(updateQuery, newValue);
 
         if (objectiveSave) {

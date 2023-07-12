@@ -1133,7 +1133,7 @@ export class PagePostController {
                 isHideStory = true;
             }
             let objIdsUser = undefined;
-            let postIds = [];
+            const postIds = [];
             if (req.headers.userid !== undefined && req.headers.userid !== null && req.headers.userid !== '') {
                 objIdsUser = new ObjectID(req.headers.userid);
                 if (objIdsUser) {

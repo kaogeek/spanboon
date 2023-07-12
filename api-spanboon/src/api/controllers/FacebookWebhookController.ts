@@ -312,13 +312,13 @@ export class FacebookWebhookController {
             const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
             return res.status(200).send(successResponse);
         }
+
+        if (message_webhooks === undefined && TrimText === undefined) {
+            TrimText = 'ไม่มีคำบรรยาย';
+        }
+
         if (body !== undefined && pageIdFB !== undefined && pageIdFB !== null && pageSubscribe.enable === true) {
-            if (value_verb === 'add' &&
-                change_value_link === undefined &&
-                body.entry[0].changes[0].value.photos === undefined &&
-                body.entry[0].changes[0].value.item !== 'share' &&
-                body.entry[0].changes[0].value.item === 'status' &&
-                published === 1) {
+            if (value_verb === 'add' && change_value_link === undefined && body.entry[0].changes[0].value.photos === undefined && body.entry[0].changes[0].value.item !== 'share' && body.entry[0].changes[0].value.item === 'status' && published === 1) {
                 const checkPost = await this.socialPostService.find({ socialId: body.entry[0].changes[0].value.post_id });
                 const checkFeed = checkPost.shift();
                 if (checkFeed === undefined) {
@@ -460,13 +460,7 @@ export class FacebookWebhookController {
                     const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
                     return res.status(200).send(successResponse);
                 }
-            } else if (
-                value_verb === 'add' &&
-                change_value_link !== undefined &&
-                body.entry[0].changes[0].value.photos === undefined &&
-                body.entry[0].changes[0].value.item !== 'share' &&
-                body.entry[0].changes[0].value.item === 'photo' &&
-                published === 1) {
+            } else if (value_verb === 'add' && change_value_link !== undefined && body.entry[0].changes[0].value.photos === undefined && body.entry[0].changes[0].value.item !== 'share' && body.entry[0].changes[0].value.item === 'photo' && published === 1) {
                 const assetPic = await this.assetService.createAssetFromURL(change_value_link, pageIdFB.ownerUser);
                 const checkPost = await this.socialPostService.find({ socialId: body.entry[0].changes[0].value.post_id });
                 const checkFeed = checkPost.shift();
@@ -644,12 +638,7 @@ export class FacebookWebhookController {
                     const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
                     return res.status(200).send(successResponse);
                 }
-            } else if (
-                value_verb === 'add' &&
-                change_value_link === undefined &&
-                body.entry[0].changes[0].value.photos !== undefined &&
-                body.entry[0].changes[0].value.item !== 'share' &&
-                published === 1) {
+            } else if (value_verb === 'add' && change_value_link === undefined && body.entry[0].changes[0].value.photos !== undefined && body.entry[0].changes[0].value.item !== 'share' && published === 1) {
                 const multiPics = [];
                 for (let i = 0; i < body.entry[0].changes[0].value.photos.length; i++) {
                     if (i === 4) {
