@@ -11,6 +11,7 @@
   box-shadow: 0px 1px 9px 0 #e5e3dd;
   min-width: 250pt;
   max-width: 450pt;
+  height: 450px;
 
   &.active {
     top: auto;
@@ -64,18 +65,44 @@
         }
       }
 
-      > .image-upload {
+      > .box-action {
         display: flex;
-        align-items: center;
-        cursor: pointer;
-        @include font-size-10($font-head-500);
-        @include pointer();
-        > .add-label {
+        flex-direction: row;
+        gap: 15px;
+
+        > .settings {
+          border: 1px solid rgb(0, 0, 0, 0.5);
+          display: flex;
+          padding: 5px;
+          border-radius: 15px;
           @include font-size-10($font-head-500);
+          @include pointer();
+
+          > .setting-button {
+            display: flex;
+            justify-content: flex-end;
+            align-items: end;
+            width: 40px;
+            @include font-size-10($font-head-500);
+          }
         }
-        > .icon-add {
-          width: 12pt;
-          margin: 0 10pt;
+
+        > .image-upload {
+          border: 1px solid rgb(0, 0, 0, 0.5);
+          display: flex;
+          padding: 5px;
+          border-radius: 15px;
+          align-items: center;
+          cursor: pointer;
+          @include font-size-10($font-head-500);
+          @include pointer();
+          > .add-label {
+            @include font-size-10($font-head-500);
+          }
+          > .icon-add {
+            width: 12pt;
+            margin-right: 10px;
+          }
         }
       }
     }
@@ -103,6 +130,7 @@
       }
 
       > .wrapper-doing {
+        position: relative;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -146,10 +174,38 @@
           }
         }
 
-        > .image-tag {
-          width: 60pt;
-          height: 60pt;
-          border-radius: 50%;
+        > .delete {
+          position: absolute;
+          right: 0;
+          z-index: 9;
+          top: 0;
+
+          > mat-icon {
+            border: 0px solid;
+            border-radius: 50%;
+            margin: 5px 5px 0 0;
+            background-color: red;
+          }
+        }
+
+        > .images {
+          position: relative;
+          flex: 0 0 auto;
+
+          > .image-tag {
+            width: 60pt;
+            height: 60pt;
+            border-radius: 50%;
+            border: 5px solid #fff;
+            overflow: hidden;
+            box-shadow: 0 5px 8px 0 #00000020;
+          }
+
+          > .lock {
+            position: absolute;
+            right: 0;
+            bottom: 8pt;
+          }
         }
         > .image-waste {
           background-color: $bg-grey;
