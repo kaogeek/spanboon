@@ -471,7 +471,7 @@ export class FacebookWebhookController {
                                         {
                                             $match: {
                                                 $expr: {
-                                                    $eq: ['$$objectiveId', '$_d']
+                                                    $eq: ['$$objectiveId', '$_id']
                                                 }
                                             }
                                         },
