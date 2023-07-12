@@ -89,14 +89,17 @@ export class Page extends BaseModel {
     @Column({ name: 's3CoverURL' })
     public s3CoverURL: string;
 
-    @Column({ name:'province'})
+    @Column({ name: 'province' })
     public province: string;
 
-    @Column({ name: 'group'})
-    public group:any;
+    @Column({ name: 'group' })
+    public group: any;
 
-    @Column({ name: 'roundRobin'})
-    public roundRobin:any;
+    @Column({ name: 'roundRobin' })
+    public roundRobin: any;
+
+    @Column({ name: 'autoApprove' })
+    public autoApprove:boolean;
 
     @BeforeInsert()
     public createDetails(): any {

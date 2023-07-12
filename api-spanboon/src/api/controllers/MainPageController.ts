@@ -718,7 +718,6 @@ export class MainPageController {
                     searchOfficialOnly
                 });
                 const emerSectionModelSec = await emerProcessorSec.process();
-
                 const emerResult: any = {};
                 emerResult.contents = emerSectionModelSec.contents;
 

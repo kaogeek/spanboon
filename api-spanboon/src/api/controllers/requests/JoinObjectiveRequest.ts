@@ -5,16 +5,12 @@
  * Author:  shiorin <junsuda.s@absolute.co.th>, chalucks <chaluck.s@absolute.co.th>
  */
 
-import { IsNotEmpty } from 'class-validator';
 import 'reflect-metadata';
 
-export class UpdatePageObjectiveRequest {
-
-    @IsNotEmpty()
+export class JoinObjectiveRequest {
+    public objectiveId: string;
     public pageId: string;
-    public title: string;
-    public detail: string;
-    public hashTag: string;
-    public asset: any;
-    public personal:boolean;
+    public joiner: string;
+    public join:boolean;
+    public approved:boolean; 
 }

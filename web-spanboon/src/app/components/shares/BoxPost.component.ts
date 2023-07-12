@@ -6,7 +6,7 @@
  */
 
 import { Component, OnInit, Output, EventEmitter, Input, ViewChild, ElementRef, SimpleChanges } from '@angular/core';
-import { DialogManageImage, DialogImage, DialogDoIng, DialogSettingDateTime, DialogPost, DialogPreview, DialogCreateStory } from './dialog/dialog';
+import { DialogManageImage, DialogImage, DialogDoIng, DialogSettingDateTime, DialogPost, DialogPreview, DialogCreateStory, DialogAlert } from './dialog/dialog';
 import { MatDialog, MatSelect, MatAutocompleteTrigger, MatSlideToggleChange, MatTableDataSource, MatMenuTrigger, MatSnackBar } from '@angular/material';
 import { FormControl } from '@angular/forms';
 import { AbstractPage } from '../pages/AbstractPage';
@@ -236,6 +236,8 @@ export class BoxPost extends AbstractPage implements OnInit {
   private twitterService: TwitterService;
   public test: any;
   public isSelectOption: boolean;
+  public isPublic: boolean = false;
+  public isEditObject: boolean = false;
 
   keyword = "hashTag";
   selectedIndex: number;
@@ -2327,6 +2329,33 @@ export class BoxPost extends AbstractPage implements OnInit {
     })
   }
 
+  public editObject() {
+    // this.isEditObject = true;
+    this.isUpload = false;
+  }
+
+  public deleteObjective(objectId, index) {
+    let dialog = this.dialog.open(DialogAlert, {
+      disableClose: true,
+      data: {
+        text: 'คุณต้องการที่จะลบหรือไม่',
+      },
+    });
+    dialog.afterClosed().subscribe((res) => {
+      if (res) {
+        this.objectiveFacade.deleteObjective(objectId).then((res: any) => {
+          if (res) {
+            this.resObjective.splice(index, 1);
+          }
+        }).catch((err) => {
+          if (err) {
+
+          }
+        });
+      }
+    });
+  }
+
   public createImageObjective(): void {
     if (!this.isLock) {
       this.isLoading = true;
@@ -2334,6 +2363,7 @@ export class BoxPost extends AbstractPage implements OnInit {
       const dataDoing = this.objectiveDoing.nativeElement.value;
       const tagName = this.objectiveDoingName.nativeElement.value;
       const category = this.objectCategory.value;
+      const isPublic = this.isPublic;
 
       if (category === undefined) {
         this.isLock = false;
@@ -2377,7 +2407,8 @@ export class BoxPost extends AbstractPage implements OnInit {
           hashTag: tagName,
           title: dataDoing,
           category: category,
-          pageId: pageId
+          pageId: pageId,
+          personal: isPublic,
         }
 
         this.objectiveFacade.uploadImageObjective(objectiveImage).then((res: any) => {
@@ -2388,6 +2419,7 @@ export class BoxPost extends AbstractPage implements OnInit {
               hashTag: res.data.hashTag,
             }
 
+            this.isPublic = false;
             this.dataObjective = object;
             this.clickCardObjective(0, this.dataObjective);
             this.closeDialog();
@@ -2405,27 +2437,50 @@ export class BoxPost extends AbstractPage implements OnInit {
             this.isLoading = false;
           }
         }).catch((err: any) => {
-          console.log(err);
-          this.isLock = false;
-          this.isLoading = false;
-          let alertMessages: string;
-          if (err.error.message === 'PageObjective is Exists') {
-            alertMessages = 'สิ่งที่คุณกำลังถูกสร้างแล้ว'
-          } else if (err.error.message === 'PageObjective HashTag is Exists') {
-            alertMessages = 'แฮชแท็กถูกสร้างไว้แล้ว'
-          }
-
-          let dialog = this.showAlertDialogWarming(alertMessages, "none");
-          dialog.afterClosed().subscribe((res) => {
-            if (res) {
-              // this.observManager.publish('authen.check', null);
-              // if (this.redirection) {
-              //   this.router.navigateByUrl(this.redirection);
-              // } else {
-              //   this.router.navigate(['/login']);
-              // }
+          if (err) {
+            console.log(err);
+            let objectiveId = err.error.error.id;
+            let pageId = err.error.error.pageId;
+            this.isLock = false;
+            this.isLoading = false;
+            let alertMessages: string;
+            if (err.error.message === 'PageObjective is Exists') {
+              alertMessages = 'สิ่งที่คุณกำลังทำมีอยู่แล้ว'
+            } else if (err.error.message === 'PageObjective HashTag is Exists') {
+              alertMessages = 'แฮชแท็กถูกสร้างไว้แล้ว'
             }
-          });
+
+            let dialog = this.showAlertDialogWarming(alertMessages, "none");
+            dialog.afterClosed().subscribe((res) => {
+              if (res) {
+                if (this.isPublic) {
+                  let dialog = this.dialog.open(DialogAlert, {
+                    disableClose: true,
+                    data: {
+                      text: 'คุณต้องการที่จะเข้าร่วมหรือไม่',
+                    },
+                  });
+                  dialog.afterClosed().subscribe((res) => {
+                    if (res) {
+                      let joinObj = {
+                        objectiveId: objectiveId,
+                        pageId: pageId,
+                        joiner: this.dataPageId.id,
+                        join: true
+                      }
+                      this.objectiveFacade.joinObjective(joinObj).then((res) => {
+                        if (res) {
+
+                        }
+                      }).catch((err) => {
+                        if (err) { }
+                      })
+                    }
+                  });
+                }
+              }
+            });
+          }
         })
       }
 
@@ -2965,5 +3020,9 @@ export class BoxPost extends AbstractPage implements OnInit {
       this.router.navigateByUrl('page/' + this.dataPageId.id + '/settings?tab=connect');
     }
     this.dialog.closeAll();
+  }
+
+  public objectPublic($event) {
+    this.isPublic = $event.checked;
   }
 }

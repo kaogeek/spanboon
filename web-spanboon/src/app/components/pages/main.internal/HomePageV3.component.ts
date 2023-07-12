@@ -76,7 +76,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   public readContent: any[] = [];
   public hidebar: boolean = true;
   public isLoadingPost: boolean;
-  public throttle = 150;
+  // public throttle = 150;
   public scrollDistance = 3;
   public offset: number = 0;
   public limit: number = 4;
@@ -323,6 +323,12 @@ export class HomePageV3 extends AbstractPage implements OnInit {
             if (this.loadingCount === 0) {
               this.isReadPost = res;
             } else if (this.loadingCount === 1) {
+              if (res.followingContents.contents.length === 0) {
+                this.countBlockBottom++;
+              }
+              if (this.countBlockBottom === 3) {
+                this.isGetBottom = true;
+              }
               if (res.followingContents.contents.length !== 0) {
                 if (this.loadContentCount > 0) {
                   let data = this.followingContent.followingContents.contents.concat(res.followingContents.contents);
@@ -835,11 +841,11 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   }
 
   public async onScrollDown(ev) {
-    if (this.isLogin() && !this.isLoadingPost && !this.isGetBottom) {
+    if (this.isLogin() && !this.isLoadingPost && !this.isGetBottom && this.hidebar) {
       this.isOnLoad = true;
       this.isLoadingPost = true;
       await this.getBottomContent(this.userCloneDatas.id);
-    } else if (!this.isLogin() && !this.isLoadingPost && !this.isGetBottom) {
+    } else if (!this.isLogin() && !this.isLoadingPost && !this.isGetBottom && this.hidebar) {
       this.isOnLoad = true;
       this.isLoadingPost = true;
       await this.getBottomContent();

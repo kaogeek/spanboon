@@ -72,13 +72,11 @@ export class PageNotificationService {
                     image,
                     count
                 );
-
                 result.push(notification);
 
                 addedUesr.push(userId);
             }
         }
-
         return result;
     }
     public async notifyToPageUser(toPageId: string, pageLevel: string[], fromUserId: string, fromUserType: string, notificationType: string, title: string, link?: string, data?: any, displayName?: any): Promise<any> {

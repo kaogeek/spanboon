@@ -29,6 +29,7 @@ import { EmergencyEventService } from '../services/EmergencyEventService';
 import { ResponseUtil } from '../../utils/ResponseUtil';
 import { POST_WEIGHT_SCORE, DEFAULT_POST_WEIGHT_SCORE } from '../../constants/SystemConfig';
 import { ConfigService } from '../services/ConfigService';
+// import { PageObjectiveJoinerService } from '../services/PageObjectiveJoinerService';
 @JsonController('/fb_webhook')
 export class FacebookWebhookController {
     constructor(
@@ -42,6 +43,7 @@ export class FacebookWebhookController {
         private pageObjectiveService: PageObjectiveService,
         private emergencyEventService: EmergencyEventService,
         private configService: ConfigService,
+        // private pageObjectiveJoinerService: PageObjectiveJoinerService
 
     ) {
     }
@@ -312,6 +314,11 @@ export class FacebookWebhookController {
             const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
             return res.status(200).send(successResponse);
         }
+
+        if (message_webhooks === undefined && TrimText === undefined) {
+            TrimText = 'ไม่มีคำบรรยาย';
+        }
+
         if (body !== undefined && pageIdFB !== undefined && pageIdFB !== null && pageSubscribe.enable === true) {
             if (value_verb === 'add' && change_value_link === undefined && body.entry[0].changes[0].value.photos === undefined && body.entry[0].changes[0].value.item !== 'share' && body.entry[0].changes[0].value.item === 'status' && published === 1) {
                 const checkPost = await this.socialPostService.find({ socialId: body.entry[0].changes[0].value.post_id });
@@ -448,6 +455,54 @@ export class FacebookWebhookController {
                             }
                         }
                     }
+
+                    /* joiner objective !!!  */
+                    /* 
+                    const joinerObjective: any = await this.pageObjectiveJoinerService.aggregate(
+                        [
+                            {
+                                $match: { joiner: pageSubscribe.pageId, join: true, approve: true }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'PageObjective',
+                                    let: { objectiveId: '$objectiveId' },
+                                    pipeline: [
+                                        {
+                                            $match: {
+                                                $expr: {
+                                                    $eq: ['$$objectiveId', '$_id']
+                                                }
+                                            }
+                                        },
+
+                                    ],
+                                    as: 'pageObjective'
+                                }
+                            },
+                            {
+                                $unwind: {
+                                    path: '$pageObjective',
+                                    preserveNullAndEmptyArrays: true
+                                }
+                            },
+                        ]
+                    );
+
+                    if (joinerObjective.length > 0) {
+                        for (const pageObjectiveJoin of joinerObjective) {
+                            const objectiveIds = new ObjectID(pageObjectiveJoin.pageObjective._id);
+                            const titleObjective = pageObjectiveJoin.pageObjective.title;
+
+                            const query = { _id: createPostPageData.id };
+                            const newValues = {
+                                $set: {
+                                    objective: objectiveIds, objectiveTag: titleObjective
+                                }
+                            };
+                            await this.postsService.update(query, newValues);
+                        }
+                    } */
                     await this.postsService.update(queryTag, newValuesTag);
                     const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
                     return res.status(200).send(successResponse);
@@ -609,6 +664,9 @@ export class FacebookWebhookController {
                             }
                         }
                     }
+
+                    /* joiner objective !!!  */
+
                     await this.postsService.update(queryTag, newValuesTag);
                     if (createPostPageData) {
                         // Asset 
@@ -773,6 +831,9 @@ export class FacebookWebhookController {
                             }
                         }
                     }
+
+                    /* joiner objective !!!  */
+
                     await this.postsService.update(queryTag, newValuesTag);
                     for (let j = 0; j < multiPics.length; j++) {
                         const postsGallery = new PostsGallery();

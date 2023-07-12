@@ -114,7 +114,6 @@ export class PostsController {
     public async getNewPost(@Res() res: any): Promise<any> {
         const search = new SearchFilter();
         search.orderBy = { createdDate: -1 };
-
         const newPosts = await this.postsService.search(search);
 
         if (newPosts) {
@@ -255,7 +254,6 @@ export class PostsController {
     @Post('/search')
     public async searchPost(@QueryParam('isHideStory') isHideStory: boolean, @QueryParam('isNeeds') isNeeds: boolean, @Body({ validate: true }) filter: SearchFilter, @Res() res: any, @Req() req: any): Promise<any> {
         const today = moment().toDate();
-        console.log('pass25');
         if (filter.whereConditions !== undefined) {
             if (typeof filter.whereConditions === 'object') {
                 const postId = filter.whereConditions._id;
@@ -878,7 +876,7 @@ export class PostsController {
         const now = new Date();
         const hours = now.getHours();
         const minutes = now.getMinutes();
-        const interval = 30;
+        const interval = 10;
 
         if (likeAsPage !== null && likeAsPage !== undefined && likeAsPage !== '') {
             likeAsPageObjId = new ObjectID(likeAsPage);

@@ -209,6 +209,7 @@ export class LoginPage extends AbstractPage implements OnInit {
       this.otpResendIcon = "show";
     }
   }
+
   public dialogConfirmMerge() {
     let mode = "EMAIL";
     this.checkMergeUserFacade.confirmMergeOtp(this.emailOtp).then((res) => {
@@ -778,37 +779,11 @@ export class LoginPage extends AbstractPage implements OnInit {
           const queue = data.data.authUser;
           for (let i = 0; i < queue.length; i++) {
             const current = queue.shift()
-            if (current === 'EMAIL') {
-              this.social.socialLogin = current;
-              this.login = false;
-              this.emailOtp = data.data.data.email;
-              this.dataUser = data.data;
-              this.socialMode = 'EMAIL';
-            } else if (current === 'FACEBOOK') {
-              this.social.socialLogin = current;
-              this.login = false;
-              this.emailOtp = data.data.data.email;
-              this.dataUser = data.data;
-              this.socialMode = 'EMAIL';
-            } else if (current === 'TWITTER') {
-              this.social.socialLogin = current;
-              this.login = false;
-              this.emailOtp = data.data.data.email;
-              this.dataUser = data.data;
-              this.socialMode = 'EMAIL';
-            } else if (current === 'GOOGLE') {
-              this.social.socialLogin = current;
-              this.login = false;
-              this.emailOtp = data.data.data.email;
-              this.dataUser = data.data;
-              this.socialMode = 'EMAIL';
-            } else if (current === 'APPLE') {
-              this.social.socialLogin = current;
-              this.login = false;
-              this.emailOtp = data.data.data.email;
-              this.dataUser = data.data;
-              this.socialMode = 'EMAIL';
-            }
+            this.social.socialLogin = current;
+            this.login = false;
+            this.emailOtp = data.data.data.email;
+            this.dataUser = data.data;
+            this.socialMode = 'EMAIL';
           }
           this.login = true;
         } else {
@@ -950,6 +925,7 @@ export class LoginPage extends AbstractPage implements OnInit {
       this.otpInput = this.countOtp.toString().length;
     }
   }
+
   public sendNewOtp() {
     this.otpResendIcon = "hide";
     this.checkMergeUserFacade.confirmMergeOtp(this.emailOtp).then((res) => {

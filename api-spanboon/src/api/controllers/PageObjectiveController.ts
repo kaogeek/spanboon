@@ -47,6 +47,13 @@ import { ObjectivePostLikedProcessor } from '../processors/objective/ObjectivePo
 import { DateTimeUtil } from '../../utils/DateTimeUtil';
 import { SearchFilter } from './requests/SearchFilterRequest';
 import { S3Service } from '../services/S3Service';
+import { JoinObjectiveRequest } from './requests/JoinObjectiveRequest';
+import { DeviceTokenService } from '../services/DeviceToken';
+import { NotificationService } from '../services/NotificationService';
+import { NOTIFICATION_TYPE } from '../../constants/NotificationType';
+import { USER_TYPE } from '../../constants/NotificationType';
+import { PageNotificationService } from '../services/PageNotificationService';
+import { PageObjectiveJoinerService } from '../services/PageObjectiveJoinerService';
 @JsonController('/objective')
 export class ObjectiveController {
     constructor(
@@ -61,7 +68,11 @@ export class ObjectiveController {
         private fulfillmentCaseService: FulfillmentCaseService,
         private socialPostService: SocialPostService,
         private userLikeService: UserLikeService,
-        private s3Service: S3Service
+        private s3Service: S3Service,
+        private deviceTokenService: DeviceTokenService,
+        private notificationService: NotificationService,
+        private pageNotificationService: PageNotificationService,
+        private pageObjectiveJoinerService: PageObjectiveJoinerService
     ) { }
 
     // Find PageObjective API
@@ -134,9 +145,12 @@ export class ObjectiveController {
         const name = objectives.hashTag;
         const today = moment().toDate();
         let hashTag;
-
+        let fileName = undefined;
+        let assets = undefined;
+        let assetCreate;
+        const objective: PageObjective = new PageObjective();
+        let result: any;
         const masterHashTag: HashTag = await this.hashTagService.findOne({ name });
-
         if (masterHashTag !== null && masterHashTag !== undefined) {
             hashTag = new ObjectID(masterHashTag.id);
         } else {
@@ -149,24 +163,143 @@ export class ObjectiveController {
             const createHashTag = await this.hashTagService.create(newHashTag);
             hashTag = createHashTag ? new ObjectID(createHashTag.id) : null;
         }
+        const hashTagIds = hashTag;
+        const data = await this.pageObjectiveService.findOne({ $or: [{ title }, { hashTag: hashTagIds }] });
+        /* personal === true meaning objective is public */
+        if (data !== null && data !== undefined && data.personal === true) {
+            if (objectives.personal === false) {
+                const pageObjIds = pageId;
+                const pageOwnerPrivate = await this.pageObjectiveService.findOne({ pageId: pageObjIds, $or: [{ title }, { hashTag: hashTagIds }] });
 
-        const data: PageObjective = await this.pageObjectiveService.findOne({ pageId, $or: [{ title }, { hashTag }] });
+                if (pageOwnerPrivate !== undefined && pageOwnerPrivate.title === title) {
+                    const errorResponse = ResponseUtil.getErrorResponse('PageObjective is Exists', data);
+                    return res.status(400).send(errorResponse);
+                }
+                if (pageOwnerPrivate !== undefined && String(pageOwnerPrivate.hashTag) === String(hashTagIds)) {
+                    const errorResponse = ResponseUtil.getErrorResponse('PageObjective HashTag is Exists', data);
+                    return res.status(400).send(errorResponse);
+                }
 
-        if (data !== null && data !== undefined) {
+                fileName = userObjId + FileUtil.renameFile();
+                assets = objectives.asset;
+
+                if (assets !== null && assets !== undefined) {
+                    const asset = new Asset();
+                    asset.userId = userObjId;
+                    asset.fileName = fileName;
+                    asset.scope = ASSET_SCOPE.PUBLIC;
+                    asset.data = assets.data;
+                    asset.size = assets.size;
+                    asset.mimeType = assets.mimeType;
+                    asset.expirationDate = null;
+
+                    assetCreate = await this.assetService.create(asset);
+                }
+
+                objective.pageId = pageId;
+                objective.title = title;
+                objective.detail = detail;
+                objective.hashTag = hashTag;
+                objective.personal = objectives.personal;
+                objective.iconURL = assetCreate ? ASSET_PATH + assetCreate.id : '';
+                objective.s3IconURL = assetCreate ? assetCreate.s3FilePath : '';
+
+                result = await this.pageObjectiveService.create(objective);
+                if (result) {
+                    const query = { _id: assetCreate.id };
+                    const newValues = { $set: { pageObjectiveId: ObjectID(result.id) } };
+                    await this.assetService.update(query, newValues);
+                    const newObjectiveHashTag = new ObjectID(result.hashTag);
+
+                    const objectiveHashTag: HashTag = await this.hashTagService.findOne({ _id: newObjectiveHashTag });
+                    result.hashTag = objectiveHashTag.name;
+
+                    const successResponse = ResponseUtil.getSuccessResponse('Successfully create PageObjective', result);
+                    return res.status(200).send(successResponse);
+                } else {
+                    const errorResponse = ResponseUtil.getErrorResponse('Unable create PageObjective', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+            }
+
             if (data.title === title) {
-                const errorResponse = ResponseUtil.getErrorResponse('PageObjective is Exists', title);
+                const errorResponse = ResponseUtil.getErrorResponse('PageObjective is Exists', data);
+                return res.status(400).send(errorResponse);
+            }
+            if (String(data.hashTag) === String(hashTagIds)) {
+                const errorResponse = ResponseUtil.getErrorResponse('PageObjective HashTag is Exists', data);
                 return res.status(400).send(errorResponse);
             }
 
-            if (data.hashTag === hashTag) {
-                const errorResponse = ResponseUtil.getErrorResponse('PageObjective HashTag is Exists', hashTag);
+        }
+
+        if (data !== null && data !== undefined && data.personal === false) {
+            if (objectives.personal === false) {
+                const pageObjIds = pageId;
+                const pageOwnerPrivate = await this.pageObjectiveService.findOne({ pageId: pageObjIds, $or: [{ title }, { hashTag: hashTagIds }] });
+
+                if (pageOwnerPrivate !== undefined && pageOwnerPrivate.title === title) {
+                    const errorResponse = ResponseUtil.getErrorResponse('PageObjective is Exists', data);
+                    return res.status(400).send(errorResponse);
+                }
+                if (pageOwnerPrivate !== undefined && String(pageOwnerPrivate.hashTag) === String(hashTagIds)) {
+                    const errorResponse = ResponseUtil.getErrorResponse('PageObjective HashTag is Exists', data);
+                    return res.status(400).send(errorResponse);
+                }
+
+                fileName = userObjId + FileUtil.renameFile();
+                assets = objectives.asset;
+                if (assets !== null && assets !== undefined) {
+                    const asset = new Asset();
+                    asset.userId = userObjId;
+                    asset.fileName = fileName;
+                    asset.scope = ASSET_SCOPE.PUBLIC;
+                    asset.data = assets.data;
+                    asset.size = assets.size;
+                    asset.mimeType = assets.mimeType;
+                    asset.expirationDate = null;
+
+                    assetCreate = await this.assetService.create(asset);
+                }
+
+                objective.pageId = pageId;
+                objective.title = title;
+                objective.detail = detail;
+                objective.hashTag = hashTag;
+                objective.personal = objectives.personal;
+                objective.iconURL = assetCreate ? ASSET_PATH + assetCreate.id : '';
+                objective.s3IconURL = assetCreate ? assetCreate.s3FilePath : '';
+
+                result = await this.pageObjectiveService.create(objective);
+                if (result) {
+                    const query = { _id: assetCreate.id };
+                    const newValues = { $set: { pageObjectiveId: ObjectID(result.id) } };
+                    await this.assetService.update(query, newValues);
+                    const newObjectiveHashTag = new ObjectID(result.hashTag);
+
+                    const objectiveHashTag: HashTag = await this.hashTagService.findOne({ _id: newObjectiveHashTag });
+                    result.hashTag = objectiveHashTag.name;
+
+                    const successResponse = ResponseUtil.getSuccessResponse('Successfully create PageObjective', result);
+                    return res.status(200).send(successResponse);
+                } else {
+                    const errorResponse = ResponseUtil.getErrorResponse('Unable create PageObjective', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+            }
+
+            if (data.title === title) {
+                const errorResponse = ResponseUtil.getErrorResponse('PageObjective is Exists', data);
+                return res.status(400).send(errorResponse);
+            }
+            if (String(data.hashTag) === String(hashTagIds)) {
+                const errorResponse = ResponseUtil.getErrorResponse('PageObjective HashTag is Exists', data);
                 return res.status(400).send(errorResponse);
             }
         }
 
-        const fileName = userObjId + FileUtil.renameFile();
-        const assets = objectives.asset;
-        let assetCreate;
+        fileName = userObjId + FileUtil.renameFile();
+        assets = objectives.asset;
 
         if (assets !== null && assets !== undefined) {
             const asset = new Asset();
@@ -181,15 +314,15 @@ export class ObjectiveController {
             assetCreate = await this.assetService.create(asset);
         }
 
-        const objective: PageObjective = new PageObjective();
         objective.pageId = pageId;
         objective.title = title;
         objective.detail = detail;
         objective.hashTag = hashTag;
+        objective.personal = objectives.personal;
         objective.iconURL = assetCreate ? ASSET_PATH + assetCreate.id : '';
         objective.s3IconURL = assetCreate ? assetCreate.s3FilePath : '';
 
-        const result: any = await this.pageObjectiveService.create(objective);
+        result = await this.pageObjectiveService.create(objective);
         if (result) {
             const query = { _id: assetCreate.id };
             const newValues = { $set: { pageObjectiveId: ObjectID(result.id) } };
@@ -204,6 +337,416 @@ export class ObjectiveController {
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Unable create PageObjective', undefined);
             return res.status(400).send(errorResponse);
+        }
+    }
+
+    @Post('/join')
+    @Authorized('user')
+    public async joinObjective(@Body({ validate: true }) joinObjectiveRequest: JoinObjectiveRequest, @Res() res: any, @Req() req: any): Promise<any> {
+        const objtiveIds = new ObjectID(joinObjectiveRequest.objectiveId);
+        const pageObjId = new ObjectID(joinObjectiveRequest.pageId);
+        const joinerObjId = new ObjectID(joinObjectiveRequest.joiner);
+        const join = joinObjectiveRequest.join;
+        const space = ' ';
+        const now = new Date();
+        const hours = now.getHours();
+        const minutes = now.getMinutes();
+        const interval_15 = 15;
+        const interval_30 = 30;
+        const searchObjective = await this.pageObjectiveJoinerService.find({ objectiveId: objtiveIds });
+        const checkJoinObjective = await this.pageObjectiveJoinerService.findOne({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId });
+        const checkPublicObjective = await this.pageObjectiveService.findOne({ _id: objtiveIds });
+        const pageOwner = await this.pageService.findOne({ _id: pageObjId });
+        const pageJoiner = await this.pageService.findOne({ _id: joinerObjId });
+        let notificationText = undefined;
+        let link = undefined;
+
+        if (checkJoinObjective !== undefined && checkJoinObjective !== null && checkJoinObjective.join === true) {
+            const errorResponse = ResponseUtil.getErrorResponse('You have been join this objective.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if (join === true && checkPublicObjective.personal === true) {
+            if (pageJoiner && pageOwner.id) {
+                const notiOwners = await this.deviceTokenService.find({ userId: pageOwner.ownerUser });
+                notificationText = pageJoiner.name + space + 'ขอเข้าร่วมสิ่งที่กำลังทำของเพจคุณ';
+                link = `/page/${pageJoiner.id}/`;
+                if (searchObjective.length === 0 || searchObjective.length <= 10) {
+                    await this.pageNotificationService.notifyToPageUserFcm(
+                        pageOwner.id + '',
+                        undefined,
+                        req.user.id + '',
+                        USER_TYPE.PAGE,
+                        NOTIFICATION_TYPE.OBJECTIVE,
+                        notificationText,
+                        link,
+                        pageJoiner.name,
+                        pageJoiner.imageURL
+                    );
+                    for (const notiOwner of notiOwners) {
+                        if (notiOwner.Tokens !== null && notiOwner.Tokens !== undefined && notiOwner.Tokens !== '') {
+                            await this.notificationService.sendNotificationFCM
+                                (
+                                    pageOwner.id + '',
+                                    USER_TYPE.PAGE,
+                                    req.user.id + '',
+                                    USER_TYPE.PAGE,
+                                    NOTIFICATION_TYPE.OBJECTIVE,
+                                    notificationText,
+                                    link,
+                                    notiOwner.Tokens,
+                                    pageJoiner.name,
+                                    pageJoiner.imageURL
+                                );
+                        } else {
+                            continue;
+                        }
+                    }
+                    const result: any = {};
+                    result['objectiveId'] = objtiveIds;
+                    result['pageId'] = pageObjId;
+                    result['joiner'] = joinerObjId;
+                    result['join'] = join;
+                    result['approve'] = false;
+                    const create = await this.pageObjectiveJoinerService.create(result);
+                    if (create) {
+                        const successResponse = ResponseUtil.getSuccessResponse('Send noti is succesful.', []);
+                        return res.status(200).send(successResponse);
+                    }
+                } else if (searchObjective.length > 10 && searchObjective.length <= 50 && minutes % interval_15 === 0) {
+                    await this.pageNotificationService.notifyToPageUserFcm(
+                        pageOwner.id + '',
+                        undefined,
+                        req.user.id + '',
+                        USER_TYPE.PAGE,
+                        NOTIFICATION_TYPE.LIKE,
+                        notificationText,
+                        link,
+                        pageJoiner.name,
+                        pageJoiner.imageURL
+                    );
+                    for (const notiOwner of notiOwners) {
+                        if (notiOwner.Tokens !== null && notiOwner.Tokens !== undefined && notiOwner.Tokens !== '') {
+                            await this.notificationService.sendNotificationFCM
+                                (
+                                    pageOwner.id + '',
+                                    USER_TYPE.PAGE,
+                                    req.user.id + '',
+                                    USER_TYPE.PAGE,
+                                    NOTIFICATION_TYPE.OBJECTIVE,
+                                    notificationText,
+                                    link,
+                                    notiOwner.Tokens,
+                                    pageJoiner.name,
+                                    pageJoiner.imageURL
+                                );
+                        } else {
+                            continue;
+                        }
+                    }
+                    const result: any = {};
+                    result['objectiveId'] = objtiveIds;
+                    result['pageId'] = pageObjId;
+                    result['joiner'] = joinerObjId;
+                    result['join'] = join;
+                    result['approve'] = false;
+                    const create = await this.pageObjectiveJoinerService.create(result);
+                    if (create) {
+                        const successResponse = ResponseUtil.getSuccessResponse('Send noti is succesful.', []);
+                        return res.status(200).send(successResponse);
+                    }
+                } else if (searchObjective.length > 50 && searchObjective.length <= 300 && minutes % interval_30 === 0) {
+                    await this.pageNotificationService.notifyToPageUserFcm(
+                        pageOwner.id + '',
+                        undefined,
+                        req.user.id + '',
+                        USER_TYPE.PAGE,
+                        NOTIFICATION_TYPE.LIKE,
+                        notificationText,
+                        link,
+                        pageJoiner.name,
+                        pageJoiner.imageURL
+                    );
+                    for (const notiOwner of notiOwners) {
+                        if (notiOwner.Tokens !== null && notiOwner.Tokens !== undefined && notiOwner.Tokens !== '') {
+                            await this.notificationService.sendNotificationFCM
+                                (
+                                    pageOwner.id + '',
+                                    USER_TYPE.PAGE,
+                                    req.user.id + '',
+                                    USER_TYPE.PAGE,
+                                    NOTIFICATION_TYPE.OBJECTIVE,
+                                    notificationText,
+                                    link,
+                                    notiOwner.Tokens,
+                                    pageJoiner.name,
+                                    pageJoiner.imageURL
+                                );
+                        } else {
+                            continue;
+                        }
+                    }
+                    const result: any = {};
+                    result['objectiveId'] = objtiveIds;
+                    result['pageId'] = pageObjId;
+                    result['joiner'] = joinerObjId;
+                    result['join'] = join;
+                    result['approve'] = false;
+                    const create = await this.pageObjectiveJoinerService.create(result);
+                    if (create) {
+                        const successResponse = ResponseUtil.getSuccessResponse('Send noti is succesful.', []);
+                        return res.status(200).send(successResponse);
+                    }
+                } else if (searchObjective.length > 300 && searchObjective.length <= 2000 && hours % 2 === 0) {
+                    await this.pageNotificationService.notifyToPageUserFcm(
+                        pageOwner.id + '',
+                        undefined,
+                        req.user.id + '',
+                        USER_TYPE.PAGE,
+                        NOTIFICATION_TYPE.LIKE,
+                        notificationText,
+                        link,
+                        pageJoiner.name,
+                        pageJoiner.imageURL
+                    );
+                    for (const notiOwner of notiOwners) {
+                        if (notiOwner.Tokens !== null && notiOwner.Tokens !== undefined && notiOwner.Tokens !== '') {
+                            await this.notificationService.sendNotificationFCM
+                                (
+                                    pageOwner.id + '',
+                                    USER_TYPE.PAGE,
+                                    req.user.id + '',
+                                    USER_TYPE.PAGE,
+                                    NOTIFICATION_TYPE.OBJECTIVE,
+                                    notificationText,
+                                    link,
+                                    notiOwner.Tokens,
+                                    pageJoiner.name,
+                                    pageJoiner.imageURL
+                                );
+                        } else {
+                            continue;
+                        }
+                    }
+                    const result: any = {};
+                    result['objectiveId'] = objtiveIds;
+                    result['pageId'] = pageObjId;
+                    result['joiner'] = joinerObjId;
+                    result['join'] = join;
+                    result['approve'] = false;
+                    const create = await this.pageObjectiveJoinerService.create(result);
+                    if (create) {
+                        const successResponse = ResponseUtil.getSuccessResponse('Send noti is succesful.', []);
+                        return res.status(200).send(successResponse);
+                    }
+                } else if (searchObjective.length > 2000 && hours % 3 === 0) {
+                    await this.pageNotificationService.notifyToPageUserFcm(
+                        pageOwner.id + '',
+                        undefined,
+                        req.user.id + '',
+                        USER_TYPE.PAGE,
+                        NOTIFICATION_TYPE.LIKE,
+                        notificationText,
+                        link,
+                        pageJoiner.name,
+                        pageJoiner.imageURL
+                    );
+                    for (const notiOwner of notiOwners) {
+                        if (notiOwner.Tokens !== null && notiOwner.Tokens !== undefined && notiOwner.Tokens !== '') {
+                            await this.notificationService.sendNotificationFCM
+                                (
+                                    pageOwner.id + '',
+                                    USER_TYPE.PAGE,
+                                    req.user.id + '',
+                                    USER_TYPE.PAGE,
+                                    NOTIFICATION_TYPE.OBJECTIVE,
+                                    notificationText,
+                                    link,
+                                    notiOwner.Tokens,
+                                    pageJoiner.name,
+                                    pageJoiner.imageURL
+                                );
+                        } else {
+                            continue;
+                        }
+                    }
+                    const result: any = {};
+                    result['objectiveId'] = objtiveIds;
+                    result['pageId'] = pageObjId;
+                    result['joiner'] = joinerObjId;
+                    result['join'] = join;
+                    result['approve'] = false;
+                    const create = await this.pageObjectiveJoinerService.create(result);
+                    if (create) {
+                        const successResponse = ResponseUtil.getSuccessResponse('Send noti is succesful.', []);
+                        return res.status(200).send(successResponse);
+                    }
+                }
+            } else {
+                const errorResponse = ResponseUtil.getErrorResponse('Error not found page owner objective.', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Unable create join objective', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+
+    @Post('/lists')
+    @Authorized('user')
+    public async searchListObjectiveJoiner(@Body({ validate: true }) joinObjectiveRequest: JoinObjectiveRequest, @Res() res: any, @Req() req: any): Promise<any> {
+        const objtiveIds = new ObjectID(joinObjectiveRequest.objectiveId);
+        const pageObjId = new ObjectID(joinObjectiveRequest.pageId);
+        if (objtiveIds !== undefined && objtiveIds !== null && pageObjId !== undefined && pageObjId !== null) {
+            const searchObjectives = await this.pageObjectiveJoinerService.aggregate(
+                [
+                    {
+                        $match: {
+                            objectiveId: objtiveIds,
+                            pageId: pageObjId,
+                            join: true,
+                            approve: false
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'Page',
+                            let: { joiner: '$joiner' },
+                            pipeline: [
+                                {
+                                    $match: {
+                                        $expr: {
+                                            $eq: ['$$joiner', '$_id']
+                                        }
+                                    }
+                                }
+                            ],
+                            as: 'page'
+                        }
+                    }
+                ]
+            );
+            if (searchObjectives.length > 0) {
+                const successResponse = ResponseUtil.getSuccessResponse('Search lists objective is succesful.', searchObjectives);
+                return res.status(200).send(successResponse);
+            } else {
+                const errorResponse = ResponseUtil.getErrorResponse('Cannot find any lists objective.', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Unable to get lists objective', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+    }
+
+    @Post('/approve')
+    @Authorized('user')
+    public async approveObjective(@Body({ validate: true }) joinObjectiveRequest: JoinObjectiveRequest, @Res() res: any, @Req() req: any): Promise<any> {
+        const objtiveIds = new ObjectID(joinObjectiveRequest.objectiveId);
+        const pageObjId = new ObjectID(joinObjectiveRequest.pageId);
+        const joinerObjId = new ObjectID(joinObjectiveRequest.joiner);
+        const approved = joinObjectiveRequest.approved;
+        const pageJoiner = await this.pageService.findOne({ _id: joinerObjId });
+        const checkPublicObjective = await this.pageObjectiveService.findOne({ _id: objtiveIds, pageId: pageObjId });
+        let notificationText = undefined;
+        let link = undefined;
+
+        const checkApprove = await this.pageObjectiveJoinerService.findOne({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId });
+
+        if (checkApprove !== undefined && checkApprove !== null && checkApprove.approve === true) {
+            const errorResponse = ResponseUtil.getErrorResponse('You have been approved.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if (
+            approved !== undefined &&
+            approved !== null &&
+            objtiveIds !== undefined &&
+            objtiveIds !== null &&
+            pageObjId !== undefined &&
+            pageObjId !== null &&
+            checkPublicObjective.personal === true
+        ) {
+            if (approved === true) {
+                const notiJoiners = await this.deviceTokenService.find({ user: pageJoiner.ownerUser });
+                notificationText = 'คุณได้ถูกอนุมัติเข้าร่วมสิ่งที่กำลังทำ';
+                link = `/objective/${objtiveIds}`;
+                await this.pageNotificationService.notifyToPageUserFcm(
+                    pageJoiner.id + '',
+                    undefined,
+                    req.user.id + '',
+                    USER_TYPE.PAGE,
+                    NOTIFICATION_TYPE.OBJECTIVE,
+                    notificationText,
+                    link,
+                    pageJoiner.name,
+                    pageJoiner.imageURL
+                );
+                if (notiJoiners.length > 0) {
+                    for (const notiJoiner of notiJoiners) {
+                        await this.notificationService.sendNotificationFCM
+                            (
+                                pageJoiner.id + '',
+                                USER_TYPE.PAGE,
+                                req.user.id + '',
+                                USER_TYPE.PAGE,
+                                NOTIFICATION_TYPE.OBJECTIVE,
+                                notificationText,
+                                link,
+                                notiJoiner.Tokens,
+                                pageJoiner.name,
+                                pageJoiner.imageURL
+                            );
+                    }
+                }
+                if (checkApprove) {
+                    const query = { objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId, join: joinObjectiveRequest.join };
+                    const newValues = { $set: { approve: approved } };
+                    const update = await this.pageObjectiveJoinerService.update(query, newValues);
+                    if (update) {
+                        const successResponse = ResponseUtil.getSuccessResponse('Join objective is sucessful.', newValues);
+                        return res.status(200).send(successResponse);
+                    }
+                } else {
+                    const errorResponse = ResponseUtil.getErrorResponse('Approve is not success.', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+            } else {
+                const notiJoiners = await this.deviceTokenService.find({ user: pageJoiner.ownerUser });
+                notificationText = 'คุณถูกปฏิเสธการเข้าร่วมสิ่งที่กำลังทำ';
+                link = `/objective/${objtiveIds}`;
+                await this.pageNotificationService.notifyToPageUserFcm(
+                    pageJoiner.id + '',
+                    undefined,
+                    req.user.id + '',
+                    USER_TYPE.PAGE,
+                    NOTIFICATION_TYPE.OBJECTIVE,
+                    notificationText,
+                    link,
+                    pageJoiner.name,
+                    pageJoiner.imageURL
+                );
+                if (notiJoiners.length > 0) {
+                    for (const notiJoiner of notiJoiners) {
+                        await this.notificationService.sendNotificationFCM
+                            (
+                                pageJoiner.id + '',
+                                USER_TYPE.PAGE,
+                                req.user.id + '',
+                                USER_TYPE.PAGE,
+                                NOTIFICATION_TYPE.OBJECTIVE,
+                                notificationText,
+                                link,
+                                notiJoiner.Tokens,
+                                pageJoiner.name,
+                                pageJoiner.imageURL
+                            );
+                    }
+                }
+                const errorResponse = ResponseUtil.getErrorResponse('Reject to join the objective.', undefined);
+                return res.status(400).send(errorResponse);
+            }
         }
     }
 
@@ -232,7 +775,7 @@ export class ObjectiveController {
      * HTTP/1.1 500 Internal Server Error
      */
     @Post('/search')
-    public async searchObjective(@Body({ validate: true }) search: FindHashTagRequest, @QueryParam('sample') sample: number,@Req() req:any ,@Res() res: any): Promise<any> {
+    public async searchObjective(@Body({ validate: true }) search: FindHashTagRequest, @QueryParam('sample') sample: number, @Req() req: any, @Res() res: any): Promise<any> {
         if (ObjectUtil.isObjectEmpty(search)) {
             return res.status(200).send([]);
         }
@@ -286,7 +829,7 @@ export class ObjectiveController {
         if (filter.whereConditions !== null && filter.whereConditions !== undefined && Object.keys(filter.whereConditions).length > 0 && typeof filter.whereConditions === 'object') {
             const pageId = filter.whereConditions.pageId;
             let pageObjId;
-            if (pageId !== null && pageId !== undefined && pageId !== '' && JSON.stringify(pageId) !== '{}' ) {
+            if (pageId !== null && pageId !== undefined && pageId !== '' && JSON.stringify(pageId) !== '{}') {
                 pageObjId = new ObjectID(filter.whereConditions.pageId);
             }
 
@@ -377,6 +920,7 @@ export class ObjectiveController {
         const objId = new ObjectID(id);
         const userObjId = new ObjectID(req.user.id);
         const pageId = new ObjectID(objectives.pageId);
+        const personal = objectives.personal;
         const newFileName = userObjId + FileUtil.renameFile() + objId;
         const assetFileName = newFileName;
         const today = moment().toDate();
@@ -464,7 +1008,7 @@ export class ObjectiveController {
         }
 
         const updateQuery = { _id: objId, pageId };
-        const newValue = { $set: { title, detail, iconURL, hashTag, s3IconURL } };
+        const newValue = { $set: { title, detail, iconURL, hashTag, s3IconURL, personal } };
         const objectiveSave = await this.pageObjectiveService.update(updateQuery, newValue);
 
         if (objectiveSave) {

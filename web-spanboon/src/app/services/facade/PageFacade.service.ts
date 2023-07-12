@@ -66,12 +66,11 @@ export class PageFacade extends AbstractFacade {
   public searchType(data: any, pageId: string): Promise<Page> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/page/' + pageId + '/post/search';
-      let body: any = {}
+      let body: any = {};
       if (data !== null && data !== undefined) {
         body = Object.assign(data)
       }
       let options = this.authMgr.getDefaultOptions();
-
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response.data);
       }).catch((error: any) => {
@@ -84,7 +83,6 @@ export class PageFacade extends AbstractFacade {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/page/' + pageId + '/post/search';
       let body: any = {};
-
       if (data !== null && data !== undefined) {
         body = Object.assign(data)
       }
