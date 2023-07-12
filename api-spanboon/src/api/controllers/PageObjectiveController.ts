@@ -145,9 +145,7 @@ export class ObjectiveController {
         const name = objectives.hashTag;
         const today = moment().toDate();
         let hashTag;
-
         const masterHashTag: HashTag = await this.hashTagService.findOne({ name });
-
         if (masterHashTag !== null && masterHashTag !== undefined) {
             hashTag = new ObjectID(masterHashTag.id);
         } else {
@@ -160,15 +158,15 @@ export class ObjectiveController {
             const createHashTag = await this.hashTagService.create(newHashTag);
             hashTag = createHashTag ? new ObjectID(createHashTag.id) : null;
         }
-        const data = await this.pageObjectiveService.findOne({ $or: [{ title }, { hashTag }] });
+        const hashTagIds = hashTag;
+        const data = await this.pageObjectiveService.findOne({ $or: [{ title }, { hashTag: hashTagIds }] });
         /* personal === true meaning objective is public */
         if (data !== null && data !== undefined && data.personal === true) {
             if (data.title === title) {
                 const errorResponse = ResponseUtil.getErrorResponse('PageObjective is Exists', data);
                 return res.status(400).send(errorResponse);
             }
-
-            if (data.hashTag === hashTag) {
+            if (String(data.hashTag) === String(hashTagIds)) {
                 const errorResponse = ResponseUtil.getErrorResponse('PageObjective HashTag is Exists', data);
                 return res.status(400).send(errorResponse);
             }
@@ -181,7 +179,7 @@ export class ObjectiveController {
                 return res.status(400).send(errorResponse);
             }
 
-            if (data.hashTag === hashTag) {
+            if (String(data.hashTag) === String(hashTagIds)) {
                 const errorResponse = ResponseUtil.getErrorResponse('PageObjective HashTag is Exists', data);
                 return res.status(400).send(errorResponse);
             }
