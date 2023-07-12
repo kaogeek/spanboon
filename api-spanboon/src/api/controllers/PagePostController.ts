@@ -1132,15 +1132,18 @@ export class PagePostController {
             if (isHideStory === null || isHideStory === undefined) {
                 isHideStory = true;
             }
-            const objIdsUser = new ObjectID(req.headers.userid);
-            const postIds = [];
-            if (objIdsUser) {
-                const hidePost = await this.hidePostService.find({ userId: objIdsUser });
-                if (hidePost.length > 0) {
-                    for (let j = 0; j < hidePost.length; j++) {
-                        const postId = hidePost[j].postId;
-                        if (postId !== undefined && postId !== null && postId.length > 0) {
-                            postIds.push(...postId.map(id => new ObjectID(id)));
+            let objIdsUser = undefined;
+            let postIds = [];
+            if (req.headers.userid !== undefined && req.headers.userid !== null && req.headers.userid !== '') {
+                objIdsUser = new ObjectID(req.headers.userid);
+                if (objIdsUser) {
+                    const hidePost = await this.hidePostService.find({ userId: objIdsUser });
+                    if (hidePost.length > 0) {
+                        for (let j = 0; j < hidePost.length; j++) {
+                            const postId = hidePost[j].postId;
+                            if (postId !== undefined && postId !== null && postId.length > 0) {
+                                postIds.push(...postId.map(id => new ObjectID(id)));
+                            }
                         }
                     }
                 }
