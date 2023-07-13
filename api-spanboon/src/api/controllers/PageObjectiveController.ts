@@ -1065,7 +1065,18 @@ export class ObjectiveController {
 
         if (objectiveSave) {
             const objectiveUpdated: PageObjective = await this.pageObjectiveService.findOne({ where: { _id: objId, pageId } });
-            return res.status(200).send(ResponseUtil.getSuccessResponse('Update PageObjective Successful', objectiveUpdated));
+            const hashTagName = await this.hashTagService.findOne({ _id: objectiveUpdated.hashTag });
+            const result: any = {};
+            result['_id'] = objectiveUpdated.id;
+            result['pageId'] = objectiveUpdated.pageId;
+            result['title'] = objectiveUpdated.title;
+            result['detail'] = objectiveUpdated.detail;
+            result['hashTag'] = objectiveUpdated.hashTag;
+            result['hashTagName'] = hashTagName.name;
+            result['iconURL'] = objectiveUpdated.iconURL;
+            result['s3IconURL'] = objectiveUpdated.s3IconURL;
+            result['createdDate'] = objectiveUpdated.createdDate;
+            return res.status(200).send(ResponseUtil.getSuccessResponse('Update PageObjective Successful', result));
         } else {
             return res.status(400).send(ResponseUtil.getErrorResponse('Cannot Update PageObjective', undefined));
         }
