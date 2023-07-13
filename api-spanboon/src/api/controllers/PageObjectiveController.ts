@@ -143,6 +143,7 @@ export class ObjectiveController {
         const title = objectives.title;
         const detail = objectives.detail;
         const name = objectives.hashTag;
+        const categoryObjIds = objectives.category;
         const today = moment().toDate();
         let hashTag;
         let fileName = undefined;
@@ -200,6 +201,7 @@ export class ObjectiveController {
                 objective.title = title;
                 objective.detail = detail;
                 objective.hashTag = hashTag;
+                objective.category = categoryObjIds;
                 objective.personal = objectives.personal;
                 objective.iconURL = assetCreate ? ASSET_PATH + assetCreate.id : '';
                 objective.s3IconURL = assetCreate ? assetCreate.s3FilePath : '';
@@ -266,6 +268,7 @@ export class ObjectiveController {
                 objective.title = title;
                 objective.detail = detail;
                 objective.hashTag = hashTag;
+                objective.category = categoryObjIds;
                 objective.personal = objectives.personal;
                 objective.iconURL = assetCreate ? ASSET_PATH + assetCreate.id : '';
                 objective.s3IconURL = assetCreate ? assetCreate.s3FilePath : '';
@@ -318,6 +321,7 @@ export class ObjectiveController {
         objective.title = title;
         objective.detail = detail;
         objective.hashTag = hashTag;
+        objective.category = categoryObjIds;
         objective.personal = objectives.personal;
         objective.iconURL = assetCreate ? ASSET_PATH + assetCreate.id : '';
         objective.s3IconURL = assetCreate ? assetCreate.s3FilePath : '';
@@ -967,6 +971,7 @@ export class ObjectiveController {
         const objId = new ObjectID(id);
         const userObjId = new ObjectID(req.user.id);
         const pageId = new ObjectID(objectives.pageId);
+        const category = objectives.category;
         const personal = objectives.personal;
         const newFileName = userObjId + FileUtil.renameFile() + objId;
         const assetFileName = newFileName;
@@ -1055,7 +1060,7 @@ export class ObjectiveController {
         }
 
         const updateQuery = { _id: objId, pageId };
-        const newValue = { $set: { title, detail, iconURL, hashTag, s3IconURL, personal } };
+        const newValue = { $set: { title, detail, iconURL, hashTag, s3IconURL, category, personal } };
         const objectiveSave = await this.pageObjectiveService.update(updateQuery, newValue);
 
         if (objectiveSave) {
