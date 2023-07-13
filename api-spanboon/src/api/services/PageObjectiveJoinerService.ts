@@ -45,6 +45,11 @@ export class PageObjectiveJoinerService {
         return await this.pageObjectiveJoinerRepository.deleteOne(query, options);
     }
 
+    // delete objectiveCategory
+    public async deleteMany(query: any, options?: any): Promise<any> {
+        return await this.pageObjectiveJoinerRepository.deleteMany(query, options);
+    }
+
     // find objectiveCategory
     public findAll(): Promise<any> {
         return this.pageObjectiveJoinerRepository.find();

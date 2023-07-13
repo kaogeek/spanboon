@@ -1037,11 +1037,28 @@ export class ObjectiveController {
      * @apiErrorExample {json} Delete PageObjective Error
      * HTTP/1.1 500 Internal Server Error
      */
-    @Delete('/:id')
+    
+    @Delete('/:id/:pageId')
     @Authorized('user')
-    public async deleteObjective(@Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
+    public async deleteObjective(@Param('pageId') pageId: string, @Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const pageIdObj = new ObjectID(pageId);
         const objId = new ObjectID(id);
-        const objective: PageObjective = await this.pageObjectiveService.findOne({ where: { _id: objId } });
+        const objective: PageObjective = await this.pageObjectiveService.findOne({ where: { _id: objId, pageId: pageIdObj } });
+        let query;
+        let deleteObjective;
+        if (objective === undefined && objective === null) {
+            // check join
+            const pageJoiner = await this.pageObjectiveJoinerService.findOne({ objectiveId: objId, pageId: pageIdObj });
+            if (pageJoiner) {
+                query = { _id: objId };
+                deleteObjective = await this.pageObjectiveJoinerService.delete(query);
+                if (deleteObjective) {
+                    return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully delete PageObjective', []));
+                }
+            } else {
+                return res.status(400).send(ResponseUtil.getErrorResponse('Unable to delete PageObjective', undefined));
+            }
+        }
 
         if (!objective) {
             return res.status(400).send(ResponseUtil.getErrorResponse('Invalid PageObjective Id', undefined));
@@ -1059,11 +1076,14 @@ export class ObjectiveController {
             }
         }
 
-        const query = { _id: objId };
-        const deleteObjective = await this.pageObjectiveService.delete(query);
+        query = { _id: objId };
+        deleteObjective = await this.pageObjectiveService.delete(query);
 
         if (deleteObjective) {
-            return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully delete PageObjective', []));
+            const deleteObjectiveJoiner = await this.pageObjectiveJoinerService.deleteMany(query);
+            if (deleteObjectiveJoiner) {
+                return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully delete PageObjective', []));
+            }
         } else {
             return res.status(400).send(ResponseUtil.getErrorResponse('Unable to delete PageObjective', undefined));
         }
