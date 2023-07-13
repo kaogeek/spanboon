@@ -29,7 +29,7 @@ import { EmergencyEventService } from '../services/EmergencyEventService';
 import { ResponseUtil } from '../../utils/ResponseUtil';
 import { POST_WEIGHT_SCORE, DEFAULT_POST_WEIGHT_SCORE } from '../../constants/SystemConfig';
 import { ConfigService } from '../services/ConfigService';
-// import { PageObjectiveJoinerService } from '../services/PageObjectiveJoinerService';
+import { PageObjectiveJoinerService } from '../services/PageObjectiveJoinerService';
 @JsonController('/fb_webhook')
 export class FacebookWebhookController {
     constructor(
@@ -43,7 +43,7 @@ export class FacebookWebhookController {
         private pageObjectiveService: PageObjectiveService,
         private emergencyEventService: EmergencyEventService,
         private configService: ConfigService,
-        // private pageObjectiveJoinerService: PageObjectiveJoinerService
+        private pageObjectiveJoinerService: PageObjectiveJoinerService
 
     ) {
     }
@@ -457,37 +457,46 @@ export class FacebookWebhookController {
                     }
 
                     /* joiner objective !!!  */
-                    /* 
-                    const joinerObjective: any = await this.pageObjectiveJoinerService.aggregate(
-                        [
-                            {
-                                $match: { joiner: pageSubscribe.pageId, join: true, approve: true }
-                            },
-                            {
-                                $lookup: {
-                                    from: 'PageObjective',
-                                    let: { objectiveId: '$objectiveId' },
-                                    pipeline: [
-                                        {
-                                            $match: {
-                                                $expr: {
-                                                    $eq: ['$$objectiveId', '$_id']
+                    let joinerObjective: any;
+                    const hashObjIds = postMasterHashTagList.map(_id => new ObjectID(_id));
+                    if (hashObjIds.length > 0) {
+                        joinerObjective = await this.pageObjectiveJoinerService.aggregate(
+                            [
+                                {
+                                    $match: { joiner: pageSubscribe.pageId, join: true, approve: true }
+                                },
+                                {
+                                    $lookup: {
+                                        from: 'PageObjective',
+                                        let: { objectiveId: '$objectiveId' },
+                                        pipeline: [
+                                            {
+                                                $match: {
+                                                    $expr: {
+                                                        $eq: ['$$objectiveId', '$_id']
+                                                    }
                                                 }
+                                            },
+                                            {
+                                                $match: { hashTag: { $in: hashObjIds } }
                                             }
-                                        },
 
-                                    ],
-                                    as: 'pageObjective'
-                                }
-                            },
-                            {
-                                $unwind: {
-                                    path: '$pageObjective',
-                                    preserveNullAndEmptyArrays: true
-                                }
-                            },
-                        ]
-                    );
+                                        ],
+                                        as: 'pageObjective'
+                                    }
+                                },
+                                {
+                                    $match: { pageObjective: { $ne: [] } }
+                                },
+                                {
+                                    $unwind: {
+                                        path: '$pageObjective',
+                                        preserveNullAndEmptyArrays: true
+                                    }
+                                },
+                            ]
+                        );
+                    }
 
                     if (joinerObjective.length > 0) {
                         for (const pageObjectiveJoin of joinerObjective) {
@@ -502,7 +511,7 @@ export class FacebookWebhookController {
                             };
                             await this.postsService.update(query, newValues);
                         }
-                    } */
+                    }
                     await this.postsService.update(queryTag, newValuesTag);
                     const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
                     return res.status(200).send(successResponse);
@@ -666,7 +675,61 @@ export class FacebookWebhookController {
                     }
 
                     /* joiner objective !!!  */
+                    let joinerObjective: any;
+                    const hashObjIds = postMasterHashTagList.map(_id => new ObjectID(_id));
+                    if (hashObjIds.length > 0) {
+                        joinerObjective = await this.pageObjectiveJoinerService.aggregate(
+                            [
+                                {
+                                    $match: { joiner: pageSubscribe.pageId, join: true, approve: true }
+                                },
+                                {
+                                    $lookup: {
+                                        from: 'PageObjective',
+                                        let: { objectiveId: '$objectiveId' },
+                                        pipeline: [
+                                            {
+                                                $match: {
+                                                    $expr: {
+                                                        $eq: ['$$objectiveId', '$_id']
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                $match: { hashTag: { $in: hashObjIds } }
+                                            }
 
+                                        ],
+                                        as: 'pageObjective'
+                                    }
+                                },
+                                {
+                                    $match: { pageObjective: { $ne: [] } }
+                                },
+                                {
+                                    $unwind: {
+                                        path: '$pageObjective',
+                                        preserveNullAndEmptyArrays: true
+                                    }
+                                },
+                            ]
+                        );
+                    }
+
+                    if (joinerObjective.length > 0) {
+                        for (const pageObjectiveJoin of joinerObjective) {
+                            const objectiveIds = new ObjectID(pageObjectiveJoin.pageObjective._id);
+                            const titleObjective = pageObjectiveJoin.pageObjective.title;
+
+                            const query = { _id: createPostPageData.id };
+                            const newValues = {
+                                $set: {
+                                    objective: objectiveIds, objectiveTag: titleObjective
+                                }
+                            };
+                            await this.postsService.update(query, newValues);
+                        }
+                    }
                     await this.postsService.update(queryTag, newValuesTag);
                     if (createPostPageData) {
                         // Asset 
@@ -833,6 +896,61 @@ export class FacebookWebhookController {
                     }
 
                     /* joiner objective !!!  */
+                    let joinerObjective: any;
+                    const hashObjIds = postMasterHashTagList.map(_id => new ObjectID(_id));
+                    if (hashObjIds.length > 0) {
+                        joinerObjective = await this.pageObjectiveJoinerService.aggregate(
+                            [
+                                {
+                                    $match: { joiner: pageSubscribe.pageId, join: true, approve: true }
+                                },
+                                {
+                                    $lookup: {
+                                        from: 'PageObjective',
+                                        let: { objectiveId: '$objectiveId' },
+                                        pipeline: [
+                                            {
+                                                $match: {
+                                                    $expr: {
+                                                        $eq: ['$$objectiveId', '$_id']
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                $match: { hashTag: { $in: hashObjIds } }
+                                            }
+
+                                        ],
+                                        as: 'pageObjective'
+                                    }
+                                },
+                                {
+                                    $match: { pageObjective: { $ne: [] } }
+                                },
+                                {
+                                    $unwind: {
+                                        path: '$pageObjective',
+                                        preserveNullAndEmptyArrays: true
+                                    }
+                                },
+                            ]
+                        );
+                    }
+
+                    if (joinerObjective.length > 0) {
+                        for (const pageObjectiveJoin of joinerObjective) {
+                            const objectiveIds = new ObjectID(pageObjectiveJoin.pageObjective._id);
+                            const titleObjective = pageObjectiveJoin.pageObjective.title;
+
+                            const query = { _id: createPostPageData.id };
+                            const newValues = {
+                                $set: {
+                                    objective: objectiveIds, objectiveTag: titleObjective
+                                }
+                            };
+                            await this.postsService.update(query, newValues);
+                        }
+                    }
 
                     await this.postsService.update(queryTag, newValuesTag);
                     for (let j = 0; j < multiPics.length; j++) {

@@ -891,6 +891,53 @@ export class ObjectiveController {
         }
     }
 
+    @Post('/search/join')
+    @Authorized('user')
+    public async searchJoinObjective(@QueryParam('limit') limit: number, @QueryParam('offset') offset: number, @Req() req: any, @Res() res: any): Promise<any> {
+        const offSetNumber: number = offset;
+        const limitNumber: number = limit;
+        const pageObjIds = new ObjectID(req.body.pageId);
+
+        const pageJoinerObjective = await this.pageObjectiveJoinerService.aggregate(
+            [
+                {
+                    $match: {
+                        joiner: pageObjIds, join: true, approve: true
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'PageObjective',
+                        let: { objectiveId: '$objectiveId' },
+                        pipeline: [
+                            {
+                                $match: {
+                                    $expr: {
+                                        $eq: ['$$objectiveId', '$_id']
+                                    }
+                                }
+                            }
+                        ],
+                        as: 'pageObjective'
+                    }
+                },
+                {
+                    $skip: offSetNumber
+                },
+                {
+                    $limit: limitNumber,
+
+                },
+            ]
+        );
+        if (pageJoinerObjective.length > 0) {
+            const successResponse = ResponseUtil.getSuccessResponse('Successfully Search PageObjective', pageJoinerObjective);
+            return res.status(200).send(successResponse);
+        } else {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Cannot find Join PageObjective.', undefined));
+        }
+    }
+
     // Update PageObjective API
     /**
      * @api {put} /api/objective/:id Update PageObjective API
@@ -1037,7 +1084,6 @@ export class ObjectiveController {
      * @apiErrorExample {json} Delete PageObjective Error
      * HTTP/1.1 500 Internal Server Error
      */
-    
     @Delete('/:id/:pageId')
     @Authorized('user')
     public async deleteObjective(@Param('pageId') pageId: string, @Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
