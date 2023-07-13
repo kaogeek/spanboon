@@ -1075,6 +1075,7 @@ export class ObjectiveController {
             result['hashTagName'] = hashTagName.name;
             result['iconURL'] = objectiveUpdated.iconURL;
             result['s3IconURL'] = objectiveUpdated.s3IconURL;
+            result['personal'] = objectiveUpdated.personal;
             result['createdDate'] = objectiveUpdated.createdDate;
             return res.status(200).send(ResponseUtil.getSuccessResponse('Update PageObjective Successful', result));
         } else {
