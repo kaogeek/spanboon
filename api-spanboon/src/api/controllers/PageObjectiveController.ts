@@ -947,6 +947,12 @@ export class ObjectiveController {
                     }
                 },
                 {
+                    $unwind: {
+                        path: '$pageObjective',
+                        preserveNullAndEmptyArrays: true
+                    }
+                },
+                {
                     $skip: offSetNumber
                 },
                 {
@@ -958,16 +964,19 @@ export class ObjectiveController {
         const resultStack: any = [];
         for (const row of pageJoinerObjective) {
             const result: any = {};
-            result['_id'] = row._id;
-            result['pageId'] = row.pageId;
-            result['title'] = row.title;
-            result['detail'] = row.detail;
-            result['hashTag'] = row.hashTag;
-            result['hashTagName'] = row.hashTag.name;
-            result['iconURL'] = row.iconURL;
-            result['s3IconURL'] = row.s3IconURL;
-            result['personal'] = row.personal;
-            result['createdDate'] = row.createdDate;
+            result['_id'] = row.pageObjective._id;
+            result['pageId'] = row.pageObjective.pageId;
+            result['title'] = row.pageObjective.title;
+            result['detail'] = row.pageObjective.detail;
+            result['hashTag'] = row.pageObjective.hashTag._id;
+            result['hashTagName'] = row.pageObjective.hashTag.name;
+            result['iconURL'] = row.pageObjective.iconURL;
+            result['s3IconURL'] = row.pageObjective.s3IconURL;
+            result['personal'] = row.pageObjective.personal;
+            result['joiner'] = row.joiner;
+            result['join'] = row.join;
+            result['approve'] = row.approve;
+            result['createdDate'] = row.pageObjective.createdDate;
             resultStack.push(result);
         }
         if (resultStack.length > 0) {
