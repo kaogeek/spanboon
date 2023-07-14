@@ -19,6 +19,7 @@ import { PageObjectiveService } from './PageObjectiveService';
 import { FulfillmentCaseService } from './FulfillmentCaseService';
 import { NeedsService } from './NeedsService';
 import { UserLikeService } from './UserLikeService';
+import { PageObjectiveJoinerService } from './PageObjectiveJoinerService';
 @Service()
 export class DeletePageService {
 
@@ -35,7 +36,8 @@ export class DeletePageService {
         private fulfillmentCaseService: FulfillmentCaseService,
         private needsService: NeedsService,
         private postsCommentService: PostsCommentService,
-        private userLikeService: UserLikeService
+        private userLikeService: UserLikeService,
+        private pageObjectiveJoinerService: PageObjectiveJoinerService
     ) {
     }
 
@@ -79,65 +81,73 @@ export class DeletePageService {
                 { $unwind: { path: '$PageConfig', preserveNullAndEmptyArrays: true } },
                 { $lookup: { from: 'PageObjective', localField: '_id', foreignField: 'pageId', as: 'PageObjective' } },
                 { $unwind: { path: '$PageObjective', preserveNullAndEmptyArrays: true } },
+                { $lookup: { from: 'PageObjectiveJoiner', localField: '_id', foreignField: 'pageId', as: 'PageObjectiveJoiner' } },
+                { $unwind: { path: '$PageObjectiveJoiner', preserveNullAndEmptyArrays: true } },
                 { $limit: 1 },
             ]);
             const pageObjId = [];
             for (const pageData of Query) {
                 pageObjId.push(pageData);
             }
-            for (const pageTest of pageObjId) {
-                const findPageObjective = await this.pageObjectiveService.findOne({ pageId: pageTest._id });
+            for (const page of pageObjId) {
+                const findPageObjective = await this.pageObjectiveService.findOne({ pageId: page._id });
                 if (findPageObjective !== undefined) {
-                    await this.pageObjectiveService.deleteMany({ pageId: pageTest._id });
+                    await this.pageObjectiveService.deleteMany({ pageId: page._id });
                 }
-                const findPageConfig = await this.pageConfigService.findOne({ page: pageTest._id });
+
+                const findPageJoinerObjective = await this.pageObjectiveJoinerService.findOne({ pageId: page._id });
+                if (findPageJoinerObjective !== undefined) {
+                    await this.pageObjectiveJoinerService.deleteMany({ pageId: page._id });
+                }
+
+                const findPageConfig = await this.pageConfigService.findOne({ page: page._id });
                 if (findPageConfig !== undefined) {
-                    await this.pageConfigService.deleteMany({ page: pageTest._id });
+                    await this.pageConfigService.deleteMany({ page: page._id });
                 }
-                const findFulfillmentPage = await this.fulfillmentCaseService.findOne({ pageId: pageTest._id });
+                const findFulfillmentPage = await this.fulfillmentCaseService.findOne({ pageId: page._id });
                 if (findFulfillmentPage !== undefined) {
-                    await this.fulfillmentCaseService.deleteMany({ pageId: pageTest._id });
+                    await this.fulfillmentCaseService.deleteMany({ pageId: page._id });
                 }
-                const findNeedsPage = await this.needsService.findOne({ pageId: pageTest._id });
+                const findNeedsPage = await this.needsService.findOne({ pageId: page._id });
                 if (findNeedsPage !== undefined) {
-                    await this.needsService.deleteMany({ pageId: pageTest._id });
+                    await this.needsService.deleteMany({ pageId: page._id });
                 }
-                const findPageAbout = await this.pageAboutService.findOne({ pageId: pageTest._id });
+                const findPageAbout = await this.pageAboutService.findOne({ pageId: page._id });
                 if (findPageAbout !== undefined) {
-                    await this.pageAboutService.deleteMany({ pageId: pageTest._id });
+                    await this.pageAboutService.deleteMany({ pageId: page._id });
                 }
-                const findPageAccess = await this.pageAccessLevelService.findOne({ page: pageTest._id, level: 'OWNER' });
+                const findPageAccess = await this.pageAccessLevelService.findOne({ page: page._id, level: 'OWNER' });
                 if (findPageAccess !== undefined) {
-                    await this.pageAccessLevelService.deleteMany({ page: pageTest._id });
+                    await this.pageAccessLevelService.deleteMany({ page: page._id });
                 }
-                const findPageSocialAcc = await this.pageSocialAccountService.findOne({ page: pageTest._id });
+                const findPageSocialAcc = await this.pageSocialAccountService.findOne({ page: page._id });
                 if (findPageSocialAcc !== undefined) {
-                    await this.pageSocialAccountService.deleteMany({ page: pageTest._id });
+                    await this.pageSocialAccountService.deleteMany({ page: page._id });
                 }
-                const findSocialPost = await this.socialPostService.findOne({ pageId: pageTest._id });
+                const findSocialPost = await this.socialPostService.findOne({ pageId: page._id });
                 if (findSocialPost !== undefined) {
-                    await this.socialPostService.deleteMany({ pageId: pageTest._id });
+                    await this.socialPostService.deleteMany({ pageId: page._id });
                 }
-                const findSocialPostLog = await this.socialPostLogsService.findOne({ pageId: pageTest._id });
+                const findSocialPostLog = await this.socialPostLogsService.findOne({ pageId: page._id });
                 if (findSocialPostLog !== undefined) {
-                    await this.socialPostLogsService.deleteMany({ pageId: pageTest._id });
+                    await this.socialPostLogsService.deleteMany({ pageId: page._id });
                 }
-                const findPostsComment = await this.postsCommentService.findOne({ commentAsPage: pageTest._id });
+                const findPostsComment = await this.postsCommentService.findOne({ commentAsPage: page._id });
                 if (findPostsComment !== undefined) {
-                    await this.postsCommentService.deleteMany({ commentAsPage: pageTest._id });
+                    await this.postsCommentService.deleteMany({ commentAsPage: page._id });
                 }
-                const findLikePage = await this.userLikeService.findOne({ likeAsPage: pageTest._id });
+                const findLikePage = await this.userLikeService.findOne({ likeAsPage: page._id });
                 if (findLikePage !== undefined) {
-                    await this.userLikeService.deleteMany({ likeAsPage: pageTest._id });
+                    await this.userLikeService.deleteMany({ likeAsPage: page._id });
                 }
-                const findPostPage = await this.postsService.findOne({ pageId: pageTest._id });
+                const findPostPage = await this.postsService.findOne({ pageId: page._id });
                 if (findPostPage !== undefined) {
-                    await this.postsService.deleteMany({ pageId: pageTest._id });
+                    await this.postsService.deleteMany({ pageId: page._id });
 
                 }
-                const findPage = await this.pageService.findOne({ _id: pageTest._id });
+                const findPage = await this.pageService.findOne({ _id: page._id });
                 if (findPage !== undefined) {
-                    await this.pageService.delete({ _id: pageTest._id });
+                    await this.pageService.delete({ _id: page._id });
                 }
             }
             resolve(pageObjId[0]);

@@ -32,18 +32,18 @@ import { UserFollow } from '../models/UserFollow';
 import { UserEngagementService } from '../services/UserEngagementService';
 import { PostsService } from '../services/PostsService';
 import { PostsCommentService } from '../services/PostsCommentService';
-import { FulfillmentCaseService } from '../services/FulfillmentCaseService';
+// import { FulfillmentCaseService } from '../services/FulfillmentCaseService';
 import { SocialPostService } from '../services/SocialPostService';
-import { UserLikeService } from '../services/UserLikeService';
+// import { UserLikeService } from '../services/UserLikeService';
 import { FULFILLMENT_STATUS } from '../../constants/FulfillmentStatus';
 import { ObjectiveStartPostProcessor } from '../processors/objective/ObjectiveStartPostProcessor';
-import { ObjectiveNeedsProcessor } from '../processors/objective/ObjectiveNeedsProcessor';
+// import { ObjectiveNeedsProcessor } from '../processors/objective/ObjectiveNeedsProcessor';
 import { ObjectiveInfluencerProcessor } from '../processors/objective/ObjectiveInfluencerProcessor';
-import { ObjectiveInfluencerFulfillProcessor } from '../processors/objective/ObjectiveInfluencerFulfillProcessor';
-import { ObjectiveInfluencerFollowedProcessor } from '../processors/objective/ObjectiveInfluencerFollowedProcessor';
+// import { ObjectiveInfluencerFulfillProcessor } from '../processors/objective/ObjectiveInfluencerFulfillProcessor';
+// import { ObjectiveInfluencerFollowedProcessor } from '../processors/objective/ObjectiveInfluencerFollowedProcessor';
 import { ObjectiveLastestProcessor } from '../processors/objective/ObjectiveLastestProcessor';
 import { ObjectiveShareProcessor } from '../processors/objective/ObjectiveShareProcessor';
-import { ObjectivePostLikedProcessor } from '../processors/objective/ObjectivePostLikedProcessor';
+// import { ObjectivePostLikedProcessor } from '../processors/objective/ObjectivePostLikedProcessor';
 import { DateTimeUtil } from '../../utils/DateTimeUtil';
 import { SearchFilter } from './requests/SearchFilterRequest';
 import { S3Service } from '../services/S3Service';
@@ -65,9 +65,9 @@ export class ObjectiveController {
         private userEngagementService: UserEngagementService,
         private postsService: PostsService,
         private postsCommentService: PostsCommentService,
-        private fulfillmentCaseService: FulfillmentCaseService,
+        // private fulfillmentCaseService: FulfillmentCaseService,
         private socialPostService: SocialPostService,
-        private userLikeService: UserLikeService,
+        // private userLikeService: UserLikeService,
         private s3Service: S3Service,
         private deviceTokenService: DeviceTokenService,
         private notificationService: NotificationService,
@@ -143,6 +143,7 @@ export class ObjectiveController {
         const title = objectives.title;
         const detail = objectives.detail;
         const name = objectives.hashTag;
+        const categoryObjIds = objectives.category;
         const today = moment().toDate();
         let hashTag;
         let fileName = undefined;
@@ -200,6 +201,7 @@ export class ObjectiveController {
                 objective.title = title;
                 objective.detail = detail;
                 objective.hashTag = hashTag;
+                objective.category = categoryObjIds;
                 objective.personal = objectives.personal;
                 objective.iconURL = assetCreate ? ASSET_PATH + assetCreate.id : '';
                 objective.s3IconURL = assetCreate ? assetCreate.s3FilePath : '';
@@ -266,6 +268,7 @@ export class ObjectiveController {
                 objective.title = title;
                 objective.detail = detail;
                 objective.hashTag = hashTag;
+                objective.category = categoryObjIds;
                 objective.personal = objectives.personal;
                 objective.iconURL = assetCreate ? ASSET_PATH + assetCreate.id : '';
                 objective.s3IconURL = assetCreate ? assetCreate.s3FilePath : '';
@@ -318,6 +321,7 @@ export class ObjectiveController {
         objective.title = title;
         objective.detail = detail;
         objective.hashTag = hashTag;
+        objective.category = categoryObjIds;
         objective.personal = objectives.personal;
         objective.iconURL = assetCreate ? ASSET_PATH + assetCreate.id : '';
         objective.s3IconURL = assetCreate ? assetCreate.s3FilePath : '';
@@ -891,6 +895,98 @@ export class ObjectiveController {
         }
     }
 
+    @Post('/search/join')
+    public async searchJoinObjective(@QueryParam('limit') limit: number, @QueryParam('offset') offset: number, @Req() req: any, @Res() res: any): Promise<any> {
+        const offSetNumber: number = offset;
+        const limitNumber: number = limit;
+        const pageObjIds = new ObjectID(req.body.pageId);
+
+        const pageJoinerObjective: any = await this.pageObjectiveJoinerService.aggregate(
+            [
+                {
+                    $match: {
+                        joiner: pageObjIds, join: true, approve: true
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'PageObjective',
+                        let: { objectiveId: '$objectiveId' },
+                        pipeline: [
+                            {
+                                $match: {
+                                    $expr: {
+                                        $eq: ['$$objectiveId', '$_id']
+                                    }
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'HashTag',
+                                    let: { hashTag: '$hashTag' },
+                                    pipeline: [
+                                        {
+                                            $match: {
+                                                $expr: {
+                                                    $eq: ['$$hashTag', '$_id']
+                                                },
+                                            },
+                                        },
+                                    ],
+                                    as: 'hashTag'
+                                },
+                            },
+                            {
+                                $unwind: {
+                                    path: '$hashTag',
+                                    preserveNullAndEmptyArrays: true
+                                }
+                            },
+                        ],
+                        as: 'pageObjective'
+                    }
+                },
+                {
+                    $unwind: {
+                        path: '$pageObjective',
+                        preserveNullAndEmptyArrays: true
+                    }
+                },
+                {
+                    $skip: offSetNumber
+                },
+                {
+                    $limit: limitNumber,
+
+                },
+            ]
+        );
+        const resultStack: any = [];
+        for (const row of pageJoinerObjective) {
+            const result: any = {};
+            result['id'] = row.pageObjective._id;
+            result['pageId'] = row.pageObjective.pageId;
+            result['title'] = row.pageObjective.title;
+            result['detail'] = row.pageObjective.detail;
+            result['hashTag'] = row.pageObjective.hashTag._id;
+            result['hashTagName'] = row.pageObjective.hashTag.name;
+            result['iconURL'] = row.pageObjective.iconURL;
+            result['s3IconURL'] = row.pageObjective.s3IconURL;
+            result['personal'] = row.pageObjective.personal;
+            result['joiner'] = row.joiner;
+            result['join'] = row.join;
+            result['approve'] = row.approve;
+            result['createdDate'] = row.pageObjective.createdDate;
+            resultStack.push(result);
+        }
+        if (resultStack.length > 0) {
+            const successResponse = ResponseUtil.getSuccessResponse('Successfully Search PageObjective', resultStack);
+            return res.status(200).send(successResponse);
+        } else {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Cannot find Join PageObjective.', undefined));
+        }
+    }
+
     // Update PageObjective API
     /**
      * @api {put} /api/objective/:id Update PageObjective API
@@ -919,13 +1015,16 @@ export class ObjectiveController {
         const name = objectives.hashTag;
         const objId = new ObjectID(id);
         const userObjId = new ObjectID(req.user.id);
-        const pageId = new ObjectID(objectives.pageId);
+        const pageObjId = new ObjectID(objectives.pageId);
+        const category = objectives.category;
         const personal = objectives.personal;
         const newFileName = userObjId + FileUtil.renameFile() + objId;
         const assetFileName = newFileName;
         const today = moment().toDate();
         const updatedDate = today;
-
+        let updateQuery: any = undefined;
+        let newValue: any = undefined;
+        let objectiveSave: any = undefined;
         let hashTagObjId;
         let masterHashTag: HashTag;
         let hashTag;
@@ -947,13 +1046,14 @@ export class ObjectiveController {
             const createHashTag = await this.hashTagService.create(newHashTag);
             hashTag = createHashTag ? new ObjectID(createHashTag.id) : null;
         }
+        // masterHashTag
+        // hashTag
+        const hashTagObjIds = hashTag;
 
-        const objectiveUpdate: PageObjective = await this.pageObjectiveService.findOne({ where: { _id: objId, pageId, $or: [{ title }, { hashTag }] } });
-
+        const objectiveUpdate: PageObjective = await this.pageObjectiveService.findOne({ where: { _id: objId, pageId: pageObjId, $or: [{ title }, { hashTagObjIds }] } });
         if (objectiveUpdate === null || objectiveUpdate === undefined) {
             return res.status(400).send(ResponseUtil.getSuccessResponse('Objective Not Found', undefined));
         }
-
         if (title === null || title === undefined) {
             title = objectiveUpdate.title;
         }
@@ -1006,14 +1106,50 @@ export class ObjectiveController {
             iconURL = objectiveIconURL;
             s3IconURL = objectiveUpdate.s3IconURL;
         }
-
-        const updateQuery = { _id: objId, pageId };
-        const newValue = { $set: { title, detail, iconURL, hashTag, s3IconURL, personal } };
-        const objectiveSave = await this.pageObjectiveService.update(updateQuery, newValue);
+        // public
+        if (objectiveUpdate.personal === true) {
+            const checkObjective = await this.pageObjectiveService.findOne({ pageId: pageObjId, _id: objId, hashTag: hashTagObjIds });
+            if (checkObjective === undefined) {
+                return res.status(400).send(ResponseUtil.getSuccessResponse('Your objective is public and hashTag you try to edit is already exists.', undefined));
+            }
+        }
+        // private 
+        if (objectiveUpdate.personal === false) {
+            updateQuery = { _id: objId, pageObjId };
+            newValue = { $set: { title, detail, iconURL, hashTag, s3IconURL, category, personal } };
+            objectiveSave = await this.pageObjectiveService.update(updateQuery, newValue);
+            const hashTagName = await this.hashTagService.findOne({ _id: objectiveUpdate.hashTag });
+            const result: any = {};
+            result['_id'] = objectiveUpdate.id;
+            result['pageId'] = objectiveUpdate.pageId;
+            result['title'] = objectiveUpdate.title;
+            result['detail'] = objectiveUpdate.detail;
+            result['hashTag'] = objectiveUpdate.hashTag;
+            result['hashTagName'] = hashTagName.name;
+            result['iconURL'] = objectiveUpdate.iconURL;
+            result['s3IconURL'] = objectiveUpdate.s3IconURL;
+            result['personal'] = objectiveUpdate.personal;
+            result['createdDate'] = objectiveUpdate.createdDate;
+            return res.status(200).send(ResponseUtil.getSuccessResponse('Update PageObjective Successful', result));
+        }
+        updateQuery = { _id: objId, pageObjId };
+        newValue = { $set: { title, detail, iconURL, hashTag, s3IconURL, category, personal } };
+        objectiveSave = await this.pageObjectiveService.update(updateQuery, newValue);
 
         if (objectiveSave) {
-            const objectiveUpdated: PageObjective = await this.pageObjectiveService.findOne({ where: { _id: objId, pageId } });
-            return res.status(200).send(ResponseUtil.getSuccessResponse('Update PageObjective Successful', objectiveUpdated));
+            const hashTagName = await this.hashTagService.findOne({ _id: objectiveUpdate.hashTag });
+            const result: any = {};
+            result['_id'] = objectiveUpdate.id;
+            result['pageId'] = objectiveUpdate.pageId;
+            result['title'] = objectiveUpdate.title;
+            result['detail'] = objectiveUpdate.detail;
+            result['hashTag'] = objectiveUpdate.hashTag;
+            result['hashTagName'] = hashTagName.name;
+            result['iconURL'] = objectiveUpdate.iconURL;
+            result['s3IconURL'] = objectiveUpdate.s3IconURL;
+            result['personal'] = objectiveUpdate.personal;
+            result['createdDate'] = objectiveUpdate.createdDate;
+            return res.status(200).send(ResponseUtil.getSuccessResponse('Update PageObjective Successful', result));
         } else {
             return res.status(400).send(ResponseUtil.getErrorResponse('Cannot Update PageObjective', undefined));
         }
@@ -1037,11 +1173,27 @@ export class ObjectiveController {
      * @apiErrorExample {json} Delete PageObjective Error
      * HTTP/1.1 500 Internal Server Error
      */
-    @Delete('/:id')
+    @Delete('/:id/:pageId')
     @Authorized('user')
-    public async deleteObjective(@Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
+    public async deleteObjective(@Param('pageId') pageId: string, @Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const pageIdObj = new ObjectID(pageId);
         const objId = new ObjectID(id);
-        const objective: PageObjective = await this.pageObjectiveService.findOne({ where: { _id: objId } });
+        const objective: PageObjective = await this.pageObjectiveService.findOne({ where: { _id: objId, pageId: pageIdObj } });
+        let query;
+        let deleteObjective;
+        if (objective === undefined && objective === null) {
+            // check join
+            const pageJoiner = await this.pageObjectiveJoinerService.findOne({ objectiveId: objId, pageId: pageIdObj });
+            if (pageJoiner) {
+                query = { _id: objId };
+                deleteObjective = await this.pageObjectiveJoinerService.delete(query);
+                if (deleteObjective) {
+                    return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully delete PageObjective', []));
+                }
+            } else {
+                return res.status(400).send(ResponseUtil.getErrorResponse('Unable to delete PageObjective', undefined));
+            }
+        }
 
         if (!objective) {
             return res.status(400).send(ResponseUtil.getErrorResponse('Invalid PageObjective Id', undefined));
@@ -1059,11 +1211,14 @@ export class ObjectiveController {
             }
         }
 
-        const query = { _id: objId };
-        const deleteObjective = await this.pageObjectiveService.delete(query);
+        query = { _id: objId };
+        deleteObjective = await this.pageObjectiveService.delete(query);
 
         if (deleteObjective) {
-            return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully delete PageObjective', []));
+            const deleteObjectiveJoiner = await this.pageObjectiveJoinerService.deleteMany(query);
+            if (deleteObjectiveJoiner) {
+                return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully delete PageObjective', []));
+            }
         } else {
             return res.status(400).send(ResponseUtil.getErrorResponse('Unable to delete PageObjective', undefined));
         }
@@ -1159,89 +1314,88 @@ export class ObjectiveController {
                 pageObjTimeline.timelines.push(startObjvResult);
             }
 
-            const datetimeRange: any[] = DateTimeUtil.generateCurrentMonthRanges(); // [[startdate, enddate], [startdate, enddate]]
-            for (const ranges of datetimeRange) {
-                if (ranges !== undefined && ranges.length < 2) {
-                    continue;
-                }
-                // influencer section
-                const influencerProcessor = new ObjectiveInfluencerProcessor(this.postsCommentService, this.userFollowService);
-                influencerProcessor.setData({
-                    objectiveId: objId,
-                    startDateTime: ranges[0],
-                    endDateTime: ranges[1],
-                    sampleCount: 4
-                });
-                const influencerProcsResult = await influencerProcessor.process();
-                if (influencerProcsResult !== undefined) {
-                    pageObjTimeline.timelines.push(influencerProcsResult);
-                }
+            // const datetimeRange: any[] = DateTimeUtil.generateCurrentMonthRanges(); // [[startdate, enddate], [startdate, enddate]]
+            const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 30);
 
-                // need section
-                const needsProcessor = new ObjectiveNeedsProcessor(this.pageObjectiveService, this.postsService);
-                needsProcessor.setData({
-                    objectiveId: objId,
-                    startDateTime: ranges[0],
-                    endDateTime: ranges[1]
-                });
-                const needsProcsResult = await needsProcessor.process();
-                if (needsProcsResult !== undefined) {
-                    pageObjTimeline.timelines.push(needsProcsResult);
-                }
-
-                // share section
-                const shareProcessor = new ObjectiveShareProcessor(this.userFollowService, this.socialPostService);
-                shareProcessor.setData({
-                    objectiveId: objId,
-                    startDateTime: ranges[0],
-                    endDateTime: ranges[1],
-                    sampleCount: 10,
-                    userId
-                });
-                const shareProcsResult = await shareProcessor.process();
-                if (shareProcsResult !== undefined) {
-                    pageObjTimeline.timelines.push(shareProcsResult);
-                }
-
-                // fulfill section
-                const fulfillrocessor = new ObjectiveInfluencerFulfillProcessor(this.fulfillmentCaseService, this.userFollowService);
-                fulfillrocessor.setData({
-                    objectiveId: objId,
-                    startDateTime: ranges[0],
-                    endDateTime: ranges[1],
-                    sampleCount: 10,
-                    userId
-                });
-                const fulfillProcsResult = await fulfillrocessor.process();
-                if (fulfillProcsResult !== undefined) {
-                    pageObjTimeline.timelines.push(fulfillProcsResult);
-                }
-
-                // following section
-                const followingProcessor = new ObjectiveInfluencerFollowedProcessor(this.userFollowService);
-                followingProcessor.setData({
-                    objectiveId: objId,
-                    sampleCount: 10,
-                    userId
-                });
-                const followingProcsResult = await followingProcessor.process();
-                if (followingProcsResult !== undefined) {
-                    pageObjTimeline.timelines.push(followingProcsResult);
-                }
-
-                // Like section
-                const postLikeProcessor = new ObjectivePostLikedProcessor(this.userLikeService);
-                postLikeProcessor.setData({
-                    objectiveId: objId,
-                    sampleCount: 10,
-                    userId
-                });
-                const postLikeProcsResult = await postLikeProcessor.process();
-                if (postLikeProcsResult !== undefined) {
-                    pageObjTimeline.timelines.push(postLikeProcsResult);
-                }
+            // influencer section
+            const influencerProcessor = new ObjectiveInfluencerProcessor(this.postsCommentService, this.userFollowService);
+            influencerProcessor.setData({
+                objectiveId: objId,
+                startDateTime: monthRange[0],
+                endDateTime: monthRange[1],
+                sampleCount: 4
+            });
+            const influencerProcsResult = await influencerProcessor.process();
+            if (influencerProcsResult !== undefined) {
+                pageObjTimeline.timelines.push(influencerProcsResult);
             }
 
+            // need section
+            /*
+            const needsProcessor = new ObjectiveNeedsProcessor(this.pageObjectiveService, this.postsService);
+            needsProcessor.setData({
+                objectiveId: objId,
+                startDateTime: monthRange[0],
+                endDateTime: monthRange[1]
+            });
+            const needsProcsResult = await needsProcessor.process();
+            if (needsProcsResult !== undefined) {
+                pageObjTimeline.timelines.push(needsProcsResult);
+            }
+            */
+            // share section
+            const shareProcessor = new ObjectiveShareProcessor(this.userFollowService, this.socialPostService);
+            shareProcessor.setData({
+                objectiveId: objId,
+                startDateTime: monthRange[0],
+                endDateTime: monthRange[1],
+                sampleCount: 10,
+                userId
+            });
+            const shareProcsResult = await shareProcessor.process();
+            if (shareProcsResult !== undefined) {
+                pageObjTimeline.timelines.push(shareProcsResult);
+            }
+
+            // fulfill section
+            /* 
+            const fulfillrocessor = new ObjectiveInfluencerFulfillProcessor(this.fulfillmentCaseService, this.userFollowService);
+            fulfillrocessor.setData({
+                objectiveId: objId,
+                startDateTime: monthRange[0],
+                endDateTime: monthRange[1],
+                sampleCount: 10,
+                userId
+            });
+            const fulfillProcsResult = await fulfillrocessor.process();
+            if (fulfillProcsResult !== undefined) {
+                pageObjTimeline.timelines.push(fulfillProcsResult);
+            }
+
+            // following section
+            const followingProcessor = new ObjectiveInfluencerFollowedProcessor(this.userFollowService);
+            followingProcessor.setData({
+                objectiveId: objId,
+                sampleCount: 10,
+                userId
+            });
+            const followingProcsResult = await followingProcessor.process();
+            if (followingProcsResult !== undefined) {
+                pageObjTimeline.timelines.push(followingProcsResult);
+            }
+            */
+            // Like section
+            /* 
+            const postLikeProcessor = new ObjectivePostLikedProcessor(this.userLikeService);
+            postLikeProcessor.setData({
+                objectiveId: objId,
+                sampleCount: 10,
+                userId
+            }); 
+            const postLikeProcsResult = await postLikeProcessor.process();
+            if (postLikeProcsResult !== undefined) {
+                pageObjTimeline.timelines.push(postLikeProcsResult);
+            } */
             // current post section
             const lastestPostProcessor = new ObjectiveLastestProcessor(this.postsService, this.s3Service);
             lastestPostProcessor.setData({

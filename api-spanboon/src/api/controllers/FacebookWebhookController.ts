@@ -25,11 +25,12 @@ import { ObjectID } from 'mongodb';
 import { HashTag } from '../models/HashTag';
 import { HashTagService } from '../services/HashTagService';
 import { PageObjectiveService } from '../services/PageObjectiveService';
-import { EmergencyEventService } from '../services/EmergencyEventService';
+// import { EmergencyEventService } from '../services/EmergencyEventService';
 import { ResponseUtil } from '../../utils/ResponseUtil';
 import { POST_WEIGHT_SCORE, DEFAULT_POST_WEIGHT_SCORE } from '../../constants/SystemConfig';
 import { ConfigService } from '../services/ConfigService';
-// import { PageObjectiveJoinerService } from '../services/PageObjectiveJoinerService';
+import { PageObjectiveJoinerService } from '../services/PageObjectiveJoinerService';
+import { Webhooks } from '../../constants/Webhooks';
 @JsonController('/fb_webhook')
 export class FacebookWebhookController {
     constructor(
@@ -41,9 +42,9 @@ export class FacebookWebhookController {
         private socialPostLogsService: SocialPostLogsService,
         private hashTagService: HashTagService,
         private pageObjectiveService: PageObjectiveService,
-        private emergencyEventService: EmergencyEventService,
+        // private emergencyEventService: EmergencyEventService,
         private configService: ConfigService,
-        // private pageObjectiveJoinerService: PageObjectiveJoinerService
+        private pageObjectiveJoinerService: PageObjectiveJoinerService
 
     ) {
     }
@@ -162,9 +163,19 @@ export class FacebookWebhookController {
         const message_webhooks = body.entry[0].changes[0].value.message;
         const change_value_link = body.entry[0].changes[0].value.link;
         const published = body.entry[0].changes[0].value.published;
+        // body.entry[0].changes[0].value.post_id
+        const value_post_id = body.entry[0].changes[0].value.post_id;
+        // body.entry[0].changes[0].value.share_id
+        const value_share_id = body.entry[0].changes[0].value.share_id;
+        // body.entry[0].changes[0].value.photos
+        const value_photos = body.entry[0].changes[0].value.photos;
+        // body.entry[0].changes[0].value.created_time
+        const value_created_time = body.entry[0].changes[0].value.created_time;
+        // body.entry[0].changes[0].value.photo_id
+        const value_photo_id = body.entry[0].changes[0].value.photo_id;
         const pageSubscribe = await this.socialPostLogsService.findOne({ providerUserId: String(body.entry[0].changes[0].value.from.id) });
         if (pageSubscribe === undefined) {
-            const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+            const successResponse = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
             return res.status(200).send(successResponse);
         }
         console.log('body.entry[0].changes[0].value', body.entry[0].changes[0].value);
@@ -174,6 +185,7 @@ export class FacebookWebhookController {
         const hashTagList2 = [];
 
         if (message_webhooks !== undefined) {
+
             const msgSplit = message_webhooks.split('#');
             if (msgSplit !== undefined) {
                 for (let i = 1; i < msgSplit.length; i++) {
@@ -188,20 +200,15 @@ export class FacebookWebhookController {
         let msg = undefined;
         let checkPattern = undefined;
         if (message_webhooks !== undefined) {
-            msg = message_webhooks;
+            const title = await this.machineState(message_webhooks);
+            msg = title;
             checkPattern = msg.startsWith('[');
         }
         const regex = /[\[\]]/g;
         const titleLength = 150;
 
-        console.log('PATTERN: ', checkPattern);
-
         if (checkPattern) {
 
-            console.log('pass1');
-            // check last ] after find [
-            // try to find /n 
-            // to cut and trim the title 
             const regex2 = /[.\-_,*+?^$|\\]/;
             const result = msg.lastIndexOf(']');
             console.log('result', result);
@@ -220,7 +227,7 @@ export class FacebookWebhookController {
                 console.log('DETAIL: ', TrimText);
             }
         } else {
-            if (message_webhooks !== undefined && value_verb === 'add' && body.entry[0].changes[0].value.comment_id === undefined && value_post === undefined && value_parent_id === undefined) {
+            if (message_webhooks !== undefined && value_verb === Webhooks.value_verb_add && body.entry[0].changes[0].value.comment_id === undefined && value_post === undefined && value_parent_id === undefined) {
                 const title1 = msg.split('\n')[0];
                 const title2 = title1.replace(regex, '').trim();
 
@@ -231,40 +238,55 @@ export class FacebookWebhookController {
 
                 TrimText = msg;
                 console.log('DETAIL: ', TrimText);
-            } else if (message_webhooks === undefined && value_verb === 'add' && value_reaction_like === 'like' && value_item === 'reaction' && value_parent_id !== undefined && change_value_link === undefined) {
+            } else if (
+                message_webhooks === undefined &&
+                value_verb === Webhooks.value_verb_add &&
+                value_reaction_like === Webhooks.value_verb_like &&
+                value_item === Webhooks.value_item_reaction &&
+                value_parent_id !== undefined &&
+                change_value_link === undefined
+            ) {
                 const likeConstance = 1;
-                const findSocialPost = await this.socialPostService.findOne({ socialId: body.entry[0].changes[0].value.post_id });
+                const findSocialPost = await this.socialPostService.findOne({ socialId: value_post_id });
                 if (findSocialPost === undefined) {
-                    const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                    const successResponse = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                     return res.status(200).send(successResponse);
                 }
                 const findActualPost = await this.postsService.findOne({ _id: findSocialPost.postId, pageId: findSocialPost.pageId });
                 if (findActualPost === undefined) {
-                    const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                    const successResponse = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                     return res.status(200).send(successResponse);
                 }
+
                 // 4*(3*(newLike+oldLike)) + summationScore. Example = 4*(3*(1+3))+23 = 48+23 = 71 ??
+
                 const like = (xTodayxScore * (sTodayLike * (likeConstance + findActualPost.likeCount))) + (yFacebookyScore * (sFacebookLike * (likeConstance + findActualPost.likeCountFB)));
                 const query = { _id: findActualPost.id };
                 const newValuesLike = { $set: { likeCountFB: findActualPost.likeCountFB + likeConstance, summationScore: like } };
                 const update = await this.postsService.update(query, newValuesLike);
                 if (update) {
-                    const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                    const successResponse = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                     return res.status(200).send(successResponse);
                 } else {
-                    const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                    const successResponse = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                     return res.status(200).send(successResponse);
                 }
-            } else if (value_verb === 'add' && value_item === 'comment' && value_comment_id !== undefined && value_post !== undefined && value_parent_id !== undefined && change_value_link === undefined) {
+            } else if (
+                value_verb === Webhooks.value_verb_add &&
+                value_item === Webhooks.value_item_comment &&
+                value_comment_id !== undefined &&
+                value_post !== undefined &&
+                value_parent_id !== undefined &&
+                change_value_link === undefined) {
                 const commentConstance = 1;
-                const findSocialPost = await this.socialPostService.findOne({ socialId: body.entry[0].changes[0].value.post_id });
+                const findSocialPost = await this.socialPostService.findOne({ socialId: value_post_id });
                 if (findSocialPost === undefined) {
-                    const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                    const successResponse = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                     return res.status(200).send(successResponse);
                 }
                 const findActualPost = await this.postsService.findOne({ _id: findSocialPost.postId, pageId: findSocialPost.pageId });
                 if (findActualPost === undefined) {
-                    const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                    const successResponse = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                     return res.status(200).send(successResponse);
                 }
                 // 4*(3*(newComment+oldComment)) + summationScore. Example = 4*(3*(1+10))+15 = 132+15 = 147
@@ -273,22 +295,28 @@ export class FacebookWebhookController {
                 const newValuesLike = { $set: { commentCountFB: findActualPost.commentCountFB + commentConstance, summationScore: commnet } };
                 const update = await this.postsService.update(query, newValuesLike);
                 if (update) {
-                    const upDatesuccessResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                    const upDatesuccessResponse = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                     return res.status(200).send(upDatesuccessResponse);
                 } else {
-                    const ErrorsuccessResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                    const ErrorsuccessResponse = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                     return res.status(200).send(ErrorsuccessResponse);
                 }
-            } else if (message_webhooks === undefined && value_verb === 'add' && body.entry[0].changes[0].value.item === 'share' && change_value_link !== undefined && body.entry[0].changes[0].value.share_id !== undefined && body.entry[0].changes[0].value.post_id !== undefined) {
+            } else if (
+                message_webhooks === undefined &&
+                value_verb === Webhooks.value_verb_add &&
+                value_item === Webhooks.value_item_share &&
+                change_value_link !== undefined &&
+                value_share_id !== undefined &&
+                value_post_id !== undefined) {
                 const shareConstance = 1;
-                const findSocialPost = await this.socialPostService.findOne({ socialId: body.entry[0].changes[0].value.post_id });
+                const findSocialPost = await this.socialPostService.findOne({ socialId: value_post_id });
                 if (findSocialPost === undefined) {
-                    const ErrorFindPostsuccessResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                    const ErrorFindPostsuccessResponse = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                     return res.status(200).send(ErrorFindPostsuccessResponse);
                 }
                 const findActualPost = await this.postsService.findOne({ _id: findSocialPost.postId, pageId: findSocialPost.pageId });
                 if (findActualPost === undefined) {
-                    const ErrorActualPostsuccessResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                    const ErrorActualPostsuccessResponse = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                     return res.status(200).send(ErrorActualPostsuccessResponse);
                 }
                 // 4*(3*(newShare+oldShare)) + summationScore. Example = 4*(3*(1+6))+23 = 107, 4*(3*(1+7)) + 107 = 203
@@ -297,21 +325,21 @@ export class FacebookWebhookController {
                 const newValuesLike = { $set: { shareCountFB: findActualPost.shareCountFB + shareConstance, summationScore: share } };
                 const update = await this.postsService.update(query, newValuesLike);
                 if (update) {
-                    const UpdatesuccessResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                    const UpdatesuccessResponse = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                     return res.status(200).send(UpdatesuccessResponse);
                 } else {
-                    const ErrorsuccessResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                    const ErrorsuccessResponse = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                     return res.status(200).send(ErrorsuccessResponse);
                 }
             }
         }
         const pageIdFB = await this.pageService.findOne({ _id: pageSubscribe.pageId });
         if (pageIdFB.isOfficial === false) {
-            const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+            const successResponse = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
             return res.status(200).send(successResponse);
         }
         if (pageIdFB === undefined) {
-            const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+            const successResponse = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
             return res.status(200).send(successResponse);
         }
 
@@ -320,51 +348,23 @@ export class FacebookWebhookController {
         }
 
         if (body !== undefined && pageIdFB !== undefined && pageIdFB !== null && pageSubscribe.enable === true) {
-            if (value_verb === 'add' && change_value_link === undefined && body.entry[0].changes[0].value.photos === undefined && body.entry[0].changes[0].value.item !== 'share' && body.entry[0].changes[0].value.item === 'status' && published === 1) {
-                const checkPost = await this.socialPostService.find({ socialId: body.entry[0].changes[0].value.post_id });
+            if (
+                value_verb === Webhooks.value_verb_add &&
+                change_value_link === undefined &&
+                value_photos === undefined &&
+                value_item !== Webhooks.value_item_share &&
+                value_item === Webhooks.value_item_status
+                && published === 1) {
+                const checkPost = await this.socialPostService.find({ socialId: value_post_id });
                 const checkFeed = checkPost.shift();
                 if (checkFeed === undefined) {
-                    const postPage: Posts = new Posts();
-                    postPage.title = realText;
-                    postPage.detail = TrimText;
-                    postPage.isDraft = false;
-                    postPage.hidden = false;
-                    postPage.type = POST_TYPE.GENERAL;
-                    postPage.userTags = [];
-                    postPage.coverImage = '';
-                    postPage.pinned = false;
-                    postPage.deleted = false;
-                    postPage.ownerUser = pageIdFB.ownerUser;
-                    postPage.commentCount = 0;
-                    postPage.repostCount = 0;
-                    postPage.shareCount = 0;
-                    postPage.likeCount = 0;
-                    postPage.viewCount = 0;
-                    postPage.likeCountFB = 0;
-                    postPage.commentCountFB = 0;
-                    postPage.shareCountFB = 0;
-                    postPage.newsFlag = false;
-                    postPage.createdDate = body.entry[0].changes[0].value.created_time;
-                    postPage.startDateTime = moment().toDate();
-                    postPage.story = null;
-                    postPage.pageId = pageIdFB.id;
-                    postPage.referencePost = null;
-                    postPage.rootReferencePost = null;
-                    postPage.visibility = null;
-                    postPage.ranges = null;
-                    const createPostPageData: Posts = await this.postsService.create(postPage);
-                    const newSocialPost = new SocialPost();
-                    newSocialPost.pageId = pageIdFB.id;
-                    newSocialPost.postId = createPostPageData.id;
-                    newSocialPost.postBy = body.entry[0].changes[0].value.from.id;
-                    newSocialPost.postByType = value_verb;
-                    newSocialPost.socialId = body.entry[0].changes[0].value.post_id;
-                    newSocialPost.socialType = PROVIDER.FACEBOOK;
-                    await this.socialPostService.create(newSocialPost);
+                    const createPostWebhooks: Posts = await this.createPostWebhooks(realText, message_webhooks, pageIdFB.ownerUser, pageIdFB.id, value_created_time);
+                    await this.socialPostFunction(pageIdFB.id, createPostWebhooks.id, body.entry[0].changes[0].value.from.id, value_verb, value_post_id);
+
                     if (hashTagList2 !== null && hashTagList2 !== undefined && hashTagList2.length > 0) {
-                        const masterHashTagList: HashTag[] = await this.findMasterHashTag(hashTagList2);
+                        const masterHashTagList: any = await this.findHashTag(hashTagList2);
                         for (const hashTag of masterHashTagList) {
-                            const id = hashTag.id;
+                            const id = hashTag._id;
                             const name = hashTag.name;
                             postMasterHashTagList.push(new ObjectID(id));
                             masterHashTagMap[name] = hashTag;
@@ -386,199 +386,62 @@ export class FacebookWebhookController {
                                 }
                             }
                         }
-
+                        if (masterHashTagList.length > 0) {
+                            await this.updateCountHashTag(masterHashTagList);
+                        }
                     }
+                    const hashTagsObjIds = postMasterHashTagList.map(_id => new ObjectID(_id));
                     // db.PageObjective.aggregate([{"$match":{"pageId":ObjectId('63bebb5e4677b2062a66b606')}},{"$limit":1},{"$sort":{"createdDate":-1}}])
-                    postPage.postsHashTags = postMasterHashTagList;
-                    for (const pageObjective of postMasterHashTagList) {
-                        const pageFindtag = await this.pageObjectiveService.aggregate(
-                            [
-                                { '$match': { 'pageId': pageSubscribe.pageId, 'hashTag': pageObjective } },
-                                { '$sort': { 'createdDate': -1 } },
-                                { '$limit': 1 }
-                            ]);
-                        const foundPageTag = pageFindtag.shift();
-                        if (foundPageTag) {
-                            const query = { _id: createPostPageData.id };
-                            const newValues = {
-                                $set: {
-                                    objective: foundPageTag._id, objectiveTag: foundPageTag.title
-                                }
-                            };
-                            const updateTag = await this.postsService.update(query, newValues);
-                            if (updateTag) {
-                                break;
-                            }
-                        } else {
-                            break;
-                        }
-                    }
-                    const queryTag = { _id: createPostPageData.id };
-                    const newValuesTag = { $set: { postsHashTags: postPage.postsHashTags } };
-                    const EmergencyFound = [];
-                    for (const hashTags of postMasterHashTagList) {
-                        const findMostHashTag = await this.hashTagService.aggregate(
-                            [
-                                {
-                                    '$match':
-                                        { '_id': ObjectID(hashTags) }
-                                },
-                                {
-                                    '$sort':
-                                    {
-                                        'createdDate': -1
-                                    }
-                                },
-                                {
-                                    '$limit': 1
-                                }, {
-                                    '$lookup': {
-                                        from: 'EmergencyEvent',
-                                        localField: '_id',
-                                        foreignField: 'hashTag',
-                                        as: 'EmergencyHaghTag'
-                                    }
-                                }
-                            ]
-                        );
-                        for (const EmergencyHash of findMostHashTag) {
-                            EmergencyFound.push(EmergencyHash);
-                        }
-                    }
-                    for (const findEmergencyPost of EmergencyFound) {
-                        for (const realEmergencyPost of findEmergencyPost.EmergencyHaghTag) {
-                            const queryEmergency = { _id: createPostPageData.id };
-                            const newValuesTagEmergency = { $set: { emergencyEvent: realEmergencyPost._id, emergencyEventTag: findEmergencyPost.name } };
-                            const updateEmeg = await this.postsService.update(queryEmergency, newValuesTagEmergency);
-                            if (updateEmeg) {
-                                break;
-                            }
-                        }
-                    }
-
-                    /* joiner objective !!!  */
-                    /* 
-                    const joinerObjective: any = await this.pageObjectiveJoinerService.aggregate(
+                    const pageFindtag = await this.pageObjectiveService.aggregate(
                         [
                             {
-                                $match: { joiner: pageSubscribe.pageId, join: true, approve: true }
-                            },
-                            {
-                                $lookup: {
-                                    from: 'PageObjective',
-                                    let: { objectiveId: '$objectiveId' },
-                                    pipeline: [
-                                        {
-                                            $match: {
-                                                $expr: {
-                                                    $eq: ['$$objectiveId', '$_id']
-                                                }
-                                            }
-                                        },
-
-                                    ],
-                                    as: 'pageObjective'
+                                $match: {
+                                    pageId: pageSubscribe.pageId,
+                                    hashTag: { $in: hashTagsObjIds }
                                 }
                             },
                             {
-                                $unwind: {
-                                    path: '$pageObjective',
-                                    preserveNullAndEmptyArrays: true
-                                }
-                            },
-                        ]
-                    );
+                                $limit: 1
+                            }
+                        ]);
+                    // 64af7a7c0ac242710bbfbe4e
+                    if (pageFindtag.length > 0) {
+                        await this.objectiveFunction(pageFindtag, pageSubscribe.pageId, createPostWebhooks.id, postMasterHashTagList);
+                    }
+                    const queryTag = { _id: createPostWebhooks.id };
+                    const newValuesTag = { $set: { postsHashTags: postMasterHashTagList } };
 
-                    if (joinerObjective.length > 0) {
-                        for (const pageObjectiveJoin of joinerObjective) {
-                            const objectiveIds = new ObjectID(pageObjectiveJoin.pageObjective._id);
-                            const titleObjective = pageObjectiveJoin.pageObjective.title;
+                    if (postMasterHashTagList.length > 0) {
+                        await this.emergencyEventFunction(postMasterHashTagList, pageSubscribe.pageId, createPostWebhooks.id);
+                    }
 
-                            const query = { _id: createPostPageData.id };
-                            const newValues = {
-                                $set: {
-                                    objective: objectiveIds, objectiveTag: titleObjective
-                                }
-                            };
-                            await this.postsService.update(query, newValues);
-                        }
-                    } */
                     await this.postsService.update(queryTag, newValuesTag);
-                    const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                    const successResponse = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                     return res.status(200).send(successResponse);
                 } else {
-                    const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                    const successResponse = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                     return res.status(200).send(successResponse);
                 }
-            } else if (value_verb === 'add' && change_value_link !== undefined && body.entry[0].changes[0].value.photos === undefined && body.entry[0].changes[0].value.item !== 'share' && body.entry[0].changes[0].value.item === 'photo' && published === 1) {
+            } else if (
+                value_verb === Webhooks.value_verb_add &&
+                change_value_link !== undefined &&
+                value_photos === undefined &&
+                value_item !== Webhooks.value_item_share &&
+                value_item === Webhooks.value_item_photo &&
+                published === 1) {
                 const assetPic = await this.assetService.createAssetFromURL(change_value_link, pageIdFB.ownerUser);
-                const checkPost = await this.socialPostService.find({ socialId: body.entry[0].changes[0].value.post_id });
+                const checkPost = await this.socialPostService.find({ socialId: value_post_id });
                 const checkFeed = checkPost.shift();
                 if (checkFeed === undefined && assetPic !== undefined) {
-                    const postPage: Posts = new Posts();
-                    postPage.title = realText;
-                    postPage.detail = TrimText;
-                    postPage.isDraft = false;
-                    postPage.hidden = false;
-                    postPage.type = POST_TYPE.GENERAL;
-                    postPage.userTags = [];
-                    postPage.coverImage = '';
-                    postPage.pinned = false;
-                    postPage.deleted = false;
-                    postPage.ownerUser = pageIdFB.ownerUser;
-                    postPage.commentCount = 0;
-                    postPage.repostCount = 0;
-                    postPage.shareCount = 0;
-                    postPage.likeCount = 0;
-                    postPage.viewCount = 0;
-                    postPage.likeCountFB = 0;
-                    postPage.commentCountFB = 0;
-                    postPage.shareCountFB = 0;
-                    postPage.newsFlag = false;
-                    postPage.createdDate = body.entry[0].changes[0].value.created_time;
-                    postPage.startDateTime = moment().toDate();
-                    postPage.story = null;
-                    postPage.pageId = pageIdFB.id;
-                    postPage.referencePost = null;
-                    postPage.rootReferencePost = null;
-                    postPage.visibility = null;
-                    postPage.ranges = null;
-                    const createPostPageData: Posts = await this.postsService.create(postPage);
-                    const newSocialPost = new SocialPost();
-                    newSocialPost.pageId = pageIdFB.id;
-                    newSocialPost.postId = createPostPageData.id;
-                    newSocialPost.postBy = body.entry[0].changes[0].value.from.id;
-                    newSocialPost.postByType = value_verb;
-                    newSocialPost.socialId = body.entry[0].changes[0].value.post_id;
-                    newSocialPost.socialType = PROVIDER.FACEBOOK;
-                    await this.socialPostService.create(newSocialPost);
+                    const createPostWebhooks: Posts = await this.createPostWebhooks(realText, message_webhooks, pageIdFB.ownerUser, pageIdFB.id, value_created_time);
+                    await this.socialPostFunction(pageIdFB.id, createPostWebhooks.id, body.entry[0].changes[0].value.from.id, value_verb, value_post_id);
                     if (hashTagList2 !== null && hashTagList2 !== undefined && hashTagList2.length > 0) {
-                        const masterHashTagList: HashTag[] = await this.findMasterHashTag(hashTagList2);
-                        const textLength = masterHashTagList.length;
+                        const masterHashTagList: any = await this.findHashTag(hashTagList2);
                         for (const hashTag of masterHashTagList) {
-                            const id = hashTag.id;
+                            const id = hashTag._id;
                             const name = hashTag.name;
                             postMasterHashTagList.push(new ObjectID(id));
                             masterHashTagMap[name] = hashTag;
-                        }
-
-                        const findPageObjective = await this.pageObjectiveService.findOne({ pageId: pageSubscribe.pageId, hashTag: masterHashTagList[textLength - 1].id });
-                        if (findPageObjective) {
-                            const queryPic = { _id: createPostPageData.id };
-                            const newValuesPic = {
-                                $set:
-                                {
-                                    objective: findPageObjective.id,
-                                    objectiveTag: findPageObjective.title
-                                }
-                            };
-                            await this.postsService.update(queryPic, newValuesPic);
-                        }
-                        const findEmergencyEvent = await this.emergencyEventService.findOne({ hashTag: masterHashTagList[textLength - 1].id });
-                        if (findEmergencyEvent) {
-                            const queryEmergency = { _id: createPostPageData.id };
-                            const newValuesEmergecy = { $set: { emergencyEvent: findEmergencyEvent.id, emergencyEventTag: findEmergencyEvent.title } };
-                            await this.postsService.update(queryEmergency, newValuesEmergecy);
                         }
 
                         for (const hashTag of hashTagList2) {
@@ -598,82 +461,34 @@ export class FacebookWebhookController {
                                 }
                             }
                         }
+                        if (masterHashTagList.length > 0) {
+                            await this.updateCountHashTag(masterHashTagList);
+                        }
                     }
                     // db.PageObjective.aggregate([{"$match":{"pageId":ObjectId('63bebb5e4677b2062a66b606')}},{"$limit":1},{"$sort":{"createdDate":-1}}])
-                    postPage.postsHashTags = postMasterHashTagList;
-                    for (const pageObjective of postMasterHashTagList) {
-                        const pageFindtag = await this.pageObjectiveService.aggregate(
-                            [
-                                { '$match': { 'pageId': pageSubscribe.pageId, 'hashTag': pageObjective } },
-                                { '$sort': { 'createdDate': -1 } },
-                                { '$limit': 1 }
-                            ]);
-                        const foundPageTag = pageFindtag.shift();
-                        if (foundPageTag) {
-                            const query = { _id: createPostPageData.id };
-                            const newValues = {
-                                $set: {
-                                    objective: foundPageTag._id, objectiveTag: foundPageTag.title
-                                }
-                            };
-                            const updateTag = await this.postsService.update(query, newValues);
-                            if (updateTag) {
-                                break;
-                            }
-                        } else {
-                            break;
-                        }
+                    const pageFindtag = await this.pageObjectiveService.aggregate(
+                        [
+                            { $match: { pageId: pageSubscribe.pageId, hashTag: { $in: postMasterHashTagList } } },
+                            { $limit: 1 }
+                        ]);
+                    // 64af7a7c0ac242710bbfbe4e
+                    if (pageFindtag.length > 0) {
+                        await this.objectiveFunction(pageFindtag, pageSubscribe.pageId, createPostWebhooks.id, postMasterHashTagList);
                     }
-                    const queryTag = { _id: createPostPageData.id };
-                    const newValuesTag = { $set: { postsHashTags: postPage.postsHashTags } };
-                    const EmergencyFound = [];
-                    for (const hashTags of postMasterHashTagList) {
-                        const findMostHashTag = await this.hashTagService.aggregate(
-                            [
-                                {
-                                    '$match':
-                                        { '_id': ObjectID(hashTags) }
-                                },
-                                {
-                                    '$sort':
-                                    {
-                                        'createdDate': -1
-                                    }
-                                },
-                                {
-                                    '$limit': 1
-                                }, {
-                                    '$lookup': {
-                                        from: 'EmergencyEvent',
-                                        localField: '_id',
-                                        foreignField: 'hashTag',
-                                        as: 'EmergencyHaghTag'
-                                    }
-                                }]);
-                        for (const EmergencyHash of findMostHashTag) {
-                            EmergencyFound.push(EmergencyHash);
-                        }
-                    }
-                    for (const findEmergencyPost of EmergencyFound) {
-                        for (const realEmergencyPost of findEmergencyPost.EmergencyHaghTag) {
-                            const queryEmergency = { _id: createPostPageData.id };
-                            const newValuesTagEmergency = { $set: { emergencyEvent: realEmergencyPost._id, emergencyEventTag: findEmergencyPost.name } };
-                            const updateEmeg = await this.postsService.update(queryEmergency, newValuesTagEmergency);
-                            if (updateEmeg) {
-                                break;
-                            }
-                        }
-                    }
+                    const queryTag = { _id: createPostWebhooks.id };
+                    const newValuesTag = { $set: { postsHashTags: postMasterHashTagList } };
 
-                    /* joiner objective !!!  */
+                    if (postMasterHashTagList.length > 0) {
+                        await this.emergencyEventFunction(postMasterHashTagList, pageSubscribe.pageId, createPostWebhooks.id);
+                    }
 
                     await this.postsService.update(queryTag, newValuesTag);
-                    if (createPostPageData) {
+                    if (createPostWebhooks) {
                         // Asset 
-                        if (body.entry[0].changes[0].value.photos === undefined) {
+                        if (value_photos === undefined) {
                             if (assetPic) {
                                 const postsGallery = new PostsGallery();
-                                postsGallery.post = createPostPageData.id;
+                                postsGallery.post = createPostWebhooks.id;
                                 postsGallery.fileId = new ObjectID(assetPic.id);
                                 postsGallery.imageURL = ASSET_PATH + new ObjectID(assetPic.id);
                                 postsGallery.s3ImageURL = assetPic ? assetPic.s3FilePath : '';
@@ -683,67 +498,38 @@ export class FacebookWebhookController {
                                     await this.assetService.update({ _id: assetPic.id, userId: pageIdFB.ownerUser }, { $set: { expirationDate: null } });
                                 }
                             }
-                            const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                            const successResponse = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                             return res.status(200).send(successResponse);
                         }
                     }
                 } else {
-                    const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                    const successResponse = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                     return res.status(200).send(successResponse);
                 }
-            } else if (value_verb === 'add' && change_value_link === undefined && body.entry[0].changes[0].value.photos !== undefined && body.entry[0].changes[0].value.item !== 'share' && published === 1) {
+            } else if (
+                value_verb === Webhooks.value_verb_add &&
+                change_value_link === undefined &&
+                value_photos !== undefined &&
+                value_item !== Webhooks.value_item_share &&
+                published === 1) {
                 const multiPics = [];
-                for (let i = 0; i < body.entry[0].changes[0].value.photos.length; i++) {
+                for (let i = 0; i < value_photos.length; i++) {
                     if (i === 4) {
                         break;
                     }
-                    const multiPic = await this.assetService.createAssetFromURL(body.entry[0].changes[0].value.photos[i], pageIdFB.ownerUser);
+                    const multiPic = await this.assetService.createAssetFromURL(value_photos[i], pageIdFB.ownerUser);
                     multiPics.push(multiPic);
                 }
-                const checkPost = await this.socialPostService.find({ socialId: body.entry[0].changes[0].value.post_id });
+                const checkPost = await this.socialPostService.find({ socialId: value_post_id });
                 const checkFeed = checkPost.shift();
                 if (checkFeed === undefined) {
-                    const postPage: Posts = new Posts();
-                    postPage.title = realText;
-                    postPage.detail = TrimText;
-                    postPage.isDraft = false;
-                    postPage.hidden = false;
-                    postPage.type = POST_TYPE.GENERAL;
-                    postPage.userTags = [];
-                    postPage.coverImage = '';
-                    postPage.pinned = false;
-                    postPage.deleted = false;
-                    postPage.ownerUser = pageIdFB.ownerUser;
-                    postPage.commentCount = 0;
-                    postPage.repostCount = 0;
-                    postPage.shareCount = 0;
-                    postPage.likeCount = 0;
-                    postPage.viewCount = 0;
-                    postPage.likeCountFB = 0;
-                    postPage.commentCountFB = 0;
-                    postPage.shareCountFB = 0;
-                    postPage.newsFlag = false;
-                    postPage.createdDate = body.entry[0].changes[0].value.created_time;
-                    postPage.startDateTime = moment().toDate();
-                    postPage.story = null;
-                    postPage.pageId = pageIdFB.id;
-                    postPage.referencePost = null;
-                    postPage.rootReferencePost = null;
-                    postPage.visibility = null;
-                    postPage.ranges = null;
-                    const createPostPageData: Posts = await this.postsService.create(postPage);
-                    const newSocialPost = new SocialPost();
-                    newSocialPost.pageId = pageIdFB.id;
-                    newSocialPost.postId = createPostPageData.id;
-                    newSocialPost.postBy = body.entry[0].changes[0].value.from.id;
-                    newSocialPost.postByType = value_verb;
-                    newSocialPost.socialId = body.entry[0].changes[0].value.post_id;
-                    newSocialPost.socialType = PROVIDER.FACEBOOK;
-                    await this.socialPostService.create(newSocialPost);
+                    const createPostWebhooks: Posts = await this.createPostWebhooks(realText, message_webhooks, pageIdFB.ownerUser, pageIdFB.id, value_created_time);
+                    await this.socialPostFunction(pageIdFB.id, createPostWebhooks.id, body.entry[0].changes[0].value.from.id, value_verb, value_post_id);
+
                     if (hashTagList2 !== null && hashTagList2 !== undefined && hashTagList2.length > 0) {
-                        const masterHashTagList: HashTag[] = await this.findMasterHashTag(hashTagList2);
+                        const masterHashTagList: any = await this.findHashTag(hashTagList2);
                         for (const hashTag of masterHashTagList) {
-                            const id = hashTag.id;
+                            const id = hashTag._id;
                             const name = hashTag.name;
                             postMasterHashTagList.push(new ObjectID(id));
                             masterHashTagMap[name] = hashTag;
@@ -765,79 +551,32 @@ export class FacebookWebhookController {
                                 }
                             }
                         }
-                    }
-                    // db.PageObjective.aggregate([{"$match":{"pageId":ObjectId('63bebb5e4677b2062a66b606')}},{"$limit":1},{"$sort":{"createdDate":-1}}])
-                    postPage.postsHashTags = postMasterHashTagList;
-                    for (const pageObjective of postMasterHashTagList) {
-                        const pageFindtag = await this.pageObjectiveService.aggregate(
-                            [
-                                { '$match': { 'pageId': pageSubscribe.pageId, 'hashTag': pageObjective } },
-                                { '$sort': { 'createdDate': -1 } },
-                                { '$limit': 1 }
-                            ]);
-                        const foundPageTag = pageFindtag.shift();
-                        if (foundPageTag) {
-                            const query = { _id: createPostPageData.id };
-                            const newValues = {
-                                $set: {
-                                    objective: foundPageTag._id, objectiveTag: foundPageTag.title
-                                }
-                            };
-                            const updateTag = await this.postsService.update(query, newValues);
-                            if (updateTag) {
-                                break;
-                            }
-                        } else {
-                            break;
-                        }
-                    }
-                    const queryTag = { _id: createPostPageData.id };
-                    const newValuesTag = { $set: { postsHashTags: postPage.postsHashTags } };
-                    const EmergencyFound = [];
-                    for (const hashTags of postMasterHashTagList) {
-                        const findMostHashTag = await this.hashTagService.aggregate(
-                            [
-                                {
-                                    '$match':
-                                        { '_id': ObjectID(hashTags) }
-                                },
-                                {
-                                    '$sort':
-                                    {
-                                        'createdDate': -1
-                                    }
-                                },
-                                {
-                                    '$limit': 1
-                                }, {
-                                    '$lookup': {
-                                        from: 'EmergencyEvent',
-                                        localField: '_id',
-                                        foreignField: 'hashTag',
-                                        as: 'EmergencyHaghTag'
-                                    }
-                                }]);
-                        for (const EmergencyHash of findMostHashTag) {
-                            EmergencyFound.push(EmergencyHash);
-                        }
-                    }
-                    for (const findEmergencyPost of EmergencyFound) {
-                        for (const realEmergencyPost of findEmergencyPost.EmergencyHaghTag) {
-                            const queryEmergency = { _id: createPostPageData.id };
-                            const newValuesTagEmergency = { $set: { emergencyEvent: realEmergencyPost._id, emergencyEventTag: findEmergencyPost.name } };
-                            const updateEmeg = await this.postsService.update(queryEmergency, newValuesTagEmergency);
-                            if (updateEmeg) {
-                                break;
-                            }
+                        if (masterHashTagList.length > 0) {
+                            await this.updateCountHashTag(masterHashTagList);
                         }
                     }
 
-                    /* joiner objective !!!  */
+                    // db.PageObjective.aggregate([{"$match":{"pageId":ObjectId('63bebb5e4677b2062a66b606')}},{"$limit":1},{"$sort":{"createdDate":-1}}])
+                    const pageFindtag = await this.pageObjectiveService.aggregate(
+                        [
+                            { $match: { pageId: pageSubscribe.pageId, hashTag: { $in: postMasterHashTagList } } },
+                            { $limit: 1 }
+                        ]);
+                    if (pageFindtag.length > 0) {
+                        await this.objectiveFunction(pageFindtag, pageSubscribe.pageId, createPostWebhooks.id, postMasterHashTagList);
+                    }
+                    // 64af7a7c0ac242710bbfbe4e
+                    const queryTag = { _id: createPostWebhooks.id };
+                    const newValuesTag = { $set: { postsHashTags: postMasterHashTagList } };
+
+                    if (postMasterHashTagList.length > 0) {
+                        await this.emergencyEventFunction(postMasterHashTagList, pageSubscribe.pageId, createPostWebhooks.id);
+                    }
 
                     await this.postsService.update(queryTag, newValuesTag);
                     for (let j = 0; j < multiPics.length; j++) {
                         const postsGallery = new PostsGallery();
-                        postsGallery.post = createPostPageData.id;
+                        postsGallery.post = createPostWebhooks.id;
                         postsGallery.fileId = new ObjectID(multiPics[j].id);
                         postsGallery.imageURL = ASSET_PATH + new ObjectID(multiPics[j].id);
                         postsGallery.s3ImageURL = multiPics[j].s3FilePath;
@@ -847,127 +586,454 @@ export class FacebookWebhookController {
                             await this.assetService.update({ _id: multiPics[j].id, userId: pageIdFB.ownerUser }, { $set: { expirationDate: null } });
                         }
                     }
-                    const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                    const successResponse = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                     return res.status(200).send(successResponse);
                 } else {
-                    const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                    const successResponse = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                     return res.status(200).send(successResponse);
                 }
             }
 
             // delete Post
 
-            else if (value_verb === 'edited' && body.entry[0].changes[0].value.message === undefined && body.entry[0].changes[0].value.item === 'status' && body.entry[0].changes[0].value.photo_id === undefined && published === 1) {
-                const findPost = await this.socialPostService.findOne({ socialId: body.entry[0].changes[0].value.post_id, socialType: 'FACEBOOK' });
+            else if (value_verb === Webhooks.value_verb_edited
+                && message_webhooks === undefined &&
+                value_item === Webhooks.value_item_status &&
+                value_photo_id === undefined
+                && published === 1) {
+                const findPost = await this.socialPostService.findOne({ socialId: value_post_id, socialType: Webhooks.socialType });
                 if (findPost !== undefined && findPost !== null) {
                     const posted = await this.postsService.findOne({ _id: findPost.postId });
                     if (posted) {
                         const query = { _id: posted.id };
                         const update = await this.postsService.delete(query);
                         if (update) {
-                            const successResponseError = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                            const successResponseError = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                             return res.status(200).send(successResponseError);
                         }
                     }
                 } else {
-                    const successResponseError = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                    const successResponseError = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                     return res.status(200).send(successResponseError);
                 }
             }
             /*
             // delete post photo
-            else if (value_verb === 'edited' && body.entry[0].changes[0].value.message === undefined && body.entry[0].changes[0].value.item === 'photo' && body.entry[0].changes[0].value.photo_id !== undefined) {
-                const findPost = await this.socialPostService.findOne({ socialId: body.entry[0].changes[0].value.post_id, socialType: 'FACEBOOK' });
+            else if (value_verb === 'edited' && message_webhooks === undefined && body.entry[0].changes[0].value.item === 'photo' && value_photo_id !== undefined) {
+                const findPost = await this.socialPostService.findOne({ socialId: value_post_id, socialType: Webhooks.socialType });
                 if (findPost !== undefined && findPost !== null) {
                     const posted = await this.postsService.findOne({ _id: findPost.postId });
                     if (posted) {
                         const query = { _id: posted.id };
                         const update = await this.postsService.delete(query);
                         if (update) {
-                            const successResponseError = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                            const successResponseError = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                             return res.status(200).send(successResponseError);
                         }
                     }
                 } else {
-                    const successResponseError = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                    const successResponseError = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                     return res.status(200).send(successResponseError);
                 }
             } */
-            else if (value_verb === 'edited' && change_value_link === undefined && body.entry[0].changes[0].value.photos === undefined && body.entry[0].changes[0].value.item === 'status' && published === 1) {
-                const findPost = await this.socialPostService.findOne({ socialId: body.entry[0].changes[0].value.post_id, socialType: 'FACEBOOK' });
+            else if (value_verb === Webhooks.value_verb_edited && change_value_link === undefined && value_photos === undefined && value_item === 'status' && published === 1) {
+                const findPost = await this.socialPostService.findOne({ socialId: value_post_id, socialType: Webhooks.socialType });
                 if (findPost !== undefined && findPost !== null) {
                     const posted = await this.postsService.findOne({ _id: findPost.postId });
                     if (posted) {
                         const query = { _id: posted.id };
-                        const newValues = { $set: { detail: body.entry[0].changes[0].value.message } };
+                        const newValues = { $set: { detail: message_webhooks } };
                         const update = await this.postsService.update(query, newValues);
                         if (update) {
-                            const successResponseError = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                            const successResponseError = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                             return res.status(200).send(successResponseError);
                         }
                     }
                 } else {
-                    const successResponseError = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                    const successResponseError = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                     return res.status(200).send(successResponseError);
                 }
 
-            } else if (value_verb === 'edited' && change_value_link !== undefined && body.entry[0].changes[0].value.photos === undefined && body.entry[0].changes[0].value.item === 'photo' && published === 1) {
-                // message_webhooks = body.entry[0].changes[0].value.message
-                if (body.entry[0].changes[0].value.message === undefined) {
-                    const successResponseError = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+            } else if (value_verb === Webhooks.value_verb_edited && change_value_link !== undefined && value_photos === undefined && value_item === 'photo' && published === 1) {
+                // message_webhooks = message_webhooks
+                if (message_webhooks === undefined) {
+                    const successResponseError = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                     return res.status(200).send(successResponseError);
                 }
-                const findPost = await this.socialPostService.findOne({ socialId: body.entry[0].changes[0].value.post_id, socialType: 'FACEBOOK' });
+                const findPost = await this.socialPostService.findOne({ socialId: value_post_id, socialType: Webhooks.socialType });
                 if (findPost !== undefined && findPost !== null) {
                     const posted = await this.postsService.findOne({ _id: findPost.postId });
                     if (posted) {
                         const query = { _id: posted.id };
-                        const newValues = { $set: { detail: body.entry[0].changes[0].value.message } };
+                        const newValues = { $set: { detail: message_webhooks } };
                         const update = await this.postsService.update(query, newValues);
                         if (update) {
-                            const successResponseError = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                            const successResponseError = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                             return res.status(200).send(successResponseError);
                         }
                     }
                 } else {
-                    const successResponseError = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                    const successResponseError = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                     return res.status(200).send(successResponseError);
                 }
 
-            } else if (value_verb === 'edited' && change_value_link === undefined && body.entry[0].changes[0].value.photos.length > 0 && body.entry[0].changes[0].value.item === 'status' && published === 1) {
-                // message_webhooks = body.entry[0].changes[0].value.message
-                if (body.entry[0].changes[0].value.message === undefined) {
-                    const successResponseError = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+            } else if (
+                value_verb === Webhooks.value_verb_edited &&
+                change_value_link === undefined &&
+                value_photos.length > 0 &&
+                value_item === Webhooks.value_item_status &&
+                published === 1) {
+                // message_webhooks = message_webhooks
+                if (message_webhooks === undefined) {
+                    const successResponseError = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                     return res.status(200).send(successResponseError);
                 }
-                const findPost = await this.socialPostService.findOne({ socialId: body.entry[0].changes[0].value.post_id, socialType: 'FACEBOOK' });
+                const findPost = await this.socialPostService.findOne({ socialId: value_post_id, socialType: Webhooks.socialType });
                 if (findPost !== undefined && findPost !== null) {
                     const posted = await this.postsService.findOne({ _id: findPost.postId });
                     if (posted) {
                         const query = { _id: posted.id };
-                        const newValues = { $set: { detail: body.entry[0].changes[0].value.message } };
+                        const newValues = { $set: { detail: message_webhooks } };
                         const update = await this.postsService.update(query, newValues);
                         if (update) {
-                            const successResponseError = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                            const successResponseError = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                             return res.status(200).send(successResponseError);
                         }
                     }
                 } else {
-                    const successResponseError = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                    const successResponseError = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                     return res.status(200).send(successResponseError);
                 }
             } else {
-                const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+                const successResponse = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                 return res.status(200).send(successResponse);
             }
         } else {
-            const successResponse = ResponseUtil.getSuccessResponse('Thank you for your service webhooks.', undefined);
+            const successResponse = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
             return res.status(200).send(successResponse);
         }
     }
 
-    private async findMasterHashTag(hashTagNameList: string[]): Promise<HashTag[]> {
-        return await this.hashTagService.find({ name: { $in: hashTagNameList } });
+    private async createPostWebhooks(title: string, detail: string, ownerUser: string, pageId: string, create_time: any): Promise<any> {
+        const pageObjIds = new ObjectID(pageId);
+        const userObjIds = new ObjectID(ownerUser);
+        const postPage: Posts = new Posts();
+        postPage.title = title;
+        postPage.detail = detail;
+        postPage.isDraft = false;
+        postPage.hidden = false;
+        postPage.type = POST_TYPE.GENERAL;
+        postPage.userTags = [];
+        postPage.coverImage = '';
+        postPage.pinned = false;
+        postPage.deleted = false;
+        postPage.ownerUser = userObjIds;
+        postPage.commentCount = 0;
+        postPage.repostCount = 0;
+        postPage.shareCount = 0;
+        postPage.likeCount = 0;
+        postPage.viewCount = 0;
+        postPage.likeCountFB = 0;
+        postPage.commentCountFB = 0;
+        postPage.shareCountFB = 0;
+        postPage.newsFlag = false;
+        postPage.createdDate = create_time;
+        postPage.startDateTime = moment().toDate();
+        postPage.story = null;
+        postPage.pageId = pageObjIds;
+        postPage.referencePost = null;
+        postPage.rootReferencePost = null;
+        postPage.visibility = null;
+        postPage.ranges = null;
+        return await this.postsService.create(postPage);
     }
 
+    private async socialPostFunction(pageId: string, postId: string, postBy: any, verb: string, socialPostId: string): Promise<any> {
+        const pageObjIds = new ObjectID(pageId);
+        const postObjIds = new ObjectID(postId);
+        const newSocialPost = new SocialPost();
+        newSocialPost.pageId = pageObjIds;
+        newSocialPost.postId = postObjIds;
+        newSocialPost.postBy = postBy;
+        newSocialPost.postByType = verb;
+        newSocialPost.socialId = socialPostId;
+        newSocialPost.socialType = PROVIDER.FACEBOOK;
+        await this.socialPostService.create(newSocialPost);
+
+    }
+
+    private async emergencyEventFunction(hashTagMasters: any, pageId: string, postId: string): Promise<any> {
+        const findMostHashTag: any = await this.hashTagService.aggregate(
+            [
+                {
+                    $match:
+                        { _id: { $in: hashTagMasters } }
+                },
+                {
+                    $sort:
+                    {
+                        count: -1
+                    }
+                },
+                {
+                    $limit: 1
+                },
+                {
+                    $lookup: {
+                        from: 'EmergencyEvent',
+                        localField: '_id',
+                        foreignField: 'hashTag',
+                        as: 'emergencyHaghTag'
+                    }
+                },
+                {
+                    $match: { emergencyHaghTag: { $ne: [] } }
+                },
+                {
+                    $unwind: {
+                        path: '$emergencyHaghTag',
+                        preserveNullAndEmptyArrays: true
+                    }
+                },
+            ]
+        );
+        const postObjIds = new ObjectID(postId);
+        const pageObjIds = new ObjectID(pageId);
+        const EmergencyFound = [];
+        if (findMostHashTag.length > 0) {
+            for (const EmergencyHash of findMostHashTag) {
+                if (EmergencyHash.emergencyHaghTag !== undefined && EmergencyHash.emergencyHaghTag !== null) {
+                    EmergencyFound.push(EmergencyHash.emergencyHaghTag);
+                } else {
+                    continue;
+                }
+            }
+        }
+        if (EmergencyFound.length > 0) {
+            for (const findEmergencyPost of EmergencyFound) {
+                const queryEmergency = { _id: postObjIds, pageId: pageObjIds };
+                const newValuesTagEmergency = { $set: { emergencyEvent: findEmergencyPost._id, emergencyEventTag: findEmergencyPost.title } };
+                const updateEmeg = await this.postsService.update(queryEmergency, newValuesTagEmergency);
+                if (updateEmeg) {
+                    break;
+                }
+            }
+        }
+    }
+
+    private async objectiveFunction(objectiveObj: any, pageId: string, postIds: string, hashTag: any): Promise<any> {
+        const postObjIds = new ObjectID(postIds);
+        const pageObjIds = new ObjectID(pageId);
+        if (objectiveObj.length > 0) {
+            const foundPageTag = objectiveObj.shift();
+            if (foundPageTag) {
+                const query = { _id: postObjIds };
+                const newValues = {
+                    $set: {
+                        objective: foundPageTag._id, objectiveTag: foundPageTag.title
+                    }
+                };
+                await this.postsService.update(query, newValues);
+            }
+        } else {
+            /* joiner objective !!!  */
+            let joinerObjective: any;
+            const hashObjIds = hashTag.map(_id => new ObjectID(_id));
+            if (hashObjIds.length > 0) {
+                joinerObjective = await this.pageObjectiveJoinerService.aggregate(
+                    [
+                        {
+                            $match: { joiner: pageObjIds, join: true, approve: true }
+                        },
+                        {
+                            $lookup: {
+                                from: 'PageObjective',
+                                let: { objectiveId: '$objectiveId' },
+                                pipeline: [
+                                    {
+                                        $match: {
+                                            $expr: {
+                                                $eq: ['$$objectiveId', '$_id']
+                                            }
+                                        }
+                                    },
+                                    {
+                                        $match: { hashTag: { $in: hashObjIds } }
+                                    }
+
+                                ],
+                                as: 'pageObjective'
+                            }
+                        },
+                        {
+                            $match: { pageObjective: { $ne: [] } }
+                        },
+                        {
+                            $unwind: {
+                                path: '$pageObjective',
+                                preserveNullAndEmptyArrays: true
+                            }
+                        },
+                    ]
+                );
+            }
+
+            if (joinerObjective.length > 0) {
+                for (const pageObjectiveJoin of joinerObjective) {
+                    const objectiveIds = new ObjectID(pageObjectiveJoin.pageObjective._id);
+                    const titleObjective = pageObjectiveJoin.pageObjective.title;
+
+                    const query = { _id: postObjIds.id };
+                    const newValues = {
+                        $set: {
+                            objective: objectiveIds, objectiveTag: titleObjective
+                        }
+                    };
+                    await this.postsService.update(query, newValues);
+                }
+            }
+        }
+    }
+
+    private async updateCountHashTag(hashTagObj: any): Promise<any> {
+        for (const hashTags of hashTagObj) {
+            const count = parseInt(hashTags.count, 10);
+            const queryHashTag = { _id: new ObjectID(hashTags._id) };
+            const newValuesHashTag = { $set: { count: count + 1 } };
+            await this.hashTagService.update(queryHashTag, newValuesHashTag);
+        }
+    }
+
+    private async findHashTag(hashTagNameList: string[]): Promise<HashTag[]> {
+        return await this.hashTagService.aggregate(
+            [
+                {
+                    $match:
+                    {
+                        name: { $in: hashTagNameList }
+                    }
+                },
+                {
+                    $sort: { count: -1 }
+                }
+            ]
+        );
+    }
+
+    private async machineState(message: string): Promise<any> {
+        function createMachine(stateMachineDefinition: any): any {
+            const machineDefinition: any = stateMachineDefinition;
+            const actions: any = {};
+            const transitions: any = {};
+            for (const [state, definition] of Object.entries(machineDefinition)) {
+                const key_header: any = state;
+                const key_transition: any = definition;
+                actions[key_header] = key_transition.actions || {};
+                transitions[key_transition] = key_transition.transitions || {};
+            }
+            return {
+                currectState: machineDefinition.initialState,
+                value: machineDefinition.initialState,
+                actions,
+                transitions,
+
+                transition(action: any): any {
+                    const currect = this.currectState;
+                    const transitionData: any = this.transitions[currect][action];
+
+                    if (!transitionData) {
+                        return this.value;
+                    }
+                    const { target, action: transitionAction } = transitionData;
+                    if (transitionAction) {
+                        transitionAction();
+                    }
+                    if (this.actions[target] && this.actions[target][action]) {
+                        this.actions[target][action]();
+                    }
+
+                    this.currectState = target;
+                    this.value = target;
+                    return this.value;
+
+                }
+            };
+
+        }
+        const title: any = [];
+        function getCharClass(char: string): any {
+            if (char === '[') {
+                title.push(char);
+                return '[';
+            } else if (char === ']') {
+                title.push(char);
+                return ']';
+            } else if (char === '\n') {
+                return '\n';
+            } else {
+                title.push(char);
+                return 'words';
+            }
+        }
+        const machine: any = createMachine({
+            initialState: 'start',
+            start: {
+                actions: {
+                    openBracket(): any {
+                        console.log('Open bracket initialState start');
+                    },
+                },
+                transitions: {
+                    '[': { target: 'title', action: () => console.log('Transition to title state') },
+                    '\n': { target: 'end', action: () => console.log('Transition to end state') },
+                },
+            },
+            title: {
+                actions: {
+                    word(char: string): any {
+                        console.log(`Title state adding char: ${char}`);
+                    },
+                    closeBracket(): any {
+                        console.log('Close bracket title state');
+                    },
+                },
+                transitions: {
+                    ']': { target: 'last', action: () => console.log('Transition to last state') },
+                    '\n': { target: 'end', action: () => console.log('Transition to end state') },
+                },
+            },
+            last: {
+                actions: {
+                    word(char: string): any {
+                        console.log(`Last state adding char: ${char}`);
+                    },
+                    closeBracket(): any {
+                        console.log('Close bracket last state');
+                    },
+                },
+                transitions: {
+                    '[': { target: 'title', action: () => console.log('Transition to title state') },
+                    '\n': { target: 'end', action: () => console.log('Transition to end state') },
+                },
+            },
+            end: {
+                actions: {
+                    word(char: string): any {
+                        console.log(`End state ignoring char :${char}`);
+                    }
+                }
+            }
+        });
+        for (let i = 0; i < message.length; i++) {
+            const char = message.charAt(i);
+            const charClass = getCharClass(char);
+            if (charClass === '\n') {
+                break;
+            }
+
+            machine.transition(charClass);
+        }
+        const result = title.join('');
+        return result;
+    }
 }
