@@ -896,7 +896,6 @@ export class ObjectiveController {
     }
 
     @Post('/search/join')
-    @Authorized('user')
     public async searchJoinObjective(@QueryParam('limit') limit: number, @QueryParam('offset') offset: number, @Req() req: any, @Res() res: any): Promise<any> {
         const offSetNumber: number = offset;
         const limitNumber: number = limit;
