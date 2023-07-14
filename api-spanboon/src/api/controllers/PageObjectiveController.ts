@@ -964,7 +964,7 @@ export class ObjectiveController {
         const resultStack: any = [];
         for (const row of pageJoinerObjective) {
             const result: any = {};
-            result['_id'] = row.pageObjective._id;
+            result['id'] = row.pageObjective._id;
             result['pageId'] = row.pageObjective.pageId;
             result['title'] = row.pageObjective.title;
             result['detail'] = row.pageObjective.detail;
