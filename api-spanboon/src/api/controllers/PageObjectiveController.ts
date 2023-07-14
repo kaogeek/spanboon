@@ -901,7 +901,7 @@ export class ObjectiveController {
         const limitNumber: number = limit;
         const pageObjIds = new ObjectID(req.body.pageId);
 
-        const pageJoinerObjective = await this.pageObjectiveJoinerService.aggregate(
+        const pageJoinerObjective: any = await this.pageObjectiveJoinerService.aggregate(
             [
                 {
                     $match: {
@@ -933,9 +933,15 @@ export class ObjectiveController {
                                             },
                                         },
                                     ],
-                                    as: 'HashTag'
+                                    as: 'hashTag'
+                                },
+                            },
+                            {
+                                $unwind: {
+                                    path: '$hashTag',
+                                    preserveNullAndEmptyArrays: true
                                 }
-                            }
+                            },
                         ],
                         as: 'pageObjective'
                     }
@@ -949,9 +955,23 @@ export class ObjectiveController {
                 },
             ]
         );
-
-        if (pageJoinerObjective.length > 0) {
-            const successResponse = ResponseUtil.getSuccessResponse('Successfully Search PageObjective', pageJoinerObjective);
+        const resultStack: any = [];
+        for (const row of pageJoinerObjective) {
+            const result: any = {};
+            result['_id'] = row._id;
+            result['pageId'] = row.pageId;
+            result['title'] = row.title;
+            result['detail'] = row.detail;
+            result['hashTag'] = row.hashTag;
+            result['hashTagName'] = row.hashTag.name;
+            result['iconURL'] = row.iconURL;
+            result['s3IconURL'] = row.s3IconURL;
+            result['personal'] = row.personal;
+            result['createdDate'] = row.createdDate;
+            resultStack.push(result);
+        }
+        if (resultStack.length > 0) {
+            const successResponse = ResponseUtil.getSuccessResponse('Successfully Search PageObjective', resultStack);
             return res.status(200).send(successResponse);
         } else {
             return res.status(400).send(ResponseUtil.getErrorResponse('Cannot find Join PageObjective.', undefined));
