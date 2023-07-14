@@ -185,6 +185,7 @@ export class FacebookWebhookController {
         const hashTagList2 = [];
 
         if (message_webhooks !== undefined) {
+
             const msgSplit = message_webhooks.split('#');
             if (msgSplit !== undefined) {
                 for (let i = 1; i < msgSplit.length; i++) {
@@ -199,20 +200,15 @@ export class FacebookWebhookController {
         let msg = undefined;
         let checkPattern = undefined;
         if (message_webhooks !== undefined) {
-            msg = message_webhooks;
+            const title = await this.machineState(message_webhooks);
+            msg = title;
             checkPattern = msg.startsWith('[');
         }
         const regex = /[\[\]]/g;
         const titleLength = 150;
 
-        console.log('PATTERN: ', checkPattern);
-
         if (checkPattern) {
 
-            console.log('pass1');
-            // check last ] after find [
-            // try to find /n 
-            // to cut and trim the title 
             const regex2 = /[.\-_,*+?^$|\\]/;
             const result = msg.lastIndexOf(']');
             console.log('result', result);
@@ -362,7 +358,7 @@ export class FacebookWebhookController {
                 const checkPost = await this.socialPostService.find({ socialId: value_post_id });
                 const checkFeed = checkPost.shift();
                 if (checkFeed === undefined) {
-                    const createPostWebhooks: Posts = await this.createPostWebhooks(realText, TrimText, pageIdFB.ownerUser, pageIdFB.id, value_created_time);
+                    const createPostWebhooks: Posts = await this.createPostWebhooks(realText, message_webhooks, pageIdFB.ownerUser, pageIdFB.id, value_created_time);
                     await this.socialPostFunction(pageIdFB.id, createPostWebhooks.id, body.entry[0].changes[0].value.from.id, value_verb, value_post_id);
 
                     if (hashTagList2 !== null && hashTagList2 !== undefined && hashTagList2.length > 0) {
@@ -437,7 +433,7 @@ export class FacebookWebhookController {
                 const checkPost = await this.socialPostService.find({ socialId: value_post_id });
                 const checkFeed = checkPost.shift();
                 if (checkFeed === undefined && assetPic !== undefined) {
-                    const createPostWebhooks: Posts = await this.createPostWebhooks(realText, TrimText, pageIdFB.ownerUser, pageIdFB.id, value_created_time);
+                    const createPostWebhooks: Posts = await this.createPostWebhooks(realText, message_webhooks, pageIdFB.ownerUser, pageIdFB.id, value_created_time);
                     await this.socialPostFunction(pageIdFB.id, createPostWebhooks.id, body.entry[0].changes[0].value.from.id, value_verb, value_post_id);
                     if (hashTagList2 !== null && hashTagList2 !== undefined && hashTagList2.length > 0) {
                         const masterHashTagList: any = await this.findHashTag(hashTagList2);
@@ -527,7 +523,7 @@ export class FacebookWebhookController {
                 const checkPost = await this.socialPostService.find({ socialId: value_post_id });
                 const checkFeed = checkPost.shift();
                 if (checkFeed === undefined) {
-                    const createPostWebhooks: Posts = await this.createPostWebhooks(realText, TrimText, pageIdFB.ownerUser, pageIdFB.id, value_created_time);
+                    const createPostWebhooks: Posts = await this.createPostWebhooks(realText, message_webhooks, pageIdFB.ownerUser, pageIdFB.id, value_created_time);
                     await this.socialPostFunction(pageIdFB.id, createPostWebhooks.id, body.entry[0].changes[0].value.from.id, value_verb, value_post_id);
 
                     if (hashTagList2 !== null && hashTagList2 !== undefined && hashTagList2.length > 0) {
@@ -923,8 +919,121 @@ export class FacebookWebhookController {
             ]
         );
     }
-    /*
-    private machineState(message: string[]): Promise<any> {
-        return undefined;
-    } */
+
+    private machineState(message: string): Promise<any> {
+        function createMachine(stateMachineDefinition: any): any {
+            const machineDefinition: any = stateMachineDefinition;
+            const actions: any = {};
+            const transitions: any = {};
+            for (const [state, definition] of Object.entries(machineDefinition)) {
+                const key_header: any = state;
+                const key_transition: any = definition;
+                actions[key_header] = key_transition.actions || {};
+                transitions[key_transition] = key_transition.transitions || {};
+            }
+            return {
+                currectState: machineDefinition.initialState,
+                value: machineDefinition.initialState,
+                actions,
+                transitions,
+
+                transition(action: any): any {
+                    const currect = this.currectState;
+                    const transitionData: any = this.transitions[currect][action];
+
+                    if (!transitionData) {
+                        return this.value;
+                    }
+                    const { target, action: transitionAction } = transitionData;
+                    if (transitionAction) {
+                        transitionAction();
+                    }
+                    if (this.actions[target] && this.actions[target][action]) {
+                        this.actions[target][action]();
+                    }
+
+                    this.currectState = target;
+                    this.value = target;
+                    return this.value;
+
+                }
+            };
+
+        }
+        const title: any = [];
+        function getCharClass(char: string): any {
+            if (char === '[') {
+                title.push(char);
+                return '[';
+            } else if (char === ']') {
+                title.push(char);
+                return ']';
+            } else if (char === '\n') {
+                return '\n';
+            } else {
+                title.push(char);
+                return 'words';
+            }
+        }
+        const machine: any = createMachine({
+            initialState: 'start',
+            start: {
+                actions: {
+                    openBracket(): any {
+                        console.log('Open bracket initialState start');
+                    },
+                },
+                transitions: {
+                    '[': { target: 'title', action: () => console.log('Transition to title state') },
+                    '\n': { target: 'end', action: () => console.log('Transition to end state') },
+                },
+            },
+            title: {
+                actions: {
+                    word(char: string): any {
+                        console.log(`Title state adding char: ${char}`);
+                    },
+                    closeBracket(): any {
+                        console.log('Close bracket title state');
+                    },
+                },
+                transitions: {
+                    ']': { target: 'last', action: () => console.log('Transition to last state') },
+                    '\n': { target: 'end', action: () => console.log('Transition to end state') },
+                },
+            },
+            last: {
+                actions: {
+                    word(char: string): any {
+                        console.log(`Last state adding char: ${char}`);
+                    },
+                    closeBracket(): any {
+                        console.log('Close bracket last state');
+                    },
+                },
+                transitions: {
+                    '[': { target: 'title', action: () => console.log('Transition to title state') },
+                    '\n': { target: 'end', action: () => console.log('Transition to end state') },
+                },
+            },
+            end: {
+                actions: {
+                    word(char: string): any {
+                        console.log(`End state ignoring char :${char}`);
+                    }
+                }
+            }
+        });
+        for (let i = 0; i < message.length; i++) {
+            const char = message.charAt(i);
+            const charClass = getCharClass(char);
+            if (charClass === '\n') {
+                break;
+            }
+
+            machine.transition(charClass);
+        }
+        const result = title.join('');
+        return result;
+    }
 }
