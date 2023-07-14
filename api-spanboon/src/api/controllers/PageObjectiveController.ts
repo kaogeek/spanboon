@@ -919,6 +919,22 @@ export class ObjectiveController {
                                         $eq: ['$$objectiveId', '$_id']
                                     }
                                 }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'HashTag',
+                                    let: { hashTag: '$hashTag' },
+                                    pipeline: [
+                                        {
+                                            $match: {
+                                                $expr: {
+                                                    $eq: ['$$hashTag', '$_id']
+                                                },
+                                            },
+                                        },
+                                    ],
+                                    as: 'HashTag'
+                                }
                             }
                         ],
                         as: 'pageObjective'
@@ -933,6 +949,7 @@ export class ObjectiveController {
                 },
             ]
         );
+
         if (pageJoinerObjective.length > 0) {
             const successResponse = ResponseUtil.getSuccessResponse('Successfully Search PageObjective', pageJoinerObjective);
             return res.status(200).send(successResponse);
