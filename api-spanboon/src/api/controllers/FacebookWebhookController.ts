@@ -920,7 +920,7 @@ export class FacebookWebhookController {
         );
     }
 
-    private machineState(message: string): Promise<any> {
+    private async machineState(message: string): Promise<any> {
         function createMachine(stateMachineDefinition: any): any {
             const machineDefinition: any = stateMachineDefinition;
             const actions: any = {};
