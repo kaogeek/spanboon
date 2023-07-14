@@ -977,7 +977,9 @@ export class ObjectiveController {
         const assetFileName = newFileName;
         const today = moment().toDate();
         const updatedDate = today;
-
+        let updateQuery: any = undefined;
+        let newValue: any = undefined;
+        let objectiveSave: any = undefined;
         let hashTagObjId;
         let masterHashTag: HashTag;
         let hashTag;
@@ -1002,17 +1004,11 @@ export class ObjectiveController {
         // masterHashTag
         // hashTag
         const hashTagObjIds = hashTag;
-        const checkHashTag = await this.pageObjectiveService.findOne({ pageId: pageObjId, _id: objId, hashTag: hashTagObjIds });
-        if (checkHashTag === undefined) {
-            return res.status(400).send(ResponseUtil.getSuccessResponse('You cannot edit HashTag.', undefined));
-
-        }
 
         const objectiveUpdate: PageObjective = await this.pageObjectiveService.findOne({ where: { _id: objId, pageId: pageObjId, $or: [{ title }, { hashTagObjIds }] } });
         if (objectiveUpdate === null || objectiveUpdate === undefined) {
             return res.status(400).send(ResponseUtil.getSuccessResponse('Objective Not Found', undefined));
         }
-
         if (title === null || title === undefined) {
             title = objectiveUpdate.title;
         }
@@ -1065,10 +1061,35 @@ export class ObjectiveController {
             iconURL = objectiveIconURL;
             s3IconURL = objectiveUpdate.s3IconURL;
         }
-
-        const updateQuery = { _id: objId, pageObjId };
-        const newValue = { $set: { title, detail, iconURL, hashTag, s3IconURL, category, personal } };
-        const objectiveSave = await this.pageObjectiveService.update(updateQuery, newValue);
+        // public
+        if (objectiveUpdate.personal === true) {
+            const checkObjective = await this.pageObjectiveService.findOne({ pageId: pageObjId, _id: objId, hashTag: hashTagObjIds });
+            if (checkObjective === undefined) {
+                return res.status(400).send(ResponseUtil.getSuccessResponse('Your objective is public and hashTag you try to edit is already exists.', undefined));
+            }
+        }
+        // private 
+        if (objectiveUpdate.personal === false) {
+            updateQuery = { _id: objId, pageObjId };
+            newValue = { $set: { title, detail, iconURL, hashTag, s3IconURL, category, personal } };
+            objectiveSave = await this.pageObjectiveService.update(updateQuery, newValue);
+            const hashTagName = await this.hashTagService.findOne({ _id: objectiveUpdate.hashTag });
+            const result: any = {};
+            result['_id'] = objectiveUpdate.id;
+            result['pageId'] = objectiveUpdate.pageId;
+            result['title'] = objectiveUpdate.title;
+            result['detail'] = objectiveUpdate.detail;
+            result['hashTag'] = objectiveUpdate.hashTag;
+            result['hashTagName'] = hashTagName.name;
+            result['iconURL'] = objectiveUpdate.iconURL;
+            result['s3IconURL'] = objectiveUpdate.s3IconURL;
+            result['personal'] = objectiveUpdate.personal;
+            result['createdDate'] = objectiveUpdate.createdDate;
+            return res.status(200).send(ResponseUtil.getSuccessResponse('Update PageObjective Successful', result));
+        }
+        updateQuery = { _id: objId, pageObjId };
+        newValue = { $set: { title, detail, iconURL, hashTag, s3IconURL, category, personal } };
+        objectiveSave = await this.pageObjectiveService.update(updateQuery, newValue);
 
         if (objectiveSave) {
             const hashTagName = await this.hashTagService.findOne({ _id: objectiveUpdate.hashTag });

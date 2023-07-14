@@ -682,10 +682,10 @@ export class FacebookWebhookController {
                 }
 
             } else if (
-                value_verb === Webhooks.value_verb_edited && 
-                change_value_link === undefined && 
-                value_photos.length > 0 && 
-                value_item === Webhooks.value_item_status && 
+                value_verb === Webhooks.value_verb_edited &&
+                change_value_link === undefined &&
+                value_photos.length > 0 &&
+                value_item === Webhooks.value_item_status &&
                 published === 1) {
                 // message_webhooks = message_webhooks
                 if (message_webhooks === undefined) {
@@ -923,4 +923,8 @@ export class FacebookWebhookController {
             ]
         );
     }
+    /*
+    private machineState(message: string[]): Promise<any> {
+        return undefined;
+    } */
 }
