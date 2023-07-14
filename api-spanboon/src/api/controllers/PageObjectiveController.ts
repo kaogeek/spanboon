@@ -32,18 +32,18 @@ import { UserFollow } from '../models/UserFollow';
 import { UserEngagementService } from '../services/UserEngagementService';
 import { PostsService } from '../services/PostsService';
 import { PostsCommentService } from '../services/PostsCommentService';
-import { FulfillmentCaseService } from '../services/FulfillmentCaseService';
+// import { FulfillmentCaseService } from '../services/FulfillmentCaseService';
 import { SocialPostService } from '../services/SocialPostService';
-import { UserLikeService } from '../services/UserLikeService';
+// import { UserLikeService } from '../services/UserLikeService';
 import { FULFILLMENT_STATUS } from '../../constants/FulfillmentStatus';
 import { ObjectiveStartPostProcessor } from '../processors/objective/ObjectiveStartPostProcessor';
-import { ObjectiveNeedsProcessor } from '../processors/objective/ObjectiveNeedsProcessor';
+// import { ObjectiveNeedsProcessor } from '../processors/objective/ObjectiveNeedsProcessor';
 import { ObjectiveInfluencerProcessor } from '../processors/objective/ObjectiveInfluencerProcessor';
-import { ObjectiveInfluencerFulfillProcessor } from '../processors/objective/ObjectiveInfluencerFulfillProcessor';
-import { ObjectiveInfluencerFollowedProcessor } from '../processors/objective/ObjectiveInfluencerFollowedProcessor';
+// import { ObjectiveInfluencerFulfillProcessor } from '../processors/objective/ObjectiveInfluencerFulfillProcessor';
+// import { ObjectiveInfluencerFollowedProcessor } from '../processors/objective/ObjectiveInfluencerFollowedProcessor';
 import { ObjectiveLastestProcessor } from '../processors/objective/ObjectiveLastestProcessor';
 import { ObjectiveShareProcessor } from '../processors/objective/ObjectiveShareProcessor';
-import { ObjectivePostLikedProcessor } from '../processors/objective/ObjectivePostLikedProcessor';
+// import { ObjectivePostLikedProcessor } from '../processors/objective/ObjectivePostLikedProcessor';
 import { DateTimeUtil } from '../../utils/DateTimeUtil';
 import { SearchFilter } from './requests/SearchFilterRequest';
 import { S3Service } from '../services/S3Service';
@@ -65,9 +65,9 @@ export class ObjectiveController {
         private userEngagementService: UserEngagementService,
         private postsService: PostsService,
         private postsCommentService: PostsCommentService,
-        private fulfillmentCaseService: FulfillmentCaseService,
+        // private fulfillmentCaseService: FulfillmentCaseService,
         private socialPostService: SocialPostService,
-        private userLikeService: UserLikeService,
+        // private userLikeService: UserLikeService,
         private s3Service: S3Service,
         private deviceTokenService: DeviceTokenService,
         private notificationService: NotificationService,
@@ -1003,13 +1003,12 @@ export class ObjectiveController {
         // hashTag
         const hashTagObjIds = hashTag;
         const checkHashTag = await this.pageObjectiveService.findOne({ pageId: pageObjId, _id: objId, hashTag: hashTagObjIds });
-        if (checkHashTag === undefined && checkHashTag === null) {
+        if (checkHashTag === undefined) {
             return res.status(400).send(ResponseUtil.getSuccessResponse('You cannot edit HashTag.', undefined));
 
         }
 
-        const objectiveUpdate: PageObjective = await this.pageObjectiveService.findOne({ where: { _id: objId, pageObjId, $or: [{ title }, { hashTag }] } });
-
+        const objectiveUpdate: PageObjective = await this.pageObjectiveService.findOne({ where: { _id: objId, pageId: pageObjId, $or: [{ title }, { hashTagObjIds }] } });
         if (objectiveUpdate === null || objectiveUpdate === undefined) {
             return res.status(400).send(ResponseUtil.getSuccessResponse('Objective Not Found', undefined));
         }
@@ -1072,19 +1071,18 @@ export class ObjectiveController {
         const objectiveSave = await this.pageObjectiveService.update(updateQuery, newValue);
 
         if (objectiveSave) {
-            const objectiveUpdated: PageObjective = await this.pageObjectiveService.findOne({ where: { _id: objId, pageObjId } });
-            const hashTagName = await this.hashTagService.findOne({ _id: objectiveUpdated.hashTag });
+            const hashTagName = await this.hashTagService.findOne({ _id: objectiveUpdate.hashTag });
             const result: any = {};
-            result['_id'] = objectiveUpdated.id;
-            result['pageId'] = objectiveUpdated.pageId;
-            result['title'] = objectiveUpdated.title;
-            result['detail'] = objectiveUpdated.detail;
-            result['hashTag'] = objectiveUpdated.hashTag;
+            result['_id'] = objectiveUpdate.id;
+            result['pageId'] = objectiveUpdate.pageId;
+            result['title'] = objectiveUpdate.title;
+            result['detail'] = objectiveUpdate.detail;
+            result['hashTag'] = objectiveUpdate.hashTag;
             result['hashTagName'] = hashTagName.name;
-            result['iconURL'] = objectiveUpdated.iconURL;
-            result['s3IconURL'] = objectiveUpdated.s3IconURL;
-            result['personal'] = objectiveUpdated.personal;
-            result['createdDate'] = objectiveUpdated.createdDate;
+            result['iconURL'] = objectiveUpdate.iconURL;
+            result['s3IconURL'] = objectiveUpdate.s3IconURL;
+            result['personal'] = objectiveUpdate.personal;
+            result['createdDate'] = objectiveUpdate.createdDate;
             return res.status(200).send(ResponseUtil.getSuccessResponse('Update PageObjective Successful', result));
         } else {
             return res.status(400).send(ResponseUtil.getErrorResponse('Cannot Update PageObjective', undefined));
