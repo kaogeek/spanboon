@@ -1321,16 +1321,17 @@ export class ObjectiveController {
             }
             */
             // Like section
+            /* 
             const postLikeProcessor = new ObjectivePostLikedProcessor(this.userLikeService);
             postLikeProcessor.setData({
                 objectiveId: objId,
                 sampleCount: 10,
                 userId
-            });
+            }); 
             const postLikeProcsResult = await postLikeProcessor.process();
             if (postLikeProcsResult !== undefined) {
                 pageObjTimeline.timelines.push(postLikeProcsResult);
-            }
+            } */
             // current post section
             const lastestPostProcessor = new ObjectiveLastestProcessor(this.postsService, this.s3Service);
             lastestPostProcessor.setData({
