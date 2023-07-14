@@ -970,7 +970,7 @@ export class ObjectiveController {
         const name = objectives.hashTag;
         const objId = new ObjectID(id);
         const userObjId = new ObjectID(req.user.id);
-        const pageId = new ObjectID(objectives.pageId);
+        const pageObjId = new ObjectID(objectives.pageId);
         const category = objectives.category;
         const personal = objectives.personal;
         const newFileName = userObjId + FileUtil.renameFile() + objId;
@@ -999,8 +999,16 @@ export class ObjectiveController {
             const createHashTag = await this.hashTagService.create(newHashTag);
             hashTag = createHashTag ? new ObjectID(createHashTag.id) : null;
         }
+        // masterHashTag
+        // hashTag
+        const hashTagObjIds = hashTag;
+        const checkHashTag = await this.pageObjectiveService.findOne({ pageId: pageObjId, _id: objId, hashTag: hashTagObjIds });
+        if (checkHashTag === undefined && checkHashTag === null) {
+            return res.status(400).send(ResponseUtil.getSuccessResponse('You cannot edit HashTag.', undefined));
 
-        const objectiveUpdate: PageObjective = await this.pageObjectiveService.findOne({ where: { _id: objId, pageId, $or: [{ title }, { hashTag }] } });
+        }
+
+        const objectiveUpdate: PageObjective = await this.pageObjectiveService.findOne({ where: { _id: objId, pageObjId, $or: [{ title }, { hashTag }] } });
 
         if (objectiveUpdate === null || objectiveUpdate === undefined) {
             return res.status(400).send(ResponseUtil.getSuccessResponse('Objective Not Found', undefined));
@@ -1059,12 +1067,12 @@ export class ObjectiveController {
             s3IconURL = objectiveUpdate.s3IconURL;
         }
 
-        const updateQuery = { _id: objId, pageId };
+        const updateQuery = { _id: objId, pageObjId };
         const newValue = { $set: { title, detail, iconURL, hashTag, s3IconURL, category, personal } };
         const objectiveSave = await this.pageObjectiveService.update(updateQuery, newValue);
 
         if (objectiveSave) {
-            const objectiveUpdated: PageObjective = await this.pageObjectiveService.findOne({ where: { _id: objId, pageId } });
+            const objectiveUpdated: PageObjective = await this.pageObjectiveService.findOne({ where: { _id: objId, pageObjId } });
             const hashTagName = await this.hashTagService.findOne({ _id: objectiveUpdated.hashTag });
             const result: any = {};
             result['_id'] = objectiveUpdated.id;
@@ -1242,89 +1250,87 @@ export class ObjectiveController {
                 pageObjTimeline.timelines.push(startObjvResult);
             }
 
-            const datetimeRange: any[] = DateTimeUtil.generateCurrentMonthRanges(); // [[startdate, enddate], [startdate, enddate]]
-            for (const ranges of datetimeRange) {
-                if (ranges !== undefined && ranges.length < 2) {
-                    continue;
-                }
-                // influencer section
-                const influencerProcessor = new ObjectiveInfluencerProcessor(this.postsCommentService, this.userFollowService);
-                influencerProcessor.setData({
-                    objectiveId: objId,
-                    startDateTime: ranges[0],
-                    endDateTime: ranges[1],
-                    sampleCount: 4
-                });
-                const influencerProcsResult = await influencerProcessor.process();
-                if (influencerProcsResult !== undefined) {
-                    pageObjTimeline.timelines.push(influencerProcsResult);
-                }
+            // const datetimeRange: any[] = DateTimeUtil.generateCurrentMonthRanges(); // [[startdate, enddate], [startdate, enddate]]
+            const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), 30);
 
-                // need section
-                const needsProcessor = new ObjectiveNeedsProcessor(this.pageObjectiveService, this.postsService);
-                needsProcessor.setData({
-                    objectiveId: objId,
-                    startDateTime: ranges[0],
-                    endDateTime: ranges[1]
-                });
-                const needsProcsResult = await needsProcessor.process();
-                if (needsProcsResult !== undefined) {
-                    pageObjTimeline.timelines.push(needsProcsResult);
-                }
-
-                // share section
-                const shareProcessor = new ObjectiveShareProcessor(this.userFollowService, this.socialPostService);
-                shareProcessor.setData({
-                    objectiveId: objId,
-                    startDateTime: ranges[0],
-                    endDateTime: ranges[1],
-                    sampleCount: 10,
-                    userId
-                });
-                const shareProcsResult = await shareProcessor.process();
-                if (shareProcsResult !== undefined) {
-                    pageObjTimeline.timelines.push(shareProcsResult);
-                }
-
-                // fulfill section
-                const fulfillrocessor = new ObjectiveInfluencerFulfillProcessor(this.fulfillmentCaseService, this.userFollowService);
-                fulfillrocessor.setData({
-                    objectiveId: objId,
-                    startDateTime: ranges[0],
-                    endDateTime: ranges[1],
-                    sampleCount: 10,
-                    userId
-                });
-                const fulfillProcsResult = await fulfillrocessor.process();
-                if (fulfillProcsResult !== undefined) {
-                    pageObjTimeline.timelines.push(fulfillProcsResult);
-                }
-
-                // following section
-                const followingProcessor = new ObjectiveInfluencerFollowedProcessor(this.userFollowService);
-                followingProcessor.setData({
-                    objectiveId: objId,
-                    sampleCount: 10,
-                    userId
-                });
-                const followingProcsResult = await followingProcessor.process();
-                if (followingProcsResult !== undefined) {
-                    pageObjTimeline.timelines.push(followingProcsResult);
-                }
-
-                // Like section
-                const postLikeProcessor = new ObjectivePostLikedProcessor(this.userLikeService);
-                postLikeProcessor.setData({
-                    objectiveId: objId,
-                    sampleCount: 10,
-                    userId
-                });
-                const postLikeProcsResult = await postLikeProcessor.process();
-                if (postLikeProcsResult !== undefined) {
-                    pageObjTimeline.timelines.push(postLikeProcsResult);
-                }
+            // influencer section
+            const influencerProcessor = new ObjectiveInfluencerProcessor(this.postsCommentService, this.userFollowService);
+            influencerProcessor.setData({
+                objectiveId: objId,
+                startDateTime: monthRange[0],
+                endDateTime: monthRange[1],
+                sampleCount: 4
+            });
+            const influencerProcsResult = await influencerProcessor.process();
+            if (influencerProcsResult !== undefined) {
+                pageObjTimeline.timelines.push(influencerProcsResult);
             }
 
+            // need section
+            /*
+            const needsProcessor = new ObjectiveNeedsProcessor(this.pageObjectiveService, this.postsService);
+            needsProcessor.setData({
+                objectiveId: objId,
+                startDateTime: monthRange[0],
+                endDateTime: monthRange[1]
+            });
+            const needsProcsResult = await needsProcessor.process();
+            if (needsProcsResult !== undefined) {
+                pageObjTimeline.timelines.push(needsProcsResult);
+            }
+            */
+            // share section
+            const shareProcessor = new ObjectiveShareProcessor(this.userFollowService, this.socialPostService);
+            shareProcessor.setData({
+                objectiveId: objId,
+                startDateTime: monthRange[0],
+                endDateTime: monthRange[1],
+                sampleCount: 10,
+                userId
+            });
+            const shareProcsResult = await shareProcessor.process();
+            if (shareProcsResult !== undefined) {
+                pageObjTimeline.timelines.push(shareProcsResult);
+            }
+
+            // fulfill section
+            /* 
+            const fulfillrocessor = new ObjectiveInfluencerFulfillProcessor(this.fulfillmentCaseService, this.userFollowService);
+            fulfillrocessor.setData({
+                objectiveId: objId,
+                startDateTime: monthRange[0],
+                endDateTime: monthRange[1],
+                sampleCount: 10,
+                userId
+            });
+            const fulfillProcsResult = await fulfillrocessor.process();
+            if (fulfillProcsResult !== undefined) {
+                pageObjTimeline.timelines.push(fulfillProcsResult);
+            }
+
+            // following section
+            const followingProcessor = new ObjectiveInfluencerFollowedProcessor(this.userFollowService);
+            followingProcessor.setData({
+                objectiveId: objId,
+                sampleCount: 10,
+                userId
+            });
+            const followingProcsResult = await followingProcessor.process();
+            if (followingProcsResult !== undefined) {
+                pageObjTimeline.timelines.push(followingProcsResult);
+            }
+            */
+            // Like section
+            const postLikeProcessor = new ObjectivePostLikedProcessor(this.userLikeService);
+            postLikeProcessor.setData({
+                objectiveId: objId,
+                sampleCount: 10,
+                userId
+            });
+            const postLikeProcsResult = await postLikeProcessor.process();
+            if (postLikeProcsResult !== undefined) {
+                pageObjTimeline.timelines.push(postLikeProcsResult);
+            }
             // current post section
             const lastestPostProcessor = new ObjectiveLastestProcessor(this.postsService, this.s3Service);
             lastestPostProcessor.setData({
