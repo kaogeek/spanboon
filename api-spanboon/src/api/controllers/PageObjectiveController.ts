@@ -1361,20 +1361,23 @@ export class ObjectiveController {
                 const createHashTag = await this.hashTagService.create(newHashTag);
                 if (createHashTag) {
                     updateQuery = { _id: objId, pageId: pageObjId };
-                    newValue = { $set: { title, detail, iconURL, hashTag: createHashTag.id, s3IconURL, category, personal } };
+                    newValue = { $set: { title, detail, iconURL, hashTag: createHashTag.id, s3IconURL, category, personal: objectives.personal } };
                     objectiveSave = await this.pageObjectiveService.update(updateQuery, newValue);
-                    const result: any = {};
-                    result['_id'] = objectiveSave.id;
-                    result['pageId'] = objectiveSave.pageId;
-                    result['title'] = objectiveSave.title;
-                    result['detail'] = objectiveSave.detail;
-                    result['hashTag'] = createHashTag.id;
-                    result['hashTagName'] = createHashTag.name;
-                    result['iconURL'] = objectiveSave.iconURL;
-                    result['s3IconURL'] = objectiveSave.s3IconURL;
-                    result['personal'] = objectiveSave.personal;
-                    result['createdDate'] = objectiveSave.createdDate;
-                    return res.status(200).send(ResponseUtil.getSuccessResponse('Update PageObjective Successful', result));
+                    const updatePosts = await this.postsService.updateMany({ objective: objId }, { $set: { objective: createHashTag.id, objectiveTag: createHashTag.name } });
+                    if (updatePosts) {
+                        const result: any = {};
+                        result['_id'] = objectiveSave.id;
+                        result['pageId'] = objectiveSave.pageId;
+                        result['title'] = objectiveSave.title;
+                        result['detail'] = objectiveSave.detail;
+                        result['hashTag'] = createHashTag.id;
+                        result['hashTagName'] = createHashTag.name;
+                        result['iconURL'] = objectiveSave.iconURL;
+                        result['s3IconURL'] = objectiveSave.s3IconURL;
+                        result['personal'] = objectiveSave.personal;
+                        result['createdDate'] = objectiveSave.createdDate;
+                        return res.status(200).send(ResponseUtil.getSuccessResponse('Update PageObjective Successful', result));
+                    }
                 }
             } else {
                 const checkObjective = await this.pageObjectiveService.findOne({ hashTag: masterHashTag.id });
