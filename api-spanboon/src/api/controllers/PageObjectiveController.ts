@@ -369,12 +369,22 @@ export class ObjectiveController {
             const errorResponse = ResponseUtil.getErrorResponse('You have been join this objective.', undefined);
             return res.status(400).send(errorResponse);
         }
+        // reconnect to join the objective.
+        if (checkJoinObjective !== undefined && checkJoinObjective !== null && checkJoinObjective.join === false && checkJoinObjective.approve === false) {
+            const query = { objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId };
+            const newValue = { $set: { join: true, approve: true } };
+            const update = await this.pageObjectiveJoinerService.update(query, newValue);
+            if (update) {
+                const errorResponse = ResponseUtil.getErrorResponse('Rejoin objective is succesful.', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        }
 
         // if auto approve 
         if (join === true && checkPublicObjective.personal === true && pageOwner.autoApprove === true) {
             if (pageJoiner && pageOwner.id) {
                 const notiOwners = await this.deviceTokenService.find({ userId: pageOwner.ownerUser });
-                notificationText = pageJoiner.name + space + 'ขอเข้าร่วมสิ่งที่กำลังทำของเพจคุณ';
+                notificationText = pageJoiner.name + space + 'เข้าร่วมสิ่งที่กำลังทำของเพจคุณ';
                 link = `/page/${pageJoiner.id}/`;
                 if (searchObjective.length === 0 || searchObjective.length <= 10) {
                     await this.pageNotificationService.notifyToPageUserFcm(
@@ -862,6 +872,43 @@ export class ObjectiveController {
             }
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Unable to get lists objective', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+    }
+
+    @Post('/disjoin')
+    @Authorized('user')
+    public async disJoinObjective(@Body({ validate: true }) joinObjectiveRequest: JoinObjectiveRequest, @Res() res: any, @Req() req: any): Promise<any> {
+        const objtiveIds = new ObjectID(joinObjectiveRequest.objectiveId);
+        const pageObjId = new ObjectID(joinObjectiveRequest.pageId);
+        const joinerObjId = new ObjectID(joinObjectiveRequest.joiner);
+        const joined = joinObjectiveRequest.join;
+        const approved = joinObjectiveRequest.approved;
+
+        const joinObjective = await this.pageObjectiveJoinerService.findOne({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId, join: joined, approve: approved });
+        if (joinObjective) {
+            const query = {
+                _id: joinObjective.id,
+                objectiveId: joinObjective.objectiveId,
+                pageId: joinObjective.pageId,
+                joiner: joinObjective.joiner,
+                join: joinObjective.join,
+                approve: joinObjective.approve
+            };
+            const newValues = { $set: { join: false, approve: false } };
+            const update = await this.pageObjectiveJoinerService.update(query, newValues);
+            const postUpdate = await this.postsService.updateMany(
+                { pageId: joinObjective.joiner, objective: joinObjective.objectiveId }, 
+                { $set: { objective: null, objectiveTag: null } }
+            );
+            if (update && postUpdate) {
+                const successResponse = ResponseUtil.getSuccessResponse('Unjoin is successfully.', newValues);
+                return res.status(200).send(successResponse);
+            }
+
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Not found objective.', undefined);
             return res.status(400).send(errorResponse);
         }
 
