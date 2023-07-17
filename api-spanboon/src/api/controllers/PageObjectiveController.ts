@@ -1349,9 +1349,38 @@ export class ObjectiveController {
         }
         // public
         if (objectiveUpdate.personal === true) {
-            const checkObjective = await this.pageObjectiveService.findOne({ pageId: pageObjId, _id: objId, hashTag: hashTagObjIds });
-            if (checkObjective === undefined) {
-                return res.status(400).send(ResponseUtil.getSuccessResponse('Your objective is public and hashTag you try to edit is already exists.', undefined));
+            const hashTagName: string = name;
+            const masterHashTag = await this.hashTagService.findOne({ name: hashTagName });
+            if (masterHashTag === undefined) {
+                const newHashTag: HashTag = new HashTag();
+                newHashTag.name = name;
+                newHashTag.lastActiveDate = today;
+                newHashTag.count = 0;
+                newHashTag.iconURL = '';
+
+                const createHashTag = await this.hashTagService.create(newHashTag);
+                if (createHashTag) {
+                    updateQuery = { _id: objId, pageObjId };
+                    newValue = { $set: { title, detail, iconURL, hashTag: createHashTag.id, s3IconURL, category, personal } };
+                    objectiveSave = await this.pageObjectiveService.update(updateQuery, newValue);
+                    const result: any = {};
+                    result['_id'] = objectiveUpdate.id;
+                    result['pageId'] = objectiveUpdate.pageId;
+                    result['title'] = objectiveUpdate.title;
+                    result['detail'] = objectiveUpdate.detail;
+                    result['hashTag'] = objectiveUpdate.hashTag;
+                    result['hashTagName'] = masterHashTag.name;
+                    result['iconURL'] = objectiveUpdate.iconURL;
+                    result['s3IconURL'] = objectiveUpdate.s3IconURL;
+                    result['personal'] = objectiveUpdate.personal;
+                    result['createdDate'] = objectiveUpdate.createdDate;
+                    return res.status(200).send(ResponseUtil.getSuccessResponse('Update PageObjective Successful', result));
+                }
+            } else {
+                const checkObjective = await this.pageObjectiveService.findOne({ hashTag: masterHashTag.id });
+                if (checkObjective === undefined) {
+                    return res.status(400).send(ResponseUtil.getSuccessResponse('Your objective is public and hashTag you try to edit is already exists.', undefined));
+                }
             }
         }
         // private 
