@@ -1369,7 +1369,7 @@ export class ObjectiveController {
                     result['title'] = objectiveUpdate.title;
                     result['detail'] = objectiveUpdate.detail;
                     result['hashTag'] = createHashTag.id;
-                    result['hashTagName'] = masterHashTag.name;
+                    result['hashTagName'] = createHashTag.name;
                     result['iconURL'] = objectiveUpdate.iconURL;
                     result['s3IconURL'] = objectiveUpdate.s3IconURL;
                     result['personal'] = objectiveUpdate.personal;
