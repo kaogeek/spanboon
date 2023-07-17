@@ -919,8 +919,8 @@ export class GuestController {
         const loginPassword = loginParam.password;
         let loginToken: any;
         let loginUser: any;
-        const userName: string = loginUsername.toLocaleLowerCase();
         if (mode === PROVIDER.EMAIL) {
+            const userName:string = loginUsername.toLocaleLowerCase();
             const tokenFCMEm = req.body.tokenFCM;
             const deviceNameEm = req.body.deviceName;
             const userLogin: any = await this.userService.findOne({ where: { username: userName } });
@@ -1607,7 +1607,7 @@ export class GuestController {
                     const errorResponse: any = { status: 0, message: 'Invalid Token.' };
                     return res.status(400).send(errorResponse);
                 }
-
+                
                 // const expiresAt = checkIdToken.expire;
                 // const today = moment().toDate();
                 let googleUser = undefined;
