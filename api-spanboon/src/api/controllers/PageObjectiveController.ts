@@ -1364,16 +1364,16 @@ export class ObjectiveController {
                     newValue = { $set: { title, detail, iconURL, hashTag: createHashTag.id, s3IconURL, category, personal } };
                     objectiveSave = await this.pageObjectiveService.update(updateQuery, newValue);
                     const result: any = {};
-                    result['_id'] = objectiveUpdate.id;
-                    result['pageId'] = objectiveUpdate.pageId;
-                    result['title'] = objectiveUpdate.title;
-                    result['detail'] = objectiveUpdate.detail;
+                    result['_id'] = objectiveSave.id;
+                    result['pageId'] = objectiveSave.pageId;
+                    result['title'] = objectiveSave.title;
+                    result['detail'] = objectiveSave.detail;
                     result['hashTag'] = createHashTag.id;
                     result['hashTagName'] = createHashTag.name;
-                    result['iconURL'] = objectiveUpdate.iconURL;
-                    result['s3IconURL'] = objectiveUpdate.s3IconURL;
-                    result['personal'] = objectiveUpdate.personal;
-                    result['createdDate'] = objectiveUpdate.createdDate;
+                    result['iconURL'] = objectiveSave.iconURL;
+                    result['s3IconURL'] = objectiveSave.s3IconURL;
+                    result['personal'] = objectiveSave.personal;
+                    result['createdDate'] = objectiveSave.createdDate;
                     return res.status(200).send(ResponseUtil.getSuccessResponse('Update PageObjective Successful', result));
                 }
             } else {
