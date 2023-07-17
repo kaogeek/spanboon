@@ -255,10 +255,10 @@ export class ObjectiveController {
         }
 
         if (data !== null && data !== undefined && data.personal === false) {
+            const pageObjIds = pageId;
+            const pageOwnerPrivate = await this.pageObjectiveService.findOne({ pageId: pageObjIds, $or: [{ title }, { hashTag: hashTagIds }] });
+            const pageObj = await this.pageService.findOne({ _id: pageOwnerPrivate.pageId });
             if (objectives.personal === false) {
-                const pageObjIds = pageId;
-                const pageOwnerPrivate = await this.pageObjectiveService.findOne({ pageId: pageObjIds, $or: [{ title }, { hashTag: hashTagIds }] });
-                const pageObj = await this.pageService.findOne({ _id: pageOwnerPrivate.pageId });
 
                 if (pageOwnerPrivate !== undefined && pageOwnerPrivate.title === title) {
                     const generic: any = {};
@@ -328,11 +328,27 @@ export class ObjectiveController {
             }
 
             if (data.title === title) {
-                const errorResponse = ResponseUtil.getErrorResponse('PageObjective is Exists', data);
+                const generic: any = {};
+                generic['id'] = data.id;
+                generic['pageId'] = data.pageId;
+                generic['detail'] = data.detail;
+                generic['hashTag'] = data.hashTag;
+                generic['iconURL'] = data.iconURL;
+                generic['s3IconURL'] = data.s3IconURL;
+                generic['name'] = pageObj.name;
+                const errorResponse = ResponseUtil.getErrorResponse('PageObjective is Exists', generic);
                 return res.status(400).send(errorResponse);
             }
             if (String(data.hashTag) === String(hashTagIds)) {
-                const errorResponse = ResponseUtil.getErrorResponse('PageObjective HashTag is Exists', data);
+                const generic: any = {};
+                generic['id'] = data.id;
+                generic['pageId'] = data.pageId;
+                generic['detail'] = data.detail;
+                generic['hashTag'] = data.hashTag;
+                generic['iconURL'] = data.iconURL;
+                generic['s3IconURL'] = data.s3IconURL;
+                generic['name'] = pageObj.name;
+                const errorResponse = ResponseUtil.getErrorResponse('PageObjective HashTag is Exists', generic);
                 return res.status(400).send(errorResponse);
             }
         }
