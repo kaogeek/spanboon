@@ -1388,8 +1388,9 @@ export class ObjectiveController {
         }
         // private 
         if (objectiveUpdate.personal === false) {
+            
             updateQuery = { _id: objId, pageObjId };
-            newValue = { $set: { title, detail, iconURL, hashTag, s3IconURL, category, personal } };
+            newValue = { $set: { title, detail, iconURL, hashTag, s3IconURL, category, personal: objectives.personal } };
             objectiveSave = await this.pageObjectiveService.update(updateQuery, newValue);
             const hashTagName = await this.hashTagService.findOne({ _id: objectiveUpdate.hashTag });
             const result: any = {};
