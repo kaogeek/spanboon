@@ -369,16 +369,6 @@ export class ObjectiveController {
             const errorResponse = ResponseUtil.getErrorResponse('You have been join this objective.', undefined);
             return res.status(400).send(errorResponse);
         }
-        // reconnect to join the objective.
-        if (checkJoinObjective !== undefined && checkJoinObjective !== null && checkJoinObjective.join === false && checkJoinObjective.approve === false) {
-            const query = { objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId };
-            const newValue = { $set: { join: true, approve: true } };
-            const update = await this.pageObjectiveJoinerService.update(query, newValue);
-            if (update) {
-                const errorResponse = ResponseUtil.getErrorResponse('Rejoin objective is succesful.', undefined);
-                return res.status(400).send(errorResponse);
-            }
-        }
 
         // if auto approve 
         if (join === true && checkPublicObjective.personal === true && pageOwner.autoApprove === true) {
@@ -893,17 +883,14 @@ export class ObjectiveController {
                 objectiveId: joinObjective.objectiveId,
                 pageId: joinObjective.pageId,
                 joiner: joinObjective.joiner,
-                join: joinObjective.join,
-                approve: joinObjective.approve
             };
-            const newValues = { $set: { join: false, approve: false } };
-            const update = await this.pageObjectiveJoinerService.update(query, newValues);
+            const update = await this.pageObjectiveJoinerService.delete(query);
             const postUpdate = await this.postsService.updateMany(
-                { pageId: joinObjective.joiner, objective: joinObjective.objectiveId }, 
+                { pageId: joinObjective.joiner, objective: joinObjective.objectiveId },
                 { $set: { objective: null, objectiveTag: null } }
             );
             if (update && postUpdate) {
-                const successResponse = ResponseUtil.getSuccessResponse('Unjoin is successfully.', newValues);
+                const successResponse = ResponseUtil.getSuccessResponse('Unjoin is successfully.', []);
                 return res.status(200).send(successResponse);
             }
 
