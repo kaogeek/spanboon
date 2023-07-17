@@ -1360,7 +1360,7 @@ export class ObjectiveController {
 
                 const createHashTag = await this.hashTagService.create(newHashTag);
                 if (createHashTag) {
-                    updateQuery = { _id: objId, pageObjId };
+                    updateQuery = { _id: objId, pageId: pageObjId };
                     newValue = { $set: { title, detail, iconURL, hashTag: createHashTag.id, s3IconURL, category, personal } };
                     objectiveSave = await this.pageObjectiveService.update(updateQuery, newValue);
                     const result: any = {};
