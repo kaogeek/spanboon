@@ -556,7 +556,6 @@ export class FacebookWebhookController {
                         }
                     }
 
-                    // db.PageObjective.aggregate([{"$match":{"pageId":ObjectId('63bebb5e4677b2062a66b606')}},{"$limit":1},{"$sort":{"createdDate":-1}}])
                     const pageFindtag = await this.pageObjectiveService.aggregate(
                         [
                             { $match: { pageId: pageSubscribe.pageId, hashTag: { $in: postMasterHashTagList } } },
@@ -565,7 +564,6 @@ export class FacebookWebhookController {
                     if (pageFindtag.length > 0) {
                         await this.objectiveFunction(pageFindtag, pageSubscribe.pageId, createPostWebhooks.id, postMasterHashTagList);
                     }
-                    // 64af7a7c0ac242710bbfbe4e
                     const queryTag = { _id: createPostWebhooks.id };
                     const newValuesTag = { $set: { postsHashTags: postMasterHashTagList } };
 
@@ -825,7 +823,8 @@ export class FacebookWebhookController {
         const postObjIds = new ObjectID(postIds);
         const pageObjIds = new ObjectID(pageId);
         if (objectiveObj.length > 0) {
-            const foundPageTag = objectiveObj.shift();
+            const foundPageTag: any = objectiveObj.shift();
+            // single objective
             if (foundPageTag) {
                 const query = { _id: postObjIds };
                 const newValues = {
@@ -833,8 +832,14 @@ export class FacebookWebhookController {
                         objective: foundPageTag._id, objectiveTag: foundPageTag.title
                     }
                 };
-                await this.postsService.update(query, newValues);
+                const updateObjective = await this.postsService.update(query, newValues);
+                if (updateObjective) {
+                    // multi objective 
+                    const arrayHashTag = [foundPageTag.hashTag];
+                    await this.postsService.updateMany({ postsHashTags: { $in: arrayHashTag } }, { $set: { objective: foundPageTag._id, objectiveTag: foundPageTag.title } });
+                }
             }
+
         } else {
             /* joiner objective !!!  */
             let joinerObjective: any;
@@ -882,7 +887,6 @@ export class FacebookWebhookController {
                 for (const pageObjectiveJoin of joinerObjective) {
                     const objectiveIds = new ObjectID(pageObjectiveJoin.pageObjective._id);
                     const titleObjective = pageObjectiveJoin.pageObjective.title;
-
                     const query = { _id: postObjIds.id };
                     const newValues = {
                         $set: {
@@ -891,6 +895,9 @@ export class FacebookWebhookController {
                     };
                     await this.postsService.update(query, newValues);
                 }
+
+                // update multi objective
+
             }
         }
     }
