@@ -370,6 +370,229 @@ export class ObjectiveController {
             return res.status(400).send(errorResponse);
         }
 
+        // if auto approve 
+        if (join === true && checkPublicObjective.personal === true && pageOwner.autoApprove === true) {
+            if (pageJoiner && pageOwner.id) {
+                const notiOwners = await this.deviceTokenService.find({ userId: pageOwner.ownerUser });
+                notificationText = pageJoiner.name + space + 'เข้าร่วมสิ่งที่กำลังทำของเพจคุณ';
+                link = `/page/${pageJoiner.id}/`;
+                if (searchObjective.length === 0 || searchObjective.length <= 10) {
+                    await this.pageNotificationService.notifyToPageUserFcm(
+                        pageOwner.id + '',
+                        undefined,
+                        req.user.id + '',
+                        USER_TYPE.PAGE,
+                        NOTIFICATION_TYPE.OBJECTIVE,
+                        notificationText,
+                        link,
+                        pageJoiner.name,
+                        pageJoiner.imageURL
+                    );
+                    for (const notiOwner of notiOwners) {
+                        if (notiOwner.Tokens !== null && notiOwner.Tokens !== undefined && notiOwner.Tokens !== '') {
+                            await this.notificationService.sendNotificationFCM
+                                (
+                                    pageOwner.id + '',
+                                    USER_TYPE.PAGE,
+                                    req.user.id + '',
+                                    USER_TYPE.PAGE,
+                                    NOTIFICATION_TYPE.OBJECTIVE,
+                                    notificationText,
+                                    link,
+                                    notiOwner.Tokens,
+                                    pageJoiner.name,
+                                    pageJoiner.imageURL
+                                );
+                        } else {
+                            continue;
+                        }
+                    }
+                    const result: any = {};
+                    result['objectiveId'] = objtiveIds;
+                    result['pageId'] = pageObjId;
+                    result['joiner'] = joinerObjId;
+                    result['join'] = join;
+                    result['approve'] = true;
+                    const create = await this.pageObjectiveJoinerService.create(result);
+                    if (create) {
+                        const successResponse = ResponseUtil.getSuccessResponse('Send noti is succesful.', []);
+                        return res.status(200).send(successResponse);
+                    }
+                } else if (searchObjective.length > 10 && searchObjective.length <= 50 && minutes % interval_15 === 0) {
+                    await this.pageNotificationService.notifyToPageUserFcm(
+                        pageOwner.id + '',
+                        undefined,
+                        req.user.id + '',
+                        USER_TYPE.PAGE,
+                        NOTIFICATION_TYPE.LIKE,
+                        notificationText,
+                        link,
+                        pageJoiner.name,
+                        pageJoiner.imageURL
+                    );
+                    for (const notiOwner of notiOwners) {
+                        if (notiOwner.Tokens !== null && notiOwner.Tokens !== undefined && notiOwner.Tokens !== '') {
+                            await this.notificationService.sendNotificationFCM
+                                (
+                                    pageOwner.id + '',
+                                    USER_TYPE.PAGE,
+                                    req.user.id + '',
+                                    USER_TYPE.PAGE,
+                                    NOTIFICATION_TYPE.OBJECTIVE,
+                                    notificationText,
+                                    link,
+                                    notiOwner.Tokens,
+                                    pageJoiner.name,
+                                    pageJoiner.imageURL
+                                );
+                        } else {
+                            continue;
+                        }
+                    }
+                    const result: any = {};
+                    result['objectiveId'] = objtiveIds;
+                    result['pageId'] = pageObjId;
+                    result['joiner'] = joinerObjId;
+                    result['join'] = join;
+                    result['approve'] = true;
+                    const create = await this.pageObjectiveJoinerService.create(result);
+                    if (create) {
+                        const successResponse = ResponseUtil.getSuccessResponse('Send noti is succesful.', []);
+                        return res.status(200).send(successResponse);
+                    }
+                } else if (searchObjective.length > 50 && searchObjective.length <= 300 && minutes % interval_30 === 0) {
+                    await this.pageNotificationService.notifyToPageUserFcm(
+                        pageOwner.id + '',
+                        undefined,
+                        req.user.id + '',
+                        USER_TYPE.PAGE,
+                        NOTIFICATION_TYPE.LIKE,
+                        notificationText,
+                        link,
+                        pageJoiner.name,
+                        pageJoiner.imageURL
+                    );
+                    for (const notiOwner of notiOwners) {
+                        if (notiOwner.Tokens !== null && notiOwner.Tokens !== undefined && notiOwner.Tokens !== '') {
+                            await this.notificationService.sendNotificationFCM
+                                (
+                                    pageOwner.id + '',
+                                    USER_TYPE.PAGE,
+                                    req.user.id + '',
+                                    USER_TYPE.PAGE,
+                                    NOTIFICATION_TYPE.OBJECTIVE,
+                                    notificationText,
+                                    link,
+                                    notiOwner.Tokens,
+                                    pageJoiner.name,
+                                    pageJoiner.imageURL
+                                );
+                        } else {
+                            continue;
+                        }
+                    }
+                    const result: any = {};
+                    result['objectiveId'] = objtiveIds;
+                    result['pageId'] = pageObjId;
+                    result['joiner'] = joinerObjId;
+                    result['join'] = join;
+                    result['approve'] = true;
+                    const create = await this.pageObjectiveJoinerService.create(result);
+                    if (create) {
+                        const successResponse = ResponseUtil.getSuccessResponse('Send noti is succesful.', []);
+                        return res.status(200).send(successResponse);
+                    }
+                } else if (searchObjective.length > 300 && searchObjective.length <= 2000 && hours % 2 === 0) {
+                    await this.pageNotificationService.notifyToPageUserFcm(
+                        pageOwner.id + '',
+                        undefined,
+                        req.user.id + '',
+                        USER_TYPE.PAGE,
+                        NOTIFICATION_TYPE.LIKE,
+                        notificationText,
+                        link,
+                        pageJoiner.name,
+                        pageJoiner.imageURL
+                    );
+                    for (const notiOwner of notiOwners) {
+                        if (notiOwner.Tokens !== null && notiOwner.Tokens !== undefined && notiOwner.Tokens !== '') {
+                            await this.notificationService.sendNotificationFCM
+                                (
+                                    pageOwner.id + '',
+                                    USER_TYPE.PAGE,
+                                    req.user.id + '',
+                                    USER_TYPE.PAGE,
+                                    NOTIFICATION_TYPE.OBJECTIVE,
+                                    notificationText,
+                                    link,
+                                    notiOwner.Tokens,
+                                    pageJoiner.name,
+                                    pageJoiner.imageURL
+                                );
+                        } else {
+                            continue;
+                        }
+                    }
+                    const result: any = {};
+                    result['objectiveId'] = objtiveIds;
+                    result['pageId'] = pageObjId;
+                    result['joiner'] = joinerObjId;
+                    result['join'] = join;
+                    result['approve'] = true;
+                    const create = await this.pageObjectiveJoinerService.create(result);
+                    if (create) {
+                        const successResponse = ResponseUtil.getSuccessResponse('Send noti is succesful.', []);
+                        return res.status(200).send(successResponse);
+                    }
+                } else if (searchObjective.length > 2000 && hours % 3 === 0) {
+                    await this.pageNotificationService.notifyToPageUserFcm(
+                        pageOwner.id + '',
+                        undefined,
+                        req.user.id + '',
+                        USER_TYPE.PAGE,
+                        NOTIFICATION_TYPE.LIKE,
+                        notificationText,
+                        link,
+                        pageJoiner.name,
+                        pageJoiner.imageURL
+                    );
+                    for (const notiOwner of notiOwners) {
+                        if (notiOwner.Tokens !== null && notiOwner.Tokens !== undefined && notiOwner.Tokens !== '') {
+                            await this.notificationService.sendNotificationFCM
+                                (
+                                    pageOwner.id + '',
+                                    USER_TYPE.PAGE,
+                                    req.user.id + '',
+                                    USER_TYPE.PAGE,
+                                    NOTIFICATION_TYPE.OBJECTIVE,
+                                    notificationText,
+                                    link,
+                                    notiOwner.Tokens,
+                                    pageJoiner.name,
+                                    pageJoiner.imageURL
+                                );
+                        } else {
+                            continue;
+                        }
+                    }
+                    const result: any = {};
+                    result['objectiveId'] = objtiveIds;
+                    result['pageId'] = pageObjId;
+                    result['joiner'] = joinerObjId;
+                    result['join'] = join;
+                    result['approve'] = true;
+                    const create = await this.pageObjectiveJoinerService.create(result);
+                    if (create) {
+                        const successResponse = ResponseUtil.getSuccessResponse('Send noti is succesful.', []);
+                        return res.status(200).send(successResponse);
+                    }
+                }
+            } else {
+                const errorResponse = ResponseUtil.getErrorResponse('Error not found page owner objective.', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        }
+        // not auto approve
         if (join === true && checkPublicObjective.personal === true) {
             if (pageJoiner && pageOwner.id) {
                 const notiOwners = await this.deviceTokenService.find({ userId: pageOwner.ownerUser });
@@ -639,6 +862,40 @@ export class ObjectiveController {
             }
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Unable to get lists objective', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+    }
+
+    @Post('/disjoin')
+    @Authorized('user')
+    public async disJoinObjective(@Body({ validate: true }) joinObjectiveRequest: JoinObjectiveRequest, @Res() res: any, @Req() req: any): Promise<any> {
+        const objtiveIds = new ObjectID(joinObjectiveRequest.objectiveId);
+        const pageObjId = new ObjectID(joinObjectiveRequest.pageId);
+        const joinerObjId = new ObjectID(joinObjectiveRequest.joiner);
+        const joined = joinObjectiveRequest.join;
+        const approved = joinObjectiveRequest.approved;
+
+        const joinObjective = await this.pageObjectiveJoinerService.findOne({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId, join: joined, approve: approved });
+        if (joinObjective) {
+            const query = {
+                _id: joinObjective.id,
+                objectiveId: joinObjective.objectiveId,
+                pageId: joinObjective.pageId,
+                joiner: joinObjective.joiner,
+            };
+            const update = await this.pageObjectiveJoinerService.delete(query);
+            const postUpdate = await this.postsService.updateMany(
+                { pageId: joinObjective.joiner, objective: joinObjective.objectiveId },
+                { $set: { objective: null, objectiveTag: null } }
+            );
+            if (update && postUpdate) {
+                const successResponse = ResponseUtil.getSuccessResponse('Unjoin is successfully.', []);
+                return res.status(200).send(successResponse);
+            }
+
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Not found objective.', undefined);
             return res.status(400).send(errorResponse);
         }
 
