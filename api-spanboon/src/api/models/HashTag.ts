@@ -31,6 +31,15 @@ export class HashTag extends BaseModel {
     @Column({ name: 'lastActiveDate' })
     public lastActiveDate: Date;
 
+    @Column({ name: 'pageId' })
+    public pageId: ObjectID;
+
+    @Column({ name: 'objectiveId' })
+    public objectiveId: ObjectID;
+
+    @Column({ name: 'type' })
+    public type: string;
+
     @BeforeInsert()
     public createDetails(): any {
         this.createdDate = moment().toDate();
