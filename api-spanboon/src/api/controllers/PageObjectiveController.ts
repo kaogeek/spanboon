@@ -1604,7 +1604,7 @@ export class ObjectiveController {
                     s3IconURL = objectiveUpdate.s3IconURL;
                 }
                 const updateQuery = { _id: objId, pageId: pageObjId };
-                const newValue = { $set: { title: detailRequest, detail: detailRequest, iconURL, hashTag: hashTagObjIds, s3IconURL, category, personal: objectives.personal } };
+                const newValue = { $set: { title: titleRequest, detail: detailRequest, iconURL, hashTag: hashTagObjIds, s3IconURL, category, personal: objectives.personal } };
                 const objectiveSave = await this.pageObjectiveService.update(updateQuery, newValue);
 
                 if (objectiveSave) {
