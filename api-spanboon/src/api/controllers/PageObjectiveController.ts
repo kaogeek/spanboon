@@ -177,13 +177,11 @@ export class ObjectiveController {
             const data = await this.pageObjectiveService.findOne({ $or: [{ title }, { hashTag: hashTagIds }] });
 
             if (data.title === title) {
-                const generic: any = [data];
-                const errorResponse = ResponseUtil.getErrorResponse('PageObjective is Exists', generic);
+                const errorResponse = ResponseUtil.getErrorResponse('PageObjective is Exists', data);
                 return res.status(400).send(errorResponse);
             }
             if (String(data.hashTag) === String(hashTagIds)) {
-                const generic: any = [data];
-                const errorResponse = ResponseUtil.getErrorResponse('PageObjective HashTag is Exists', generic);
+                const errorResponse = ResponseUtil.getErrorResponse('PageObjective HashTag is Exists', data);
                 return res.status(400).send(errorResponse);
             }
 
