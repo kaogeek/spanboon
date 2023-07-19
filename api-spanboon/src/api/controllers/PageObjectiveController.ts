@@ -177,8 +177,8 @@ export class ObjectiveController {
             const hashTagIds = hashTag;
             const titleRequest = title;
             const pageOwnerPublic = await this.pageObjectiveService.findOne({ personal: true, $or: [{ title: titleRequest }, { hashTag: hashTagIds }] });
-            const pageObj = await this.pageService.findOne({ _id: pageOwnerPublic.pageId });
             if (pageOwnerPublic !== undefined && pageOwnerPublic.title === title) {
+                const pageObj = await this.pageService.findOne({ _id: pageOwnerPublic.pageId });
                 const generic: any = {};
                 generic['id'] = pageOwnerPublic.id;
                 generic['title'] = pageOwnerPublic.title;
@@ -192,6 +192,7 @@ export class ObjectiveController {
                 return res.status(400).send(errorResponse);
             }
             if (pageOwnerPublic !== undefined && String(pageOwnerPublic.hashTag) === String(hashTagIds)) {
+                const pageObj = await this.pageService.findOne({ _id: pageOwnerPublic.pageId });
                 const generic: any = {};
                 generic['id'] = pageOwnerPublic.id;
                 generic['title'] = pageOwnerPublic.title;
