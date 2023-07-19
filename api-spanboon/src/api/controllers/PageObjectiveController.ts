@@ -174,22 +174,12 @@ export class ObjectiveController {
             }
 
             const hashTagIds = hashTag;
-            const data = await this.pageObjectiveService.findOne({ $or: [{ title }, { hashTag: hashTagIds }] });
-
-            if (data.title === title) {
-                const errorResponse = ResponseUtil.getErrorResponse('PageObjective is Exists', data);
-                return res.status(400).send(errorResponse);
-            }
-            if (String(data.hashTag) === String(hashTagIds)) {
-                const errorResponse = ResponseUtil.getErrorResponse('PageObjective HashTag is Exists', data);
-                return res.status(400).send(errorResponse);
-            }
-
             const pageOwnerPublic = await this.pageObjectiveService.findOne({ personal: objectives.personal, $or: [{ title }, { hashTag: hashTagIds }] });
             const pageObj = await this.pageService.findOne({ _id: pageOwnerPublic.pageId });
             if (pageOwnerPublic !== undefined && pageOwnerPublic.title === title) {
                 const generic: any = {};
                 generic['id'] = pageOwnerPublic.id;
+                generic['title'] = pageOwnerPublic.title;
                 generic['pageId'] = pageOwnerPublic.pageId;
                 generic['detail'] = pageOwnerPublic.detail;
                 generic['hashTag'] = pageOwnerPublic.hashTag;
@@ -202,6 +192,7 @@ export class ObjectiveController {
             if (pageOwnerPublic !== undefined && String(pageOwnerPublic.hashTag) === String(hashTagIds)) {
                 const generic: any = {};
                 generic['id'] = pageOwnerPublic.id;
+                generic['title'] = pageOwnerPublic.title;
                 generic['pageId'] = pageOwnerPublic.pageId;
                 generic['detail'] = pageOwnerPublic.detail;
                 generic['hashTag'] = pageOwnerPublic.hashTag;
@@ -1746,7 +1737,7 @@ export class ObjectiveController {
             if (pageJoiner) {
                 query = { _id: objId };
                 deleteObjective = await this.pageObjectiveJoinerService.delete(query);
-                await this.hashTagService.delete({ _id: pageJoiner.hashTag,type:'OBJECTIVE' });
+                await this.hashTagService.delete({ _id: pageJoiner.hashTag, type: 'OBJECTIVE' });
                 if (deleteObjective) {
                     return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully delete PageObjective', []));
                 }
