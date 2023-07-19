@@ -1192,21 +1192,20 @@ export class GuestController {
             const data: User = await this.userService.findOne({ where: { username: userEmail } });
             const checkAuthen = await this.authenticationIdService.findOne({ user: data.id, providerName: mode });
             if (checkAuthen !== undefined) {
-                const user: User = new User();
-                user.username = data.username;
-                user.email = data.email;
-                user.uniqueId = data.uniqueId;
-                user.firstName = data.firstName;
-                user.lastName = data.lastName;
-                user.imageURL = data.imageURL;
-                user.coverURL = data.coverURL;
-                user.coverPosition = 0;
-                user.displayName = data.displayName;
-                user.birthdate = new Date(data.birthdate);
-                user.isAdmin = data.isAdmin;
-                user.isSubAdmin = data.isSubAdmin;
-                user.banned = data.banned;
-                const errorResponse: any = { status: 0, message: 'You cannot merge this user you have had one.', user };
+                data.username = data.username;
+                data.email = data.email;
+                data.uniqueId = data.uniqueId;
+                data.firstName = data.firstName;
+                data.lastName = data.lastName;
+                data.imageURL = data.imageURL;
+                data.coverURL = data.coverURL;
+                data.coverPosition = 0;
+                data.displayName = data.displayName;
+                data.birthdate = new Date(data.birthdate);
+                data.isAdmin = data.isAdmin;
+                data.isSubAdmin = data.isSubAdmin;
+                data.banned = data.banned;
+                const errorResponse: any = { status: 0, message: 'You cannot merge this user you have had one.', data };
                 return res.status(400).send(errorResponse);
             }
             if (data === undefined) {
@@ -1301,24 +1300,24 @@ export class GuestController {
             // fbUser (userId,email)
             const fbUser = await this.facebookService.fetchFacebook(users.token);
             // check authen
-            const checkUser = await this.userService.findOne({ email: fbUser.email });
+            const checkUser:User = await this.userService.findOne({ email: fbUser.email });
             const checkAuthen = await this.authenticationIdService.findOne({ user: checkUser.id, providerName: mode });
             if (checkAuthen !== undefined) {
-                const user: User = new User();
-                user.username = checkUser.username;
-                user.email = checkUser.email;
-                user.uniqueId = checkUser.uniqueId;
-                user.firstName = checkUser.firstName;
-                user.lastName = checkUser.lastName;
-                user.imageURL = checkUser.imageURL;
-                user.coverURL = checkUser.coverURL;
-                user.coverPosition = 0;
-                user.displayName = checkUser.displayName;
-                user.birthdate = new Date(checkUser.birthdate);
-                user.isAdmin = checkUser.isAdmin;
-                user.isSubAdmin = checkUser.isSubAdmin;
-                user.banned = checkUser.banned;
-                const errorResponse: any = { status: 0, message: 'You cannot merge this user you have had one.', user };
+                const data: User = new User();
+                data.username = checkUser.username;
+                data.email = checkUser.email;
+                data.uniqueId = checkUser.uniqueId;
+                data.firstName = checkUser.firstName;
+                data.lastName = checkUser.lastName;
+                data.imageURL = checkUser.imageURL;
+                data.coverURL = checkUser.coverURL;
+                data.coverPosition = 0;
+                data.displayName = checkUser.displayName;
+                data.birthdate = new Date(checkUser.birthdate);
+                data.isAdmin = checkUser.isAdmin;
+                data.isSubAdmin = checkUser.isSubAdmin;
+                data.banned = checkUser.banned;
+                const errorResponse: any = { status: 0, message: 'You cannot merge this user you have had one.', data };
                 return res.status(400).send(errorResponse);
             }
 
@@ -1516,21 +1515,21 @@ export class GuestController {
                 userApple = await this.userService.findOne({ where: { username: users.email.toLowerCase() } });
                 const checkAuthen = await this.authenticationIdService.findOne({ user: userApple.id, providerName: mode });
                 if (checkAuthen !== undefined) {
-                    const user: User = new User();
-                    user.username = userApple.username;
-                    user.email = userApple.email;
-                    user.uniqueId = userApple.uniqueId;
-                    user.firstName = userApple.firstName;
-                    user.lastName = userApple.lastName;
-                    user.imageURL = userApple.imageURL;
-                    user.coverURL = userApple.coverURL;
-                    user.coverPosition = 0;
-                    user.displayName = userApple.displayName;
-                    user.birthdate = new Date(userApple.birthdate);
-                    user.isAdmin = userApple.isAdmin;
-                    user.isSubAdmin = userApple.isSubAdmin;
-                    user.banned = userApple.banned;
-                    const errorResponse: any = { status: 0, message: 'You cannot merge this user you have had one.', user };
+                    const data: User = new User();
+                    data.username = userApple.username;
+                    data.email = userApple.email;
+                    data.uniqueId = userApple.uniqueId;
+                    data.firstName = userApple.firstName;
+                    data.lastName = userApple.lastName;
+                    data.imageURL = userApple.imageURL;
+                    data.coverURL = userApple.coverURL;
+                    data.coverPosition = 0;
+                    data.displayName = userApple.displayName;
+                    data.birthdate = new Date(userApple.birthdate);
+                    data.isAdmin = userApple.isAdmin;
+                    data.isSubAdmin = userApple.isSubAdmin;
+                    data.banned = userApple.banned;
+                    const errorResponse: any = { status: 0, message: 'You cannot merge this user you have had one.', data };
                     return res.status(400).send(errorResponse);
                 }
                 if (userApple === undefined) {
@@ -1625,21 +1624,21 @@ export class GuestController {
 
             const checkAuthen = await this.authenticationIdService.findOne({ user: userGG.id, providerName: mode });
             if (checkAuthen !== undefined) {
-                const user: User = new User();
-                user.username = userGG.username;
-                user.email = userGG.email;
-                user.uniqueId = userGG.uniqueId;
-                user.firstName = userGG.firstName;
-                user.lastName = userGG.lastName;
-                user.imageURL = userGG.imageURL;
-                user.coverURL = userGG.coverURL;
-                user.coverPosition = 0;
-                user.displayName = userGG.displayName;
-                user.birthdate = new Date(userGG.birthdate);
-                user.isAdmin = userGG.isAdmin;
-                user.isSubAdmin = userGG.isSubAdmin;
-                user.banned = userGG.banned;
-                const errorResponse: any = { status: 0, message: 'You cannot merge this user you have had one.', user };
+                const data: User = new User();
+                data.username = userGG.username;
+                data.email = userGG.email;
+                data.uniqueId = userGG.uniqueId;
+                data.firstName = userGG.firstName;
+                data.lastName = userGG.lastName;
+                data.imageURL = userGG.imageURL;
+                data.coverURL = userGG.coverURL;
+                data.coverPosition = 0;
+                data.displayName = userGG.displayName;
+                data.birthdate = new Date(userGG.birthdate);
+                data.isAdmin = userGG.isAdmin;
+                data.isSubAdmin = userGG.isSubAdmin;
+                data.banned = userGG.banned;
+                const errorResponse: any = { status: 0, message: 'You cannot merge this user you have had one.', data };
                 return res.status(400).send(errorResponse);
             }
 
@@ -1933,21 +1932,21 @@ export class GuestController {
             // check merge curl
             const checkAuthen = await this.authenticationIdService.findOne({ user: user.id, providerName: mode });
             if (checkAuthen !== undefined) {
-                const userAuth: User = new User();
-                userAuth.username = user.username;
-                userAuth.email = user.email;
-                userAuth.uniqueId = user.uniqueId;
-                userAuth.firstName = user.firstName;
-                userAuth.lastName = user.lastName;
-                userAuth.imageURL = user.imageURL;
-                userAuth.coverURL = user.coverURL;
-                userAuth.coverPosition = 0;
-                userAuth.displayName = user.displayName;
-                userAuth.birthdate = new Date(user.birthdate);
-                userAuth.isAdmin = user.isAdmin;
-                userAuth.isSubAdmin = user.isSubAdmin;
-                userAuth.banned = user.banned;
-                const errorResponse: any = { status: 0, message: 'You cannot merge this user you have had one.', user };
+                const data: User = new User();
+                data.username = user.username;
+                data.email = user.email;
+                data.uniqueId = user.uniqueId;
+                data.firstName = user.firstName;
+                data.lastName = user.lastName;
+                data.imageURL = user.imageURL;
+                data.coverURL = user.coverURL;
+                data.coverPosition = 0;
+                data.displayName = user.displayName;
+                data.birthdate = new Date(user.birthdate);
+                data.isAdmin = user.isAdmin;
+                data.isSubAdmin = user.isSubAdmin;
+                data.banned = user.banned;
+                const errorResponse: any = { status: 0, message: 'You cannot merge this user you have had one.', data };
                 return res.status(400).send(errorResponse);
             }
             if (otp === otpFind.otp) {
@@ -1989,21 +1988,21 @@ export class GuestController {
             // check merge curl
             const checkAuthen = await this.authenticationIdService.findOne({ user: user.id, providerName: mode });
             if (checkAuthen !== undefined) {
-                const userAuth: User = new User();
-                userAuth.username = user.username;
-                userAuth.email = user.email;
-                userAuth.uniqueId = user.uniqueId;
-                userAuth.firstName = user.firstName;
-                userAuth.lastName = user.lastName;
-                userAuth.imageURL = user.imageURL;
-                userAuth.coverURL = user.coverURL;
-                userAuth.coverPosition = 0;
-                userAuth.displayName = user.displayName;
-                userAuth.birthdate = new Date(user.birthdate);
-                userAuth.isAdmin = user.isAdmin;
-                userAuth.isSubAdmin = user.isSubAdmin;
-                userAuth.banned = user.banned;
-                const errorResponse: any = { status: 0, message: 'You cannot merge this user you have had one.', user };
+                const data: User = new User();
+                data.username = user.username;
+                data.email = user.email;
+                data.uniqueId = user.uniqueId;
+                data.firstName = user.firstName;
+                data.lastName = user.lastName;
+                data.imageURL = user.imageURL;
+                data.coverURL = user.coverURL;
+                data.coverPosition = 0;
+                data.displayName = user.displayName;
+                data.birthdate = new Date(user.birthdate);
+                data.isAdmin = user.isAdmin;
+                data.isSubAdmin = user.isSubAdmin;
+                data.banned = user.banned;
+                const errorResponse: any = { status: 0, message: 'You cannot merge this user you have had one.', data };
                 return res.status(400).send(errorResponse);
             }
             if (otp === otpFind.otp) {
@@ -2064,21 +2063,21 @@ export class GuestController {
             // check merge curl
             const checkAuthen = await this.authenticationIdService.findOne({ user: user.id, providerName: mode });
             if (checkAuthen !== undefined) {
-                const userAuth: User = new User();
-                userAuth.username = user.username;
-                userAuth.email = user.email;
-                userAuth.uniqueId = user.uniqueId;
-                userAuth.firstName = user.firstName;
-                userAuth.lastName = user.lastName;
-                userAuth.imageURL = user.imageURL;
-                userAuth.coverURL = user.coverURL;
-                userAuth.coverPosition = 0;
-                userAuth.displayName = user.displayName;
-                userAuth.birthdate = new Date(user.birthdate);
-                userAuth.isAdmin = user.isAdmin;
-                userAuth.isSubAdmin = user.isSubAdmin;
-                userAuth.banned = user.banned;
-                const errorResponse: any = { status: 0, message: 'You cannot merge this user you have had one.', user };
+                const data: User = new User();
+                data.username = user.username;
+                data.email = user.email;
+                data.uniqueId = user.uniqueId;
+                data.firstName = user.firstName;
+                data.lastName = user.lastName;
+                data.imageURL = user.imageURL;
+                data.coverURL = user.coverURL;
+                data.coverPosition = 0;
+                data.displayName = user.displayName;
+                data.birthdate = new Date(user.birthdate);
+                data.isAdmin = user.isAdmin;
+                data.isSubAdmin = user.isSubAdmin;
+                data.banned = user.banned;
+                const errorResponse: any = { status: 0, message: 'You cannot merge this user you have had one.', data };
                 return res.status(400).send(errorResponse);
             }
             if (otp === otpFind.otp) {
@@ -2139,21 +2138,21 @@ export class GuestController {
             // check merge curl
             const checkAuthen = await this.authenticationIdService.findOne({ user: user.id, providerName: mode });
             if (checkAuthen !== undefined) {
-                const userAuth: User = new User();
-                userAuth.username = user.username;
-                userAuth.email = user.email;
-                userAuth.uniqueId = user.uniqueId;
-                userAuth.firstName = user.firstName;
-                userAuth.lastName = user.lastName;
-                userAuth.imageURL = user.imageURL;
-                userAuth.coverURL = user.coverURL;
-                userAuth.coverPosition = 0;
-                userAuth.displayName = user.displayName;
-                userAuth.birthdate = new Date(user.birthdate);
-                userAuth.isAdmin = user.isAdmin;
-                userAuth.isSubAdmin = user.isSubAdmin;
-                userAuth.banned = user.banned;
-                const errorResponse: any = { status: 0, message: 'You cannot merge this user you have had one.', user };
+                const data: User = new User();
+                data.username = user.username;
+                data.email = user.email;
+                data.uniqueId = user.uniqueId;
+                data.firstName = user.firstName;
+                data.lastName = user.lastName;
+                data.imageURL = user.imageURL;
+                data.coverURL = user.coverURL;
+                data.coverPosition = 0;
+                data.displayName = user.displayName;
+                data.birthdate = new Date(user.birthdate);
+                data.isAdmin = user.isAdmin;
+                data.isSubAdmin = user.isSubAdmin;
+                data.banned = user.banned;
+                const errorResponse: any = { status: 0, message: 'You cannot merge this user you have had one.', data };
                 return res.status(400).send(errorResponse);
             }
             if (otp === otpFind.otp) {
@@ -2229,21 +2228,21 @@ export class GuestController {
             // check merge curl
             const checkAuthen = await this.authenticationIdService.findOne({ user: user.id, providerName: mode });
             if (checkAuthen !== undefined) {
-                const userAuth: User = new User();
-                userAuth.username = user.username;
-                userAuth.email = user.email;
-                userAuth.uniqueId = user.uniqueId;
-                userAuth.firstName = user.firstName;
-                userAuth.lastName = user.lastName;
-                userAuth.imageURL = user.imageURL;
-                userAuth.coverURL = user.coverURL;
-                userAuth.coverPosition = 0;
-                userAuth.displayName = user.displayName;
-                userAuth.birthdate = new Date(user.birthdate);
-                userAuth.isAdmin = user.isAdmin;
-                userAuth.isSubAdmin = user.isSubAdmin;
-                userAuth.banned = user.banned;
-                const errorResponse: any = { status: 0, message: 'You cannot merge this user you have had one.', user };
+                const data: User = new User();
+                data.username = user.username;
+                data.email = user.email;
+                data.uniqueId = user.uniqueId;
+                data.firstName = user.firstName;
+                data.lastName = user.lastName;
+                data.imageURL = user.imageURL;
+                data.coverURL = user.coverURL;
+                data.coverPosition = 0;
+                data.displayName = user.displayName;
+                data.birthdate = new Date(user.birthdate);
+                data.isAdmin = user.isAdmin;
+                data.isSubAdmin = user.isSubAdmin;
+                data.banned = user.banned;
+                const errorResponse: any = { status: 0, message: 'You cannot merge this user you have had one.', data };
                 return res.status(400).send(errorResponse);
             }
             if (otp === otpFind.otp) {
