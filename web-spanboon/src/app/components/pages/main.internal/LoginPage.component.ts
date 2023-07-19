@@ -407,44 +407,88 @@ export class LoginPage extends AbstractPage implements OnInit {
     let mode = 'GOOGLE';
     this.checkMergeUserFacade.loginWithGoogle(this.googleToken.idToken, this.googleToken.authToken, mode).then((data: any) => {
       // login success redirect to main page  
-      this.getGoogleUser();
-      this.mockDataMergeSocial.social = mode;
-      this.pictureSocial = data.pic;
-      this.modeSwitch = "mergeuser";
-      const queue = data.data.authUser;
-      for (let i = 0; i < queue.length; i++) {
-        const current = queue.shift()
-        if (current === 'EMAIL') {
-          this.social.socialLogin = current;
-          this.login = false;
-          this.emailOtp = data.data.data.email;
-          this.dataUser = data.data;
-          this.socialMode = 'GOOGLE';
-        } else if (current === 'FACEBOOK') {
-          this.social.socialLogin = current;
-          this.login = false;
-          this.emailOtp = data.data.data.email;
-          this.dataUser = data.data;
-          this.socialMode = 'GOOGLE';
-        } else if (current === 'TWITTER') {
-          this.social.socialLogin = current;
-          this.login = false;
-          this.emailOtp = data.data.data.email;
-          this.dataUser = data.data;
-          this.socialMode = 'GOOGLE';
-        } else if (current === 'GOOGLE') {
-          this.social.socialLogin = current;
-          this.login = false;
-          this.emailOtp = data.data.data.email;
-          this.dataUser = data.data;
-          this.socialMode = 'GOOGLE';
-        } else if (current === 'APPLE') {
-          this.social.socialLogin = current;
-          this.login = false;
-          this.emailOtp = data.data.data.email;
-          this.dataUser = data.data;
-          this.socialMode = 'GOOGLE';
+      if (data.data.status === 2) {
+        this.getGoogleUser();
+        this.mockDataMergeSocial.social = mode;
+        this.pictureSocial = data.pic;
+        this.modeSwitch = "mergeuser";
+        const queue = data.data.authUser;
+        for (let i = 0; i < queue.length; i++) {
+          const current = queue.shift()
+          if (current === 'EMAIL') {
+            this.social.socialLogin = current;
+            this.login = false;
+            this.emailOtp = data.data.data.email;
+            this.dataUser = data.data;
+            this.socialMode = 'GOOGLE';
+          } else if (current === 'FACEBOOK') {
+            this.social.socialLogin = current;
+            this.login = false;
+            this.emailOtp = data.data.data.email;
+            this.dataUser = data.data;
+            this.socialMode = 'GOOGLE';
+          } else if (current === 'TWITTER') {
+            this.social.socialLogin = current;
+            this.login = false;
+            this.emailOtp = data.data.data.email;
+            this.dataUser = data.data;
+            this.socialMode = 'GOOGLE';
+          } else if (current === 'GOOGLE') {
+            this.social.socialLogin = current;
+            this.login = false;
+            this.emailOtp = data.data.data.email;
+            this.dataUser = data.data;
+            this.socialMode = 'GOOGLE';
+          } else if (current === 'APPLE') {
+            this.social.socialLogin = current;
+            this.login = false;
+            this.emailOtp = data.data.data.email;
+            this.dataUser = data.data;
+            this.socialMode = 'GOOGLE';
+          }
         }
+      } else if (data.data.status === 1) {
+        this.authenManager.loginWithGoogle(this.googleToken.idToken, this.googleToken.authToken, mode).then((data: any) => {
+          // login success redirect to main page
+          this.observManager.publish('authen.check', null);
+          this.notificationManager.checkLoginSuccess();
+          if (this.redirection) {
+            this.router.navigateByUrl(this.redirection);
+          } else {
+            this.router.navigate(['home']);
+          }
+        }).catch((err) => {
+          const statusMsg = err.error.message;
+          if (statusMsg === "User was not found.") {
+            let navigationExtras: NavigationExtras = {
+              state: {
+                accessToken: this.accessToken,
+                redirection: this.redirection
+              },
+              queryParams: { mode: 'google' }
+            }
+            this.router.navigate(['/register'], navigationExtras);
+          } else if (statusMsg === "This Email not exists") {
+            let navigationExtras: NavigationExtras = {
+              state: {
+                accessToken: this.accessToken,
+                redirection: this.redirection
+              },
+              queryParams: { mode: 'google' }
+            }
+            this.router.navigate(['/register'], navigationExtras);
+          } else if (err.error.message === 'User Banned') {
+            this.dialog.open(DialogAlert, {
+              disableClose: true,
+              data: {
+                text: MESSAGE.TEXT_LOGIN_BANED,
+                bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+                bottomColorText2: "black",
+                btDisplay1: "none"
+              }
+            });
+          }
+        });
       }
     }).catch((error) => {
       const statusMsg = error.error.message;
@@ -458,6 +502,11 @@ export class LoginPage extends AbstractPage implements OnInit {
         }
 
         this.router.navigate(['/register'], navigationExtras);
+      } else if (error.error.message === 'You cannot merge this user you have had one.') {
+        this.mockDataMergeSocial.social = mode;
+        this.dataUser = error.error;
+        this.emailOtp = error.error.data.email;
+        this.modeSwitch = "mergeuser";
       } else if (statusMsg === "This Email not exists") {
         let navigationExtras: NavigationExtras = {
           state: {
@@ -532,43 +581,80 @@ export class LoginPage extends AbstractPage implements OnInit {
       this.isFBLogin = true;
       await this.checkMergeUserFacade.loginWithFacebook(this.accessToken.fbtoken, mode).then((data: any) => {
         // login success redirect to main page
-        this.mockDataMergeSocial.social = mode;
-        this.pictureSocial = data.pic;
-        this.modeSwitch = "mergeuser";
-        const queue = data.data.authUser;
-        for (let i = 0; i < queue.length; i++) {
-          const current = queue.shift()
-          if (current === 'EMAIL') {
-            this.social.socialLogin = current;
-            this.login = false;
-            this.emailOtp = data.data.data.email;
-            this.dataUser = data.data;
-            this.socialMode = 'FACEBOOK';
-          } else if (current === 'FACEBOOK') {
-            this.social.socialLogin = current;
-            this.login = false;
-            this.emailOtp = data.data.data.email;
-            this.dataUser = data;
-            this.socialMode = 'FACEBOOK';
-          } else if (current === 'TWITTER') {
-            this.social.socialLogin = current;
-            this.login = false;
-            this.emailOtp = data.data.data.email;
-            this.dataUser = data;
-            this.socialMode = 'FACEBOOK';
-          } else if (current === 'GOOGLE') {
-            this.social.socialLogin = current;
-            this.login = false;
-            this.emailOtp = data.data.data.email;
-            this.dataUser = data.data;
-            this.socialMode = 'FACEBOOK';
-          } else if (current === 'APPLE') {
-            this.social.socialLogin = current;
-            this.login = false;
-            this.emailOtp = data.data.data.email;
-            this.dataUser = data.data;
-            this.socialMode = 'FACEBOOK';
+        if (data.data.status === 2) {
+          this.mockDataMergeSocial.social = mode;
+          this.pictureSocial = data.pic;
+          this.modeSwitch = "mergeuser";
+          const queue = data.data.authUser;
+          for (let i = 0; i < queue.length; i++) {
+            const current = queue.shift()
+            if (current === 'EMAIL') {
+              this.social.socialLogin = current;
+              this.login = false;
+              this.emailOtp = data.data.data.email;
+              this.dataUser = data.data;
+              this.socialMode = 'FACEBOOK';
+            } else if (current === 'FACEBOOK') {
+              this.social.socialLogin = current;
+              this.login = false;
+              this.emailOtp = data.data.data.email;
+              this.dataUser = data;
+              this.socialMode = 'FACEBOOK';
+            } else if (current === 'TWITTER') {
+              this.social.socialLogin = current;
+              this.login = false;
+              this.emailOtp = data.data.data.email;
+              this.dataUser = data;
+              this.socialMode = 'FACEBOOK';
+            } else if (current === 'GOOGLE') {
+              this.social.socialLogin = current;
+              this.login = false;
+              this.emailOtp = data.data.data.email;
+              this.dataUser = data.data;
+              this.socialMode = 'FACEBOOK';
+            } else if (current === 'APPLE') {
+              this.social.socialLogin = current;
+              this.login = false;
+              this.emailOtp = data.data.data.email;
+              this.dataUser = data.data;
+              this.socialMode = 'FACEBOOK';
+            }
           }
+        } else if (data.data.status === 1) {
+          this.authenManager.loginWithFacebook(this.accessToken.fbtoken, mode).then((data: any) => {
+            // login success redirect to main page
+            this.isFBLogin = false;
+            this.observManager.publish('authen.check', null);
+            this.notificationManager.checkLoginSuccess();
+            if (this.redirection) {
+              this.router.navigateByUrl(this.redirection);
+            } else {
+              this.router.navigate(['home']);
+            }
+          }).catch((err) => {
+            this.isFBLogin = false;
+            const statusMsg = err.error.message;
+            if (statusMsg === "User was not found.") {
+              let navigationExtras: NavigationExtras = {
+                state: {
+                  accessToken: this.accessToken,
+                  redirection: this.redirection
+                },
+                queryParams: { mode: 'facebook' }
+              }
+              this.router.navigate(['/register'], navigationExtras);
+            } else if (err.error.message === 'User Banned') {
+              this.dialog.open(DialogAlert, {
+                disableClose: true,
+                data: {
+                  text: MESSAGE.TEXT_LOGIN_BANED,
+                  bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+                  bottomColorText2: "black",
+                  btDisplay1: "none"
+                }
+              });
+            }
+          });
         }
       }).catch((error) => {
         const statusMsg = error.error.message;
@@ -692,23 +778,82 @@ export class LoginPage extends AbstractPage implements OnInit {
         return this.showAlertDialog("กรุณากรอกรหัสผ่าน");
       }
       this.checkMergeUserFacade.checkMergeUser(mode, body).then((data) => {
-        this.mockDataMergeSocial.social = mode;
-        this.login = false;
-        this.emailOtp = body.email;
-        this.passwordOtp = body.password;
-        this.dataUser = data.data;
-        this.socialMode = "EMAIL";
-        this.modeSwitch = "mergeuser";
-        const queue = data.data.authUser;
-        for (let i = 0; i < queue.length; i++) {
-          const current = queue.shift()
-          this.social.socialLogin = current;
+        if (data.data.status === 2) {
+          this.mockDataMergeSocial.social = mode;
           this.login = false;
-          this.emailOtp = data.data.data.email;
+          this.modeSwitch = "mergeuser";
+          this.emailOtp = body.email;
+          this.passwordOtp = body.password;
           this.dataUser = data.data;
-          this.socialMode = 'EMAIL';
+          this.socialMode = "EMAIL";
+          const queue = data.data.authUser;
+          for (let i = 0; i < queue.length; i++) {
+            const current = queue.shift()
+            this.social.socialLogin = current;
+            this.login = false;
+            this.emailOtp = data.data.data.email;
+            this.dataUser = data.data;
+            this.socialMode = 'EMAIL';
+          }
+          this.login = true;
+        } else {
+          this.authenManager
+            .login(body.email, body.password, mode)
+            .then((data) => {
+              if (data) {
+                let dialog = this.dialog.open(DialogAlert, {
+                  disableClose: true,
+                  data: {
+                    text: MESSAGE.TEXT_LOGIN_SUCCESS,
+                    bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+                    bottomColorText2: "black",
+                    btDisplay1: "none",
+                  },
+                });
+                this.login = true;
+                dialog.afterClosed().subscribe((res) => {
+                  if (res) {
+                    this.observManager.publish("authen.check", null);
+                    this.observManager.publish("authen.profileUser", data.user);
+                    this.notificationManager.checkLoginSuccess();
+                    if (this.redirection) {
+                      this.router.navigateByUrl(this.redirection);
+                    } else {
+                      this.router.navigate(["home"]);
+                      this.login = true;
+                    }
+                  }
+                });
+              }
+            })
+            .catch((err) => {
+              if (err.error.status === 0) {
+                let alertMessages: string;
+                if (err.error.message === "Invalid username") {
+                  alertMessages = "กรุณาใส่อีเมลให้ถูกต้อง";
+                } else if (err.error.message === "User Banned") {
+                  alertMessages = "บัญชีผู้ใช้ถูกแบน";
+                } else if (err.error.message === "Invalid Password") {
+                  alertMessages = "รหัสผ่านไม่ถูกต้อง";
+                }
+                let dialog = this.dialog.open(DialogAlert, {
+                  disableClose: true,
+                  data: {
+                    text: alertMessages,
+                    bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+                    bottomColorText2: "black",
+                    btDisplay1: "none",
+                  },
+                });
+                dialog.afterClosed().subscribe((res) => {
+                  if (res) {
+
+                  }
+                });
+                this.login = true;
+              }
+            });
         }
-        this.login = true;
       }).catch((err) => {
         if (err.error.message === "Invalid Password" && err.status === 400) {
           let dialog = this.dialog.open(DialogAlert, {
@@ -760,6 +905,12 @@ export class LoginPage extends AbstractPage implements OnInit {
               this.login = true;
             }
           });
+        }
+        if (err.error.message === 'You cannot merge this user you have had one.') {
+          this.mockDataMergeSocial.social = mode;
+          this.dataUser = err.error;
+          this.emailOtp = err.error.data.email;
+          this.modeSwitch = "mergeuser";
         } else {
           console.log(err);
           this.login = true;
