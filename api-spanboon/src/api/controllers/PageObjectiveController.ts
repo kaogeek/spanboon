@@ -1442,11 +1442,9 @@ export class ObjectiveController {
             // if hashTagObjective === objectives.hashTag you can edit hashtag
             const hashTagObjective = checkObjective.hashTag;
             const hashTagName: string = name;
-            const checkHashTag = await this.hashTagService.find({ name: hashTagName });
-            if (checkHashTag.length > 0) {
-                return res.status(400).send(ResponseUtil.getErrorResponse('You cannot edit hashtag because your objective is public and the hashTag is duplicate.', undefined));
-            }
-            if (checkHashTag === undefined) {
+            const checkHashTag = await this.hashTagService.findOne({ pageId: pageObjId, _id: hashTagObjective, type: 'OBJECTIVE' });
+
+            if (checkHashTag !== undefined) {
                 queryHashtag = { _id: hashTagObjective, pageId: pageObjId, objectiveId: objId, type: 'OBJECTIVE' };
                 newValueHashTag = { $set: { name: hashTagName } };
                 updateHashTag = await this.hashTagService.update(queryHashtag, newValueHashTag);
