@@ -1748,6 +1748,7 @@ export class ObjectiveController {
             if (pageJoiner) {
                 query = { _id: objId };
                 deleteObjective = await this.pageObjectiveJoinerService.delete(query);
+                await this.hashTagService.delete({ _id: pageJoiner.hashTag,type:'OBJECTIVE' });
                 if (deleteObjective) {
                     return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully delete PageObjective', []));
                 }
