@@ -1187,38 +1187,23 @@ export class GuestController {
         const userEmail: string = users.email ? users.email.toLowerCase() : '';
         let authen = undefined;
         if (mode === PROVIDER.EMAIL) {
-
+            
             const modeAuthen = [];
             const data: User = await this.userService.findOne({ where: { username: userEmail } });
-            const checkAuthen = await this.authenticationIdService.findOne({ user: data.id, providerName: mode });
-            if (checkAuthen !== undefined) {
-                data.username = data.username;
-                data.email = data.email;
-                data.uniqueId = data.uniqueId;
-                data.firstName = data.firstName;
-                data.lastName = data.lastName;
-                data.imageURL = data.imageURL;
-                data.coverURL = data.coverURL;
-                data.coverPosition = 0;
-                data.displayName = data.displayName;
-                data.birthdate = new Date(data.birthdate);
-                data.isAdmin = data.isAdmin;
-                data.isSubAdmin = data.isSubAdmin;
-                data.banned = data.banned;
-                const errorResponse: any = { status: 0, message: 'You cannot merge this user you have had one.', data };
-                return res.status(400).send(errorResponse);
-            }
+
             if (data === undefined) {
                 const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
                 return res.status(400).send(errorUserNameResponse);
             }
 
             const checkAuth = await this.authenticationIdService.findOne({ where: { user: ObjectID(String(data.id)), providerName: mode } });
-
             const AllAuthen = await this.authenticationIdService.find({ user: data.id });
             // ONE-HOT ENCODING
             // [1,0,0,0,0]
             // [0,1,0,0,0]
+            // [0,0,1,0,0]
+            // [0,0,0,1,0]
+            // [0,0,0,0,1]
             // authen.providerName === PROVIDER.EMAIL && authen.providerName === PROVIDER.FACEBOOK && authen.providerName === PROVIDER.GOOGLE && authen.providerName === PROVIDER.TWITTER && authen.providerName === PROVIDER.APPLE 
             for (authen of AllAuthen) {
                 if (authen.providerName === 'EMAIL') {
@@ -1261,6 +1246,7 @@ export class GuestController {
                         return res.status(400).send(errorResponse);
                     }
                 }
+
             } else if (data && checkAuth !== undefined) {
                 if (data) {
                     const userObjId = new ObjectID(data.id);
@@ -1300,26 +1286,6 @@ export class GuestController {
             // fbUser (userId,email)
             const fbUser = await this.facebookService.fetchFacebook(users.token);
             // check authen
-            const checkUser:User = await this.userService.findOne({ email: fbUser.email });
-            const checkAuthen = await this.authenticationIdService.findOne({ user: checkUser.id, providerName: mode });
-            if (checkAuthen !== undefined) {
-                const data: User = new User();
-                data.username = checkUser.username;
-                data.email = checkUser.email;
-                data.uniqueId = checkUser.uniqueId;
-                data.firstName = checkUser.firstName;
-                data.lastName = checkUser.lastName;
-                data.imageURL = checkUser.imageURL;
-                data.coverURL = checkUser.coverURL;
-                data.coverPosition = 0;
-                data.displayName = checkUser.displayName;
-                data.birthdate = new Date(checkUser.birthdate);
-                data.isAdmin = checkUser.isAdmin;
-                data.isSubAdmin = checkUser.isSubAdmin;
-                data.banned = checkUser.banned;
-                const errorResponse: any = { status: 0, message: 'You cannot merge this user you have had one.', data };
-                return res.status(400).send(errorResponse);
-            }
 
             if (fbUser.id !== undefined && fbUser.email !== undefined) {
                 const findUserFb = await this.userService.findOne({ email: fbUser.email });
@@ -1513,25 +1479,7 @@ export class GuestController {
 
             } else {
                 userApple = await this.userService.findOne({ where: { username: users.email.toLowerCase() } });
-                const checkAuthen = await this.authenticationIdService.findOne({ user: userApple.id, providerName: mode });
-                if (checkAuthen !== undefined) {
-                    const data: User = new User();
-                    data.username = userApple.username;
-                    data.email = userApple.email;
-                    data.uniqueId = userApple.uniqueId;
-                    data.firstName = userApple.firstName;
-                    data.lastName = userApple.lastName;
-                    data.imageURL = userApple.imageURL;
-                    data.coverURL = userApple.coverURL;
-                    data.coverPosition = 0;
-                    data.displayName = userApple.displayName;
-                    data.birthdate = new Date(userApple.birthdate);
-                    data.isAdmin = userApple.isAdmin;
-                    data.isSubAdmin = userApple.isSubAdmin;
-                    data.banned = userApple.banned;
-                    const errorResponse: any = { status: 0, message: 'You cannot merge this user you have had one.', data };
-                    return res.status(400).send(errorResponse);
-                }
+
                 if (userApple === undefined) {
                     const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
                     return res.status(400).send(errorUserNameResponse);
@@ -1621,27 +1569,6 @@ export class GuestController {
             const authToken = users.authToken;
             const checkIdToken = await this.googleService.verifyIdToken(idToken, modHeaders);
             const userGG = await this.userService.findOne({ email: checkIdToken.email });
-
-            const checkAuthen = await this.authenticationIdService.findOne({ user: userGG.id, providerName: mode });
-            if (checkAuthen !== undefined) {
-                const data: User = new User();
-                data.username = userGG.username;
-                data.email = userGG.email;
-                data.uniqueId = userGG.uniqueId;
-                data.firstName = userGG.firstName;
-                data.lastName = userGG.lastName;
-                data.imageURL = userGG.imageURL;
-                data.coverURL = userGG.coverURL;
-                data.coverPosition = 0;
-                data.displayName = userGG.displayName;
-                data.birthdate = new Date(userGG.birthdate);
-                data.isAdmin = userGG.isAdmin;
-                data.isSubAdmin = userGG.isSubAdmin;
-                data.banned = userGG.banned;
-                const errorResponse: any = { status: 0, message: 'You cannot merge this user you have had one.', data };
-                return res.status(400).send(errorResponse);
-            }
-
             const pic = [];
             if (checkIdToken === undefined) {
                 const errorResponse: any = { status: 0, message: 'Invalid Token.' };
