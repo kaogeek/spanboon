@@ -1453,7 +1453,7 @@ export class ObjectiveController {
 
                 const hashTagObjIds = hashTagObjective;
 
-                const objectiveUpdate: PageObjective = await this.pageObjectiveService.findOne({ where: { _id: objId, pageId: pageObjId, $or: [{ titleRequest }, { hashTagObjIds }] } });
+                const objectiveUpdate: PageObjective = await this.pageObjectiveService.findOne({ where: { _id: objId, pageId: pageObjId, $or: [{ title: titleRequest }, { hashTag: hashTagObjIds }] } });
                 if (objectiveUpdate === null || objectiveUpdate === undefined) {
                     return res.status(400).send(ResponseUtil.getSuccessResponse('Objective Not Found', undefined));
                 }
@@ -1547,7 +1547,7 @@ export class ObjectiveController {
                 }
                 const hashTagObjIds = hashTagPrivate;
 
-                const objectiveUpdate: PageObjective = await this.pageObjectiveService.findOne({ where: { _id: objId, pageId: pageObjId, $or: [{ titleRequest }, { hashTagObjIds }] } });
+                const objectiveUpdate: PageObjective = await this.pageObjectiveService.findOne({ where: { _id: objId, pageId: pageObjId, $or: [{ title: titleRequest }, { hashTag: hashTagObjIds }] } });
                 if (objectiveUpdate === null || objectiveUpdate === undefined) {
                     return res.status(400).send(ResponseUtil.getSuccessResponse('Objective Not Found', undefined));
                 }
