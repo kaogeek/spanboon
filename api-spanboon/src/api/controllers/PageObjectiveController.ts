@@ -157,7 +157,8 @@ export class ObjectiveController {
         /* personal === true meaning objective is public */
         // objective public
         if (objectives.personal === true) {
-            const masterHashTag: HashTag = await this.hashTagService.findOne({ name });
+            const hashTagName = name;
+            const masterHashTag: HashTag = await this.hashTagService.findOne({ pageId: pageObjId, name: hashTagName, type: 'OBJECTIVE' });
             if (masterHashTag !== null && masterHashTag !== undefined) {
                 hashTag = new ObjectID(masterHashTag.id);
             } else {
