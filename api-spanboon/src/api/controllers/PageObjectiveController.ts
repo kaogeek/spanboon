@@ -1034,6 +1034,89 @@ export class ObjectiveController {
         }
     }
 
+    @Post('/search/all')
+    @Authorized('user')
+    public async searchObjectives(@Body({ validate: true }) search: FindHashTagRequest, @QueryParam('sample') sample: number, @Req() req: any, @Res() res: any): Promise<any> {
+        const userObjIds = new ObjectID(req.headers.userid);
+        const pageObjIds = await this.pageService.findOne({ ownerUser: userObjIds });
+        if (ObjectUtil.isObjectEmpty(search)) {
+            return res.status(200).send([]);
+        }
+
+        let filter: any = search.filter;
+        if (filter === undefined) {
+            filter = new SearchFilter();
+        }
+        const order = filter.orderBy.createdDate;
+        const take = filter.limit;
+        const offset = filter.offset;
+        if (pageObjIds !== undefined && pageObjIds !== null) {
+            const pageObjective = await this.pageObjectiveService.aggregate(
+                [
+                    {
+                        $match: { pageId: pageObjIds.id }
+                    },
+                    {
+                        $lookup: {
+                            from: 'PageObjectiveJoiner',
+                            let: { pageId: '$pageId' },
+                            pipeline: [
+                                {
+                                    $match: {
+                                        $expr: {
+                                            $eq: ['$$pageId', '$pageId']
+                                        }
+                                    }
+                                },
+                                {
+                                    $match: { join: true, approve: true }
+                                },
+                                {
+                                    $lookup: {
+                                        from: 'Page',
+                                        let: { joiner: '$joiner' },
+                                        pipeline: [
+                                            {
+                                                $match: {
+                                                    $expr: {
+                                                        $eq: ['$$joiner', '$_id']
+                                                    }
+                                                }
+                                            }
+                                        ],
+                                        as: 'page'
+                                    }
+                                }
+                            ],
+                            as: 'pageObjectiveJoiner'
+                        }
+                    },
+                    {
+                        $sort: {
+                            createdDate: order
+                        }
+                    },
+                    {
+                        $limit: take
+                    },
+                    {
+                        $skip: offset
+                    }
+                ]
+            );
+            if (pageObjective.length > 0) {
+                const successResponse = ResponseUtil.getSuccessResponse('Successfully Search PageObjective', pageObjective);
+                return res.status(200).send(successResponse);
+            } else {
+                const errorResponse = ResponseUtil.getErrorResponse('Not found objective.', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Not found user.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+
     // Search PageObjective
     /**
      * @api {post} /api/objective/search Search PageObjective API
@@ -1144,51 +1227,22 @@ export class ObjectiveController {
             }
 
             if (aggregateStmt !== undefined && aggregateStmt.length > 0) {
-                console.log('pass1');
                 objectiveLists = await this.pageObjectiveService.aggregateEntity(aggregateStmt, { signURL: true });
             } else {
-                console.log('pass2');
                 objectiveLists = await this.pageObjectiveService.find(filter.whereConditions, { signURL: true });
             }
         } else {
             if (aggregateStmt !== undefined && aggregateStmt.length > 0) {
-                console.log('pass3');
                 objectiveLists = await this.pageObjectiveService.aggregateEntity(aggregateStmt, { signURL: true });
             } else {
-                console.log('pass4');
                 // filter.limit
                 // filter.offset
                 // filter.orderBy.createdDate
-                console.log('filter', filter);
                 const order = filter.orderBy.createdDate;
                 const take = filter.limit;
                 const offset = filter.offset;
                 objectiveLists = await this.pageObjectiveService.aggregate(
                     [
-                        {
-                            $lookup: {
-                                from: 'PageObjectiveJoiner',
-                                let: { pageId: '$pageId' },
-                                pipeline: [
-                                    {
-                                        $match: {
-                                            $expr: {
-                                                $eq: [
-                                                    '$$pageId', '$pageId'
-                                                ]
-                                            }
-                                        }
-                                    },
-                                    {
-                                        $match: {
-                                            join: true,
-                                            approve: true
-                                        }
-                                    }
-                                ],
-                                as: 'pageObjectiveJoiner'
-                            }
-                        },
                         {
                             $lookup: {
                                 from: 'Page',
