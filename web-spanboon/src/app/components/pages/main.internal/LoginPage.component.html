@@ -97,7 +97,7 @@
                                 </div>
                             </div>
                             <div class="label">
-                                {{dataUser.data.email}}
+                                {{dataUser?.data?.email}}
                             </div>
                         </div>
                         <div class="arrow">
@@ -114,21 +114,21 @@
                                             [src]="social.socialLogin === 'FACEBOOK' ? '../../../../assets/img/facebook-logo.svg' : (social.socialLogin === 'TWITTER' ? '../../../../assets/img/twitter.svg' : (social.socialLogin === 'GOOGLE' ? '../../../../assets/img/google.svg' : '../../../../assets/img/logo/mfp.svg'))">
                                     </div>
                                     <ng-container
-                                        *ngIf="!!dataUser!.data!.signURL || !!dataUser!.data!.imageURL; else elsePhoto">
+                                        *ngIf="!!dataUser!.data?.signURL || !!dataUser!.data?.imageURL; else elsePhoto">
                                         <img class="social-pic"
                                             [src]="dataUser.data.signURL ? dataUser.data.signURL : apiBaseURL + dataUser.data.imageURL + '/image'" />
                                     </ng-container>
                                     <ng-template #elsePhoto>
                                         <div class="not-image">
-                                            {{dataUser.data.displayName || dataUser.data.name | slice: 0:1 }}
+                                            {{dataUser?.data?.displayName || dataUser?.data?.name | slice: 0:1 }}
                                         </div>
                                     </ng-template>
                                 </div>
                             </div>
                             <div class="label">
-                                {{dataUser.data.firstName}} {{dataUser.data.lastName}}
+                                {{dataUser?.data?.firstName}} {{dataUser?.data?.lastName}}
                                 <div class="label-tag">
-                                    @{{dataUser.data.uniqueId}}
+                                    @{{dataUser?.data?.uniqueId}}
                                 </div>
                             </div>
                         </div>

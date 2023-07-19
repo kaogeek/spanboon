@@ -653,6 +653,11 @@ export class LoginPage extends AbstractPage implements OnInit {
               btDisplay1: "none"
             }
           });
+        } else if (statusMsg === 'You cannot merge this user you have had one.') {
+          this.mockDataMergeSocial.social = mode;
+          this.dataUser = error.error;
+          this.emailOtp = error.error.data.email;
+          this.modeSwitch = "mergeuser";
         } else if (error.error.status === 0 && this.emailFB) {
           this.isFBLogin = false;
           if (error.error.status === 0) {
