@@ -160,7 +160,6 @@ export class ObjectiveController {
 
             const hashTagName = name;
             const masterHashTag: HashTag = await this.hashTagService.findOne({ name: hashTagName, type: 'OBJECTIVE' });
-
             if (masterHashTag !== undefined && String(masterHashTag.name) === String(hashTagName)) {
                 const objectiveDuplicate = await this.pageObjectiveService.findOne({ _id: masterHashTag.objectiveId, pageId: masterHashTag.pageId });
                 const pageObj = await this.pageService.findOne({ _id: masterHashTag.pageId });
@@ -1371,7 +1370,7 @@ export class ObjectiveController {
 
             if (checkHashTag !== undefined) {
                 // check hashTag duplicate in the page ?
-                const hashTagCheck = await this.hashTagService.findOne({ name: hashTagName, pageId: pageObjId, type: 'OBJECTIVE' });
+                const hashTagCheck = await this.hashTagService.findOne({ name: hashTagName, type: 'OBJECTIVE' });
                 if (hashTagCheck !== undefined && String(hashTagPrivate) === String(hashTagCheck.id)) {
                     queryHashtag = { _id: hashTagPrivate, pageId: pageObjId, objectiveId: objId, type: 'OBJECTIVE' };
                     newValueHashTag = { $set: { name: hashTagName } };
