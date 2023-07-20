@@ -1026,8 +1026,6 @@ export class ObjectiveController {
 
     @Post('/search/all')
     public async searchObjectives(@Body({ validate: true }) search: FindHashTagRequest, @QueryParam('sample') sample: number, @Req() req: any, @Res() res: any): Promise<any> {
-        const userObjIds = new ObjectID(req.headers.userid);
-        const pageObjIds = await this.pageService.findOne({ ownerUser: userObjIds });
         if (ObjectUtil.isObjectEmpty(search)) {
             return res.status(200).send([]);
         }
@@ -1036,14 +1034,17 @@ export class ObjectiveController {
         if (filter === undefined) {
             filter = new SearchFilter();
         }
+        const pageObjIds = new ObjectID(filter.whereConditions.pageId);
+        const pageId = await this.pageService.findOne({ _id: pageObjIds });
+
         const order = filter.orderBy.createdDate;
         const take = filter.limit;
         const offset = filter.offset;
-        if (pageObjIds !== undefined && pageObjIds !== null) {
+        if (pageId !== undefined && pageId !== null) {
             const pageObjective = await this.pageObjectiveService.aggregate(
                 [
                     {
-                        $match: { pageId: pageObjIds.id }
+                        $match: { pageId: pageId.id }
                     },
                     {
                         $lookup: {
