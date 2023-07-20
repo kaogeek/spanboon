@@ -161,11 +161,6 @@ export class ObjectiveController {
             const hashTagName = name;
             const masterHashTag: HashTag = await this.hashTagService.findOne({ name: hashTagName, type: 'OBJECTIVE' });
 
-            if (masterHashTag !== undefined && String(hashTagName) === String(masterHashTag.name)) {
-                const errorResponse = ResponseUtil.getErrorResponse('HashTag is Duplicate.', undefined);
-                return res.status(400).send(errorResponse);
-            }
-
             if (masterHashTag !== undefined && String(masterHashTag.name) === String(hashTagName)) {
                 const objectiveDuplicate = await this.pageObjectiveService.findOne({ _id: masterHashTag.objectiveId, pageId: masterHashTag.pageId });
                 const pageObj = await this.pageService.findOne({ _id: masterHashTag.pageId });
