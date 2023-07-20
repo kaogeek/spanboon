@@ -888,10 +888,8 @@ export class ObjectiveController {
         const objtiveIds = new ObjectID(joinObjectiveRequest.objectiveId);
         const pageObjId = new ObjectID(joinObjectiveRequest.pageId);
         const joinerObjId = new ObjectID(joinObjectiveRequest.joiner);
-        const joined = joinObjectiveRequest.join;
-        const approved = joinObjectiveRequest.approved;
 
-        const joinObjective = await this.pageObjectiveJoinerService.findOne({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId, join: joined, approve: approved });
+        const joinObjective = await this.pageObjectiveJoinerService.findOne({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId });
         if (joinObjective) {
             const query = {
                 _id: joinObjective.id,
