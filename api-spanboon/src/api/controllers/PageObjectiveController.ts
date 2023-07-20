@@ -203,7 +203,7 @@ export class ObjectiveController {
                 generic['iconURL'] = pageOwnerPublic.iconURL;
                 generic['s3IconURL'] = pageOwnerPublic.s3IconURL;
                 generic['name'] = pageObj.name;
-                const errorResponse = ResponseUtil.getErrorResponse('PageObjective HashTag is Exists', generic);
+                const errorResponse = ResponseUtil.getErrorResponse('PageObjective is Exists', generic);
                 return res.status(400).send(errorResponse);
             }
 
@@ -315,49 +315,6 @@ export class ObjectiveController {
                 return res.status(400).send(errorResponse);
             }
         }
-        // objective private
-        /* 
-        fileName = userObjId + FileUtil.renameFile();
-        assets = objectives.asset;
-
-        if (assets !== null && assets !== undefined) {
-            const asset = new Asset();
-            asset.userId = userObjId;
-            asset.fileName = fileName;
-            asset.scope = ASSET_SCOPE.PUBLIC;
-            asset.data = assets.data;
-            asset.size = assets.size;
-            asset.mimeType = assets.mimeType;
-            asset.expirationDate = null;
-
-            assetCreate = await this.assetService.create(asset);
-        }
-
-        objective.pageId = pageId;
-        objective.title = title;
-        objective.detail = detail;
-        objective.hashTag = hashTag;
-        objective.category = categoryObjIds;
-        objective.personal = objectives.personal;
-        objective.iconURL = assetCreate ? ASSET_PATH + assetCreate.id : '';
-        objective.s3IconURL = assetCreate ? assetCreate.s3FilePath : '';
-
-        result = await this.pageObjectiveService.create(objective);
-        if (result) {
-            const query = { _id: assetCreate.id };
-            const newValues = { $set: { pageObjectiveId: ObjectID(result.id) } };
-            await this.assetService.update(query, newValues);
-            const newObjectiveHashTag = new ObjectID(result.hashTag);
-
-            const objectiveHashTag: HashTag = await this.hashTagService.findOne({ _id: newObjectiveHashTag });
-            result.hashTag = objectiveHashTag.name;
-
-            const successResponse = ResponseUtil.getSuccessResponse('Successfully create PageObjective', result);
-            return res.status(200).send(successResponse);
-        } else {
-            const errorResponse = ResponseUtil.getErrorResponse('Unable create PageObjective', undefined);
-            return res.status(400).send(errorResponse);
-        } */
     }
 
     @Post('/join')
