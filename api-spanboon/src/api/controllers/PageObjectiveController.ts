@@ -1726,8 +1726,8 @@ export class ObjectiveController {
 
         query = { _id: objId };
         deleteObjective = await this.pageObjectiveService.delete(query);
-
-        if (deleteObjective) {
+        const deleteHashTag = await this.hashTagService.delete({ pageId: objective.pageId, _id: objective.hashTag, type: 'OBJECTIVE' });
+        if (deleteObjective && deleteHashTag) {
             const deleteObjectiveJoiner = await this.pageObjectiveJoinerService.deleteMany(query);
             const postObjective = await this.postsService.updateMany({ objective: objId }, { $set: { objective: null, objectiveTag: null } });
             if (deleteObjectiveJoiner && postObjective) {
