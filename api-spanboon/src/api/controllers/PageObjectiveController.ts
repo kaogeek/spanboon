@@ -176,7 +176,7 @@ export class ObjectiveController {
 
             const hashTagIds = hashTag;
             const titleRequest = title;
-            const pageOwnerPublic = await this.pageObjectiveService.findOne({ personal: true, $or: [{ title: titleRequest }, { hashTag: hashTagIds }] });
+            const pageOwnerPublic = await this.pageObjectiveService.findOne({ pageId: pageObjId, $or: [{ title: titleRequest }, { hashTag: hashTagIds }] });
             if (pageOwnerPublic !== undefined && pageOwnerPublic.title === title) {
                 const pageObj = await this.pageService.findOne({ _id: pageOwnerPublic.pageId });
                 const generic: any = {};
