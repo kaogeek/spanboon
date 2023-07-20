@@ -1438,6 +1438,14 @@ export class ObjectiveController {
         if (checkObjective.personal === true) {
             // public
             // if hashTagObjective === objectives.hashTag you can edit hashtag
+
+            // check if objective is public and objective switch to private 
+            // check if this objective have a joiner ?
+            const joinerObjecitve = await this.pageObjectiveJoinerService.find({ objectiveId: checkObjective.id, pageId: pageObjId });
+            if (joinerObjecitve.length > 0 && checkObjective.personal === true && objectives.personal === false) {
+                return res.status(400).send(ResponseUtil.getErrorResponse('You cannot edit objective you have had a joiner.', undefined));
+            }
+
             const hashTagObjective = checkObjective.hashTag;
             const hashTagName: string = name;
             const checkHashTag = await this.hashTagService.findOne({ pageId: pageObjId, _id: hashTagObjective, type: 'OBJECTIVE' });
@@ -1532,96 +1540,101 @@ export class ObjectiveController {
         } else {
             // private
             // ??
-            const hashTags: string = name;
-            const hashTagName = await this.hashTagService.find({ name: hashTags, pageId: pageObjId, type: 'OBJECTIVE' });
-            if (hashTagName.length > 0) {
-                return res.status(400).send(ResponseUtil.getErrorResponse('HashTag is duplicate.', undefined));
+            const hashTagPrivate = checkObjective.hashTag;
+            const hashTagName = name;
+            const checkHashTag = await this.hashTagService.findOne({ pageId: pageObjId, _id: hashTagPrivate, type: 'OBJECTIVE' });
+            if (checkHashTag) {
+                // check hashTag duplicate in the page ?
+                const hashTagCheck = await this.hashTagService.findOne({ name: hashTagName, pageId: pageObjId, type: 'OBJECTIVE' });
+                if (String(hashTagPrivate) === String(hashTagCheck.id)) {
+                    queryHashtag = { _id: hashTagPrivate, pageId: pageObjId, objectiveId: objId, type: 'OBJECTIVE' };
+                    newValueHashTag = { $set: { name: hashTagName } };
+                    updateHashTag = await this.hashTagService.update(queryHashtag, newValueHashTag);
+                    if (updateHashTag) {
+                        await this.postsService.updateMany({ objective: objId }, { $set: { objectiveTag: hashTagName } });
+                    }
+                } else {
+                    return res.status(400).send(ResponseUtil.getErrorResponse('HashTag is Duplicate.', undefined));
+                }
+            }
+
+            const hashTagObjIds = hashTagPrivate;
+
+            const objectiveUpdate: PageObjective = await this.pageObjectiveService.findOne({ where: { _id: objId, pageId: pageObjId, $or: [{ title: titleRequest }, { hashTag: hashTagObjIds }] } });
+            if (objectiveUpdate === null || objectiveUpdate === undefined) {
+                return res.status(400).send(ResponseUtil.getSuccessResponse('Objective Not Found', undefined));
+            }
+            if (titleRequest === null || titleRequest === undefined) {
+                titleRequest = objectiveUpdate.title;
+            }
+
+            if (detailRequest === null || detailRequest === undefined) {
+                detailRequest = objectiveUpdate.detail;
+            }
+
+            const objectiveIconURL = objectiveUpdate.iconURL;
+            const objectiveAsset = objectives.asset;
+            let assetData;
+            let assetMimeType;
+            let assetSize;
+            let assetResult;
+            let assetId;
+            let newAssetId;
+            let iconURL;
+            let s3IconURL;
+
+            if (objectiveAsset !== null && objectiveAsset !== undefined) {
+                assetData = objectiveAsset.data;
+                assetMimeType = objectiveAsset.mimeType;
+                assetSize = objectiveAsset.size;
+
+                if (objectiveIconURL !== null && objectiveIconURL !== undefined) {
+                    assetId = new ObjectID(objectiveIconURL.split(ASSET_PATH)[1]);
+
+                    const assetQuery = { _id: assetId, userId: userObjId };
+                    const newAssetValue = { $set: { data: assetData, mimeType: assetMimeType, fileName: assetFileName, size: assetSize, updateDate: updatedDate } };
+                    await this.assetService.update(assetQuery, newAssetValue);
+                    newAssetId = assetId;
+                    assetResult = await this.assetService.findOne({ _id: new ObjectID(newAssetId) });
+                } else {
+                    const asset = new Asset();
+                    asset.userId = userObjId;
+                    asset.data = assetData;
+                    asset.mimeType = assetMimeType;
+                    asset.fileName = assetFileName;
+                    asset.size = assetSize;
+                    asset.scope = ASSET_SCOPE.PUBLIC;
+                    assetResult = await this.assetService.create(asset);
+                    newAssetId = assetResult.id;
+                }
+
+                if (assetResult) {
+                    iconURL = assetResult ? ASSET_PATH + newAssetId : '';
+                    s3IconURL = assetResult ? assetResult.s3FilePath : '';
+                }
             } else {
-                const hashTagPrivate = checkObjective.hashTag;
-                queryHashtag = { _id: hashTagPrivate, pageId: pageObjId, objectiveId: objId, type: 'OBJECTIVE' };
-                newValueHashTag = { $set: { name: hashTags } };
-                updateHashTag = await this.hashTagService.update(queryHashtag, newValueHashTag);
-                if (updateHashTag) {
-                    await this.postsService.updateMany({ objective: objId }, { $set: { objectiveTag: hashTags } });
-                }
-                const hashTagObjIds = hashTagPrivate;
+                iconURL = objectiveIconURL;
+                s3IconURL = objectiveUpdate.s3IconURL;
+            }
+            const updateQuery = { _id: objId, pageId: pageObjId };
+            const newValue = { $set: { title: titleRequest, detail: detailRequest, iconURL, hashTag: hashTagObjIds, s3IconURL, category, personal: objectives.personal } };
+            const objectiveSave = await this.pageObjectiveService.update(updateQuery, newValue);
 
-                const objectiveUpdate: PageObjective = await this.pageObjectiveService.findOne({ where: { _id: objId, pageId: pageObjId, $or: [{ title: titleRequest }, { hashTag: hashTagObjIds }] } });
-                if (objectiveUpdate === null || objectiveUpdate === undefined) {
-                    return res.status(400).send(ResponseUtil.getSuccessResponse('Objective Not Found', undefined));
-                }
-                if (titleRequest === null || titleRequest === undefined) {
-                    titleRequest = objectiveUpdate.title;
-                }
-
-                if (detailRequest === null || detailRequest === undefined) {
-                    detailRequest = objectiveUpdate.detail;
-                }
-
-                const objectiveIconURL = objectiveUpdate.iconURL;
-                const objectiveAsset = objectives.asset;
-                let assetData;
-                let assetMimeType;
-                let assetSize;
-                let assetResult;
-                let assetId;
-                let newAssetId;
-                let iconURL;
-                let s3IconURL;
-
-                if (objectiveAsset !== null && objectiveAsset !== undefined) {
-                    assetData = objectiveAsset.data;
-                    assetMimeType = objectiveAsset.mimeType;
-                    assetSize = objectiveAsset.size;
-
-                    if (objectiveIconURL !== null && objectiveIconURL !== undefined) {
-                        assetId = new ObjectID(objectiveIconURL.split(ASSET_PATH)[1]);
-
-                        const assetQuery = { _id: assetId, userId: userObjId };
-                        const newAssetValue = { $set: { data: assetData, mimeType: assetMimeType, fileName: assetFileName, size: assetSize, updateDate: updatedDate } };
-                        await this.assetService.update(assetQuery, newAssetValue);
-                        newAssetId = assetId;
-                        assetResult = await this.assetService.findOne({ _id: new ObjectID(newAssetId) });
-                    } else {
-                        const asset = new Asset();
-                        asset.userId = userObjId;
-                        asset.data = assetData;
-                        asset.mimeType = assetMimeType;
-                        asset.fileName = assetFileName;
-                        asset.size = assetSize;
-                        asset.scope = ASSET_SCOPE.PUBLIC;
-                        assetResult = await this.assetService.create(asset);
-                        newAssetId = assetResult.id;
-                    }
-
-                    if (assetResult) {
-                        iconURL = assetResult ? ASSET_PATH + newAssetId : '';
-                        s3IconURL = assetResult ? assetResult.s3FilePath : '';
-                    }
-                } else {
-                    iconURL = objectiveIconURL;
-                    s3IconURL = objectiveUpdate.s3IconURL;
-                }
-                const updateQuery = { _id: objId, pageId: pageObjId };
-                const newValue = { $set: { title: titleRequest, detail: detailRequest, iconURL, hashTag: hashTagObjIds, s3IconURL, category, personal: objectives.personal } };
-                const objectiveSave = await this.pageObjectiveService.update(updateQuery, newValue);
-
-                if (objectiveSave) {
-                    const result: any = {};
-                    result['_id'] = objectiveUpdate.id;
-                    result['pageId'] = objectiveUpdate.pageId;
-                    result['title'] = objectiveUpdate.title;
-                    result['detail'] = objectiveUpdate.detail;
-                    result['hashTag'] = objectiveUpdate.hashTag;
-                    result['hashTagName'] = hashTagName;
-                    result['iconURL'] = objectiveUpdate.iconURL;
-                    result['s3IconURL'] = objectiveUpdate.s3IconURL;
-                    result['personal'] = objectiveUpdate.personal;
-                    result['createdDate'] = objectiveUpdate.createdDate;
-                    return res.status(200).send(ResponseUtil.getSuccessResponse('Update PageObjective Successful', result));
-                } else {
-                    return res.status(400).send(ResponseUtil.getErrorResponse('Cannot Update PageObjective', undefined));
-                }
+            if (objectiveSave) {
+                const result: any = {};
+                result['_id'] = objectiveUpdate.id;
+                result['pageId'] = objectiveUpdate.pageId;
+                result['title'] = objectiveUpdate.title;
+                result['detail'] = objectiveUpdate.detail;
+                result['hashTag'] = objectiveUpdate.hashTag;
+                result['hashTagName'] = hashTagName;
+                result['iconURL'] = objectiveUpdate.iconURL;
+                result['s3IconURL'] = objectiveUpdate.s3IconURL;
+                result['personal'] = objectiveUpdate.personal;
+                result['createdDate'] = objectiveUpdate.createdDate;
+                return res.status(200).send(ResponseUtil.getSuccessResponse('Update PageObjective Successful', result));
+            } else {
+                return res.status(400).send(ResponseUtil.getErrorResponse('Cannot Update PageObjective', undefined));
             }
         }
 
