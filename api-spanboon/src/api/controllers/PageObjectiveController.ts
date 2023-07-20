@@ -1025,7 +1025,6 @@ export class ObjectiveController {
     }
 
     @Post('/search/all')
-    @Authorized('user')
     public async searchObjectives(@Body({ validate: true }) search: FindHashTagRequest, @QueryParam('sample') sample: number, @Req() req: any, @Res() res: any): Promise<any> {
         const userObjIds = new ObjectID(req.headers.userid);
         const pageObjIds = await this.pageService.findOne({ ownerUser: userObjIds });
