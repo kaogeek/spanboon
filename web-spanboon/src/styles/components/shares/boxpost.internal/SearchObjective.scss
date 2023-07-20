@@ -20,31 +20,11 @@
     flex-direction: column;
   }
 
-  > .search-header-objective {
-    display: flex;
-    align-items: center;
-    position: relative;
-    border-bottom: $width-border solid $border-separator;
-
-    > label {
-      position: absolute;
-      left: 12px;
-
-      > .img-search {
-        width: 12pt;
-      }
-    }
-
-    > input {
-      flex: 1 1 0%;
-      height: 16pt;
-      padding: 14px 14px 14px 46px;
-      @include font-size-10($font-head-500);
-    }
-  }
-
   > .wrapper-add-doing {
-    border-bottom: $width-border solid $border-separator;
+    height: 55px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
     > .wrapper-add-image {
       display: flex;
@@ -54,7 +34,7 @@
 
       > .page-doing {
         display: flex;
-        @include font-size-10($font-head-500);
+        @include font-size-8($font-head-500);
         span {
           display: -webkit-box;
           -webkit-line-clamp: 1;
@@ -62,48 +42,88 @@
           overflow: hidden;
           max-width: 100%;
           word-break: break-all;
+          color: $brandcolor2;
+          margin: 0 4px;
+
+          &:first-child {
+            color: black;
+          }
+
+          &:last-child {
+            color: black;
+          }
+        }
+      }
+    }
+  }
+
+  > .box-action {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    align-items: center;
+    padding: 10pt 10pt 0 10pt;
+    background-color: #80808012;
+
+    > .settings {
+      border: 1px solid rgb(0, 0, 0, 0.5);
+      display: flex;
+      padding: 5px;
+      border-radius: 15px;
+      @include font-size-10($font-head-500);
+      @include pointer();
+
+      > .setting-button {
+        display: flex;
+        justify-content: flex-end;
+        align-items: end;
+        width: 40px;
+        @include font-size-10($font-head-500);
+      }
+    }
+
+    > .image-upload {
+      background-color: $brandcolor2;
+      border: 1px solid $brandcolor2;
+      display: flex;
+      padding: 5px 15px;
+      border-radius: 4px;
+      height: 20px;
+      align-items: center;
+      cursor: pointer;
+      @include font-size-10($font-head-500);
+      @include pointer();
+      > .add-label {
+        @include font-size-10($font-head-500);
+        color: white;
+      }
+    }
+
+    > .search-header-objective {
+      display: flex;
+      align-items: center;
+      position: relative;
+      height: 30px;
+      border: 1px solid rgb(0, 0, 0, 0.1);
+      border-radius: 50px;
+      width: 100%;
+
+      > label {
+        position: absolute;
+        left: 12px;
+
+        > .img-search {
+          width: 10pt;
+          height: 10pt;
+          opacity: 0.6;
         }
       }
 
-      > .box-action {
-        display: flex;
-        flex-direction: row;
-        gap: 15px;
-
-        > .settings {
-          border: 1px solid rgb(0, 0, 0, 0.5);
-          display: flex;
-          padding: 5px;
-          border-radius: 15px;
-          @include font-size-10($font-head-500);
-          @include pointer();
-
-          > .setting-button {
-            display: flex;
-            justify-content: flex-end;
-            align-items: end;
-            width: 40px;
-            @include font-size-10($font-head-500);
-          }
-        }
-
-        > .image-upload {
-          border: 1px solid rgb(0, 0, 0, 0.5);
-          display: flex;
-          padding: 5px;
-          border-radius: 15px;
-          align-items: center;
-          cursor: pointer;
-          @include font-size-10($font-head-500);
-          @include pointer();
-          > .add-label {
-            @include font-size-10($font-head-500);
-          }
-          > .icon-add {
-            width: 12pt;
-            margin-right: 10px;
-          }
-        }
+      > input {
+        flex: 1 1 0%;
+        height: 16pt;
+        padding: 14px 14px 14px 36px;
+        @include font-size-10($font-head-500);
       }
     }
   }
@@ -113,12 +133,15 @@
     height: 245pt;
 
     > .wrapper-body-doing {
-      display: flex;
-      flex-wrap: wrap;
       border: unset;
       overflow-x: hidden;
       -webkit-user-select: none;
       width: 100%;
+      padding: 10pt;
+      gap: 7px;
+      display: flex;
+      flex-direction: column;
+      background-color: #80808012;
 
       > .wrapper-not-objective {
         display: flex;
@@ -132,15 +155,16 @@
       > .wrapper-doing {
         position: relative;
         display: flex;
-        flex-direction: column;
         align-items: center;
         text-align: center;
-        padding: 14pt;
         margin: 0;
-        width: calc(25% - 28pt);
+        width: 100%;
         @include font-size-10($font-head-500);
-        height: max-content;
+        height: 60px;
         @include pointer();
+        background: white;
+        box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.1);
+        border-radius: 4px;
 
         &:hover {
           background-color: $background-hover;
@@ -148,29 +172,60 @@
 
         &.active-click-doing {
           background-color: $brandcolor2;
+        }
 
-          > .name-objective,
-          > .div-objective {
-            color: $brandcolor;
+        > .dropdown {
+          position: absolute;
+          right: 12px;
+          border-radius: unset;
+          background: #ebf0f2;
+          height: 30px;
+          width: 37px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 4px;
+        }
+
+        > .text-objective {
+          margin-left: 5px;
+          display: flex;
+          flex-direction: column;
+          text-align: left;
+
+          > .name-objective {
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            max-width: 100%;
+            word-break: break-all;
+            @include font-size-9($font-head-500);
+          }
+          > .title-objective {
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            max-width: 100%;
+            word-break: break-all;
+            opacity: 0.5;
+            @include font-size-10($font-head-100);
           }
         }
 
-        .name-objective {
-          display: -webkit-box;
-          -webkit-line-clamp: 1;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-          max-width: 100%;
-          word-break: break-all;
-        }
+        > .edit {
+          position: absolute;
+          left: 0;
+          z-index: 9;
+          top: 0;
 
-        .div-objective {
-          display: flex;
-          flex-direction: row;
-          justify-content: center;
-
-          .bo_2 {
-            padding: 0 5pt;
+          > mat-icon {
+            font-size: 22px;
+            border: 0px solid;
+            border-radius: 50%;
+            margin: 5px 0 0 5px;
+            background-color: #79ca00;
           }
         }
 
@@ -191,12 +246,13 @@
         > .images {
           position: relative;
           flex: 0 0 auto;
+          display: flex;
+          padding: 12px;
 
           > .image-tag {
-            width: 60pt;
-            height: 60pt;
+            width: 35pt;
+            height: 35pt;
             border-radius: 50%;
-            border: 5px solid #fff;
             overflow: hidden;
             box-shadow: 0 5px 8px 0 #00000020;
           }
@@ -204,7 +260,9 @@
           > .lock {
             position: absolute;
             right: 0;
-            bottom: 8pt;
+            bottom: 8px;
+            height: 30px;
+            width: 30px;
           }
         }
         > .image-waste {
@@ -271,6 +329,46 @@
       }
     }
   }
+
+  .upload-image-doing {
+    > .body-center {
+      > .wrappper-body-upload {
+        > .wrapper-doing {
+          flex-direction: column;
+
+          > .hash {
+            width: 100%;
+          }
+        }
+
+        > .wrapper-upload {
+          padding: 5pt 0;
+          flex-direction: column;
+          align-items: center;
+
+          > .div-image {
+            > .image-user {
+              width: 90pt;
+              height: 90pt;
+            }
+          }
+
+          > .wrapper-field-upload {
+            align-items: center;
+            gap: 5px;
+
+            > .top {
+              display: none;
+            }
+
+            > .public-button {
+              margin-top: 5px;
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
 @media (max-width: $small) {
@@ -279,9 +377,11 @@
     height: 100%;
     > .wrapper-add-doing {
       > .wrapper-add-image {
-        > .image-upload {
-          > .add-label {
-            display: none;
+        > .box-action {
+          > .image-upload {
+            > .add-label {
+              display: none;
+            }
           }
         }
       }

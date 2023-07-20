@@ -7,188 +7,200 @@
 
 .newcon-alert-dialog,
 .newcon-edit-dialog {
+  position: relative;
+  max-width: 420pt;
+  width: 90vw;
+  height: auto;
+  background-color: $white;
+  box-shadow: 0px 1px 3px 0px #d3d3d4;
+  transition: 0.3s;
+  overflow: hidden;
+
+  > .edit-h {
+    width: auto;
+    height: 20pt;
+    background-color: $brandcolor2;
+    border-bottom: whitesmoke 2px solid;
+    padding: 10pt;
+    display: flex;
+    align-items: center;
+    flex-direction: inherit;
     position: relative;
-    max-width: 420pt;
-    width: 90vw;
-    height: auto;
-    background-color: $white;
-    box-shadow: 0px 1px 3px 0px #d3d3d4;
-    transition: 0.3s;
     overflow: hidden;
 
-    >.edit-h {
-        width: auto;
-        height: 20pt;
-        background-color: $brandcolor2;
-        border-bottom: whitesmoke 2px solid;
-        padding: 10pt;
-        display: flex;
-        align-items: center;
-        flex-direction: inherit;
-        position: relative;
+    > .edit-head-one {
+      @include font-size-8($font-head-500);
+      height: 20px;
+      color: white;
+    }
+
+    > .dialog-image-title-right {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: absolute;
+      right: 10pt;
+
+      > .material-icons {
+        font-family: "Material Icons" !important;
+        cursor: pointer;
+        opacity: 0.4;
+        color: $white;
+
+        &:hover {
+          opacity: 0.8;
+        }
+      }
+    }
+  }
+
+  > .edit-input {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 20pt 15pt;
+    text-align: center;
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height: calc(55vh - 40pt - 20pt - 20pt);
+    font-size: 15pt;
+    @include font-size-7($font-head-500);
+    word-break: break-word;
+
+    .text-item {
+      color: $brandcolor2;
+    }
+    > .images {
+      position: relative;
+      flex: 0 0 auto;
+
+      > .image-page {
+        width: 60pt;
+        height: 60pt;
+        border-radius: 50%;
+        border: 5px solid #fff;
         overflow: hidden;
+        box-shadow: 0 5px 8px 0 #00000020;
+      }
+    }
+  }
 
-        >.edit-head-one {
-            @include font-size-8($font-head-500);
-            height: 20px;
-            color: white;
-        }
+  > .wrapper-page-create {
+    padding: 20pt 15pt 10pt 15pt;
+    flex: 0 0 auto;
+    position: sticky;
+    bottom: 0;
+    z-index: 99;
+    background: #fff;
 
-        >.dialog-image-title-right {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: absolute;
-            right: 10pt;
+    > .social-list-page {
+      gap: 10px;
+      display: flex;
+      flex-direction: column;
+      margin-top: 10px;
+    }
+  }
 
-            >.material-icons {
-                font-family: 'Material Icons' !important;
-                cursor: pointer;
-                opacity: 0.4;
-                color: $white;
+  ckeditor {
+    width: 100%;
+  }
 
-                &:hover {
-                    opacity: 0.8;
-                }
-            }
-        }
+  > .dialog-footer {
+    height: 20pt;
+    padding: 10pt;
+    border-top: 1px solid $bg-color1;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    overflow: hidden;
+
+    > .butt {
+      width: 20%;
+      border-radius: 5px;
+      padding: 5px 0px;
+      cursor: pointer;
+      border: $width-border solid #e0e0e0;
+      text-align: center;
+      @include font-size-9($font-head-500);
+      margin: 0 0.25rem;
+      transition: 0.5s;
+
+      &:hover {
+        transform: scale(1.06);
+        -webkit-transform: scale(1.06);
+        -moz-transform: scale(1.06);
+        -ms-transform: scale(1.06);
+        -o-transform: scale(1.06);
+      }
     }
 
-    >.edit-input {
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: center;
-        padding: 20pt 15pt;
-        text-align: center;
-        overflow-y: auto;
-        overflow-x: hidden;
-        max-height: calc(55vh - 40pt - 20pt - 20pt);
-        font-size: 15pt;
-        @include font-size-7($font-head-500);
-        word-break: break-word;
-
-        .text-item {
-            color: $brandcolor2;
-        }
-
+    .but-cancel {
     }
 
-    >.wrapper-page-create {
-        padding: 20pt 15pt 10pt 15pt;
-        flex: 0 0 auto;
-        position: sticky;
-        bottom: 0;
-        z-index: 99;
-        background: #fff;
-
-        >.social-list-page {
-            gap: 10px;
-            display: flex;
-            flex-direction: column;
-            margin-top: 10px;
-
-
-        }
+    .but-submit {
+      color: $brandcolor;
+      background-color: $brandcolor2;
     }
-
-    ckeditor {
-        width: 100%;
-    }
-
-    >.dialog-footer {
-        height: 20pt;
-        padding: 10pt;
-        border-top: 1px solid $bg-color1;
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-end;
-        align-items: center;
-        overflow: hidden;
-
-        >.butt {
-            width: 20%;
-            border-radius: 5px;
-            padding: 5px 0px;
-            cursor: pointer;
-            border: $width-border solid #e0e0e0;
-            text-align: center;
-            @include font-size-9($font-head-500);
-            margin: 0 0.25rem;
-            transition: 0.5s;
-
-            &:hover {
-                transform: scale(1.06);
-                -webkit-transform: scale(1.06);
-                -moz-transform: scale(1.06);
-                -ms-transform: scale(1.06);
-                -o-transform: scale(1.06);
-            }
-        }
-
-        .but-cancel {}
-
-        .but-submit {
-            color: $brandcolor;
-            background-color: $brandcolor2;
-        }
-    }
+  }
 }
 
 @media (max-width: $xxlarge) {
-    .newcon-alert-dialog {
-        max-width: 480px;
+  .newcon-alert-dialog {
+    max-width: 480px;
 
-        >.edit-input {
-            padding: 18pt;
-            max-height: calc(55vh - 36pt - 20pt - 20pt);
-        }
+    > .edit-input {
+      padding: 18pt;
+      max-height: calc(55vh - 36pt - 20pt - 20pt);
     }
+  }
 }
 
 @media (max-width: $xlarge) {
-    .newcon-alert-dialog {
-        max-width: 470px;
+  .newcon-alert-dialog {
+    max-width: 470px;
 
-        >.edit-h,
-        >.dialog-footer {
-            height: 18pt;
-        }
-
-        >.edit-input {
-            max-height: calc(55vh - 36pt - 18pt - 18pt);
-        }
+    > .edit-h,
+    > .dialog-footer {
+      height: 18pt;
     }
+
+    > .edit-input {
+      max-height: calc(55vh - 36pt - 18pt - 18pt);
+    }
+  }
 }
 
 @media (max-width: $large) {
-    .newcon-alert-dialog {
-        max-width: 460px;
+  .newcon-alert-dialog {
+    max-width: 460px;
 
-        >.edit-h,
-        >.dialog-footer {
-            height: 16pt;
-        }
-
-        >.edit-input {
-            max-height: calc(55vh - 36pt - 16pt - 16pt);
-        }
+    > .edit-h,
+    > .dialog-footer {
+      height: 16pt;
     }
+
+    > .edit-input {
+      max-height: calc(55vh - 36pt - 16pt - 16pt);
+    }
+  }
 }
 
 @media (max-width: $medium) {
-    .newcon-alert-dialog {
-        max-width: 440px;
+  .newcon-alert-dialog {
+    max-width: 440px;
 
-        >.edit-h,
-        >.dialog-footer {
-            height: 14pt;
-        }
-
-        >.edit-input {
-            max-height: calc(55vh - 36pt - 14pt - 14pt);
-        }
+    > .edit-h,
+    > .dialog-footer {
+      height: 14pt;
     }
+
+    > .edit-input {
+      max-height: calc(55vh - 36pt - 14pt - 14pt);
+    }
+  }
 }
 
-@media (max-width: $small) {}
+@media (max-width: $small) {
+}

@@ -144,6 +144,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   public shareDialog: boolean;
   public mainPostLink: string;
   public groups: any = [];
+  public resJoinObjective: any;
 
   public CheckPost: boolean = true;
   public isPostLoading: boolean = false;

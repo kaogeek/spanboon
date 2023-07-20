@@ -238,6 +238,12 @@ export class BoxPost extends AbstractPage implements OnInit {
   public isSelectOption: boolean;
   public isPublic: boolean = false;
   public isEditObject: boolean = false;
+  public dataEdit: any;
+  public objDoing: any;
+  public tagObjDoing: any;
+  public objCategory: any;
+  public objectId: any;
+  public joinObjective: any;
 
   keyword = "hashTag";
   selectedIndex: number;
@@ -614,6 +620,21 @@ export class BoxPost extends AbstractPage implements OnInit {
   onDirtyDialogCancelButtonClick(): EventEmitter<any> {
     // throw new Error('Method not implemented.');
     return;
+  }
+
+  public searchJoinedObjective() {
+    let limit = 10;
+    let offset = 0;
+    this.objectiveFacade.searchJoinedObjective(!this.dataPageId.id ? this.dataPageId : this.dataPageId.id, limit, offset).then((res: any) => {
+      if (res) {
+        this.joinObjective = res.data;
+        for (let index = 0; index < this.joinObjective.length; index++) {
+          this.resObjective.push(this.joinObjective[index]);
+        }
+      }
+    }).catch((err) => {
+      if (err) { }
+    });
   }
 
   public updateText() {
@@ -1356,7 +1377,13 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public closeDialog(): void {
+    this.objectCategory = undefined;
+    this.tagObjDoing = undefined;
+    this.objDoing = undefined;
+    this.isPublic = false;
+    this.imageIcon = {};
     this.isUpload = false;
+    this.isEditObject = false;
     this.isShowObjective = false;
   }
 
@@ -1751,6 +1778,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public keyUpSearchObjective(value: string) {
+    this.isLoading = true;
     this.resObjective = [];
     const keywordFilter: any = {
       filter: {
@@ -1770,8 +1798,8 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.objectiveFacade.searchObjective(keywordFilter).then((result: any) => {
       if (result.status === 1) {
         this.resObjective = result.data;
+        this.searchJoinedObjective();
         let index = 0;
-        this.isLoading = true;
         for (let data of this.resObjective) {
           if (!data.iconSignURL) {
             if (!!data.iconURL) {
@@ -1792,6 +1820,7 @@ export class BoxPost extends AbstractPage implements OnInit {
       console.log(err)
       if (err.error.message === 'Cannot Search PageObjective') {
         this.resObjective = [];
+        this.isLoading = false;
       }
     });
   }
@@ -2101,7 +2130,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     } else {
       this.selectedObjectiveId = item.id;
       this.dataObjective.id = item.id;
-      this.dataObjective.hashTag = item.hashTag;
+      this.dataObjective.hashTag = !!item.hashTagName ? item.hashTagName : item.hashTag;
       this.dataObjective.status = 2;
     }
     // if (this.elementCheck) {
@@ -2256,6 +2285,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.isShowObjective = true;
     this.keyUpSearchObjective("");
     this.elementCheck = true;
+    // this.searchJoinedObjective();
     setTimeout(() => {
       this.setTopobj();
     }, 0);
@@ -2301,6 +2331,11 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public onBack() {
+    this.objectCategory = undefined;
+    this.tagObjDoing = undefined;
+    this.objDoing = undefined;
+    this.isPublic = false;
+    this.imageIcon = {};
     this.isShowObjective = true;
     this.isUpload = false
     this.keyUpSearchObjective("");
@@ -2329,29 +2364,65 @@ export class BoxPost extends AbstractPage implements OnInit {
     })
   }
 
-  public editObject() {
-    // this.isEditObject = true;
-    this.isUpload = false;
+  public editObjective(item, index) {
+    this.isEditObject = true;
+    this.objectId = item.id;
+    this.imageIcon.image = item.iconBase64;
+    this.dataEdit = {
+      data: item,
+      index: index
+    };
+    this.objDoing = item.title;
+    this.tagObjDoing = item.hashTag;
+    this.isPublic = item.personal;
+    for (const item of this.resPageCategory) {
+    }
+    // this.objCategory
+    return this.isUpload = true;
   }
 
-  public deleteObjective(objectId, index) {
+  public deleteObjective(object, index, type?: any) {
+    let objectId = object.id;
+    let pageId = object.pageId;
+    let message;
+    if (type === 'join') {
+      message = 'คุณต้องการที่จะยกเลิกเข้าร่วมหรือไม่';
+    } else {
+      message = 'คุณต้องการที่จะลบหรือไม่';
+    }
     let dialog = this.dialog.open(DialogAlert, {
       disableClose: true,
       data: {
-        text: 'คุณต้องการที่จะลบหรือไม่',
+        text: message,
       },
     });
     dialog.afterClosed().subscribe((res) => {
       if (res) {
-        this.objectiveFacade.deleteObjective(objectId).then((res: any) => {
-          if (res) {
-            this.resObjective.splice(index, 1);
+        if (type === 'join') {
+          let disJoinObj = {
+            objectiveId: objectId,
+            pageId: pageId,
+            joiner: !this.dataPageId.id ? this.dataPageId : this.dataPageId.id,
+            join: false
           }
-        }).catch((err) => {
-          if (err) {
+          this.objectiveFacade.disJoinObjective(disJoinObj).then((res) => {
+            if (res) {
 
-          }
-        });
+            }
+          }).catch((err) => {
+            if (err) { }
+          })
+        } else {
+          this.objectiveFacade.deleteObjective(objectId, pageId).then((res: any) => {
+            if (res) {
+              this.resObjective.splice(index, 1);
+            }
+          }).catch((err) => {
+            if (err) {
+
+            }
+          });
+        }
       }
     });
   }
@@ -2360,8 +2431,8 @@ export class BoxPost extends AbstractPage implements OnInit {
     if (!this.isLock) {
       this.isLoading = true;
       let pageId = this.dataPageId.id;
-      const dataDoing = this.objectiveDoing.nativeElement.value;
-      const tagName = this.objectiveDoingName.nativeElement.value;
+      const dataDoing = this.objDoing ? this.objDoing : this.objectiveDoing.nativeElement.value;
+      const tagName = this.tagObjDoing ? this.tagObjDoing : this.objectiveDoingName.nativeElement.value;
       const category = this.objectCategory.value;
       const isPublic = this.isPublic;
 
@@ -2400,7 +2471,6 @@ export class BoxPost extends AbstractPage implements OnInit {
         asset.data = this.imageIcon.image.split(',')[1];
         asset.size = this.imageIcon.size;
       }
-
       if (!!dataDoing) {
         let objectiveImage = {
           asset,
@@ -2410,84 +2480,207 @@ export class BoxPost extends AbstractPage implements OnInit {
           pageId: pageId,
           personal: isPublic,
         }
+        if (this.isEditObject) {
+          this.objectiveFacade.updateObjective(objectiveImage, this.objectId).then((res) => {
+            if (res.status === 1) {
+              let object = {
+                id: res.data.id,
+                title: res.data.title,
+                hashTag: res.data.hashTagName,
+              }
 
-        this.objectiveFacade.uploadImageObjective(objectiveImage).then((res: any) => {
-          if (res.status === 1) {
-            let object = {
-              id: res.data.id,
-              title: res.data.title,
-              hashTag: res.data.hashTag,
+              this.isPublic = false;
+              this.isEditObject = false
+              this.objDoing = undefined;
+              this.tagObjDoing = undefined;
+              this.objCategory = undefined;
+              this.isPublic = false;
+              this.dataObjective = object;
+              this.clickCardObjective(0, this.dataObjective);
+              this.keyUpSearchObjective("");
+              this.closeDialog();
+              this.imageIcon = {};
+              this.selectedValue = 'เลือกหมวดหมู่';
+              this.isMsgError = false;
+              this.isLock = false;
+              this.isLoading = false;
             }
-
-            this.isPublic = false;
-            this.dataObjective = object;
-            this.clickCardObjective(0, this.dataObjective);
-            this.closeDialog();
-            this.imageIcon = {};
-            this.selectedValue = 'เลือกหมวดหมู่';
-            this.resObjective.push(res.data);
-            if (!res.data.iconSignURL) {
-              let index_data = this.resObjective.findIndex((obj) => obj.id === res.data.id);
-              if (index_data !== -1) {
-                this.getDataIcon(res.data.iconURL, index_data);
+          }).catch((err: any) => {
+            if (err) {
+              console.log(err);
+              this.isLock = false;
+              this.isLoading = false;
+              let alertMessage: string;
+              if (err.error.message === 'Cannot create Objective because the same HashTag you have one.') {
+                alertMessage = 'สิ่งที่คุณกำลังทำมีอยู่แล้ว';
+                this.alertMessage(alertMessage);
+              }
+              if (err.error.message === 'HashTag is duplicate.') {
+                alertMessage = 'สิ่งที่คุณกำลังทำมีอยู่แล้ว';
+                this.alertMessage(alertMessage);
+              }
+              if (err.error.message === 'PageObjective HashTag is Exists') {
+                let objectiveId = err.error.error.id ? err.error.error.id : null;
+                let pageId = err.error.error.pageId;
+                let dialogAlert = this.dialog.open(DialogAlert, {
+                  disableClose: true,
+                  data: {
+                    text: 'สิ่งที่กำลังทำอยู่มีเพจ ' + err.error.error.name + ' สร้างไว้แล้ว',
+                    page: err.error.error,
+                  },
+                });
+                dialogAlert.afterClosed().subscribe((res) => {
+                  if (res) {
+                    if (this.isPublic) {
+                      let dialog = this.dialog.open(DialogAlert, {
+                        disableClose: true,
+                        data: {
+                          text: 'คุณต้องการที่จะเข้าร่วมหรือไม่',
+                        },
+                      });
+                      dialog.afterClosed().subscribe((res) => {
+                        if (res) {
+                          let joinObj = {
+                            objectiveId: objectiveId,
+                            pageId: pageId,
+                            joiner: this.dataPageId.id,
+                            join: true
+                          }
+                          this.objectiveFacade.joinObjective(joinObj).then((res) => {
+                            if (res) {
+                              this.closeDialog();
+                            }
+                          }).catch((err) => {
+                            if (err) {
+                              console.log("err", err)
+                              if (err.error.message === 'You have been join this objective.') {
+                                let dialogJoinError = this.showAlertDialogWarming('คุณได้เข้าร่วมสิ่งที่กำลังทำนี้ไปแล้ว', "none");
+                                dialogJoinError.afterClosed().subscribe((res) => {
+                                  if (res) {
+                                    this.closeDialog();
+                                  }
+                                });
+                              }
+                            }
+                          })
+                        }
+                      });
+                    }
+                  }
+                });
               }
             }
-            this.isMsgError = false;
-            this.isLock = false;
-            this.isLoading = false;
-          }
-        }).catch((err: any) => {
-          if (err) {
-            console.log(err);
-            let objectiveId = err.error.error.id;
-            let pageId = err.error.error.pageId;
-            this.isLock = false;
-            this.isLoading = false;
-            let alertMessages: string;
-            if (err.error.message === 'PageObjective is Exists') {
-              alertMessages = 'สิ่งที่คุณกำลังทำมีอยู่แล้ว'
-            } else if (err.error.message === 'PageObjective HashTag is Exists') {
-              alertMessages = 'แฮชแท็กถูกสร้างไว้แล้ว'
-            }
+          });
+        } else {
+          this.objectiveFacade.uploadImageObjective(objectiveImage).then((res: any) => {
+            if (res.status === 1) {
+              let object = {
+                id: res.data.id,
+                title: res.data.title,
+                hashTag: res.data.hashTag,
+              }
 
-            let dialog = this.showAlertDialogWarming(alertMessages, "none");
-            dialog.afterClosed().subscribe((res) => {
-              if (res) {
-                if (this.isPublic) {
-                  let dialog = this.dialog.open(DialogAlert, {
-                    disableClose: true,
-                    data: {
-                      text: 'คุณต้องการที่จะเข้าร่วมหรือไม่',
-                    },
-                  });
-                  dialog.afterClosed().subscribe((res) => {
-                    if (res) {
-                      let joinObj = {
-                        objectiveId: objectiveId,
-                        pageId: pageId,
-                        joiner: this.dataPageId.id,
-                        join: true
-                      }
-                      this.objectiveFacade.joinObjective(joinObj).then((res) => {
-                        if (res) {
-
-                        }
-                      }).catch((err) => {
-                        if (err) { }
-                      })
-                    }
-                  });
+              this.isPublic = false;
+              this.dataObjective = object;
+              this.clickCardObjective(0, this.dataObjective);
+              this.closeDialog();
+              this.imageIcon = {};
+              this.selectedValue = 'เลือกหมวดหมู่';
+              this.resObjective.push(res.data);
+              if (!res.data.iconSignURL) {
+                let index_data = this.resObjective.findIndex((obj) => obj.id === res.data.id);
+                if (index_data !== -1) {
+                  this.getDataIcon(res.data.iconURL, index_data);
                 }
               }
-            });
-          }
-        })
+              this.isMsgError = false;
+              this.isLock = false;
+              this.isLoading = false;
+            }
+          }).catch((err: any) => {
+            if (err) {
+              console.log(err);
+              this.isLock = false;
+              this.isLoading = false;
+              let alertMessage: string;
+              if (err.error.message === 'Cannot create Objective because the same HashTag you have one.') {
+                alertMessage = 'สิ่งที่คุณกำลังทำมีอยู่แล้ว';
+                this.alertMessage(alertMessage);
+              }
+              if (err.error.message === 'HashTag is duplicate.') {
+                alertMessage = 'สิ่งที่คุณกำลังทำมีอยู่แล้ว';
+                this.alertMessage(alertMessage);
+              }
+              if (err.error.message === 'PageObjective HashTag is Exists') {
+                let objectiveId = err.error.error.id ? err.error.error.id : null;
+                let pageId = err.error.error.pageId;
+                let dialogAlert = this.dialog.open(DialogAlert, {
+                  disableClose: true,
+                  data: {
+                    text: 'สิ่งที่กำลังทำอยู่มีเพจ ' + err.error.error.name + ' สร้างไว้แล้ว',
+                    page: err.error.error,
+                  },
+                });
+                dialogAlert.afterClosed().subscribe((res) => {
+                  if (res) {
+                    if (this.isPublic) {
+                      let dialog = this.dialog.open(DialogAlert, {
+                        disableClose: true,
+                        data: {
+                          text: 'คุณต้องการที่จะเข้าร่วมหรือไม่',
+                        },
+                      });
+                      dialog.afterClosed().subscribe((res) => {
+                        if (res) {
+                          let joinObj = {
+                            objectiveId: objectiveId,
+                            pageId: pageId,
+                            joiner: this.dataPageId.id,
+                            join: true
+                          }
+                          this.objectiveFacade.joinObjective(joinObj).then((res) => {
+                            if (res) {
+                              this.closeDialog();
+                            }
+                          }).catch((err) => {
+                            if (err) {
+                              console.log("err", err)
+                              if (err.error.message === 'You have been join this objective.') {
+                                let dialogJoinError = this.showAlertDialogWarming('คุณได้เข้าร่วมสิ่งที่กำลังทำนี้ไปแล้ว', "none");
+                                dialogJoinError.afterClosed().subscribe((res) => {
+                                  if (res) {
+                                    this.closeDialog();
+                                  }
+                                });
+                              }
+                            }
+                          })
+                        }
+                      });
+                    }
+                  }
+                });
+              }
+            }
+          });
+        }
       }
 
       // $("#menubottom").css({
       //   'overflow-y': "auto"
       // });
     }
+  }
+
+  public alertMessage(text: any) {
+    let dialogAlert = this.dialog.open(DialogAlert, {
+      disableClose: true,
+      data: {
+        text: text,
+        bottomText1: 'ตกลง',
+        btDisplay1: 'none'
+      },
+    });
   }
 
   public canCelImageObject() {

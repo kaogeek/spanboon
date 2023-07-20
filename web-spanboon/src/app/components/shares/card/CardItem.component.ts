@@ -9,7 +9,7 @@ import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angu
 import { SwiperComponent, SwiperConfigInterface, SwiperDirective } from 'ngx-swiper-wrapper';
 import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
-import { AuthenManager, AssetFacade } from 'src/app/services/services';
+import { AuthenManager, AssetFacade, ObjectiveFacade } from 'src/app/services/services';
 import { AbstractPage } from '../../pages/AbstractPage';
 import { environment } from 'src/environments/environment';
 import { DialogFulfill } from '../dialog/DialogFulfill.component';
@@ -31,6 +31,8 @@ export class CardItem extends AbstractPage implements OnInit {
     @Input()
     public pageName: any;
     @Input()
+    public pageId: any;
+    @Input()
     public label: string;
     @Input()
     public statusLable: string;
@@ -50,6 +52,8 @@ export class CardItem extends AbstractPage implements OnInit {
     public isButton: boolean = false;
     @Input()
     public isShowWidthButton: number;
+    @Input()
+    public isShowIcon: boolean;
 
     @Input()
     private isDevelop: boolean;
@@ -66,18 +70,23 @@ export class CardItem extends AbstractPage implements OnInit {
     public fontSize: any;
     public index: number;
     public item: any;
+    public joinObjective: any;
 
-    constructor(authenManager: AuthenManager, assetFacade: AssetFacade, dialog: MatDialog, router: Router) {
+    constructor(authenManager: AuthenManager, assetFacade: AssetFacade, dialog: MatDialog, router: Router, private objectiveFacade: ObjectiveFacade) {
         super(PAGE_NAME, authenManager, dialog, router);
 
         this.authenManager = authenManager;
         this.dialog = dialog;
         this.router = router;
         this.assetFacade = assetFacade;
+        this.objectiveFacade = objectiveFacade;
     }
 
     async ngOnInit(): Promise<void> {
         this.checkResp();
+        setTimeout(() => {
+            this.searchJoinedObjective();
+        }, 1000);
     }
     public ngOnDestroy(): void {
         super.ngOnDestroy();
@@ -118,6 +127,18 @@ export class CardItem extends AbstractPage implements OnInit {
             dialog.afterClosed().subscribe((res) => {
             });
         }
+    }
+
+    public searchJoinedObjective() {
+        let limit = 10;
+        let offset = 0;
+        this.objectiveFacade.searchJoinedObjective(this.pageId, limit, offset).then((res: any) => {
+            if (res) {
+                this.joinObjective = res.data;
+            }
+        }).catch((err) => {
+            if (err) { }
+        });
     }
 
     public configSlider1: SwiperConfigInterface = {
@@ -191,9 +212,15 @@ export class CardItem extends AbstractPage implements OnInit {
     }
 
     public clickObjective(data) {
-        this.router.navigate([]).then(() => {
-            window.open('/objective/' + data.id);
-        });
+        if (data.id !== null && data.id !== undefined && data.id !== '') {
+            this.router.navigate([]).then(() => {
+                window.open('/objective/' + data.id);
+            });
+        } else {
+            this.router.navigate([]).then(() => {
+                window.open('/objective/' + data._id);
+            });
+        }
     }
 
 }

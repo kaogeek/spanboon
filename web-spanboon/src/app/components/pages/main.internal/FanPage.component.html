@@ -723,7 +723,8 @@
                             <div class="side-feed" #sidefeedHeight>
                                 <ng-container
                                     *ngIf="resDataPage && resDataPage.pageObjectives && resDataPage.pageObjectives.length > 0">
-                                    <card-item [itemData]="resDataPage && resDataPage.pageObjectives" [isDoIng]="'true'"
+                                    <card-item [itemData]="resDataPage && resDataPage.pageObjectives"
+                                        [pageId]="resDataPage.id" [isDoIng]="'true'" [isShowIcon]="isNotAccess"
                                         [statusLable]="'กำลังทำอยู่'"></card-item>
                                 </ng-container>
                                 <recommend-card *ngIf="!showLoading" [title]="'คุณอาจรู้จัก'" [data]="dataRecommend"

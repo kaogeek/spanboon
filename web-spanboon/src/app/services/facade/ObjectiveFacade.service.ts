@@ -34,6 +34,25 @@ export class ObjectiveFacade extends AbstractFacade {
     });
   }
 
+  public searchJoinedObjective(pageId: string, limit?: any, offset?: any): Promise<any[]> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/objective/search/join';
+      if (limit !== undefined) {
+        url += `?limit=${limit}`;
+      }
+      if (offset !== undefined) {
+        url += `&offset=${offset}`;
+      }
+      let body: any = { pageId: pageId };
+      let options = this.authMgr.getDefaultOptions();
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
   public searchPublicObjective(searchFilter: SearchFilter): Promise<any[]> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/objective/lists';
@@ -69,6 +88,45 @@ export class ObjectiveFacade extends AbstractFacade {
     return new Promise((resolve, reject) => {
 
       let url: string = this.baseURL + '/objective';
+
+      let body: any = {};
+      if (data !== null && data !== undefined) {
+        body = Object.assign(data)
+      }
+      let options = this.authMgr.getDefaultOptions();
+
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public updateObjective(data: any, objectId?: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/objective/' + objectId;
+      let body: any = {
+        hashTag: data.hashTag,
+        title: data.title,
+        category: data.category,
+        pageId: data.pageId,
+        personal: data.personal
+      };
+
+      let option = this.authMgr.getDefaultOptions();
+      this.http.put(url, body, option).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public disJoinObjective(data: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+
+      let url: string = this.baseURL + '/objective/disjoin';
 
       let body: any = {};
       if (data !== null && data !== undefined) {
@@ -122,9 +180,9 @@ export class ObjectiveFacade extends AbstractFacade {
     });
   }
 
-  public deleteObjective(objectiveId: string): Promise<any> {
+  public deleteObjective(objectiveId: string, pageId: string): Promise<any> {
     return new Promise((resolve, reject) => {
-      let url: string = this.baseURL + '/objective/' + objectiveId;
+      let url: string = this.baseURL + '/objective/' + objectiveId + '/' + pageId;
       let options = this.authMgr.getDefaultOptions();
 
       this.http.delete(url, options).toPromise().then((response: any) => {

@@ -1379,6 +1379,10 @@
     right: 0;
     left: 0;
     top: 0;
+
+    @media (max-width: $small) {
+      display: none;
+    }
   }
 
   .sg-vertical-sub-menu

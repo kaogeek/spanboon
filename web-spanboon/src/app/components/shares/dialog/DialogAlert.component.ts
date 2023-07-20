@@ -8,6 +8,7 @@
 import { Component, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { DialogData } from '../../../models/models';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'dialog-alert',
@@ -18,6 +19,7 @@ import { DialogData } from '../../../models/models';
 export class DialogAlert {
 
   private isbottom: boolean
+  public apiBaseURL = environment.apiBaseURL;
 
   constructor(public dialogRef: MatDialogRef<DialogAlert>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData) {
@@ -28,7 +30,7 @@ export class DialogAlert {
     this.isbottom = true
     this.dialogRef.close(this.isbottom);
 
-    if(this.data !== undefined && this.data !== null && this.data.confirmClickedEvent !== undefined){
+    if (this.data !== undefined && this.data !== null && this.data.confirmClickedEvent !== undefined) {
       this.data.confirmClickedEvent.emit(true);
     }
   }
@@ -36,8 +38,8 @@ export class DialogAlert {
   onClose(): void {
     this.isbottom = false
     this.dialogRef.close(this.isbottom);
-    
-    if(this.data !== undefined && this.data !== null && this.data.cancelClickedEvent !== undefined){
+
+    if (this.data !== undefined && this.data !== null && this.data.cancelClickedEvent !== undefined) {
       this.data.cancelClickedEvent.emit(false);
     }
   }
