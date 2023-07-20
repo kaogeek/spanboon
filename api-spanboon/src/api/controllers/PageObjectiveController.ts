@@ -162,7 +162,7 @@ export class ObjectiveController {
             const masterHashTag: HashTag = await this.hashTagService.findOne({ pageId: pageObjId, name: hashTagName, type: 'OBJECTIVE' });
 
             if (masterHashTag !== undefined && String(masterHashTag.name) === String(hashTagName)) {
-                const errorResponse = ResponseUtil.getErrorResponse('PageObjective is Exist.', undefined);
+                const errorResponse = ResponseUtil.getErrorResponse('PageObjective is Exists.', undefined);
                 return res.status(400).send(errorResponse);
             }
             if (masterHashTag !== null && masterHashTag !== undefined) {
