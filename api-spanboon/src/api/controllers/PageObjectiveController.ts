@@ -159,10 +159,26 @@ export class ObjectiveController {
         if (objectives.personal === true) {
 
             const hashTagName = name;
-            const masterHashTag: HashTag = await this.hashTagService.findOne({ pageId: pageObjId, name: hashTagName, type: 'OBJECTIVE' });
+            const masterHashTag: HashTag = await this.hashTagService.findOne({ name: hashTagName, type: 'OBJECTIVE' });
+
+            if (masterHashTag !== undefined && String(hashTagName) === String(masterHashTag.name)) {
+                const errorResponse = ResponseUtil.getErrorResponse('HashTag is Duplicate.', undefined);
+                return res.status(400).send(errorResponse);
+            }
 
             if (masterHashTag !== undefined && String(masterHashTag.name) === String(hashTagName)) {
-                const errorResponse = ResponseUtil.getErrorResponse('PageObjective is Exists.', undefined);
+                const objectiveDuplicate = await this.pageObjectiveService.findOne({ _id: masterHashTag.objectiveId, pageId: masterHashTag.pageId });
+                const pageObj = await this.pageService.findOne({ _id: masterHashTag.pageId });
+                const generic: any = {};
+                generic['id'] = objectiveDuplicate.id;
+                generic['title'] = objectiveDuplicate.title;
+                generic['pageId'] = objectiveDuplicate.pageId;
+                generic['detail'] = objectiveDuplicate.detail;
+                generic['hashTag'] = objectiveDuplicate.hashTag;
+                generic['iconURL'] = objectiveDuplicate.iconURL;
+                generic['s3IconURL'] = objectiveDuplicate.s3IconURL;
+                generic['name'] = pageObj.name;
+                const errorResponse = ResponseUtil.getErrorResponse('PageObjective is Exists', generic);
                 return res.status(400).send(errorResponse);
             }
             if (masterHashTag !== null && masterHashTag !== undefined) {
@@ -1345,6 +1361,7 @@ export class ObjectiveController {
         if (checkObjective.personal === true) {
             // public
             // if hashTagObjective === objectives.hashTag you can edit hashtag
+            const hashTagPrivate = checkObjective.hashTag;
 
             // check if objective is public and objective switch to private 
             // check if this objective have a joiner ?
@@ -1358,11 +1375,27 @@ export class ObjectiveController {
             const checkHashTag = await this.hashTagService.findOne({ pageId: pageObjId, _id: hashTagObjective, type: 'OBJECTIVE' });
 
             if (checkHashTag !== undefined) {
-                queryHashtag = { _id: hashTagObjective, pageId: pageObjId, objectiveId: objId, type: 'OBJECTIVE' };
-                newValueHashTag = { $set: { name: hashTagName } };
-                updateHashTag = await this.hashTagService.update(queryHashtag, newValueHashTag);
-                if (updateHashTag) {
-                    await this.postsService.updateMany({ objective: hashTagObjective }, { $set: { objectiveTag: hashTagName } });
+                // check hashTag duplicate in the page ?
+                const hashTagCheck = await this.hashTagService.findOne({ name: hashTagName, pageId: pageObjId, type: 'OBJECTIVE' });
+                if (hashTagCheck !== undefined && String(hashTagPrivate) === String(hashTagCheck.id)) {
+                    queryHashtag = { _id: hashTagPrivate, pageId: pageObjId, objectiveId: objId, type: 'OBJECTIVE' };
+                    newValueHashTag = { $set: { name: hashTagName } };
+                    updateHashTag = await this.hashTagService.update(queryHashtag, newValueHashTag);
+                    if (updateHashTag) {
+                        await this.postsService.updateMany({ objective: objId }, { $set: { objectiveTag: hashTagName } });
+                    }
+                }
+
+                if (hashTagCheck === undefined) {
+                    queryHashtag = { _id: hashTagPrivate, pageId: pageObjId, objectiveId: objId, type: 'OBJECTIVE' };
+                    newValueHashTag = { $set: { name: hashTagName } };
+                    updateHashTag = await this.hashTagService.update(queryHashtag, newValueHashTag);
+                    if (updateHashTag) {
+                        await this.postsService.updateMany({ objective: objId }, { $set: { objectiveTag: hashTagName } });
+                    }
+                } else {
+                    return res.status(400).send(ResponseUtil.getSuccessResponse('HashTag is Duplicate.', undefined));
+
                 }
 
                 const hashTagObjIds = hashTagObjective;
