@@ -1453,7 +1453,16 @@ export class ObjectiveController {
             if (checkHashTag) {
                 // check hashTag duplicate in the page ?
                 const hashTagCheck = await this.hashTagService.findOne({ name: hashTagName, pageId: pageObjId, type: 'OBJECTIVE' });
-                if (String(hashTagPrivate) === String(hashTagCheck.id)) {
+                if (hashTagCheck !== undefined && String(hashTagPrivate) === String(hashTagCheck.id)) {
+                    queryHashtag = { _id: hashTagPrivate, pageId: pageObjId, objectiveId: objId, type: 'OBJECTIVE' };
+                    newValueHashTag = { $set: { name: hashTagName } };
+                    updateHashTag = await this.hashTagService.update(queryHashtag, newValueHashTag);
+                    if (updateHashTag) {
+                        await this.postsService.updateMany({ objective: objId }, { $set: { objectiveTag: hashTagName } });
+                    }
+                }
+
+                if (hashTagCheck === undefined) {
                     queryHashtag = { _id: hashTagPrivate, pageId: pageObjId, objectiveId: objId, type: 'OBJECTIVE' };
                     newValueHashTag = { $set: { name: hashTagName } };
                     updateHashTag = await this.hashTagService.update(queryHashtag, newValueHashTag);
@@ -1461,7 +1470,8 @@ export class ObjectiveController {
                         await this.postsService.updateMany({ objective: objId }, { $set: { objectiveTag: hashTagName } });
                     }
                 } else {
-                    return res.status(400).send(ResponseUtil.getErrorResponse('HashTag is Duplicate.', undefined));
+                    return res.status(400).send(ResponseUtil.getSuccessResponse('HashTag is Duplicate.', undefined));
+
                 }
             }
 
