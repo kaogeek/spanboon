@@ -157,6 +157,7 @@ export class ObjectiveController {
         /* personal === true meaning objective is public */
         // objective public
         if (objectives.personal === true) {
+
             const hashTagName = name;
             const masterHashTag: HashTag = await this.hashTagService.findOne({ pageId: pageObjId, name: hashTagName, type: 'OBJECTIVE' });
             if (masterHashTag !== null && masterHashTag !== undefined) {
@@ -176,7 +177,7 @@ export class ObjectiveController {
 
             const hashTagIds = hashTag;
             const titleRequest = title;
-            const pageOwnerPublic = await this.pageObjectiveService.findOne({ pageId: pageObjId, $or: [{ title: titleRequest }, { hashTag: hashTagIds }] });
+            const pageOwnerPublic = await this.pageObjectiveService.findOne({ $or: [{ title: titleRequest }, { hashTag: hashTagIds }] });
             if (pageOwnerPublic !== undefined && pageOwnerPublic.title === title) {
                 const pageObj = await this.pageService.findOne({ _id: pageOwnerPublic.pageId });
                 const generic: any = {};
@@ -1225,63 +1226,7 @@ export class ObjectiveController {
             if (aggregateStmt !== undefined && aggregateStmt.length > 0) {
                 objectiveLists = await this.pageObjectiveService.aggregateEntity(aggregateStmt, { signURL: true });
             } else {
-                // filter.limit
-                // filter.offset
-                // filter.orderBy.createdDate
-                const order = filter.orderBy.createdDate;
-                const take = filter.limit;
-                const offset = filter.offset;
-                objectiveLists = await this.pageObjectiveService.aggregate(
-                    [
-                        {
-                            $lookup: {
-                                from: 'Page',
-                                let: { pageId: '$pageId' },
-                                pipeline: [
-                                    {
-                                        $match: {
-                                            $expr: {
-                                                $eq: ['$$pageId', '$_id']
-                                            }
-                                        },
-                                    },
-                                    {
-                                        $match: {
-                                            isOfficial: true
-                                        }
-                                    }
-                                ],
-                                as: 'page'
-                            }
-                        },
-                        {
-                            $match: { page: { $ne: [] } }
-                        },
-                        {
-                            $sort: {
-                                createdDate: order
-                            }
-                        },
-                        {
-                            $limit: take
-                        },
-                        {
-                            $skip: offset
-                        }
-                    ]
-                );
-                if (objectiveLists) {
-                    for (const objective of objectiveLists) {
-                        if (objective.s3IconURL && objective.s3IconURL !== '') {
-                            try {
-                                const signUrl = await this.s3Service.getConfigedSignedUrl(objective.s3IconURL);
-                                Object.assign(objective, { iconSignURL: (signUrl ? signUrl : '') });
-                            } catch (error) {
-                                console.log('Search PageObjective Error: ', error);
-                            }
-                        }
-                    }
-                }
+                objectiveLists = await this.pageObjectiveService.search(filter, { signURL: true });
             }
         }
 
