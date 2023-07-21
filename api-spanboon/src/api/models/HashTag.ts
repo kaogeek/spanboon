@@ -40,6 +40,9 @@ export class HashTag extends BaseModel {
     @Column({ name: 'type' })
     public type: string;
 
+    @Column({ name: 'personal' })
+    public personal: boolean;
+
     @BeforeInsert()
     public createDetails(): any {
         this.createdDate = moment().toDate();

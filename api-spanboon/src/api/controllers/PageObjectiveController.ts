@@ -159,7 +159,7 @@ export class ObjectiveController {
         if (objectives.personal === true) {
 
             const hashTagName = name;
-            const masterHashTag: HashTag = await this.hashTagService.findOne({ name: hashTagName, type: 'OBJECTIVE' });
+            const masterHashTag: HashTag = await this.hashTagService.findOne({ name: hashTagName, type: 'OBJECTIVE', personal: objectives.personal });
             if (masterHashTag !== undefined && String(masterHashTag.name) === String(hashTagName)) {
                 const objectiveDuplicate = await this.pageObjectiveService.findOne({ _id: masterHashTag.objectiveId, pageId: masterHashTag.pageId });
                 const pageObj = await this.pageService.findOne({ _id: masterHashTag.pageId });
@@ -185,7 +185,7 @@ export class ObjectiveController {
                 newHashTag.iconURL = '';
                 newHashTag.pageId = pageObjId;
                 newHashTag.type = 'OBJECTIVE';
-
+                newHashTag.personal = objectives.personal;
                 const createHashTag = await this.hashTagService.create(newHashTag);
                 hashTag = createHashTag ? new ObjectID(createHashTag.id) : null;
             }
@@ -269,7 +269,7 @@ export class ObjectiveController {
 
         if (objectives.personal === false) {
             const hashTagName = name;
-            const checkhashTagName = await this.hashTagService.findOne({ name: hashTagName, pageId: pageObjId, type: 'OBJECTIVE' });
+            const checkhashTagName = await this.hashTagService.findOne({ name: hashTagName, pageId: pageObjId, type: 'OBJECTIVE', personal: objectives.personal });
             if (checkhashTagName !== undefined) {
                 const errorResponse = ResponseUtil.getErrorResponse('Cannot create Objective because the same HashTag you have one.', undefined);
                 return res.status(400).send(errorResponse);
@@ -281,6 +281,7 @@ export class ObjectiveController {
             newHashTag.iconURL = '';
             newHashTag.pageId = pageObjId;
             newHashTag.type = 'OBJECTIVE';
+            newHashTag.personal = objectives.personal;
 
             const createHashTag = await this.hashTagService.create(newHashTag);
             hashTag = createHashTag ? new ObjectID(createHashTag.id) : null;
@@ -893,14 +894,13 @@ export class ObjectiveController {
         const objtiveIds = new ObjectID(joinObjectiveRequest.objectiveId);
         const pageObjId = new ObjectID(joinObjectiveRequest.pageId);
         const joinerObjId = new ObjectID(joinObjectiveRequest.joiner);
-        const approved = joinObjectiveRequest.approved;
+        const approved = joinObjectiveRequest.approve;
         const pageJoiner = await this.pageService.findOne({ _id: joinerObjId });
         const checkPublicObjective = await this.pageObjectiveService.findOne({ _id: objtiveIds, pageId: pageObjId });
         let notificationText = undefined;
         let link = undefined;
 
         const checkApprove = await this.pageObjectiveJoinerService.findOne({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId });
-
         if (checkApprove !== undefined && checkApprove !== null && checkApprove.approve === true) {
             const errorResponse = ResponseUtil.getErrorResponse('You have been approved.', undefined);
             return res.status(400).send(errorResponse);
@@ -1366,7 +1366,7 @@ export class ObjectiveController {
 
             const hashTagObjective = checkObjective.hashTag;
             const hashTagName: string = name;
-            const checkHashTag = await this.hashTagService.findOne({ pageId: pageObjId, _id: hashTagObjective, type: 'OBJECTIVE' });
+            const checkHashTag = await this.hashTagService.findOne({ pageId: pageObjId, _id: hashTagObjective, type: 'OBJECTIVE', personal: objectives.personal });
 
             if (checkHashTag !== undefined) {
                 // check hashTag duplicate in the page ?
@@ -1476,7 +1476,7 @@ export class ObjectiveController {
             // ??
             const hashTagPrivate = checkObjective.hashTag;
             const hashTagName = name;
-            const checkHashTag = await this.hashTagService.findOne({ pageId: pageObjId, _id: hashTagPrivate, type: 'OBJECTIVE' });
+            const checkHashTag = await this.hashTagService.findOne({ pageId: pageObjId, _id: hashTagPrivate, type: 'OBJECTIVE', personal: objectives.personal });
             if (checkHashTag) {
                 // check hashTag duplicate in the page ?
                 const hashTagCheck = await this.hashTagService.findOne({ name: hashTagName, pageId: pageObjId, type: 'OBJECTIVE' });

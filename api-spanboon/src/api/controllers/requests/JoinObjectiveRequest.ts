@@ -12,5 +12,5 @@ export class JoinObjectiveRequest {
     public pageId: string;
     public joiner: string;
     public join:boolean;
-    public approved:boolean; 
+    public approve:boolean; 
 }
