@@ -244,6 +244,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   public objCategory: any;
   public objectId: any;
   public joinObjective: any;
+  public isShow: boolean = false;
 
   keyword = "hashTag";
   selectedIndex: number;
@@ -1383,6 +1384,8 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.isPublic = false;
     this.imageIcon = {};
     this.isUpload = false;
+    this.isShow = false;
+    this.selectedValue = 'เลือกหมวดหมู่';
     this.isEditObject = false;
     this.isShowObjective = false;
   }
@@ -1798,7 +1801,9 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.objectiveFacade.searchObjective(keywordFilter).then((result: any) => {
       if (result.status === 1) {
         this.resObjective = result.data;
-        this.searchJoinedObjective();
+        if (this.searchInputObjective.nativeElement.value === '') {
+          this.searchJoinedObjective();
+        }
         let index = 0;
         for (let data of this.resObjective) {
           if (!data.iconSignURL) {
@@ -2282,6 +2287,8 @@ export class BoxPost extends AbstractPage implements OnInit {
 
   public clickObjectiveDoing() {
     this.isUpload = false;
+    this.isShow = false;
+    this.selectedValue = 'เลือกหมวดหมู่';
     this.isShowObjective = true;
     this.keyUpSearchObjective("");
     this.elementCheck = true;
@@ -2337,7 +2344,9 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.isPublic = false;
     this.imageIcon = {};
     this.isShowObjective = true;
-    this.isUpload = false
+    this.selectedValue = 'เลือกหมวดหมู่';
+    this.isShow = false;
+    this.isUpload = false;
     this.keyUpSearchObjective("");
 
     setTimeout(() => {
@@ -2375,10 +2384,17 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.objDoing = item.title;
     this.tagObjDoing = item.hashTag;
     this.isPublic = item.personal;
-    for (const item of this.resPageCategory) {
+    for (const category of this.resPageCategory) {
+      if (category.id === item.category) {
+        this.selectedValue = category.name;
+      }
     }
     // this.objCategory
     return this.isUpload = true;
+  }
+
+  public selectCategory() {
+    this.isShow = true;
   }
 
   public deleteObjective(object, index, type?: any) {
@@ -2429,14 +2445,25 @@ export class BoxPost extends AbstractPage implements OnInit {
 
   public createImageObjective(): void {
     if (!this.isLock) {
+      if (this.selectedValue !== 'เลือกหมวดหมู่') {
+        this.isShow = true;
+      }
+      this.isLock = true;
+      if (!!this.selectedValue) {
+        for (const listCategory of this.resPageCategory) {
+          if (listCategory.name === this.selectedValue) {
+            this.selectedValue = listCategory.id;
+          }
+        }
+      }
       this.isLoading = true;
       let pageId = this.dataPageId.id;
-      const dataDoing = this.objDoing ? this.objDoing : this.objectiveDoing.nativeElement.value;
-      const tagName = this.tagObjDoing ? this.tagObjDoing : this.objectiveDoingName.nativeElement.value;
-      const category = this.objectCategory.value;
+      const dataDoing = this.objDoing ? this.objDoing : this.selectedValue;
+      const tagName = this.tagObjDoing ? this.tagObjDoing : '';
+      const category = this.selectedValue;
       const isPublic = this.isPublic;
 
-      if (category === undefined) {
+      if (category === undefined || category === 'เลือกหมวดหมู่') {
         this.isLock = false;
         this.isLoading = false;
         return this.showAlertDialog("เลือกหมวดหมู่");
@@ -2462,7 +2489,6 @@ export class BoxPost extends AbstractPage implements OnInit {
         return this.showAlertDialog("กรุณาอัพโหลดรูปภาพ");
       }
 
-      this.isLock = true;
       const asset = new Asset();
       if (this.isEmptyObject(this.imageIcon)) {
         let data = this.imageIcon.image.split(',')[0];
@@ -2515,7 +2541,7 @@ export class BoxPost extends AbstractPage implements OnInit {
                 alertMessage = 'สิ่งที่คุณกำลังทำมีอยู่แล้ว';
                 this.alertMessage(alertMessage);
               }
-              if (err.error.message === 'HashTag is duplicate.') {
+              if (err.error.message === 'HashTag is Duplicate.') {
                 alertMessage = 'สิ่งที่คุณกำลังทำมีอยู่แล้ว';
                 this.alertMessage(alertMessage);
               }
@@ -2544,7 +2570,8 @@ export class BoxPost extends AbstractPage implements OnInit {
                             objectiveId: objectiveId,
                             pageId: pageId,
                             joiner: this.dataPageId.id,
-                            join: true
+                            join: true,
+                            approve: false,
                           }
                           this.objectiveFacade.joinObjective(joinObj).then((res) => {
                             if (res) {
@@ -2607,11 +2634,15 @@ export class BoxPost extends AbstractPage implements OnInit {
                 alertMessage = 'สิ่งที่คุณกำลังทำมีอยู่แล้ว';
                 this.alertMessage(alertMessage);
               }
-              if (err.error.message === 'HashTag is duplicate.') {
+              if (err.error.message === 'HashTag is Duplicate.') {
                 alertMessage = 'สิ่งที่คุณกำลังทำมีอยู่แล้ว';
                 this.alertMessage(alertMessage);
               }
-              if (err.error.message === 'PageObjective HashTag is Exists') {
+              if (err.error.message === 'PageObjective is Exist.') {
+                alertMessage = 'สิ่งที่คุณกำลังทำมีอยู่แล้ว';
+                this.alertMessage(alertMessage);
+              }
+              if (err.error.message === 'PageObjective is Exists') {
                 let objectiveId = err.error.error.id ? err.error.error.id : null;
                 let pageId = err.error.error.pageId;
                 let dialogAlert = this.dialog.open(DialogAlert, {
@@ -2636,7 +2667,8 @@ export class BoxPost extends AbstractPage implements OnInit {
                             objectiveId: objectiveId,
                             pageId: pageId,
                             joiner: this.dataPageId.id,
-                            join: true
+                            join: true,
+                            approve: false
                           }
                           this.objectiveFacade.joinObjective(joinObj).then((res) => {
                             if (res) {
@@ -2685,6 +2717,8 @@ export class BoxPost extends AbstractPage implements OnInit {
 
   public canCelImageObject() {
     this.isUpload = false;
+    this.isShow = false;
+    this.selectedValue = 'เลือกหมวดหมู่';
     this.isShowObjective = false;
     // $("#menubottom").css({
     //   'overflow-y': "auto"

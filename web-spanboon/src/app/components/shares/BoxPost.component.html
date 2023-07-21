@@ -347,65 +347,67 @@
                                     </div>
                                 </div>
                                 <div class="body-center">
-                                    <div class="wrappper-body-upload" (click)="$event.stopPropagation()">
-                                        <div class="wrapper-doing">
-                                            <mat-form-field class="objective-category" appearance="none">
-                                                <mat-label style="margin-bottom: 2pt;">หมวดหมู่</mat-label>
-                                                <mat-select #objectCategory [class.msg-error]="isMsgError"
-                                                    [(ngModel)]="selectedValue" name="objectCategory" required>
-                                                    <mat-option matInput disabled value="เลือกหมวดหมู่">เลือกหมวดหมู่
-                                                    </mat-option>
-                                                    <mat-option *ngFor="let item of resPageCategory" [value]="item.id">
-                                                        {{item.name}}
-                                                    </mat-option>
-                                                </mat-select>
-                                            </mat-form-field>
-                                            <div class="hash">
-                                                <label for="add-username">#</label>
-                                                <input type="text" class="input-hashTag" id="objective-doing-name"
-                                                    name="objective-doing-name" [(ngModel)]="tagObjDoing"
-                                                    placeholder="แฮชแท๊ค" required matInput>
+                                    <div class="wrappper-body-upload display-flex" style="gap: 25px;"
+                                        (click)="$event.stopPropagation()">
+                                        <div class="section-left">
+                                            <div class="wrapper-upload">
+                                                <ng-container
+                                                    *ngIf="imageIcon && imageIcon !== undefined; else elseShowImage">
+                                                    <div class="div-image">
+                                                        <img class="image-user"
+                                                            src="{{imageIcon.image !== undefined ? imageIcon.image : '../../../../assets/img/image.svg'}}"
+                                                            alt="">
+                                                        <div class="edit-image"
+                                                            (click)="showDialogImage(); $event.stopPropagation()">
+                                                            <img src="../../../assets/img/camera.svg">
+                                                        </div>
+                                                    </div>
+                                                </ng-container>
+                                                <ng-template #elseShowImage>
+                                                    <div class="div-image">
+                                                        <img class="image-user" src="../../../../assets/img/image.svg"
+                                                            alt="">
+                                                        <div class="edit-image"
+                                                            (click)="showDialogImage(); $event.stopPropagation()">
+                                                            <img src="../../../assets/img/camera.svg">
+                                                        </div>
+                                                    </div>
+                                                </ng-template>
                                             </div>
                                         </div>
-                                        <div class="wrapper-doing">
-                                            <input type="text" class="input-doing" id="objective-doing"
-                                                name="objective-doing" [(ngModel)]="objDoing"
-                                                placeholder="สิ่งที่คุณกำลังทำ" required matInput>
-                                        </div>
-                                        <div class="wrapper-upload">
-                                            <ng-container
-                                                *ngIf="imageIcon && imageIcon !== undefined; else elseShowImage">
-                                                <div class="div-image">
-                                                    <img class="image-user"
-                                                        src="{{imageIcon.image !== undefined ? imageIcon.image : '../../../../assets/img/image.svg'}}"
-                                                        alt="">
-                                                </div>
-                                            </ng-container>
-                                            <ng-template #elseShowImage>
-                                                <div class="div-image">
-                                                    <img class="image-user" src="../../../../assets/img/image.svg"
-                                                        alt="">
-                                                </div>
-                                            </ng-template>
-
-                                            <div class="wrapper-field-upload">
-                                                <div class="top">
-                                                    อัพโหลดรูปโปรไฟล์
-                                                </div>
-                                                <div class="btn-upload">
-                                                    <label for="file-upload" class="button-social"
-                                                        (click)="showDialogImage(); $event.stopPropagation()">อัพโหลดรูปภาพ
-                                                    </label>
-                                                </div>
-                                                <div class="public-button">
-                                                    <span>สาธารณะ :</span>
-                                                    <mat-slide-toggle [(ngModel)]="isPublic"
+                                        <div class="section-right">
+                                            <div class="wrapper-doing" style="flex-direction: column;">
+                                                <mat-form-field class="objective-category" appearance="none"
+                                                    [floatLabel]="'never'">
+                                                    <mat-label *ngIf="!isShow">{{selectedValue}}</mat-label>
+                                                    <mat-select [class.msg-error]="isMsgError"
                                                         [ngModelOptions]="{standalone: true}"
-                                                        (change)="objectPublic($event)">
-                                                    </mat-slide-toggle>
+                                                        [(ngModel)]="selectedValue">
+                                                        <mat-option *ngFor="let item of resPageCategory"
+                                                            (click)="selectCategory()" [value]="item.id">
+                                                            {{item.name}}
+                                                        </mat-option>
+                                                    </mat-select>
+                                                </mat-form-field>
+                                                <div class="hash">
+                                                    <label for="add-username">#</label>
+                                                    <input type="text" class="input-hashTag" id="objective-doing-name"
+                                                        name="objective-doing-name" [(ngModel)]="tagObjDoing"
+                                                        placeholder="แฮชแท๊ค" required matInput>
                                                 </div>
                                             </div>
-
+                                            <div class="wrapper-doing">
+                                                <input type="text" class="input-doing" id="objective-doing"
+                                                    name="objective-doing" [(ngModel)]="objDoing"
+                                                    placeholder="สิ่งที่คุณกำลังทำ" required matInput>
+                                            </div>
+                                            <div class="public-button">
+                                                <mat-slide-toggle [(ngModel)]="isPublic"
+                                                    [ngModelOptions]="{standalone: true}"
+                                                    (change)="objectPublic($event)">
+                                                </mat-slide-toggle>
+                                                <span>เปิดเป็นสาธารณะ</span>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="wrapper-footer-doing">
