@@ -1507,11 +1507,13 @@ export class ObjectiveController {
             }
 
         } else {
+            console.log('pass2');
             // check objective private !
             // change private to public 
             // check duplicate to another or itself ?
             const hashTagPrivate = await this.hashTagService.findOne({ _id: checkObjective.hashTag, pageId: checkObjective.pageId, type: 'OBJECTIVE', objectiveId: checkObjective.id, personal: false });
             if (hashTagPrivate.personal === false && objectives.personal === true && name === hashTagPrivate.name) {
+                console.log('pass3 ???');
                 // slice private to public
                 // duplicate another
                 hashTagName = name;
@@ -1595,6 +1597,7 @@ export class ObjectiveController {
 
             }
             if (hashTagPrivate.personal === false && objectives.personal === true && name !== hashTagPrivate.name) {
+                console.log('pass4 ???');
                 // slice private to public
                 // duplicate another
                 hashTagName = name;
@@ -1677,10 +1680,10 @@ export class ObjectiveController {
                 }
             }
 
-            if (hashTagPrivate.personal === objectives.personal && name !== hashTagPrivate.name) {
+            if (String(hashTagPrivate.personal) === String(objectives.personal) && name !== hashTagPrivate.name) {
                 // duplicate itself 
                 hashTagName = name;
-                const checkHashTag = await this.hashTagService.findOne({ name: hashTagName, objectiveId: objId, pageId: pageObjId, type: 'OBJECTIVE', personal: hashTagPrivate.personal });
+                const checkHashTag = await this.hashTagService.findOne({ name: hashTagName, pageId: pageObjId, type: 'OBJECTIVE', personal: hashTagPrivate.personal });
                 if (checkHashTag !== undefined) {
                     return res.status(400).send(ResponseUtil.getSuccessResponse('HashTag is Duplicate.', undefined));
                 }
