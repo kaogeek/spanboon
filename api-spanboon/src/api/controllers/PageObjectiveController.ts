@@ -1480,7 +1480,7 @@ export class ObjectiveController {
                 }
             } else {
                 iconURL = objectiveIconURL;
-                s3IconURL = objectiveUpdate.s3IconURL;
+                s3IconURL = pageObjective.s3IconURL;
             }
             updateQuery = { _id: objId, pageId: pageObjId };
             newValue = { $set: { title: titleRequest, detail: detailRequest, iconURL, hashTag: pageObjective.hashTag, s3IconURL, category, personal: objectives.personal } };
@@ -1570,7 +1570,7 @@ export class ObjectiveController {
                     }
                 } else {
                     iconURL = objectiveIconURL;
-                    s3IconURL = objectiveUpdate.s3IconURL;
+                    s3IconURL = pageObjective.s3IconURL;
                 }
                 updateQuery = { _id: objId, pageId: pageObjId };
                 newValue = { $set: { title: titleRequest, detail: detailRequest, iconURL, hashTag: pageObjective.hashTag, s3IconURL, category, personal: objectives.personal } };
@@ -1654,7 +1654,7 @@ export class ObjectiveController {
                     }
                 } else {
                     iconURL = objectiveIconURL;
-                    s3IconURL = objectiveUpdate.s3IconURL;
+                    s3IconURL = pageObjective.s3IconURL;
                 }
                 updateQuery = { _id: objId, pageId: pageObjId };
                 newValue = { $set: { title: titleRequest, detail: detailRequest, iconURL, hashTag: pageObjective.hashTag, s3IconURL, category, personal: objectives.personal } };
@@ -1719,7 +1719,7 @@ export class ObjectiveController {
                     }
                 } else {
                     iconURL = objectiveIconURL;
-                    s3IconURL = objectiveUpdate.s3IconURL;
+                    s3IconURL = pageObjective.s3IconURL;
                 }
                 updateQuery = { _id: objId, pageId: pageObjId };
                 newValue = { $set: { title: titleRequest, detail: detailRequest, iconURL, hashTag: pageObjective.hashTag, s3IconURL, category, personal: objectives.personal } };
@@ -1824,8 +1824,37 @@ export class ObjectiveController {
             const errorResponse = ResponseUtil.getErrorResponse('Unable create join objective', undefined);
             return res.status(400).send(errorResponse);
         }
-
     }
+
+    // approve invite 
+    @Post('/approve/invite')
+    @Authorized('user')
+    public async approveInviteObjective(@Body({ validate: true }) joinObjectiveRequest: JoinObjectiveRequest, @Res() res: any, @Req() req: any): Promise<any> {
+        const objtiveIds = new ObjectID(joinObjectiveRequest.objectiveId);
+        const pageObjId = new ObjectID(joinObjectiveRequest.pageId);
+        const joinerObjId = new ObjectID(joinObjectiveRequest.joiner);
+        const join = joinObjectiveRequest.join;
+        const approved = joinObjectiveRequest.approve;
+        const pageObjective = await this.pageObjectiveService.findOne({ pageId: pageObjId, _id: objtiveIds });
+        const hashTagObjective = await this.hashTagService.findOne({ pageId: pageObjId, type: 'OBJECTIVE', objectiveId: objtiveIds });
+        if (pageObjective !== undefined && hashTagObjective !== undefined && pageObjective.personal === false && hashTagObjective.personal === false) {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Cannot approve invite.', undefined));
+        }
+
+        // approve invite
+        const joinerTrue = join;
+        const pageJoiner = await this.pageObjectiveJoinerService.findOne({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId, join: joinerTrue });
+        if (pageJoiner === undefined) {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Not found the Join obijective.', undefined));
+        }
+        const query = { objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId, join: joinerTrue };
+        const newValue = { $set: { approve: approved } };
+        const update = await this.pageObjectiveService.update(query, newValue);
+        if (update) {
+            return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully approve invite.', []));
+        }
+    }
+
     /**
      * @api {delete} /api/objective/:id Delete PageObjective API
      * @apiGroup PageObjective
