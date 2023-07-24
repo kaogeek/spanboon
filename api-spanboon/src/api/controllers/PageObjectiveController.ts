@@ -1601,7 +1601,7 @@ export class ObjectiveController {
                 const hashTagAnother = await this.hashTagService.findOne({ name: hashTagName, type: 'OBJECTIVE', personal: true });
                 if (hashTagAnother !== undefined && String(hashTagAnother.pageId) !== String(pageObjId)) {
                     pageName = await this.pageService.findOne({ _id: hashTagAnother.pageId });
-                    pageObjective = await this.pageObjectiveService.findOne({ _id: objId, pageId: pageObjId });
+                    pageObjective = await this.pageObjectiveService.findOne({ _id: hashTagAnother.objectiveId, pageId: hashTagAnother.pageId });
                     const generic: any = {};
                     generic['id'] = pageObjective.id;
                     generic['title'] = pageObjective.title;
