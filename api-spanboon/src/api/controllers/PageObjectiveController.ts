@@ -160,7 +160,7 @@ export class ObjectiveController {
             const hashTagName = name;
             const masterHashTag: HashTag = await this.hashTagService.findOne({ name: hashTagName, type: 'OBJECTIVE', personal: objectives.personal });
             if (masterHashTag !== undefined && String(masterHashTag.name) === String(hashTagName)) {
-                if (masterHashTag.pageId !== pageObjId) {
+                if (String(masterHashTag.pageId) !== String(pageObjId)) {
                     const objectiveDuplicate = await this.pageObjectiveService.findOne({ _id: masterHashTag.objectiveId, pageId: masterHashTag.pageId });
                     const pageObj = await this.pageService.findOne({ _id: masterHashTag.pageId });
                     const generic: any = {};
@@ -197,7 +197,7 @@ export class ObjectiveController {
             const titleRequest = title;
             const pageOwnerPublic = await this.pageObjectiveService.findOne({ $or: [{ title: titleRequest }, { hashTag: hashTagIds }] });
             if (pageOwnerPublic !== undefined && pageOwnerPublic.title === title) {
-                if (pageOwnerPublic.pageId !== pageObjId) {
+                if (String(pageOwnerPublic.pageId) !== String(pageObjId)) {
                     const pageObj = await this.pageService.findOne({ _id: pageOwnerPublic.pageId });
                     const generic: any = {};
                     generic['id'] = pageOwnerPublic.id;
@@ -215,7 +215,7 @@ export class ObjectiveController {
                 }
             }
             if (pageOwnerPublic !== undefined && String(pageOwnerPublic.hashTag) === String(hashTagIds)) {
-                if (pageOwnerPublic.pageId !== pageObjId) {
+                if (String(pageOwnerPublic.pageId) !== String(pageObjId)) {
                     const pageObj = await this.pageService.findOne({ _id: pageOwnerPublic.pageId });
                     const generic: any = {};
                     generic['id'] = pageOwnerPublic.id;
