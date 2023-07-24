@@ -160,19 +160,23 @@ export class ObjectiveController {
             const hashTagName = name;
             const masterHashTag: HashTag = await this.hashTagService.findOne({ name: hashTagName, type: 'OBJECTIVE', personal: objectives.personal });
             if (masterHashTag !== undefined && String(masterHashTag.name) === String(hashTagName)) {
-                const objectiveDuplicate = await this.pageObjectiveService.findOne({ _id: masterHashTag.objectiveId, pageId: masterHashTag.pageId });
-                const pageObj = await this.pageService.findOne({ _id: masterHashTag.pageId });
-                const generic: any = {};
-                generic['id'] = objectiveDuplicate.id;
-                generic['title'] = objectiveDuplicate.title;
-                generic['pageId'] = objectiveDuplicate.pageId;
-                generic['detail'] = objectiveDuplicate.detail;
-                generic['hashTag'] = objectiveDuplicate.hashTag;
-                generic['iconURL'] = objectiveDuplicate.iconURL;
-                generic['s3IconURL'] = objectiveDuplicate.s3IconURL;
-                generic['name'] = pageObj.name;
-                const errorResponse = ResponseUtil.getErrorResponse('PageObjective is Exists', generic);
-                return res.status(400).send(errorResponse);
+                if (masterHashTag.pageId !== pageObjId) {
+                    const objectiveDuplicate = await this.pageObjectiveService.findOne({ _id: masterHashTag.objectiveId, pageId: masterHashTag.pageId });
+                    const pageObj = await this.pageService.findOne({ _id: masterHashTag.pageId });
+                    const generic: any = {};
+                    generic['id'] = objectiveDuplicate.id;
+                    generic['title'] = objectiveDuplicate.title;
+                    generic['pageId'] = objectiveDuplicate.pageId;
+                    generic['detail'] = objectiveDuplicate.detail;
+                    generic['hashTag'] = objectiveDuplicate.hashTag;
+                    generic['iconURL'] = objectiveDuplicate.iconURL;
+                    generic['s3IconURL'] = objectiveDuplicate.s3IconURL;
+                    generic['name'] = pageObj.name;
+                    const errorResponse = ResponseUtil.getErrorResponse('PageObjective is Exists', generic);
+                    return res.status(400).send(errorResponse);
+                } else {
+                    return res.status(400).send(ResponseUtil.getSuccessResponse('HashTag is Duplicate.', undefined));
+                }
             }
             if (masterHashTag !== null && masterHashTag !== undefined) {
                 hashTag = new ObjectID(masterHashTag.id);
@@ -193,32 +197,40 @@ export class ObjectiveController {
             const titleRequest = title;
             const pageOwnerPublic = await this.pageObjectiveService.findOne({ $or: [{ title: titleRequest }, { hashTag: hashTagIds }] });
             if (pageOwnerPublic !== undefined && pageOwnerPublic.title === title) {
-                const pageObj = await this.pageService.findOne({ _id: pageOwnerPublic.pageId });
-                const generic: any = {};
-                generic['id'] = pageOwnerPublic.id;
-                generic['title'] = pageOwnerPublic.title;
-                generic['pageId'] = pageOwnerPublic.pageId;
-                generic['detail'] = pageOwnerPublic.detail;
-                generic['hashTag'] = pageOwnerPublic.hashTag;
-                generic['iconURL'] = pageOwnerPublic.iconURL;
-                generic['s3IconURL'] = pageOwnerPublic.s3IconURL;
-                generic['name'] = pageObj.name;
-                const errorResponse = ResponseUtil.getErrorResponse('PageObjective is Exists', generic);
-                return res.status(400).send(errorResponse);
+                if (pageOwnerPublic.pageId !== pageObjId) {
+                    const pageObj = await this.pageService.findOne({ _id: pageOwnerPublic.pageId });
+                    const generic: any = {};
+                    generic['id'] = pageOwnerPublic.id;
+                    generic['title'] = pageOwnerPublic.title;
+                    generic['pageId'] = pageOwnerPublic.pageId;
+                    generic['detail'] = pageOwnerPublic.detail;
+                    generic['hashTag'] = pageOwnerPublic.hashTag;
+                    generic['iconURL'] = pageOwnerPublic.iconURL;
+                    generic['s3IconURL'] = pageOwnerPublic.s3IconURL;
+                    generic['name'] = pageObj.name;
+                    const errorResponse = ResponseUtil.getErrorResponse('PageObjective is Exists', generic);
+                    return res.status(400).send(errorResponse);
+                } else {
+                    return res.status(400).send(ResponseUtil.getSuccessResponse('HashTag is Duplicate.', undefined));
+                }
             }
             if (pageOwnerPublic !== undefined && String(pageOwnerPublic.hashTag) === String(hashTagIds)) {
-                const pageObj = await this.pageService.findOne({ _id: pageOwnerPublic.pageId });
-                const generic: any = {};
-                generic['id'] = pageOwnerPublic.id;
-                generic['title'] = pageOwnerPublic.title;
-                generic['pageId'] = pageOwnerPublic.pageId;
-                generic['detail'] = pageOwnerPublic.detail;
-                generic['hashTag'] = pageOwnerPublic.hashTag;
-                generic['iconURL'] = pageOwnerPublic.iconURL;
-                generic['s3IconURL'] = pageOwnerPublic.s3IconURL;
-                generic['name'] = pageObj.name;
-                const errorResponse = ResponseUtil.getErrorResponse('PageObjective is Exists', generic);
-                return res.status(400).send(errorResponse);
+                if (pageOwnerPublic.pageId !== pageObjId) {
+                    const pageObj = await this.pageService.findOne({ _id: pageOwnerPublic.pageId });
+                    const generic: any = {};
+                    generic['id'] = pageOwnerPublic.id;
+                    generic['title'] = pageOwnerPublic.title;
+                    generic['pageId'] = pageOwnerPublic.pageId;
+                    generic['detail'] = pageOwnerPublic.detail;
+                    generic['hashTag'] = pageOwnerPublic.hashTag;
+                    generic['iconURL'] = pageOwnerPublic.iconURL;
+                    generic['s3IconURL'] = pageOwnerPublic.s3IconURL;
+                    generic['name'] = pageObj.name;
+                    const errorResponse = ResponseUtil.getErrorResponse('PageObjective is Exists', generic);
+                    return res.status(400).send(errorResponse);
+                } else {
+                    return res.status(400).send(ResponseUtil.getSuccessResponse('HashTag is Duplicate.', undefined));
+                }
             }
 
             fileName = userObjId + FileUtil.renameFile();
@@ -1712,6 +1724,9 @@ export class ObjectiveController {
                 updateQuery = { _id: objId, pageId: pageObjId };
                 newValue = { $set: { title: titleRequest, detail: detailRequest, iconURL, hashTag: pageObjective.hashTag, s3IconURL, category, personal: objectives.personal } };
                 objectiveSave = await this.pageObjectiveService.update(updateQuery, newValue);
+                queryHashTag = { objectiveId: objId, pageId: pageObjId, type: 'OBJECTIVE' };
+                newValueHashTag = { $set: { name: hashTagName } };
+                await this.hashTagService.update(queryHashTag, newValueHashTag);
                 if (objectiveSave) {
                     objectiveSave = await this.pageObjectiveService.findOne({ _id: objId, pageId: pageObjId });
                     const result: any = {};
