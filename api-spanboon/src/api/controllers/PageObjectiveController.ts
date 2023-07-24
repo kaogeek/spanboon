@@ -1507,13 +1507,11 @@ export class ObjectiveController {
             }
 
         } else {
-            console.log('pass2');
             // check objective private !
             // change private to public 
             // check duplicate to another or itself ?
             const hashTagPrivate = await this.hashTagService.findOne({ _id: checkObjective.hashTag, pageId: checkObjective.pageId, type: 'OBJECTIVE', objectiveId: checkObjective.id, personal: false });
             if (hashTagPrivate.personal === false && objectives.personal === true && name === hashTagPrivate.name) {
-                console.log('pass3 ???');
                 // slice private to public
                 // duplicate another
                 hashTagName = name;
@@ -1597,7 +1595,6 @@ export class ObjectiveController {
 
             }
             if (hashTagPrivate.personal === false && objectives.personal === true && name !== hashTagPrivate.name) {
-                console.log('pass4 ???');
                 // slice private to public
                 // duplicate another
                 hashTagName = name;
