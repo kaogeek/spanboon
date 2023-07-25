@@ -951,6 +951,39 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     }
   }
 
+  public searchObjective(value: string) {
+    this.isLoading = true;
+    this.resObjective = [];
+    const keywordFilter: any = {
+      filter: {
+        limit: SEARCH_LIMIT,
+        offset: SEARCH_OFFSET,
+        relation: [],
+        whereConditions: {
+          pageId: this.resDataPage.id,
+        },
+        count: false,
+        orderBy: {
+          createdDate: "DESC",
+        }
+      },
+    };
+    Object.assign(keywordFilter, { hashTag: value });
+    this.objectiveFacade.searchObjective(keywordFilter).then((result: any) => {
+      if (result.status === 1) {
+        this.resObjective = result.data;
+
+        this.isLoading = false;
+      }
+    }).catch((err: any) => {
+      console.log(err)
+      if (err.error.message === 'Cannot Search PageObjective') {
+        this.resObjective = [];
+        this.isLoading = false;
+      }
+    });
+  }
+
   public showProfilePage(url): void {
     this.pageFacade.getProfilePage(url).then(async (res) => {
       if (res) {
@@ -992,6 +1025,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
             this.seoService.setMetaInfo(this.router.url, this.resDataPage.name, this.resDataPage.name, this.resDataPage.imageURL, this.resDataPage.name);
           }
           this.searchAboutPage();
+          this.searchObjective("");
 
           setTimeout(() => {
             this.isLoading = false;

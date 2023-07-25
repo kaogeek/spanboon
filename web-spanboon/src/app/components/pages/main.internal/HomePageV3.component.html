@@ -722,6 +722,7 @@
                                         </ng-template>
                                     </ng-template>
                                     <div class="detail"
+                                        [ngStyle]="{'width': model && model.pageRoundRobin.contents.length === 1 ? '100%' : '50%'}"
                                         [ngClass]="{'post-wid': !isRes && model && model.pageRoundRobin.contents.length < 3}">
                                         <ng-container
                                             *ngIf="model && model.pageRoundRobin.contents === 2; else elseDetail2">
@@ -1089,8 +1090,7 @@
         </div>
     </section>
 
-    <section class="section-5"
-        *ngIf="hidebar && loadingCount > 0">
+    <section class="section-5" *ngIf="hidebar && loadingCount > 0">
         <div class="container">
             <div class="header-title" [ngStyle]="{'top': !isRes && hidebar ? '59px' : '0'}" style="
             grid-template-columns: 1fr auto 1fr;">

@@ -2342,6 +2342,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.tagObjDoing = undefined;
     this.objDoing = undefined;
     this.isPublic = false;
+    this.isEditObject = false;
     this.imageIcon = {};
     this.isShowObjective = true;
     this.selectedValue = 'เลือกหมวดหมู่';
@@ -2534,8 +2535,6 @@ export class BoxPost extends AbstractPage implements OnInit {
           }).catch((err: any) => {
             if (err) {
               console.log(err);
-              this.isLock = false;
-              this.isLoading = false;
               let alertMessage: string;
               if (err.error.message === 'Cannot create Objective because the same HashTag you have one.') {
                 alertMessage = 'สิ่งที่คุณกำลังทำมีอยู่แล้ว';
@@ -2545,7 +2544,12 @@ export class BoxPost extends AbstractPage implements OnInit {
                 alertMessage = 'สิ่งที่คุณกำลังทำมีอยู่แล้ว';
                 this.alertMessage(alertMessage);
               }
-              if (err.error.message === 'PageObjective HashTag is Exists') {
+              if (err.error.message === '') {
+                this.alertMessage('เกิดข้อผิดพลาด');
+                this.isEditObject = false;
+                this.closeDialog();
+              }
+              if (err.error.message === 'PageObjective HashTag is Exists' || err.error.message === 'PageObjective is Exists') {
                 let objectiveId = err.error.error.id ? err.error.error.id : null;
                 let pageId = err.error.error.pageId;
                 let dialogAlert = this.dialog.open(DialogAlert, {
@@ -2575,6 +2579,7 @@ export class BoxPost extends AbstractPage implements OnInit {
                           }
                           this.objectiveFacade.joinObjective(joinObj).then((res) => {
                             if (res) {
+                              this.isEditObject = false;
                               this.closeDialog();
                             }
                           }).catch((err) => {
@@ -2584,6 +2589,7 @@ export class BoxPost extends AbstractPage implements OnInit {
                                 let dialogJoinError = this.showAlertDialogWarming('คุณได้เข้าร่วมสิ่งที่กำลังทำนี้ไปแล้ว', "none");
                                 dialogJoinError.afterClosed().subscribe((res) => {
                                   if (res) {
+                                    this.isEditObject = false;
                                     this.closeDialog();
                                   }
                                 });
@@ -2596,6 +2602,8 @@ export class BoxPost extends AbstractPage implements OnInit {
                   }
                 });
               }
+              this.isLock = false;
+              this.isLoading = false;
             }
           });
         } else {
@@ -2608,6 +2616,7 @@ export class BoxPost extends AbstractPage implements OnInit {
               }
 
               this.isPublic = false;
+              this.isEditObject = false;
               this.dataObjective = object;
               this.clickCardObjective(0, this.dataObjective);
               this.closeDialog();
@@ -2627,8 +2636,6 @@ export class BoxPost extends AbstractPage implements OnInit {
           }).catch((err: any) => {
             if (err) {
               console.log(err);
-              this.isLock = false;
-              this.isLoading = false;
               let alertMessage: string;
               if (err.error.message === 'Cannot create Objective because the same HashTag you have one.') {
                 alertMessage = 'สิ่งที่คุณกำลังทำมีอยู่แล้ว';
@@ -2641,6 +2648,11 @@ export class BoxPost extends AbstractPage implements OnInit {
               if (err.error.message === 'PageObjective is Exist.') {
                 alertMessage = 'สิ่งที่คุณกำลังทำมีอยู่แล้ว';
                 this.alertMessage(alertMessage);
+              }
+              if (err.error.message === '') {
+                this.alertMessage('เกิดข้อผิดพลาด');
+                this.isEditObject = false;
+                this.closeDialog();
               }
               if (err.error.message === 'PageObjective is Exists') {
                 let objectiveId = err.error.error.id ? err.error.error.id : null;
@@ -2672,6 +2684,7 @@ export class BoxPost extends AbstractPage implements OnInit {
                           }
                           this.objectiveFacade.joinObjective(joinObj).then((res) => {
                             if (res) {
+                              this.isEditObject = false;
                               this.closeDialog();
                             }
                           }).catch((err) => {
@@ -2681,6 +2694,7 @@ export class BoxPost extends AbstractPage implements OnInit {
                                 let dialogJoinError = this.showAlertDialogWarming('คุณได้เข้าร่วมสิ่งที่กำลังทำนี้ไปแล้ว', "none");
                                 dialogJoinError.afterClosed().subscribe((res) => {
                                   if (res) {
+                                    this.isEditObject = false;
                                     this.closeDialog();
                                   }
                                 });
@@ -2693,6 +2707,8 @@ export class BoxPost extends AbstractPage implements OnInit {
                   }
                 });
               }
+              this.isLock = false;
+              this.isLoading = false;
             }
           });
         }

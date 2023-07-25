@@ -112,6 +112,27 @@ notification-card {
             opacity: 0.8;
           }
         }
+
+        > .objective-wrapper {
+          display: flex;
+          margin-top: 10px;
+          gap: 8px;
+
+          > .button {
+            display: flex;
+            padding: 5px 15px;
+            border-radius: 4px;
+            height: 20px;
+            align-items: center;
+            cursor: pointer;
+            @include font-size-10($font-head-500);
+            @include pointer();
+            > .add-label {
+              @include font-size-10($font-head-500);
+              color: white;
+            }
+          }
+        }
       }
       > .new {
         position: absolute;

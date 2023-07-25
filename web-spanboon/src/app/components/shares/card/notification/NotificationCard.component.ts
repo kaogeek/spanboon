@@ -31,6 +31,7 @@ export class NotificationCard extends AbstractPage implements OnInit {
   public slide: boolean;
   @Input()
   public date: Date = new Date();
+  public isActionSlide: boolean = false;
 
   private observManager: ObservableManager;
   private apiBaseURL = environment.apiBaseURL;

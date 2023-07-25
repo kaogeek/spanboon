@@ -35,10 +35,17 @@
             <ng-container *ngFor="let itemObjective of itemData; let index = index">
                 <div class="wrapper-doing" (click)="clickObjective(itemObjective);" *ngIf="index <= 5">
                     <div class="images">
-                        <display-image [class]="'image-tag'" [isPreload]="'true'" [isLoaded]="itemObjective.isLoaded"
-                            [isGlightbox]="false"
-                            [base64]="!!itemObjective?.iconSignURL ? itemObjective.iconSignURL : itemObjective.iconBase64">
-                        </display-image>
+                        <ng-container *ngIf="!!itemObjective.iconSignURL else elseIconURL">
+                            <display-image [class]="'image-tag'" [isPreload]="'true'"
+                                [isLoaded]="itemObjective.isLoaded" [isGlightbox]="false"
+                                [base64]="!!itemObjective?.iconSignURL ? itemObjective.iconSignURL : itemObjective.iconBase64">
+                            </display-image>
+                        </ng-container>
+                        <ng-template #elseIconURL>
+                            <div class="displayImage">
+                                <img class="image-tag" src="{{apiBaseURL + itemObjective.iconURL + '/image'}}" alt="">
+                            </div>
+                        </ng-template>
                         <ng-container *ngIf="itemObjective.personal !== true; else elsePublicObj">
                             <img *ngIf="isShowIcon" class="lock" src="'../../../../../assets/img/lock-icon.svg" alt="">
                         </ng-container>
@@ -48,7 +55,7 @@
                         </ng-template>
                     </div>
                     <span class="i_title">
-                        {{itemObjective.title}}
+                        #{{itemObjective.hashTag}}
                     </span>
                 </div>
             </ng-container>

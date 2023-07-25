@@ -89,6 +89,8 @@
             > .score {
               margin-left: 40pt;
               display: flex;
+              gap: 25px;
+              margin-top: 60px;
 
               @media (max-width: $large) {
                 margin-left: 0;
@@ -103,6 +105,7 @@
                 align-content: center;
                 justify-content: center;
                 align-items: center;
+                width: 80px;
 
                 > .title {
                   @include font-size-5($font-head-500);

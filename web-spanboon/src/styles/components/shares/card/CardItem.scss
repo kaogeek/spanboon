@@ -104,6 +104,16 @@
           }
         }
 
+        > .displayImage {
+          > .image-tag {
+            margin: unset !important;
+            margin-bottom: 5pt;
+            width: 45pt;
+            height: 45pt;
+            border-radius: 50%;
+          }
+        }
+
         > .lock {
           position: absolute;
           right: 0;
