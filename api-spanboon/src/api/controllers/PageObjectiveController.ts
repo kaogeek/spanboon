@@ -1517,15 +1517,16 @@ export class ObjectiveController {
                 hashTagName = name;
                 const hashTagAnother = await this.hashTagService.findOne({ name: hashTagName, type: 'OBJECTIVE', personal: true });
                 if (hashTagAnother !== undefined && String(hashTagAnother.pageId) !== String(pageObjId)) {
+                    objectiveSave = await this.pageObjectiveService.findOne({ _id: hashTagAnother.objectiveId, pageId: hashTagAnother.pageId });
                     pageName = await this.pageService.findOne({ _id: hashTagAnother.pageId });
                     const generic: any = {};
-                    generic['id'] = pageObjective.id;
-                    generic['title'] = pageObjective.title;
-                    generic['pageId'] = pageObjective.pageId;
-                    generic['detail'] = pageObjective.detail;
-                    generic['hashTag'] = pageObjective.hashTag;
-                    generic['iconURL'] = pageObjective.iconURL;
-                    generic['s3IconURL'] = pageObjective.s3IconURL;
+                    generic['id'] = objectiveSave.id;
+                    generic['title'] = objectiveSave.title;
+                    generic['pageId'] = objectiveSave.pageId;
+                    generic['detail'] = objectiveSave.detail;
+                    generic['hashTag'] = objectiveSave.hashTag;
+                    generic['iconURL'] = objectiveSave.iconURL;
+                    generic['s3IconURL'] = objectiveSave.s3IconURL;
                     generic['name'] = pageName.name;
                     const errorResponse = ResponseUtil.getErrorResponse('PageObjective is Exists', generic);
                     return res.status(400).send(errorResponse);

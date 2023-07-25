@@ -429,6 +429,7 @@ export class FacebookWebhookController {
                     // 64af7a7c0ac242710bbfbe4e
                     if (pageFindtag.length > 0) {
                         await this.objectiveFunction(pageFindtag, pageSubscribe.pageId, createPostWebhooks.id, postMasterHashTagList);
+                        await this.updateCountObjecitve(pageSubscribe.pageId, postMasterHashTagList);
                     } else {
                         pageFindtag = await this.pageObjectiveService.aggregate(
                             [
@@ -536,6 +537,7 @@ export class FacebookWebhookController {
                     // 64af7a7c0ac242710bbfbe4e
                     if (pageFindtag.length > 0) {
                         await this.objectiveFunction(pageFindtag, pageSubscribe.pageId, createPostWebhooks.id, postMasterHashTagList);
+                        await this.updateCountObjecitve(pageSubscribe.pageId, postMasterHashTagList);
                     } else {
                         pageFindtag = await this.pageObjectiveService.aggregate(
                             [
@@ -665,6 +667,7 @@ export class FacebookWebhookController {
                         ]);
                     if (pageFindtag.length > 0) {
                         await this.objectiveFunction(pageFindtag, pageSubscribe.pageId, createPostWebhooks.id, postMasterHashTagList);
+                        await this.updateCountObjecitve(pageSubscribe.pageId, postMasterHashTagList);
                     } else {
                         pageFindtag = await this.pageObjectiveService.aggregate(
                             [
@@ -1020,10 +1023,20 @@ export class FacebookWebhookController {
         }
     }
 
+    private async updateCountObjecitve(pageId: string, hashTagObj: any): Promise<any> {
+        const pageObjIds = new ObjectID(pageId);
+        for (const hashTags of hashTagObj) {
+            const count = parseInt(hashTags.count, 10);
+            const queryHashTag = { name: String(hashTags.name), type: 'OBJECTIVE', pageId: pageObjIds };
+            const newValuesHashTag = { $set: { count: count + 1 } };
+            await this.hashTagService.update(queryHashTag, newValuesHashTag);
+        }
+    }
+
     private async updateCountHashTag(hashTagObj: any): Promise<any> {
         for (const hashTags of hashTagObj) {
             const count = parseInt(hashTags.count, 10);
-            const queryHashTag = { _id: new ObjectID(hashTags._id) };
+            const queryHashTag = { _id: new ObjectID(hashTags._id), type: null };
             const newValuesHashTag = { $set: { count: count + 1 } };
             await this.hashTagService.update(queryHashTag, newValuesHashTag);
         }
