@@ -357,7 +357,7 @@ export class ObjectiveController {
         const interval_15 = 15;
         const interval_30 = 30;
         const searchObjective = await this.pageObjectiveJoinerService.find({ objectiveId: objtiveIds });
-        const checkJoinObjective = await this.pageObjectiveJoinerService.findOne({ objectiveId: objtiveIds, pageId: pageObjId});
+        const checkJoinObjective = await this.pageObjectiveJoinerService.findOne({ objectiveId: objtiveIds, pageId: pageObjId });
         const checkPublicObjective = await this.pageObjectiveService.findOne({ _id: objtiveIds });
         const pageOwner = await this.pageService.findOne({ _id: pageObjId });
         const pageJoiner = await this.pageService.findOne({ _id: joinerObjId });
@@ -1342,26 +1342,26 @@ export class ObjectiveController {
                         $match: { objectiveId: objtiveId, pageId: pageObjIds, join: true, approve: true }
                     },
                     {
-                        $lookup:{
-                            from:'Page',
-                            let:{joiner:'$joiner'},
-                            pipeline:[
+                        $lookup: {
+                            from: 'Page',
+                            let: { joiner: '$joiner' },
+                            pipeline: [
                                 {
-                                    $match:{
-                                        $expr:{
-                                            $eq:['$$joiner','$_id']
+                                    $match: {
+                                        $expr: {
+                                            $eq: ['$$joiner', '$_id']
                                         }
                                     }
                                 },
                                 { $project: { email: 0 } },
-                                
+
                             ],
-                            as:'page'
+                            as: 'page'
                         },
                     },
                     {
-                        $unwind:{
-                            path:'$page',
+                        $unwind: {
+                            path: '$page',
                             preserveNullAndEmptyArrays: true
                         }
                     }
@@ -1375,6 +1375,37 @@ export class ObjectiveController {
             }
         } else {
             return res.status(400).send(ResponseUtil.getErrorResponse('PageId is undefined.', undefined));
+        }
+    }
+
+    @Delete('/joiner')
+    @Authorized('user')
+    public async deleteJoinerObjective(@Body({ validate: true }) joinObjectiveRequest: JoinObjectiveRequest, @Res() res: any, @Req() req: any): Promise<any> {
+        // check owner objective
+        const userObjId = new ObjectID(req.headers.userid);
+
+        const objectiveObjId = new ObjectID(joinObjectiveRequest.objectiveId);
+        const pageObjId = new ObjectID(joinObjectiveRequest.pageId);
+        const joinerObjId = new ObjectID(joinObjectiveRequest.joiner);
+
+        const page = await this.pageService.findOne({ ownerUser: userObjId, _id: pageObjId });
+        if (page === undefined) {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Cannot find your page.', undefined));
+        }
+        const pageObjective = await this.pageObjectiveService.findOne({ _id: objectiveObjId, pageId: page.id });
+        if (pageObjective === undefined) {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Cannot delete objective you are not owner objective.', undefined));
+        }
+
+        const checkJoiner = await this.pageObjectiveJoinerService.findOne({ objectiveId: objectiveObjId, pageId: pageObjId, joiner: joinerObjId });
+        if (checkJoiner !== undefined) {
+            const deleteJoiner = await this.pageObjectiveJoinerService.delete({ objectiveId: checkJoiner.objectiveId, pageId: checkJoiner.pageId, joiner: checkJoiner.joiner });
+            if (deleteJoiner) {
+                const successResponse = ResponseUtil.getSuccessResponse('Delete Joiner objective is successful.', []);
+                return res.status(200).send(successResponse);
+            }
+        } else {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Cannot delete joiner objective.', undefined));
         }
     }
     // Update PageObjective API
