@@ -1242,57 +1242,48 @@ export class ObjectiveController {
         }
         const offSetNumber: number = filter.offset;
         const limitNumber: number = filter.limit;
-        const pageObjIds = new ObjectID(filter.whereConditions.pageId);
-
-        const pageJoinerObjective: any = await this.pageObjectiveJoinerService.aggregate(
+        const pageObjId = new ObjectID(filter.whereConditions.pageId);
+        const pageObjective: any = await this.pageObjectiveService.aggregate(
             [
                 {
-                    $match: {
-                        joiner: pageObjIds, join: true, approve: true
-                    }
+                    $match: { pageId: pageObjId }
                 },
                 {
                     $lookup: {
-                        from: 'PageObjective',
-                        let: { objectiveId: '$objectiveId' },
+                        from: 'PageObjectiveJoiner',
+                        let: { id: '$_id' },
                         pipeline: [
                             {
                                 $match: {
                                     $expr: {
-                                        $eq: ['$$objectiveId', '$_id']
+                                        $eq: ['$$id', '$objectiveId']
                                     }
                                 }
                             },
                             {
-                                $lookup: {
-                                    from: 'HashTag',
-                                    let: { hashTag: '$hashTag' },
-                                    pipeline: [
+                                $lookup:{
+                                    from:'Page',
+                                    let:{pageId:'$pageId'},
+                                    pipeline:[
                                         {
-                                            $match: {
-                                                $expr: {
-                                                    $eq: ['$$hashTag', '$_id']
-                                                },
-                                            },
-                                        },
+                                            $match:{
+                                                $expr:{
+                                                    $eq:['$$pageId','$_id']
+                                                }
+                                            }
+                                        }
                                     ],
-                                    as: 'hashTag'
-                                },
-                            },
-                            {
-                                $unwind: {
-                                    path: '$hashTag',
-                                    preserveNullAndEmptyArrays: true
+                                    as:'page'
                                 }
                             },
+                            {
+                                $unwind:{
+                                    path:'$page',
+                                    preserveNullAndEmptyArrays: true
+                                }
+                            }
                         ],
-                        as: 'pageObjective'
-                    }
-                },
-                {
-                    $unwind: {
-                        path: '$pageObjective',
-                        preserveNullAndEmptyArrays: true
+                        as: 'pageObjectiveJoiner'
                     }
                 },
                 {
@@ -1304,26 +1295,8 @@ export class ObjectiveController {
                 },
             ]
         );
-        const resultStack: any = [];
-        for (const row of pageJoinerObjective) {
-            const result: any = {};
-            result['id'] = row.pageObjective._id;
-            result['pageId'] = row.pageObjective.pageId;
-            result['title'] = row.pageObjective.title;
-            result['detail'] = row.pageObjective.detail;
-            result['hashTag'] = row.pageObjective.hashTag._id;
-            result['hashTagName'] = row.pageObjective.hashTag.name;
-            result['iconURL'] = row.pageObjective.iconURL;
-            result['s3IconURL'] = row.pageObjective.s3IconURL;
-            result['personal'] = row.pageObjective.personal;
-            result['joiner'] = row.joiner;
-            result['join'] = row.join;
-            result['approve'] = row.approve;
-            result['createdDate'] = row.pageObjective.createdDate;
-            resultStack.push(result);
-        }
-        if (resultStack.length > 0) {
-            const successResponse = ResponseUtil.getSuccessResponse('Successfully Search PageObjective', resultStack);
+        if (pageObjective.length > 0) {
+            const successResponse = ResponseUtil.getSuccessResponse('Successfully Search PageObjective', pageObjective);
             return res.status(200).send(successResponse);
         } else {
             return res.status(400).send(ResponseUtil.getErrorResponse('Cannot find Join PageObjective.', undefined));
