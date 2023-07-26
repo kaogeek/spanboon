@@ -357,13 +357,12 @@ export class ObjectiveController {
         const interval_15 = 15;
         const interval_30 = 30;
         const searchObjective = await this.pageObjectiveJoinerService.find({ objectiveId: objtiveIds });
-        const checkJoinObjective = await this.pageObjectiveJoinerService.findOne({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId });
+        const checkJoinObjective = await this.pageObjectiveJoinerService.findOne({ objectiveId: objtiveIds, pageId: pageObjId});
         const checkPublicObjective = await this.pageObjectiveService.findOne({ _id: objtiveIds });
         const pageOwner = await this.pageService.findOne({ _id: pageObjId });
         const pageJoiner = await this.pageService.findOne({ _id: joinerObjId });
         let notificationText = undefined;
         let link = undefined;
-
         if (checkJoinObjective !== undefined && checkJoinObjective !== null && checkJoinObjective.join === true) {
             const errorResponse = ResponseUtil.getErrorResponse('You have been join this objective.', undefined);
             return res.status(400).send(errorResponse);
@@ -1341,6 +1340,30 @@ export class ObjectiveController {
                 [
                     {
                         $match: { objectiveId: objtiveId, pageId: pageObjIds, join: true, approve: true }
+                    },
+                    {
+                        $lookup:{
+                            from:'Page',
+                            let:{joiner:'$joiner'},
+                            pipeline:[
+                                {
+                                    $match:{
+                                        $expr:{
+                                            $eq:['$$joiner','$_id']
+                                        }
+                                    }
+                                },
+                                { $project: { email: 0 } },
+                                
+                            ],
+                            as:'page'
+                        },
+                    },
+                    {
+                        $unwind:{
+                            path:'$page',
+                            preserveNullAndEmptyArrays: true
+                        }
                     }
                 ]
             );
