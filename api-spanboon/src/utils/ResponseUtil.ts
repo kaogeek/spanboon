@@ -6,13 +6,14 @@
  */
 
 export class ResponseUtil {
-    public static getSuccessResponse(msg: string, value: any, countIsReadL?: number): any {
+    public static getSuccessResponse(msg: string, value: any, countIsReadL?: number, objective?: any): any {
         if (value !== null || value !== undefined || value !== '') {
             const sucessRes: any = {
                 status: 1,
                 message: msg,
                 data: value,
                 count: countIsReadL,
+                notiObjective: objective
             };
             return sucessRes;
         } else {

@@ -16,9 +16,17 @@ import { SearchFilter } from './requests/SearchFilterRequest';
 import { Notification } from '../models/Notification';
 import { NotificationResponse } from './responses/NotificationResponse';
 import { USER_TYPE } from '../../constants/NotificationType';
+import { PageObjectiveService } from '../services/PageObjectiveService';
 @JsonController('/notification')
 export class UserNotificationController {
-    constructor(private notificationService: NotificationService, private userService: UserService, private pageService: PageService) { }
+    constructor(
+        private notificationService: NotificationService,
+        private userService: UserService,
+        private pageService: PageService,
+        private pageObjectiveService: PageObjectiveService
+    ) {
+
+    }
 
     // Find UserNotifications API
     /**
@@ -176,8 +184,105 @@ export class UserNotificationController {
         if (filter === undefined) {
             filter = new SearchFilter();
         }
-
+        const limits = filter.limit;
+        const skips = filter.offset;
+        console.log('limits', limits);
+        console.log('skips', skips);
         const userObjId = new ObjectID(req.user.id);
+        const pageObjective = await this.notificationService.aggregate(
+            [
+                {
+                    $match: {
+                        toUser: userObjId
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'Page',
+                        let: { toUser: '$toUser' },
+                        pipeline: [
+                            {
+                                $match: {
+                                    $expr: {
+                                        $eq: ['$$toUser', '$ownerUser']
+                                    }
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'PageObjective',
+                                    let: { id: '$_id' },
+                                    pipeline: [
+                                        {
+                                            $match: {
+                                                $expr: {
+                                                    $eq: ['$$id', '$pageId']
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    as: 'pageObjective'
+                                }
+                            },
+                            {
+                                $unwind: {
+                                    path: '$pageObjective',
+                                    preserveNullAndEmptyArrays: true
+                                }
+                            },
+                            {
+                                $match: { pageObjective: { $ne: null } }
+                            }
+                        ],
+                        as: 'page'
+                    }
+                },
+                {
+                    $unwind: {
+                        path: '$page',
+                        preserveNullAndEmptyArrays: true
+                    }
+                },
+                {
+                    $match: { page: { $ne: null } }
+                },
+                {
+                    $limit: limits
+                },
+                {
+                    $skip: skips
+                }
+
+            ]
+        );
+        const pageObjectives: any = [];
+        if (pageObjective.length > 0) {
+            for (const notiObjective of pageObjective) {
+                const result: any = {};
+                result.id = notiObjective._id;
+                result.title = notiObjective.title;
+                result.fromUser = notiObjective.fromUser;
+                result.touser = notiObjective.toUser;
+                result.isRead = notiObjective.isRead;
+                result.toUserType = notiObjective.toUserType;
+                result.fromUserType = notiObjective.fromUserType;
+                result.link = notiObjective.link;
+                result.type = notiObjective.type;
+                result.deleted = notiObjective.deleted;
+                result.data = notiObjective.data;
+                result.objectiveId = notiObjective.page.pageObjective._id;
+                result.pageId = notiObjective.page.pageObjective.pageId;
+                result.title = notiObjective.page.pageObjective.title;
+                result.detail = notiObjective.page.pageObjective.detail;
+                result.iconURL = notiObjective.page.pageObjective.iconURL;
+                result.category = notiObjective.page.pageObjective.category;
+                result.hashTag = notiObjective.page.pageObjective.hashTag;
+                result.s3IconURL = notiObjective.page.pageObjective.s3IconURL;
+                result.personal = notiObjective.page.pageObjective.personal;
+                pageObjectives.push(result);
+            }
+        }
+
         if (filter.whereConditions !== null && filter.whereConditions !== undefined) {
             if (typeof filter.whereConditions === 'object') {
                 filter.whereConditions.toUser = userObjId;
@@ -206,7 +311,7 @@ export class UserNotificationController {
         const newValues = { $set: { isRead: true } };
         const updateReadNoti = await this.notificationService.updateMany(query, newValues);
         if (userNotificationsList && updateReadNoti) {
-            const successResponse = ResponseUtil.getSuccessResponse('Successfully search UserNotifications', notiResp, findAllCountNotification.length);
+            const successResponse = ResponseUtil.getSuccessResponse('Successfully search UserNotifications', notiResp, findAllCountNotification.length, pageObjectives);
             return res.status(200).send(successResponse);
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot search UserNotifications', undefined);

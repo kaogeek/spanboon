@@ -1323,6 +1323,29 @@ export class ObjectiveController {
         }
     }
 
+    @Post('/:objectiveId/:pageId/joiner')
+    @Authorized('user')
+    public async searchPageObjectiveJoiner(@Param('pageId') pageId: string, @Param('objectiveId') objectiveId: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const pageObjIds = new ObjectID(pageId);
+        const objtiveId = new ObjectID(objectiveId);
+        if (pageObjIds) {
+            const pageJoiner = await this.pageObjectiveJoinerService.aggregate(
+                [
+                    {
+                        $match: { objectiveId: objtiveId, pageId: pageObjIds, join: true, approve: true }
+                    }
+                ]
+            );
+            if (pageJoiner.length > 0) {
+                const successResponse = ResponseUtil.getSuccessResponse('Successfully Search Page Join Objective.', pageJoiner);
+                return res.status(200).send(successResponse);
+            } else {
+                return res.status(400).send(ResponseUtil.getErrorResponse('Not found Page Join Objective.', undefined));
+            }
+        } else {
+            return res.status(400).send(ResponseUtil.getErrorResponse('PageId is undefined.', undefined));
+        }
+    }
     // Update PageObjective API
     /**
      * @api {put} /api/objective/:id Update PageObjective API
@@ -1759,39 +1782,50 @@ export class ObjectiveController {
         const joinerObjId = new ObjectID(joinObjectiveRequest.joiner);
         const join = joinObjectiveRequest.join;
         const space = ' ';
-        const checkJoinObjective = await this.pageObjectiveJoinerService.findOne({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId });
-        const checkPublicObjective = await this.pageObjectiveService.findOne({ _id: objtiveIds });
+        const result: any = {};
+        result['objectiveId'] = objtiveIds;
+        result['pageId'] = pageObjId;
+        result['joiner'] = joinerObjId;
+        result['join'] = join;
+        result['approve'] = false;
+        const createJoin = await this.pageObjectiveJoinerService.create(result);
+
+        let checkJoinObjective = undefined;
+        let checkPublicObjective = undefined;
+        if (createJoin) {
+            checkJoinObjective = await this.pageObjectiveJoinerService.findOne({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId });
+            checkPublicObjective = await this.pageObjectiveService.findOne({ _id: objtiveIds });
+        }
         const pageOwner = await this.pageService.findOne({ _id: pageObjId });
         const pageJoiner = await this.pageService.findOne({ _id: joinerObjId });
         let notificationText = undefined;
         let link = undefined;
-
-        if (checkJoinObjective !== undefined && checkJoinObjective !== null && checkJoinObjective.join === true) {
-            const errorResponse = ResponseUtil.getErrorResponse('You have been invite this objective.', undefined);
+        if (checkJoinObjective === undefined && checkJoinObjective === null) {
+            const errorResponse = ResponseUtil.getErrorResponse('Not found the join objective.', undefined);
             return res.status(400).send(errorResponse);
         }
         // not auto approve
-        if (join === true && checkPublicObjective.personal === true) {
-            if (pageJoiner && pageOwner.id) {
+        if (checkPublicObjective !== undefined && join === true && checkPublicObjective.personal === true) {
+            if (pageJoiner !== undefined && pageOwner.id !== undefined) {
                 const notiOwners = await this.deviceTokenService.find({ userId: pageOwner.ownerUser });
-                notificationText = pageJoiner.name + space + 'เชิญเข้าร่วมกิจกรรม' + checkPublicObjective.title;
+                notificationText = pageOwner.name + space + 'เชิญเข้าร่วมกิจกรรม' + checkPublicObjective.title;
                 link = `/page/${pageJoiner.id}/`;
                 await this.pageNotificationService.notifyToPageUserFcm(
-                    pageOwner.id + '',
+                    pageJoiner.id + '',
                     undefined,
                     req.user.id + '',
                     USER_TYPE.PAGE,
                     NOTIFICATION_TYPE.OBJECTIVE,
                     notificationText,
                     link,
-                    pageJoiner.name,
-                    pageJoiner.imageURL
+                    pageOwner.name,
+                    pageOwner.imageURL
                 );
                 for (const notiOwner of notiOwners) {
                     if (notiOwner.Tokens !== null && notiOwner.Tokens !== undefined && notiOwner.Tokens !== '') {
                         await this.notificationService.sendNotificationFCM
                             (
-                                pageOwner.id + '',
+                                pageJoiner.id + '',
                                 USER_TYPE.PAGE,
                                 req.user.id + '',
                                 USER_TYPE.PAGE,
@@ -1799,29 +1833,21 @@ export class ObjectiveController {
                                 notificationText,
                                 link,
                                 notiOwner.Tokens,
-                                pageJoiner.name,
-                                pageJoiner.imageURL
+                                pageOwner.name,
+                                pageOwner.imageURL
                             );
                     } else {
                         continue;
                     }
                 }
-                const result: any = {};
-                result['objectiveId'] = objtiveIds;
-                result['pageId'] = pageObjId;
-                result['joiner'] = joinerObjId;
-                result['join'] = join;
-                result['approve'] = false;
-                const create = await this.pageObjectiveJoinerService.create(result);
-                if (create) {
-                    const successResponse = ResponseUtil.getSuccessResponse('Send noti is succesful.', []);
-                    return res.status(200).send(successResponse);
-                }
+                const successResponse = ResponseUtil.getSuccessResponse('Invite join objective is succesful.', []);
+                return res.status(200).send(successResponse);
             } else {
                 const errorResponse = ResponseUtil.getErrorResponse('Error not found page owner objective.', undefined);
                 return res.status(400).send(errorResponse);
             }
         } else {
+            await this.pageObjectiveJoinerService.delete({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId });
             const errorResponse = ResponseUtil.getErrorResponse('Unable create join objective', undefined);
             return res.status(400).send(errorResponse);
         }
