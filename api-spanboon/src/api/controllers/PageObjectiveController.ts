@@ -1231,10 +1231,18 @@ export class ObjectiveController {
     }
 
     @Post('/search/join')
-    public async searchJoinObjective(@QueryParam('limit') limit: number, @QueryParam('offset') offset: number, @Req() req: any, @Res() res: any): Promise<any> {
-        const offSetNumber: number = offset;
-        const limitNumber: number = limit;
-        const pageObjIds = new ObjectID(req.body.pageId);
+    public async searchJoinObjective(@Body({ validate: true }) search: FindHashTagRequest, @Req() req: any, @Res() res: any): Promise<any> {
+        if (ObjectUtil.isObjectEmpty(search)) {
+            return res.status(200).send([]);
+        }
+
+        let filter: any = search.filter;
+        if (filter === undefined) {
+            filter = new SearchFilter();
+        }
+        const offSetNumber: number = filter.offset;
+        const limitNumber: number = filter.limit;
+        const pageObjIds = new ObjectID(filter.whereConditions.pageId);
 
         const pageJoinerObjective: any = await this.pageObjectiveJoinerService.aggregate(
             [
