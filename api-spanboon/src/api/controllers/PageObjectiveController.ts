@@ -1323,11 +1323,19 @@ export class ObjectiveController {
         }
     }
 
-    @Post('/:objectiveId/:pageId/joiner')
+    @Post('/:objectiveId/joiner')
     @Authorized('user')
-    public async searchPageObjectiveJoiner(@Param('pageId') pageId: string, @Param('objectiveId') objectiveId: string, @Res() res: any, @Req() req: any): Promise<any> {
-        const pageObjIds = new ObjectID(pageId);
+    public async searchPageObjectiveJoiner(@Body({ validate: true }) search: FindHashTagRequest, @Param('objectiveId') objectiveId: string, @Res() res: any, @Req() req: any): Promise<any> {
+        if (ObjectUtil.isObjectEmpty(search)) {
+            return res.status(200).send([]);
+        }
+
+        let filter: any = search.filter;
+        if (filter === undefined) {
+            filter = new SearchFilter();
+        }
         const objtiveId = new ObjectID(objectiveId);
+        const pageObjIds = new ObjectID(filter.whereConditions.pageId);
         if (pageObjIds) {
             const pageJoiner = await this.pageObjectiveJoinerService.aggregate(
                 [
