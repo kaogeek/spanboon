@@ -1378,7 +1378,7 @@ export class ObjectiveController {
         }
     }
 
-    @Delete('/joiner')
+    @Post('/joiner')
     @Authorized('user')
     public async deleteJoinerObjective(@Body({ validate: true }) joinObjectiveRequest: JoinObjectiveRequest, @Res() res: any, @Req() req: any): Promise<any> {
         // check owner objective
