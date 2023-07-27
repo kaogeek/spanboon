@@ -279,6 +279,7 @@ export class UserNotificationController {
                 result.s3IconURL = notiObjective.page.pageObjective.s3IconURL;
                 result.personal = notiObjective.page.pageObjective.personal;
                 result.imagePage = notiObjective.page.imageURL;
+                result.mode = notiObjective.mode;
                 pageObjectives.push(result);
             }
         }
