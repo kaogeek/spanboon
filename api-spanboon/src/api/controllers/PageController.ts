@@ -2305,7 +2305,14 @@ export class PageController {
         } else {
             filter.whereConditions = {};
         }
-        if (userId !== undefined) {
+        const stackPageId = [];
+        const pageObj = await this.pageService.find({ ownerUser: userId });
+        if (pageObj.length > 0) {
+            for (const page of pageObj) {
+                stackPageId.push(new ObjectID(page.id));
+            }
+        }
+        if (userId !== undefined && stackPageId.length > 0) {
             const limits = filter.limit;
             const ban = filter.whereConditions.banned;
             const keyword = filter.keyword;
@@ -2313,7 +2320,7 @@ export class PageController {
             pageLists = await this.pageService.aggregate(
                 [
                     {
-                        $match: { banned: ban, name: exp }
+                        $match: { banned: ban, name: exp, _id: { $nin: stackPageId } }
                     },
                     {
                         $lookup: {

@@ -193,7 +193,6 @@ export class UserNotificationController {
                     $match: {
                         toUser: userObjId,
                         type: 'OBJECTIVE',
-                        isRead: false
                     }
                 },
                 {

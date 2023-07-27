@@ -216,6 +216,21 @@ export class NotificationService {
         }
     }
 
+    public async createNofiticationObjective(toUserId: string, toUserType: string, fromUserId: string, fromUserType: string, notificationType: string, title: string, link: string, data?: any, displayName?: any, image?: any, count?: any): Promise<any> {
+        const notification: Notification = new Notification();
+        notification.isRead = false;
+        notification.toUser = new ObjectID(toUserId);
+        notification.toUserType = toUserType;
+        notification.fromUser = new ObjectID(fromUserId);
+        notification.fromUserType = fromUserType;
+        notification.title = title;
+        notification.link = link;
+        notification.type = notificationType;
+        notification.deleted = false;
+        notification.data = data;
+        return await this.create(notification);
+    }
+    
     public async createNotificationFCM(toUserId: string, toUserType: string, fromUserId: string, fromUserType: string, notificationType: string, title: string, link: string, data?: any, displayName?: any, image?: any, count?: any): Promise<any> {
         const notification: Notification = new Notification();
         notification.isRead = false;
@@ -252,6 +267,11 @@ export class NotificationService {
         } else {
             return;
         }
+    }
+
+    public async createUserNotificationObjective(toUserId: string, fromUserId: string, fromUserType: string, notificationType: string, title: string, link?: string, data?: any, displayName?: any, image?: any, count?: any): Promise<any> {
+        const token = data;
+        return await this.createNofiticationObjective(toUserId, USER_TYPE.PAGE, fromUserId, fromUserType, notificationType, title, link, token, displayName, image);
     }
 
     public async createUserNotificationFCM(toUserId: string, fromUserId: string, fromUserType: string, notificationType: string, title: string, link?: string, data?: any, displayName?: any, image?: any, count?: any): Promise<any> {

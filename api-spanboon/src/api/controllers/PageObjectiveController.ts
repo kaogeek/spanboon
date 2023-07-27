@@ -385,7 +385,7 @@ export class ObjectiveController {
                 notificationText = pageJoiner.name + space + 'เข้าร่วมสิ่งที่กำลังทำของเพจคุณ';
                 link = `/page/${pageJoiner.id}/`;
                 if (searchObjective.length === 0 || searchObjective.length <= 10) {
-                    await this.pageNotificationService.notifyToPageUserFcm(
+                    await this.pageNotificationService.notifyToPageUserObjective(
                         pageOwner.id + '',
                         undefined,
                         req.user.id + '',
@@ -427,7 +427,7 @@ export class ObjectiveController {
                         return res.status(200).send(successResponse);
                     }
                 } else if (searchObjective.length > 10 && searchObjective.length <= 50 && minutes % interval_15 === 0) {
-                    await this.pageNotificationService.notifyToPageUserFcm(
+                    await this.pageNotificationService.notifyToPageUserObjective(
                         pageOwner.id + '',
                         undefined,
                         req.user.id + '',
@@ -462,14 +462,14 @@ export class ObjectiveController {
                     result['pageId'] = pageObjId;
                     result['joiner'] = joinerObjId;
                     result['join'] = join;
-                    result['approve'] = true;
+                    result['approve'] = false;
                     const create = await this.pageObjectiveJoinerService.create(result);
                     if (create) {
                         const successResponse = ResponseUtil.getSuccessResponse('Send noti is succesful.', []);
                         return res.status(200).send(successResponse);
                     }
                 } else if (searchObjective.length > 50 && searchObjective.length <= 300 && minutes % interval_30 === 0) {
-                    await this.pageNotificationService.notifyToPageUserFcm(
+                    await this.pageNotificationService.notifyToPageUserObjective(
                         pageOwner.id + '',
                         undefined,
                         req.user.id + '',
@@ -504,14 +504,14 @@ export class ObjectiveController {
                     result['pageId'] = pageObjId;
                     result['joiner'] = joinerObjId;
                     result['join'] = join;
-                    result['approve'] = true;
+                    result['approve'] = false;
                     const create = await this.pageObjectiveJoinerService.create(result);
                     if (create) {
                         const successResponse = ResponseUtil.getSuccessResponse('Send noti is succesful.', []);
                         return res.status(200).send(successResponse);
                     }
                 } else if (searchObjective.length > 300 && searchObjective.length <= 2000 && hours % 2 === 0) {
-                    await this.pageNotificationService.notifyToPageUserFcm(
+                    await this.pageNotificationService.notifyToPageUserObjective(
                         pageOwner.id + '',
                         undefined,
                         req.user.id + '',
@@ -546,14 +546,14 @@ export class ObjectiveController {
                     result['pageId'] = pageObjId;
                     result['joiner'] = joinerObjId;
                     result['join'] = join;
-                    result['approve'] = true;
+                    result['approve'] = false;
                     const create = await this.pageObjectiveJoinerService.create(result);
                     if (create) {
                         const successResponse = ResponseUtil.getSuccessResponse('Send noti is succesful.', []);
                         return res.status(200).send(successResponse);
                     }
                 } else if (searchObjective.length > 2000 && hours % 3 === 0) {
-                    await this.pageNotificationService.notifyToPageUserFcm(
+                    await this.pageNotificationService.notifyToPageUserObjective(
                         pageOwner.id + '',
                         undefined,
                         req.user.id + '',
@@ -588,7 +588,7 @@ export class ObjectiveController {
                     result['pageId'] = pageObjId;
                     result['joiner'] = joinerObjId;
                     result['join'] = join;
-                    result['approve'] = true;
+                    result['approve'] = false;
                     const create = await this.pageObjectiveJoinerService.create(result);
                     if (create) {
                         const successResponse = ResponseUtil.getSuccessResponse('Send noti is succesful.', []);
@@ -607,7 +607,7 @@ export class ObjectiveController {
                 notificationText = pageJoiner.name + space + 'ขอเข้าร่วมสิ่งที่กำลังทำของเพจคุณ';
                 link = `/page/${pageJoiner.id}/`;
                 if (searchObjective.length === 0 || searchObjective.length <= 10) {
-                    await this.pageNotificationService.notifyToPageUserFcm(
+                    await this.pageNotificationService.notifyToPageUserObjective(
                         pageOwner.id + '',
                         undefined,
                         req.user.id + '',
@@ -649,7 +649,7 @@ export class ObjectiveController {
                         return res.status(200).send(successResponse);
                     }
                 } else if (searchObjective.length > 10 && searchObjective.length <= 50 && minutes % interval_15 === 0) {
-                    await this.pageNotificationService.notifyToPageUserFcm(
+                    await this.pageNotificationService.notifyToPageUserObjective(
                         pageOwner.id + '',
                         undefined,
                         req.user.id + '',
@@ -691,7 +691,7 @@ export class ObjectiveController {
                         return res.status(200).send(successResponse);
                     }
                 } else if (searchObjective.length > 50 && searchObjective.length <= 300 && minutes % interval_30 === 0) {
-                    await this.pageNotificationService.notifyToPageUserFcm(
+                    await this.pageNotificationService.notifyToPageUserObjective(
                         pageOwner.id + '',
                         undefined,
                         req.user.id + '',
@@ -733,7 +733,7 @@ export class ObjectiveController {
                         return res.status(200).send(successResponse);
                     }
                 } else if (searchObjective.length > 300 && searchObjective.length <= 2000 && hours % 2 === 0) {
-                    await this.pageNotificationService.notifyToPageUserFcm(
+                    await this.pageNotificationService.notifyToPageUserObjective(
                         pageOwner.id + '',
                         undefined,
                         req.user.id + '',
@@ -775,7 +775,7 @@ export class ObjectiveController {
                         return res.status(200).send(successResponse);
                     }
                 } else if (searchObjective.length > 2000 && hours % 3 === 0) {
-                    await this.pageNotificationService.notifyToPageUserFcm(
+                    await this.pageNotificationService.notifyToPageUserObjective(
                         pageOwner.id + '',
                         undefined,
                         req.user.id + '',
@@ -1894,7 +1894,7 @@ export class ObjectiveController {
                 for (const pageJoin of pageJoiner) {
                     notificationText = pageOwner.name + space + 'เชิญเข้าร่วมกิจกรรม' + checkPublicObjective.title;
                     link = `/page/${pageJoin._id}/`;
-                    await this.pageNotificationService.notifyToPageUserFcm(
+                    await this.pageNotificationService.notifyToPageUserObjective(
                         pageJoin._id + '',
                         undefined,
                         req.user.id + '',
