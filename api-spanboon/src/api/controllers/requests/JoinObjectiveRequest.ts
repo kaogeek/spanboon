@@ -10,7 +10,7 @@ import 'reflect-metadata';
 export class JoinObjectiveRequest {
     public objectiveId: string;
     public pageId: string;
-    public joiner: string;
+    public joiner: any;
     public join:boolean;
     public approve:boolean; 
 }

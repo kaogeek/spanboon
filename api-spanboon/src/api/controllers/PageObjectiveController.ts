@@ -356,17 +356,28 @@ export class ObjectiveController {
         const minutes = now.getMinutes();
         const interval_15 = 15;
         const interval_30 = 30;
+        let checkJoinObjective = undefined
         const searchObjective = await this.pageObjectiveJoinerService.find({ objectiveId: objtiveIds });
-        const checkJoinObjective = await this.pageObjectiveJoinerService.findOne({ objectiveId: objtiveIds, pageId: pageObjId });
+        checkJoinObjective = await this.pageObjectiveJoinerService.findOne({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId });
         const checkPublicObjective = await this.pageObjectiveService.findOne({ _id: objtiveIds });
         const pageOwner = await this.pageService.findOne({ _id: pageObjId });
         const pageJoiner = await this.pageService.findOne({ _id: joinerObjId });
         let notificationText = undefined;
         let link = undefined;
+        const joinIds = [];
         if (checkJoinObjective !== undefined && checkJoinObjective !== null && checkJoinObjective.join === true) {
-            const errorResponse = ResponseUtil.getErrorResponse('You have been join this objective.', undefined);
+            const errorResponse = ResponseUtil.getErrorResponse('You have joined the objective before.', undefined);
             return res.status(400).send(errorResponse);
         }
+        joinIds.push(joinerObjId);
+        if (joinIds.length > 0) {
+            checkJoinObjective = await this.pageObjectiveJoinerService.find({ objectiveId: objtiveIds, pageId: pageObjId, joiner: { $in: joinIds } });
+            if (checkJoinObjective.length > 0) {
+                const errorResponse = ResponseUtil.getErrorResponse('You have joined the objective before.', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        }
+
 
         // if auto approve 
         if (join === true && checkPublicObjective.personal === true && pageOwner.autoApprove === true) {
@@ -1261,24 +1272,24 @@ export class ObjectiveController {
                                 }
                             },
                             {
-                                $lookup:{
-                                    from:'Page',
-                                    let:{pageId:'$pageId'},
-                                    pipeline:[
+                                $lookup: {
+                                    from: 'Page',
+                                    let: { pageId: '$pageId' },
+                                    pipeline: [
                                         {
-                                            $match:{
-                                                $expr:{
-                                                    $eq:['$$pageId','$_id']
+                                            $match: {
+                                                $expr: {
+                                                    $eq: ['$$pageId', '$_id']
                                                 }
                                             }
                                         }
                                     ],
-                                    as:'page'
+                                    as: 'page'
                                 }
                             },
                             {
-                                $unwind:{
-                                    path:'$page',
+                                $unwind: {
+                                    path: '$page',
                                     preserveNullAndEmptyArrays: true
                                 }
                             }
@@ -1822,25 +1833,55 @@ export class ObjectiveController {
     public async inviteObjective(@Body({ validate: true }) joinObjectiveRequest: JoinObjectiveRequest, @Res() res: any, @Req() req: any): Promise<any> {
         const objtiveIds = new ObjectID(joinObjectiveRequest.objectiveId);
         const pageObjId = new ObjectID(joinObjectiveRequest.pageId);
-        const joinerObjId = new ObjectID(joinObjectiveRequest.joiner);
+        const joinObjs: any = joinObjectiveRequest.joiner;
+        let joinerObjId = undefined;
         const join = joinObjectiveRequest.join;
         const space = ' ';
         const result: any = {};
-        result['objectiveId'] = objtiveIds;
-        result['pageId'] = pageObjId;
-        result['joiner'] = joinerObjId;
-        result['join'] = join;
-        result['approve'] = false;
-        const createJoin = await this.pageObjectiveJoinerService.create(result);
-
+        let createJoin = undefined;
         let checkJoinObjective = undefined;
         let checkPublicObjective = undefined;
+        // check before create invite 
+        if (joinObjs.length > 0) {
+            joinerObjId = joinObjs.map(_id => new ObjectID(_id));
+        }
+        if (joinerObjId.length > 0) {
+            for (const joinIds of joinerObjId) {
+                checkJoinObjective = await this.pageObjectiveJoinerService.find({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinIds });
+                if (checkJoinObjective.length > 0) {
+                    const errorResponse = ResponseUtil.getErrorResponse('You have joined the objective before.', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+            }
+        }
+
+        const checkJoin = await this.pageObjectiveJoinerService.find({ objectiveId: objtiveIds, pageId: pageObjId, joiner: { $in: joinerObjId } });
+        if (checkJoin.length > 0) {
+            const errorResponse = ResponseUtil.getErrorResponse('You have joined the objective before.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if (joinObjs.length > 0 && joinerObjId.length > 0) {
+            result['objectiveId'] = objtiveIds;
+            result['pageId'] = pageObjId;
+            result['joiner'] = joinerObjId;
+            result['join'] = join;
+            result['approve'] = false;
+            createJoin = await this.pageObjectiveJoinerService.create(result);
+        }
         if (createJoin) {
-            checkJoinObjective = await this.pageObjectiveJoinerService.findOne({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId });
+            checkJoinObjective = await this.pageObjectiveJoinerService.find({ objectiveId: objtiveIds, pageId: pageObjId, joiner: { $in: joinerObjId } });
             checkPublicObjective = await this.pageObjectiveService.findOne({ _id: objtiveIds });
         }
         const pageOwner = await this.pageService.findOne({ _id: pageObjId });
-        const pageJoiner = await this.pageService.findOne({ _id: joinerObjId });
+        // const pageJoiner = await this.pageService.aggregate({ _id: joinerObjId });
+        const pageJoiner: any = await this.pageService.aggregate(
+            [
+                {
+                    $match: { _id: { $in: joinerObjId } },
+                }
+            ]
+        );
         let notificationText = undefined;
         let link = undefined;
         if (checkJoinObjective === undefined && checkJoinObjective === null) {
@@ -1849,26 +1890,28 @@ export class ObjectiveController {
         }
         // not auto approve
         if (checkPublicObjective !== undefined && join === true && checkPublicObjective.personal === true) {
-            if (pageJoiner !== undefined && pageOwner.id !== undefined) {
+            if (pageJoiner.length > 0 && pageOwner.id !== undefined) {
                 const notiOwners = await this.deviceTokenService.find({ userId: pageOwner.ownerUser });
-                notificationText = pageOwner.name + space + 'เชิญเข้าร่วมกิจกรรม' + checkPublicObjective.title;
-                link = `/page/${pageJoiner.id}/`;
-                await this.pageNotificationService.notifyToPageUserFcm(
-                    pageJoiner.id + '',
-                    undefined,
-                    req.user.id + '',
-                    USER_TYPE.PAGE,
-                    NOTIFICATION_TYPE.OBJECTIVE,
-                    notificationText,
-                    link,
-                    pageOwner.name,
-                    pageOwner.imageURL
-                );
+                for (const pageJoin of pageJoiner) {
+                    notificationText = pageOwner.name + space + 'เชิญเข้าร่วมกิจกรรม' + checkPublicObjective.title;
+                    link = `/page/${pageJoin._id}/`;
+                    await this.pageNotificationService.notifyToPageUserFcm(
+                        pageJoin._id + '',
+                        undefined,
+                        req.user.id + '',
+                        USER_TYPE.PAGE,
+                        NOTIFICATION_TYPE.OBJECTIVE,
+                        notificationText,
+                        link,
+                        pageOwner.name,
+                        pageOwner.imageURL
+                    );
+                }
                 for (const notiOwner of notiOwners) {
                     if (notiOwner.Tokens !== null && notiOwner.Tokens !== undefined && notiOwner.Tokens !== '') {
                         await this.notificationService.sendNotificationFCM
                             (
-                                pageJoiner.id + '',
+                                notiOwner.userId + '',
                                 USER_TYPE.PAGE,
                                 req.user.id + '',
                                 USER_TYPE.PAGE,
