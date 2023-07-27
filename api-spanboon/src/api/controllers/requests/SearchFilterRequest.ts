@@ -29,6 +29,6 @@ export class SearchFilter {
 
     public typeHashTag:string;
 
-    public keyworkd:string[];
+    public keyword:string[];
 
 }

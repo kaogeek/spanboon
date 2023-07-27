@@ -356,7 +356,7 @@ export class ObjectiveController {
         const minutes = now.getMinutes();
         const interval_15 = 15;
         const interval_30 = 30;
-        let checkJoinObjective = undefined
+        let checkJoinObjective = undefined;
         const searchObjective = await this.pageObjectiveJoinerService.find({ objectiveId: objtiveIds });
         checkJoinObjective = await this.pageObjectiveJoinerService.findOne({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId });
         const checkPublicObjective = await this.pageObjectiveService.findOne({ _id: objtiveIds });
@@ -377,7 +377,6 @@ export class ObjectiveController {
                 return res.status(400).send(errorResponse);
             }
         }
-
 
         // if auto approve 
         if (join === true && checkPublicObjective.personal === true && pageOwner.autoApprove === true) {

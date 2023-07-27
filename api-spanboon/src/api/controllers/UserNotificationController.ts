@@ -16,14 +16,14 @@ import { SearchFilter } from './requests/SearchFilterRequest';
 import { Notification } from '../models/Notification';
 import { NotificationResponse } from './responses/NotificationResponse';
 import { USER_TYPE } from '../../constants/NotificationType';
-import { PageObjectiveService } from '../services/PageObjectiveService';
+// import { PageObjectiveService } from '../services/PageObjectiveService';
 @JsonController('/notification')
 export class UserNotificationController {
     constructor(
         private notificationService: NotificationService,
         private userService: UserService,
         private pageService: PageService,
-        private pageObjectiveService: PageObjectiveService
+        // private pageObjectiveService: PageObjectiveService
     ) {
 
     }
