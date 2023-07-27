@@ -186,14 +186,13 @@ export class UserNotificationController {
         }
         const limits = filter.limit;
         const skips = filter.offset;
-        console.log('limits', limits);
-        console.log('skips', skips);
         const userObjId = new ObjectID(req.user.id);
         const pageObjective = await this.notificationService.aggregate(
             [
                 {
                     $match: {
-                        toUser: userObjId
+                        toUser: userObjId,
+                        type:'OBJECTIVE'
                     }
                 },
                 {
