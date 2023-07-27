@@ -377,7 +377,6 @@ export class ObjectiveController {
                 return res.status(400).send(errorResponse);
             }
         }
-
         // if auto approve 
         if (join === true && checkPublicObjective.personal === true && pageOwner.autoApprove === true) {
             if (pageJoiner && pageOwner.id) {
@@ -394,7 +393,8 @@ export class ObjectiveController {
                         notificationText,
                         link,
                         pageJoiner.name,
-                        pageJoiner.imageURL
+                        pageJoiner.imageURL,
+
                     );
                     for (const notiOwner of notiOwners) {
                         if (notiOwner.Tokens !== null && notiOwner.Tokens !== undefined && notiOwner.Tokens !== '') {
@@ -436,7 +436,8 @@ export class ObjectiveController {
                         notificationText,
                         link,
                         pageJoiner.name,
-                        pageJoiner.imageURL
+                        pageJoiner.imageURL,
+
                     );
                     for (const notiOwner of notiOwners) {
                         if (notiOwner.Tokens !== null && notiOwner.Tokens !== undefined && notiOwner.Tokens !== '') {
@@ -478,7 +479,8 @@ export class ObjectiveController {
                         notificationText,
                         link,
                         pageJoiner.name,
-                        pageJoiner.imageURL
+                        pageJoiner.imageURL,
+
                     );
                     for (const notiOwner of notiOwners) {
                         if (notiOwner.Tokens !== null && notiOwner.Tokens !== undefined && notiOwner.Tokens !== '') {
@@ -520,7 +522,8 @@ export class ObjectiveController {
                         notificationText,
                         link,
                         pageJoiner.name,
-                        pageJoiner.imageURL
+                        pageJoiner.imageURL,
+
                     );
                     for (const notiOwner of notiOwners) {
                         if (notiOwner.Tokens !== null && notiOwner.Tokens !== undefined && notiOwner.Tokens !== '') {
@@ -562,7 +565,8 @@ export class ObjectiveController {
                         notificationText,
                         link,
                         pageJoiner.name,
-                        pageJoiner.imageURL
+                        pageJoiner.imageURL,
+
                     );
                     for (const notiOwner of notiOwners) {
                         if (notiOwner.Tokens !== null && notiOwner.Tokens !== undefined && notiOwner.Tokens !== '') {
@@ -616,7 +620,8 @@ export class ObjectiveController {
                         notificationText,
                         link,
                         pageJoiner.name,
-                        pageJoiner.imageURL
+                        pageJoiner.imageURL,
+
                     );
                     for (const notiOwner of notiOwners) {
                         if (notiOwner.Tokens !== null && notiOwner.Tokens !== undefined && notiOwner.Tokens !== '') {
@@ -658,7 +663,8 @@ export class ObjectiveController {
                         notificationText,
                         link,
                         pageJoiner.name,
-                        pageJoiner.imageURL
+                        pageJoiner.imageURL,
+
                     );
                     for (const notiOwner of notiOwners) {
                         if (notiOwner.Tokens !== null && notiOwner.Tokens !== undefined && notiOwner.Tokens !== '') {
@@ -700,7 +706,8 @@ export class ObjectiveController {
                         notificationText,
                         link,
                         pageJoiner.name,
-                        pageJoiner.imageURL
+                        pageJoiner.imageURL,
+
                     );
                     for (const notiOwner of notiOwners) {
                         if (notiOwner.Tokens !== null && notiOwner.Tokens !== undefined && notiOwner.Tokens !== '') {
@@ -742,7 +749,8 @@ export class ObjectiveController {
                         notificationText,
                         link,
                         pageJoiner.name,
-                        pageJoiner.imageURL
+                        pageJoiner.imageURL,
+
                     );
                     for (const notiOwner of notiOwners) {
                         if (notiOwner.Tokens !== null && notiOwner.Tokens !== undefined && notiOwner.Tokens !== '') {
@@ -784,7 +792,8 @@ export class ObjectiveController {
                         notificationText,
                         link,
                         pageJoiner.name,
-                        pageJoiner.imageURL
+                        pageJoiner.imageURL,
+
                     );
                     for (const notiOwner of notiOwners) {
                         if (notiOwner.Tokens !== null && notiOwner.Tokens !== undefined && notiOwner.Tokens !== '') {

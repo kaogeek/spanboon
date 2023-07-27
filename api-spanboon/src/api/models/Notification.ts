@@ -49,6 +49,9 @@ export class Notification extends BaseModel {
     @Column({ name: 'data' })
     public data: any;
 
+    @Column({ name: 'mode' })
+    public mode: string;
+
     @BeforeInsert()
     public createDetails(): any {
         this.createdDate = moment().toDate();
