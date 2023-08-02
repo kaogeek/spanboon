@@ -310,6 +310,8 @@ export class UserNotificationController {
                                     }
                                 }
                             },
+                            // $match: { toUser: userObjId, type: 'OBJECTIVE', mode: 'invite' }
+
                             {
                                 $match: { toUser: userObjId, type: 'OBJECTIVE', mode: 'join' }
                             },
@@ -321,9 +323,9 @@ export class UserNotificationController {
                                         {
                                             $match: {
                                                 $expr: {
-                                                    $eq: ['$$pageId', '$joiner']
+                                                    $eq: ['$$pageId', '$pageId']
                                                 }
-                                            }
+                                            },
                                         },
                                         {
                                             $lookup: {
@@ -344,7 +346,8 @@ export class UserNotificationController {
                                                             pipeline: [
                                                                 {
                                                                     $match: {
-                                                                        $expr: {
+                                                                        $expr:
+                                                                        {
                                                                             $eq: ['$$pageId', '$_id']
                                                                         }
                                                                     }
@@ -374,18 +377,17 @@ export class UserNotificationController {
                                 }
                             },
                             {
-                                $limit: limits
-                            },
-                            {
-                                $skip: skips
-                            },
-                            {
                                 $unwind: {
                                     path: '$pageObjectiveJoiner',
                                     preserveNullAndEmptyArrays: true
                                 }
                             },
-
+                            {
+                                $limit: limits
+                            },
+                            {
+                                $skip: skips
+                            },
                         ],
                         as: 'InviteNotification'
                     }
@@ -428,7 +430,7 @@ export class UserNotificationController {
         }
         if (joinNoti.length > 0) {
             for (const notiPage of joinNoti) {
-                if (notiPage.InviteNotification !== undefined ) {
+                if (notiPage.InviteNotification !== undefined && notiPage.InviteNotification.pageObjectiveJoiner !== undefined) {
                     const result: any = {};
                     result.title = notiPage.InviteNotification.title;
                     result.fromUser = notiPage.InviteNotification.fromUser;

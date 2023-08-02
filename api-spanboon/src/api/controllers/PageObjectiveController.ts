@@ -1245,6 +1245,22 @@ export class ObjectiveController {
                             }
                         },
                         {
+                            $lookup: {
+                                from: 'PageObjectiveJoiner',
+                                let: { id: '$_id' },
+                                pipeline: [
+                                    {
+                                        $match: {
+                                            $expr: {
+                                                $eq: ['$$id', '$objectiveId']
+                                            }
+                                        }
+                                    }
+                                ],
+                                as:'pageObjectiveJoiner'
+                            }
+                        },
+                        {
                             $sort: {
                                 createdDate: -1
                             }
