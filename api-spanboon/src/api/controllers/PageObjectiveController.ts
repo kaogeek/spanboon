@@ -883,6 +883,8 @@ export class ObjectiveController {
         const joinerObjId = new ObjectID(joinObjectiveRequest.joiner);
 
         const joinObjective = await this.pageObjectiveJoinerService.findOne({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId });
+        const pageOwner = await this.pageService.findOne({ _id: pageObjId });
+        const pageJoiner = await this.pageService.findOne({ _id: joinerObjId });
         if (joinObjective) {
             const query = {
                 _id: joinObjective.id,
@@ -895,6 +897,7 @@ export class ObjectiveController {
                 { pageId: joinObjective.joiner, objective: joinObjective.objectiveId },
                 { $set: { objective: null, objectiveTag: null } }
             );
+            await this.notificationService.delete({ fromUser: pageOwner.ownerUser, toUser: pageJoiner.ownerUser });
             if (update && postUpdate) {
                 const successResponse = ResponseUtil.getSuccessResponse('Unjoin is successfully.', []);
                 return res.status(200).send(successResponse);
@@ -1344,7 +1347,7 @@ export class ObjectiveController {
     }
 
     @Post('/search/join')
-    public async searchJoinObjective(@QueryParam('limit') limit: number, @QueryParam('offset') offset: number,@Body({ validate: true }) search: FindHashTagRequest, @Req() req: any, @Res() res: any): Promise<any> {
+    public async searchJoinObjective(@QueryParam('limit') limit: number, @QueryParam('offset') offset: number, @Body({ validate: true }) search: FindHashTagRequest, @Req() req: any, @Res() res: any): Promise<any> {
         if (ObjectUtil.isObjectEmpty(search)) {
             return res.status(200).send([]);
         }
