@@ -819,6 +819,7 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     let cloneObject: any[] = this.resObjective;
     this.isLoadMoreObjective = true;
     await this.objectiveFacade.searchObjective(keywordFilter).then((result: any) => {
+      result.data.reverse();
       if (result.data) {
         for (let object of result.data) {
           cloneObject.push(object);

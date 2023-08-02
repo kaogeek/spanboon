@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+                    xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs" width="12px"
+                    height="12px" x="0" y="0" viewBox="0 0 25 25" style="enable-background:new 0 0 512 512"
+                    xml:space="preserve" class="">
+                    <g>
+                        <g fill="#4294ff" data-name="Add User">
+                            <path
+                                d="M9.962 13h-.924A9.049 9.049 0 0 0 0 22.038v.565A2.4 2.4 0 0 0 2.397 25h14.206A2.4 2.4 0 0 0 19 22.603v-.565A9.049 9.049 0 0 0 9.962 13z"
+                                fill="#ffffff" data-original="#4294ff" class=""></path>
+                            <circle cx="9.5" cy="5.5" r="5.5" fill="#ffffff" data-original="#4294ff" class=""></circle>
+                            <path
+                                d="M24.5 11H21V7.5a.5.5 0 0 0-1 0V11h-3.5a.5.5 0 0 0 0 1H20v3.5a.5.5 0 0 0 1 0V12h3.5a.5.5 0 0 0 0-1z"
+                                fill="#ffffff" data-original="#4294ff" class=""></path>
+                        </g>
+                    </g>
+                </svg>

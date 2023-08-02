@@ -23,15 +23,18 @@ const NOTI_READ_SUBJECT: string = 'noti.read';
 export class Notification extends AbstractPage implements OnInit {
   @Input()
   public noti: any;
+  @Input()
+  public notiObj: any;
 
   private observManager: ObservableManager;
   public dataNotiRead: any[] = [];
   public apiBaseURL = environment.apiBaseURL;
-  public isNotiAll: boolean = false;
+  public isNotiAll: number = 0;
   public router: Router;
   public authenManager: AuthenManager;
   public notificationFacade: NotificationFacade;
   public isLoading: boolean = false;
+  public isRequestNoti: boolean = false;
   @ViewChild('notiScroll', { static: false }) public notiScroll!: ElementRef<HTMLDivElement>;
   public notiOffsetUnread: number = 0;
   public notiOffsetAll: number = 0;
@@ -103,13 +106,19 @@ export class Notification extends AbstractPage implements OnInit {
     this.observManager.createSubject('scrollLoadNotification');
   }
 
-  public clickNotification() {
+  public clickNotification(value?) {
     this.isLoading = true;
+    this.isRequestNoti = false;
     this.notiScroll!.nativeElement!.scrollTop = 0;
     setTimeout(() => {
       this.isLoading = false;
     }, 1000);
-    this.isNotiAll = !this.isNotiAll;
+    this.isNotiAll = value;
+  }
+
+  public clickRequestNoti() {
+    this.isNotiAll = 0;
+    this.isRequestNoti = true;
   }
 
   public ngOnDestroy(): void {
@@ -145,14 +154,14 @@ export class Notification extends AbstractPage implements OnInit {
     if ((event.target.scrollTop + event.target.offsetHeight) === event.target.scrollHeight) {
       this.isLoading = true;
       let count = this.isNotiAll ? (this.noti!.countAll >= this.notiOffsetAll ? this.notiOffsetAll += 30 : '') : (this.noti!.countUnread >= this.notiOffsetUnread ? this.notiOffsetUnread += 30 : '');
-      if (!!count) {
-        this.observManager.publish('scrollLoadNotification', {
-          data: {
-            isReadAll: this.isNotiAll,
-            offset: count
-          }
-        });
-      }
+      // if (!!count) {
+      //   this.observManager.publish('scrollLoadNotification', {
+      //     data: {
+      //       isReadAll: this.isNotiAll,
+      //       offset: count
+      //     }
+      //   });
+      // }
     }
   }
 

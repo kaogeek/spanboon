@@ -40,7 +40,7 @@
   > .body-center {
     > .wrappper-body-upload {
       padding: 14pt 20pt;
-      background-color: $bg-color1;
+      background-color: $white;
 
       > .wrapper-doing {
         display: flex;
@@ -428,6 +428,76 @@
           @include font-size-9($font-head-500);
           gap: 20px;
           display: flex;
+        }
+      }
+    }
+    > .wrapper-joiner {
+      background-color: #f3f3f3;
+
+      > .wrapper-box {
+        padding: 25pt 20pt 10pt 20pt;
+        > .header-joiner {
+          display: flex;
+          justify-content: space-between;
+
+          > span {
+            @include font-size-8($font-head-500);
+          }
+
+          > .image-upload {
+            background-color: $brandcolor2;
+            border: 1px solid $brandcolor2;
+            display: flex;
+            padding: 5px 15px;
+            border-radius: 4px;
+            height: 20px;
+            align-items: center;
+            cursor: pointer;
+            @include font-size-10($font-head-500);
+            @include pointer();
+            > .add-label {
+              @include font-size-10($font-head-500);
+              color: white;
+            }
+          }
+        }
+
+        > .box-joiner {
+          padding: 5px 12px 5px 12px;
+          margin-top: 8px;
+          display: flex;
+          align-items: center;
+          position: relative;
+          background-color: #fff;
+
+          > .images {
+            display: flex;
+            align-items: center;
+
+            > img {
+              width: 35pt;
+              height: 35pt;
+              border-radius: 50%;
+            }
+          }
+
+          > span {
+            @include font-size-9($font-head-500);
+            margin-left: 10px;
+          }
+
+          > .dropdown {
+            position: absolute;
+            right: 12px;
+            border-radius: unset;
+            background: #ebf0f2;
+            height: 30px;
+            width: 37px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+          }
         }
       }
     }

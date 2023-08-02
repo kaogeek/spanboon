@@ -34,6 +34,23 @@ export class ObjectiveFacade extends AbstractFacade {
     });
   }
 
+  public searchJoiner(searchFilter: SearchFilter, objectiveId): Promise<any[]> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/objective/' + objectiveId + '/joiner';
+
+      let body: any = {
+        filter: searchFilter,
+        hashTag: ''
+      };
+      let options = this.authMgr.getDefaultOptions();
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
   public searchJoinedObjective(pageId: string, limit?: any, offset?: any): Promise<any[]> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/objective/search/join';
@@ -123,6 +140,25 @@ export class ObjectiveFacade extends AbstractFacade {
     });
   }
 
+  public deleteJoinerObjective(data: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+
+      let url: string = this.baseURL + '/objective/joiner';
+
+      let body: any = {};
+      if (data !== null && data !== undefined) {
+        body = Object.assign(data)
+      }
+      let options = this.authMgr.getDefaultOptions();
+
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
   public disJoinObjective(data: any): Promise<any> {
     return new Promise((resolve, reject) => {
 
@@ -201,6 +237,22 @@ export class ObjectiveFacade extends AbstractFacade {
 
       this.http.get(url, options).toPromise().then((response: any) => {
         resolve(response.data);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public invite(data: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+
+      let url: string = this.baseURL + '/objective/invite';
+
+      let body = data;
+      let options = this.authMgr.getDefaultOptions();
+
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response);
       }).catch((error: any) => {
         reject(error);
       });

@@ -132,16 +132,18 @@ export class MainPageSlideFacade extends AbstractFacade {
     });
   }
 
-  public readContent(userId: string, postId: any[]): Promise<any[]> {
+  public readContent(userId: string, postId: any[], mode?: string, token?: string): Promise<any[]> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/main/is/read';
+      if (!!mode) localStorage.setItem('mode', mode);
+      if (!!token) localStorage.setItem('token', token);
       let body: any = {
         userId: userId,
         postId: postId,
         isRead: true
       };
 
-      let option = this.authMgr.getDefaultOptions();
+      let option = this.authMgr.getDefaultOptions(userId);
 
       this.http.post(url, body, option).toPromise().then((response: any) => {
         resolve(response.data);

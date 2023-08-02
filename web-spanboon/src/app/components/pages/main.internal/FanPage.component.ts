@@ -970,6 +970,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     };
     Object.assign(keywordFilter, { hashTag: value });
     this.objectiveFacade.searchObjective(keywordFilter).then((result: any) => {
+      result.data.reverse();
       if (result.status === 1) {
         this.resObjective = result.data;
 

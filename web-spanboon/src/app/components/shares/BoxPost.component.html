@@ -410,6 +410,56 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <ng-container *ngIf="isPublicObj">
+                                        <ng-container *ngIf="listJoiner.length > 0; else elseEmptyJoiner">
+                                            <div class="wrapper-joiner">
+                                                <div class="wrapper-box">
+                                                    <div class="header-joiner">
+                                                        <span>ผู้คนที่กำลังทำสิ่งเดียวกัน</span>
+                                                        <div class="image-upload"
+                                                            (click)="inviteJoin();$event.stopPropagation()">
+                                                            <span class="add-label">+เพิ่ม</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="box-joiner"
+                                                        *ngFor="let item of listJoiner;let i = index">
+                                                        <div class="images">
+                                                            <img [src]="apiBaseURL + item.page.imageURL + '/image'">
+                                                        </div>
+                                                        <span>{{item.page.name}}</span>
+                                                        <button mat-icon-button [matMenuTriggerFor]="menu"
+                                                            [disableRipple]="'false'" class="dropdown"
+                                                            (click)="$event.stopPropagation()">
+                                                            <span class="material-icons">
+                                                                more_horiz
+                                                            </span>
+                                                        </button>
+                                                        <mat-menu #menu="matMenu" xPosition="before">
+                                                            <button mat-menu-item [disableRipple]="'true'"
+                                                                class="list-dropdown"
+                                                                (click)="deleteObjective(item,i,'deleteJoiner');$event.stopPropagation()">
+                                                                <mat-icon>delete</mat-icon>
+                                                                <span>ลบ</span>
+                                                            </button>
+                                                        </mat-menu>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </ng-container>
+                                        <ng-template #elseEmptyJoiner>
+                                            <div class="wrapper-joiner">
+                                                <div class="wrapper-box">
+                                                    <div class="header-joiner">
+                                                        <span>ไม่มีผู้เข้าร่วมสิ่งที่กำลังทำนี้</span>
+                                                        <div class="image-upload"
+                                                            (click)="inviteJoin(); $event.stopPropagation()">
+                                                            <span class="add-label">+เพิ่ม</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </ng-template>
+                                    </ng-container>
                                     <div class="wrapper-footer-doing">
                                         <div class="btn-submit">
                                             <spanboon-button (click)="canCelImageObject()" [bgColor]="'#f3f3f3'"
@@ -498,11 +548,23 @@
                                                         </span>
                                                     </button>
                                                     <mat-menu #menu="matMenu" xPosition="before">
-                                                        <button mat-menu-item [disableRipple]="'true'"
-                                                            class="list-dropdown" (click)="editObjective(item,i)">
-                                                            <mat-icon>edit</mat-icon>
-                                                            <span>แก้ไข</span>
-                                                        </button>
+                                                        <ng-container *ngIf="!item.personal else elsePersonal">
+                                                            <button mat-menu-item [disableRipple]="'true'"
+                                                                class="list-dropdown"
+                                                                (click)="editObjective(item,i,false)">
+                                                                <mat-icon>edit</mat-icon>
+                                                                <span>แก้ไข</span>
+                                                            </button>
+                                                        </ng-container>
+                                                        <ng-template #elsePersonal>
+                                                            <button mat-menu-item [disableRipple]="'true'"
+                                                                class="list-dropdown"
+                                                                (click)="editObjective(item,i,true)">
+                                                                <mat-icon>edit</mat-icon>
+                                                                <span>แก้ไข</span>
+                                                            </button>
+                                                        </ng-template>
+
                                                         <button mat-menu-item [disableRipple]="'true'"
                                                             class="list-dropdown" (click)="deleteObjective(item,i)">
                                                             <mat-icon>delete</mat-icon>

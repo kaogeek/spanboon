@@ -6,7 +6,7 @@
  */
 
 import { Component, OnInit, Output, EventEmitter, Input, ViewChild, ElementRef, SimpleChanges } from '@angular/core';
-import { DialogManageImage, DialogImage, DialogDoIng, DialogSettingDateTime, DialogPost, DialogPreview, DialogCreateStory, DialogAlert } from './dialog/dialog';
+import { DialogManageImage, DialogImage, DialogDoIng, DialogSettingDateTime, DialogPost, DialogPreview, DialogCreateStory, DialogAlert, DialogCheckBox } from './dialog/dialog';
 import { MatDialog, MatSelect, MatAutocompleteTrigger, MatSlideToggleChange, MatTableDataSource, MatMenuTrigger, MatSnackBar } from '@angular/material';
 import { FormControl } from '@angular/forms';
 import { AbstractPage } from '../pages/AbstractPage';
@@ -245,6 +245,8 @@ export class BoxPost extends AbstractPage implements OnInit {
   public objectId: any;
   public joinObjective: any;
   public isShow: boolean = false;
+  public isPublicObj: boolean = false;
+  public listJoiner: any[] = [];
 
   keyword = "hashTag";
   selectedIndex: number;
@@ -1800,6 +1802,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     Object.assign(keywordFilter, { hashTag: value });
     this.objectiveFacade.searchObjective(keywordFilter).then((result: any) => {
       if (result.status === 1) {
+        result.data.reverse();
         this.resObjective = result.data;
         if (this.searchInputObjective.nativeElement.value === '') {
           this.searchJoinedObjective();
@@ -1818,7 +1821,8 @@ export class BoxPost extends AbstractPage implements OnInit {
 
           index++;
         }
-
+        this.listJoiner = [];
+        this.isPublicObj = false;
         this.isLoading = false;
       }
     }).catch((err: any) => {
@@ -2364,7 +2368,7 @@ export class BoxPost extends AbstractPage implements OnInit {
       active: true
     };
     filter.count = false;
-    filter.orderBy = {}
+    filter.orderBy = {};
     this.objectiveFacade.searchObjectiveCategory(filter).then((res: any) => {
       this.resPageCategory = res.data;
       this.isLoading = false;
@@ -2374,14 +2378,36 @@ export class BoxPost extends AbstractPage implements OnInit {
     })
   }
 
-  public editObjective(item, index) {
-    this.isEditObject = true;
-    this.objectId = item.id;
-    this.imageIcon.image = item.iconBase64;
-    this.dataEdit = {
-      data: item,
-      index: index
+  private _searchJoiner(objId) {
+    let filter = new SearchFilter();
+    filter.limit = SEARCH_LIMIT;
+    filter.offset = SEARCH_OFFSET;
+    filter.relation = [];
+    filter.whereConditions = {
+      pageId: this.dataPageId.id
     };
+    filter.count = false;
+    filter.orderBy = {
+      createdDate: "DESC",
+    }
+    this.objectiveFacade.searchJoiner(filter, objId).then((res: any) => {
+      this.listJoiner = res.data;
+      this.isLoading = false;
+    }).catch((err: any) => {
+      this.listJoiner = [];
+      this.isLoading = false;
+      console.log(err)
+    })
+  }
+
+  public editObjective(item, index, objPublic) {
+    this.isEditObject = true;
+    this.isPublicObj = objPublic;
+    this.objectId = item._id;
+    if (objPublic) {
+      this._searchJoiner(this.objectId);
+    }
+    this.imageIcon.image = item.iconBase64;
     this.objDoing = item.title;
     this.tagObjDoing = item.hashTag;
     this.isPublic = item.personal;
@@ -2399,11 +2425,13 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public deleteObjective(object, index, type?: any) {
-    let objectId = object.id;
+    let objectId = object._id;
     let pageId = object.pageId;
     let message;
     if (type === 'join') {
       message = 'คุณต้องการที่จะยกเลิกเข้าร่วมหรือไม่';
+    } else if (type === 'deleteJoiner') {
+      message = 'คุณต้องการที่จะลบผู้เข้าร่วมนี้หรือไม่';
     } else {
       message = 'คุณต้องการที่จะลบหรือไม่';
     }
@@ -2428,20 +2456,95 @@ export class BoxPost extends AbstractPage implements OnInit {
             }
           }).catch((err) => {
             if (err) { }
-          })
+          });
+        } else if (type === 'deleteJoiner') {
+          let deleteJoiner = {
+            objectiveId: object.objectiveId,
+            pageId: object.pageId,
+            joiner: object.joiner
+          }
+          this.objectiveFacade.deleteJoinerObjective(deleteJoiner).then((res) => {
+            if (res) {
+              this.listJoiner.splice(index, 1);
+            }
+          }).catch((err) => {
+            if (err) { }
+          });
         } else {
           this.objectiveFacade.deleteObjective(objectId, pageId).then((res: any) => {
             if (res) {
               this.resObjective.splice(index, 1);
             }
           }).catch((err) => {
-            if (err) {
-
-            }
+            if (err) { }
           });
         }
       }
     });
+  }
+
+  public inviteJoin() {
+    let dialog = this.dialog.open(DialogCheckBox, {
+      disableClose: false,
+      data: {
+        title: 'เพิ่มผู้ร่วมแคมเปญ',
+        subject: '',
+        bottomText2: 'ตกลง',
+        bottomColorText2: "black"
+      }
+    });
+    dialog.afterClosed().subscribe((res) => {
+      if (res) {
+        let data = {
+          objectiveId: this.objectId,
+          pageId: this.dataPageId.id,
+          joiner: res,
+          join: true,
+          approve: false
+        }
+        this.objectiveFacade.invite(data).then((res) => {
+          if (res) {
+            let dialogAlert = this.dialog.open(DialogAlert, {
+              disableClose: true,
+              data: {
+                text: 'ส่งคำเชิญเสร็จสิ้นแล้ว',
+                bottomText1: 'ตกลง',
+                btDisplay1: 'none'
+              },
+            });
+            dialogAlert.afterClosed().subscribe((res) => {
+              if (res) {
+              }
+            });
+          }
+        }).catch((err) => {
+          if (err) {
+            console.log(err);
+            if (err.error.message === 'You have joined the objective before.') {
+              let dialogAlert = this.dialog.open(DialogAlert, {
+                disableClose: true,
+                data: {
+                  text: 'คุณเคยส่งคำเชิญไปแล้ว',
+                  bottomText1: 'ตกลง',
+                  btDisplay1: 'none'
+                },
+              });
+              dialogAlert.afterClosed().subscribe((res) => {
+                if (res) {
+                }
+              });
+            }
+          }
+        });
+      }
+    });
+    // this.objectiveFacade.invite(data).then((res: any) => {
+    //   if (res) {
+
+    //   }
+    // }).catch((err) => {
+    //   if (err) { }
+    // });
   }
 
   public createImageObjective(): void {
@@ -2700,7 +2803,7 @@ export class BoxPost extends AbstractPage implements OnInit {
                                 });
                               }
                             }
-                          })
+                          });
                         }
                       });
                     }
