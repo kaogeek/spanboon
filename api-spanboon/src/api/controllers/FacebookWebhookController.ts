@@ -413,7 +413,9 @@ export class FacebookWebhookController {
                                             }
                                         },
                                         {
-                                            $match: { type: 'OBJECTIVE' }
+                                            $match: { 
+                                                type: 'OBJECTIVE'
+                                            }
                                         }
                                     ],
                                     as: 'hashTag'

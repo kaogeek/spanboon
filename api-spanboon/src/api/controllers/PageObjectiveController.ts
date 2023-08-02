@@ -364,18 +364,9 @@ export class ObjectiveController {
         const pageJoiner = await this.pageService.findOne({ _id: joinerObjId });
         let notificationText = undefined;
         let link = undefined;
-        const joinIds = [];
         if (checkJoinObjective !== undefined && checkJoinObjective !== null && checkJoinObjective.join === true) {
             const errorResponse = ResponseUtil.getErrorResponse('You have joined the objective before.', undefined);
             return res.status(400).send(errorResponse);
-        }
-        joinIds.push(joinerObjId);
-        if (joinIds.length > 0) {
-            checkJoinObjective = await this.pageObjectiveJoinerService.find({ objectiveId: objtiveIds, pageId: pageObjId, joiner: { $in: joinIds } });
-            if (checkJoinObjective.length > 0) {
-                const errorResponse = ResponseUtil.getErrorResponse('You have joined the objective before.', undefined);
-                return res.status(400).send(errorResponse);
-            }
         }
         // if auto approve 
         if (join === true && checkPublicObjective.personal === true && pageOwner.autoApprove === true) {
@@ -1166,7 +1157,9 @@ export class ObjectiveController {
         }
 
         let objectiveLists: PageObjective[];
-
+        const limits = parseInt(filter.limit, 10);
+        const offsets = parseInt(filter.offset, 10);
+        const orderBys = filter.orderBy.createdDate;
         let aggregateStmt: any[];
         if (sample !== undefined && sample !== null && sample > 0) {
             aggregateStmt = [
@@ -1220,13 +1213,110 @@ export class ObjectiveController {
             if (aggregateStmt !== undefined && aggregateStmt.length > 0) {
                 objectiveLists = await this.pageObjectiveService.aggregateEntity(aggregateStmt, { signURL: true });
             } else {
-                objectiveLists = await this.pageObjectiveService.find(filter.whereConditions, { signURL: true });
+
+                objectiveLists = await this.pageObjectiveService.aggregate(
+                    [
+                        {
+                            $lookup: {
+                                from: 'Page',
+                                let: { pageId: '$pageId' },
+                                pipeline: [
+                                    {
+                                        $match: {
+                                            $expr: {
+                                                $eq: ['$$pageId', '$_id']
+                                            }
+                                        }
+                                    },
+                                    {
+                                        $match: {
+                                            isOfficial: true
+                                        }
+                                    }
+                                ],
+                                as: 'page'
+                            }
+                        },
+                        {
+                            $sort: {
+                                createdDate: orderBys
+                            }
+                        },
+                        {
+                            $limit: limits
+                        },
+                        {
+                            $skip: offsets
+                        }
+                    ]
+                );
+
+                if (objectiveLists) {
+                    for (const objective of objectiveLists) {
+                        if (objective.s3IconURL && objective.s3IconURL !== '') {
+                            try {
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(objective.s3IconURL);
+                                Object.assign(objective, { iconSignURL: (signUrl ? signUrl : '') });
+                            } catch (error) {
+                                console.log('Search PageObjective Error: ', error);
+                            }
+                        }
+                    }
+                }
             }
         } else {
             if (aggregateStmt !== undefined && aggregateStmt.length > 0) {
                 objectiveLists = await this.pageObjectiveService.aggregateEntity(aggregateStmt, { signURL: true });
             } else {
-                objectiveLists = await this.pageObjectiveService.search(filter, { signURL: true });
+                // objectiveLists = await this.pageObjectiveService.search(filter, { signURL: true });
+                objectiveLists = await this.pageObjectiveService.aggregate(
+                    [
+                        {
+                            $lookup: {
+                                from: 'Page',
+                                let: { pageId: '$pageId' },
+                                pipeline: [
+                                    {
+                                        $match: {
+                                            $expr: {
+                                                $eq: ['$$pageId', '$_id']
+                                            }
+                                        }
+                                    },
+                                    {
+                                        $match: {
+                                            isOfficial: true
+                                        }
+                                    }
+                                ],
+                                as: 'page'
+                            }
+                        },
+                        {
+                            $sort: {
+                                createdDate: -1
+                            }
+                        },
+                        {
+                            $limit: limits
+                        },
+                        {
+                            $skip: offsets
+                        }
+                    ]
+                );
+                if (objectiveLists) {
+                    for (const objective of objectiveLists) {
+                        if (objective.s3IconURL && objective.s3IconURL !== '') {
+                            try {
+                                const signUrl = await this.s3Service.getConfigedSignedUrl(objective.s3IconURL);
+                                Object.assign(objective, { iconSignURL: (signUrl ? signUrl : '') });
+                            } catch (error) {
+                                console.log('Search PageObjective Error: ', error);
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -1853,6 +1943,7 @@ export class ObjectiveController {
         if (joinObjs.length > 0) {
             joinerObjId = joinObjs.map(_id => new ObjectID(_id));
         }
+        /* 
         if (joinerObjId.length > 0) {
             for (const joinIds of joinerObjId) {
                 checkJoinObjective = await this.pageObjectiveJoinerService.find({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinIds });
@@ -1861,7 +1952,7 @@ export class ObjectiveController {
                     return res.status(400).send(errorResponse);
                 }
             }
-        }
+        } */
 
         const checkJoin = await this.pageObjectiveJoinerService.find({ objectiveId: objtiveIds, pageId: pageObjId, joiner: { $in: joinerObjId } });
         if (checkJoin.length > 0) {
@@ -1870,12 +1961,14 @@ export class ObjectiveController {
         }
 
         if (joinObjs.length > 0 && joinerObjId.length > 0) {
-            result['objectiveId'] = objtiveIds;
-            result['pageId'] = pageObjId;
-            result['joiner'] = joinerObjId;
-            result['join'] = join;
-            result['approve'] = false;
-            createJoin = await this.pageObjectiveJoinerService.create(result);
+            for (const joiner of joinerObjId) {
+                result['objectiveId'] = objtiveIds;
+                result['pageId'] = pageObjId;
+                result['joiner'] = joiner;
+                result['join'] = join;
+                result['approve'] = false;
+                createJoin = await this.pageObjectiveJoinerService.create(result);
+            }
         }
         if (createJoin) {
             checkJoinObjective = await this.pageObjectiveJoinerService.find({ objectiveId: objtiveIds, pageId: pageObjId, joiner: { $in: joinerObjId } });
