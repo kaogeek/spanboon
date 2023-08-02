@@ -518,7 +518,7 @@
                                         <ng-container
                                             *ngIf="resObjective && resObjective.length > 0; else elseHasObjective">
                                             <div class="wrapper-doing" id="wrapper-doing"
-                                                [class.active-click-doing]="selectedObjectiveId === item.id"
+                                                [class.active-click-doing]="selectedObjectiveId === item._id"
                                                 *ngFor="let item of resObjective ; let i = index"
                                                 (click)="clickCardObjective(i,item)">
                                                 <!-- <ng-container *ngIf="selectedObjectiveId === item.id">

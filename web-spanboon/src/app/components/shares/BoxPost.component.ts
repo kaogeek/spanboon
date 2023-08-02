@@ -2132,13 +2132,13 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public clickCardObjective(index: number, item: any) {
-    if (this.dataObjective && this.dataObjective.id === item.id) {
+    if (this.dataObjective && this.dataObjective.id === item._id) {
       this.dataObjective = {};
       this.selectedObjectiveId = null;
       // document.querySelector('.active-click-doing').classList.remove('active-click-doing');
     } else {
-      this.selectedObjectiveId = item.id;
-      this.dataObjective.id = item.id;
+      this.selectedObjectiveId = item._id;
+      this.dataObjective.id = item._id;
       this.dataObjective.hashTag = !!item.hashTagName ? item.hashTagName : item.hashTag;
       this.dataObjective.status = 2;
     }
