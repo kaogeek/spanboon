@@ -1344,7 +1344,7 @@ export class ObjectiveController {
     }
 
     @Post('/search/join')
-    public async searchJoinObjective(@Body({ validate: true }) search: FindHashTagRequest, @Req() req: any, @Res() res: any): Promise<any> {
+    public async searchJoinObjective(@QueryParam('limit') limit: number, @QueryParam('offset') offset: number,@Body({ validate: true }) search: FindHashTagRequest, @Req() req: any, @Res() res: any): Promise<any> {
         if (ObjectUtil.isObjectEmpty(search)) {
             return res.status(200).send([]);
         }
@@ -1353,8 +1353,8 @@ export class ObjectiveController {
         if (filter === undefined) {
             filter = new SearchFilter();
         }
-        const offSetNumber: number = filter.offset;
-        const limitNumber: number = filter.limit;
+        const offSetNumber: number = offset;
+        const limitNumber: number = limit;
         const pageObjId = new ObjectID(filter.pageId);
         const pageObjective: any = await this.pageObjectiveService.aggregate(
             [
