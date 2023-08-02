@@ -971,7 +971,7 @@ export class ObjectiveController {
                     const newValues = { $set: { approve: approved } };
                     const update = await this.pageObjectiveJoinerService.update(query, newValues);
                     if (update) {
-                        checkApprove = await this.pageObjectiveJoinerService.findOne({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId }); 
+                        checkApprove = await this.pageObjectiveJoinerService.findOne({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId });
                         const successResponse = ResponseUtil.getSuccessResponse('Join objective is sucessful.', checkApprove);
                         return res.status(200).send(successResponse);
                     }
@@ -1998,7 +1998,7 @@ export class ObjectiveController {
             if (pageJoiner.length > 0 && pageOwner.id !== undefined) {
                 const notiOwners = await this.deviceTokenService.find({ userId: pageOwner.ownerUser });
                 for (const pageJoin of pageJoiner) {
-                    notificationText = pageOwner.name + space + 'เชิญเข้าร่วมกิจกรรม' + checkPublicObjective.title;
+                    notificationText = pageOwner.name + space + 'เชิญเข้าร่วมกิจกรรม' + space + checkPublicObjective.title;
                     link = `/page/${pageJoin._id}/`;
                     await this.pageNotificationService.notifyToPageUserObjective(
                         pageJoin._id + '',
