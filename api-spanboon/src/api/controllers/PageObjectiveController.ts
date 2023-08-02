@@ -2067,7 +2067,7 @@ export class ObjectiveController {
         }
         const query = { objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId, join: joinerTrue };
         const newValue = { $set: { approve: approved } };
-        const update = await this.pageObjectiveService.update(query, newValue);
+        const update = await this.pageObjectiveJoinerService.update(query, newValue);
         if (update) {
             return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully approve invite.', []));
         }
