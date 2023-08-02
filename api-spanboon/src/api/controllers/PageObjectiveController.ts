@@ -1355,7 +1355,7 @@ export class ObjectiveController {
         }
         const offSetNumber: number = filter.offset;
         const limitNumber: number = filter.limit;
-        const pageObjId = new ObjectID(filter.whereConditions.pageId);
+        const pageObjId = new ObjectID(filter.pageId);
         const pageObjective: any = await this.pageObjectiveService.aggregate(
             [
                 {

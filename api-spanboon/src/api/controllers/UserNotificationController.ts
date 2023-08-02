@@ -321,7 +321,7 @@ export class UserNotificationController {
                                         {
                                             $match: {
                                                 $expr: {
-                                                    $eq: ['$$pageId', '$pageId']
+                                                    $eq: ['$$pageId', '$joiner']
                                                 }
                                             }
                                         },
@@ -428,7 +428,7 @@ export class UserNotificationController {
         }
         if (joinNoti.length > 0) {
             for (const notiPage of joinNoti) {
-                if (notiPage.InviteNotification !== undefined && notiPage.InviteNotification.pageObjectiveJoiner !== undefined) {
+                if (notiPage.InviteNotification !== undefined ) {
                     const result: any = {};
                     result.title = notiPage.InviteNotification.title;
                     result.fromUser = notiPage.InviteNotification.fromUser;
