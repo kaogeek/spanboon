@@ -219,7 +219,51 @@ export class UserNotificationController {
                                                     $eq: ['$$pageId', '$joiner']
                                                 }
                                             }
-                                        }
+                                        },
+                                        {
+                                            $lookup: {
+                                                from: 'PageObjective',
+                                                let: { objectiveId: '$objectiveId' },
+                                                pipeline: [
+                                                    {
+                                                        $match: {
+                                                            $expr: {
+                                                                $eq: ['$$objectiveId', '$_id']
+                                                            }
+                                                        }
+                                                    },
+                                                    {
+                                                        $lookup: {
+                                                            from: 'Page',
+                                                            let: { pageId: '$pageId' },
+                                                            pipeline: [
+                                                                {
+                                                                    $match: {
+                                                                        $expr: {
+                                                                            $eq: ['$$pageId', '$_id']
+                                                                        }
+                                                                    }
+                                                                }
+                                                            ],
+                                                            as: 'page'
+                                                        }
+                                                    },
+                                                    {
+                                                        $unwind: {
+                                                            path: '$page',
+                                                            preserveNullAndEmptyArrays: true
+                                                        }
+                                                    },
+                                                ],
+                                                as: 'pageObjective'
+                                            }
+                                        },
+                                        {
+                                            $unwind: {
+                                                path: '$pageObjective',
+                                                preserveNullAndEmptyArrays: true
+                                            }
+                                        },
                                     ],
                                     as: 'pageObjectiveJoiner'
                                 }
@@ -265,6 +309,10 @@ export class UserNotificationController {
                     result.deleted = notiPage.InviteNotification.deleted;
                     result.data = notiPage.InviteNotification.data;
                     result.mode = notiPage.InviteNotification.mode;
+                    result.objectiveId = notiPage.InviteNotification.pageObjectiveJoiner.objectiveId;
+                    result.pageId = notiPage.InviteNotification.pageId;
+                    result.joinerId = notiPage.InviteNotification.pageObjectiveJoiner.joiner;
+                    result.imageUrl = notiPage.InviteNotification.pageObjectiveJoiner.pageObjective.page.s3ImageURL ? notiPage.InviteNotification.pageObjectiveJoiner.pageObjective.page.imageURL : notiPage.InviteNotification.pageObjectiveJoiner.pageObjective.page.s3ImageURL;
                     result.join = notiPage.InviteNotification.pageObjectiveJoiner.join;
                     result.approve = notiPage.InviteNotification.pageObjectiveJoiner.approve;
                     pageObjectives.push(result);
