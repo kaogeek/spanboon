@@ -197,6 +197,25 @@ export class ObjectiveFacade extends AbstractFacade {
     });
   }
 
+  public approveInvite(data: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+
+      let url: string = this.baseURL + '/objective/approve/invite';
+
+      let body: any = {};
+      if (data !== null && data !== undefined) {
+        body = Object.assign(data)
+      }
+      let options = this.authMgr.getDefaultOptions();
+
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
   public searchObjectiveCategory(searchFilter: SearchFilter): Promise<any> {
     return new Promise((resolve, reject) => {
 

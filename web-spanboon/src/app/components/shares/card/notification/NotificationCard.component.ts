@@ -31,6 +31,7 @@ export class NotificationCard extends AbstractPage implements OnInit {
   public slide: boolean;
   @Input()
   public date: Date = new Date();
+  public isShow: boolean = false;
   public isActionSlide: boolean = false;
 
   private observManager: ObservableManager;
@@ -58,13 +59,14 @@ export class NotificationCard extends AbstractPage implements OnInit {
     if (type === 'approve') {
       let joinObj = {
         objectiveId: link.objectiveId,
-        pageId: link.fromUser,
-        joiner: link.pageId,
+        pageId: link.pageId,
+        joiner: link.joinerId,
         join: true,
         approve: true
       }
-      this.objectiveFacade.joinObjective(joinObj).then((res) => {
+      this.objectiveFacade.approveInvite(joinObj).then((res) => {
         if (res) {
+          this.message.approve = true;
         }
       }).catch((err) => {
         if (err) {
@@ -79,15 +81,15 @@ export class NotificationCard extends AbstractPage implements OnInit {
         }
       });
     } else if (type === 'reject') {
+      this.isShow = true;
+      this.message = {};
       let disJoinObj = {
-        objectiveId: link.objectId,
-        pageId: link.formUser,
-        joiner: link.pageId,
-        join: false
+        objectiveId: link.objectiveId,
+        pageId: link.pageId,
+        joiner: link.joinerId
       }
       this.objectiveFacade.disJoinObjective(disJoinObj).then((res) => {
         if (res) {
-
         }
       }).catch((err) => {
         if (err) { }

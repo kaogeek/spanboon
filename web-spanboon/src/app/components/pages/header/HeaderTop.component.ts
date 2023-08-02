@@ -453,9 +453,7 @@ export class HeaderTop extends AbstractPage implements OnInit {
 
     this.notificationFacade.search(val).then(async (res) => {
       if (res) {
-        console.log("resnotijaaa", res)
         this.notificationObjectList = res.notiObjective;
-        console.log("notificationObjectList", this.notificationObjectList)
         for await (let data of res.data) {
           if (arrange === 'unshift') {
             if ((whereConditions['isRead'] === true)) this.notificationList['read'].unshift(this._setValueNotification(data, (whereConditions['isRead'] === true))), (this.notificationList.countRead = res.count);
@@ -468,7 +466,6 @@ export class HeaderTop extends AbstractPage implements OnInit {
             // if ((!whereConditions['isRead'])) this.notificationList['objective'].push(this._setValueNotification(data, (!whereConditions['isRead']), true));
           }
         }
-        console.log("thisnotiall", this.notificationList)
 
         this.observManager.createSubject('notification');
         this.observManager.publish('notification', {
@@ -483,7 +480,6 @@ export class HeaderTop extends AbstractPage implements OnInit {
   }
 
   private _setValueNotification(data: any, isRead: boolean, isObj?) {
-    console.log("data", data)
     const title = "การแจ้งเตือนใหม่";
     if (isObj) {
       return {

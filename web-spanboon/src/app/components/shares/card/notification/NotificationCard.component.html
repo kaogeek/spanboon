@@ -1,7 +1,6 @@
-<!-- <pre>{{message | json}}</pre> -->
-<div (click)="message.type !== 'OBJECTIVE' ? navigatetopage(message) : null"
-    [style.transform]="slide ? 'translateX(0)' : 'translateX(-25vw)'" class="noticard"
-    [ngClass]="{'fullpage': fullPage }">
+<pre>{{message | json}}</pre>
+<div *ngIf="!isShow" (click)="navigatetopage(message)" [style.transform]="slide ? 'translateX(0)' : 'translateX(-25vw)'"
+    class="noticard" [ngClass]="{'fullpage': fullPage }">
     <div *ngIf="!fullPage" class="title">
         {{message ? message.title : 'การแจ้งเตือนใหม่'}}
         <div class="close" (click)="close()">
@@ -61,8 +60,8 @@
     <ng-template #elseOjbNotification>
         <div class="body">
             <div class="image">
-                <ng-container *ngIf="!!message!.iconURL; else image">
-                    <img src="{{apiBaseURL + message.iconURL + '/image'}}">
+                <ng-container *ngIf="!!message!.imageUrl; else image">
+                    <img [src]="apiBaseURL + message.imageUrl + '/image'">
                 </ng-container>
                 <ng-template #image>
                     <div class="image-err">
@@ -89,9 +88,8 @@
             </div>
             <!-- <div class="message" [style.opacity]="message.isRead ? '0.5' : '1'"> -->
             <div class="message">
-                <span
-                    [innerHTML]="message.data + (message.mode === 'invite' ? ' เชิญคุณเข้าร่วมกิจกรรม ' : ' ขอเข้าร่วมกิจกรรม ') + message.title"></span>
-                <div class="objective-wrapper">
+                <span [innerHTML]="message.title"></span>
+                <div class="objective-wrapper" *ngIf="message.approve === false">
                     <div class="button" style="background-color: #fff;border: 1px solid #E5E5E5;">
                         <span class="add-label" style="color: #757575;"
                             (click)="navigatetopage(message,'reject');$event.stopPropagation()">ไม่ยินยอม</span>

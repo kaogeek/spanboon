@@ -2696,6 +2696,33 @@ export class BoxPost extends AbstractPage implements OnInit {
                                     this.closeDialog();
                                   }
                                 });
+                              } else if (err.error.message === 'You have joined the objective before.') {
+                                let dialogApprove = this.dialog.open(DialogAlert, {
+                                  disableClose: true,
+                                  data: {
+                                    text: 'ยืนยันที่จะเข้าร่วม',
+                                  },
+                                });
+                                dialogApprove.afterClosed().subscribe((res) => {
+                                  if (res) {
+                                    let approveObj = {
+                                      objectiveId: objectiveId,
+                                      pageId: pageId,
+                                      joiner: this.dataPageId.id,
+                                      join: true,
+                                      approve: true,
+                                    }
+                                    this.objectiveFacade.approveInvite(approveObj).then((res) => {
+                                      if (res) {
+                                        this.isEditObject = false;
+                                        this.closeDialog();
+                                      }
+                                    }).catch((err) => {
+                                      if (err) {
+                                      }
+                                    })
+                                  }
+                                });
                               }
                             }
                           })
@@ -2799,6 +2826,33 @@ export class BoxPost extends AbstractPage implements OnInit {
                                   if (res) {
                                     this.isEditObject = false;
                                     this.closeDialog();
+                                  }
+                                });
+                              } else if (err.error.message === 'You have joined the objective before.') {
+                                let dialogApprove = this.dialog.open(DialogAlert, {
+                                  disableClose: true,
+                                  data: {
+                                    text: 'ยืนยันที่จะเข้าร่วม',
+                                  },
+                                });
+                                dialogApprove.afterClosed().subscribe((res) => {
+                                  if (res) {
+                                    let approveObj = {
+                                      objectiveId: objectiveId,
+                                      pageId: pageId,
+                                      joiner: this.dataPageId.id,
+                                      join: true,
+                                      approve: true,
+                                    }
+                                    this.objectiveFacade.approveInvite(approveObj).then((res) => {
+                                      if (res) {
+                                        this.isEditObject = false;
+                                        this.closeDialog();
+                                      }
+                                    }).catch((err) => {
+                                      if (err) {
+                                      }
+                                    })
                                   }
                                 });
                               }
