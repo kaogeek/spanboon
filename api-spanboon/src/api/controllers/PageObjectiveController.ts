@@ -1217,6 +1217,9 @@ export class ObjectiveController {
                 objectiveLists = await this.pageObjectiveService.aggregate(
                     [
                         {
+                            $match: { pageId: pageObjId }
+                        },
+                        {
                             $lookup: {
                                 from: 'Page',
                                 let: { pageId: '$pageId' },
@@ -1239,7 +1242,7 @@ export class ObjectiveController {
                         },
                         {
                             $sort: {
-                                createdDate: orderBys
+                                createdDate: -1
                             }
                         },
                         {
