@@ -374,7 +374,7 @@ export class ObjectiveController {
                 const notiOwners = await this.deviceTokenService.find({ userId: pageOwner.ownerUser });
                 notificationText = pageJoiner.name + space + 'เข้าร่วมสิ่งที่กำลังทำของเพจคุณ';
                 link = `/page/${pageJoiner.id}/`;
-                if (searchObjective.length === 0 || searchObjective.length <= 10) {
+                if (searchObjective.length > 0 || searchObjective.length <= 10) {
                     await this.pageNotificationService.notifyToPageUserObjective(
                         pageOwner.id + '',
                         undefined,
@@ -601,7 +601,7 @@ export class ObjectiveController {
                 const notiOwners = await this.deviceTokenService.find({ userId: pageOwner.ownerUser });
                 notificationText = pageJoiner.name + space + 'ขอเข้าร่วมสิ่งที่กำลังทำของเพจคุณ';
                 link = `/page/${pageJoiner.id}/`;
-                if (searchObjective.length === 0 || searchObjective.length <= 10) {
+                if (searchObjective.length > 0 || searchObjective.length <= 10) {
                     await this.pageNotificationService.notifyToPageUserObjective(
                         pageOwner.id + '',
                         undefined,
@@ -1994,6 +1994,7 @@ export class ObjectiveController {
             return res.status(400).send(errorResponse);
         }
         // not auto approve
+        const mode = String('invite');
         if (checkPublicObjective !== undefined && join === true && checkPublicObjective.personal === true) {
             if (pageJoiner.length > 0 && pageOwner.id !== undefined) {
                 const notiOwners = await this.deviceTokenService.find({ userId: pageOwner.ownerUser });
@@ -2009,7 +2010,8 @@ export class ObjectiveController {
                         notificationText,
                         link,
                         pageOwner.name,
-                        pageOwner.imageURL
+                        pageOwner.imageURL,
+                        mode
                     );
                 }
                 for (const notiOwner of notiOwners) {

@@ -44,13 +44,13 @@ export class PageNotificationService {
         return result;
     }
 
-    public async notifyToPageUserObjective(toPageId: string, pageLevel: string[], fromUserId: string, fromUserType: string, notificationType: string, title: string, link?: string, data?: any, displayName?: any, image?: any, count?: any): Promise<any> {
+    public async notifyToPageUserObjective(toPageId: string, pageLevel: string[], fromUserId: string, fromUserType: string, notificationType: string, title: string, link?: string, data?: any, displayName?: any, image?: any, count?: any, mode?: string): Promise<any> {
         // check pageId
         const page: Page = await this.pageService.findOne({ where: { _id: new ObjectID(toPageId), banned: false } });
         if (page === undefined) {
             return [];
         }
-        const mode = 'join';
+        const checkMode = mode ? mode : 'join';
         const pageAccess = await this.pageAccessLevelService.getAllPageUserAccess(toPageId, pageLevel);
         const result: Notification[] = [];
         if (pageAccess) {
@@ -73,7 +73,7 @@ export class PageNotificationService {
                     displayName,
                     image,
                     count,
-                    mode,
+                    checkMode,
                     pageId
                 );
                 result.push(notification);

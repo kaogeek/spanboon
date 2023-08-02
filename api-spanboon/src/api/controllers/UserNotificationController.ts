@@ -206,7 +206,7 @@ export class UserNotificationController {
                                 }
                             },
                             {
-                                $match: { toUser: userObjId, type: 'OBJECTIVE', mode: 'join' }
+                                $match: { toUser: userObjId, type: 'OBJECTIVE', mode: 'invite' }
                             },
                             {
                                 $lookup: {
@@ -293,10 +293,142 @@ export class UserNotificationController {
 
             ]
         );
+        const joinNoti: any = await this.pageService.aggregate(
+            [
+                {
+                    $match: { ownerUser: userObjId }
+                },
+                {
+                    $lookup: {
+                        from: 'Notification',
+                        let: { id: '$_id' },
+                        pipeline: [
+                            {
+                                $match: {
+                                    $expr: {
+                                        $eq: ['$$id', '$pageId']
+                                    }
+                                }
+                            },
+                            {
+                                $match: { toUser: userObjId, type: 'OBJECTIVE', mode: 'join' }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'PageObjectiveJoiner',
+                                    let: { pageId: '$pageId' },
+                                    pipeline: [
+                                        {
+                                            $match: {
+                                                $expr: {
+                                                    $eq: ['$$pageId', '$pageId']
+                                                }
+                                            }
+                                        },
+                                        {
+                                            $lookup: {
+                                                from: 'PageObjective',
+                                                let: { objectiveId: '$objectiveId' },
+                                                pipeline: [
+                                                    {
+                                                        $match: {
+                                                            $expr: {
+                                                                $eq: ['$$objectiveId', '$_id']
+                                                            }
+                                                        }
+                                                    },
+                                                    {
+                                                        $lookup: {
+                                                            from: 'Page',
+                                                            let: { pageId: '$pageId' },
+                                                            pipeline: [
+                                                                {
+                                                                    $match: {
+                                                                        $expr: {
+                                                                            $eq: ['$$pageId', '$_id']
+                                                                        }
+                                                                    }
+                                                                }
+                                                            ],
+                                                            as: 'page'
+                                                        }
+                                                    },
+                                                    {
+                                                        $unwind: {
+                                                            path: '$page',
+                                                            preserveNullAndEmptyArrays: true
+                                                        }
+                                                    },
+                                                ],
+                                                as: 'pageObjective'
+                                            }
+                                        },
+                                        {
+                                            $unwind: {
+                                                path: '$pageObjective',
+                                                preserveNullAndEmptyArrays: true
+                                            }
+                                        },
+                                    ],
+                                    as: 'pageObjectiveJoiner'
+                                }
+                            },
+                            {
+                                $limit: limits
+                            },
+                            {
+                                $skip: skips
+                            },
+                            {
+                                $unwind: {
+                                    path: '$pageObjectiveJoiner',
+                                    preserveNullAndEmptyArrays: true
+                                }
+                            },
+
+                        ],
+                        as: 'InviteNotification'
+                    }
+                },
+                {
+                    $unwind: {
+                        path: '$InviteNotification',
+                        preserveNullAndEmptyArrays: true
+                    }
+                },
+            ]
+        );
         const pageObjectives: any = [];
         if (notiPages.length > 0) {
             for (const notiPage of notiPages) {
-                if (notiPage.InviteNotification !== undefined) {
+                if (notiPage.InviteNotification !== undefined && notiPage.InviteNotification.pageObjectiveJoiner !== undefined) {
+                    const result: any = {};
+                    result.title = notiPage.InviteNotification.title;
+                    result.fromUser = notiPage.InviteNotification.fromUser;
+                    result.toUser = notiPage.InviteNotification.toUser;
+                    result.isRead = notiPage.InviteNotification.isRead;
+                    result.toUserType = notiPage.InviteNotification.toUserType;
+                    result.fromUserType = notiPage.InviteNotification.fromUserType;
+                    result.link = notiPage.InviteNotification.link;
+                    result.type = notiPage.InviteNotification.type;
+                    result.deleted = notiPage.InviteNotification.deleted;
+                    result.data = notiPage.InviteNotification.data;
+                    result.mode = notiPage.InviteNotification.mode;
+                    result.objectiveId = notiPage.InviteNotification.pageObjectiveJoiner.objectiveId;
+                    result.pageId = notiPage.InviteNotification.pageObjectiveJoiner.pageObjective.page._id;
+                    result.joinerId = notiPage.InviteNotification.pageObjectiveJoiner.joiner;
+                    result.imageUrl = notiPage.InviteNotification.pageObjectiveJoiner.pageObjective.page.s3ImageURL ? notiPage.InviteNotification.pageObjectiveJoiner.pageObjective.page.imageURL : notiPage.InviteNotification.pageObjectiveJoiner.pageObjective.page.s3ImageURL;
+                    result.join = notiPage.InviteNotification.pageObjectiveJoiner.join;
+                    result.approve = notiPage.InviteNotification.pageObjectiveJoiner.approve;
+                    pageObjectives.push(result);
+                } else {
+                    continue;
+                }
+            }
+        }
+        if (joinNoti.length > 0) {
+            for (const notiPage of joinNoti) {
+                if (notiPage.InviteNotification !== undefined && notiPage.InviteNotification.pageObjectiveJoiner !== undefined) {
                     const result: any = {};
                     result.title = notiPage.InviteNotification.title;
                     result.fromUser = notiPage.InviteNotification.fromUser;
