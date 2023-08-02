@@ -310,7 +310,7 @@ export class UserNotificationController {
                     result.data = notiPage.InviteNotification.data;
                     result.mode = notiPage.InviteNotification.mode;
                     result.objectiveId = notiPage.InviteNotification.pageObjectiveJoiner.objectiveId;
-                    result.pageId = notiPage.InviteNotification.pageId;
+                    result.pageId = notiPage.InviteNotification.pageObjectiveJoiner.pageObjective.page._id;
                     result.joinerId = notiPage.InviteNotification.pageObjectiveJoiner.joiner;
                     result.imageUrl = notiPage.InviteNotification.pageObjectiveJoiner.pageObjective.page.s3ImageURL ? notiPage.InviteNotification.pageObjectiveJoiner.pageObjective.page.imageURL : notiPage.InviteNotification.pageObjectiveJoiner.pageObjective.page.s3ImageURL;
                     result.join = notiPage.InviteNotification.pageObjectiveJoiner.join;
