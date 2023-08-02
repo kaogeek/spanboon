@@ -919,7 +919,7 @@ export class ObjectiveController {
         let notificationText = undefined;
         let link = undefined;
 
-        const checkApprove = await this.pageObjectiveJoinerService.findOne({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId });
+        let checkApprove = await this.pageObjectiveJoinerService.findOne({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId });
         if (checkApprove !== undefined && checkApprove !== null && checkApprove.approve === true) {
             const errorResponse = ResponseUtil.getErrorResponse('You have been approved.', undefined);
             return res.status(400).send(errorResponse);
@@ -971,7 +971,8 @@ export class ObjectiveController {
                     const newValues = { $set: { approve: approved } };
                     const update = await this.pageObjectiveJoinerService.update(query, newValues);
                     if (update) {
-                        const successResponse = ResponseUtil.getSuccessResponse('Join objective is sucessful.', newValues);
+                        checkApprove = await this.pageObjectiveJoinerService.findOne({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId }); 
+                        const successResponse = ResponseUtil.getSuccessResponse('Join objective is sucessful.', checkApprove);
                         return res.status(200).send(successResponse);
                     }
                 } else {

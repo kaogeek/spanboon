@@ -237,15 +237,6 @@ export class UserNotificationController {
                     }
                 },
                 {
-                    $unwind: {
-                        path: '$page',
-                        preserveNullAndEmptyArrays: true
-                    }
-                },
-                {
-                    $match: { page: { $ne: null } }
-                },
-                {
                     $limit: limits
                 },
                 {
@@ -254,6 +245,8 @@ export class UserNotificationController {
 
             ]
         );
+
+        /*
         const pageObjectives: any = [];
         if (pageObjective.length > 0) {
             for (const notiObjective of pageObjective) {
@@ -282,7 +275,7 @@ export class UserNotificationController {
                 result.mode = notiObjective.mode;
                 pageObjectives.push(result);
             }
-        }
+        } */
 
         if (filter.whereConditions !== null && filter.whereConditions !== undefined) {
             if (typeof filter.whereConditions === 'object') {
@@ -312,7 +305,7 @@ export class UserNotificationController {
         const newValues = { $set: { isRead: true } };
         const updateReadNoti = await this.notificationService.updateMany(query, newValues);
         if (userNotificationsList && updateReadNoti) {
-            const successResponse = ResponseUtil.getSuccessResponse('Successfully search UserNotifications', notiResp, findAllCountNotification.length, pageObjectives);
+            const successResponse = ResponseUtil.getSuccessResponse('Successfully search UserNotifications', notiResp, findAllCountNotification.length, pageObjective);
             return res.status(200).send(successResponse);
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot search UserNotifications', undefined);
