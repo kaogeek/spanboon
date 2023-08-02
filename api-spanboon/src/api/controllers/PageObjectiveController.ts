@@ -1160,7 +1160,7 @@ export class ObjectiveController {
         let objectiveLists: PageObjective[];
         const limits = parseInt(filter.limit, 10);
         const offsets = parseInt(filter.offset, 10);
-        const orderBys = filter.orderBy.createdDate;
+        // const orderBys = filter.orderBy.createdDate;
         let aggregateStmt: any[];
         if (sample !== undefined && sample !== null && sample > 0) {
             aggregateStmt = [

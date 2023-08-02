@@ -187,95 +187,92 @@ export class UserNotificationController {
         const limits = filter.limit;
         const skips = filter.offset;
         const userObjId = new ObjectID(req.user.id);
-        const pageObjective = await this.notificationService.aggregate(
+
+        const notiPages: any = await this.pageService.aggregate(
             [
                 {
-                    $match: {
-                        toUser: userObjId,
-                        type: 'OBJECTIVE',
-                    }
+                    $match: { ownerUser: userObjId }
                 },
                 {
                     $lookup: {
-                        from: 'Page',
-                        let: { toUser: '$toUser' },
+                        from: 'Notification',
+                        let: { id: '$_id' },
                         pipeline: [
                             {
                                 $match: {
                                     $expr: {
-                                        $eq: ['$$toUser', '$ownerUser']
+                                        $eq: ['$$id', '$pageId']
                                     }
                                 }
                             },
                             {
+                                $match: { toUser: userObjId, type: 'OBJECTIVE', mode: 'join' }
+                            },
+                            {
                                 $lookup: {
-                                    from: 'PageObjective',
-                                    let: { id: '$_id' },
+                                    from: 'PageObjectiveJoiner',
+                                    let: { pageId: '$pageId' },
                                     pipeline: [
                                         {
                                             $match: {
                                                 $expr: {
-                                                    $eq: ['$$id', '$pageId']
+                                                    $eq: ['$$pageId', '$joiner']
                                                 }
                                             }
                                         }
                                     ],
-                                    as: 'pageObjective'
+                                    as: 'pageObjectiveJoiner'
                                 }
+                            },
+                            {
+                                $limit: limits
+                            },
+                            {
+                                $skip: skips
                             },
                             {
                                 $unwind: {
-                                    path: '$pageObjective',
+                                    path: '$pageObjectiveJoiner',
                                     preserveNullAndEmptyArrays: true
                                 }
                             },
-                            {
-                                $match: { pageObjective: { $ne: null } }
-                            }
                         ],
-                        as: 'page'
+                        as: 'InviteNotification'
                     }
                 },
                 {
-                    $limit: limits
+                    $unwind: {
+                        path: '$InviteNotification',
+                        preserveNullAndEmptyArrays: true
+                    }
                 },
-                {
-                    $skip: skips
-                }
 
             ]
         );
-
-        /*
         const pageObjectives: any = [];
-        if (pageObjective.length > 0) {
-            for (const notiObjective of pageObjective) {
-                const result: any = {};
-                result.id = notiObjective._id;
-                result.title = notiObjective.title;
-                result.fromUser = notiObjective.fromUser;
-                result.touser = notiObjective.toUser;
-                result.isRead = notiObjective.isRead;
-                result.toUserType = notiObjective.toUserType;
-                result.fromUserType = notiObjective.fromUserType;
-                result.link = notiObjective.link;
-                result.type = notiObjective.type;
-                result.deleted = notiObjective.deleted;
-                result.data = notiObjective.data;
-                result.objectiveId = notiObjective.page.pageObjective._id;
-                result.pageId = notiObjective.page.pageObjective.pageId;
-                result.title = notiObjective.page.pageObjective.title;
-                result.detail = notiObjective.page.pageObjective.detail;
-                result.iconURL = notiObjective.page.pageObjective.iconURL;
-                result.category = notiObjective.page.pageObjective.category;
-                result.hashTag = notiObjective.page.pageObjective.hashTag;
-                result.s3IconURL = notiObjective.page.pageObjective.s3IconURL;
-                result.personal = notiObjective.page.pageObjective.personal;
-                result.imagePage = notiObjective.page.imageURL;
-                result.mode = notiObjective.mode;
-                pageObjectives.push(result);
+        if (notiPages.length > 0) {
+            for (const notiPage of notiPages) {
+                if (notiPage.InviteNotification !== undefined) {
+                    const result: any = {};
+                    result.title = notiPage.InviteNotification.title;
+                    result.fromUser = notiPage.InviteNotification.fromUser;
+                    result.toUser = notiPage.InviteNotification.toUser;
+                    result.isRead = notiPage.InviteNotification.isRead;
+                    result.toUserType = notiPage.InviteNotification.toUserType;
+                    result.fromUserType = notiPage.InviteNotification.fromUserType;
+                    result.link = notiPage.InviteNotification.link;
+                    result.type = notiPage.InviteNotification.type;
+                    result.deleted = notiPage.InviteNotification.deleted;
+                    result.data = notiPage.InviteNotification.data;
+                    result.mode = notiPage.InviteNotification.mode;
+                    result.join = notiPage.InviteNotification.pageObjectiveJoiner.join;
+                    result.approve = notiPage.InviteNotification.pageObjectiveJoiner.approve;
+                    pageObjectives.push(result);
+                } else {
+                    continue;
+                }
             }
-        } */
+        }
 
         if (filter.whereConditions !== null && filter.whereConditions !== undefined) {
             if (typeof filter.whereConditions === 'object') {
@@ -305,7 +302,7 @@ export class UserNotificationController {
         const newValues = { $set: { isRead: true } };
         const updateReadNoti = await this.notificationService.updateMany(query, newValues);
         if (userNotificationsList && updateReadNoti) {
-            const successResponse = ResponseUtil.getSuccessResponse('Successfully search UserNotifications', notiResp, findAllCountNotification.length, pageObjective);
+            const successResponse = ResponseUtil.getSuccessResponse('Successfully search UserNotifications', notiResp, findAllCountNotification.length, pageObjectives);
             return res.status(200).send(successResponse);
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot search UserNotifications', undefined);
@@ -478,4 +475,5 @@ export class UserNotificationController {
 
         return response;
     }
+
 } 

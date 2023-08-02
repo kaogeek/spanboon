@@ -57,6 +57,7 @@ export class PageNotificationService {
             const addedUesr = [];
             for (const userAccess of pageAccess) {
                 const userId = userAccess.user + '';
+                const pageId = userAccess.page + '';
 
                 if (addedUesr.indexOf(userId) >= 0) {
                     continue;
@@ -72,7 +73,8 @@ export class PageNotificationService {
                     displayName,
                     image,
                     count,
-                    mode
+                    mode,
+                    pageId
                 );
                 result.push(notification);
 
