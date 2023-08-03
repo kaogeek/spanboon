@@ -2790,6 +2790,7 @@ export class PageController {
             let pageEmail = pages.email;
             let pageGroup = pages.group;
             let pageProvince = pages.province;
+            let pageAutoApprove = pages.autoApprove;
             const pageAccessLevel = pages.pageAccessLevel;
             // const assetQuery = { userId: ownerUsers };
             // const newFileName = ownerUsers + FileUtil.renameFile + ownerUsers;
@@ -2849,6 +2850,10 @@ export class PageController {
                 pageGroup = pageUpdate.group;
 
             }
+            if (pageAutoApprove === null && pageAutoApprove === undefined) {
+                pageAutoApprove = pageUpdate.autoApprove;
+            }
+
             // let updateImageAsset;
             // let updatedImageAsset;
             // let assetId;
@@ -2952,6 +2957,7 @@ export class PageController {
                     email: pageEmail,
                     province: pageProvince,
                     group: pageGroup,
+                    autoApprove: pageAutoApprove
                 }
             };
             const pageSave = await this.pageService.update(updateQuery, newValue);
