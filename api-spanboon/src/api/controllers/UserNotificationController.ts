@@ -293,6 +293,7 @@ export class UserNotificationController {
 
             ]
         );
+
         const joinNoti: any = await this.pageService.aggregate(
             [
                 {
@@ -323,7 +324,7 @@ export class UserNotificationController {
                                         {
                                             $match: {
                                                 $expr: {
-                                                    $eq: ['$$pageId', '$pageId']
+                                                    $eq: ['$$pageId', '$joiner']
                                                 }
                                             },
                                         },
@@ -400,6 +401,7 @@ export class UserNotificationController {
                 },
             ]
         );
+
         const pageObjectives: any = [];
         if (notiPages.length > 0) {
             for (const notiPage of notiPages) {

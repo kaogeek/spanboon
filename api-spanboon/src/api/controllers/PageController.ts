@@ -2317,12 +2317,11 @@ export class PageController {
             const ban = filter.whereConditions.banned;
             const keyword = filter.keyword;
             const exp = { $regex: '.*' + keyword + '.*', $options: 'si' };
-            const matched: any = { banned: ban, name: exp, _id: { $nin: stackPageId } };
 
             pageLists = await this.pageService.aggregate(
                 [
                     {
-                        $match: matched
+                        $match: { banned: ban, name: exp, _id: { $nin: stackPageId } }
                     },
                     {
                         $lookup: {
