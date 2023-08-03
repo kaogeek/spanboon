@@ -369,6 +369,7 @@ export class ObjectiveController {
             return res.status(400).send(errorResponse);
         }
         // if auto approve 
+        const mode = String('join');
         if (join === true && checkPublicObjective.personal === true && pageOwner.autoApprove === true) {
             if (pageJoiner && pageOwner.id) {
                 const notiOwners = await this.deviceTokenService.find({ userId: pageOwner.ownerUser });
@@ -385,7 +386,8 @@ export class ObjectiveController {
                         link,
                         pageJoiner.name,
                         pageJoiner.imageURL,
-
+                        searchObjective.length,
+                        mode
                     );
                     for (const notiOwner of notiOwners) {
                         if (notiOwner.Tokens !== null && notiOwner.Tokens !== undefined && notiOwner.Tokens !== '') {
@@ -428,6 +430,8 @@ export class ObjectiveController {
                         link,
                         pageJoiner.name,
                         pageJoiner.imageURL,
+                        searchObjective.length,
+                        mode
 
                     );
                     for (const notiOwner of notiOwners) {
@@ -471,6 +475,8 @@ export class ObjectiveController {
                         link,
                         pageJoiner.name,
                         pageJoiner.imageURL,
+                        searchObjective.length,
+                        mode
 
                     );
                     for (const notiOwner of notiOwners) {
@@ -514,6 +520,8 @@ export class ObjectiveController {
                         link,
                         pageJoiner.name,
                         pageJoiner.imageURL,
+                        searchObjective.length,
+                        mode
 
                     );
                     for (const notiOwner of notiOwners) {
@@ -557,6 +565,8 @@ export class ObjectiveController {
                         link,
                         pageJoiner.name,
                         pageJoiner.imageURL,
+                        searchObjective.length,
+                        mode
 
                     );
                     for (const notiOwner of notiOwners) {
@@ -596,7 +606,7 @@ export class ObjectiveController {
             }
         }
         // not auto approve
-        if (join === true && checkPublicObjective.personal === true) {
+        if (join === true && checkPublicObjective.personal === true && (pageOwner.autoApprove === false || pageOwner.autoApprove === null)) {
             if (pageJoiner && pageOwner.id) {
                 const notiOwners = await this.deviceTokenService.find({ userId: pageOwner.ownerUser });
                 notificationText = pageJoiner.name + space + 'ขอเข้าร่วมสิ่งที่กำลังทำของเพจคุณ';
@@ -612,6 +622,8 @@ export class ObjectiveController {
                         link,
                         pageJoiner.name,
                         pageJoiner.imageURL,
+                        searchObjective.length,
+                        mode
 
                     );
                     for (const notiOwner of notiOwners) {
@@ -655,6 +667,8 @@ export class ObjectiveController {
                         link,
                         pageJoiner.name,
                         pageJoiner.imageURL,
+                        searchObjective.length,
+                        mode
 
                     );
                     for (const notiOwner of notiOwners) {
@@ -698,6 +712,8 @@ export class ObjectiveController {
                         link,
                         pageJoiner.name,
                         pageJoiner.imageURL,
+                        searchObjective.length,
+                        mode
 
                     );
                     for (const notiOwner of notiOwners) {
@@ -741,6 +757,8 @@ export class ObjectiveController {
                         link,
                         pageJoiner.name,
                         pageJoiner.imageURL,
+                        searchObjective.length,
+                        mode
 
                     );
                     for (const notiOwner of notiOwners) {
@@ -784,6 +802,8 @@ export class ObjectiveController {
                         link,
                         pageJoiner.name,
                         pageJoiner.imageURL,
+                        searchObjective.length,
+                        mode
 
                     );
                     for (const notiOwner of notiOwners) {
@@ -937,6 +957,7 @@ export class ObjectiveController {
             pageObjId !== null &&
             checkPublicObjective.personal === true
         ) {
+            const count = 0 ;
             if (approved === true) {
                 mode = true;
                 const notiJoiners = await this.deviceTokenService.find({ user: pageJoiner.ownerUser });
@@ -944,7 +965,6 @@ export class ObjectiveController {
                 link = `/objective/${objtiveIds}`;
                 await this.pageNotificationService.notifyToPageUserObjective(
                     pageJoiner.id + '',
-                    undefined,
                     req.user.id + '',
                     USER_TYPE.PAGE,
                     NOTIFICATION_TYPE.OBJECTIVE,
@@ -952,6 +972,7 @@ export class ObjectiveController {
                     link,
                     pageJoiner.name,
                     pageJoiner.imageURL,
+                    count,
                     mode
                 );
                 if (notiJoiners.length > 0) {
@@ -991,7 +1012,6 @@ export class ObjectiveController {
                 link = `/objective/${objtiveIds}`;
                 await this.pageNotificationService.notifyToPageUserObjective(
                     pageJoiner.id + '',
-                    undefined,
                     req.user.id + '',
                     USER_TYPE.PAGE,
                     NOTIFICATION_TYPE.OBJECTIVE,
@@ -999,6 +1019,7 @@ export class ObjectiveController {
                     link,
                     pageJoiner.name,
                     pageJoiner.imageURL,
+                    count,
                     mode
                 );
                 if (notiJoiners.length > 0) {
@@ -1992,6 +2013,7 @@ export class ObjectiveController {
                         link,
                         pageOwner.name,
                         pageOwner.imageURL,
+                        pageJoiner.length,
                         mode
                     );
                 }

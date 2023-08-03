@@ -196,17 +196,14 @@ export class UserNotificationController {
                 {
                     $lookup: {
                         from: 'Notification',
-                        let: { id: '$_id' },
+                        let: { ownerUser: '$ownerUser' },
                         pipeline: [
                             {
                                 $match: {
                                     $expr: {
-                                        $eq: ['$$id', '$pageId']
+                                        $eq: ['$$ownerUser', '$toUser']
                                     }
                                 }
-                            },
-                            {
-                                $match: { toUser: userObjId, type: 'OBJECTIVE', mode: 'invite' }
                             },
                             {
                                 $lookup: {
@@ -216,7 +213,7 @@ export class UserNotificationController {
                                         {
                                             $match: {
                                                 $expr: {
-                                                    $eq: ['$$pageId', '$joiner']
+                                                    eq: ['$$pageId', 'joiner']
                                                 }
                                             }
                                         },
@@ -254,6 +251,7 @@ export class UserNotificationController {
                                                             preserveNullAndEmptyArrays: true
                                                         }
                                                     },
+
                                                 ],
                                                 as: 'pageObjective'
                                             }
@@ -267,12 +265,6 @@ export class UserNotificationController {
                                     ],
                                     as: 'pageObjectiveJoiner'
                                 }
-                            },
-                            {
-                                $limit: limits
-                            },
-                            {
-                                $skip: skips
                             },
                             {
                                 $unwind: {
@@ -302,12 +294,12 @@ export class UserNotificationController {
                 {
                     $lookup: {
                         from: 'Notification',
-                        let: { id: '$_id' },
+                        let: { ownerUser: '$ownerUser' },
                         pipeline: [
                             {
                                 $match: {
                                     $expr: {
-                                        $eq: ['$$id', '$pageId']
+                                        $eq: ['$$ownerUser', '$toUser']
                                     }
                                 }
                             },
@@ -324,7 +316,7 @@ export class UserNotificationController {
                                         {
                                             $match: {
                                                 $expr: {
-                                                    $eq: ['$$pageId', '$joiner']
+                                                    $eq: ['$$pageId', '$pageId']
                                                 }
                                             },
                                         },
@@ -401,7 +393,6 @@ export class UserNotificationController {
                 },
             ]
         );
-
         const pageObjectives: any = [];
         if (notiPages.length > 0) {
             for (const notiPage of notiPages) {
@@ -459,7 +450,6 @@ export class UserNotificationController {
                 }
             }
         }
-
         if (filter.whereConditions !== null && filter.whereConditions !== undefined) {
             if (typeof filter.whereConditions === 'object') {
                 filter.whereConditions.toUser = userObjId;
