@@ -413,7 +413,7 @@ export class FacebookWebhookController {
                                             }
                                         },
                                         {
-                                            $match: { 
+                                            $match: {
                                                 type: 'OBJECTIVE'
                                             }
                                         }
@@ -955,11 +955,12 @@ export class FacebookWebhookController {
                         objective: foundPageTag._id, objectiveTag: foundPageTag.title
                     }
                 };
+                const hashName = await this.hashTagService.findOne({ pageId: pageObjIds, objectiveId: foundPageTag._id, type: 'OBJECTIVE' });
                 const updateObjective = await this.postsService.update(query, newValues);
                 if (updateObjective) {
                     // multi objective 
                     const arrayHashTag = [foundPageTag.hashTag];
-                    await this.postsService.updateMany({ postsHashTags: { $in: arrayHashTag } }, { $set: { objective: foundPageTag._id, objectiveTag: foundPageTag.title } });
+                    await this.postsService.updateMany({ postsHashTags: { $in: arrayHashTag } }, { $set: { objective: foundPageTag._id, objectiveTag: hashName.name } });
                 }
             }
 
