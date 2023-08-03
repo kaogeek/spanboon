@@ -921,7 +921,7 @@ export class ObjectiveController {
         const checkPublicObjective = await this.pageObjectiveService.findOne({ _id: objtiveIds, pageId: pageObjId });
         let notificationText = undefined;
         let link = undefined;
-        let mode:boolean;
+        let mode: boolean;
         let checkApprove = await this.pageObjectiveJoinerService.findOne({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId });
         if (checkApprove !== undefined && checkApprove !== null && checkApprove.approve === true) {
             const errorResponse = ResponseUtil.getErrorResponse('You have been approved.', undefined);
@@ -1169,6 +1169,7 @@ export class ObjectiveController {
         const offsets = parseInt(filter.offset, 10);
         // const orderBys = filter.orderBy.createdDate;
         let aggregateStmt: any[];
+        let pageObjectiveJoiner: any;
         if (sample !== undefined && sample !== null && sample > 0) {
             aggregateStmt = [
                 { $match: filter.whereConditions },
@@ -1290,6 +1291,36 @@ export class ObjectiveController {
                         }
                     }
                 }
+                pageObjectiveJoiner = await this.pageObjectiveJoinerService.aggregate(
+                    [
+                        {
+                            $match: { joiner: pageObjId, approve: true, join: true }
+                        },
+                        {
+                            $lookup: {
+                                from: 'PageObjective',
+                                let: { objectiveId: '$objectiveId' },
+                                pipeline: [
+                                    {
+                                        $match: {
+                                            $expr: {
+                                                $eq: ['$$objectiveId', '$_id']
+                                            }
+                                        }
+                                    }
+                                ],
+                                as: 'pageObjective'
+                            }
+                        },
+                        {
+                            $skip: offsets
+                        },
+                        {
+                            $limit: limits,
+
+                        },
+                    ]
+                );
             }
         } else {
             if (aggregateStmt !== undefined && aggregateStmt.length > 0) {
@@ -1358,84 +1389,11 @@ export class ObjectiveController {
                 }
             });
 
-            const successResponse = ResponseUtil.getSuccessResponse('Successfully Search PageObjective', objectiveLists);
+            const successResponse = ResponseUtil.getSuccessResponseObjective('Successfully Search PageObjective', objectiveLists, pageObjectiveJoiner);
             return res.status(200).send(successResponse);
         } else {
             const successResponse = ResponseUtil.getSuccessResponse('Successfully Search PageObjective', []);
             return res.status(200).send(successResponse);
-        }
-    }
-
-    @Post('/search/join')
-    public async searchJoinObjective(@QueryParam('limit') limit: number, @QueryParam('offset') offset: number, @Body({ validate: true }) search: FindHashTagRequest, @Req() req: any, @Res() res: any): Promise<any> {
-        if (ObjectUtil.isObjectEmpty(search)) {
-            return res.status(200).send([]);
-        }
-
-        let filter: any = search.filter;
-        if (filter === undefined) {
-            filter = new SearchFilter();
-        }
-        const offSetNumber: number = offset;
-        const limitNumber: number = limit;
-        const pageObjId = new ObjectID(filter.pageId);
-        const pageObjective: any = await this.pageObjectiveService.aggregate(
-            [
-                {
-                    $match: { pageId: pageObjId }
-                },
-                {
-                    $lookup: {
-                        from: 'PageObjectiveJoiner',
-                        let: { id: '$_id' },
-                        pipeline: [
-                            {
-                                $match: {
-                                    $expr: {
-                                        $eq: ['$$id', '$objectiveId']
-                                    }
-                                }
-                            },
-                            {
-                                $lookup: {
-                                    from: 'Page',
-                                    let: { pageId: '$pageId' },
-                                    pipeline: [
-                                        {
-                                            $match: {
-                                                $expr: {
-                                                    $eq: ['$$pageId', '$_id']
-                                                }
-                                            }
-                                        }
-                                    ],
-                                    as: 'page'
-                                }
-                            },
-                            {
-                                $unwind: {
-                                    path: '$page',
-                                    preserveNullAndEmptyArrays: true
-                                }
-                            }
-                        ],
-                        as: 'pageObjectiveJoiner'
-                    }
-                },
-                {
-                    $skip: offSetNumber
-                },
-                {
-                    $limit: limitNumber,
-
-                },
-            ]
-        );
-        if (pageObjective.length > 0) {
-            const successResponse = ResponseUtil.getSuccessResponse('Successfully Search PageObjective', pageObjective);
-            return res.status(200).send(successResponse);
-        } else {
-            return res.status(400).send(ResponseUtil.getErrorResponse('Cannot find Join PageObjective.', undefined));
         }
     }
 
