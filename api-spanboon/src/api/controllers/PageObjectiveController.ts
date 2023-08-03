@@ -921,7 +921,7 @@ export class ObjectiveController {
         const checkPublicObjective = await this.pageObjectiveService.findOne({ _id: objtiveIds, pageId: pageObjId });
         let notificationText = undefined;
         let link = undefined;
-
+        let mode:boolean;
         let checkApprove = await this.pageObjectiveJoinerService.findOne({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId });
         if (checkApprove !== undefined && checkApprove !== null && checkApprove.approve === true) {
             const errorResponse = ResponseUtil.getErrorResponse('You have been approved.', undefined);
@@ -938,6 +938,7 @@ export class ObjectiveController {
             checkPublicObjective.personal === true
         ) {
             if (approved === true) {
+                mode = true;
                 const notiJoiners = await this.deviceTokenService.find({ user: pageJoiner.ownerUser });
                 notificationText = 'คุณได้ถูกอนุมัติเข้าร่วมสิ่งที่กำลังทำ';
                 link = `/objective/${objtiveIds}`;
@@ -950,7 +951,8 @@ export class ObjectiveController {
                     notificationText,
                     link,
                     pageJoiner.name,
-                    pageJoiner.imageURL
+                    pageJoiner.imageURL,
+                    mode
                 );
                 if (notiJoiners.length > 0) {
                     for (const notiJoiner of notiJoiners) {
@@ -983,6 +985,7 @@ export class ObjectiveController {
                     return res.status(400).send(errorResponse);
                 }
             } else {
+                mode = false;
                 const notiJoiners = await this.deviceTokenService.find({ user: pageJoiner.ownerUser });
                 notificationText = 'คุณถูกปฏิเสธการเข้าร่วมสิ่งที่กำลังทำ';
                 link = `/objective/${objtiveIds}`;
@@ -995,7 +998,8 @@ export class ObjectiveController {
                     notificationText,
                     link,
                     pageJoiner.name,
-                    pageJoiner.imageURL
+                    pageJoiner.imageURL,
+                    mode
                 );
                 if (notiJoiners.length > 0) {
                     for (const notiJoiner of notiJoiners) {
@@ -2062,35 +2066,6 @@ export class ObjectiveController {
             await this.pageObjectiveJoinerService.delete({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId });
             const errorResponse = ResponseUtil.getErrorResponse('Unable create join objective', undefined);
             return res.status(400).send(errorResponse);
-        }
-    }
-
-    // approve invite 
-    @Post('/approve/invite')
-    @Authorized('user')
-    public async approveInviteObjective(@Body({ validate: true }) joinObjectiveRequest: JoinObjectiveRequest, @Res() res: any, @Req() req: any): Promise<any> {
-        const objtiveIds = new ObjectID(joinObjectiveRequest.objectiveId);
-        const pageObjId = new ObjectID(joinObjectiveRequest.pageId);
-        const joinerObjId = new ObjectID(joinObjectiveRequest.joiner);
-        const join = joinObjectiveRequest.join;
-        const approved = joinObjectiveRequest.approve;
-        const pageObjective = await this.pageObjectiveService.findOne({ pageId: pageObjId, _id: objtiveIds });
-        const hashTagObjective = await this.hashTagService.findOne({ pageId: pageObjId, type: 'OBJECTIVE', objectiveId: objtiveIds });
-        if (pageObjective !== undefined && hashTagObjective !== undefined && pageObjective.personal === false && hashTagObjective.personal === false) {
-            return res.status(400).send(ResponseUtil.getErrorResponse('Cannot approve invite.', undefined));
-        }
-
-        // approve invite
-        const joinerTrue = join;
-        const pageJoiner = await this.pageObjectiveJoinerService.findOne({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId, join: joinerTrue });
-        if (pageJoiner === undefined) {
-            return res.status(400).send(ResponseUtil.getErrorResponse('Not found the Join obijective.', undefined));
-        }
-        const query = { objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId, join: joinerTrue };
-        const newValue = { $set: { approve: approved } };
-        const update = await this.pageObjectiveJoinerService.update(query, newValue);
-        if (update) {
-            return res.status(200).send(ResponseUtil.getSuccessResponse('Successfully approve invite.', []));
         }
     }
 
