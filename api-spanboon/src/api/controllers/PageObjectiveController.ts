@@ -957,7 +957,7 @@ export class ObjectiveController {
             pageObjId !== null &&
             checkPublicObjective.personal === true
         ) {
-            const count = 0 ;
+            const count = 0;
             if (approved === true) {
                 mode = true;
                 const notiJoiners = await this.deviceTokenService.find({ user: pageJoiner.ownerUser });
@@ -1327,10 +1327,38 @@ export class ObjectiveController {
                                             $expr: {
                                                 $eq: ['$$objectiveId', '$_id']
                                             }
+                                        },
+                                    },
+                                    {
+                                        $lookup: {
+                                            from: 'HashTag',
+                                            let: { hashTag: '$hashTag' },
+                                            pipeline: [
+                                                {
+                                                    $match: {
+                                                        $expr: {
+                                                            $eq: ['$$hashTag', '$_id']
+                                                        }
+                                                    }
+                                                }
+                                            ],
+                                            as: 'hashTag'
                                         }
-                                    }
+                                    },
+                                    {
+                                        $unwind: {
+                                            path: '$hashTag',
+                                            preserveNullAndEmptyArrays: true
+                                        }
+                                    },
                                 ],
                                 as: 'pageObjective'
+                            }
+                        },
+                        {
+                            $unwind: {
+                                path: '$pageObjective',
+                                preserveNullAndEmptyArrays: true
                             }
                         },
                         {
