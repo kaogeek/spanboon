@@ -205,6 +205,10 @@ export class UserNotificationController {
                                     }
                                 }
                             },
+
+                            {
+                                $match: { toUser: userObjId, type: 'OBJECTIVE', mode: 'invite' }
+                            },
                             {
                                 $lookup: {
                                     from: 'PageObjectiveJoiner',
@@ -272,9 +276,16 @@ export class UserNotificationController {
                                     preserveNullAndEmptyArrays: true
                                 }
                             },
+                            {
+                                $limit: limits
+                            },
+                            {
+                                $skip: skips
+                            },
                         ],
                         as: 'InviteNotification'
                     }
+
                 },
                 {
                     $unwind: {
@@ -282,7 +293,6 @@ export class UserNotificationController {
                         preserveNullAndEmptyArrays: true
                     }
                 },
-
             ]
         );
 
@@ -396,6 +406,7 @@ export class UserNotificationController {
         const pageObjectives: any = [];
         if (notiPages.length > 0) {
             for (const notiPage of notiPages) {
+                // && notiPage.InviteNotification.isRead === false 
                 if (notiPage.InviteNotification !== undefined && notiPage.InviteNotification.isRead === false && notiPage.InviteNotification.pageObjectiveJoiner !== undefined) {
                     const result: any = {};
                     result.title = notiPage.InviteNotification.title;
@@ -424,6 +435,7 @@ export class UserNotificationController {
         }
         if (joinNoti.length > 0) {
             for (const notiPage of joinNoti) {
+                //  
                 if (notiPage.InviteNotification !== undefined && notiPage.InviteNotification.isRead === false && notiPage.InviteNotification.pageObjectiveJoiner !== undefined) {
                     const result: any = {};
                     result.title = notiPage.InviteNotification.title;
