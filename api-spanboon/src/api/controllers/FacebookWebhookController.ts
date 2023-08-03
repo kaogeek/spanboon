@@ -946,6 +946,7 @@ export class FacebookWebhookController {
         const postObjIds = new ObjectID(postIds);
         const pageObjIds = new ObjectID(pageId);
         if (objectiveObj.length > 0) {
+            console.log('pass1');
             const foundPageTag: any = objectiveObj.shift();
             // single objective
             if (foundPageTag) {
@@ -965,6 +966,7 @@ export class FacebookWebhookController {
             }
 
         } else {
+            console.log('pass2');
             /* joiner objective !!!  */
             let joinerObjective: any;
             const hashObjIds = hashTag.map(_id => new ObjectID(_id));
@@ -1006,15 +1008,14 @@ export class FacebookWebhookController {
                     ]
                 );
             }
-
             if (joinerObjective.length > 0) {
                 for (const pageObjectiveJoin of joinerObjective) {
                     const objectiveIds = new ObjectID(pageObjectiveJoin.pageObjective._id);
-                    const titleObjective = pageObjectiveJoin.pageObjective.title;
+                    const hashName = await this.hashTagService.findOne({ pageId: pageObjIds, objectiveId: objectiveIds._id, type: 'OBJECTIVE' });
                     const query = { _id: postObjIds.id };
                     const newValues = {
                         $set: {
-                            objective: objectiveIds, objectiveTag: titleObjective
+                            objective: objectiveIds, objectiveTag: hashName.name
                         }
                     };
                     await this.postsService.update(query, newValues);
