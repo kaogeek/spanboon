@@ -446,6 +446,7 @@ export class FacebookWebhookController {
                                 }
                             ]);
                         if (pageFindtag.length > 0) {
+                            console.log('pass3');
                             await this.objectiveFunction(pageFindtag, pageSubscribe.pageId, createPostWebhooks.id, postMasterHashTagList);
                         }
                     }
@@ -946,27 +947,26 @@ export class FacebookWebhookController {
         const postObjIds = new ObjectID(postIds);
         const pageObjIds = new ObjectID(pageId);
         if (objectiveObj.length > 0) {
-            console.log('pass1');
             const foundPageTag: any = objectiveObj.shift();
             // single objective
             if (foundPageTag) {
+                const hashName = await this.hashTagService.findOne({ pageId: pageObjIds, objectiveId: foundPageTag._id, type: 'OBJECTIVE' });
                 const query = { _id: postObjIds };
                 const newValues = {
                     $set: {
-                        objective: foundPageTag._id, objectiveTag: foundPageTag.title
+                        objective: foundPageTag._id, objectiveTag: hashName.name
                     }
                 };
-                const hashName = await this.hashTagService.findOne({ pageId: pageObjIds, objectiveId: foundPageTag._id, type: 'OBJECTIVE' });
                 const updateObjective = await this.postsService.update(query, newValues);
                 if (updateObjective) {
                     // multi objective 
-                    const arrayHashTag = [foundPageTag.hashTag];
+                    const arrayHashTag = foundPageTag.hashTag;
                     await this.postsService.updateMany({ postsHashTags: { $in: arrayHashTag } }, { $set: { objective: foundPageTag._id, objectiveTag: hashName.name } });
+
                 }
             }
 
         } else {
-            console.log('pass2');
             /* joiner objective !!!  */
             let joinerObjective: any;
             const hashObjIds = hashTag.map(_id => new ObjectID(_id));
