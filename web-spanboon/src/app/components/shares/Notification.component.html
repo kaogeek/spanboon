@@ -92,8 +92,8 @@
         </ng-container>
         <ng-container *ngIf="isNotiAll === 1 && !isRequestNoti">
             <ng-container *ngFor="let item of noti!.unread; let i = index">
-                <notification-card *ngIf="item.status !== 'OBJECTIVE'" [message]="item" [fullPage]="true" [slide]="true"
-                    (click)="clickIsRead(i)">
+                <notification-card *ngIf="item.status !== 'OBJECTIVE' && item.isRead !== true" [message]="item"
+                    [fullPage]="true" [slide]="true" (click)="clickIsRead(i)">
                 </notification-card>
             </ng-container>
         </ng-container>

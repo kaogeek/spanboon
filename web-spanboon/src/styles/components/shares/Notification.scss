@@ -301,6 +301,10 @@
   .noti-sub-menu + * .cdk-overlay-pane {
     right: 0 !important;
     top: 39pt !important;
+
+    @media (max-width: $small) {
+      max-width: 100% !important;
+    }
   }
 
   .cdk-overlay-connected-position-bounding-box {

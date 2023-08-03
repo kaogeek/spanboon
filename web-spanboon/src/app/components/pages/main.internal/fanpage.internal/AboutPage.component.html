@@ -427,6 +427,30 @@
             </div>
         </div>
     </div>
+
+    <div class="info-title">ตั้งค่าเพจ</div>
+
+    <div class="card-info">
+        <div class="card-left">
+            <div class="header">
+                ตอบรับคำร้องอัตโนมัติ
+            </div>
+        </div>
+        <div class="card-right">
+            <div class="card-detail">
+                <div class="form-group">
+                    <div class="slide-email">
+                        <ng-container>
+                            <mat-slide-toggle [(ngModel)]="autoApprove" [ngModelOptions]="{standalone: true}"
+                                (change)="approveEventAuto($event)">
+                            </mat-slide-toggle>
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="card-info">
         <div class="card-left">
             <div class="header-delete">

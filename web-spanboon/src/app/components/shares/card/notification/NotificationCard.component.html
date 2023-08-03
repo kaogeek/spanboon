@@ -1,6 +1,5 @@
 <!-- <pre>{{message | json}}</pre> -->
-<div *ngIf="!isShow" (click)="navigatetopage(message)" [style.transform]="slide ? 'translateX(0)' : 'translateX(-25vw)'"
-    class="noticard" [ngClass]="{'fullpage': fullPage }">
+<div *ngIf="!isShow" (click)="navigatetopage(message)" class="noticard" [ngClass]="{'fullpage': fullPage }">
     <div *ngIf="!fullPage" class="title">
         {{message ? message.title : 'การแจ้งเตือนใหม่'}}
         <div class="close" (click)="close()">
@@ -40,8 +39,8 @@
                 </div>
             </div>
             <div class="message" [style.opacity]="message.isRead ? '0.5' : '1'">
-                <span
-                    [innerHTML]="message ? (message.body | textnoti : (message.createdDate ? (message.createdDate | dateFormat) : (date | dateFormat))) : 'มีการแจ้งเตือนใหม่'"></span>
+                <span [innerHTML]="message.body"></span>
+                <span [innerHTML]="message.createdDate | dateFormat"></span>
                 <ng-container *ngIf="message.type === 'OBJECTIVE'">
                     <div class="objective-wrapper">
                         <div class="button" style="background-color: #fff;border: 1px solid #E5E5E5;">
@@ -68,22 +67,8 @@
                         <span>{{message.data | slice: 0:1 }}</span>
                     </div>
                 </ng-template>
-                <div [ngClass]="{'status-one': message.status === 'FOLLOW' || 'POST' || 'repost' || 'share' || 'COMMENT' || 'LIKE', 'status-two' : message.status === 'fullfill', 'status-tree' : message.status === 'officerPage' }"
-                    class="status">
-                    <ng-container *ngIf="message.status === 'FOLLOW'"><img src="../../../../../assets/img/follow.svg"
-                            alt=""></ng-container>
-                    <ng-container *ngIf="message.status === 'POST'"><img src="../../../../../assets/img/post.svg"
-                            alt=""></ng-container>
-                    <ng-container *ngIf="message.status === 'repost'"><img src="../../../../../assets/img/repost.svg"
-                            alt=""></ng-container>
-                    <ng-container *ngIf="message.status === 'share'"><img src="../../../../../assets/img/share.svg"
-                            alt=""></ng-container>
-                    <ng-container *ngIf="message.status === 'COMMENT'"><img src="../../../../../assets/img/comment.svg"
-                            alt=""></ng-container>
-                    <ng-container *ngIf="message.status === 'LIKE'"><img src="../../../../../assets/img/like.svg"
-                            alt=""></ng-container>
-                    <ng-container *ngIf="message.status === 'fullfill'"><img src="../../../../../assets/img/fulfill.svg"
-                            alt=""></ng-container>
+                <div class="status status-one">
+                    <img src="../../../../../assets/img/flag-objective.svg" alt="" style="width: 15px;">
                 </div>
             </div>
             <!-- <div class="message" [style.opacity]="message.isRead ? '0.5' : '1'"> -->
