@@ -84,9 +84,6 @@ export class CardItem extends AbstractPage implements OnInit {
 
     async ngOnInit(): Promise<void> {
         this.checkResp();
-        setTimeout(() => {
-            this.searchJoinedObjective();
-        }, 1000);
     }
     public ngOnDestroy(): void {
         super.ngOnDestroy();
@@ -127,18 +124,6 @@ export class CardItem extends AbstractPage implements OnInit {
             dialog.afterClosed().subscribe((res) => {
             });
         }
-    }
-
-    public searchJoinedObjective() {
-        let limit = 10;
-        let offset = 0;
-        this.objectiveFacade.searchJoinedObjective(this.pageId, limit, offset).then((res: any) => {
-            if (res) {
-                this.joinObjective = res.data;
-            }
-        }).catch((err) => {
-            if (err) { }
-        });
     }
 
     public configSlider1: SwiperConfigInterface = {

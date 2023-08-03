@@ -625,21 +625,6 @@ export class BoxPost extends AbstractPage implements OnInit {
     return;
   }
 
-  public searchJoinedObjective() {
-    let limit = 10;
-    let offset = 0;
-    this.objectiveFacade.searchJoinedObjective(!this.dataPageId.id ? this.dataPageId : this.dataPageId.id, limit, offset).then((res: any) => {
-      if (res) {
-        this.joinObjective = res.data;
-        for (let index = 0; index < this.joinObjective.length; index++) {
-          this.resObjective.push(this.joinObjective[index]);
-        }
-      }
-    }).catch((err) => {
-      if (err) { }
-    });
-  }
-
   public updateText() {
     const detail = document.getElementById(this.prefix && this.prefix.detail ? this.prefix.detail + 'editableStoryPost' : 'editableStoryPost');
     const header = document.getElementById(this.prefix && this.prefix.header ? this.prefix.header + 'topic' : 'topic');
@@ -1804,9 +1789,6 @@ export class BoxPost extends AbstractPage implements OnInit {
       if (result.status === 1) {
         result.data.reverse();
         this.resObjective = result.data;
-        if (this.searchInputObjective.nativeElement.value === '') {
-          this.searchJoinedObjective();
-        }
         let index = 0;
         for (let data of this.resObjective) {
           if (!data.iconSignURL) {
@@ -2296,7 +2278,6 @@ export class BoxPost extends AbstractPage implements OnInit {
     this.isShowObjective = true;
     this.keyUpSearchObjective("");
     this.elementCheck = true;
-    // this.searchJoinedObjective();
     setTimeout(() => {
       this.setTopobj();
     }, 0);

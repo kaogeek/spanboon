@@ -151,18 +151,18 @@ export class DialogCheckBox extends AbstractPage {
             }
             if (pages) {
                 let array = [];
-                for (let index = 0; index < pages.length; index++) {
-                    if (pages[index].pageObjectiveJoiner.length === 0) {
-                        array.push(pages[index]);
-                    } else {
-                        for (const item of pages[index].pageObjectiveJoiner) {
-                            if (item.join === false) {
-                                array.push(pages[index]);
-                            }
-                        }
-                    }
-                }
-                this.listPage = array;
+                // for (let index = 0; index < pages.length; index++) {
+                //     if (pages[index].pageObjectiveJoiner.length === 0) {
+                //         array.push(pages[index]);
+                //     } else {
+                //         for (const item of pages[index].pageObjectiveJoiner) {
+                //             if (item.join === false) {
+                //                 array.push(pages[index]);
+                //             }
+                //         }
+                //     }
+                // }
+                this.listPage = pages;
             }
         }).catch((err: any) => {
             console.log("err", err);

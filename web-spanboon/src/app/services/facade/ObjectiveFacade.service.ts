@@ -51,25 +51,6 @@ export class ObjectiveFacade extends AbstractFacade {
     });
   }
 
-  public searchJoinedObjective(pageId: string, limit?: any, offset?: any): Promise<any[]> {
-    return new Promise((resolve, reject) => {
-      let url: string = this.baseURL + '/objective/search/join';
-      if (limit !== undefined) {
-        url += `?limit=${limit}`;
-      }
-      if (offset !== undefined) {
-        url += `&offset=${offset}`;
-      }
-      let body: any = { pageId: pageId };
-      let options = this.authMgr.getDefaultOptions();
-      this.http.post(url, body, options).toPromise().then((response: any) => {
-        resolve(response);
-      }).catch((error: any) => {
-        reject(error);
-      });
-    });
-  }
-
   public searchPublicObjective(searchFilter: SearchFilter): Promise<any[]> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/objective/lists';
