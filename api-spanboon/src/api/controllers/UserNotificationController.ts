@@ -416,6 +416,7 @@ export class UserNotificationController {
                     result.deleted = notiPage.InviteNotification.deleted;
                     result.data = notiPage.InviteNotification.data;
                     result.mode = notiPage.InviteNotification.mode;
+                    result.createdDate = notiPage.createdDate;
                     result.objectiveId = notiPage.InviteNotification.pageObjectiveJoiner.objectiveId;
                     result.pageId = notiPage.InviteNotification.pageObjectiveJoiner.pageObjective.page._id;
                     result.joinerId = notiPage.InviteNotification.pageObjectiveJoiner.joiner;
@@ -443,6 +444,7 @@ export class UserNotificationController {
                     result.deleted = notiPage.InviteNotification.deleted;
                     result.data = notiPage.InviteNotification.data;
                     result.mode = notiPage.InviteNotification.mode;
+                    result.createdDate = notiPage.createdDate;
                     result.objectiveId = notiPage.InviteNotification.pageObjectiveJoiner.objectiveId;
                     result.pageId = notiPage.InviteNotification.pageObjectiveJoiner.pageObjective.page._id;
                     result.joinerId = notiPage.InviteNotification.pageObjectiveJoiner.joiner;

@@ -1257,7 +1257,7 @@ export class ObjectiveController {
                                         }
                                     }
                                 ],
-                                as:'pageObjectiveJoiner'
+                                as: 'pageObjectiveJoiner'
                             }
                         },
                         {
