@@ -411,7 +411,7 @@ export class ObjectiveController {
                     result['pageId'] = pageObjId;
                     result['joiner'] = joinerObjId;
                     result['join'] = join;
-                    result['approve'] = true;
+                    result['approve'] = false;
                     const create = await this.pageObjectiveJoinerService.create(result);
                     if (create) {
                         const successResponse = ResponseUtil.getSuccessResponse('Send noti is succesful.', []);
@@ -941,7 +941,7 @@ export class ObjectiveController {
                 const notiJoiners = await this.deviceTokenService.find({ user: pageJoiner.ownerUser });
                 notificationText = 'คุณได้ถูกอนุมัติเข้าร่วมสิ่งที่กำลังทำ';
                 link = `/objective/${objtiveIds}`;
-                await this.pageNotificationService.notifyToPageUserFcm(
+                await this.pageNotificationService.notifyToPageUserObjective(
                     pageJoiner.id + '',
                     undefined,
                     req.user.id + '',
@@ -986,7 +986,7 @@ export class ObjectiveController {
                 const notiJoiners = await this.deviceTokenService.find({ user: pageJoiner.ownerUser });
                 notificationText = 'คุณถูกปฏิเสธการเข้าร่วมสิ่งที่กำลังทำ';
                 link = `/objective/${objtiveIds}`;
-                await this.pageNotificationService.notifyToPageUserFcm(
+                await this.pageNotificationService.notifyToPageUserObjective(
                     pageJoiner.id + '',
                     undefined,
                     req.user.id + '',
