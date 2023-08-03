@@ -946,6 +946,7 @@ export class FacebookWebhookController {
     private async objectiveFunction(objectiveObj: any, pageId: string, postIds: string, hashTag: any): Promise<any> {
         const postObjIds = new ObjectID(postIds);
         const pageObjIds = new ObjectID(pageId);
+        const hashObjIds = hashTag.map(_id => new ObjectID(_id));
         if (objectiveObj.length > 0) {
             const foundPageTag: any = objectiveObj.shift();
             // single objective
@@ -960,8 +961,7 @@ export class FacebookWebhookController {
                 const updateObjective = await this.postsService.update(query, newValues);
                 if (updateObjective) {
                     // multi objective 
-                    const arrayHashTag = foundPageTag.hashTag;
-                    await this.postsService.updateMany({ postsHashTags: { $in: arrayHashTag } }, { $set: { objective: foundPageTag._id, objectiveTag: hashName.name } });
+                    await this.postsService.updateMany({ postsHashTags: { $in: hashObjIds }, objective: null, objectiveTag: null }, { $set: { objective: foundPageTag._id, objectiveTag: hashName.name } });
 
                 }
             }
@@ -969,7 +969,6 @@ export class FacebookWebhookController {
         } else {
             /* joiner objective !!!  */
             let joinerObjective: any;
-            const hashObjIds = hashTag.map(_id => new ObjectID(_id));
             if (hashObjIds.length > 0) {
                 joinerObjective = await this.pageObjectiveJoinerService.aggregate(
                     [
