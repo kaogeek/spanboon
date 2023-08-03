@@ -200,7 +200,7 @@ export class ObjectiveFacade extends AbstractFacade {
   public approveInvite(data: any): Promise<any> {
     return new Promise((resolve, reject) => {
 
-      let url: string = this.baseURL + '/objective/approve/invite';
+      let url: string = this.baseURL + '/objective/approve';
 
       let body: any = {};
       if (data !== null && data !== undefined) {
