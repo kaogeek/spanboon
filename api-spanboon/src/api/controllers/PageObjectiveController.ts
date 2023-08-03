@@ -957,6 +957,7 @@ export class ObjectiveController {
             pageObjId !== null &&
             checkPublicObjective.personal === true
         ) {
+
             const count = 0;
             if (approved === true) {
                 mode = true;
@@ -965,6 +966,7 @@ export class ObjectiveController {
                 link = `/objective/${objtiveIds}`;
                 await this.pageNotificationService.notifyToPageUserObjective(
                     pageJoiner.id + '',
+                    undefined,
                     req.user.id + '',
                     USER_TYPE.PAGE,
                     NOTIFICATION_TYPE.OBJECTIVE,
@@ -1012,6 +1014,7 @@ export class ObjectiveController {
                 link = `/objective/${objtiveIds}`;
                 await this.pageNotificationService.notifyToPageUserObjective(
                     pageJoiner.id + '',
+                    undefined,
                     req.user.id + '',
                     USER_TYPE.PAGE,
                     NOTIFICATION_TYPE.OBJECTIVE,

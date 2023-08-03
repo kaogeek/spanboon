@@ -485,12 +485,12 @@ export class UserNotificationController {
             findAllCountNotification = await this.notificationService.find({ toUser: userObjId });
         }
         const userNotificationsList: any = await this.notificationService.search(filter);
-        // const notiResp = await this.parseNotificationsToResponses(userNotificationsList);
+        const notiResp = await this.parseNotificationsToResponses(userNotificationsList);
         const query = { toUser: userObjId };
         const newValues = { $set: { isRead: true } };
         const updateReadNoti = await this.notificationService.updateMany(query, newValues);
         if (userNotificationsList && updateReadNoti) {
-            const successResponse = ResponseUtil.getSuccessResponse('Successfully search UserNotifications', userNotificationsList, findAllCountNotification.length, pageObjectives);
+            const successResponse = ResponseUtil.getSuccessResponse('Successfully search UserNotifications', notiResp, findAllCountNotification.length, pageObjectives);
             return res.status(200).send(successResponse);
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot search UserNotifications', undefined);
