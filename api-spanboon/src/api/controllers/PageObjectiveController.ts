@@ -413,7 +413,7 @@ export class ObjectiveController {
                     result['pageId'] = pageObjId;
                     result['joiner'] = joinerObjId;
                     result['join'] = join;
-                    result['approve'] = false;
+                    result['approve'] = true;
                     const create = await this.pageObjectiveJoinerService.create(result);
                     if (create) {
                         const successResponse = ResponseUtil.getSuccessResponse('Send noti is succesful.', []);
@@ -458,7 +458,7 @@ export class ObjectiveController {
                     result['pageId'] = pageObjId;
                     result['joiner'] = joinerObjId;
                     result['join'] = join;
-                    result['approve'] = false;
+                    result['approve'] = true;
                     const create = await this.pageObjectiveJoinerService.create(result);
                     if (create) {
                         const successResponse = ResponseUtil.getSuccessResponse('Send noti is succesful.', []);
@@ -503,7 +503,7 @@ export class ObjectiveController {
                     result['pageId'] = pageObjId;
                     result['joiner'] = joinerObjId;
                     result['join'] = join;
-                    result['approve'] = false;
+                    result['approve'] = true;
                     const create = await this.pageObjectiveJoinerService.create(result);
                     if (create) {
                         const successResponse = ResponseUtil.getSuccessResponse('Send noti is succesful.', []);
@@ -548,7 +548,7 @@ export class ObjectiveController {
                     result['pageId'] = pageObjId;
                     result['joiner'] = joinerObjId;
                     result['join'] = join;
-                    result['approve'] = false;
+                    result['approve'] = true;
                     const create = await this.pageObjectiveJoinerService.create(result);
                     if (create) {
                         const successResponse = ResponseUtil.getSuccessResponse('Send noti is succesful.', []);
@@ -593,7 +593,7 @@ export class ObjectiveController {
                     result['pageId'] = pageObjId;
                     result['joiner'] = joinerObjId;
                     result['join'] = join;
-                    result['approve'] = false;
+                    result['approve'] = true;
                     const create = await this.pageObjectiveJoinerService.create(result);
                     if (create) {
                         const successResponse = ResponseUtil.getSuccessResponse('Send noti is succesful.', []);
