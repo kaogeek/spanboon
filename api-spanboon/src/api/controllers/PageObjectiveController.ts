@@ -901,9 +901,9 @@ export class ObjectiveController {
         const objtiveIds = new ObjectID(joinObjectiveRequest.objectiveId);
         const pageObjId = new ObjectID(joinObjectiveRequest.pageId);
         const joinerObjId = new ObjectID(joinObjectiveRequest.joiner);
+        const notiObjIds = new ObjectID(joinObjectiveRequest.notificationId);
         const joinObjective = await this.pageObjectiveJoinerService.findOne({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId });
-        const pageOwner = await this.pageService.findOne({ _id: pageObjId });
-        const pageJoiner = await this.pageService.findOne({ _id: joinerObjId });
+
         if (joinObjective) {
             const query = {
                 objectiveId: joinObjective.objectiveId,
@@ -915,8 +915,8 @@ export class ObjectiveController {
                 { pageId: joinObjective.joiner, objective: joinObjective.objectiveId },
                 { $set: { objective: null, objectiveTag: null } }
             );
-            await this.notificationService.delete({ fromUser: pageOwner.ownerUser, toUser: pageJoiner.ownerUser, type: NOTIFICATION_TYPE.OBJECTIVE });
-            if (update && postUpdate) {
+            const notfi = await this.notificationService.delete({ _id: notiObjIds, type: 'OBJECTIVE' });
+            if (update && postUpdate && notfi) {
                 const successResponse = ResponseUtil.getSuccessResponse('Unjoin is successfully.', []);
                 return res.status(200).send(successResponse);
             }
