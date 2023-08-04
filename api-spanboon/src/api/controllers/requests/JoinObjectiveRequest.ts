@@ -11,6 +11,7 @@ export class JoinObjectiveRequest {
     public objectiveId: string;
     public pageId: string;
     public joiner: any;
-    public join:boolean;
-    public approve:boolean; 
+    public join: boolean;
+    public approve: boolean;
+    public notificationId: string;
 }

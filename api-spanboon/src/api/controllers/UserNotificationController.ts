@@ -180,7 +180,6 @@ export class UserNotificationController {
     @Post('/search')
     @Authorized('user')
     public async searchUserNotifications(@Body({ validate: true }) filter: SearchFilter, @Res() res: any, @Req() req: any): Promise<any> {
-        let findAllCountNotification = undefined;
         if (filter === undefined) {
             filter = new SearchFilter();
         }
@@ -431,13 +430,7 @@ export class UserNotificationController {
         } else {
             filter.whereConditions = { toUser: userObjId, toUserType: USER_TYPE.USER };
         }
-        if (filter.whereConditions.isRead !== undefined && filter.whereConditions.isRead !== null && filter.whereConditions.isRead !== '' && filter.whereConditions.deleted !== undefined && filter.whereConditions.deleted !== null && filter.whereConditions.deleted !== '') {
-            findAllCountNotification = await this.notificationService.find({ toUser: userObjId, isRead: filter.whereConditions.isRead, deleted: filter.whereConditions.deleted });
-        } else if (filter.whereConditions.isRead !== undefined && filter.whereConditions.isRead !== null && filter.whereConditions.isRead !== '') {
-            findAllCountNotification = await this.notificationService.find({ toUser: userObjId, isRead: filter.whereConditions.isRead });
-        } else {
-            findAllCountNotification = await this.notificationService.find({ toUser: userObjId });
-        }
+
         /*        
         "$and": [
             {"mode": {"$ne": "invite"}},

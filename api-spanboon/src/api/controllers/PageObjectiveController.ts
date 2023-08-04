@@ -935,17 +935,12 @@ export class ObjectiveController {
         const pageObjId = new ObjectID(joinObjectiveRequest.pageId);
         const joinerObjId = new ObjectID(joinObjectiveRequest.joiner);
         const approved = joinObjectiveRequest.approve;
+        const notiObjId = new ObjectID(joinObjectiveRequest.notificationId);
         const pageJoiner = await this.pageService.findOne({ _id: joinerObjId });
         const pageOwner = await this.pageService.findOne({ _id: pageObjId });
         const space = ' ';
         const checkPublicObjective = await this.pageObjectiveService.findOne({ _id: objtiveIds, pageId: pageObjId });
-        const notificationCheck = await this.notificationService.findOne({
-            type: NOTIFICATION_TYPE.OBJECTIVE,
-            toUserType: USER_TYPE.PAGE,
-            fromUserType: USER_TYPE.PAGE,
-            fromUser: pageOwner.ownerUser,
-            toUser: pageJoiner.ownerUser
-        });
+        const notificationCheck = await this.notificationService.findOne({ _id: notiObjId });
         let notificationText = undefined;
         let link = undefined;
         let mode: string;
@@ -1019,7 +1014,7 @@ export class ObjectiveController {
                                     fromUserType: USER_TYPE.PAGE,
                                     fromUser: pageOwner.ownerUser,
                                     toUser: pageJoiner.ownerUser
-                                } 
+                                }
                             );
 
                             const successResponse = ResponseUtil.getSuccessResponse('Join objective is sucessful.', checkApprove);
@@ -1073,7 +1068,7 @@ export class ObjectiveController {
                             fromUserType: USER_TYPE.PAGE,
                             fromUser: pageOwner.ownerUser,
                             toUser: pageJoiner.ownerUser
-                        } 
+                        }
                     );
                     // delete join objective
                     // joinerObjId
@@ -1136,7 +1131,7 @@ export class ObjectiveController {
                                     fromUserType: USER_TYPE.PAGE,
                                     fromUser: pageOwner.ownerUser,
                                     toUser: pageJoiner.ownerUser
-                                } 
+                                }
                             );
 
                             const successResponse = ResponseUtil.getSuccessResponse('Join objective is sucessful.', checkApprove);
@@ -1190,7 +1185,7 @@ export class ObjectiveController {
                             fromUserType: USER_TYPE.PAGE,
                             fromUser: pageOwner.ownerUser,
                             toUser: pageJoiner.ownerUser
-                        } 
+                        }
                     );
                     // delete join objective
                     // joinerObjId
