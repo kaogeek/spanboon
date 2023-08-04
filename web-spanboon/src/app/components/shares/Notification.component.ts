@@ -63,6 +63,11 @@ export class Notification extends AbstractPage implements OnInit {
   }
 
   public ngOnInit(): void {
+    console.log("noti", this.noti)
+    setTimeout(() => {
+
+      console.log("notiobj", this.notiObj)
+    }, 2000);
     this.observManager.subscribe(NOTI_READ_SUBJECT, (result: any) => {
       if (result) {
         let dataNoti = [
@@ -127,13 +132,16 @@ export class Notification extends AbstractPage implements OnInit {
     this.observManager.complete(NOTI_READ_SUBJECT);
   }
 
-  public clickIsRead(index: number) {
-    this.notificationFacade.markRead(this.isNotiAll ? this.noti!.all[index].id : this.noti!.unread[index].id).then((res) => {
+  public clickIsRead(index: number, isObj?: boolean) {
+    let value: any = (isObj ? this.notiObj[index].id : this.isNotiAll ? this.noti!.all[index].id : this.noti!.unread[index].id);
+    this.notificationFacade.markRead(value).then((res) => {
       if (res) {
+        console.log("res", res)
+        console.log("isNotiAll", this.isNotiAll)
         if (this.isNotiAll) {
-          this.noti.all[index].isRead = true;
+          // this.noti.all[index].isRead = true;
         } else {
-          this.noti.unread[index].isRead = true;
+          // this.noti.unread[index].isRead = true;
           this.noti.unread.splice(index, 1);
           this.noti.countUnread--;
         }

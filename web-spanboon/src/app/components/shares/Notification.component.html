@@ -4,14 +4,14 @@
     License: MIT. https://opensource.org/licenses/MIT
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
-<div [class.active]="isActive()" class="btn-notfication" [matMenuTriggerFor]="beforeMenu"
-    (menuOpened)="isNotiAll = 1; clickReadAll();">
-    <div class="notiAlert" [class.active-plus]="noti!.countUnread > 9" *ngIf="noti!.countUnread > 0">
-        <ng-container *ngIf="noti!.countUnread > 9; else elseTemplateNoti">
+<div [class.active]="isActive()" class="btn-notfication" [matMenuTriggerFor]="beforeMenu" (menuOpened)="isNotiAll = 1">
+    <div class="notiAlert" [class.active-plus]="noti!.countUnread + (notiObj && notiObj.count) > 9"
+        *ngIf="noti!.countUnread + (notiObj && notiObj.count) > 0">
+        <ng-container *ngIf="noti!.countUnread + (notiObj && notiObj.count) > 9; else elseTemplateNoti">
             <span>9+</span>
         </ng-container>
         <ng-template #elseTemplateNoti>
-            <span>{{noti.countUnread}}</span>
+            <span>{{noti.countUnread + (notiObj && notiObj.count)}}</span>
         </ng-template>
     </div>
     <ng-container>
@@ -73,7 +73,8 @@
                         [ngClass]="{'select': isNotiAll === 2 && !isRequestNoti }">
                         ทั้งหมด ({{noti!.countAll < 1000 ? noti!.countAll : '999+' }}) </span>
                             <span class="list" (click)="clickRequestNoti()"
-                                [ngClass]="{'select': isRequestNoti }">คำร้อง</span>
+                                [ngClass]="{'select': isRequestNoti }">คำร้อง ({{notiObj && notiObj.count < 1000 ?
+                                    (notiObj && notiObj.count) : '0' }})</span>
         </div>
     </div>
     <div *ngIf="noti.length !== 0" class="wrapper-header" (click)="$event.stopPropagation();">
@@ -105,8 +106,7 @@
         </ng-container>
         <ng-container *ngIf="isRequestNoti">
             <ng-container *ngFor="let item of notiObj;let i = index">
-                <notification-card *ngIf="item.isRead === false" [message]="item" [fullPage]="true" [slide]="true"
-                    (click)="clickIsRead(i)">
+                <notification-card [message]="item" [fullPage]="true" [slide]="true" (click)="clickIsRead(i,true)">
                 </notification-card>
             </ng-container>
         </ng-container>
