@@ -16,6 +16,7 @@ import { ObservableManager } from "src/app/services/ObservableManager.service";
 
 const NOTI_CHECK_SUBJECT: string = 'noti.check';
 const NOTI_READ_SUBJECT: string = 'noti.read';
+const NOTI_ACTION: string = 'noti.action';
 @Component({
   selector: "btn-notification",
   templateUrl: "./Notification.component.html",
@@ -90,6 +91,12 @@ export class Notification extends AbstractPage implements OnInit {
       }
     });
 
+    this.observManager.subscribe(NOTI_ACTION, (result: any) => {
+      if (result) {
+
+      }
+    });
+
     this.observManager.subscribe(NOTI_CHECK_SUBJECT, (result: any) => {
       if (result) {
         this.noti.unread.unshift(result.data);
@@ -130,6 +137,7 @@ export class Notification extends AbstractPage implements OnInit {
     this.observManager.complete('notification');
     this.observManager.complete(NOTI_CHECK_SUBJECT);
     this.observManager.complete(NOTI_READ_SUBJECT);
+    this.observManager.complete(NOTI_ACTION);
   }
 
   public clickIsRead(index: number, isObj?: boolean) {

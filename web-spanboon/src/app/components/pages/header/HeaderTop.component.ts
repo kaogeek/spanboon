@@ -478,6 +478,9 @@ export class HeaderTop extends AbstractPage implements OnInit {
             // if ((!whereConditions['isRead'])) this.notificationList['objective'].push(this._setValueNotification(data, (!whereConditions['isRead']), true));
           }
         }
+        for await (let data of res.notiObjective) {
+          this.notificationList['objective'].push(data);
+        }
 
         this.observManager.createSubject('notification');
         this.observManager.publish('notification', {

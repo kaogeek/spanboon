@@ -41,17 +41,6 @@
             <div class="message" [style.opacity]="message.isRead ? '0.5' : '1'">
                 <span [innerHTML]="message.body"></span>
                 <span [innerHTML]="message.createdDate | dateFormat"></span>
-                <ng-container *ngIf="message.type === 'OBJECTIVE'">
-                    <div class="objective-wrapper">
-                        <div class="button" style="background-color: #fff;border: 1px solid #E5E5E5;">
-                            <span class="add-label" style="color: #757575;">ไม่ยินยอม</span>
-                        </div>
-                        <div class="button" style="background-color: #EE7623;border: 1px solid #EE7623;">
-                            <span class="add-label">ยินยอม</span>
-                        </div>
-                    </div>
-                </ng-container>
-
             </div>
             <div *ngIf="!message.isRead" class="new"></div>
         </div>

@@ -73,8 +73,8 @@
                         [ngClass]="{'select': isNotiAll === 2 && !isRequestNoti }">
                         ทั้งหมด ({{noti!.countAll < 1000 ? noti!.countAll : '999+' }}) </span>
                             <span class="list" (click)="clickRequestNoti()"
-                                [ngClass]="{'select': isRequestNoti }">คำร้อง ({{notiObj && notiObj.count < 1000 ?
-                                    (notiObj && notiObj.count) : '0' }})</span>
+                                [ngClass]="{'select': isRequestNoti }">คำร้อง ({{noti.objective.length < 1000 ?
+                                    (noti.objective.length) : '0' }})</span>
         </div>
     </div>
     <div *ngIf="noti.length !== 0" class="wrapper-header" (click)="$event.stopPropagation();">

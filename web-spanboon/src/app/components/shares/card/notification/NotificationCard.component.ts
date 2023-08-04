@@ -13,6 +13,7 @@ import { environment } from '../../../../../environments/environment';
 import { AbstractPage } from "../../../pages/AbstractPage";
 
 const NOTI_READ_SUBJECT: string = 'noti.read';
+const NOTI_ACTION: string = 'noti.action';
 
 const PAGE_NAME: string = "NotificationCard";
 
@@ -45,6 +46,7 @@ export class NotificationCard extends AbstractPage implements OnInit {
   }
 
   public ngOnInit(): void {
+    console.log("message", this.message)
   }
 
   public ngOnDestroy(): void {
@@ -61,6 +63,7 @@ export class NotificationCard extends AbstractPage implements OnInit {
         objectiveId: link.objectiveId,
         pageId: link.pageId,
         joiner: link.joinerId,
+        notificationId: link.id,
         join: true,
         approve: true
       }
@@ -86,10 +89,13 @@ export class NotificationCard extends AbstractPage implements OnInit {
       let disJoinObj = {
         objectiveId: link.objectiveId,
         pageId: link.pageId,
-        joiner: link.joinerId
+        joiner: link.joinerId,
+        notificationId: link.id
       }
       this.objectiveFacade.disJoinObjective(disJoinObj).then((res) => {
         if (res) {
+          this.observManager.createSubject(NOTI_ACTION);
+          this.observManager.publish(NOTI_ACTION, 1);
         }
       }).catch((err) => {
         if (err) { }
