@@ -55,6 +55,9 @@ export class Notification extends BaseModel {
     @Column({ name: 'pageId' })
     public pageId: ObjectID;
 
+    @Column({ name: 'imageURL' })
+    public imageURL:string;
+
     @BeforeInsert()
     public createDetails(): any {
         this.createdDate = moment().toDate();
