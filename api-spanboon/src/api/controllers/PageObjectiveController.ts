@@ -370,7 +370,7 @@ export class ObjectiveController {
         }
         // if auto approve 
         const mode = String('join');
-        if (join === true && checkPublicObjective.personal === true && pageOwner.autoApprove === true) {
+        if (join === true && checkPublicObjective.personal === true && pageOwner.autoApprove === true && pageOwner.autoApprove !== null && pageOwner.autoApprove !== undefined) {
             if (pageJoiner && pageOwner.id) {
                 const notiOwners = await this.deviceTokenService.find({ userId: pageOwner.ownerUser });
                 notificationText = pageJoiner.name + space + 'เข้าร่วมสิ่งที่กำลังทำของเพจคุณ';
@@ -606,7 +606,7 @@ export class ObjectiveController {
             }
         }
         // not auto approve
-        if (join === true && checkPublicObjective.personal === true && (pageOwner.autoApprove === false || pageOwner.autoApprove === null)) {
+        if (join === true && checkPublicObjective.personal === true && pageOwner.autoApprove === false || pageOwner.autoApprove === null || pageOwner.autoApprove === undefined) {
             if (pageJoiner && pageOwner.id) {
                 const notiOwners = await this.deviceTokenService.find({ userId: pageOwner.ownerUser });
                 notificationText = pageJoiner.name + space + 'ขอเข้าร่วมสิ่งที่กำลังทำของเพจคุณ';
@@ -650,7 +650,7 @@ export class ObjectiveController {
                     result['pageId'] = pageObjId;
                     result['joiner'] = joinerObjId;
                     result['join'] = join;
-                    result['approve'] = true;
+                    result['approve'] = false;
                     const create = await this.pageObjectiveJoinerService.create(result);
                     if (create) {
                         const successResponse = ResponseUtil.getSuccessResponse('Send noti is succesful.', []);
@@ -954,7 +954,6 @@ export class ObjectiveController {
             const errorResponse = ResponseUtil.getErrorResponse('You have been approved.', undefined);
             return res.status(400).send(errorResponse);
         }
-
         if (
             approved !== undefined &&
             approved !== null &&
@@ -1013,15 +1012,14 @@ export class ObjectiveController {
 
                             // 63b693401a69db32be899d25
                             // 637af2bec1b90f60a0d0e968
-                            await this.notificationService.update(
+                            await this.notificationService.delete(
                                 {
                                     type: NOTIFICATION_TYPE.OBJECTIVE,
                                     toUserType: USER_TYPE.PAGE,
                                     fromUserType: USER_TYPE.PAGE,
                                     fromUser: pageOwner.ownerUser,
                                     toUser: pageJoiner.ownerUser
-                                },
-                                { $set: { isRead: true } }
+                                } 
                             );
 
                             const successResponse = ResponseUtil.getSuccessResponse('Join objective is sucessful.', checkApprove);
@@ -1068,15 +1066,14 @@ export class ObjectiveController {
                     }
                     // delete flah noti
                     // toUserType, fromUserType,  toUser, fromUser
-                    await this.notificationService.update(
+                    await this.notificationService.delete(
                         {
                             type: NOTIFICATION_TYPE.OBJECTIVE,
                             toUserType: USER_TYPE.PAGE,
                             fromUserType: USER_TYPE.PAGE,
                             fromUser: pageOwner.ownerUser,
                             toUser: pageJoiner.ownerUser
-                        },
-                        { $set: { isRead: true } }
+                        } 
                     );
                     // delete join objective
                     // joinerObjId
@@ -1132,15 +1129,14 @@ export class ObjectiveController {
 
                             // 63b693401a69db32be899d25
                             // 637af2bec1b90f60a0d0e968
-                            await this.notificationService.update(
+                            await this.notificationService.delete(
                                 {
                                     type: NOTIFICATION_TYPE.OBJECTIVE,
                                     toUserType: USER_TYPE.PAGE,
                                     fromUserType: USER_TYPE.PAGE,
                                     fromUser: pageOwner.ownerUser,
                                     toUser: pageJoiner.ownerUser
-                                },
-                                { $set: { isRead: true } }
+                                } 
                             );
 
                             const successResponse = ResponseUtil.getSuccessResponse('Join objective is sucessful.', checkApprove);
@@ -1187,15 +1183,14 @@ export class ObjectiveController {
                     }
                     // delete flah noti
                     // toUserType, fromUserType,  toUser, fromUser
-                    await this.notificationService.update(
+                    await this.notificationService.delete(
                         {
                             type: NOTIFICATION_TYPE.OBJECTIVE,
                             toUserType: USER_TYPE.PAGE,
                             fromUserType: USER_TYPE.PAGE,
                             fromUser: pageOwner.ownerUser,
                             toUser: pageJoiner.ownerUser
-                        },
-                        { $set: { isRead: true } }
+                        } 
                     );
                     // delete join objective
                     // joinerObjId
