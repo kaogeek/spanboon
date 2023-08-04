@@ -105,7 +105,8 @@
         </ng-container>
         <ng-container *ngIf="isRequestNoti">
             <ng-container *ngFor="let item of notiObj;let i = index">
-                <notification-card [message]="item" [fullPage]="true" [slide]="true" (click)="clickIsRead(i)">
+                <notification-card *ngIf="item.isRead === false" [message]="item" [fullPage]="true" [slide]="true"
+                    (click)="clickIsRead(i)">
                 </notification-card>
             </ng-container>
         </ng-container>

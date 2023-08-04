@@ -50,8 +50,14 @@
                             <img *ngIf="isShowIcon" class="lock" src="'../../../../../assets/img/lock-icon.svg" alt="">
                         </ng-container>
                         <ng-template #elsePublicObj>
-                            <img *ngIf="isShowIcon" class="lock" src="'../../../../../assets/img/public-objective.svg"
-                                alt="">
+                            <ng-container *ngIf="itemObjective.join; else elseIconJoin">
+                                <img *ngIf="isShowIcon" class="lock" src="'../../../../../assets/img/join-objective.svg"
+                                    alt="">
+                            </ng-container>
+                            <ng-template #elseIconJoin>
+                                <img *ngIf="isShowIcon" class="lock"
+                                    src="'../../../../../assets/img/public-objective.svg" alt="">
+                            </ng-template>
                         </ng-template>
                     </div>
                     <span class="i_title">
@@ -59,7 +65,7 @@
                     </span>
                 </div>
             </ng-container>
-            <ng-container *ngFor="let item of joinObjective; let index = index">
+            <!-- <ng-container *ngFor="let item of joinObjective; let index = index">
                 <div class="wrapper-doing" (click)="clickObjective(item);" *ngIf="index <= 5">
                     <div class="images">
                         <display-image [class]="'image-tag'" [isPreload]="'true'" [isLoaded]="'true'"
@@ -72,7 +78,7 @@
                         #{{item.title}}
                     </span>
                 </div>
-            </ng-container>
+            </ng-container> -->
             <div class="content-all" *ngIf="itemData && itemData.length > 6">
                 ดูทั้งหมด
             </div>

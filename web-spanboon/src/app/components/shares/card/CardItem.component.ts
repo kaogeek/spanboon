@@ -201,6 +201,10 @@ export class CardItem extends AbstractPage implements OnInit {
             this.router.navigate([]).then(() => {
                 window.open('/objective/' + data.id);
             });
+        } else if (data.join === true) {
+            this.router.navigate([]).then(() => {
+                window.open('/objective/' + data.objectiveId);
+            });
         } else {
             this.router.navigate([]).then(() => {
                 window.open('/objective/' + data._id);

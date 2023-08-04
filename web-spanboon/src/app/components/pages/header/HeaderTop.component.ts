@@ -453,7 +453,10 @@ export class HeaderTop extends AbstractPage implements OnInit {
 
     this.notificationFacade.search(val).then(async (res) => {
       if (res) {
-        this.notificationObjectList = res.notiObjective;
+        if (res.notiObjective.length > 0) {
+          res.notiObjective.reverse();
+          this.notificationObjectList = res.notiObjective;
+        }
         for await (let data of res.data) {
           if (arrange === 'unshift') {
             if ((whereConditions['isRead'] === true)) this.notificationList['read'].unshift(this._setValueNotification(data, (whereConditions['isRead'] === true))), (this.notificationList.countRead = res.count);

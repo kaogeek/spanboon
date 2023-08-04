@@ -74,6 +74,7 @@
             <!-- <div class="message" [style.opacity]="message.isRead ? '0.5' : '1'"> -->
             <div class="message">
                 <span [innerHTML]="message.title"></span>
+                <span [innerHTML]="message.createdDate | dateFormat"></span>
                 <div class="objective-wrapper" *ngIf="message.approve === false">
                     <div class="button" style="background-color: #fff;border: 1px solid #E5E5E5;">
                         <span class="add-label" style="color: #757575;"
