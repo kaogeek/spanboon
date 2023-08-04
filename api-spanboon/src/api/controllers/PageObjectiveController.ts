@@ -2105,54 +2105,42 @@ export class ObjectiveController {
         let joinerObjId = undefined;
         const join = joinObjectiveRequest.join;
         const space = ' ';
-        const result: any = {};
-        let createJoin = undefined;
         let checkJoinObjective = undefined;
         let checkPublicObjective = undefined;
         // check before create invite 
         if (joinObjs.length > 0) {
             joinerObjId = joinObjs.map(_id => new ObjectID(_id));
         }
-        /* 
-        if (joinerObjId.length > 0) {
-            for (const joinIds of joinerObjId) {
-                checkJoinObjective = await this.pageObjectiveJoinerService.find({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinIds });
-                if (checkJoinObjective.length > 0) {
-                    const errorResponse = ResponseUtil.getErrorResponse('You have joined the objective before.', undefined);
-                    return res.status(400).send(errorResponse);
-                }
-            }
-        } */
-
         const checkJoin = await this.pageObjectiveJoinerService.find({ objectiveId: objtiveIds, pageId: pageObjId, joiner: { $in: joinerObjId } });
         if (checkJoin.length > 0) {
             const errorResponse = ResponseUtil.getErrorResponse('You have joined the objective before.', undefined);
             return res.status(400).send(errorResponse);
         }
-
+        let pageOwner: any;
+        let pageJoiner: any;
         if (joinObjs.length > 0 && joinerObjId.length > 0) {
             for (const joiner of joinerObjId) {
+                const result: any = {};
                 result['objectiveId'] = objtiveIds;
                 result['pageId'] = pageObjId;
                 result['joiner'] = joiner;
                 result['join'] = join;
                 result['approve'] = false;
-                createJoin = await this.pageObjectiveJoinerService.create(result);
+                const createJoin = await this.pageObjectiveJoinerService.create(result);
+                if (createJoin) {
+                    checkJoinObjective = await this.pageObjectiveJoinerService.find({ objectiveId: objtiveIds, pageId: pageObjId, joiner: { $in: joinerObjId } });
+                    checkPublicObjective = await this.pageObjectiveService.findOne({ _id: objtiveIds });
+                    pageOwner = await this.pageService.findOne({ _id: pageObjId });
+                    pageJoiner = await this.pageService.aggregate(
+                        [
+                            {
+                                $match: { _id: { $in: joinerObjId } },
+                            }
+                        ]
+                    );
+                }
             }
         }
-        if (createJoin) {
-            checkJoinObjective = await this.pageObjectiveJoinerService.find({ objectiveId: objtiveIds, pageId: pageObjId, joiner: { $in: joinerObjId } });
-            checkPublicObjective = await this.pageObjectiveService.findOne({ _id: objtiveIds });
-        }
-        const pageOwner = await this.pageService.findOne({ _id: pageObjId });
-        // const pageJoiner = await this.pageService.aggregate({ _id: joinerObjId });
-        const pageJoiner: any = await this.pageService.aggregate(
-            [
-                {
-                    $match: { _id: { $in: joinerObjId } },
-                }
-            ]
-        );
         let notificationText = undefined;
         let link = undefined;
         if (checkJoinObjective === undefined && checkJoinObjective === null) {
