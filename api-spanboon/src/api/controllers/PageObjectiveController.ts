@@ -1072,7 +1072,7 @@ export class ObjectiveController {
                 );
                 // delete join objective
                 // joinerObjId
-                await this.pageObjectiveJoinerService.delete({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId});
+                await this.pageObjectiveJoinerService.delete({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId });
 
                 const errorResponse = ResponseUtil.getErrorResponse('Reject to join the objective.', undefined);
                 return res.status(400).send(errorResponse);
