@@ -1007,12 +1007,7 @@ export class ObjectiveController {
 
                             // 63b693401a69db32be899d25
                             // 637af2bec1b90f60a0d0e968
-                            await this.notificationService.delete(
-                                {
-                                    _id: notiObjId,
-                                    type: 'OBJECTIVE'
-                                }
-                            );
+                            await this.notificationService.delete({ _id: notiObjId, type: 'OBJECTIVE' });
 
                             const successResponse = ResponseUtil.getSuccessResponse('Join objective is sucessful.', checkApprove);
                             return res.status(200).send(successResponse);
