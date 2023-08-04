@@ -907,7 +907,6 @@ export class ObjectiveController {
         const pageJoiner = await this.pageService.findOne({ _id: joinerObjId });
         if (joinObjective) {
             const query = {
-                _id: joinObjective.id,
                 objectiveId: joinObjective.objectiveId,
                 pageId: joinObjective.pageId,
                 joiner: joinObjective.joiner,
@@ -917,7 +916,7 @@ export class ObjectiveController {
                 { pageId: joinObjective.joiner, objective: joinObjective.objectiveId },
                 { $set: { objective: null, objectiveTag: null } }
             );
-            await this.notificationService.delete({ fromUser: pageOwner.ownerUser, toUser: pageJoiner.ownerUser });
+            await this.notificationService.delete({ fromUser: pageOwner.ownerUser, toUser: pageJoiner.ownerUser, type: NOTIFICATION_TYPE.OBJECTIVE });
             if (update && postUpdate) {
                 const successResponse = ResponseUtil.getSuccessResponse('Unjoin is successfully.', []);
                 return res.status(200).send(successResponse);
@@ -938,6 +937,7 @@ export class ObjectiveController {
         const joinerObjId = new ObjectID(joinObjectiveRequest.joiner);
         const approved = joinObjectiveRequest.approve;
         const pageJoiner = await this.pageService.findOne({ _id: joinerObjId });
+        const pageOwner = await this.pageService.findOne({ _id: pageObjId });
         const checkPublicObjective = await this.pageObjectiveService.findOne({ _id: objtiveIds, pageId: pageObjId });
         let notificationText = undefined;
         let link = undefined;
@@ -1053,7 +1053,7 @@ export class ObjectiveController {
                 // delete flah noti
                 // toUserType, fromUserType,  toUser, fromUser
                 console.log('pageJoiner', pageJoiner);
-                await this.notificationService.update({ type: NOTIFICATION_TYPE.OBJECTIVE, toUserType: USER_TYPE.PAGE, fromUserType: USER_TYPE.PAGE }, { $set: { deleted: true } });
+                await this.notificationService.update({ type: NOTIFICATION_TYPE.OBJECTIVE, toUserType: USER_TYPE.PAGE, fromUserType: USER_TYPE.PAGE }, { $set: { isRead: true } });
                 // delete join objective
                 // joinerObjId
                 await this.pageObjectiveJoinerService.delete({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId, join: true });
