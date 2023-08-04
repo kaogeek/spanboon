@@ -1002,11 +1002,19 @@ export class ObjectiveController {
                         checkApprove = await this.pageObjectiveJoinerService.findOne({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId });
                         // delete flah noti
                         // toUserType, fromUserType,  toUser, fromUser
-                        console.log('pageJoiner', pageJoiner);
-                        console.log('req.user.id', req.user.id);
+
                         // 63b693401a69db32be899d25
                         // 637af2bec1b90f60a0d0e968
-                        await this.notificationService.update({ type: NOTIFICATION_TYPE.OBJECTIVE, toUserType: USER_TYPE.PAGE, fromUserType: USER_TYPE.PAGE }, { $set: { isRead: true } });
+                        await this.notificationService.update(
+                            {
+                                type: NOTIFICATION_TYPE.OBJECTIVE,
+                                toUserType: USER_TYPE.PAGE,
+                                fromUserType: USER_TYPE.PAGE,
+                                fromUser: pageOwner.ownerUser,
+                                toUser: pageJoiner.ownerUser
+                            },
+                            { $set: { isRead: true } }
+                        );
 
                         const successResponse = ResponseUtil.getSuccessResponse('Join objective is sucessful.', checkApprove);
                         return res.status(200).send(successResponse);
@@ -1052,11 +1060,19 @@ export class ObjectiveController {
                 }
                 // delete flah noti
                 // toUserType, fromUserType,  toUser, fromUser
-                console.log('pageJoiner', pageJoiner);
-                await this.notificationService.update({ type: NOTIFICATION_TYPE.OBJECTIVE, toUserType: USER_TYPE.PAGE, fromUserType: USER_TYPE.PAGE }, { $set: { isRead: true } });
+                await this.notificationService.update(
+                    {
+                        type: NOTIFICATION_TYPE.OBJECTIVE,
+                        toUserType: USER_TYPE.PAGE,
+                        fromUserType: USER_TYPE.PAGE,
+                        fromUser: pageOwner.ownerUser,
+                        toUser: pageJoiner.ownerUser
+                    },
+                    { $set: { isRead: true } }
+                );
                 // delete join objective
                 // joinerObjId
-                await this.pageObjectiveJoinerService.delete({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId, join: true });
+                await this.pageObjectiveJoinerService.delete({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId});
 
                 const errorResponse = ResponseUtil.getErrorResponse('Reject to join the objective.', undefined);
                 return res.status(400).send(errorResponse);
