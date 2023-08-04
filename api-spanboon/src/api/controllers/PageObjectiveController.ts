@@ -1009,11 +1009,8 @@ export class ObjectiveController {
                             // 637af2bec1b90f60a0d0e968
                             await this.notificationService.delete(
                                 {
-                                    type: NOTIFICATION_TYPE.OBJECTIVE,
-                                    toUserType: USER_TYPE.PAGE,
-                                    fromUserType: USER_TYPE.PAGE,
-                                    fromUser: pageOwner.ownerUser,
-                                    toUser: pageJoiner.ownerUser
+                                    _id: notiObjId,
+                                    type: 'OBJECTIVE'
                                 }
                             );
 
@@ -1063,11 +1060,8 @@ export class ObjectiveController {
                     // toUserType, fromUserType,  toUser, fromUser
                     await this.notificationService.delete(
                         {
-                            type: NOTIFICATION_TYPE.OBJECTIVE,
-                            toUserType: USER_TYPE.PAGE,
-                            fromUserType: USER_TYPE.PAGE,
-                            fromUser: pageOwner.ownerUser,
-                            toUser: pageJoiner.ownerUser
+                            _id: notiObjId,
+                            type: 'OBJECTIVE'
                         }
                     );
                     // delete join objective
@@ -1126,11 +1120,8 @@ export class ObjectiveController {
                             // 637af2bec1b90f60a0d0e968
                             await this.notificationService.delete(
                                 {
-                                    type: NOTIFICATION_TYPE.OBJECTIVE,
-                                    toUserType: USER_TYPE.PAGE,
-                                    fromUserType: USER_TYPE.PAGE,
-                                    fromUser: pageOwner.ownerUser,
-                                    toUser: pageJoiner.ownerUser
+                                    _id: notiObjId,
+                                    type: 'OBJECTIVE'
                                 }
                             );
 
@@ -1180,11 +1171,8 @@ export class ObjectiveController {
                     // toUserType, fromUserType,  toUser, fromUser
                     await this.notificationService.delete(
                         {
-                            type: NOTIFICATION_TYPE.OBJECTIVE,
-                            toUserType: USER_TYPE.PAGE,
-                            fromUserType: USER_TYPE.PAGE,
-                            fromUser: pageOwner.ownerUser,
-                            toUser: pageJoiner.ownerUser
+                            _id: notiObjId,
+                            type: 'OBJECTIVE'
                         }
                     );
                     // delete join objective
