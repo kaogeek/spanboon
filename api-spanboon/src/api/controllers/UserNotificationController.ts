@@ -381,6 +381,7 @@ export class UserNotificationController {
                 // && notiPage.InviteNotification.isRead === false 
                 if (notiPage !== undefined && notiPage.pageObjectiveJoiner !== undefined) {
                     const result: any = {};
+                    result['id'] = notiPage._Id;
                     result.title = notiPage.title;
                     result.fromUser = notiPage.fromUser;
                     result.toUser = notiPage.toUser;
@@ -410,6 +411,7 @@ export class UserNotificationController {
                 //  
                 if (notiPage.InviteNotification !== undefined && notiPage.InviteNotification.pageObjectiveJoiner !== undefined) {
                     const result: any = {};
+                    result['id'] = notiPage.InviteNotification._Id;
                     result.title = notiPage.InviteNotification.title;
                     result.fromUser = notiPage.InviteNotification.fromUser;
                     result.toUser = notiPage.InviteNotification.toUser;

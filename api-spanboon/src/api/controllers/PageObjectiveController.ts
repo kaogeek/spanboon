@@ -901,7 +901,6 @@ export class ObjectiveController {
         const objtiveIds = new ObjectID(joinObjectiveRequest.objectiveId);
         const pageObjId = new ObjectID(joinObjectiveRequest.pageId);
         const joinerObjId = new ObjectID(joinObjectiveRequest.joiner);
-
         const joinObjective = await this.pageObjectiveJoinerService.findOne({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId });
         const pageOwner = await this.pageService.findOne({ _id: pageObjId });
         const pageJoiner = await this.pageService.findOne({ _id: joinerObjId });
@@ -938,7 +937,15 @@ export class ObjectiveController {
         const approved = joinObjectiveRequest.approve;
         const pageJoiner = await this.pageService.findOne({ _id: joinerObjId });
         const pageOwner = await this.pageService.findOne({ _id: pageObjId });
+        const space = ' ';
         const checkPublicObjective = await this.pageObjectiveService.findOne({ _id: objtiveIds, pageId: pageObjId });
+        const notificationCheck = await this.notificationService.findOne({
+            type: NOTIFICATION_TYPE.OBJECTIVE,
+            toUserType: USER_TYPE.PAGE,
+            fromUserType: USER_TYPE.PAGE,
+            fromUser: pageOwner.ownerUser,
+            toUser: pageJoiner.ownerUser
+        });
         let notificationText = undefined;
         let link = undefined;
         let mode: string;
@@ -959,123 +966,244 @@ export class ObjectiveController {
         ) {
 
             const count = 0;
-            if (approved === true) {
-                mode = 'approve';
-                const notiJoiners = await this.deviceTokenService.find({ user: pageJoiner.ownerUser });
-                notificationText = 'คุณได้ถูกอนุมัติเข้าร่วมสิ่งที่กำลังทำ';
-                link = `/objective/${objtiveIds}`;
-                await this.pageNotificationService.notifyToPageUserObjective(
-                    pageJoiner.id + '',
-                    undefined,
-                    req.user.id + '',
-                    USER_TYPE.PAGE,
-                    NOTIFICATION_TYPE.OBJECTIVE,
-                    notificationText,
-                    link,
-                    pageJoiner.name,
-                    pageJoiner.imageURL,
-                    count,
-                    mode
-                );
-                if (notiJoiners.length > 0) {
-                    for (const notiJoiner of notiJoiners) {
-                        await this.notificationService.sendNotificationFCM
-                            (
-                                pageJoiner.id + '',
-                                USER_TYPE.PAGE,
-                                req.user.id + '',
-                                USER_TYPE.PAGE,
-                                NOTIFICATION_TYPE.OBJECTIVE,
-                                notificationText,
-                                link,
-                                notiJoiner.Tokens,
-                                pageJoiner.name,
-                                pageJoiner.imageURL
-                            );
+            if (notificationCheck.mode === 'join') {
+                if (approved === true) {
+                    mode = 'approve';
+                    const notiJoiners = await this.deviceTokenService.find({ user: pageJoiner.ownerUser });
+                    notificationText = 'คุณได้ถูกอนุมัติเข้าร่วมสิ่งที่กำลังทำ';
+                    link = `/objective/${objtiveIds}`;
+                    await this.pageNotificationService.notifyToPageUserObjective(
+                        pageJoiner.id + '',
+                        undefined,
+                        req.user.id + '',
+                        USER_TYPE.PAGE,
+                        NOTIFICATION_TYPE.OBJECTIVE,
+                        notificationText,
+                        link,
+                        pageJoiner.name,
+                        pageJoiner.imageURL,
+                        count,
+                        mode
+                    );
+                    if (notiJoiners.length > 0) {
+                        for (const notiJoiner of notiJoiners) {
+                            await this.notificationService.sendNotificationFCM
+                                (
+                                    pageJoiner.id + '',
+                                    USER_TYPE.PAGE,
+                                    req.user.id + '',
+                                    USER_TYPE.PAGE,
+                                    NOTIFICATION_TYPE.OBJECTIVE,
+                                    notificationText,
+                                    link,
+                                    notiJoiner.Tokens,
+                                    pageJoiner.name,
+                                    pageJoiner.imageURL
+                                );
+                        }
                     }
-                }
-                if (checkApprove) {
-                    const query = { objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId, join: joinObjectiveRequest.join };
-                    const newValues = { $set: { approve: approved } };
-                    const update = await this.pageObjectiveJoinerService.update(query, newValues);
-                    if (update) {
-                        checkApprove = await this.pageObjectiveJoinerService.findOne({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId });
-                        // delete flah noti
-                        // toUserType, fromUserType,  toUser, fromUser
+                    if (checkApprove) {
+                        const query = { objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId, join: joinObjectiveRequest.join };
+                        const newValues = { $set: { approve: approved } };
+                        const update = await this.pageObjectiveJoinerService.update(query, newValues);
+                        if (update) {
+                            checkApprove = await this.pageObjectiveJoinerService.findOne({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId });
+                            // delete flah noti
+                            // toUserType, fromUserType,  toUser, fromUser
 
-                        // 63b693401a69db32be899d25
-                        // 637af2bec1b90f60a0d0e968
-                        await this.notificationService.update(
-                            {
-                                type: NOTIFICATION_TYPE.OBJECTIVE,
-                                toUserType: USER_TYPE.PAGE,
-                                fromUserType: USER_TYPE.PAGE,
-                                fromUser: pageOwner.ownerUser,
-                                toUser: pageJoiner.ownerUser
-                            },
-                            { $set: { isRead: true } }
-                        );
+                            // 63b693401a69db32be899d25
+                            // 637af2bec1b90f60a0d0e968
+                            await this.notificationService.update(
+                                {
+                                    type: NOTIFICATION_TYPE.OBJECTIVE,
+                                    toUserType: USER_TYPE.PAGE,
+                                    fromUserType: USER_TYPE.PAGE,
+                                    fromUser: pageOwner.ownerUser,
+                                    toUser: pageJoiner.ownerUser
+                                },
+                                { $set: { isRead: true } }
+                            );
 
-                        const successResponse = ResponseUtil.getSuccessResponse('Join objective is sucessful.', checkApprove);
-                        return res.status(200).send(successResponse);
+                            const successResponse = ResponseUtil.getSuccessResponse('Join objective is sucessful.', checkApprove);
+                            return res.status(200).send(successResponse);
+                        }
+                    } else {
+                        const errorResponse = ResponseUtil.getErrorResponse('Approve is not success.', undefined);
+                        return res.status(400).send(errorResponse);
                     }
                 } else {
-                    const errorResponse = ResponseUtil.getErrorResponse('Approve is not success.', undefined);
+                    mode = 'approve';
+                    const notiJoiners = await this.deviceTokenService.find({ user: pageJoiner.ownerUser });
+                    notificationText = 'คุณถูกปฏิเสธการเข้าร่วมสิ่งที่กำลังทำ';
+                    link = `/objective/${objtiveIds}`;
+                    await this.pageNotificationService.notifyToPageUserObjective(
+                        pageJoiner.id + '',
+                        undefined,
+                        req.user.id + '',
+                        USER_TYPE.PAGE,
+                        NOTIFICATION_TYPE.OBJECTIVE,
+                        notificationText,
+                        link,
+                        pageJoiner.name,
+                        pageJoiner.imageURL,
+                        count,
+                        mode
+                    );
+                    if (notiJoiners.length > 0) {
+                        for (const notiJoiner of notiJoiners) {
+                            await this.notificationService.sendNotificationFCM
+                                (
+                                    pageJoiner.id + '',
+                                    USER_TYPE.PAGE,
+                                    req.user.id + '',
+                                    USER_TYPE.PAGE,
+                                    NOTIFICATION_TYPE.OBJECTIVE,
+                                    notificationText,
+                                    link,
+                                    notiJoiner.Tokens,
+                                    pageJoiner.name,
+                                    pageJoiner.imageURL
+                                );
+                        }
+                    }
+                    // delete flah noti
+                    // toUserType, fromUserType,  toUser, fromUser
+                    await this.notificationService.update(
+                        {
+                            type: NOTIFICATION_TYPE.OBJECTIVE,
+                            toUserType: USER_TYPE.PAGE,
+                            fromUserType: USER_TYPE.PAGE,
+                            fromUser: pageOwner.ownerUser,
+                            toUser: pageJoiner.ownerUser
+                        },
+                        { $set: { isRead: true } }
+                    );
+                    // delete join objective
+                    // joinerObjId
+                    await this.pageObjectiveJoinerService.delete({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId });
+
+                    const errorResponse = ResponseUtil.getErrorResponse('Reject to join the objective.', undefined);
                     return res.status(400).send(errorResponse);
                 }
             } else {
-                mode = 'approve';
-                const notiJoiners = await this.deviceTokenService.find({ user: pageJoiner.ownerUser });
-                notificationText = 'คุณถูกปฏิเสธการเข้าร่วมสิ่งที่กำลังทำ';
-                link = `/objective/${objtiveIds}`;
-                await this.pageNotificationService.notifyToPageUserObjective(
-                    pageJoiner.id + '',
-                    undefined,
-                    req.user.id + '',
-                    USER_TYPE.PAGE,
-                    NOTIFICATION_TYPE.OBJECTIVE,
-                    notificationText,
-                    link,
-                    pageJoiner.name,
-                    pageJoiner.imageURL,
-                    count,
-                    mode
-                );
-                if (notiJoiners.length > 0) {
-                    for (const notiJoiner of notiJoiners) {
-                        await this.notificationService.sendNotificationFCM
-                            (
-                                pageJoiner.id + '',
-                                USER_TYPE.PAGE,
-                                req.user.id + '',
-                                USER_TYPE.PAGE,
-                                NOTIFICATION_TYPE.OBJECTIVE,
-                                notificationText,
-                                link,
-                                notiJoiner.Tokens,
-                                pageJoiner.name,
-                                pageJoiner.imageURL
-                            );
+                if (approved === true) {
+                    mode = 'approve';
+                    const notiJoiners = await this.deviceTokenService.find({ user: pageJoiner.ownerUser });
+                    notificationText = pageJoiner.name + space + 'ได้เข้าร่วมสิ่งที่กำลังทำแล้ว';
+                    link = `/objective/${objtiveIds}`;
+                    await this.pageNotificationService.notifyToPageUserObjective(
+                        pageOwner.id + '',
+                        undefined,
+                        req.user.id + '',
+                        USER_TYPE.PAGE,
+                        NOTIFICATION_TYPE.OBJECTIVE,
+                        notificationText,
+                        link,
+                        pageJoiner.name,
+                        pageJoiner.imageURL,
+                        count,
+                        mode
+                    );
+                    if (notiJoiners.length > 0) {
+                        for (const notiJoiner of notiJoiners) {
+                            await this.notificationService.sendNotificationFCM
+                                (
+                                    pageOwner.id + '',
+                                    USER_TYPE.PAGE,
+                                    req.user.id + '',
+                                    USER_TYPE.PAGE,
+                                    NOTIFICATION_TYPE.OBJECTIVE,
+                                    notificationText,
+                                    link,
+                                    notiJoiner.Tokens,
+                                    pageJoiner.name,
+                                    pageJoiner.imageURL
+                                );
+                        }
                     }
-                }
-                // delete flah noti
-                // toUserType, fromUserType,  toUser, fromUser
-                await this.notificationService.update(
-                    {
-                        type: NOTIFICATION_TYPE.OBJECTIVE,
-                        toUserType: USER_TYPE.PAGE,
-                        fromUserType: USER_TYPE.PAGE,
-                        fromUser: pageOwner.ownerUser,
-                        toUser: pageJoiner.ownerUser
-                    },
-                    { $set: { isRead: true } }
-                );
-                // delete join objective
-                // joinerObjId
-                await this.pageObjectiveJoinerService.delete({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId });
+                    if (checkApprove) {
+                        const query = { objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId, join: joinObjectiveRequest.join };
+                        const newValues = { $set: { approve: approved } };
+                        const update = await this.pageObjectiveJoinerService.update(query, newValues);
+                        if (update) {
+                            checkApprove = await this.pageObjectiveJoinerService.findOne({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId });
+                            // delete flah noti
+                            // toUserType, fromUserType,  toUser, fromUser
 
-                const errorResponse = ResponseUtil.getErrorResponse('Reject to join the objective.', undefined);
-                return res.status(400).send(errorResponse);
+                            // 63b693401a69db32be899d25
+                            // 637af2bec1b90f60a0d0e968
+                            await this.notificationService.update(
+                                {
+                                    type: NOTIFICATION_TYPE.OBJECTIVE,
+                                    toUserType: USER_TYPE.PAGE,
+                                    fromUserType: USER_TYPE.PAGE,
+                                    fromUser: pageOwner.ownerUser,
+                                    toUser: pageJoiner.ownerUser
+                                },
+                                { $set: { isRead: true } }
+                            );
+
+                            const successResponse = ResponseUtil.getSuccessResponse('Join objective is sucessful.', checkApprove);
+                            return res.status(200).send(successResponse);
+                        }
+                    } else {
+                        const errorResponse = ResponseUtil.getErrorResponse('Approve is not success.', undefined);
+                        return res.status(400).send(errorResponse);
+                    }
+                } else {
+                    mode = 'approve';
+                    const notiJoiners = await this.deviceTokenService.find({ user: pageJoiner.ownerUser });
+                    notificationText = 'คุณถูกปฏิเสธการเข้าร่วมสิ่งที่กำลังทำ';
+                    link = `/objective/${objtiveIds}`;
+                    await this.pageNotificationService.notifyToPageUserObjective(
+                        pageOwner.id + '',
+                        undefined,
+                        req.user.id + '',
+                        USER_TYPE.PAGE,
+                        NOTIFICATION_TYPE.OBJECTIVE,
+                        notificationText,
+                        link,
+                        pageJoiner.name,
+                        pageJoiner.imageURL,
+                        count,
+                        mode
+                    );
+                    if (notiJoiners.length > 0) {
+                        for (const notiJoiner of notiJoiners) {
+                            await this.notificationService.sendNotificationFCM
+                                (
+                                    pageOwner.id + '',
+                                    USER_TYPE.PAGE,
+                                    req.user.id + '',
+                                    USER_TYPE.PAGE,
+                                    NOTIFICATION_TYPE.OBJECTIVE,
+                                    notificationText,
+                                    link,
+                                    notiJoiner.Tokens,
+                                    pageJoiner.name,
+                                    pageJoiner.imageURL
+                                );
+                        }
+                    }
+                    // delete flah noti
+                    // toUserType, fromUserType,  toUser, fromUser
+                    await this.notificationService.update(
+                        {
+                            type: NOTIFICATION_TYPE.OBJECTIVE,
+                            toUserType: USER_TYPE.PAGE,
+                            fromUserType: USER_TYPE.PAGE,
+                            fromUser: pageOwner.ownerUser,
+                            toUser: pageJoiner.ownerUser
+                        },
+                        { $set: { isRead: true } }
+                    );
+                    // delete join objective
+                    // joinerObjId
+                    await this.pageObjectiveJoinerService.delete({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId });
+
+                    const errorResponse = ResponseUtil.getErrorResponse('Reject to join the objective.', undefined);
+                    return res.status(400).send(errorResponse);
+                }
             }
         }
     }
