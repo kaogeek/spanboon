@@ -424,7 +424,7 @@ export class UserNotificationController {
                     result.objectiveId = notiPage.InviteNotification.pageObjectiveJoiner.objectiveId;
                     result.pageId = notiPage.InviteNotification.pageObjectiveJoiner.pageObjective.page._id;
                     result.joinerId = notiPage.InviteNotification.pageObjectiveJoiner.joiner;
-                    result.imageUrl = notiPage.InviteNotification.pageObjectiveJoiner.pageObjective.page.s3ImageURL ? notiPage.InviteNotification.pageObjectiveJoiner.pageObjective.page.imageURL : notiPage.InviteNotification.pageObjectiveJoiner.pageObjective.page.s3ImageURL;
+                    result.imageUrl = notiPage.InviteNotification.pageObjectiveJoiner.pageObjective.page.s3ImageURL ? notiPage.InviteNotification.pageObjectiveJoiner.pageObjective.page.s3ImageURL : notiPage.InviteNotification.pageObjectiveJoiner.pageObjective.page.imageURL;
                     result.join = notiPage.InviteNotification.pageObjectiveJoiner.join;
                     result.approve = notiPage.InviteNotification.pageObjectiveJoiner.approve;
                     pageObjectives.push(result);
@@ -453,7 +453,7 @@ export class UserNotificationController {
                     result.objectiveId = notiPage.InviteNotification.pageObjectiveJoiner.objectiveId;
                     result.pageId = notiPage.InviteNotification.pageObjectiveJoiner.pageObjective.page._id;
                     result.joinerId = notiPage.InviteNotification.pageObjectiveJoiner.joiner;
-                    result.imageUrl = notiPage.InviteNotification.pageObjectiveJoiner.pageObjective.page.s3ImageURL ? notiPage.InviteNotification.pageObjectiveJoiner.pageObjective.page.imageURL : notiPage.InviteNotification.pageObjectiveJoiner.pageObjective.page.s3ImageURL;
+                    result.imageUrl = notiPage.InviteNotification.pageObjectiveJoiner.pageObjective.page.s3ImageURL ? notiPage.InviteNotification.pageObjectiveJoiner.pageObjective.page.s3ImageURL : notiPage.InviteNotification.pageObjectiveJoiner.pageObjective.page.imageURL;
                     result.join = notiPage.InviteNotification.pageObjectiveJoiner.join;
                     result.approve = notiPage.InviteNotification.pageObjectiveJoiner.approve;
                     pageObjectives.push(result);
@@ -484,12 +484,38 @@ export class UserNotificationController {
         } else {
             findAllCountNotification = await this.notificationService.find({ toUser: userObjId });
         }
-        const userNotificationsList: any = await this.notificationService.search(filter);
-        const notiResp = await this.parseNotificationsToResponses(userNotificationsList);
+        /*        
+        "$and": [
+            {"mode": {"$ne": "invite"}},
+            {"mode": {"$ne": "join"}}
+        ]     */
+
+        const notifications: any = await this.notificationService.aggregate([
+            {
+                $match: {
+                    $and: [
+                        { mode: { $ne: 'invite' } },
+                        { mode: { $ne: 'join' } },
+                    ],
+                    toUser: filter.whereConditions.toUser,
+                    deleted: filter.whereConditions.deleted
+                }
+            },
+            {
+                $sort: { createdDate: filter.orderBy.createdDate }
+            },
+            {
+                $limit: filter.limit
+            },
+            {
+                $skip: filter.offset
+            }
+        ]);
+        const notiResp = await this.parseNotificationsToResponses(notifications);
         const query = { toUser: userObjId };
         const newValues = { $set: { isRead: true } };
         const updateReadNoti = await this.notificationService.updateMany(query, newValues);
-        if (userNotificationsList && updateReadNoti) {
+        if (notifications && updateReadNoti) {
             const successResponse = ResponseUtil.getSuccessResponse('Successfully search UserNotifications', notiResp, findAllCountNotification.length, pageObjectives);
             return res.status(200).send(successResponse);
         } else {

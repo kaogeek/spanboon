@@ -941,7 +941,7 @@ export class ObjectiveController {
         const checkPublicObjective = await this.pageObjectiveService.findOne({ _id: objtiveIds, pageId: pageObjId });
         let notificationText = undefined;
         let link = undefined;
-        let mode: boolean;
+        let mode: string;
         let checkApprove = await this.pageObjectiveJoinerService.findOne({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId });
         if (checkApprove !== undefined && checkApprove !== null && checkApprove.approve === true) {
             const errorResponse = ResponseUtil.getErrorResponse('You have been approved.', undefined);
@@ -960,7 +960,7 @@ export class ObjectiveController {
 
             const count = 0;
             if (approved === true) {
-                mode = true;
+                mode = 'approve';
                 const notiJoiners = await this.deviceTokenService.find({ user: pageJoiner.ownerUser });
                 notificationText = 'คุณได้ถูกอนุมัติเข้าร่วมสิ่งที่กำลังทำ';
                 link = `/objective/${objtiveIds}`;
@@ -1000,6 +1000,14 @@ export class ObjectiveController {
                     const update = await this.pageObjectiveJoinerService.update(query, newValues);
                     if (update) {
                         checkApprove = await this.pageObjectiveJoinerService.findOne({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId });
+                        // delete flah noti
+                        // toUserType, fromUserType,  toUser, fromUser
+                        console.log('pageJoiner', pageJoiner);
+                        console.log('req.user.id', req.user.id);
+                        // 63b693401a69db32be899d25
+                        // 637af2bec1b90f60a0d0e968
+                        await this.notificationService.update({ type: NOTIFICATION_TYPE.OBJECTIVE, toUserType: USER_TYPE.PAGE, fromUserType: USER_TYPE.PAGE }, { $set: { isRead: true } });
+
                         const successResponse = ResponseUtil.getSuccessResponse('Join objective is sucessful.', checkApprove);
                         return res.status(200).send(successResponse);
                     }
@@ -1008,7 +1016,7 @@ export class ObjectiveController {
                     return res.status(400).send(errorResponse);
                 }
             } else {
-                mode = false;
+                mode = 'approve';
                 const notiJoiners = await this.deviceTokenService.find({ user: pageJoiner.ownerUser });
                 notificationText = 'คุณถูกปฏิเสธการเข้าร่วมสิ่งที่กำลังทำ';
                 link = `/objective/${objtiveIds}`;
@@ -1042,6 +1050,14 @@ export class ObjectiveController {
                             );
                     }
                 }
+                // delete flah noti
+                // toUserType, fromUserType,  toUser, fromUser
+                console.log('pageJoiner', pageJoiner);
+                await this.notificationService.update({ type: NOTIFICATION_TYPE.OBJECTIVE, toUserType: USER_TYPE.PAGE, fromUserType: USER_TYPE.PAGE }, { $set: { deleted: true } });
+                // delete join objective
+                // joinerObjId
+                await this.pageObjectiveJoinerService.delete({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId, join: true });
+
                 const errorResponse = ResponseUtil.getErrorResponse('Reject to join the objective.', undefined);
                 return res.status(400).send(errorResponse);
             }
