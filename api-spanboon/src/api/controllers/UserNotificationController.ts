@@ -381,7 +381,7 @@ export class UserNotificationController {
                 // && notiPage.InviteNotification.isRead === false 
                 if (notiPage !== undefined && notiPage.pageObjectiveJoiner !== undefined) {
                     const result: any = {};
-                    result['id'] = notiPage._Id;
+                    result['id'] = notiPage._id;
                     result.title = notiPage.title;
                     result.fromUser = notiPage.fromUser;
                     result.toUser = notiPage.toUser;
@@ -411,7 +411,7 @@ export class UserNotificationController {
                 //  
                 if (notiPage.InviteNotification !== undefined && notiPage.InviteNotification.pageObjectiveJoiner !== undefined) {
                     const result: any = {};
-                    result['id'] = notiPage.InviteNotification._Id;
+                    result['id'] = notiPage.InviteNotification._id;
                     result.title = notiPage.InviteNotification.title;
                     result.fromUser = notiPage.InviteNotification.fromUser;
                     result.toUser = notiPage.InviteNotification.toUser;
@@ -434,6 +434,12 @@ export class UserNotificationController {
                 } else {
                     continue;
                 }
+            }
+        }
+        const stackIds: any = [];
+        if (pageObjectives.length > 0) {
+            for (let i = 0; i < pageObjectives.length; i++) {
+                stackIds.push(pageObjectives[i].id);
             }
         }
         if (filter.whereConditions !== null && filter.whereConditions !== undefined) {
@@ -486,11 +492,11 @@ export class UserNotificationController {
             }
         ]);
         const notiResp = await this.parseNotificationsToResponses(notifications);
-        const query = { toUser: userObjId };
+        const query = { toUser: userObjId, _id: { $nin: stackIds }};
         const newValues = { $set: { isRead: true } };
         const updateReadNoti = await this.notificationService.updateMany(query, newValues);
         if (notifications && updateReadNoti) {
-            const successResponse = ResponseUtil.getSuccessResponse('Successfully search UserNotifications', notiResp, findAllCountNotification.length, pageObjectives);
+            const successResponse = ResponseUtil.getSuccessResponse('Successfully search UserNotifications', notiResp, notiResp.length, pageObjectives);
             return res.status(200).send(successResponse);
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot search UserNotifications', undefined);
