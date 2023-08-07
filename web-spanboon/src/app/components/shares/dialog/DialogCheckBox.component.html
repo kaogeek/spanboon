@@ -41,7 +41,8 @@
                 <input matInput placeholder="ค้นหา" #searchInputObjective id="searchInputObjective">
             </div>
             <div class="box-list-page">
-                <div class="wrapper-page" *ngFor="let item of listPage;let i = index" (click)="selectPage(item,i)"
+                <div class="wrapper-page" *ngFor="let item of listPage;let i = index"
+                    (click)="!item.check ? selectPage(item,i) : unselectPage(item,i)"
                     [class.active-click-doing]="item.check">
                     <div class="images">
                         <img class="image-tag" [src]="item.img64 ? item.img64 : apiBaseURL + item.imageURL + '/image'"
