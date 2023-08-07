@@ -373,9 +373,7 @@ export class ObjectiveController {
         let create: any;
         const mode = String('join');
         if (join === true && checkPublicObjective.personal === true && pageOwner.autoApprove === true && pageOwner.autoApprove !== null && pageOwner.autoApprove !== undefined) {
-            console.log('pass1');
             if (pageJoiner && pageOwner.id) {
-                console.log('pass2');
                 const notiOwners = await this.deviceTokenService.find({ userId: pageOwner.ownerUser });
                 notificationText = pageJoiner.name + space + 'เข้าร่วมสิ่งที่กำลังทำของเพจคุณ';
                 link = `/page/${pageJoiner.id}/`;
@@ -692,9 +690,7 @@ export class ObjectiveController {
         }
         // not auto approve
         if (join === true && checkPublicObjective.personal === true && pageOwner.autoApprove === false || pageOwner.autoApprove === null || pageOwner.autoApprove === undefined) {
-            console.log('pass3');
             if (pageJoiner && pageOwner.id) {
-                console.log('pass4');
                 const notiOwners = await this.deviceTokenService.find({ userId: pageOwner.ownerUser });
                 notificationText = pageJoiner.name + space + 'ขอเข้าร่วมสิ่งที่กำลังทำของเพจคุณ';
                 link = `/page/${pageJoiner.id}/`;
