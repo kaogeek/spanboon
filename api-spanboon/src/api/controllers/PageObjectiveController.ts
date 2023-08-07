@@ -172,7 +172,7 @@ export class ObjectiveController {
                     generic['iconURL'] = objectiveDuplicate.iconURL;
                     generic['s3IconURL'] = objectiveDuplicate.s3IconURL;
                     generic['name'] = pageObj.name;
-                    const errorResponse = ResponseUtil.getErrorResponse('PageObjective is Exists', generic);
+                    const errorResponse = ResponseUtil.getErrorResponse('PageObjective does exist', generic);
                     return res.status(400).send(errorResponse);
                 } else {
                     return res.status(400).send(ResponseUtil.getSuccessResponse('HashTag is Duplicate.', undefined));
@@ -208,7 +208,7 @@ export class ObjectiveController {
                     generic['iconURL'] = pageOwnerPublic.iconURL;
                     generic['s3IconURL'] = pageOwnerPublic.s3IconURL;
                     generic['name'] = pageObj.name;
-                    const errorResponse = ResponseUtil.getErrorResponse('PageObjective is Exists', generic);
+                    const errorResponse = ResponseUtil.getErrorResponse('PageObjective does exist', generic);
                     return res.status(400).send(errorResponse);
                 } else {
                     return res.status(400).send(ResponseUtil.getSuccessResponse('HashTag is Duplicate.', undefined));
@@ -226,7 +226,7 @@ export class ObjectiveController {
                     generic['iconURL'] = pageOwnerPublic.iconURL;
                     generic['s3IconURL'] = pageOwnerPublic.s3IconURL;
                     generic['name'] = pageObj.name;
-                    const errorResponse = ResponseUtil.getErrorResponse('PageObjective is Exists', generic);
+                    const errorResponse = ResponseUtil.getErrorResponse('PageObjective does exist', generic);
                     return res.status(400).send(errorResponse);
                 } else {
                     return res.status(400).send(ResponseUtil.getSuccessResponse('HashTag is Duplicate.', undefined));
@@ -1866,7 +1866,7 @@ export class ObjectiveController {
                     generic['iconURL'] = pageObjective.iconURL;
                     generic['s3IconURL'] = pageObjective.s3IconURL;
                     generic['name'] = pageName.name;
-                    const errorResponse = ResponseUtil.getErrorResponse('PageObjective is Exists', generic);
+                    const errorResponse = ResponseUtil.getErrorResponse('PageObjective does exist', generic);
                     return res.status(400).send(errorResponse);
                 } else {
                     // check duplicate itself !
@@ -1957,7 +1957,7 @@ export class ObjectiveController {
                     generic['iconURL'] = objectiveSave.iconURL;
                     generic['s3IconURL'] = objectiveSave.s3IconURL;
                     generic['name'] = pageName.name;
-                    const errorResponse = ResponseUtil.getErrorResponse('PageObjective is Exists', generic);
+                    const errorResponse = ResponseUtil.getErrorResponse('PageObjective does exist', generic);
                     return res.status(400).send(errorResponse);
                 }
                 // duplicate itself 
@@ -2041,7 +2041,7 @@ export class ObjectiveController {
                     generic['iconURL'] = pageObjective.iconURL;
                     generic['s3IconURL'] = pageObjective.s3IconURL;
                     generic['name'] = pageName.name;
-                    const errorResponse = ResponseUtil.getErrorResponse('PageObjective is Exists', generic);
+                    const errorResponse = ResponseUtil.getErrorResponse('PageObjective does exist', generic);
                     return res.status(400).send(errorResponse);
                 }
                 // duplicate itself 
