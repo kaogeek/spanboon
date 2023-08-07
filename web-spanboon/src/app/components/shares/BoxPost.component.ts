@@ -1805,7 +1805,6 @@ export class BoxPost extends AbstractPage implements OnInit {
         }
       }
       if (result.status === 1) {
-        result.data.reverse();
         this.resObjective = result.data;
         let index = 0;
         for (let data of this.resObjective) {
@@ -2137,7 +2136,7 @@ export class BoxPost extends AbstractPage implements OnInit {
       this.selectedObjectiveId = null;
       // document.querySelector('.active-click-doing').classList.remove('active-click-doing');
     } else {
-      this.selectedObjectiveId = item._id;
+      this.selectedObjectiveId = item.objectiveId ? item.objectiveId : item._id;
       this.dataObjective.id = item._id;
       this.dataObjective.hashTag = !!item.hashTagName ? item.hashTagName : item.hashTag;
       this.dataObjective.status = 2;
@@ -2424,7 +2423,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public deleteObjective(object, index, type?: any) {
-    let objectId = object._id;
+    let objectId = type === 'join' ? object.objectiveId : object._id;
     let pageId = object.pageId;
     let message;
     if (type === 'join') {
@@ -2651,7 +2650,7 @@ export class BoxPost extends AbstractPage implements OnInit {
                 this.isEditObject = false;
                 this.closeDialog();
               }
-              if (err.error.message === 'PageObjective HashTag is Exists' || err.error.message === 'PageObjective is Exists') {
+              if (err.error.message === 'PageObjective HashTag is Exists' || err.error.message === 'PageObjective does exist') {
                 let objectiveId = err.error.error.id ? err.error.error.id : null;
                 let pageId = err.error.error.pageId;
                 let dialogAlert = this.dialog.open(DialogAlert, {
@@ -2774,16 +2773,12 @@ export class BoxPost extends AbstractPage implements OnInit {
                 alertMessage = 'สิ่งที่คุณกำลังทำมีอยู่แล้ว';
                 this.alertMessage(alertMessage);
               }
-              if (err.error.message === 'PageObjective is Exist.') {
-                alertMessage = 'สิ่งที่คุณกำลังทำมีอยู่แล้ว';
-                this.alertMessage(alertMessage);
-              }
               if (err.error.message === '') {
                 this.alertMessage('เกิดข้อผิดพลาด');
                 this.isEditObject = false;
                 this.closeDialog();
               }
-              if (err.error.message === 'PageObjective is Exists') {
+              if (err.error.message === 'PageObjective does exist') {
                 let objectiveId = err.error.error.id ? err.error.error.id : null;
                 let pageId = err.error.error.pageId;
                 let dialogAlert = this.dialog.open(DialogAlert, {

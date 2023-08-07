@@ -455,16 +455,13 @@ export class HeaderTop extends AbstractPage implements OnInit {
       if (res) {
         if (res.notiObjective.length > 0) {
           let num = 0;
-          res.notiObjective.reverse();
           this.notificationObjectList = res.notiObjective;
           for (const data of this.notificationObjectList) {
             if (data.isRead === false) {
               num++;
             }
           }
-          console.log("num", num)
           this.notificationObjectList.count = num;
-          console.log("notif", this.notificationObjectList)
         }
         for await (let data of res.data) {
           if (arrange === 'unshift') {
@@ -495,8 +492,6 @@ export class HeaderTop extends AbstractPage implements OnInit {
   }
 
   private _setValueNotification(data: any, isRead: boolean, isObj?) {
-    console.log("isRead", isRead)
-    console.log("isObj", isObj)
     const title = "การแจ้งเตือนใหม่";
     if (isObj) {
       return {

@@ -2143,7 +2143,7 @@ export class CardCreateStoryText extends AbstractPage implements OnInit {
             }).catch((err: any) => {
                 console.log(err);
                 let alertMessages: string;
-                if (err.error.message === 'PageObjective is Exists') {
+                if (err.error.message === 'PageObjective does exist') {
                     alertMessages = 'สิ่งที่คุณกำลังถูกสร้างแล้ว'
                 } else if (err.error.message === 'PageObjective HashTag is Exists') {
                     alertMessages = 'แฮชแท็กถูกสร้างไว้แล้ว'
