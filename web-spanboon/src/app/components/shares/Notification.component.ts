@@ -64,30 +64,28 @@ export class Notification extends AbstractPage implements OnInit {
   }
 
   public ngOnInit(): void {
-    console.log("noti", this.noti)
-    setTimeout(() => {
-
-      console.log("notiobj", this.notiObj)
-    }, 2000);
     this.observManager.subscribe(NOTI_READ_SUBJECT, (result: any) => {
       if (result) {
-        let dataNoti = [
-          { body: result.data.body, link: result.data.link, status: result.data.status }];
+        if (result.data.type !== 'OBJECTIVE') {
+          let notiId = result.data.id ? result.data.id : null;
+          let dataNoti = [
+            { body: result.data.body, link: result.data.link, status: result.data.status }];
 
-        let index = dataNoti.findIndex(res => res.body === result.data.body && res.link === result.data.link && res.status === result.data.status);
-        this.notificationFacade.markRead(this.noti!.unread[index].id).then((res) => {
-          if (res) {
-            if (index >= 0) {
-              this.noti.all[index].isRead = true;
-              this.noti.unread.splice(index, 1);
-              this.noti.countUnread--;
+          let index = dataNoti.findIndex(res => res.body === result.data.body && res.link === result.data.link && res.status === result.data.status);
+          this.notificationFacade.markRead(notiId ? notiId : this.noti!.unread[index].id).then((res) => {
+            if (res) {
+              if (index >= 0) {
+                this.noti.all[index].isRead = true;
+                this.noti.unread.splice(index, 1);
+                this.noti.countUnread--;
+              }
             }
-          }
-        }).catch((error) => {
-          if (error) {
-            console.log(error);
-          }
-        });
+          }).catch((error) => {
+            if (error) {
+              console.log(error);
+            }
+          });
+        }
       }
     });
 
@@ -144,14 +142,12 @@ export class Notification extends AbstractPage implements OnInit {
     let value: any = (isObj ? this.notiObj[index].id : this.isNotiAll ? this.noti!.all[index].id : this.noti!.unread[index].id);
     this.notificationFacade.markRead(value).then((res) => {
       if (res) {
-        console.log("res", res)
-        console.log("isNotiAll", this.isNotiAll)
         if (this.isNotiAll) {
-          // this.noti.all[index].isRead = true;
+          this.noti.all[index].isRead = true;
         } else {
-          // this.noti.unread[index].isRead = true;
+          this.noti.unread[index].isRead = true;
           this.noti.unread.splice(index, 1);
-          this.noti.countUnread--;
+          if (!isObj) this.noti.countUnread--;
         }
       }
     }).catch((error) => {

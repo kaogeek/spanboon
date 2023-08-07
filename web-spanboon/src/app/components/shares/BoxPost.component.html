@@ -413,14 +413,14 @@
                                     <ng-container *ngIf="isPublicObj">
                                         <ng-container *ngIf="listJoiner.length > 0; else elseEmptyJoiner">
                                             <div class="wrapper-joiner">
-                                                <div class="wrapper-box">
-                                                    <div class="header-joiner">
-                                                        <span>ผู้คนที่กำลังทำสิ่งเดียวกัน</span>
-                                                        <div class="image-upload"
-                                                            (click)="inviteJoin();$event.stopPropagation()">
-                                                            <span class="add-label">+เพิ่ม</span>
-                                                        </div>
+                                                <div class="header-joiner">
+                                                    <span>ผู้คนที่กำลังทำสิ่งเดียวกัน</span>
+                                                    <div class="image-upload"
+                                                        (click)="inviteJoin();$event.stopPropagation()">
+                                                        <span class="add-label">+เพิ่ม</span>
                                                     </div>
+                                                </div>
+                                                <div class="wrapper-box">
                                                     <div class="box-joiner"
                                                         *ngFor="let item of listJoiner;let i = index">
                                                         <div class="images">
@@ -448,13 +448,11 @@
                                         </ng-container>
                                         <ng-template #elseEmptyJoiner>
                                             <div class="wrapper-joiner">
-                                                <div class="wrapper-box">
-                                                    <div class="header-joiner">
-                                                        <span>ไม่มีผู้เข้าร่วมสิ่งที่กำลังทำนี้</span>
-                                                        <div class="image-upload"
-                                                            (click)="inviteJoin(); $event.stopPropagation()">
-                                                            <span class="add-label">+เพิ่ม</span>
-                                                        </div>
+                                                <div class="header-joiner">
+                                                    <span>ไม่มีผู้เข้าร่วมสิ่งที่กำลังทำนี้</span>
+                                                    <div class="image-upload"
+                                                        (click)="inviteJoin(); $event.stopPropagation()">
+                                                        <span class="add-label">+เพิ่ม</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -518,7 +516,7 @@
                                         <ng-container
                                             *ngIf="resObjective && resObjective.length > 0; else elseHasObjective">
                                             <div class="wrapper-doing" id="wrapper-doing"
-                                                [class.active-click-doing]="selectedObjectiveId === item._id"
+                                                [class.active-click-doing]="(selectedObjectiveId === item._id) || (selectedObjectiveId === item.objectiveId) && selectedObjectiveId !== undefined"
                                                 *ngFor="let item of resObjective ; let i = index"
                                                 (click)="clickCardObjective(i,item)">
                                                 <!-- <ng-container *ngIf="selectedObjectiveId === item.id">
@@ -635,13 +633,18 @@
                                                                         [src]="item.iconSignURL ? item.iconSignURL : item.iconBase64"
                                                                         alt="">
                                                                     <ng-container
-                                                                        *ngIf="item.pageObjectiveJoiner.length === 0; else elseObjJoin">
+                                                                        *ngIf="item && item.pageObjectiveJoiner.length === 0; else elseObjJoin">
                                                                         <img class="lock"
                                                                             src="'../../../../../assets/img/public-objective.svg"
                                                                             alt="">
                                                                     </ng-container>
                                                                     <ng-template #elseObjJoin>
-                                                                        <img class="lock"
+                                                                        <img *ngIf="item.pageObjectiveJoiner[0].approve === false"
+                                                                            class="lock"
+                                                                            src="'../../../../../assets/img/public-objective.svg"
+                                                                            alt="">
+                                                                        <img *ngIf="item.pageObjectiveJoiner[0].approve === true"
+                                                                            class="lock"
                                                                             src="'../../../../../assets/img/joined-objective.svg"
                                                                             alt="">
                                                                     </ng-template>

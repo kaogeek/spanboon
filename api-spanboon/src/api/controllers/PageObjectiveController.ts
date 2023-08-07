@@ -356,7 +356,7 @@ export class ObjectiveController {
         const interval_15 = 15;
         const interval_30 = 30;
         let checkJoinObjective = undefined;
-        let notificationTextApprove:string;
+        let notificationTextApprove: string;
         const searchObjective = await this.pageObjectiveJoinerService.find({ objectiveId: objtiveIds });
         checkJoinObjective = await this.pageObjectiveJoinerService.findOne({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId });
         const checkPublicObjective = await this.pageObjectiveService.findOne({ _id: objtiveIds });
@@ -511,7 +511,7 @@ export class ObjectiveController {
                         undefined,
                         req.user.id + '',
                         USER_TYPE.PAGE,
-                        NOTIFICATION_TYPE.LIKE,
+                        NOTIFICATION_TYPE.OBJECTIVE,
                         notificationText,
                         link,
                         pageJoiner.name,
@@ -572,7 +572,7 @@ export class ObjectiveController {
                         undefined,
                         req.user.id + '',
                         USER_TYPE.PAGE,
-                        NOTIFICATION_TYPE.LIKE,
+                        NOTIFICATION_TYPE.OBJECTIVE,
                         notificationText,
                         link,
                         pageJoiner.name,
@@ -633,7 +633,7 @@ export class ObjectiveController {
                         undefined,
                         req.user.id + '',
                         USER_TYPE.PAGE,
-                        NOTIFICATION_TYPE.LIKE,
+                        NOTIFICATION_TYPE.OBJECTIVE,
                         notificationText,
                         link,
                         pageJoiner.name,
@@ -714,7 +714,6 @@ export class ObjectiveController {
                         searchObjective.length,
                         mode,
                         create.id
-
                     );
                     for (const notiOwner of notiOwners) {
                         if (notiOwner.Tokens !== null && notiOwner.Tokens !== undefined && notiOwner.Tokens !== '') {
@@ -752,7 +751,7 @@ export class ObjectiveController {
                         undefined,
                         req.user.id + '',
                         USER_TYPE.PAGE,
-                        NOTIFICATION_TYPE.LIKE,
+                        NOTIFICATION_TYPE.OBJECTIVE,
                         notificationText,
                         link,
                         pageJoiner.name,
@@ -999,6 +998,7 @@ export class ObjectiveController {
                 { pageId: joinObjective.joiner, objective: joinObjective.objectiveId },
                 { $set: { objective: null, objectiveTag: null } }
             );
+
             const notfi = await this.notificationService.delete({ _id: notiObjIds, type: 'OBJECTIVE' });
             if (update && postUpdate && notfi) {
                 const successResponse = ResponseUtil.getSuccessResponse('Unjoin is successfully.', []);
@@ -1023,6 +1023,7 @@ export class ObjectiveController {
         const pageJoiner = await this.pageService.findOne({ _id: joinerObjId });
         const pageOwner = await this.pageService.findOne({ _id: pageObjId });
         const space = ' ';
+
         const checkPublicObjective = await this.pageObjectiveService.findOne({ _id: objtiveIds, pageId: pageObjId });
         const notificationCheck = await this.notificationService.findOne({ _id: notiObjId });
         let notificationText = undefined;
@@ -1620,6 +1621,9 @@ export class ObjectiveController {
                             }
                         },
                         {
+                            $match: { page: { $ne: [] } }
+                        },
+                        {
                             $sort: {
                                 createdDate: -1
                             }
@@ -1917,6 +1921,17 @@ export class ObjectiveController {
             newValueHashTag = { $set: { name: hashTagName } };
             await this.hashTagService.update(queryHashTag, newValueHashTag);
             objectiveSave = await this.pageObjectiveService.update(updateQuery, newValue);
+
+            // update disjoin
+            const disJoinObjective = await this.pageObjectiveJoinerService.find({ objectiveId: objId, pageId: pageObjId });
+            if (disJoinObjective.length > 0) {
+                for (const disJoinIds of disJoinObjective) {
+                    await this.disJoinObjectives(disJoinIds.objectiveId, disJoinIds.pageId, disJoinIds.joiner);
+                }
+            }
+            // update hashTag name 
+            await this.postsService.updateMany({ objective: objId }, { $set: { objectiveTag: hashTagName } });
+
             if (objectiveSave) {
                 objectiveSave = await this.pageObjectiveService.findOne({ pageId: pageObjId, _id: objId });
                 const result: any = {};
@@ -2157,6 +2172,10 @@ export class ObjectiveController {
                 queryHashTag = { objectiveId: objId, pageId: pageObjId, type: 'OBJECTIVE' };
                 newValueHashTag = { $set: { name: hashTagName } };
                 await this.hashTagService.update(queryHashTag, newValueHashTag);
+
+                // update hashTag name 
+                await this.postsService.updateMany({ pageId: pageObjId, objective: objId }, { $set: { objectiveTag: hashTagName } });
+
                 if (objectiveSave) {
                     objectiveSave = await this.pageObjectiveService.findOne({ _id: objId, pageId: pageObjId });
                     const result: any = {};
@@ -2212,8 +2231,9 @@ export class ObjectiveController {
                 result['join'] = join;
                 result['approve'] = false;
                 const createJoin = await this.pageObjectiveJoinerService.create(result);
+                console.log('createJoin', createJoin);
                 if (createJoin) {
-                    pageJoinerIds.push(createJoin.id);
+                    pageJoinerIds.push(new ObjectID(createJoin.id));
                     checkJoinObjective = await this.pageObjectiveJoinerService.find({ objectiveId: objtiveIds, pageId: pageObjId, joiner: { $in: joinerObjId } });
                     checkPublicObjective = await this.pageObjectiveService.findOne({ _id: objtiveIds });
                     pageOwner = await this.pageService.findOne({ _id: pageObjId });
@@ -2237,12 +2257,14 @@ export class ObjectiveController {
         if (checkPublicObjective !== undefined && join === true && checkPublicObjective.personal === true) {
             if (pageJoiner.length > 0 && pageOwner.id !== undefined) {
                 const notiOwners = await this.deviceTokenService.find({ userId: pageOwner.ownerUser });
-                for (const pageJoin of pageJoiner) {
-                    const joinerIds: any = await this.pageObjectiveJoinerService.findOne({ joiner: new ObjectID(pageJoin._id) });
+                for (const pageJoin of pageJoinerIds) {
+                    // console.log('pageJoin', pageJoin);
+                    const joinerIds: any = await this.pageObjectiveJoinerService.findOne({ _id: new ObjectID(pageJoin) });
+                    // console.log('joinerIds', joinerIds);
                     notificationText = pageOwner.name + space + 'เชิญเข้าร่วมกิจกรรม' + space + checkPublicObjective.title;
-                    link = `/page/${pageJoin._id}/`;
+                    link = `/page/${joinerIds.pageId}/`;
                     await this.pageNotificationService.notifyToPageUserObjective(
-                        pageJoin._id + '',
+                        joinerIds.joiner + '',
                         undefined,
                         req.user.id + '',
                         USER_TYPE.PAGE,
@@ -2253,7 +2275,7 @@ export class ObjectiveController {
                         pageOwner.imageURL,
                         pageJoiner.length,
                         mode,
-                        joinerIds.id,
+                        pageJoin,
 
                     );
                 }
@@ -2644,6 +2666,25 @@ export class ObjectiveController {
                 const errorResponse = ResponseUtil.getErrorResponse('Follow PageObjective Failed', undefined);
                 return res.status(400).send(errorResponse);
             }
+        }
+    }
+
+    private async disJoinObjectives(objectiveId: string, pageId: string, joinerId: string): Promise<any> {
+        const objtiveIds = new ObjectID(objectiveId);
+        const pageObjId = new ObjectID(pageId);
+        const joinerObjId = new ObjectID(joinerId);
+        const joinObjective = await this.pageObjectiveJoinerService.findOne({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId });
+        if (joinObjective) {
+            const query = {
+                objectiveId: joinObjective.objectiveId,
+                pageId: joinObjective.pageId,
+                joiner: joinObjective.joiner,
+            };
+            await this.pageObjectiveJoinerService.delete(query);
+            await this.postsService.updateMany(
+                { pageId: joinObjective.joiner, objective: joinObjective.objectiveId },
+                { $set: { objective: null, objectiveTag: null } }
+            );
         }
     }
 }

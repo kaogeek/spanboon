@@ -46,7 +46,6 @@ export class NotificationCard extends AbstractPage implements OnInit {
   }
 
   public ngOnInit(): void {
-    console.log("message", this.message)
   }
 
   public ngOnDestroy(): void {
@@ -58,16 +57,15 @@ export class NotificationCard extends AbstractPage implements OnInit {
   }
 
   public navigatetopage(link, type?) {
+    let value = {
+      objectiveId: link.objectiveId,
+      pageId: link.pageId,
+      joiner: link.joinerId,
+      notificationId: link.id,
+    }
     if (type === 'approve') {
-      let joinObj = {
-        objectiveId: link.objectiveId,
-        pageId: link.pageId,
-        joiner: link.joinerId,
-        notificationId: link.id,
-        join: true,
-        approve: true
-      }
-      this.objectiveFacade.approveInvite(joinObj).then((res) => {
+      Object.assign(value, { join: true, approve: true });
+      this.objectiveFacade.approveInvite(value).then((res) => {
         if (res) {
           this.message.approve = true;
         }
@@ -86,13 +84,7 @@ export class NotificationCard extends AbstractPage implements OnInit {
     } else if (type === 'reject') {
       this.isShow = true;
       this.message = {};
-      let disJoinObj = {
-        objectiveId: link.objectiveId,
-        pageId: link.pageId,
-        joiner: link.joinerId,
-        notificationId: link.id
-      }
-      this.objectiveFacade.disJoinObjective(disJoinObj).then((res) => {
+      this.objectiveFacade.disJoinObjective(value).then((res) => {
         if (res) {
           this.observManager.createSubject(NOTI_ACTION);
           this.observManager.publish(NOTI_ACTION, 1);
@@ -110,7 +102,9 @@ export class NotificationCard extends AbstractPage implements OnInit {
             status: link.status,
             isRead: true,
             link: link.link,
-            displayName: link.displayName
+            displayName: link.displayName,
+            id: link.id,
+            type: link.type
           },
         });
         window.open(link.link);

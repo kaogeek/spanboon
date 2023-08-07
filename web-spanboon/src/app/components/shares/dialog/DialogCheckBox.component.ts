@@ -185,7 +185,13 @@ export class DialogCheckBox extends AbstractPage {
         if (data.check) {
             this.pageSelectList.push(data._id);
         }
-        // let array = this.pageSelectList.filter((item, index) => this.pageSelectList.indexOf(item) === index);
+    }
+
+    public unselectPage(data, index?) {
+        this.listPage[index].check = false;
+        let result = this.pageSelectList.filter((res) => res === data._id);
+        let indexOf = this.pageSelectList.indexOf(result[0]);
+        this.pageSelectList.splice(indexOf, 1);
     }
 
 }

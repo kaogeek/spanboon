@@ -434,33 +434,35 @@
     > .wrapper-joiner {
       background-color: #f3f3f3;
 
-      > .wrapper-box {
-        padding: 25pt 20pt 10pt 20pt;
-        > .header-joiner {
+      > .header-joiner {
+        display: flex;
+        justify-content: space-between;
+        padding: 25pt 20pt 0 20pt;
+
+        > span {
+          @include font-size-8($font-head-500);
+        }
+
+        > .image-upload {
+          background-color: $brandcolor2;
+          border: 1px solid $brandcolor2;
           display: flex;
-          justify-content: space-between;
-
-          > span {
-            @include font-size-8($font-head-500);
-          }
-
-          > .image-upload {
-            background-color: $brandcolor2;
-            border: 1px solid $brandcolor2;
-            display: flex;
-            padding: 5px 15px;
-            border-radius: 4px;
-            height: 20px;
-            align-items: center;
-            cursor: pointer;
+          padding: 5px 15px;
+          border-radius: 4px;
+          height: 20px;
+          align-items: center;
+          cursor: pointer;
+          @include font-size-10($font-head-500);
+          @include pointer();
+          > .add-label {
             @include font-size-10($font-head-500);
-            @include pointer();
-            > .add-label {
-              @include font-size-10($font-head-500);
-              color: white;
-            }
+            color: white;
           }
         }
+      }
+
+      > .wrapper-box {
+        padding: 0 20pt 10pt 20pt;
 
         > .box-joiner {
           padding: 5px 12px 5px 12px;
