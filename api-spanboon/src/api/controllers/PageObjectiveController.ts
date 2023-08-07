@@ -342,7 +342,6 @@ export class ObjectiveController {
             }
         }
     }
-
     @Post('/join')
     @Authorized('user')
     public async joinObjective(@Body({ validate: true }) joinObjectiveRequest: JoinObjectiveRequest, @Res() res: any, @Req() req: any): Promise<any> {
@@ -357,6 +356,7 @@ export class ObjectiveController {
         const interval_15 = 15;
         const interval_30 = 30;
         let checkJoinObjective = undefined;
+        let notificationTextApprove:string;
         const searchObjective = await this.pageObjectiveJoinerService.find({ objectiveId: objtiveIds });
         checkJoinObjective = await this.pageObjectiveJoinerService.findOne({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId });
         const checkPublicObjective = await this.pageObjectiveService.findOne({ _id: objtiveIds });
@@ -421,13 +421,14 @@ export class ObjectiveController {
                         }
                     }
                     // noti to owner
+                    notificationTextApprove = 'คุณได้ถูกอนุมัติเข้าร่วมสิ่งที่กำลังทำ';
                     const ownerNoti: any = await this.pageNotificationService.notifyToPageUserObjective(
                         pageJoiner.id + '',
                         undefined,
                         req.user.id + '',
                         USER_TYPE.PAGE,
                         NOTIFICATION_TYPE.OBJECTIVE,
-                        notificationText,
+                        notificationTextApprove,
                         link,
                         pageOwner.name,
                         pageOwner.imageURL,
@@ -481,13 +482,14 @@ export class ObjectiveController {
                         }
                     }
                     // noti to owner
+                    notificationTextApprove = 'คุณได้ถูกอนุมัติเข้าร่วมสิ่งที่กำลังทำ';
                     const ownerNoti: any = await this.pageNotificationService.notifyToPageUserObjective(
                         pageJoiner.id + '',
                         undefined,
                         req.user.id + '',
                         USER_TYPE.PAGE,
                         NOTIFICATION_TYPE.OBJECTIVE,
-                        notificationText,
+                        notificationTextApprove,
                         link,
                         pageOwner.name,
                         pageOwner.imageURL,
@@ -541,13 +543,14 @@ export class ObjectiveController {
                         }
                     }
                     // noti to owner
+                    notificationTextApprove = 'คุณได้ถูกอนุมัติเข้าร่วมสิ่งที่กำลังทำ';
                     const ownerNoti: any = await this.pageNotificationService.notifyToPageUserObjective(
                         pageJoiner.id + '',
                         undefined,
                         req.user.id + '',
                         USER_TYPE.PAGE,
                         NOTIFICATION_TYPE.OBJECTIVE,
-                        notificationText,
+                        notificationTextApprove,
                         link,
                         pageOwner.name,
                         pageOwner.imageURL,
@@ -601,13 +604,14 @@ export class ObjectiveController {
                         }
                     }
                     // noti to owner
+                    notificationTextApprove = 'คุณได้ถูกอนุมัติเข้าร่วมสิ่งที่กำลังทำ';
                     const ownerNoti: any = await this.pageNotificationService.notifyToPageUserObjective(
                         pageJoiner.id + '',
                         undefined,
                         req.user.id + '',
                         USER_TYPE.PAGE,
                         NOTIFICATION_TYPE.OBJECTIVE,
-                        notificationText,
+                        notificationTextApprove,
                         link,
                         pageOwner.name,
                         pageOwner.imageURL,
@@ -661,13 +665,14 @@ export class ObjectiveController {
                         }
                     }
                     // noti to owner
+                    notificationTextApprove = 'คุณได้ถูกอนุมัติเข้าร่วมสิ่งที่กำลังทำ';
                     const ownerNoti: any = await this.pageNotificationService.notifyToPageUserObjective(
                         pageJoiner.id + '',
                         undefined,
                         req.user.id + '',
                         USER_TYPE.PAGE,
                         NOTIFICATION_TYPE.OBJECTIVE,
-                        notificationText,
+                        notificationTextApprove,
                         link,
                         pageOwner.name,
                         pageOwner.imageURL,
