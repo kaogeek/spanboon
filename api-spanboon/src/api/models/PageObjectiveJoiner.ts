@@ -34,6 +34,9 @@ export class PageObjectiveJoiner extends BaseModel {
     @Column({ name: 'approve' })
     public approve: boolean;
 
+    @Column({ name: 'joinObjectiveId'})
+    public joinObjectiveId: ObjectID;
+
     @BeforeInsert()
     public createDetails(): any {
         this.createdDate = moment().toDate();

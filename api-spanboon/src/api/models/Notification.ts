@@ -58,6 +58,9 @@ export class Notification extends BaseModel {
     @Column({ name: 'imageURL' })
     public imageURL:string;
 
+    @Column({ name: 'joinObjectiveId'})
+    public joinObjectiveId: ObjectID;
+
     @BeforeInsert()
     public createDetails(): any {
         this.createdDate = moment().toDate();

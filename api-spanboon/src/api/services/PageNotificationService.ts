@@ -55,7 +55,9 @@ export class PageNotificationService {
         displayName?: any,
         image?: any,
         count?: any,
-        mode?: any): Promise<any> {
+        mode?: any,
+        joinObjectiveId?: string
+        ): Promise<any> {
         // check pageId
         const page: Page = await this.pageService.findOne({ where: { _id: new ObjectID(toPageId), banned: false } });
         if (page === undefined) {
@@ -68,7 +70,7 @@ export class PageNotificationService {
             const addedUesr = [];
             for (const userAccess of pageAccess) {
                 const userId = userAccess.user + '';
-                const pageId = userAccess.page + '';
+                // const pageId = userAccess.page + '';
 
                 if (addedUesr.indexOf(userId) >= 0) {
                     continue;
@@ -84,7 +86,7 @@ export class PageNotificationService {
                     image,
                     count,
                     checkMode,
-                    pageId,
+                    joinObjectiveId,
 
                 );
                 result.push(notification);

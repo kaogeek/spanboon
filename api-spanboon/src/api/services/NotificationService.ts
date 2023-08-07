@@ -216,7 +216,7 @@ export class NotificationService {
         }
     }
 
-    public async createNofiticationObjective(toUserId: string, toUserType: string, fromUserId: string, fromUserType: string, notificationType: string, title: string, link: string, displayName?: any, image?: any, count?: any, mode?: string, pageId?: string): Promise<any> {
+    public async createNofiticationObjective(toUserId: string, toUserType: string, fromUserId: string, fromUserType: string, notificationType: string, title: string, link: string, displayName?: any, image?: any, count?: any, mode?: string, joinObjectiveId?: string): Promise<any> {
         const notification: Notification = new Notification();
         notification.isRead = false;
         notification.toUser = new ObjectID(toUserId);
@@ -228,8 +228,8 @@ export class NotificationService {
         notification.type = notificationType;
         notification.deleted = false;
         notification.mode = mode;
-        notification.pageId = new ObjectID(pageId);
         notification.imageURL = image;
+        notification.joinObjectiveId = new ObjectID(joinObjectiveId);
         return await this.create(notification);
     }
 
@@ -272,7 +272,8 @@ export class NotificationService {
     }
 
     public async createUserNotificationObjective
-        (toUserId: string,
+        (
+            toUserId: string,
             fromUserId: string,
             fromUserType: string,
             notificationType: string,
@@ -282,12 +283,12 @@ export class NotificationService {
             image?: any,
             count?: any,
             mode?: string,
-            page?: string,
+            joinObjectiveId?: string,
 
         ):
         Promise<any> {
 
-        return await this.createNofiticationObjective(toUserId, USER_TYPE.PAGE, fromUserId, fromUserType, notificationType, title, link, displayName, image, count, mode, page);
+        return await this.createNofiticationObjective(toUserId, USER_TYPE.PAGE, fromUserId, fromUserType, notificationType, title, link, displayName, image, count, mode, joinObjectiveId);
     }
 
     public async createUserNotificationFCM(toUserId: string,

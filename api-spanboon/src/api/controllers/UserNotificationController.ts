@@ -189,17 +189,17 @@ export class UserNotificationController {
         const invites: any = await this.notificationService.aggregate(
             [
                 {
-                    $match: { toUser: userObjId, type: 'OBJECTIVE', mode: 'invite' },
+                    $match: { toUser: userObjId, type: 'OBJECTIVE' },
                 },
                 {
                     $lookup: {
                         from: 'PageObjectiveJoiner',
-                        let: { pageId: '$pageId' },
+                        let: { joinObjectiveId: '$joinObjectiveId' },
                         pipeline: [
                             {
                                 $match: {
                                     $expr: {
-                                        $eq: ['$$pageId', '$joiner']
+                                        $eq: ['$$joinObjectiveId', '$_id']
                                     }
                                 }
                             },
@@ -266,7 +266,8 @@ export class UserNotificationController {
                 },
             ]
         );
-
+        console.log('invites', invites);
+        /* 
         const joinNoti: any = await this.notificationService.aggregate(
             [
                 {
@@ -347,7 +348,7 @@ export class UserNotificationController {
                 },
             ]
         );
-
+        */
         const pageObjectives: any = [];
         if (invites.length > 0) {
             for (const notiPage of invites) {
@@ -379,6 +380,7 @@ export class UserNotificationController {
                 }
             }
         }
+        /* 
         if (joinNoti.length > 0) {
             for (const notiPage of joinNoti) {
                 //  
@@ -408,7 +410,7 @@ export class UserNotificationController {
                     continue;
                 }
             }
-        }
+        } */
         const stackIds: any = [];
         if (pageObjectives.length > 0) {
             for (let i = 0; i < pageObjectives.length; i++) {

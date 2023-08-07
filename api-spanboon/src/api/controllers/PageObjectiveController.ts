@@ -369,14 +369,25 @@ export class ObjectiveController {
             return res.status(400).send(errorResponse);
         }
         // if auto approve 
+        const result: any = {};
+        let create: any;
         const mode = String('join');
         if (join === true && checkPublicObjective.personal === true && pageOwner.autoApprove === true && pageOwner.autoApprove !== null && pageOwner.autoApprove !== undefined) {
+            console.log('pass1');
             if (pageJoiner && pageOwner.id) {
+                console.log('pass2');
                 const notiOwners = await this.deviceTokenService.find({ userId: pageOwner.ownerUser });
                 notificationText = pageJoiner.name + space + 'เข้าร่วมสิ่งที่กำลังทำของเพจคุณ';
                 link = `/page/${pageJoiner.id}/`;
+                result['objectiveId'] = objtiveIds;
+                result['pageId'] = pageObjId;
+                result['joiner'] = joinerObjId;
+                result['join'] = join;
+                result['approve'] = true;
+                create = await this.pageObjectiveJoinerService.create(result);
                 if (searchObjective.length > 0 || searchObjective.length <= 10) {
-                    await this.pageNotificationService.notifyToPageUserObjective(
+                    // noti to joiner
+                    const noti: any = await this.pageNotificationService.notifyToPageUserObjective(
                         pageOwner.id + '',
                         undefined,
                         req.user.id + '',
@@ -387,7 +398,8 @@ export class ObjectiveController {
                         pageJoiner.name,
                         pageJoiner.imageURL,
                         searchObjective.length,
-                        mode
+                        mode,
+                        create.id
                     );
                     for (const notiOwner of notiOwners) {
                         if (notiOwner.Tokens !== null && notiOwner.Tokens !== undefined && notiOwner.Tokens !== '') {
@@ -408,30 +420,45 @@ export class ObjectiveController {
                             continue;
                         }
                     }
-                    const result: any = {};
-                    result['objectiveId'] = objtiveIds;
-                    result['pageId'] = pageObjId;
-                    result['joiner'] = joinerObjId;
-                    result['join'] = join;
-                    result['approve'] = true;
-                    const create = await this.pageObjectiveJoinerService.create(result);
-                    if (create) {
+                    // noti to owner
+                    const ownerNoti: any = await this.pageNotificationService.notifyToPageUserObjective(
+                        pageJoiner.id + '',
+                        undefined,
+                        req.user.id + '',
+                        USER_TYPE.PAGE,
+                        NOTIFICATION_TYPE.OBJECTIVE,
+                        notificationText,
+                        link,
+                        pageOwner.name,
+                        pageOwner.imageURL,
+                        searchObjective.length,
+                        mode,
+                        create.id
+                    );
+                    if (create && noti && ownerNoti) {
                         const successResponse = ResponseUtil.getSuccessResponse('Send noti is succesful.', []);
                         return res.status(200).send(successResponse);
                     }
                 } else if (searchObjective.length > 10 && searchObjective.length <= 50 && minutes % interval_15 === 0) {
-                    await this.pageNotificationService.notifyToPageUserObjective(
+                    result['objectiveId'] = objtiveIds;
+                    result['pageId'] = pageObjId;
+                    result['joiner'] = joinerObjId;
+                    result['join'] = join;
+                    result['approve'] = true;
+                    create = await this.pageObjectiveJoinerService.create(result);
+                    const noti: any = await this.pageNotificationService.notifyToPageUserObjective(
                         pageOwner.id + '',
                         undefined,
                         req.user.id + '',
                         USER_TYPE.PAGE,
-                        NOTIFICATION_TYPE.LIKE,
+                        NOTIFICATION_TYPE.OBJECTIVE,
                         notificationText,
                         link,
                         pageJoiner.name,
                         pageJoiner.imageURL,
                         searchObjective.length,
-                        mode
+                        mode,
+                        create.id
 
                     );
                     for (const notiOwner of notiOwners) {
@@ -453,19 +480,33 @@ export class ObjectiveController {
                             continue;
                         }
                     }
-                    const result: any = {};
-                    result['objectiveId'] = objtiveIds;
-                    result['pageId'] = pageObjId;
-                    result['joiner'] = joinerObjId;
-                    result['join'] = join;
-                    result['approve'] = true;
-                    const create = await this.pageObjectiveJoinerService.create(result);
-                    if (create) {
+                    // noti to owner
+                    const ownerNoti: any = await this.pageNotificationService.notifyToPageUserObjective(
+                        pageJoiner.id + '',
+                        undefined,
+                        req.user.id + '',
+                        USER_TYPE.PAGE,
+                        NOTIFICATION_TYPE.OBJECTIVE,
+                        notificationText,
+                        link,
+                        pageOwner.name,
+                        pageOwner.imageURL,
+                        searchObjective.length,
+                        mode,
+                        create.id
+                    );
+                    if (create && noti && ownerNoti) {
                         const successResponse = ResponseUtil.getSuccessResponse('Send noti is succesful.', []);
                         return res.status(200).send(successResponse);
                     }
                 } else if (searchObjective.length > 50 && searchObjective.length <= 300 && minutes % interval_30 === 0) {
-                    await this.pageNotificationService.notifyToPageUserObjective(
+                    result['objectiveId'] = objtiveIds;
+                    result['pageId'] = pageObjId;
+                    result['joiner'] = joinerObjId;
+                    result['join'] = join;
+                    result['approve'] = true;
+                    create = await this.pageObjectiveJoinerService.create(result);
+                    const noti: any = await this.pageNotificationService.notifyToPageUserObjective(
                         pageOwner.id + '',
                         undefined,
                         req.user.id + '',
@@ -476,7 +517,8 @@ export class ObjectiveController {
                         pageJoiner.name,
                         pageJoiner.imageURL,
                         searchObjective.length,
-                        mode
+                        mode,
+                        create.id
 
                     );
                     for (const notiOwner of notiOwners) {
@@ -498,19 +540,33 @@ export class ObjectiveController {
                             continue;
                         }
                     }
-                    const result: any = {};
-                    result['objectiveId'] = objtiveIds;
-                    result['pageId'] = pageObjId;
-                    result['joiner'] = joinerObjId;
-                    result['join'] = join;
-                    result['approve'] = true;
-                    const create = await this.pageObjectiveJoinerService.create(result);
-                    if (create) {
+                    // noti to owner
+                    const ownerNoti: any = await this.pageNotificationService.notifyToPageUserObjective(
+                        pageJoiner.id + '',
+                        undefined,
+                        req.user.id + '',
+                        USER_TYPE.PAGE,
+                        NOTIFICATION_TYPE.OBJECTIVE,
+                        notificationText,
+                        link,
+                        pageOwner.name,
+                        pageOwner.imageURL,
+                        searchObjective.length,
+                        mode,
+                        create.id
+                    );
+                    if (create && noti && ownerNoti) {
                         const successResponse = ResponseUtil.getSuccessResponse('Send noti is succesful.', []);
                         return res.status(200).send(successResponse);
                     }
                 } else if (searchObjective.length > 300 && searchObjective.length <= 2000 && hours % 2 === 0) {
-                    await this.pageNotificationService.notifyToPageUserObjective(
+                    result['objectiveId'] = objtiveIds;
+                    result['pageId'] = pageObjId;
+                    result['joiner'] = joinerObjId;
+                    result['join'] = join;
+                    result['approve'] = true;
+                    create = await this.pageObjectiveJoinerService.create(result);
+                    const noti: any = await this.pageNotificationService.notifyToPageUserObjective(
                         pageOwner.id + '',
                         undefined,
                         req.user.id + '',
@@ -521,7 +577,8 @@ export class ObjectiveController {
                         pageJoiner.name,
                         pageJoiner.imageURL,
                         searchObjective.length,
-                        mode
+                        mode,
+                        create.id
 
                     );
                     for (const notiOwner of notiOwners) {
@@ -543,19 +600,33 @@ export class ObjectiveController {
                             continue;
                         }
                     }
-                    const result: any = {};
-                    result['objectiveId'] = objtiveIds;
-                    result['pageId'] = pageObjId;
-                    result['joiner'] = joinerObjId;
-                    result['join'] = join;
-                    result['approve'] = true;
-                    const create = await this.pageObjectiveJoinerService.create(result);
-                    if (create) {
+                    // noti to owner
+                    const ownerNoti: any = await this.pageNotificationService.notifyToPageUserObjective(
+                        pageJoiner.id + '',
+                        undefined,
+                        req.user.id + '',
+                        USER_TYPE.PAGE,
+                        NOTIFICATION_TYPE.OBJECTIVE,
+                        notificationText,
+                        link,
+                        pageOwner.name,
+                        pageOwner.imageURL,
+                        searchObjective.length,
+                        mode,
+                        create.id
+                    );
+                    if (create && noti && ownerNoti) {
                         const successResponse = ResponseUtil.getSuccessResponse('Send noti is succesful.', []);
                         return res.status(200).send(successResponse);
                     }
                 } else if (searchObjective.length > 2000 && hours % 3 === 0) {
-                    await this.pageNotificationService.notifyToPageUserObjective(
+                    result['objectiveId'] = objtiveIds;
+                    result['pageId'] = pageObjId;
+                    result['joiner'] = joinerObjId;
+                    result['join'] = join;
+                    result['approve'] = true;
+                    create = await this.pageObjectiveJoinerService.create(result);
+                    const noti: any = await this.pageNotificationService.notifyToPageUserObjective(
                         pageOwner.id + '',
                         undefined,
                         req.user.id + '',
@@ -566,7 +637,8 @@ export class ObjectiveController {
                         pageJoiner.name,
                         pageJoiner.imageURL,
                         searchObjective.length,
-                        mode
+                        mode,
+                        create.id
 
                     );
                     for (const notiOwner of notiOwners) {
@@ -588,14 +660,22 @@ export class ObjectiveController {
                             continue;
                         }
                     }
-                    const result: any = {};
-                    result['objectiveId'] = objtiveIds;
-                    result['pageId'] = pageObjId;
-                    result['joiner'] = joinerObjId;
-                    result['join'] = join;
-                    result['approve'] = true;
-                    const create = await this.pageObjectiveJoinerService.create(result);
-                    if (create) {
+                    // noti to owner
+                    const ownerNoti: any = await this.pageNotificationService.notifyToPageUserObjective(
+                        pageJoiner.id + '',
+                        undefined,
+                        req.user.id + '',
+                        USER_TYPE.PAGE,
+                        NOTIFICATION_TYPE.OBJECTIVE,
+                        notificationText,
+                        link,
+                        pageOwner.name,
+                        pageOwner.imageURL,
+                        searchObjective.length,
+                        mode,
+                        create.id
+                    );
+                    if (create && noti && ownerNoti) {
                         const successResponse = ResponseUtil.getSuccessResponse('Send noti is succesful.', []);
                         return res.status(200).send(successResponse);
                     }
@@ -607,12 +687,20 @@ export class ObjectiveController {
         }
         // not auto approve
         if (join === true && checkPublicObjective.personal === true && pageOwner.autoApprove === false || pageOwner.autoApprove === null || pageOwner.autoApprove === undefined) {
+            console.log('pass3');
             if (pageJoiner && pageOwner.id) {
+                console.log('pass4');
                 const notiOwners = await this.deviceTokenService.find({ userId: pageOwner.ownerUser });
                 notificationText = pageJoiner.name + space + 'ขอเข้าร่วมสิ่งที่กำลังทำของเพจคุณ';
                 link = `/page/${pageJoiner.id}/`;
                 if (searchObjective.length > 0 || searchObjective.length <= 10) {
-                    await this.pageNotificationService.notifyToPageUserObjective(
+                    result['objectiveId'] = objtiveIds;
+                    result['pageId'] = pageObjId;
+                    result['joiner'] = joinerObjId;
+                    result['join'] = join;
+                    result['approve'] = false;
+                    create = await this.pageObjectiveJoinerService.create(result);
+                    const noti: any = await this.pageNotificationService.notifyToPageUserObjective(
                         pageOwner.id + '',
                         undefined,
                         req.user.id + '',
@@ -623,7 +711,8 @@ export class ObjectiveController {
                         pageJoiner.name,
                         pageJoiner.imageURL,
                         searchObjective.length,
-                        mode
+                        mode,
+                        create.id
 
                     );
                     for (const notiOwner of notiOwners) {
@@ -645,19 +734,19 @@ export class ObjectiveController {
                             continue;
                         }
                     }
-                    const result: any = {};
-                    result['objectiveId'] = objtiveIds;
-                    result['pageId'] = pageObjId;
-                    result['joiner'] = joinerObjId;
-                    result['join'] = join;
-                    result['approve'] = false;
-                    const create = await this.pageObjectiveJoinerService.create(result);
-                    if (create) {
+
+                    if (create && noti) {
                         const successResponse = ResponseUtil.getSuccessResponse('Send noti is succesful.', []);
                         return res.status(200).send(successResponse);
                     }
                 } else if (searchObjective.length > 10 && searchObjective.length <= 50 && minutes % interval_15 === 0) {
-                    await this.pageNotificationService.notifyToPageUserObjective(
+                    result['objectiveId'] = objtiveIds;
+                    result['pageId'] = pageObjId;
+                    result['joiner'] = joinerObjId;
+                    result['join'] = join;
+                    result['approve'] = true;
+                    create = await this.pageObjectiveJoinerService.create(result);
+                    const noti: any = await this.pageNotificationService.notifyToPageUserObjective(
                         pageOwner.id + '',
                         undefined,
                         req.user.id + '',
@@ -668,7 +757,8 @@ export class ObjectiveController {
                         pageJoiner.name,
                         pageJoiner.imageURL,
                         searchObjective.length,
-                        mode
+                        mode,
+                        create.id
 
                     );
                     for (const notiOwner of notiOwners) {
@@ -690,19 +780,18 @@ export class ObjectiveController {
                             continue;
                         }
                     }
-                    const result: any = {};
-                    result['objectiveId'] = objtiveIds;
-                    result['pageId'] = pageObjId;
-                    result['joiner'] = joinerObjId;
-                    result['join'] = join;
-                    result['approve'] = true;
-                    const create = await this.pageObjectiveJoinerService.create(result);
-                    if (create) {
+                    if (create && noti) {
                         const successResponse = ResponseUtil.getSuccessResponse('Send noti is succesful.', []);
                         return res.status(200).send(successResponse);
                     }
                 } else if (searchObjective.length > 50 && searchObjective.length <= 300 && minutes % interval_30 === 0) {
-                    await this.pageNotificationService.notifyToPageUserObjective(
+                    result['objectiveId'] = objtiveIds;
+                    result['pageId'] = pageObjId;
+                    result['joiner'] = joinerObjId;
+                    result['join'] = join;
+                    result['approve'] = true;
+                    create = await this.pageObjectiveJoinerService.create(result);
+                    const noti: any = await this.pageNotificationService.notifyToPageUserObjective(
                         pageOwner.id + '',
                         undefined,
                         req.user.id + '',
@@ -713,7 +802,8 @@ export class ObjectiveController {
                         pageJoiner.name,
                         pageJoiner.imageURL,
                         searchObjective.length,
-                        mode
+                        mode,
+                        create.id
 
                     );
                     for (const notiOwner of notiOwners) {
@@ -735,19 +825,18 @@ export class ObjectiveController {
                             continue;
                         }
                     }
-                    const result: any = {};
-                    result['objectiveId'] = objtiveIds;
-                    result['pageId'] = pageObjId;
-                    result['joiner'] = joinerObjId;
-                    result['join'] = join;
-                    result['approve'] = true;
-                    const create = await this.pageObjectiveJoinerService.create(result);
-                    if (create) {
+                    if (create && noti) {
                         const successResponse = ResponseUtil.getSuccessResponse('Send noti is succesful.', []);
                         return res.status(200).send(successResponse);
                     }
                 } else if (searchObjective.length > 300 && searchObjective.length <= 2000 && hours % 2 === 0) {
-                    await this.pageNotificationService.notifyToPageUserObjective(
+                    result['objectiveId'] = objtiveIds;
+                    result['pageId'] = pageObjId;
+                    result['joiner'] = joinerObjId;
+                    result['join'] = join;
+                    result['approve'] = true;
+                    create = await this.pageObjectiveJoinerService.create(result);
+                    const noti: any = await this.pageNotificationService.notifyToPageUserObjective(
                         pageOwner.id + '',
                         undefined,
                         req.user.id + '',
@@ -758,7 +847,8 @@ export class ObjectiveController {
                         pageJoiner.name,
                         pageJoiner.imageURL,
                         searchObjective.length,
-                        mode
+                        mode,
+                        create.id
 
                     );
                     for (const notiOwner of notiOwners) {
@@ -780,19 +870,18 @@ export class ObjectiveController {
                             continue;
                         }
                     }
-                    const result: any = {};
-                    result['objectiveId'] = objtiveIds;
-                    result['pageId'] = pageObjId;
-                    result['joiner'] = joinerObjId;
-                    result['join'] = join;
-                    result['approve'] = true;
-                    const create = await this.pageObjectiveJoinerService.create(result);
-                    if (create) {
+                    if (create && noti) {
                         const successResponse = ResponseUtil.getSuccessResponse('Send noti is succesful.', []);
                         return res.status(200).send(successResponse);
                     }
                 } else if (searchObjective.length > 2000 && hours % 3 === 0) {
-                    await this.pageNotificationService.notifyToPageUserObjective(
+                    result['objectiveId'] = objtiveIds;
+                    result['pageId'] = pageObjId;
+                    result['joiner'] = joinerObjId;
+                    result['join'] = join;
+                    result['approve'] = true;
+                    create = await this.pageObjectiveJoinerService.create(result);
+                    const noti: any = await this.pageNotificationService.notifyToPageUserObjective(
                         pageOwner.id + '',
                         undefined,
                         req.user.id + '',
@@ -803,7 +892,8 @@ export class ObjectiveController {
                         pageJoiner.name,
                         pageJoiner.imageURL,
                         searchObjective.length,
-                        mode
+                        mode,
+                        create.id
 
                     );
                     for (const notiOwner of notiOwners) {
@@ -825,14 +915,7 @@ export class ObjectiveController {
                             continue;
                         }
                     }
-                    const result: any = {};
-                    result['objectiveId'] = objtiveIds;
-                    result['pageId'] = pageObjId;
-                    result['joiner'] = joinerObjId;
-                    result['join'] = join;
-                    result['approve'] = true;
-                    const create = await this.pageObjectiveJoinerService.create(result);
-                    if (create) {
+                    if (create && noti) {
                         const successResponse = ResponseUtil.getSuccessResponse('Send noti is succesful.', []);
                         return res.status(200).send(successResponse);
                     }
@@ -2118,6 +2201,7 @@ export class ObjectiveController {
         }
         let pageOwner: any;
         let pageJoiner: any;
+        const pageJoinerIds = [];
         if (joinObjs.length > 0 && joinerObjId.length > 0) {
             for (const joiner of joinerObjId) {
                 const result: any = {};
@@ -2128,6 +2212,7 @@ export class ObjectiveController {
                 result['approve'] = false;
                 const createJoin = await this.pageObjectiveJoinerService.create(result);
                 if (createJoin) {
+                    pageJoinerIds.push(createJoin.id);
                     checkJoinObjective = await this.pageObjectiveJoinerService.find({ objectiveId: objtiveIds, pageId: pageObjId, joiner: { $in: joinerObjId } });
                     checkPublicObjective = await this.pageObjectiveService.findOne({ _id: objtiveIds });
                     pageOwner = await this.pageService.findOne({ _id: pageObjId });
@@ -2147,12 +2232,12 @@ export class ObjectiveController {
             const errorResponse = ResponseUtil.getErrorResponse('Not found the join objective.', undefined);
             return res.status(400).send(errorResponse);
         }
-        // not auto approve
         const mode = String('invite');
         if (checkPublicObjective !== undefined && join === true && checkPublicObjective.personal === true) {
             if (pageJoiner.length > 0 && pageOwner.id !== undefined) {
                 const notiOwners = await this.deviceTokenService.find({ userId: pageOwner.ownerUser });
                 for (const pageJoin of pageJoiner) {
+                    const joinerIds: any = await this.pageObjectiveJoinerService.findOne({ joiner: new ObjectID(pageJoin._id) });
                     notificationText = pageOwner.name + space + 'เชิญเข้าร่วมกิจกรรม' + space + checkPublicObjective.title;
                     link = `/page/${pageJoin._id}/`;
                     await this.pageNotificationService.notifyToPageUserObjective(
@@ -2166,9 +2251,12 @@ export class ObjectiveController {
                         pageOwner.name,
                         pageOwner.imageURL,
                         pageJoiner.length,
-                        mode
+                        mode,
+                        joinerIds.id,
+
                     );
                 }
+
                 for (const notiOwner of notiOwners) {
                     if (notiOwner.Tokens !== null && notiOwner.Tokens !== undefined && notiOwner.Tokens !== '') {
                         await this.notificationService.sendNotificationFCM
@@ -2188,6 +2276,7 @@ export class ObjectiveController {
                         continue;
                     }
                 }
+
                 const successResponse = ResponseUtil.getSuccessResponse('Invite join objective is succesful.', []);
                 return res.status(200).send(successResponse);
             } else {
