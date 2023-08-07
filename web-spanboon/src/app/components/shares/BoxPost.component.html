@@ -413,14 +413,14 @@
                                     <ng-container *ngIf="isPublicObj">
                                         <ng-container *ngIf="listJoiner.length > 0; else elseEmptyJoiner">
                                             <div class="wrapper-joiner">
-                                                <div class="wrapper-box">
-                                                    <div class="header-joiner">
-                                                        <span>ผู้คนที่กำลังทำสิ่งเดียวกัน</span>
-                                                        <div class="image-upload"
-                                                            (click)="inviteJoin();$event.stopPropagation()">
-                                                            <span class="add-label">+เพิ่ม</span>
-                                                        </div>
+                                                <div class="header-joiner">
+                                                    <span>ผู้คนที่กำลังทำสิ่งเดียวกัน</span>
+                                                    <div class="image-upload"
+                                                        (click)="inviteJoin();$event.stopPropagation()">
+                                                        <span class="add-label">+เพิ่ม</span>
                                                     </div>
+                                                </div>
+                                                <div class="wrapper-box">
                                                     <div class="box-joiner"
                                                         *ngFor="let item of listJoiner;let i = index">
                                                         <div class="images">
@@ -448,13 +448,11 @@
                                         </ng-container>
                                         <ng-template #elseEmptyJoiner>
                                             <div class="wrapper-joiner">
-                                                <div class="wrapper-box">
-                                                    <div class="header-joiner">
-                                                        <span>ไม่มีผู้เข้าร่วมสิ่งที่กำลังทำนี้</span>
-                                                        <div class="image-upload"
-                                                            (click)="inviteJoin(); $event.stopPropagation()">
-                                                            <span class="add-label">+เพิ่ม</span>
-                                                        </div>
+                                                <div class="header-joiner">
+                                                    <span>ไม่มีผู้เข้าร่วมสิ่งที่กำลังทำนี้</span>
+                                                    <div class="image-upload"
+                                                        (click)="inviteJoin(); $event.stopPropagation()">
+                                                        <span class="add-label">+เพิ่ม</span>
                                                     </div>
                                                 </div>
                                             </div>
