@@ -1621,6 +1621,9 @@ export class ObjectiveController {
                             }
                         },
                         {
+                            $match: { page: { $ne: [] } }
+                        },
+                        {
                             $sort: {
                                 createdDate: -1
                             }
