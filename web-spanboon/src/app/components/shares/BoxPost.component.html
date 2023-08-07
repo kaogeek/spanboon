@@ -328,7 +328,7 @@
                             สิ่งที่กำลังทำ
                         </ng-template>
                     </div>
-                    <mat-menu #menuEventObjective="matMenu" (click)="$event.stopPropagation()"
+                    <mat-menu #menuEventObjective="matMenu" class="menu-objective" (click)="$event.stopPropagation()"
                         (keydown)="$event.stopPropagation()" backdropClass="sg-vertical-sub-menu">
                         <ng-container *ngIf="isUpload; else elseUpload">
                             <div class="upload-image-doing" (click)="$event.stopPropagation()">
