@@ -446,7 +446,6 @@ export class FacebookWebhookController {
                                 }
                             ]);
                         if (pageFindtag.length > 0) {
-                            console.log('pass3');
                             await this.objectiveFunction(pageFindtag, pageSubscribe.pageId, createPostWebhooks.id, postMasterHashTagList);
                         }
                     }
@@ -1051,7 +1050,9 @@ export class FacebookWebhookController {
                 {
                     $match:
                     {
-                        name: { $in: hashTagNameList }
+                        name: { $in: hashTagNameList },
+                        type: 'OBJECTIVE',
+
                     }
                 },
                 {
