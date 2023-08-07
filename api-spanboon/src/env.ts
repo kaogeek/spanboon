@@ -79,7 +79,14 @@ export const env = {
         password: getOsEnv('MONITOR_PASSWORD'),
     },
     imageserver: getOsEnv('IMAGE_SERVER'),
-    SECRET_KEY: getOsEnv('SECRET_KEY')
+    SECRET_KEY: getOsEnv('SECRET_KEY'),
+    reteLimit: {
+        API_PATH_UNIQUEID_CHECK: getOsEnv('API_PATH_UNIQUEID_CHECK'),
+        API_PATH_FORGET: getOsEnv('API_PATH_FORGET'),
+        API_PATH_REGISTER: getOsEnv('API_PATH_REGISTER'),
+        API_PATH_HISTORY_SEARCH: getOsEnv('API_PATH_HISTORY_SEARCH'),
+        API_PATH_HASHTAG_TREND: getOsEnv('API_PATH_HASHTAG_TREND'),
+    }
 };
 
 export const mail = {

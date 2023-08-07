@@ -28,11 +28,11 @@ export const expressLoader: MicroframeworkLoader = async (settings: Microframewo
         app.use(compression());
         app.use(bodyParser.urlencoded({ extended: true }));
         app.use(bodyParser.json({ limit: '50mb' }));
-        app.use(process.env.API_PATH_UNIQUEID_CHECK, rateLimiterMiddleware);
-        app.use(process.env.API_PATH_FORGET, rateLimiterMiddleware);
-        app.use(process.env.API_PATH_REGISTER, rateLimiterMiddleware);
-        app.use(process.env.API_PATH_HISTORY_SEARCH, rateLimiterMiddleware);
-        app.use(process.env.API_PATH_HASHTAG_TREND, rateLimiterMiddleware);
+        app.use(env.reteLimit.API_PATH_UNIQUEID_CHECK, rateLimiterMiddleware);
+        app.use(env.reteLimit.API_PATH_FORGET, rateLimiterMiddleware);
+        app.use(env.reteLimit.API_PATH_REGISTER, rateLimiterMiddleware);
+        app.use(env.reteLimit.API_PATH_HISTORY_SEARCH, rateLimiterMiddleware);
+        app.use(env.reteLimit.API_PATH_HASHTAG_TREND, rateLimiterMiddleware);
         // Rate limiting 
         app.set('trust proxy', 1);
         app.listen(env.app.port);
