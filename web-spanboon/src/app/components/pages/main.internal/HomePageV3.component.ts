@@ -95,6 +95,9 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   public isConfirmTosUa: boolean = false;
   public isGetBottom: boolean = false;
   public countBlockBottom: number = 0;
+  public paramToken: string;
+  public paramUserId: string;
+  public paramMode: string;
 
   maxDate = new Date();
 
@@ -118,6 +121,12 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     super(null, authenManager, dialog, router);
     this.route.queryParams.subscribe(params => {
       const rawDate = params['date'];
+      const tokens = params['token'];
+      const userid = params['userid'];
+      const mode = params['mode'];
+      if (tokens) this.paramToken = tokens;
+      if (userid) this.paramUserId = userid;
+      if (mode) this.paramMode = mode;
       if (rawDate) {
         const dateParts = rawDate.split('-');
         this.queryParamsUrl = new Date(`${dateParts[1]}-${dateParts[0]}-${dateParts[2]}`).getTime();
@@ -193,7 +202,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     const day = date.getDate().toString().padStart(2, '0');
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
     const year = date.getFullYear();
-    const formattedDate = `${day}-${month}-${year}`;
+    let formattedDate = `${day}-${month}-${year}`;
     this.mainPageModelFacade.getMainPageModelV3(this.user, this.startDateLong).then((res) => {
       this.model = res;
       if (!!res.announcement) {
@@ -230,7 +239,11 @@ export class HomePageV3 extends AbstractPage implements OnInit {
       });
       localStorage.removeItem('datetime')
     });
-    this.router.navigate(['/home'], { queryParams: { date: formattedDate } });
+    if (!!this.paramToken && !!this.paramUserId && !!this.paramMode) {
+      this.router.navigate(['/home'], { queryParams: { date: formattedDate, token: this.paramToken, userid: this.paramUserId, mode: this.paramMode } });
+    } else {
+      this.router.navigate(['/home'], { queryParams: { date: formattedDate } });
+    }
   }
 
   public async getBottomContent(userId?) {
@@ -759,6 +772,17 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     }
   }
 
+  private _checkWebView() {
+    let isCheck: boolean;
+    if (!!this.paramMode && !!this.paramToken && !!this.paramUserId) {
+      isCheck = true;
+    } else {
+      isCheck = false;
+    }
+
+    return isCheck;
+  }
+
   @HostListener('window:scroll', ['$event'])
   @debounce(1000)
   scroll(event) {
@@ -804,8 +828,8 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   }
 
   private async _readHomeContent() {
-    if (this.isLogin()) {
-      let userId = this.userCloneDatas.id;
+    if (this.isLogin() || this._checkWebView()) {
+      let userId = !this._checkWebView() ? this.userCloneDatas.id : this.paramUserId;
       if (this.readContent.length > 0) {
         if (this.readPost.length !== 0) {
           for (var i = this.readContent.length - 1; i >= 0; i--) {
@@ -824,7 +848,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
           }
         }
         if (this.readContent.length > 0) {
-          await this.mainPageModelFacade.readContent(userId, this.readContent).then((res: any) => {
+          await this.mainPageModelFacade.readContent(userId, this.readContent, this.paramMode, this.paramToken).then((res: any) => {
             if (res) {
               for (let index = 0; index < res.isReadPost.length; index++) {
                 this.readPost.push(res.isReadPost[index]._id);

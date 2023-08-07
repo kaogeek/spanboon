@@ -15,7 +15,8 @@
                 </i>
             </div>
         </div>
-        <div class="wrapper-page-create" [ngStyle]="{'display': !!spamTopic ? 'none' : 'unset'}">
+        <div class="wrapper-page-create" *ngIf="listPage.length === 0"
+            [ngStyle]="{'display': !!spamTopic ? 'none' : 'unset'}">
             <div *ngFor="let item of data.subject;let index = index" class="wrapper-subject"
                 (click)="selectTopic(item,index)"
                 [ngStyle]="{'background-color': item === spamTopic ? '#ee7623' : 'white','color': item === spamTopic ? 'white' : 'black'}">
@@ -24,6 +25,33 @@
                 </section>
             </div>
         </div>
+
+        <div class="wrapper-list-page" *ngIf="!!listPage">
+            <div class="search-header-objective">
+                <label for="searchInputObjective">
+                    <svg class="img-search" xmlns="http://www.w3.org/2000/svg" width="20.276" height="20.682"
+                        viewBox="0 0 20.276 20.682">
+                        <g id="surface1" transform="translate(-27)">
+                            <path id="Path_104" data-name="Path 104"
+                                d="M14.235,12.272a7.776,7.776,0,1,0-2.392,2.2l5.734,5.7a1.628,1.628,0,0,0,2.36-2.242c-.02-.021-.039-.04-.059-.059ZM7.883,12.8A5.016,5.016,0,1,1,12.9,7.779,5.017,5.017,0,0,1,7.883,12.8Zm0,0"
+                                transform="translate(26.891 0)" fill="#474747" />
+                        </g>
+                    </svg>
+                </label>
+                <input matInput placeholder="ค้นหา" #searchInputObjective id="searchInputObjective">
+            </div>
+            <div class="box-list-page">
+                <div class="wrapper-page" *ngFor="let item of listPage;let i = index" (click)="selectPage(item,i)"
+                    [class.active-click-doing]="item.check">
+                    <div class="images">
+                        <img class="image-tag" [src]="item.img64 ? item.img64 : apiBaseURL + item.imageURL + '/image'"
+                            alt="">
+                    </div>
+                    <span>{{item.name}}</span>
+                </div>
+            </div>
+        </div>
+
         <div class="detail-message" *ngIf="!!spamTopic">
             <div class="topic-select">
                 <section class="section-subject">
@@ -40,8 +68,9 @@
                 <div class="butt but-cancel" [ngStyle]="{'display': data.btDisplay1}" (click)="onClose() ">
                     {{data.bottomText1 ? data.bottomText1 : "ปิด"}}</div>
                 <div class="butt but-submit"
-                    [ngStyle]="{'display': data.btDisplay2,'opacity': !!spamTopic ? '1' : '0.5','cursor': !!spamTopic ? 'pointer' : 'default'}"
-                    appDebounceClick (debounceClick)="!!spamTopic ? onConfirm() : null">{{data.bottomText2 ?
+                    [ngStyle]="{'display': data.btDisplay2,'opacity': !!spamTopic || pageSelectList.length > 0 ? '1' : '0.5','cursor': !!spamTopic || pageSelectList.length > 0 ? 'pointer' : 'default'}"
+                    appDebounceClick (debounceClick)="!!spamTopic || pageSelectList.length > 0 ? onConfirm() : null">
+                    {{data.bottomText2 ?
                     data.bottomText2 : "ยืนยัน"}}</div>
             </div>
         </div>

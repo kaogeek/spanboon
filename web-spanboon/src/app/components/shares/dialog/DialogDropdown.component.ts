@@ -74,7 +74,7 @@ export class DialogDropdown {
                     }
                 });
             } else {
-                this.pageFacade.updateProfilePage(this.page[this.nextPage].id, this.selectedProvince, this.selectedGroup).then((res) => {
+                this.pageFacade.updateProvincePage(this.page[this.nextPage].id, this.selectedProvince, this.selectedGroup).then((res) => {
                     if (res.data) {
                         this.observManager.publish('page.about', res);
                         this.isbottom = true

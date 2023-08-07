@@ -212,6 +212,7 @@ export class DialogFulfillAllocate extends AbstractPage implements OnInit {
         };
 
         this.objectiveFacade.searchObjective(keywordFilter).then((obj: any) => {
+            obj.data.reverse();
             this.sortingByObjArr.push({ hashTag: "ไม่มี", title: "NONE" })
             for (let i of obj.data) {
                 this.sortingByObjArr.push(i)

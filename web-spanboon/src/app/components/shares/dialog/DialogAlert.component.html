@@ -18,6 +18,12 @@
         <div class="edit-input">
             <span>{{data.text}}</span>
             <p>{{data.text2}}</p>
+            <ng-container *ngIf="data.page && data.page.iconURL">
+                <div class="images">
+                    <img class="image-page" [src]="apiBaseURL + data.page.iconURL + '/image'" alt="">
+                </div>
+                <span class="name">{{data.page.name}}</span>
+            </ng-container>
         </div>
         <div class="dialog-footer">
             <div class="butt but-cancel" [ngStyle]="{'display': data.btDisplay1}" (click)="onClose() ">

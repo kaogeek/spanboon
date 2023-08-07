@@ -144,6 +144,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   public shareDialog: boolean;
   public mainPostLink: string;
   public groups: any = [];
+  public resJoinObjective: any;
 
   public CheckPost: boolean = true;
   public isPostLoading: boolean = false;
@@ -950,6 +951,57 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     }
   }
 
+  public searchObjective(value: string) {
+    this.isLoading = true;
+    this.resObjective = [];
+    const keywordFilter: any = {
+      filter: {
+        limit: SEARCH_LIMIT,
+        offset: SEARCH_OFFSET,
+        relation: [],
+        whereConditions: {
+          pageId: this.resDataPage.id,
+        },
+        count: false,
+        orderBy: {
+          createdDate: "DESC",
+        }
+      },
+    };
+    Object.assign(keywordFilter, { hashTag: value });
+    this.objectiveFacade.searchObjective(keywordFilter).then((result: any) => {
+      if (result.joinObjective.length > 0) {
+        for (const data of result.joinObjective) {
+          let obj = {
+            category: data.pageObjective.category,
+            hashTag: data.pageObjective.hashTag.name,
+            iconURL: data.pageObjective.iconURL,
+            pageId: data.pageId,
+            objectiveId: data.objectiveId,
+            joiner: data.joiner,
+            join: true,
+            personal: data.pageObjective.personal,
+            title: data.pageObjective.title,
+            _id: data._id,
+          }
+          result.data.push(obj);
+        }
+      }
+      result.data.reverse();
+      if (result.status === 1) {
+        this.resObjective = result.data;
+
+        this.isLoading = false;
+      }
+    }).catch((err: any) => {
+      console.log(err)
+      if (err.error.message === 'Cannot Search PageObjective') {
+        this.resObjective = [];
+        this.isLoading = false;
+      }
+    });
+  }
+
   public showProfilePage(url): void {
     this.pageFacade.getProfilePage(url).then(async (res) => {
       if (res) {
@@ -991,6 +1043,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
             this.seoService.setMetaInfo(this.router.url, this.resDataPage.name, this.resDataPage.name, this.resDataPage.imageURL, this.resDataPage.name);
           }
           this.searchAboutPage();
+          this.searchObjective("");
 
           setTimeout(() => {
             this.isLoading = false;

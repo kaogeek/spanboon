@@ -15,7 +15,7 @@ export class ConvertTextNotification implements PipeTransform {
 
     private rejectlist: string[] = ['ได้แชร์โพสต์ของ', 'ดูการเติบโตของเพจ', 'ส่งรูปภาพไปให้', 'กดถูกใจโพสต์ของคุณ', 'กดถูกใจโพสต์ของเพจ', 'คอมเม้นต์โพสต์', 'กดติดตามเพจ', 'แสดงความคิดเห็นโพสต์ของ'];
 
-    transform(text: string, date: string): string {
+    transform(text: string, date?: string): string {
         for (let re of this.rejectlist) {
             text = text.split(re).join('<span class="textthin">' + re + '</span><br/>');
         }

@@ -94,6 +94,7 @@ export class AboutPage extends AbstractPage implements OnInit {
     public latitudeAboutPage: any;
     public uuid: boolean;
     public indexCard: number;
+    public autoApprove: boolean = false;
 
     public links = [
         {
@@ -202,6 +203,9 @@ export class AboutPage extends AbstractPage implements OnInit {
     }
 
     public ngOnInit(): void {
+        if (!!this.dataPage!.autoApprove === true) {
+            this.autoApprove = true;
+        }
         this.crateValueAbout();
         this.getProvince();
         this.getGroupList();
@@ -827,6 +831,26 @@ export class AboutPage extends AbstractPage implements OnInit {
                 groupAbout!.get('longtitudeAboutPage')!.setValue(this.longtitudeAboutPage!.value);
             }
         }
+    }
+
+    public approveEventAuto($event) {
+        let body = {
+            autoApprove: $event.checked
+        }
+        this.pageFacade.updateProfilePage(this.pageId, body).then((res) => {
+            if (res.data) {
+                this.observManager.publish('page.about', res);
+                this.dataPage = res.data;
+                this.dataUpdatePage.emit(this.dataPage);
+                if (this.dataPage.pageUsername === "") {
+                    this.router.navigateByUrl('/page/' + this.pageId + '/settings');
+                } else {
+                    this.router.navigateByUrl('/page/' + this.dataPage.pageUsername + '/settings');
+                }
+            }
+        }).catch((err) => {
+            console.log('error ', err)
+        });
     }
 
     public selectType($event, index: number) {

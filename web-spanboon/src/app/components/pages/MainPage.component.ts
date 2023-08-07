@@ -93,7 +93,6 @@ export class MainPage extends AbstractPage implements OnInit {
         if (url === '/login' || (path === "fulfill")) {
           this.isPost = false;
         }
-
         if (this.isLogin()) {
           let token = localStorage.getItem('token');
           let mode = localStorage.getItem('mode');

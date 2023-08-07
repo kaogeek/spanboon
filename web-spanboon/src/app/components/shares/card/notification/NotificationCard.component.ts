@@ -8,11 +8,12 @@
 import { Component, EventEmitter, Input, OnInit } from "@angular/core";
 import { MatDialog } from "@angular/material";
 import { Router } from "@angular/router";
-import { AuthenManager, ObservableManager } from "src/app/services/services";
-import { environment } from "src/environments/environment";
+import { AuthenManager, ObjectiveFacade, ObservableManager } from "src/app/services/services";
+import { environment } from '../../../../../environments/environment';
 import { AbstractPage } from "../../../pages/AbstractPage";
 
 const NOTI_READ_SUBJECT: string = 'noti.read';
+const NOTI_ACTION: string = 'noti.action';
 
 const PAGE_NAME: string = "NotificationCard";
 
@@ -31,16 +32,21 @@ export class NotificationCard extends AbstractPage implements OnInit {
   public slide: boolean;
   @Input()
   public date: Date = new Date();
+  public isShow: boolean = false;
+  public isActionSlide: boolean = false;
 
   private observManager: ObservableManager;
-  private apiBaseURL = environment.apiBaseURL;
+  private objectiveFacade: ObjectiveFacade;
+  public apiBaseURL = environment.apiBaseURL;
 
-  constructor(authenManager: AuthenManager, router: Router, dialog: MatDialog, observManager: ObservableManager) {
+  constructor(authenManager: AuthenManager, router: Router, dialog: MatDialog, observManager: ObservableManager, objectiveFacade: ObjectiveFacade) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.observManager = observManager;
+    this.objectiveFacade = objectiveFacade;
   }
 
   public ngOnInit(): void {
+    console.log("message", this.message)
   }
 
   public ngOnDestroy(): void {
@@ -51,21 +57,65 @@ export class NotificationCard extends AbstractPage implements OnInit {
     this.slide = false;
   }
 
-  public navigatetopage(link) {
-    this.router.navigate([]).then(() => {
-      this.observManager.publish(NOTI_READ_SUBJECT, {
-        data: {
-          title: link.title,
-          body: link.body,
-          image: link.image,
-          status: link.status,
-          isRead: true,
-          link: link.link,
-          displayName: link.displayName
-        },
+  public navigatetopage(link, type?) {
+    if (type === 'approve') {
+      let joinObj = {
+        objectiveId: link.objectiveId,
+        pageId: link.pageId,
+        joiner: link.joinerId,
+        notificationId: link.id,
+        join: true,
+        approve: true
+      }
+      this.objectiveFacade.approveInvite(joinObj).then((res) => {
+        if (res) {
+          this.message.approve = true;
+        }
+      }).catch((err) => {
+        if (err) {
+          console.log("err", err)
+          if (err.error.message === 'You have been join this objective.') {
+            let dialogJoinError = this.showAlertDialogWarming('คุณได้เข้าร่วมสิ่งที่กำลังทำนี้ไปแล้ว', "none");
+            dialogJoinError.afterClosed().subscribe((res) => {
+              if (res) {
+              }
+            });
+          }
+        }
       });
-      window.open(link.link);
-    });
+    } else if (type === 'reject') {
+      this.isShow = true;
+      this.message = {};
+      let disJoinObj = {
+        objectiveId: link.objectiveId,
+        pageId: link.pageId,
+        joiner: link.joinerId,
+        notificationId: link.id
+      }
+      this.objectiveFacade.disJoinObjective(disJoinObj).then((res) => {
+        if (res) {
+          this.observManager.createSubject(NOTI_ACTION);
+          this.observManager.publish(NOTI_ACTION, 1);
+        }
+      }).catch((err) => {
+        if (err) { }
+      });
+    } else {
+      this.router.navigate([]).then(() => {
+        this.observManager.publish(NOTI_READ_SUBJECT, {
+          data: {
+            title: link.title,
+            body: link.body,
+            image: link.image,
+            status: link.status,
+            isRead: true,
+            link: link.link,
+            displayName: link.displayName
+          },
+        });
+        window.open(link.link);
+      });
+    }
   }
 
   public isPageDirty(): boolean {

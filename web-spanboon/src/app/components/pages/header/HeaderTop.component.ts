@@ -50,10 +50,12 @@ export class HeaderTop extends AbstractPage implements OnInit {
     read: [],
     unread: [],
     all: [],
+    objective: [],
     countRead: 0,
     countUnread: 0,
     countAll: 0
   };
+  public notificationObjectList: any;
   public isLoadNotification: boolean = false;
   public limitNotification = 30;
   public sumNotification = 30;
@@ -167,7 +169,7 @@ export class HeaderTop extends AbstractPage implements OnInit {
     }
     if (this.isLogin()) {
       this._getNotification(this.limitNotification, 0, '', '', {}, { 'createdDate': -1 }, false, 'push');
-      this._getNotification(this.limitNotification, 0, '', '', { isRead: false }, { 'createdDate': -1 }, false, 'push');
+      // this._getNotification(this.limitNotification, 0, '', '', { isRead: false }, { 'createdDate': -1 }, false, 'push');
       this.observManager.subscribe('scrollLoadNotification', (res) => {
         if (res) {
           if (res.data.isReadAll) {
@@ -436,19 +438,34 @@ export class HeaderTop extends AbstractPage implements OnInit {
     }
   }
 
-  private _getNotification(limit: number, offset: number, select: any, relation: any, whereConditions: any, orderBy: any, count: boolean, arrange?: 'unshift' | 'push') {
+  private async _getNotification(limit: number, offset: number, select: any, relation: any, whereConditions: any, orderBy: any, count: boolean, arrange?: 'unshift' | 'push') {
     let val = {
       limit: limit,
       offset: offset,
       select: select,
       relation: relation,
-      whereConditions: whereConditions,
+      whereConditions: {
+        "type": { "$ne": "OBJECTIVE" }
+      },
       orderBy: orderBy,
       count: count
     };
 
-    this.notificationFacade.search(val).then(async (res) => {
+    await this.notificationFacade.search(val).then(async (res) => {
       if (res) {
+        if (res.notiObjective.length > 0) {
+          let num = 0;
+          res.notiObjective.reverse();
+          this.notificationObjectList = res.notiObjective;
+          for (const data of this.notificationObjectList) {
+            if (data.isRead === false) {
+              num++;
+            }
+          }
+          console.log("num", num)
+          this.notificationObjectList.count = num;
+          console.log("notif", this.notificationObjectList)
+        }
         for await (let data of res.data) {
           if (arrange === 'unshift') {
             if ((whereConditions['isRead'] === true)) this.notificationList['read'].unshift(this._setValueNotification(data, (whereConditions['isRead'] === true))), (this.notificationList.countRead = res.count);
@@ -458,7 +475,11 @@ export class HeaderTop extends AbstractPage implements OnInit {
             if ((whereConditions['isRead'] === true)) this.notificationList['read'].push(this._setValueNotification(data, (whereConditions['isRead'] === true))), (this.notificationList.countRead = res.count);
             if ((whereConditions['isRead'] === false)) this.notificationList['unread'].push(this._setValueNotification(data, (whereConditions['isRead'] === false))), (this.notificationList.countUnread = res.count);
             if ((!whereConditions['isRead'])) this.notificationList['all'].push(this._setValueNotification(data, (!whereConditions['isRead']))), (this.notificationList.countAll = res.count);
+            // if ((!whereConditions['isRead'])) this.notificationList['objective'].push(this._setValueNotification(data, (!whereConditions['isRead']), true));
           }
+        }
+        for await (let data of res.notiObjective) {
+          this.notificationList['objective'].push(data);
         }
 
         this.observManager.createSubject('notification');
@@ -473,13 +494,29 @@ export class HeaderTop extends AbstractPage implements OnInit {
     });
   }
 
-  private _setValueNotification(data: any, isRead: boolean) {
+  private _setValueNotification(data: any, isRead: boolean, isObj?) {
+    console.log("isRead", isRead)
+    console.log("isObj", isObj)
     const title = "การแจ้งเตือนใหม่";
-    if (isRead) {
+    if (isObj) {
       return {
         title: title,
         body: data.notification.title,
         image: !!data!.sender && data.sender.imageURL ? this.apiBaseURL + data.sender.imageURL + '/image' : '',
+        status: data.notification.type,
+        isRead: data.notification.isRead,
+        id: data.notification.id,
+        link: data.notification.link,
+        createdDate: data.notification.createdDate,
+        fromUser: data.notification.fromUser,
+        toUser: data.notification.toUser
+      }
+    }
+    if (isRead) {
+      return {
+        title: title,
+        body: data.notification.title,
+        image: !!data!.sender && data.sender.imageURL ? this.apiBaseURL + data.sender.imageURL + '/image' : data.notification.imageURL ? this.apiBaseURL + data.notification.imageURL + '/image' : '',
         status: data.notification.type,
         isRead: data.notification.isRead,
         id: data.notification.id,
@@ -498,11 +535,6 @@ export class HeaderTop extends AbstractPage implements OnInit {
         createdDate: data.notification.createdDate
       }
     }
-  }
-
-  public clickAboutUs() {
-    let dialog = this.dialog.open(DialogAboutUs, {
-    });
   }
 
   public clickShowSearch(data) {

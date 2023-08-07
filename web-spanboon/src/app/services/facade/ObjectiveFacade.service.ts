@@ -34,6 +34,23 @@ export class ObjectiveFacade extends AbstractFacade {
     });
   }
 
+  public searchJoiner(searchFilter: SearchFilter, objectiveId): Promise<any[]> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/objective/' + objectiveId + '/joiner';
+
+      let body: any = {
+        filter: searchFilter,
+        hashTag: ''
+      };
+      let options = this.authMgr.getDefaultOptions();
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
   public searchPublicObjective(searchFilter: SearchFilter): Promise<any[]> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/objective/lists';
@@ -84,10 +101,87 @@ export class ObjectiveFacade extends AbstractFacade {
     });
   }
 
+  public updateObjective(data: any, objectId?: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/objective/' + objectId;
+      let body: any = {
+        hashTag: data.hashTag,
+        title: data.title,
+        category: data.category,
+        pageId: data.pageId,
+        personal: data.personal
+      };
+
+      let option = this.authMgr.getDefaultOptions();
+      this.http.put(url, body, option).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public deleteJoinerObjective(data: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+
+      let url: string = this.baseURL + '/objective/joiner';
+
+      let body: any = {};
+      if (data !== null && data !== undefined) {
+        body = Object.assign(data)
+      }
+      let options = this.authMgr.getDefaultOptions();
+
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public disJoinObjective(data: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+
+      let url: string = this.baseURL + '/objective/disjoin';
+
+      let body: any = {};
+      if (data !== null && data !== undefined) {
+        body = Object.assign(data)
+      }
+      let options = this.authMgr.getDefaultOptions();
+
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
   public joinObjective(data: any): Promise<any> {
     return new Promise((resolve, reject) => {
 
       let url: string = this.baseURL + '/objective/join';
+
+      let body: any = {};
+      if (data !== null && data !== undefined) {
+        body = Object.assign(data)
+      }
+      let options = this.authMgr.getDefaultOptions();
+
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public approveInvite(data: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+
+      let url: string = this.baseURL + '/objective/approve';
 
       let body: any = {};
       if (data !== null && data !== undefined) {
@@ -122,9 +216,9 @@ export class ObjectiveFacade extends AbstractFacade {
     });
   }
 
-  public deleteObjective(objectiveId: string): Promise<any> {
+  public deleteObjective(objectiveId: string, pageId: string): Promise<any> {
     return new Promise((resolve, reject) => {
-      let url: string = this.baseURL + '/objective/' + objectiveId;
+      let url: string = this.baseURL + '/objective/' + objectiveId + '/' + pageId;
       let options = this.authMgr.getDefaultOptions();
 
       this.http.delete(url, options).toPromise().then((response: any) => {
@@ -143,6 +237,22 @@ export class ObjectiveFacade extends AbstractFacade {
 
       this.http.get(url, options).toPromise().then((response: any) => {
         resolve(response.data);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public invite(data: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+
+      let url: string = this.baseURL + '/objective/invite';
+
+      let body = data;
+      let options = this.authMgr.getDefaultOptions();
+
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response);
       }).catch((error: any) => {
         reject(error);
       });

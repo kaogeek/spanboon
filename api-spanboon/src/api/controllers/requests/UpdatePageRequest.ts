@@ -32,4 +32,5 @@ export class UpdatePageRequest {
     public email: string;
     public province:string;
     public group:string;
+    public autoApprove:boolean;
 }

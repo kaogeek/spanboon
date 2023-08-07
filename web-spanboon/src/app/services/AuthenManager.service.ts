@@ -464,10 +464,10 @@ export class AuthenManager {
     localStorage.removeItem(TOKEN_FCM);
   }
 
-  public getDefaultOptions(): any {
+  public getDefaultOptions(id?: string): any {
     let header = this.getDefaultHeader();
     let userId = this.getCurrentUser();
-    header = header.append('userid', userId ? userId.id : '')
+    header = header.append('userid', userId ? userId.id : id ? id : '')
 
     let httpOptions = {
       headers: header

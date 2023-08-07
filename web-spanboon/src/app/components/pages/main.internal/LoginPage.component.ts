@@ -502,6 +502,11 @@ export class LoginPage extends AbstractPage implements OnInit {
         }
 
         this.router.navigate(['/register'], navigationExtras);
+      } else if (error.error.message === 'You cannot merge this user you have had one.') {
+        this.mockDataMergeSocial.social = mode;
+        this.dataUser = error.error;
+        this.emailOtp = error.error.data.email;
+        this.modeSwitch = "mergeuser";
       } else if (statusMsg === "This Email not exists") {
         let navigationExtras: NavigationExtras = {
           state: {
@@ -734,6 +739,11 @@ export class LoginPage extends AbstractPage implements OnInit {
               btDisplay1: "none"
             }
           });
+        } else if (statusMsg === 'You cannot merge this user you have had one.') {
+          this.mockDataMergeSocial.social = mode;
+          this.dataUser = error.error;
+          this.emailOtp = error.error.data.email;
+          this.modeSwitch = "mergeuser";
         } else if (error.error.status === 0 && this.emailFB) {
           this.isFBLogin = false;
           if (error.error.status === 0) {
@@ -895,6 +905,12 @@ export class LoginPage extends AbstractPage implements OnInit {
               this.login = true;
             }
           });
+        }
+        if (err.error.message === 'You cannot merge this user you have had one.') {
+          this.mockDataMergeSocial.social = mode;
+          this.dataUser = err.error;
+          this.emailOtp = err.error.data.email;
+          this.modeSwitch = "mergeuser";
         } else {
           console.log(err);
           this.login = true;

@@ -10,16 +10,16 @@
   display: flex;
   flex-direction: row;
 
-  >.settings-left {
+  > .settings-left {
     width: 300px;
     margin-right: 10pt;
 
-    >.settings-list {
+    > .settings-list {
       border-radius: 4px;
       border: 1px solid $border-color;
       background: $white;
 
-      >.list-item-menu {
+      > .list-item-menu {
         display: flex;
         flex-direction: row;
         justify-content: flex-start;
@@ -42,17 +42,18 @@
           opacity: 1;
         }
 
-        >.settings-icon {
+        > .settings-icon {
           margin-right: 8pt;
           color: $brandcolor2;
         }
 
-        >.settings-title {}
+        > .settings-title {
+        }
       }
     }
   }
 
-  >.settings-right {
+  > .settings-right {
     width: calc(100% - 300px - 10pt);
     border-radius: 4px;
     border: 1px solid $border-color;
@@ -63,13 +64,13 @@
 }
 
 .fanpage-info {
-  >.info-title {
+  > .info-title {
     @include font-size-8($font-head-500);
     margin: 15pt 50pt 5pt 50pt;
     height: 30pt;
   }
 
-  >.card-info {
+  > .card-info {
     position: relative;
     display: flex;
     flex-direction: row;
@@ -89,19 +90,19 @@
       background: rgba($bg-fog-gray, 0.4);
     }
 
-    >.card-left {
+    > .card-left {
       width: 120pt;
       padding-right: 15pt;
 
-      >.header {
+      > .header {
         @include font-size-10($font-head-500);
       }
 
-      >.header-delete {
+      > .header-delete {
         @include font-size-10($font-head-500);
         display: flex;
 
-        >span {
+        > span {
           @include font-size-9($font-head-500);
           margin-top: 30px;
           color: red;
@@ -116,30 +117,55 @@
       }
     }
 
-    >.delete-page {
+    > .delete-page {
       width: 100%;
       display: flex;
       justify-content: flex-end;
     }
 
-    >.card-right {
+    > .card-right {
       width: calc(100% - 120pt - 15pt);
 
-      >.card-detail {
-        >.dropdown-province {
+      > .card-detail {
+        > .form-group {
+          display: flex;
+          justify-content: flex-start;
+          align-items: center;
+          width: 100%;
+          height: 35pt;
+          margin-bottom: 15pt;
+          gap: 15px;
+
+          > .slide-email {
+            > mat-slide-toggle {
+              display: flex;
+              background-color: #fff;
+              border: 0.7px solid rgba(0, 0, 0, 0.3);
+              width: 50pt;
+              height: 28pt;
+              border-radius: 25px;
+
+              > label {
+                justify-content: center;
+              }
+            }
+          }
+        }
+
+        > .dropdown-province {
           .mat-form-field {
-            >.mat-form-field-wrapper {
-              >.mat-form-field-flex {
+            > .mat-form-field-wrapper {
+              > .mat-form-field-flex {
                 background-color: white;
 
-                >.mat-form-field-infix {
+                > .mat-form-field-infix {
                   border: 1px solid #e5e5e5;
                   border-radius: 4px;
 
                   .mat-select {
-                    >.mat-select-trigger {
-                      >.mat-select-value {
-                        >span {
+                    > .mat-select-trigger {
+                      > .mat-select-value {
+                        > span {
                           margin-left: 10px;
                         }
                       }
@@ -151,42 +177,42 @@
           }
         }
 
-        >.mat-radio-group {
+        > .mat-radio-group {
           display: flex;
           flex-direction: column;
 
-          >.mat-radio-button {
+          > .mat-radio-button {
             margin-bottom: 3pt;
             width: fit-content;
             @include font-size-9($font-head-400);
           }
 
-          >.mat-radio-checked {
+          > .mat-radio-checked {
             @include font-size-9($font-head-600);
           }
         }
 
-        >.set-time-to-date {
+        > .set-time-to-date {
           margin-top: 8pt;
 
-          >.date-time {
+          > .date-time {
             // display: flex;
             // flex-direction: row;
             // align-items: center;
             // margin: 5pt 0;
 
-            >.card-date {
+            > .card-date {
               display: flex;
               flex-direction: row;
               align-items: center;
               margin: 5pt 0;
 
-              >.date {
+              > .date {
                 width: 100pt;
               }
 
-              >.time {
-                >.to {
+              > .time {
+                > .to {
                   font-size: 20pt;
                   height: 20pt;
                   font-weight: 900;
@@ -194,8 +220,8 @@
                 }
               }
 
-              >.add-time,
-              >.remove-time {
+              > .add-time,
+              > .remove-time {
                 width: 26pt;
                 height: 26pt;
                 display: flex;
@@ -221,13 +247,13 @@
           }
         }
 
-        >.div-map {
+        > .div-map {
           width: 100%;
           height: 300px;
           margin: 8pt 0;
         }
 
-        >.div-checkbox {
+        > .div-checkbox {
           display: flex;
           flex-direction: row;
           justify-content: flex-start;
@@ -236,10 +262,10 @@
           margin-top: 8pt;
           color: $black;
 
-          >.mat-checkbox {
-            >.mat-checkbox-layout {
-              >.mat-checkbox-label {
-                >.checkbox-confirm {
+          > .mat-checkbox {
+            > .mat-checkbox-layout {
+              > .mat-checkbox-label {
+                > .checkbox-confirm {
                   @include font-size-10($font-head-500);
                 }
               }
@@ -247,31 +273,31 @@
           }
         }
 
-        >.card-bottom {
+        > .card-bottom {
           display: none;
 
           &.active {
             display: block;
           }
 
-          >.card-title {
+          > .card-title {
             padding-top: 8pt;
             @include font-size-10($font-head-400);
             color: rgba($black, 0.5);
             word-break: break-word;
           }
 
-          >.display-name {
+          > .display-name {
             margin-top: 3px;
             @include font-size-9($font-head-500);
             word-break: break-all;
             padding: 0 13px;
           }
 
-          >.card-confirm {
+          > .card-confirm {
             padding-top: 8pt;
 
-            >.save-card {
+            > .save-card {
               color: $white;
               background: $brandcolor2;
               opacity: 0.7;
@@ -286,13 +312,13 @@
               }
             }
 
-            >.cancel-card {
+            > .cancel-card {
               color: $brandcolor2;
               background: transparent;
               @include font-size-10($font-head-500);
 
               &:hover {
-                >.mat-button-wrapper {
+                > .mat-button-wrapper {
                   color: rgba($brandcolor2, 0.95);
                 }
               }
@@ -308,14 +334,14 @@
     display: flex;
     align-items: center;
 
-    >label {
+    > label {
       position: absolute;
       left: 9pt;
       @include font-size-8($font-content-light);
       bottom: 6pt;
     }
 
-    >.input-data {
+    > .input-data {
       padding-right: 26pt;
     }
 
@@ -370,30 +396,31 @@
   }
 
   .mat-checkbox {
-
     // display: flex;
     // justify-content: center;
     // align-items: center;
-    >.mat-checkbox-layout {
+    > .mat-checkbox-layout {
       margin-bottom: 0;
 
-      >.mat-checkbox-inner-container {
+      > .mat-checkbox-inner-container {
         width: 14pt;
         height: 14pt;
 
-        >.mat-checkbox-fram {
+        > .mat-checkbox-fram {
           // border-color: $black;
         }
       }
 
-      >.mat-checkbox-label {
+      > .mat-checkbox-label {
         @include font-size-9($font-head-500);
       }
     }
   }
 
-  .mat-checkbox-checked:not(.mat-checkbox-disabled).mat-accent .mat-ripple-element,
-  .mat-checkbox:active:not(.mat-checkbox-disabled).mat-accent .mat-ripple-element {
+  .mat-checkbox-checked:not(.mat-checkbox-disabled).mat-accent
+    .mat-ripple-element,
+  .mat-checkbox:active:not(.mat-checkbox-disabled).mat-accent
+    .mat-ripple-element {
     background: $brandcolor2;
   }
 
@@ -419,7 +446,7 @@
 }
 
 .delete-page {
-  >.delete-card {
+  > .delete-card {
     margin-left: 5pt;
     width: 70pt;
     min-width: 70pt;
@@ -436,23 +463,23 @@
 
 @media (max-width: $large) {
   .fanpage-info {
-    >.info-title {
+    > .info-title {
       @include font-size-9($font-head-500);
     }
 
-    >.card-info {
-      >.card-left {
-        >.header {
+    > .card-info {
+      > .card-left {
+        > .header {
           @include font-size-10($font-head-500);
         }
       }
 
-      >.card-right {
+      > .card-right {
         @include font-size-10($font-head-500);
 
-        >.card-detail {
-
-          >.input-data {}
+        > .card-detail {
+          > .input-data {
+          }
 
           //             > .card-bottom {
           //                 > .card-title {
@@ -468,7 +495,7 @@
           //                     }
           //                 }
           // }
-          >.div-checkbox {
+          > .div-checkbox {
             align-items: center;
             @include font-size-11($font-head-500);
           }
@@ -480,28 +507,29 @@
 
 @media (max-width: $lmedium) {
   .fanpage-info {
-    >.info-title {
+    > .info-title {
       margin: 15pt 30pt 5pt 30pt;
       @include font-size-9($font-head-500);
     }
 
-    >.card-info {
+    > .card-info {
       margin: 0 20pt;
 
-      >.card-left {
+      > .card-left {
         width: 88pt;
 
-        >.header {
+        > .header {
           @include font-size-10($font-head-500);
         }
       }
 
-      >.card-right {
+      > .card-right {
         width: calc(100% - 88pt - 15pt);
         @include font-size-10($font-head-500);
 
-        >.card-detail {
-          >.input-data {}
+        > .card-detail {
+          > .input-data {
+          }
 
           //             > .card-bottom {
           //                 > .card-title {
@@ -517,7 +545,7 @@
           //                     }
           //                 }
           // }
-          >.div-checkbox {
+          > .div-checkbox {
             align-items: center;
             @include font-size-11($font-head-500);
           }
@@ -529,46 +557,47 @@
 
 @media (max-width: $medium) {
   .fanpage-info {
-    >.info-title {}
+    > .info-title {
+    }
 
-    >.card-info {
+    > .card-info {
       flex-direction: column;
 
-      >.card-left {
-        >.header {
+      > .card-left {
+        > .header {
           @include font-size-10($font-head-500);
         }
       }
 
-      >.card-right {
+      > .card-right {
         width: 100%;
         padding-top: 8pt;
         @include font-size-9($font-head-500);
 
-        >.card-detail {
-          >.input-data {
+        > .card-detail {
+          > .input-data {
             @include font-size-10($font-content-light);
           }
 
-          >.card-bottom {
-            >.card-title {
+          > .card-bottom {
+            > .card-title {
               font-size: 11px;
             }
 
-            >.card-confirm {
+            > .card-confirm {
               text-align: flex-end;
 
-              >.save-card {
+              > .save-card {
                 @include font-size-11($font-head-500);
               }
 
-              >.cancel-card {
+              > .cancel-card {
                 @include font-size-11($font-head-500);
               }
             }
           }
 
-          >.div-checkbox {
+          > .div-checkbox {
             align-items: center;
             @include font-size-10($font-head-500);
           }
@@ -582,53 +611,53 @@
   .fanpage-info {
     min-height: calc(100vh - 39pt);
 
-    >.info-title {
+    > .info-title {
       margin: 15pt 16pt 5pt 16pt;
       @include font-size-9($font-head-500);
     }
 
-    >.card-info {
+    > .card-info {
       margin: 0 5pt;
       flex-direction: column;
 
-      >.card-left {
-        >.header {
+      > .card-left {
+        > .header {
           @include font-size-10($font-head-500);
         }
       }
 
-      >.card-right {
+      > .card-right {
         width: 100%;
         padding-top: 8pt;
         @include font-size-9($font-head-500);
 
-        >.card-detail {
-          >.card-bottom {
-            >.card-title {
+        > .card-detail {
+          > .card-bottom {
+            > .card-title {
               font-size: 11px;
             }
 
-            >.card-confirm {
+            > .card-confirm {
               text-align: flex-end;
 
-              >.save-card {
+              > .save-card {
                 @include font-size-11($font-head-500);
               }
 
-              >.cancel-card {
+              > .cancel-card {
                 @include font-size-11($font-head-500);
               }
             }
           }
 
-          >.div-checkbox {
+          > .div-checkbox {
             align-items: center;
             @include font-size-10($font-head-500);
           }
         }
 
-        >.crop-input {
-          >.input-data {
+        > .crop-input {
+          > .input-data {
             @include font-size-10($font-head-500);
           }
         }

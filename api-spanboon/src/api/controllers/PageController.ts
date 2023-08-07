@@ -112,7 +112,7 @@ export class PageController {
         private notificationService: NotificationService,
         private deletePageService: DeletePageService,
         private pageGroupService: PageGroupService,
-        private manipulateService:ManipulateService
+        private manipulateService: ManipulateService
     ) { }
 
     @Get('/report/manipulate')
@@ -2287,7 +2287,9 @@ export class PageController {
      * HTTP/1.1 500 Internal Server Error
      */
     @Post('/search')
-    public async searchPage(@QueryParam('limit') limit: number, @QueryParam('offset') offset: number, @Body({ validate: true }) filter: SearchFilter, @Res() res: any): Promise<any> {
+    public async searchPage(@QueryParam('limit') limit: number, @QueryParam('offset') offset: number, @Body({ validate: true }) filter: SearchFilter, @Res() res: any, @Req() req: any): Promise<any> {
+        const userId = new ObjectID(req.headers.userid);
+        let pageLists: any;
         if (ObjectUtil.isObjectEmpty(filter)) {
             return res.status(200).send([]);
         }
@@ -2303,9 +2305,57 @@ export class PageController {
         } else {
             filter.whereConditions = {};
         }
+        const stackPageId = [];
+        const pageObj = await this.pageService.find({ ownerUser: userId });
+        if (pageObj.length > 0) {
+            for (const page of pageObj) {
+                stackPageId.push(new ObjectID(page.id));
+            }
+        }
+        if (userId !== undefined && stackPageId.length > 0) {
+            const limits = filter.limit;
+            const ban = filter.whereConditions.banned;
+            const keyword = filter.keyword;
+            const exp = { $regex: '.*' + keyword + '.*', $options: 'si' };
+
+            pageLists = await this.pageService.aggregate(
+                [
+                    {
+                        $match: { banned: ban, name: exp, _id: { $nin: stackPageId } }
+                    },
+                    {
+                        $lookup: {
+                            from: 'PageObjectiveJoiner',
+                            let: { id: '$_id' },
+                            pipeline: [
+                                {
+                                    $match: {
+                                        $expr: {
+                                            $or: [
+                                                {
+                                                    $eq: ['$$id', '$joiner']
+                                                },
+                                            ]
+                                        }
+                                    }
+                                }
+                            ],
+                            as: 'pageObjectiveJoiner'
+                        }
+                    },
+                    {
+                        $limit: limits
+                    }
+                ]
+            );
+            if (pageLists.length > 0) {
+                const successResponse = ResponseUtil.getSuccessResponse('Successfully Search Page', pageLists);
+                return res.status(200).send(successResponse);
+            }
+        }
 
         // const pageLists: any = await this.pageService.search(filter, { signURL: true });
-        const pageLists: any = await this.pageService.search(filter, { signURL: true });
+        pageLists = await this.pageService.search(filter, { signURL: true });
 
         if (pageLists) {
             const successResponse = ResponseUtil.getSuccessResponse('Successfully Search Page', pageLists);
@@ -2740,6 +2790,7 @@ export class PageController {
             let pageEmail = pages.email;
             let pageGroup = pages.group;
             let pageProvince = pages.province;
+            let pageAutoApprove = pages.autoApprove;
             const pageAccessLevel = pages.pageAccessLevel;
             // const assetQuery = { userId: ownerUsers };
             // const newFileName = ownerUsers + FileUtil.renameFile + ownerUsers;
@@ -2799,6 +2850,10 @@ export class PageController {
                 pageGroup = pageUpdate.group;
 
             }
+            if (pageAutoApprove === null && pageAutoApprove === undefined) {
+                pageAutoApprove = pageUpdate.autoApprove;
+            }
+
             // let updateImageAsset;
             // let updatedImageAsset;
             // let assetId;
@@ -2902,6 +2957,7 @@ export class PageController {
                     email: pageEmail,
                     province: pageProvince,
                     group: pageGroup,
+                    autoApprove: pageAutoApprove
                 }
             };
             const pageSave = await this.pageService.update(updateQuery, newValue);
