@@ -518,7 +518,7 @@
                                         <ng-container
                                             *ngIf="resObjective && resObjective.length > 0; else elseHasObjective">
                                             <div class="wrapper-doing" id="wrapper-doing"
-                                                [class.active-click-doing]="selectedObjectiveId === item._id"
+                                                [class.active-click-doing]="(selectedObjectiveId === item._id) || (selectedObjectiveId === item.objectiveId) && selectedObjectiveId !== undefined"
                                                 *ngFor="let item of resObjective ; let i = index"
                                                 (click)="clickCardObjective(i,item)">
                                                 <!-- <ng-container *ngIf="selectedObjectiveId === item.id">
@@ -635,13 +635,18 @@
                                                                         [src]="item.iconSignURL ? item.iconSignURL : item.iconBase64"
                                                                         alt="">
                                                                     <ng-container
-                                                                        *ngIf="item.pageObjectiveJoiner.length === 0; else elseObjJoin">
+                                                                        *ngIf="item && item.pageObjectiveJoiner.length === 0; else elseObjJoin">
                                                                         <img class="lock"
                                                                             src="'../../../../../assets/img/public-objective.svg"
                                                                             alt="">
                                                                     </ng-container>
                                                                     <ng-template #elseObjJoin>
-                                                                        <img class="lock"
+                                                                        <img *ngIf="item.pageObjectiveJoiner[0].approve === false"
+                                                                            class="lock"
+                                                                            src="'../../../../../assets/img/public-objective.svg"
+                                                                            alt="">
+                                                                        <img *ngIf="item.pageObjectiveJoiner[0].approve === true"
+                                                                            class="lock"
                                                                             src="'../../../../../assets/img/joined-objective.svg"
                                                                             alt="">
                                                                     </ng-template>
