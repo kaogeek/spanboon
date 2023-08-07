@@ -356,7 +356,7 @@ export class ObjectiveController {
         const interval_15 = 15;
         const interval_30 = 30;
         let checkJoinObjective = undefined;
-        let notificationTextApprove:string;
+        let notificationTextApprove: string;
         const searchObjective = await this.pageObjectiveJoinerService.find({ objectiveId: objtiveIds });
         checkJoinObjective = await this.pageObjectiveJoinerService.findOne({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId });
         const checkPublicObjective = await this.pageObjectiveService.findOne({ _id: objtiveIds });
@@ -2212,8 +2212,9 @@ export class ObjectiveController {
                 result['join'] = join;
                 result['approve'] = false;
                 const createJoin = await this.pageObjectiveJoinerService.create(result);
+                console.log('createJoin', createJoin);
                 if (createJoin) {
-                    pageJoinerIds.push(createJoin.id);
+                    pageJoinerIds.push(new ObjectID(createJoin.id));
                     checkJoinObjective = await this.pageObjectiveJoinerService.find({ objectiveId: objtiveIds, pageId: pageObjId, joiner: { $in: joinerObjId } });
                     checkPublicObjective = await this.pageObjectiveService.findOne({ _id: objtiveIds });
                     pageOwner = await this.pageService.findOne({ _id: pageObjId });
@@ -2237,12 +2238,14 @@ export class ObjectiveController {
         if (checkPublicObjective !== undefined && join === true && checkPublicObjective.personal === true) {
             if (pageJoiner.length > 0 && pageOwner.id !== undefined) {
                 const notiOwners = await this.deviceTokenService.find({ userId: pageOwner.ownerUser });
-                for (const pageJoin of pageJoiner) {
-                    const joinerIds: any = await this.pageObjectiveJoinerService.findOne({ joiner: new ObjectID(pageJoin._id) });
+                for (const pageJoin of pageJoinerIds) {
+                    // console.log('pageJoin', pageJoin);
+                    const joinerIds: any = await this.pageObjectiveJoinerService.findOne({ _id: new ObjectID(pageJoin) });
+                    // console.log('joinerIds', joinerIds);
                     notificationText = pageOwner.name + space + 'เชิญเข้าร่วมกิจกรรม' + space + checkPublicObjective.title;
-                    link = `/page/${pageJoin._id}/`;
+                    link = `/page/${joinerIds.pageId}/`;
                     await this.pageNotificationService.notifyToPageUserObjective(
-                        pageJoin._id + '',
+                        joinerIds.joiner + '',
                         undefined,
                         req.user.id + '',
                         USER_TYPE.PAGE,
@@ -2253,7 +2256,7 @@ export class ObjectiveController {
                         pageOwner.imageURL,
                         pageJoiner.length,
                         mode,
-                        joinerIds.id,
+                        pageJoin,
 
                     );
                 }
