@@ -998,6 +998,7 @@ export class ObjectiveController {
                 { pageId: joinObjective.joiner, objective: joinObjective.objectiveId },
                 { $set: { objective: null, objectiveTag: null } }
             );
+
             const notfi = await this.notificationService.delete({ _id: notiObjIds, type: 'OBJECTIVE' });
             if (update && postUpdate && notfi) {
                 const successResponse = ResponseUtil.getSuccessResponse('Unjoin is successfully.', []);
@@ -1918,6 +1919,13 @@ export class ObjectiveController {
             await this.hashTagService.update(queryHashTag, newValueHashTag);
             objectiveSave = await this.pageObjectiveService.update(updateQuery, newValue);
 
+            // update disjoin
+            const disJoinObjective = await this.pageObjectiveJoinerService.find({ objectiveId: objId, pageId: pageObjId });
+            if (disJoinObjective.length > 0) {
+                for (const disJoinIds of disJoinObjective) {
+                    await this.disJoinObjectives(disJoinIds.objectiveId, disJoinIds.pageId, disJoinIds.joiner);
+                }
+            }
             // update hashTag name 
             await this.postsService.updateMany({ objective: objId }, { $set: { objectiveTag: hashTagName } });
 
@@ -2655,6 +2663,25 @@ export class ObjectiveController {
                 const errorResponse = ResponseUtil.getErrorResponse('Follow PageObjective Failed', undefined);
                 return res.status(400).send(errorResponse);
             }
+        }
+    }
+
+    private async disJoinObjectives(objectiveId: string, pageId: string, joinerId: string): Promise<any> {
+        const objtiveIds = new ObjectID(objectiveId);
+        const pageObjId = new ObjectID(pageId);
+        const joinerObjId = new ObjectID(joinerId);
+        const joinObjective = await this.pageObjectiveJoinerService.findOne({ objectiveId: objtiveIds, pageId: pageObjId, joiner: joinerObjId });
+        if (joinObjective) {
+            const query = {
+                objectiveId: joinObjective.objectiveId,
+                pageId: joinObjective.pageId,
+                joiner: joinObjective.joiner,
+            };
+            await this.pageObjectiveJoinerService.delete(query);
+            await this.postsService.updateMany(
+                { pageId: joinObjective.joiner, objective: joinObjective.objectiveId },
+                { $set: { objective: null, objectiveTag: null } }
+            );
         }
     }
 }
