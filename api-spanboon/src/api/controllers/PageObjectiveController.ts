@@ -1917,6 +1917,10 @@ export class ObjectiveController {
             newValueHashTag = { $set: { name: hashTagName } };
             await this.hashTagService.update(queryHashTag, newValueHashTag);
             objectiveSave = await this.pageObjectiveService.update(updateQuery, newValue);
+
+            // update hashTag name 
+            await this.postsService.updateMany({ objective: objId }, { $set: { objectiveTag: hashTagName } });
+
             if (objectiveSave) {
                 objectiveSave = await this.pageObjectiveService.findOne({ pageId: pageObjId, _id: objId });
                 const result: any = {};
@@ -2157,6 +2161,10 @@ export class ObjectiveController {
                 queryHashTag = { objectiveId: objId, pageId: pageObjId, type: 'OBJECTIVE' };
                 newValueHashTag = { $set: { name: hashTagName } };
                 await this.hashTagService.update(queryHashTag, newValueHashTag);
+
+                // update hashTag name 
+                await this.postsService.updateMany({ pageId: pageObjId, objective: objId }, { $set: { objectiveTag: hashTagName } });
+
                 if (objectiveSave) {
                     objectiveSave = await this.pageObjectiveService.findOne({ _id: objId, pageId: pageObjId });
                     const result: any = {};
