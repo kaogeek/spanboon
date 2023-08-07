@@ -701,7 +701,6 @@ export class ObjectiveController {
                     result['join'] = join;
                     result['approve'] = false;
                     create = await this.pageObjectiveJoinerService.create(result);
-                    console.log('create',create);
                     const noti: any = await this.pageNotificationService.notifyToPageUserObjective(
                         pageOwner.id + '',
                         undefined,
@@ -1023,6 +1022,7 @@ export class ObjectiveController {
         const pageJoiner = await this.pageService.findOne({ _id: joinerObjId });
         const pageOwner = await this.pageService.findOne({ _id: pageObjId });
         const space = ' ';
+
         const checkPublicObjective = await this.pageObjectiveService.findOne({ _id: objtiveIds, pageId: pageObjId });
         const notificationCheck = await this.notificationService.findOne({ _id: notiObjId });
         let notificationText = undefined;

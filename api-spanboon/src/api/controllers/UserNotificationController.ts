@@ -411,7 +411,7 @@ export class UserNotificationController {
                     result.mode = notiPage.mode;
                     result.createdDate = notiPage.createdDate;
                     result.objectiveId = notiPage.pageObjectiveJoiner.objectiveId;
-                    result.pageId = notiPage.pageObjectiveJoiner.page._id;
+                    result.pageId = notiPage.pageObjectiveJoiner.pageId;
                     result.joinerId = notiPage.pageObjectiveJoiner.joiner;
                     result.imageUrl = notiPage.pageObjectiveJoiner.page.s3ImageURL ? notiPage.pageObjectiveJoiner.page.s3ImageURL : notiPage.pageObjectiveJoiner.page.imageURL;
                     result.join = notiPage.pageObjectiveJoiner.join;
