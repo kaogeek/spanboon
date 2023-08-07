@@ -189,7 +189,10 @@ export class UserNotificationController {
         const invites: any = await this.notificationService.aggregate(
             [
                 {
-                    $match: { toUser: userObjId, type: 'OBJECTIVE' },
+                    $match: { toUser: userObjId, type: 'OBJECTIVE', mode: 'invite' },
+                },
+                {
+                    $sort: { createdDate: -1 }
                 },
                 {
                     $lookup: {
@@ -258,8 +261,97 @@ export class UserNotificationController {
                         preserveNullAndEmptyArrays: true
                     }
                 },
+
+                {
+                    $limit: limits
+                },
+                {
+                    $skip: skips
+                },
+            ]
+        );
+
+        const joinNoti: any = await this.notificationService.aggregate(
+            [
+                {
+                    $match: { toUser: userObjId, type: 'OBJECTIVE', mode: 'join' }
+                },
                 {
                     $sort: { createdDate: -1 }
+                },
+                {
+                    $lookup: {
+                        from: 'PageObjectiveJoiner',
+                        let: { joinObjectiveId: '$joinObjectiveId' },
+                        pipeline: [
+                            {
+                                $match: {
+                                    $expr: {
+                                        $eq: ['$$joinObjectiveId', '$_id']
+                                    }
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'PageObjective',
+                                    let: { objectiveId: '$objectiveId' },
+                                    pipeline: [
+                                        {
+                                            $match: {
+                                                $expr: {
+                                                    $eq: ['$$objectiveId', '$_id']
+                                                }
+                                            }
+                                        },
+
+                                        {
+                                            $unwind: {
+                                                path: '$page',
+                                                preserveNullAndEmptyArrays: true
+                                            }
+                                        },
+
+                                    ],
+                                    as: 'pageObjective'
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'Page',
+                                    let: { joiner: '$joiner' },
+                                    pipeline: [
+                                        {
+                                            $match: {
+                                                $expr: {
+                                                    $eq: ['$$joiner', '$_id']
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    as: 'page'
+                                }
+                            },
+                            {
+                                $unwind: {
+                                    path: '$page',
+                                    preserveNullAndEmptyArrays: true
+                                }
+                            },
+                            {
+                                $unwind: {
+                                    path: '$pageObjective',
+                                    preserveNullAndEmptyArrays: true
+                                }
+                            },
+                        ],
+                        as: 'pageObjectiveJoiner'
+                    }
+                },
+                {
+                    $unwind: {
+                        path: '$pageObjectiveJoiner',
+                        preserveNullAndEmptyArrays: true
+                    }
                 },
                 {
                     $limit: limits
@@ -292,6 +384,36 @@ export class UserNotificationController {
                     result.pageId = notiPage.pageObjectiveJoiner.pageObjective.page._id;
                     result.joinerId = notiPage.pageObjectiveJoiner.joiner;
                     result.imageUrl = notiPage.pageObjectiveJoiner.pageObjective.page.s3ImageURL ? notiPage.pageObjectiveJoiner.pageObjective.page.s3ImageURL : notiPage.pageObjectiveJoiner.pageObjective.page.imageURL;
+                    result.join = notiPage.pageObjectiveJoiner.join;
+                    result.approve = notiPage.pageObjectiveJoiner.approve;
+                    pageObjectives.push(result);
+                } else {
+                    continue;
+                }
+            }
+        }
+        if (joinNoti.length > 0) {
+            for (const notiPage of joinNoti) {
+                //  
+                if (notiPage !== undefined && notiPage.pageObjectiveJoiner !== undefined) {
+                    const result: any = {};
+                    result['id'] = notiPage._id;
+                    result.title = notiPage.title;
+                    result.fromUser = notiPage.fromUser;
+                    result.toUser = notiPage.toUser;
+                    result.isRead = notiPage.isRead;
+                    result.toUserType = notiPage.toUserType;
+                    result.fromUserType = notiPage.fromUserType;
+                    result.link = notiPage.link;
+                    result.type = notiPage.type;
+                    result.deleted = notiPage.deleted;
+                    result.data = notiPage.data;
+                    result.mode = notiPage.mode;
+                    result.createdDate = notiPage.createdDate;
+                    result.objectiveId = notiPage.pageObjectiveJoiner.objectiveId;
+                    result.pageId = notiPage.pageObjectiveJoiner.page._id;
+                    result.joinerId = notiPage.pageObjectiveJoiner.joiner;
+                    result.imageUrl = notiPage.pageObjectiveJoiner.page.s3ImageURL ? notiPage.pageObjectiveJoiner.page.s3ImageURL : notiPage.pageObjectiveJoiner.page.imageURL;
                     result.join = notiPage.pageObjectiveJoiner.join;
                     result.approve = notiPage.pageObjectiveJoiner.approve;
                     pageObjectives.push(result);

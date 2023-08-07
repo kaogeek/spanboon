@@ -511,7 +511,7 @@ export class ObjectiveController {
                         undefined,
                         req.user.id + '',
                         USER_TYPE.PAGE,
-                        NOTIFICATION_TYPE.LIKE,
+                        NOTIFICATION_TYPE.OBJECTIVE,
                         notificationText,
                         link,
                         pageJoiner.name,
@@ -572,7 +572,7 @@ export class ObjectiveController {
                         undefined,
                         req.user.id + '',
                         USER_TYPE.PAGE,
-                        NOTIFICATION_TYPE.LIKE,
+                        NOTIFICATION_TYPE.OBJECTIVE,
                         notificationText,
                         link,
                         pageJoiner.name,
@@ -633,7 +633,7 @@ export class ObjectiveController {
                         undefined,
                         req.user.id + '',
                         USER_TYPE.PAGE,
-                        NOTIFICATION_TYPE.LIKE,
+                        NOTIFICATION_TYPE.OBJECTIVE,
                         notificationText,
                         link,
                         pageJoiner.name,
@@ -701,6 +701,7 @@ export class ObjectiveController {
                     result['join'] = join;
                     result['approve'] = false;
                     create = await this.pageObjectiveJoinerService.create(result);
+                    console.log('create',create);
                     const noti: any = await this.pageNotificationService.notifyToPageUserObjective(
                         pageOwner.id + '',
                         undefined,
@@ -714,7 +715,6 @@ export class ObjectiveController {
                         searchObjective.length,
                         mode,
                         create.id
-
                     );
                     for (const notiOwner of notiOwners) {
                         if (notiOwner.Tokens !== null && notiOwner.Tokens !== undefined && notiOwner.Tokens !== '') {
@@ -752,7 +752,7 @@ export class ObjectiveController {
                         undefined,
                         req.user.id + '',
                         USER_TYPE.PAGE,
-                        NOTIFICATION_TYPE.LIKE,
+                        NOTIFICATION_TYPE.OBJECTIVE,
                         notificationText,
                         link,
                         pageJoiner.name,
