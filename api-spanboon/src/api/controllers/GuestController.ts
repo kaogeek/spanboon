@@ -62,6 +62,48 @@ export class GuestController {
         private otpService: OtpService
     ) { }
 
+    @Get('/register/date')
+    public async getUserRegisterByDate(@QueryParam('limit') limit: number, @QueryParam('offset') offset: number, @Res() res: any): Promise<any> {
+        try {
+            if (offset === undefined) {
+                offset = 0;
+            }
+            if (limit === undefined) {
+                limit = 10;
+            }
+
+            const user = await this.userService.aggregate([
+                {
+                    $sort: { createdDate: -1 }
+                },
+                {
+                    $group: {
+                        _id: {
+                            $dateToString: {
+                                format: '%Y-%m-%d',
+                                date: '$createdDate'
+                            }
+                        },
+                        count: { $sum: 1 }
+                    }
+                },
+                { $limit: limit },
+                { $skip: offset },
+                {
+                    $sort: { _id: -1 }
+                }
+            ]);
+
+            if (!!user) {
+                return res.status(200).send(ResponseUtil.getSuccessResponse('Get User Register By Date Success', user));
+            } else {
+                return res.status(400).send(ResponseUtil.getErrorResponse('Get User Register By Date Failed', undefined));
+            }
+        } catch (error) {
+            return res.status(400).send(ResponseUtil.getErrorResponse('Cannot Get User Register By Date', error));
+        }
+    }
+
     /**
      * @api {post} /api/register Create User
      * @apiGroup Guest API
@@ -920,7 +962,7 @@ export class GuestController {
         let loginToken: any;
         let loginUser: any;
         if (mode === PROVIDER.EMAIL) {
-            const userName:string = loginUsername.toLocaleLowerCase();
+            const userName: string = loginUsername.toLocaleLowerCase();
             const tokenFCMEm = req.body.tokenFCM;
             const deviceNameEm = req.body.deviceName;
             const userLogin: any = await this.userService.findOne({ where: { username: userName } });
@@ -1607,7 +1649,7 @@ export class GuestController {
                     const errorResponse: any = { status: 0, message: 'Invalid Token.' };
                     return res.status(400).send(errorResponse);
                 }
-                
+
                 // const expiresAt = checkIdToken.expire;
                 // const today = moment().toDate();
                 let googleUser = undefined;
