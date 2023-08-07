@@ -274,8 +274,6 @@ export class UserNotificationController {
             for (const notiPage of invites) {
                 // && notiPage.InviteNotification.isRead === false 
                 if (notiPage !== undefined && notiPage.pageObjectiveJoiner !== undefined) {
-                    console.log('notiPage', notiPage);
-                    console.log('notiPage', notiPage.pageObjectiveJoiner.pageObjective.page);
                     const result: any = {};
                     result['id'] = notiPage._id;
                     result.title = notiPage.title;
