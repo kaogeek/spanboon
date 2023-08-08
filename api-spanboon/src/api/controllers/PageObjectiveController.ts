@@ -1495,7 +1495,6 @@ export class ObjectiveController {
             if (aggregateStmt !== undefined && aggregateStmt.length > 0) {
                 objectiveLists = await this.pageObjectiveService.aggregate(aggregateStmt);
             } else {
-
                 objectiveLists = await this.pageObjectiveService.aggregate(
                     [
                         {
@@ -1533,13 +1532,38 @@ export class ObjectiveController {
                                                 $eq: ['$$id', '$objectiveId']
                                             }
                                         }
-                                    }
+                                    },
+                                    {
+                                        $lookup: {
+                                            from: 'HashTag',
+                                            let: { objectiveId: '$objectiveId' },
+                                            pipeline: [
+                                                {
+                                                    $match: {
+                                                        $expr: {
+                                                            $eq: ['$$objectiveId', '$objectiveId']
+                                                        }
+                                                    }
+                                                }
+                                            ],
+                                            as: 'hashTag'
+                                        }
+                                    },
+                                    {
+                                        $unwind: {
+                                            path: '$hashTag',
+                                            preserveNullAndEmptyArrays: true
+                                        }
+                                    },
                                 ],
                                 as: 'pageObjectiveJoiner'
                             }
                         },
                         {
-                            $match: { page: { $ne: [] } }
+                            $unwind: {
+                                path: '$pageObjectiveJoiner',
+                                preserveNullAndEmptyArrays: true
+                            }
                         },
                         {
                             $sort: {
@@ -1715,7 +1739,10 @@ export class ObjectiveController {
                 result['createdDate'] = data.createdDate;
                 result['createdBy'] = data.createdBy;
                 result['page'] = data.page;
-                result['pageObjectiveJoiner'] = data.pageObjectiveJoiner;
+                result['name'] = data.pageObjectiveJoiner ? data.pageObjectiveJoiner.hashTag.name : undefined;
+                result['personal'] = data.pageObjectiveJoiner ? data.pageObjectiveJoiner.hashTag.personal : undefined;
+                result['join'] = data.pageObjectiveJoiner ? data.pageObjectiveJoiner.join : undefined;
+                result['approve'] = data.pageObjectiveJoiner ? data.pageObjectiveJoiner.approve :undefined;
                 dataObjective.push(result);
                 const hashTagKey = data.hashTag;
                 const objective = hashTagMap[hashTagKey];
