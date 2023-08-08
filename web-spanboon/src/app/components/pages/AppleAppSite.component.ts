@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import * as jsonData from '../../../../.well-known/apple-app-site-association';
+import * as jsonData from '../../../.well-known/assetlinks.json';
 
 const PAGE_NAME: string = '.well-known';
-const PAGE_NAME_APPLE: string = 'apple-app-site-association';
+const PAGE_NAME_APPLE: string = 'assetlinks.json';
 
 @Component({
     selector: 'my-app',

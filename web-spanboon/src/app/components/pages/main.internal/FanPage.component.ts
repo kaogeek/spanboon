@@ -970,29 +970,29 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     };
     Object.assign(keywordFilter, { hashTag: value });
     this.objectiveFacade.searchObjective(keywordFilter).then((result: any) => {
-      if (result.joinObjective.length > 0) {
-        for (const data of result.joinObjective) {
-          let obj = {
-            category: data.pageObjective.category,
-            hashTag: data.pageObjective.hashTag.name,
-            iconURL: data.pageObjective.iconURL,
-            pageId: data.pageId,
-            objectiveId: data.objectiveId,
-            joiner: data.joiner,
-            join: true,
-            personal: data.pageObjective.personal,
-            title: data.pageObjective.title,
-            _id: data._id,
+      if (result.data.length > 0) {
+        if (result.joinObjective.length > 0) {
+          for (const data of result.joinObjective) {
+            let obj = {
+              category: data.pageObjective.category,
+              hashTag: data.pageObjective.hashTag.name,
+              iconURL: data.pageObjective.iconURL,
+              pageId: data.pageId,
+              objectiveId: data.objectiveId,
+              joiner: data.joiner,
+              join: true,
+              personal: data.pageObjective.personal,
+              title: data.pageObjective.title,
+              _id: data._id,
+            }
+            result.data.push(obj);
           }
-          result.data.push(obj);
+        }
+        if (result.status === 1) {
+          this.resObjective = result.data;
         }
       }
-      result.data.reverse();
-      if (result.status === 1) {
-        this.resObjective = result.data;
-
-        this.isLoading = false;
-      }
+      this.isLoading = false;
     }).catch((err: any) => {
       console.log(err)
       if (err.error.message === 'Cannot Search PageObjective') {
