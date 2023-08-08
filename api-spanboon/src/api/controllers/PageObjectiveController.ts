@@ -1502,6 +1502,22 @@ export class ObjectiveController {
                         },
                         {
                             $lookup: {
+                                from: 'HashTag',
+                                let: { id: '$_id' },
+                                pipeline: [
+                                    {
+                                        $match: {
+                                            $expr: {
+                                                $eq: ['$$id', '$objectiveId']
+                                            }
+                                        }
+                                    }
+                                ],
+                                as: 'hashTag'
+                            }
+                        },
+                        {
+                            $lookup: {
                                 from: 'Page',
                                 let: { pageId: '$pageId' },
                                 pipeline: [
@@ -1533,30 +1549,14 @@ export class ObjectiveController {
                                             }
                                         }
                                     },
-                                    {
-                                        $lookup: {
-                                            from: 'HashTag',
-                                            let: { objectiveId: '$objectiveId' },
-                                            pipeline: [
-                                                {
-                                                    $match: {
-                                                        $expr: {
-                                                            $eq: ['$$objectiveId', '$objectiveId']
-                                                        }
-                                                    }
-                                                }
-                                            ],
-                                            as: 'hashTag'
-                                        }
-                                    },
-                                    {
-                                        $unwind: {
-                                            path: '$hashTag',
-                                            preserveNullAndEmptyArrays: true
-                                        }
-                                    },
                                 ],
                                 as: 'pageObjectiveJoiner'
+                            }
+                        },
+                        {
+                            $unwind: {
+                                path: '$hashTag',
+                                preserveNullAndEmptyArrays: true
                             }
                         },
                         {
@@ -1730,7 +1730,7 @@ export class ObjectiveController {
                 result['detail'] = data.detail;
                 result['iconURL'] = data.iconURL;
                 result['category'] = data.category;
-                result['hashTag'] = data.hashTag;
+                result['hashTag'] = data.hashTag._id;
                 result['s3IconURL'] = data.s3IconURL;
                 result['updateByUsername'] = data.updateByUsername;
                 result['updateDate'] = data.updateDate;
@@ -1739,10 +1739,8 @@ export class ObjectiveController {
                 result['createdDate'] = data.createdDate;
                 result['createdBy'] = data.createdBy;
                 result['page'] = data.page;
-                result['name'] = data.pageObjectiveJoiner ? data.pageObjectiveJoiner.hashTag.name : undefined;
-                result['personal'] = data.pageObjectiveJoiner ? data.pageObjectiveJoiner.hashTag.personal : undefined;
-                result['join'] = data.pageObjectiveJoiner ? data.pageObjectiveJoiner.join : undefined;
-                result['approve'] = data.pageObjectiveJoiner ? data.pageObjectiveJoiner.approve :undefined;
+                result['name'] = data.hashTag.name;
+                result['personal'] = data.hashTag.personal;
                 dataObjective.push(result);
                 const hashTagKey = data.hashTag;
                 const objective = hashTagMap[hashTagKey];
