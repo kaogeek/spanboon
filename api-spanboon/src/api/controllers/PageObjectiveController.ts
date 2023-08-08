@@ -1494,7 +1494,6 @@ export class ObjectiveController {
 
             if (aggregateStmt !== undefined && aggregateStmt.length > 0) {
                 objectiveLists = await this.pageObjectiveService.aggregate(aggregateStmt);
-                console.log('objectiveLists_123: ', objectiveLists);
             } else {
 
                 objectiveLists = await this.pageObjectiveService.aggregate(
@@ -1538,6 +1537,9 @@ export class ObjectiveController {
                                 ],
                                 as: 'pageObjectiveJoiner'
                             }
+                        },
+                        {
+                            $match: { page: { $ne: [] } }
                         },
                         {
                             $sort: {
@@ -1607,6 +1609,9 @@ export class ObjectiveController {
                                 ],
                                 as: 'pageObjective'
                             }
+                        },
+                        {
+                            $match: { page: { $ne: [] } }
                         },
                         {
                             $unwind: {
