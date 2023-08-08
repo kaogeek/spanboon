@@ -1406,7 +1406,7 @@ export class ObjectiveController {
             }
         }
 
-        let objectiveLists: PageObjective[];
+        let objectiveLists: any;
         const limits = parseInt(filter.limit, 10);
         const offsets = parseInt(filter.offset, 10);
         // const orderBys = filter.orderBy.createdDate;
@@ -1415,7 +1415,38 @@ export class ObjectiveController {
         if (sample !== undefined && sample !== null && sample > 0) {
             aggregateStmt = [
                 { $match: filter.whereConditions },
-                { $sample: { size: sample } }
+                {
+                    $lookup: {
+                        from: 'Page',
+                        let: { pageId: '$pageId' },
+                        pipeline: [
+                            {
+                                $match: {
+                                    $expr: {
+                                        $eq: ['$$pageId', '$_id']
+                                    }
+                                }
+                            },
+                            {
+                                $match: {
+                                    isOfficial: true
+                                }
+                            },
+                            {
+                                $project: {
+                                    _id: 1,
+                                    isOfficial: 1
+                                }
+                            }
+                        ],
+                        as: 'page'
+                    }
+                },
+
+                { $sample: { size: sample } },
+                {
+                    $match: { page: { $ne: [] } }
+                }
             ];
             if (filter.orderBy !== undefined) {
                 aggregateStmt.push({ $sort: filter.orderBy });
@@ -1462,7 +1493,8 @@ export class ObjectiveController {
             }
 
             if (aggregateStmt !== undefined && aggregateStmt.length > 0) {
-                objectiveLists = await this.pageObjectiveService.aggregateEntity(aggregateStmt, { signURL: true });
+                objectiveLists = await this.pageObjectiveService.aggregate(aggregateStmt);
+                console.log('objectiveLists_123: ', objectiveLists);
             } else {
 
                 objectiveLists = await this.pageObjectiveService.aggregate(
@@ -1615,7 +1647,15 @@ export class ObjectiveController {
                                         $match: {
                                             isOfficial: true
                                         }
-                                    }
+                                    },
+                                    {
+                                        $project:
+                                        {
+                                            _id: 1,
+                                            isOfficial: 1
+                                        }
+                                    },
+
                                 ],
                                 as: 'page'
                             }
@@ -1652,7 +1692,26 @@ export class ObjectiveController {
         }
 
         if (objectiveLists !== null && objectiveLists !== undefined && objectiveLists.length > 0) {
+            const dataObjective: any = [];
             objectiveLists.map((data) => {
+                const result: any = {};
+                result['id'] = data._id;
+                result['pageId'] = data.pageId;
+                result['title'] = data.title;
+                result['detail'] = data.detail;
+                result['iconURL'] = data.iconURL;
+                result['category'] = data.category;
+                result['hashTag'] = data.hashTag;
+                result['s3IconURL'] = data.s3IconURL;
+                result['updateByUsername'] = data.updateByUsername;
+                result['updateDate'] = data.updateDate;
+                result['createdByUsername'] = data.createdByUsername;
+                result['createdTime'] = data.createdTime;
+                result['createdDate'] = data.createdDate;
+                result['createdBy'] = data.createdBy;
+                result['page'] = data.page;
+                result['pageObjectiveJoiner'] = data.pageObjectiveJoiner;
+                dataObjective.push(result);
                 const hashTagKey = data.hashTag;
                 const objective = hashTagMap[hashTagKey];
 
@@ -1662,7 +1721,7 @@ export class ObjectiveController {
                 }
             });
 
-            const successResponse = ResponseUtil.getSuccessResponseObjective('Successfully Search PageObjective', objectiveLists, pageObjectiveJoiner);
+            const successResponse = ResponseUtil.getSuccessResponseObjective('Successfully Search PageObjective', dataObjective, pageObjectiveJoiner);
             return res.status(200).send(successResponse);
         } else {
             const successResponse = ResponseUtil.getSuccessResponse('Successfully Search PageObjective', []);
