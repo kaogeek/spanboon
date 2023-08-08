@@ -16,6 +16,7 @@ import {
   PostPage,
   RegisterPage,
   OfficialPage,
+  AppleAppSite,
   MenuRegister,
   PageHashTag,
   PageRecommended,
@@ -32,6 +33,10 @@ export const APP_ROUTES: Routes = [
     path: '',
     redirectTo: '/home',
     pathMatch: 'full'
+  },
+  {
+    path: AppleAppSite.PAGE_NAME + '/' + AppleAppSite.PAGE_NAME_APPLE,
+    component: AppleAppSite,
   },
   {
     path: OfficialPage.PAGE_NAME,
@@ -266,7 +271,12 @@ export const APP_ROUTES: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(APP_ROUTES)],
+  imports: [RouterModule.forRoot(APP_ROUTES, {
+    useHash: false,
+    relativeLinkResolution: 'legacy',
+    initialNavigation: 'enabled',
+    scrollPositionRestoration: 'top'
+  })],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }
