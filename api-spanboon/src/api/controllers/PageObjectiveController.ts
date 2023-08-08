@@ -1537,31 +1537,10 @@ export class ObjectiveController {
                                 as: 'page'
                             }
                         },
-                        {
-                            $lookup: {
-                                from: 'PageObjectiveJoiner',
-                                let: { id: '$_id' },
-                                pipeline: [
-                                    {
-                                        $match: {
-                                            $expr: {
-                                                $eq: ['$$id', '$objectiveId']
-                                            }
-                                        }
-                                    },
-                                ],
-                                as: 'pageObjectiveJoiner'
-                            }
-                        },
+
                         {
                             $unwind: {
                                 path: '$hashTag',
-                                preserveNullAndEmptyArrays: true
-                            }
-                        },
-                        {
-                            $unwind: {
-                                path: '$pageObjectiveJoiner',
                                 preserveNullAndEmptyArrays: true
                             }
                         },
@@ -1591,6 +1570,7 @@ export class ObjectiveController {
                         }
                     }
                 }
+
                 pageObjectiveJoiner = await this.pageObjectiveJoinerService.aggregate(
                     [
                         {
