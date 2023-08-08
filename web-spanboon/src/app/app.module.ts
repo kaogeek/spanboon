@@ -220,6 +220,7 @@ import {
   TagEvent,
   CardFulfillItem,
   HomePageV3,
+  AppleAppSite,
 } from './components/components';
 
 // remove when finished test
@@ -438,6 +439,7 @@ const COMPONENTS: any[] = [
   FulfillItem,
   FulFillMenu,
   AuthenCheckPage,
+  AppleAppSite,
   NotificationCheckPage,
   Loading,
   IconUser,

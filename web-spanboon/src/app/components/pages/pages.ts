@@ -10,4 +10,5 @@ export * from './AuthenCheckPage.component';
 export * from './NotificationCheckPage.component';
 export * from './footer/Footer.component';
 export * from './MainPage.component';
+export * from './AppleAppSite.component';
 export * from './footer/FooterMobile.component';
