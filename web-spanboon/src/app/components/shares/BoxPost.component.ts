@@ -2133,59 +2133,20 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public clickCardObjective(index: number, item: any) {
-    if (this.dataObjective && this.dataObjective.id === item._id) {
+    if (this.resObjective[index].select === true) {
       this.dataObjective = {};
       this.selectedObjectiveId = null;
+      delete this.resObjective[index].select;
       // document.querySelector('.active-click-doing').classList.remove('active-click-doing');
     } else {
-      this.selectedObjectiveId = item.objectiveId ? item.objectiveId : item._id;
-      this.dataObjective.id = item._id;
+      this.resObjective[index].select = true;
+      this.selectedObjectiveId = item.objectiveId ? item.objectiveId : item._id ? item._id : item.id;
+      this.dataObjective.id = item._id ? item._id : item.id;
       this.dataObjective.hashTag = !!item.hashTagName ? item.hashTagName : item.hashTag;
       this.dataObjective.status = 2;
     }
-    // if (this.elementCheck) {
-    //   if (this.dataObjective && this.dataObjective.id === item.id) {
-    //     this.dataObjective = {};
-    //     this.selectedObjectiveId = undefined;
-    //     document.querySelector('.active-click-doing').classList.remove('active-click-doing');
-    //   } else {
-    //     this.selectedObjectiveId = item.id;
-    //     this.dataObjective.id = item.id;
-    //     this.dataObjective.hashTag = item.hashTag;
-    //     this.dataObjective.status = 2;
-    //   }
-    // } else {
-    //   this.selectedObjectiveId = item.id;
-    //   this.dataObjective.id = item.id;
-    //   this.dataObjective.hashTag = item.hashTag;
-    //   this.dataObjective.status = 2;
-    //   let objectClone = JSON.parse(JSON.stringify(this.dataObjective));
-
-    // const isPass = this.objectArray.find(objective => {
-    // return objective.hashTag === this.dataObjective.hashTag
-    // console.log(objective.hashTag, 'sdfsdf', this.dataObjective.hashTag);
-    // });
-
-    //   if (!isPass) {
-    //     this.objectArray.push({
-    //       id: this.dataObjective.id,
-    //       name: this.dataObjective.hashTag,
-    //       isText: true,
-    //       isTopic: false
-    //     });
-    //   }
-
-    //   let indexData = this.objectArray.map(function (e) { return e.name; }).indexOf(objectClone.title);
-    //   if (indexData != 0) {
-    //     this.objectArray = this.objectArray.splice(index, 1);
-    //   }
-    // }
-
-    // this.closeDialog();
-    // // $("#menubottom").css({
-    // //   'overflow-y': "auto"
-    // // });
   }
+
   public isEmptyObject(obj) {
     return (obj && (Object.keys(obj).length > 0));
   }
@@ -2403,13 +2364,13 @@ export class BoxPost extends AbstractPage implements OnInit {
   public editObjective(item, index, objPublic) {
     this.isEditObject = true;
     this.isPublicObj = objPublic;
-    this.objectId = item._id;
+    this.objectId = item._id ? item._id : item.id;
     if (objPublic) {
       this._searchJoiner(this.objectId);
     }
     this.imageIcon.image = item.iconBase64;
     this.objDoing = item.title;
-    this.tagObjDoing = item.hashTag;
+    this.tagObjDoing = item.name;
     this.isPublic = item.personal;
     for (const category of this.resPageCategory) {
       if (category.id === item.category) {
@@ -2425,7 +2386,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public deleteObjective(object, index, type?: any) {
-    let objectId = type === 'join' ? object.objectiveId : object._id;
+    let objectId = type === 'join' ? object.objectiveId : object._id ? object._id : object.id;
     let pageId = object.pageId;
     let message;
     if (type === 'join') {
@@ -2960,30 +2921,31 @@ export class BoxPost extends AbstractPage implements OnInit {
 
   }
   public focusOutObjective() {
-    if (this.isEmptyObject(this.imageIcon)) {
-      const confirmEventEmitter = new EventEmitter<any>();
-      confirmEventEmitter.subscribe(() => {
-        this.submitDialog.emit(this.imageIcon);
+    // if (this.isEmptyObject(this.imageIcon)) {
+    //   const confirmEventEmitter = new EventEmitter<any>();
+    //   confirmEventEmitter.subscribe(() => {
+    //     this.submitDialog.emit(this.imageIcon);
 
-      });
-      const canCelEventEmitter = new EventEmitter<any>();
-      canCelEventEmitter.subscribe(() => {
-        this.submitCanCelDialog.emit(this.imageIcon);
-      });
+    //   });
+    //   const canCelEventEmitter = new EventEmitter<any>();
+    //   canCelEventEmitter.subscribe(() => {
+    //     this.submitCanCelDialog.emit(this.imageIcon);
+    //   });
 
-      let dialog = this.showDialogWarming("ไฟล์กำลังอัพโหลด คุณต้องการปิดหรือไม่ ?", "ยกเลิก", "ตกลง", confirmEventEmitter, canCelEventEmitter);
-      dialog.afterClosed().subscribe((res) => {
-        if (res) {
-          this.imageIcon = {};
-          this.selectedValue = "เลือกหมวดหมู่";
-          this.closeDialog();
-        } else {
-          this.closeDialog();
-        }
-      });
-    } else {
-      this.closeDialog();
-    }
+    //   let dialog = this.showDialogWarming("ไฟล์กำลังอัพโหลด คุณต้องการปิดหรือไม่ ?", "ยกเลิก", "ตกลง", confirmEventEmitter, canCelEventEmitter);
+    //   dialog.afterClosed().subscribe((res) => {
+    //     if (res) {
+    //       this.imageIcon = {};
+    //       this.selectedValue = "เลือกหมวดหมู่";
+    //       this.closeDialog();
+    //     } else {
+    //       this.closeDialog();
+    //     }
+    //   });
+    // } else {
+    //   this.closeDialog();
+    // }
+    this.closeDialog();
     // $("#menubottom").css({
     //   'overflow-y': "auto"
     // });

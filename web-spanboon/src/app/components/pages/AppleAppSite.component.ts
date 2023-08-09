@@ -18,6 +18,5 @@ export class AppleAppSite {
     }
 
     ngOnInit(): void {
-        console.log("data", this.data)
     }
 }

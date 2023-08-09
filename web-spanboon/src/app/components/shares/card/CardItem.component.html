@@ -50,18 +50,19 @@
                             <img *ngIf="isShowIcon" class="lock" src="'../../../../../assets/img/lock-icon.svg" alt="">
                         </ng-container>
                         <ng-template #elsePublicObj>
-                            <ng-container *ngIf="itemObjective.join; else elseIconJoin">
+                            <ng-container *ngIf="itemObjective.join">
                                 <img *ngIf="isShowIcon" class="lock" src="'../../../../../assets/img/join-objective.svg"
                                     alt="">
                             </ng-container>
-                            <ng-template #elseIconJoin>
+                            <!-- <ng-template #elseIconJoin>
                                 <img *ngIf="isShowIcon" class="lock"
                                     src="'../../../../../assets/img/public-objective.svg" alt="">
-                            </ng-template>
+                            </ng-template> -->
                         </ng-template>
                     </div>
                     <span class="i_title">
-                        #{{itemObjective.hashTag}}
+                        #{{itemObjective.hashTagName ? itemObjective.hashTagName : itemObjective.name ?
+                        itemObjective.name : itemObjective.hashTag}}
                     </span>
                 </div>
             </ng-container>
