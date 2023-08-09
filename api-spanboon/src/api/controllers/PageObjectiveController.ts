@@ -1670,6 +1670,28 @@ export class ObjectiveController {
                             }
                         },
                         {
+                            $lookup: {
+                                from: 'HashTag',
+                                let: { hashTag: '$hashTag' },
+                                pipeline: [
+                                    {
+                                        $match: {
+                                            $expr: {
+                                                $eq: ['$$hashTag', '$_id']
+                                            }
+                                        }
+                                    }
+                                ],
+                                as: 'hashTag'
+                            }
+                        },
+                        {
+                            $unwind: {
+                                path: '$hashTag',
+                                preserveNullAndEmptyArrays: true
+                            }
+                        },
+                        {
                             $match: { page: { $ne: [] } }
                         },
                         {
@@ -1710,7 +1732,8 @@ export class ObjectiveController {
                 result['detail'] = data.detail;
                 result['iconURL'] = data.iconURL;
                 result['category'] = data.category;
-                result['hashTag'] = data.hashTag._id;
+                result['hashTagId'] = data.hashTag._id;
+                result['hashTag'] = data.hashTag.name;
                 result['s3IconURL'] = data.s3IconURL;
                 result['updateByUsername'] = data.updateByUsername;
                 result['updateDate'] = data.updateDate;
@@ -1719,7 +1742,6 @@ export class ObjectiveController {
                 result['createdDate'] = data.createdDate;
                 result['createdBy'] = data.createdBy;
                 result['page'] = data.page;
-                result['name'] = data.hashTag.name;
                 result['personal'] = data.hashTag.personal;
                 dataObjective.push(result);
                 const hashTagKey = data.hashTag;
