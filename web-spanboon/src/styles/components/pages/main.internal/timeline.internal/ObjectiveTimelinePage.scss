@@ -2466,6 +2466,12 @@
           height: auto;
           text-align: center;
 
+          @media (max-width: $small) {
+            display: flex;
+            flex-direction: column;
+            width: 80%;
+          }
+
           > .objective {
             color: $brandcolor2;
             margin: 10px;
@@ -4400,6 +4406,12 @@
         width: 60%;
         height: auto;
         text-align: center;
+
+        @media (max-width: $small) {
+          display: flex;
+          flex-direction: column;
+          width: 80%;
+        }
 
         > .objective {
           color: $brandcolor2;

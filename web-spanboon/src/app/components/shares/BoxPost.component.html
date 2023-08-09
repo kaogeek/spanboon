@@ -516,7 +516,7 @@
                                         <ng-container
                                             *ngIf="resObjective && resObjective.length > 0; else elseHasObjective">
                                             <div class="wrapper-doing" id="wrapper-doing"
-                                                [class.active-click-doing]="(selectedObjectiveId === item._id) || (selectedObjectiveId === item.objectiveId) && selectedObjectiveId !== undefined"
+                                                [class.active-click-doing]="(selectedObjectiveId === (item._id || item.id)) || (selectedObjectiveId === item.objectiveId) && selectedObjectiveId !== undefined"
                                                 *ngFor="let item of resObjective ; let i = index"
                                                 (click)="clickCardObjective(i,item)">
                                                 <!-- <ng-container *ngIf="selectedObjectiveId === item.id">
@@ -632,7 +632,7 @@
                                                                     <img class="image-tag"
                                                                         [src]="item.iconSignURL ? item.iconSignURL : item.iconBase64"
                                                                         alt="">
-                                                                    <ng-container
+                                                                    <!-- <ng-container
                                                                         *ngIf="item && item.pageObjectiveJoiner.length === 0; else elseObjJoin">
                                                                         <img class="lock"
                                                                             src="'../../../../../assets/img/public-objective.svg"
@@ -647,7 +647,7 @@
                                                                             class="lock"
                                                                             src="'../../../../../assets/img/joined-objective.svg"
                                                                             alt="">
-                                                                    </ng-template>
+                                                                    </ng-template> -->
                                                                 </div>
                                                             </ng-template>
                                                         </ng-container>
@@ -661,8 +661,7 @@
                                                 </ng-template>
                                                 <div class="text-objective">
                                                     <span class="name-objective">{{'#'+ (item.hashTagName ?
-                                                        item.hashTagName
-                                                        :
+                                                        item.hashTagName : item.name ? item.name :
                                                         item.hashTag)}}</span>
                                                     <span class="title-objective">{{'['+ item.title + ']'}}</span>
                                                 </div>

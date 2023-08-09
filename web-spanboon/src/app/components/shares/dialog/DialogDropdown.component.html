@@ -74,7 +74,7 @@
             </ng-template>
         </div>
         <div class="dialog-footer">
-            <div class="wizard-point">
+            <div class="wizard-point" *ngIf="page.length > 1">
                 <ng-container *ngFor="let item of page; let i=index">
                     <span class="point-page" (click)="changePage(i)" [ngClass]="{'select': i === nextPage}">●</span>
                 </ng-container>
