@@ -1,3 +1,62 @@
 {
-    "gcm_sender_id": "975487605237"
+    "gcm_sender_id": "975487605237",
+    "name": "MFP Today",
+    "short_name": "MFPToday",
+    "description": "ก้าวไกลทูเดย์",
+    "lang": "en-US",
+    "start_url": "/",
+    "scope": "/",
+    "orientation": "portrait-primary",
+    "theme_color": "#EE7623",
+    "display": "standalone",
+    "prefer_related_applications": true,
+    "related_applications": [
+        {
+            "platform": "play",
+            "url": "https://play.google.com/store/apps/details?id=org.moveforwardparty.today",
+            "id": "org.moveforwardparty.today"
+        },
+        {
+            "platform": "itunes",
+            "url": "https://apps.apple.com/us/app/mfp-today/id6444463783"
+        }
+    ],
+    "icons": [
+        {
+            "src": "/assets/img/icons/icon-16x16.png",
+            "sizes": "16x16",
+            "type": "image/png"
+        },
+        {
+            "src": "/assets/img/icons/icon-24x24.png",
+            "sizes": "24x24",
+            "type": "image/png"
+        },
+        {
+            "src": "/assets/img/icons/icon-32x32.png",
+            "sizes": "32x32",
+            "type": "image/png"
+        },
+        {
+            "src": "/assets/img/icons/icon-64x64.png",
+            "sizes": "64x64",
+            "type": "image/png"
+        },
+        {
+            "src": "/assets/img/icons/icon-128x128.png",
+            "sizes": "128x128",
+            "type": "image/png"
+        },
+        {
+            "src": "/assets/img/icons/icon-256x256.png",
+            "sizes": "256x256",
+            "type": "image/png"
+        },
+        {
+            "src": "/assets/img/icons/icon-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "background_color": "#EE7623"
 }
