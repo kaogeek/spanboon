@@ -334,11 +334,11 @@ export class FacebookWebhookController {
             }
         }
         const pageIdFB = await this.pageService.findOne({ _id: pageSubscribe.pageId });
-        /* 
+
         if (pageIdFB.isOfficial === false) {
             const successResponse = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
             return res.status(200).send(successResponse);
-        } */
+        } 
         if (pageIdFB === undefined) {
             const successResponse = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
             return res.status(200).send(successResponse);
@@ -666,7 +666,6 @@ export class FacebookWebhookController {
                                 $limit: 1
                             }
                         ]);
-                    console.log('pageFindtag', pageFindtag);
                     if (pageFindtag.length > 0) {
                         await this.objectiveFunction(pageFindtag, pageSubscribe.pageId, createPostWebhooks.id, postMasterHashTagList);
                         await this.updateCountObjecitve(pageSubscribe.pageId, postMasterHashTagList);
