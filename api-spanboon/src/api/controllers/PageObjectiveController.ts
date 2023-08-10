@@ -355,6 +355,7 @@ export class ObjectiveController {
         const minutes = now.getMinutes();
         const interval_15 = 15;
         const interval_30 = 30;
+        const today = moment().toDate();
         let checkJoinObjective = undefined;
         let notificationTextApprove: string;
         const searchObjective = await this.pageObjectiveJoinerService.find({ objectiveId: objtiveIds });
@@ -382,6 +383,7 @@ export class ObjectiveController {
                 result['joiner'] = joinerObjId;
                 result['join'] = join;
                 result['approve'] = true;
+                result['createdDate'] = today;
                 create = await this.pageObjectiveJoinerService.create(result);
                 if (searchObjective.length > 0 || searchObjective.length <= 10) {
                     // noti to joiner
@@ -444,6 +446,7 @@ export class ObjectiveController {
                     result['joiner'] = joinerObjId;
                     result['join'] = join;
                     result['approve'] = true;
+                    result['createdDate'] = today;
                     create = await this.pageObjectiveJoinerService.create(result);
                     const noti: any = await this.pageNotificationService.notifyToPageUserObjective(
                         pageOwner.id + '',
@@ -505,6 +508,7 @@ export class ObjectiveController {
                     result['joiner'] = joinerObjId;
                     result['join'] = join;
                     result['approve'] = true;
+                    result['createdDate'] = today;
                     create = await this.pageObjectiveJoinerService.create(result);
                     const noti: any = await this.pageNotificationService.notifyToPageUserObjective(
                         pageOwner.id + '',
@@ -566,6 +570,7 @@ export class ObjectiveController {
                     result['joiner'] = joinerObjId;
                     result['join'] = join;
                     result['approve'] = true;
+                    result['createdDate'] = today;
                     create = await this.pageObjectiveJoinerService.create(result);
                     const noti: any = await this.pageNotificationService.notifyToPageUserObjective(
                         pageOwner.id + '',
@@ -627,6 +632,7 @@ export class ObjectiveController {
                     result['joiner'] = joinerObjId;
                     result['join'] = join;
                     result['approve'] = true;
+                    result['createdDate'] = today;
                     create = await this.pageObjectiveJoinerService.create(result);
                     const noti: any = await this.pageNotificationService.notifyToPageUserObjective(
                         pageOwner.id + '',
@@ -700,6 +706,7 @@ export class ObjectiveController {
                     result['joiner'] = joinerObjId;
                     result['join'] = join;
                     result['approve'] = false;
+                    result['createdDate'] = today;
                     create = await this.pageObjectiveJoinerService.create(result);
                     const noti: any = await this.pageNotificationService.notifyToPageUserObjective(
                         pageOwner.id + '',
@@ -745,6 +752,7 @@ export class ObjectiveController {
                     result['joiner'] = joinerObjId;
                     result['join'] = join;
                     result['approve'] = true;
+                    result['createdDate'] = today;
                     create = await this.pageObjectiveJoinerService.create(result);
                     const noti: any = await this.pageNotificationService.notifyToPageUserObjective(
                         pageOwner.id + '',
@@ -790,6 +798,7 @@ export class ObjectiveController {
                     result['joiner'] = joinerObjId;
                     result['join'] = join;
                     result['approve'] = true;
+                    result['createdDate'] = today;
                     create = await this.pageObjectiveJoinerService.create(result);
                     const noti: any = await this.pageNotificationService.notifyToPageUserObjective(
                         pageOwner.id + '',
@@ -835,6 +844,7 @@ export class ObjectiveController {
                     result['joiner'] = joinerObjId;
                     result['join'] = join;
                     result['approve'] = true;
+                    result['createdDate'] = today;
                     create = await this.pageObjectiveJoinerService.create(result);
                     const noti: any = await this.pageNotificationService.notifyToPageUserObjective(
                         pageOwner.id + '',
@@ -880,6 +890,7 @@ export class ObjectiveController {
                     result['joiner'] = joinerObjId;
                     result['join'] = join;
                     result['approve'] = true;
+                    result['createdDate'] = today;
                     create = await this.pageObjectiveJoinerService.create(result);
                     const noti: any = await this.pageNotificationService.notifyToPageUserObjective(
                         pageOwner.id + '',
@@ -2301,6 +2312,8 @@ export class ObjectiveController {
         const space = ' ';
         let checkJoinObjective = undefined;
         let checkPublicObjective = undefined;
+        const today = moment().toDate();
+
         // check before create invite 
         if (joinObjs.length > 0) {
             joinerObjId = joinObjs.map(_id => new ObjectID(_id));
@@ -2321,8 +2334,8 @@ export class ObjectiveController {
                 result['joiner'] = joiner;
                 result['join'] = join;
                 result['approve'] = false;
+                result['createdDate'] = today;
                 const createJoin = await this.pageObjectiveJoinerService.create(result);
-                console.log('createJoin', createJoin);
                 if (createJoin) {
                     pageJoinerIds.push(new ObjectID(createJoin.id));
                     checkJoinObjective = await this.pageObjectiveJoinerService.find({ objectiveId: objtiveIds, pageId: pageObjId, joiner: { $in: joinerObjId } });
