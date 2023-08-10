@@ -34,8 +34,12 @@ export const APP_ROUTES: Routes = [
     redirectTo: '/home',
     pathMatch: 'full'
   },
+  // {
+  //   path: AppleAppSite.PAGE_NAME + '/' + AppleAppSite.PAGE_NAME_APPLE,
+  //   component: AppleAppSite,
+  // },
   {
-    path: AppleAppSite.PAGE_NAME + '/' + AppleAppSite.PAGE_NAME_APPLE,
+    path: AppleAppSite.PAGE_NAME + '/assetlinks.json',
     component: AppleAppSite,
   },
   {
