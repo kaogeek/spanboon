@@ -2020,7 +2020,7 @@ export class ObjectiveController {
             updateQuery = { _id: objId, pageId: pageObjId };
             newValue = { $set: { title: titleRequest, detail: detailRequest, iconURL, hashTag: pageObjective.hashTag, s3IconURL, category, personal: objectives.personal } };
             queryHashTag = { objectiveId: objId, pageId: pageObjId, type: 'OBJECTIVE' };
-            newValueHashTag = { $set: { name: hashTagName } };
+            newValueHashTag = { $set: { name: hashTagName, personal: objectives.personal } };
             await this.hashTagService.update(queryHashTag, newValueHashTag);
             objectiveSave = await this.pageObjectiveService.update(updateQuery, newValue);
 
@@ -2122,6 +2122,9 @@ export class ObjectiveController {
                 updateQuery = { _id: objId, pageId: pageObjId };
                 newValue = { $set: { title: titleRequest, detail: detailRequest, iconURL, hashTag: pageObjective.hashTag, s3IconURL, category, personal: objectives.personal } };
                 objectiveSave = await this.pageObjectiveService.update(updateQuery, newValue);
+                queryHashTag = { objectiveId: objId, pageId: pageObjId, type: 'OBJECTIVE' };
+                newValueHashTag = { $set: { name: hashTagName, personal: objectives.personal } };
+                await this.hashTagService.update(queryHashTag, newValueHashTag);
                 if (objectiveSave) {
                     objectiveSave = await this.pageObjectiveService.findOne({ _id: objId, pageId: pageObjId });
                     const result: any = {};
@@ -2206,6 +2209,9 @@ export class ObjectiveController {
                 updateQuery = { _id: objId, pageId: pageObjId };
                 newValue = { $set: { title: titleRequest, detail: detailRequest, iconURL, hashTag: pageObjective.hashTag, s3IconURL, category, personal: objectives.personal } };
                 objectiveSave = await this.pageObjectiveService.update(updateQuery, newValue);
+                queryHashTag = { objectiveId: objId, pageId: pageObjId, type: 'OBJECTIVE' };
+                newValueHashTag = { $set: { name: hashTagName, personal: objectives.personal } };
+                await this.hashTagService.update(queryHashTag, newValueHashTag);
                 if (objectiveSave) {
                     const result: any = {};
                     result['_id'] = objectiveUpdate.id;
@@ -2272,7 +2278,7 @@ export class ObjectiveController {
                 newValue = { $set: { title: titleRequest, detail: detailRequest, iconURL, hashTag: pageObjective.hashTag, s3IconURL, category, personal: objectives.personal } };
                 objectiveSave = await this.pageObjectiveService.update(updateQuery, newValue);
                 queryHashTag = { objectiveId: objId, pageId: pageObjId, type: 'OBJECTIVE' };
-                newValueHashTag = { $set: { name: hashTagName } };
+                newValueHashTag = { $set: { name: hashTagName, personal: objectives.personal } };
                 await this.hashTagService.update(queryHashTag, newValueHashTag);
 
                 // update hashTag name 
