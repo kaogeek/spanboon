@@ -2546,6 +2546,7 @@ export class ObjectiveController {
                 [
                     {
                         $match: {
+                            objectiveId: objId,
                             pageId: page.id
                         }
                     },
