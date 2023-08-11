@@ -1828,10 +1828,10 @@ export class BoxPost extends AbstractPage implements OnInit {
       this.isLoading = false;
     }).catch((err: any) => {
       console.log(err)
-      if (err.error.message === 'Cannot Search PageObjective') {
-        this.resObjective = [];
-        this.isLoading = false;
-      }
+      // if (err.error.message === 'Cannot Search PageObjective') {
+      //   this.resObjective = [];
+      //   this.isLoading = false;
+      // }
     });
   }
 
@@ -2370,7 +2370,7 @@ export class BoxPost extends AbstractPage implements OnInit {
     }
     this.imageIcon.image = item.iconBase64;
     this.objDoing = item.title;
-    this.tagObjDoing = item.name;
+    this.tagObjDoing = item.hashTag ? item.hashTag : item.name;
     this.isPublic = item.personal;
     for (const category of this.resPageCategory) {
       if (category.id === item.category) {
