@@ -32,6 +32,8 @@ export const environment = {
    accessTokenSecretTwitter: "${process.env["TWITTER_ACCESS_TOKEN_SECRET_KEY"]}",
    apiBaseURL: "${process.env["API_BASE_URL"]}",
    webBaseURL: "${process.env["WEB_BASE_URL"]}",
+   sha256_cert_fingerprints: ${process.env["SHA_256_CERT_FINGER_PRINTS"]},
+   apple_app_link: ${process.env["APPLE_APP_LINK"]},
    firebase: {
     apiKey: "${process.env["FIREBASE_API_KEY"]}",
     authDomain: "${process.env["FIREBASE_AUTH_DOMAIN"]}",
