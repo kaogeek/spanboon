@@ -8,6 +8,7 @@
 export class PageObjectiveTimelineResponse {
     public page: any;
     public pageObjective: any;
+    public pageJoinerObjective:any;
     public relatedHashTags: any[];
     public followedUser: any[];
     public followedCount: number;

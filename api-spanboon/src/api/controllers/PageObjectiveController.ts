@@ -2542,7 +2542,48 @@ export class ObjectiveController {
                     isFollowed = true;
                 }
             }
-
+            const pageJoinerObjective: any = await this.pageObjectiveJoinerService.aggregate(
+                [
+                    {
+                        $match: {
+                            pageId: page.id
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'Page',
+                            let: { 'joiner': '$joiner' },
+                            pipeline: [
+                                {
+                                    $match: {
+                                        $expr: {
+                                            $eq: ['$$joiner', '$_id']
+                                        }
+                                    }
+                                },
+                                {
+                                    $project: {
+                                        _id: 1,
+                                        name: 1,
+                                        pageUsername: 1,
+                                        imageURL: 1,
+                                        isOfficial: 1,
+                                        banned: 1,
+                                        s3ImageURL: 1
+                                    }
+                                }
+                            ],
+                            as: 'page'
+                        }
+                    },
+                    {
+                        $unwind: {
+                            path: '$page',
+                            preserveNullAndEmptyArrays: true
+                        }
+                    }
+                ]
+            );
             if (objective.s3IconURL !== undefined && objective.s3IconURL !== '') {
                 const signUrl = await this.s3Service.getConfigedSignedUrl(objective.s3IconURL);
                 Object.assign(objective, { iconSignURL: (signUrl ? signUrl : '') });
@@ -2552,6 +2593,7 @@ export class ObjectiveController {
             const pageObjTimeline = new PageObjectiveTimelineResponse();
             pageObjTimeline.pageObjective = objective;
             pageObjTimeline.page = page;
+            pageObjTimeline.pageJoinerObjective = pageJoinerObjective;
             pageObjTimeline.followedUser = followingUsers.followers;
             pageObjTimeline.followedCount = followingUsers.count;
             pageObjTimeline.isFollow = isFollowed;
