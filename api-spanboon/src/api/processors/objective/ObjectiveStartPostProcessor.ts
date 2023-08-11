@@ -44,13 +44,68 @@ export class ObjectiveStartPostProcessor extends AbstractTypeSectionProcessor {
                             as: 'hashTag'
                         }
                     },
+                    {
+                        $lookup: {
+                            from: 'PageObjectiveJoiner',
+                            let: { id: '$_id' },
+                            pipeline: [
+                                {
+                                    $match: {
+                                        $expr: {
+                                            $eq: ['$$id', '$objectiveId']
+                                        }
+                                    }
+                                },
+                                {
+                                    $lookup: {
+                                        from: 'Page',
+                                        let: { joiner: '$joiner' },
+                                        pipeline: [
+                                            {
+                                                $match: {
+                                                    $expr: {
+                                                        $eq: ['$$joiner', '$_id']
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                $project: {
+                                                    _id: 1,
+                                                    name: 1,
+                                                    pageUsername: 1,
+                                                    isOfficial: 1,
+                                                    banned: 1,
+                                                    imageURL: 1,
+                                                    s3ImageURL: 1
+
+                                                }
+                                            }
+                                        ],
+                                        as: 'page'
+                                    }
+                                },
+                                {
+                                    $unwind: {
+                                        path: '$page',
+                                        preserveNullAndEmptyArrays: true
+                                    }
+                                }
+                            ],
+                            as: 'pageObjectiveJoiner'
+                        }
+                    },
+                    {
+                        $unwind: {
+                            path: '$pageObjectiveJoiner',
+                            preserveNullAndEmptyArrays: true
+                        }
+                    }
                 ];
-                const objectiveList = await this.pageObjectiveService.aggregate(objectiveAgg);
+                const objectiveList: any = await this.pageObjectiveService.aggregate(objectiveAgg);
                 if (objectiveList === undefined || objectiveList.length <= 0) {
                     resolve(undefined);
                 }
                 const objective = objectiveList[0];
-
                 // search first post of objective and join gallery
                 const postAgg = [
                     { $match: { objective: objectiveId, deleted: false } },
@@ -100,6 +155,7 @@ export class ObjectiveStartPostProcessor extends AbstractTypeSectionProcessor {
                     result = {
                         title: objective.title, // as a objective name
                         subTitle: (objective.hashTag !== undefined && objective.hashTag.length > 0) ? '#' + objective.hashTag[0].name : '', // as a objective hashtag
+                        pageObjectiveJoiner: objective.pageObjectiveJoiner,
                         detail: objective.detail,
                         post,
                         type: this.type,
