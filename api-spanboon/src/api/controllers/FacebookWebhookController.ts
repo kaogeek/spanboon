@@ -25,7 +25,7 @@ import { ObjectID } from 'mongodb';
 import { HashTag } from '../models/HashTag';
 import { HashTagService } from '../services/HashTagService';
 import { PageObjectiveService } from '../services/PageObjectiveService';
-// import { EmergencyEventService } from '../services/EmergencyEventService';
+import { EmergencyEventService } from '../services/EmergencyEventService';
 import { ResponseUtil } from '../../utils/ResponseUtil';
 import { POST_WEIGHT_SCORE, DEFAULT_POST_WEIGHT_SCORE } from '../../constants/SystemConfig';
 import { ConfigService } from '../services/ConfigService';
@@ -42,7 +42,7 @@ export class FacebookWebhookController {
         private socialPostLogsService: SocialPostLogsService,
         private hashTagService: HashTagService,
         private pageObjectiveService: PageObjectiveService,
-        // private emergencyEventService: EmergencyEventService,
+        private emergencyEventService: EmergencyEventService,
         private configService: ConfigService,
         private pageObjectiveJoinerService: PageObjectiveJoinerService
 
@@ -181,12 +181,14 @@ export class FacebookWebhookController {
         console.log('body.entry[0].changes[0].value', body.entry[0].changes[0].value);
         let realText = undefined;
         let TrimText = undefined;
-        const hashTagList1 = [];
-        const hashTagList2 = [];
+        let hashTagList2: any;
 
         if (message_webhooks !== undefined) {
 
             const msgSplit = message_webhooks.split('#');
+            const hashTag = await this.splitHashTag(msgSplit);
+            hashTagList2 = hashTag;
+            /*
             if (msgSplit !== undefined) {
                 for (let i = 1; i < msgSplit.length; i++) {
                     hashTagList1.push(msgSplit[i].split('\n')[0]);
@@ -195,7 +197,7 @@ export class FacebookWebhookController {
                 for (let i = 0; i < hashTagList1.length; i++) {
                     hashTagList2.push(hashTagList1[i].split(' ')[0]);
                 }
-            }
+            } */
         }
         let msg = undefined;
         let checkPattern = undefined;
@@ -363,7 +365,7 @@ export class FacebookWebhookController {
                 if (checkFeed === undefined) {
                     const createPostWebhooks: Posts = await this.createPostWebhooks(realText, message_webhooks, pageIdFB.ownerUser, pageIdFB.id, value_created_time);
                     await this.socialPostFunction(pageIdFB.id, createPostWebhooks.id, body.entry[0].changes[0].value.from.id, value_verb, value_post_id);
-
+                    // Normal HashTag && Emergency
                     if (hashTagList2 !== null && hashTagList2 !== undefined && hashTagList2.length > 0) {
                         const masterHashTagList: any = await this.findHashTag(hashTagList2);
                         for (const hashTag of masterHashTagList) {
@@ -393,14 +395,25 @@ export class FacebookWebhookController {
                             await this.updateCountHashTag(masterHashTagList);
                         }
                     }
-                    const hashTagsObjIds = postMasterHashTagList.map(_id => new ObjectID(_id));
+                    const queryTag = { _id: createPostWebhooks.id };
+                    const newValuesTag = { $set: { postsHashTags: postMasterHashTagList } };
+                    await this.postsService.update(queryTag, newValuesTag);
+                    // Hashtag Objective
+                    const hashTagObjectiveIds = [];
+                    const hashTagObjective: any = await this.hashTagObjective(hashTagList2);
+                    if (hashTagObjective.length > 0) {
+                        for (const hashTagObjIds of hashTagObjective) {
+                            hashTagObjectiveIds.push(new ObjectID(hashTagObjIds._id));
+                        }
+                        await this.updateCountHashTag(hashTagObjective);
+                    }
                     // db.PageObjective.aggregate([{"$match":{"pageId":ObjectId('63bebb5e4677b2062a66b606')}},{"$limit":1},{"$sort":{"createdDate":-1}}])
-                    let pageFindtag = await this.pageObjectiveService.aggregate(
+                    const pageFindtag = await this.pageObjectiveService.aggregate(
                         [
                             {
                                 $match: {
                                     pageId: pageSubscribe.pageId,
-                                    hashTag: { $in: hashTagsObjIds }
+                                    hashTag: { $in: hashTagObjectiveIds }
                                 }
                             },
                             {
@@ -432,33 +445,13 @@ export class FacebookWebhookController {
                             }
                         ]);
                     // 64af7a7c0ac242710bbfbe4e
-                    if (pageFindtag.length > 0) {
-                        await this.objectiveFunction(pageFindtag, pageSubscribe.pageId, createPostWebhooks.id, postMasterHashTagList);
-                        await this.updateCountObjecitve(pageSubscribe.pageId, postMasterHashTagList);
-                    } else {
-                        pageFindtag = await this.pageObjectiveService.aggregate(
-                            [
-                                {
-                                    $match: {
-                                        pageId: pageSubscribe.pageId,
-                                        hashTag: { $in: hashTagsObjIds }
-                                    }
-                                },
-                                {
-                                    $limit: 1
-                                }
-                            ]);
-                        await this.objectiveFunction(pageFindtag, pageSubscribe.pageId, createPostWebhooks.id, postMasterHashTagList);
-
-                    }
-                    const queryTag = { _id: createPostWebhooks.id };
-                    const newValuesTag = { $set: { postsHashTags: postMasterHashTagList } };
+                    await this.objectiveFunction(pageFindtag, pageSubscribe.pageId, createPostWebhooks.id, postMasterHashTagList);
+                    await this.updateCountObjecitve(pageSubscribe.pageId, postMasterHashTagList);
 
                     if (postMasterHashTagList.length > 0) {
                         await this.emergencyEventFunction(postMasterHashTagList, pageSubscribe.pageId, createPostWebhooks.id);
                     }
 
-                    await this.postsService.update(queryTag, newValuesTag);
                     const successResponse = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                     return res.status(200).send(successResponse);
                 } else {
@@ -510,10 +503,18 @@ export class FacebookWebhookController {
                             await this.updateCountHashTag(masterHashTagList);
                         }
                     }
-                    // db.PageObjective.aggregate([{"$match":{"pageId":ObjectId('63bebb5e4677b2062a66b606')}},{"$limit":1},{"$sort":{"createdDate":-1}}])
-                    let pageFindtag = await this.pageObjectiveService.aggregate(
+                    const hashTagObjectiveIds = [];
+                    const hashTagObjective: any = await this.hashTagObjective(hashTagList2);
+                    if (hashTagObjective.length > 0) {
+                        for (const hashTagObjIds of hashTagObjective) {
+                            hashTagObjectiveIds.push(new ObjectID(hashTagObjIds._id));
+                        }
+                        await this.updateCountHashTag(hashTagObjective);
+                    }
+                    console.log('hashTagObjective_2', hashTagObjective);
+                    const pageFindtag = await this.pageObjectiveService.aggregate(
                         [
-                            { $match: { pageId: pageSubscribe.pageId, hashTag: { $in: postMasterHashTagList } } },
+                            { $match: { pageId: pageSubscribe.pageId, hashTag: { $in: hashTagObjectiveIds } } },
                             {
                                 $lookup: {
                                     from: 'HashTag',
@@ -541,25 +542,9 @@ export class FacebookWebhookController {
                             },
                         ]);
                     // 64af7a7c0ac242710bbfbe4e
-                    if (pageFindtag.length > 0) {
-                        await this.objectiveFunction(pageFindtag, pageSubscribe.pageId, createPostWebhooks.id, postMasterHashTagList);
-                        await this.updateCountObjecitve(pageSubscribe.pageId, postMasterHashTagList);
-                    } else {
-                        pageFindtag = await this.pageObjectiveService.aggregate(
-                            [
-                                {
-                                    $match: {
-                                        pageId: pageSubscribe.pageId,
-                                        hashTag: { $in: postMasterHashTagList }
-                                    }
-                                },
-                                {
-                                    $limit: 1
-                                }
-                            ]);
-                        await this.objectiveFunction(pageFindtag, pageSubscribe.pageId, createPostWebhooks.id, postMasterHashTagList);
+                    await this.objectiveFunction(pageFindtag, pageSubscribe.pageId, createPostWebhooks.id, postMasterHashTagList);
+                    await this.updateCountObjecitve(pageSubscribe.pageId, postMasterHashTagList);
 
-                    }
                     const queryTag = { _id: createPostWebhooks.id };
                     const newValuesTag = { $set: { postsHashTags: postMasterHashTagList } };
 
@@ -640,10 +625,18 @@ export class FacebookWebhookController {
                             await this.updateCountHashTag(masterHashTagList);
                         }
                     }
-
-                    let pageFindtag = await this.pageObjectiveService.aggregate(
+                    const hashTagObjectiveIds = [];
+                    const hashTagObjective: any = await this.hashTagObjective(hashTagList2);
+                    if (hashTagObjective.length > 0) {
+                        for (const hashTagObjIds of hashTagObjective) {
+                            hashTagObjectiveIds.push(new ObjectID(hashTagObjIds._id));
+                        }
+                        await this.updateCountHashTag(hashTagObjective);
+                    }
+                    console.log('hashTagObjective_3', hashTagObjective);
+                    const pageFindtag = await this.pageObjectiveService.aggregate(
                         [
-                            { $match: { pageId: pageSubscribe.pageId, hashTag: { $in: postMasterHashTagList } } },
+                            { $match: { pageId: pageSubscribe.pageId, hashTag: { $in: hashTagObjectiveIds } } },
                             {
                                 $lookup: {
                                     from: 'HashTag',
@@ -670,25 +663,8 @@ export class FacebookWebhookController {
                                 $limit: 1
                             }
                         ]);
-                    if (pageFindtag.length > 0) {
-                        await this.objectiveFunction(pageFindtag, pageSubscribe.pageId, createPostWebhooks.id, postMasterHashTagList);
-                        await this.updateCountObjecitve(pageSubscribe.pageId, postMasterHashTagList);
-                    } else {
-                        pageFindtag = await this.pageObjectiveService.aggregate(
-                            [
-                                {
-                                    $match: {
-                                        pageId: pageSubscribe.pageId,
-                                        hashTag: { $in: postMasterHashTagList }
-                                    }
-                                },
-                                {
-                                    $limit: 1
-                                }
-                            ]);
-                        await this.objectiveFunction(pageFindtag, pageSubscribe.pageId, createPostWebhooks.id, postMasterHashTagList);
-
-                    }
+                    await this.objectiveFunction(pageFindtag, pageSubscribe.pageId, createPostWebhooks.id, postMasterHashTagList);
+                    await this.updateCountObjecitve(pageSubscribe.pageId, postMasterHashTagList);
                     const queryTag = { _id: createPostWebhooks.id };
                     const newValuesTag = { $set: { postsHashTags: postMasterHashTagList } };
 
@@ -745,16 +721,16 @@ export class FacebookWebhookController {
                     return res.status(200).send(successResponseError);
                 }
             }
-            
+
             // delete post photo
             else if (
-                change_value_link !== undefined && 
-                message_webhooks === undefined && 
-                body.entry[0].changes[0].value.item === 'photo' && 
-                value_photo_id !== undefined && 
+                change_value_link !== undefined &&
+                message_webhooks === undefined &&
+                body.entry[0].changes[0].value.item === 'photo' &&
+                value_photo_id !== undefined &&
                 published === 1 &&
-                value_verb === Webhooks.value_verb_edited  
-                ) {
+                value_verb === Webhooks.value_verb_edited
+            ) {
                 const findPost = await this.socialPostService.findOne({ socialId: value_post_id, socialType: Webhooks.socialType });
                 if (findPost !== undefined && findPost !== null) {
                     const posted = await this.postsService.findOne({ _id: findPost.postId });
@@ -772,19 +748,114 @@ export class FacebookWebhookController {
                 }
             }
             else if (
-                value_verb === Webhooks.value_verb_edited && 
-                change_value_link === undefined && 
-                value_photos === undefined && 
-                value_item === 'status' && 
-                published === 1) 
-                {
+                value_verb === Webhooks.value_verb_edited &&
+                change_value_link === undefined &&
+                value_photos === undefined &&
+                value_item === 'status' &&
+                published === 1) {
+                let query = undefined;
+                let newValues = undefined;
+                let update = undefined;
                 const findPost = await this.socialPostService.findOne({ socialId: value_post_id, socialType: Webhooks.socialType });
                 if (findPost !== undefined && findPost !== null) {
                     const posted = await this.postsService.findOne({ _id: findPost.postId });
                     if (posted) {
-                        const query = { _id: posted.id };
-                        const newValues = { $set: { detail: message_webhooks } };
-                        const update = await this.postsService.update(query, newValues);
+                        if (message_webhooks !== undefined) {
+
+                            const msgSplit = message_webhooks.split('#');
+                            const hashTag = await this.splitHashTag(msgSplit);
+                            hashTagList2 = hashTag;
+                        }
+                        if (hashTagList2 !== null && hashTagList2 !== undefined && hashTagList2.length > 0) {
+                            const masterHashTagList: any = await this.findHashTag(hashTagList2);
+                            for (const hashTag of masterHashTagList) {
+                                const id = hashTag._id;
+                                const name = hashTag.name;
+                                postMasterHashTagList.push(new ObjectID(id));
+                                masterHashTagMap[name] = hashTag;
+                            }
+                            for (const hashTag of hashTagList2) {
+                                if (masterHashTagMap[hashTag] === undefined) {
+                                    const newHashTag: HashTag = new HashTag();
+                                    newHashTag.name = hashTag;
+                                    newHashTag.lastActiveDate = today;
+                                    newHashTag.count = 0;
+                                    newHashTag.iconURL = '';
+
+                                    const newMasterHashTag: HashTag = await this.hashTagService.create(newHashTag);
+
+                                    if (newMasterHashTag !== null && newMasterHashTag !== undefined) {
+                                        postMasterHashTagList.push(new ObjectID(newMasterHashTag.id));
+
+                                        masterHashTagMap[hashTag] = newMasterHashTag;
+                                    }
+                                }
+                            }
+                            if (masterHashTagList.length > 0) {
+                                await this.updateCountHashTag(masterHashTagList);
+                            }
+                            if (postMasterHashTagList.length > 0 &&
+                                posted.emergencyEvent === null &&
+                                posted.emergencyEventTag === null) {
+                                await this.emergencyEventFunction(postMasterHashTagList, pageSubscribe.pageId, posted.id);
+                            }
+                            const hashTagObjectiveIds = [];
+                            const hashTagObjective: any = await this.hashTagObjective(hashTagList2);
+                            if (hashTagObjective.length > 0) {
+                                for (const hashTagObjIds of hashTagObjective) {
+                                    hashTagObjectiveIds.push(new ObjectID(hashTagObjIds._id));
+                                }
+                                await this.updateCountHashTag(hashTagObjective);
+                            }
+                            const pageFindtag = await this.pageObjectiveService.aggregate(
+                                [
+                                    { $match: { pageId: pageSubscribe.pageId, hashTag: { $in: hashTagObjectiveIds } } },
+                                    {
+                                        $lookup: {
+                                            from: 'HashTag',
+                                            let: { hashTag: '$hashTag' },
+                                            pipeline: [
+                                                {
+                                                    $match: {
+                                                        $expr: {
+                                                            $eq: ['$$hashTag', '$_id']
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    $match: { type: 'OBJECTIVE' }
+                                                }
+                                            ],
+                                            as: 'hashTag'
+                                        }
+                                    },
+                                    {
+                                        $match: { hashTag: { $ne: [] } }
+                                    },
+                                    {
+                                        $limit: 1
+                                    },
+                                ]);
+                            // 64af7a7c0ac242710bbfbe4e
+                            if (
+                                posted.objective === null &&
+                                posted.objectiveTag === null) {
+                                await this.objectiveFunction(pageFindtag, pageSubscribe.pageId, posted.id, hashTagObjectiveIds);
+                                await this.updateCountObjecitve(pageSubscribe.pageId, hashTagObjectiveIds);
+                            }
+                            if (postMasterHashTagList.length > 0) {
+                                query = { _id: posted.id };
+                                newValues = { $set: { detail: message_webhooks, postsHashTags: postMasterHashTagList } };
+                                update = await this.postsService.update(query, newValues);
+                                if (update) {
+                                    const successResponseError = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
+                                    return res.status(200).send(successResponseError);
+                                }
+                            }
+                        }
+                        query = { _id: posted.id };
+                        newValues = { $set: { detail: message_webhooks, postsHashTags: postMasterHashTagList } };
+                        update = await this.postsService.update(query, newValues);
                         if (update) {
                             const successResponseError = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                             return res.status(200).send(successResponseError);
@@ -795,19 +866,122 @@ export class FacebookWebhookController {
                     return res.status(200).send(successResponseError);
                 }
 
-            } else if (message_webhooks !== undefined && value_verb === Webhooks.value_verb_edited && change_value_link !== undefined && value_photos === undefined && value_item === 'photo' && published === 1) {
+            } else if (
+                message_webhooks !== undefined &&
+                value_verb === Webhooks.value_verb_edited &&
+                change_value_link !== undefined &&
+                value_photos === undefined &&
+                value_item === 'photo' &&
+                published === 1) {
                 // message_webhooks = message_webhooks
                 if (message_webhooks === undefined) {
                     const successResponseError = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                     return res.status(200).send(successResponseError);
                 }
+                let query = undefined;
+                let newValues = undefined;
+                let update = undefined;
                 const findPost = await this.socialPostService.findOne({ socialId: value_post_id, socialType: Webhooks.socialType });
                 if (findPost !== undefined && findPost !== null) {
                     const posted = await this.postsService.findOne({ _id: findPost.postId });
                     if (posted) {
-                        const query = { _id: posted.id };
-                        const newValues = { $set: { detail: message_webhooks } };
-                        const update = await this.postsService.update(query, newValues);
+                        if (message_webhooks !== undefined) {
+
+                            const msgSplit = message_webhooks.split('#');
+                            const hashTag = await this.splitHashTag(msgSplit);
+                            hashTagList2 = hashTag;
+                        }
+                        if (hashTagList2 !== null && hashTagList2 !== undefined && hashTagList2.length > 0) {
+                            const masterHashTagList: any = await this.findHashTag(hashTagList2);
+                            for (const hashTag of masterHashTagList) {
+                                const id = hashTag._id;
+                                const name = hashTag.name;
+                                postMasterHashTagList.push(new ObjectID(id));
+                                masterHashTagMap[name] = hashTag;
+                            }
+                            for (const hashTag of hashTagList2) {
+                                if (masterHashTagMap[hashTag] === undefined) {
+                                    const newHashTag: HashTag = new HashTag();
+                                    newHashTag.name = hashTag;
+                                    newHashTag.lastActiveDate = today;
+                                    newHashTag.count = 0;
+                                    newHashTag.iconURL = '';
+
+                                    const newMasterHashTag: HashTag = await this.hashTagService.create(newHashTag);
+
+                                    if (newMasterHashTag !== null && newMasterHashTag !== undefined) {
+                                        postMasterHashTagList.push(new ObjectID(newMasterHashTag.id));
+
+                                        masterHashTagMap[hashTag] = newMasterHashTag;
+                                    }
+                                }
+                            }
+                            if (masterHashTagList.length > 0) {
+                                await this.updateCountHashTag(masterHashTagList);
+                            }
+                            if (postMasterHashTagList.length > 0 &&
+                                posted.emergencyEvent === null &&
+                                posted.emergencyEventTag === null) {
+                                await this.emergencyEventFunction(postMasterHashTagList, pageSubscribe.pageId, posted.id);
+                            }
+                            const hashTagObjectiveIds = [];
+                            const hashTagObjective: any = await this.hashTagObjective(hashTagList2);
+                            if (hashTagObjective.length > 0) {
+                                for (const hashTagObjIds of hashTagObjective) {
+                                    hashTagObjectiveIds.push(new ObjectID(hashTagObjIds._id));
+                                }
+                                await this.updateCountHashTag(hashTagObjective);
+                            }
+                            const pageFindtag = await this.pageObjectiveService.aggregate(
+                                [
+                                    { $match: { pageId: pageSubscribe.pageId, hashTag: { $in: hashTagObjectiveIds } } },
+                                    {
+                                        $lookup: {
+                                            from: 'HashTag',
+                                            let: { hashTag: '$hashTag' },
+                                            pipeline: [
+                                                {
+                                                    $match: {
+                                                        $expr: {
+                                                            $eq: ['$$hashTag', '$_id']
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    $match: { type: 'OBJECTIVE' }
+                                                }
+                                            ],
+                                            as: 'hashTag'
+                                        }
+                                    },
+                                    {
+                                        $match: { hashTag: { $ne: [] } }
+                                    },
+                                    {
+                                        $limit: 1
+                                    },
+                                ]);
+                            // 64af7a7c0ac242710bbfbe4e
+                            if (
+                                posted.objective === null &&
+                                posted.objectiveTag === null) {
+                                await this.objectiveFunction(pageFindtag, pageSubscribe.pageId, posted.id, hashTagObjectiveIds);
+                                await this.updateCountObjecitve(pageSubscribe.pageId, hashTagObjectiveIds);
+                            }
+
+                            if (postMasterHashTagList.length > 0) {
+                                query = { _id: posted.id };
+                                newValues = { $set: { detail: message_webhooks, postsHashTags: postMasterHashTagList } };
+                                update = await this.postsService.update(query, newValues);
+                                if (update) {
+                                    const successResponseError = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
+                                    return res.status(200).send(successResponseError);
+                                }
+                            }
+                        }
+                        query = { _id: posted.id };
+                        newValues = { $set: { detail: message_webhooks, postsHashTags: postMasterHashTagList } };
+                        update = await this.postsService.update(query, newValues);
                         if (update) {
                             const successResponseError = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                             return res.status(200).send(successResponseError);
@@ -829,13 +1003,109 @@ export class FacebookWebhookController {
                     const successResponseError = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                     return res.status(200).send(successResponseError);
                 }
+                let query = undefined;
+                let newValues = undefined;
+                let update = undefined;
                 const findPost = await this.socialPostService.findOne({ socialId: value_post_id, socialType: Webhooks.socialType });
                 if (findPost !== undefined && findPost !== null) {
                     const posted = await this.postsService.findOne({ _id: findPost.postId });
                     if (posted) {
-                        const query = { _id: posted.id };
-                        const newValues = { $set: { detail: message_webhooks } };
-                        const update = await this.postsService.update(query, newValues);
+                        if (message_webhooks !== undefined) {
+
+                            const msgSplit = message_webhooks.split('#');
+                            const hashTag = await this.splitHashTag(msgSplit);
+                            hashTagList2 = hashTag;
+                        }
+                        if (hashTagList2 !== null && hashTagList2 !== undefined && hashTagList2.length > 0) {
+                            const masterHashTagList: any = await this.findHashTag(hashTagList2);
+                            for (const hashTag of masterHashTagList) {
+                                const id = hashTag._id;
+                                const name = hashTag.name;
+                                postMasterHashTagList.push(new ObjectID(id));
+                                masterHashTagMap[name] = hashTag;
+                            }
+                            for (const hashTag of hashTagList2) {
+                                if (masterHashTagMap[hashTag] === undefined) {
+                                    const newHashTag: HashTag = new HashTag();
+                                    newHashTag.name = hashTag;
+                                    newHashTag.lastActiveDate = today;
+                                    newHashTag.count = 0;
+                                    newHashTag.iconURL = '';
+
+                                    const newMasterHashTag: HashTag = await this.hashTagService.create(newHashTag);
+
+                                    if (newMasterHashTag !== null && newMasterHashTag !== undefined) {
+                                        postMasterHashTagList.push(new ObjectID(newMasterHashTag.id));
+
+                                        masterHashTagMap[hashTag] = newMasterHashTag;
+                                    }
+                                }
+                            }
+                            if (masterHashTagList.length > 0) {
+                                await this.updateCountHashTag(masterHashTagList);
+                            }
+                            if (postMasterHashTagList.length > 0 &&
+                                posted.emergencyEvent === null &&
+                                posted.emergencyEventTag === null) {
+                                await this.emergencyEventFunction(postMasterHashTagList, pageSubscribe.pageId, posted.id);
+                            }
+                            const hashTagObjectiveIds = [];
+                            const hashTagObjective: any = await this.hashTagObjective(hashTagList2);
+                            if (hashTagObjective.length > 0) {
+                                for (const hashTagObjIds of hashTagObjective) {
+                                    hashTagObjectiveIds.push(new ObjectID(hashTagObjIds._id));
+                                }
+                                await this.updateCountHashTag(hashTagObjective);
+                            }
+                            const pageFindtag = await this.pageObjectiveService.aggregate(
+                                [
+                                    { $match: { pageId: pageSubscribe.pageId, hashTag: { $in: hashTagObjectiveIds } } },
+                                    {
+                                        $lookup: {
+                                            from: 'HashTag',
+                                            let: { hashTag: '$hashTag' },
+                                            pipeline: [
+                                                {
+                                                    $match: {
+                                                        $expr: {
+                                                            $eq: ['$$hashTag', '$_id']
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    $match: { type: 'OBJECTIVE' }
+                                                }
+                                            ],
+                                            as: 'hashTag'
+                                        }
+                                    },
+                                    {
+                                        $match: { hashTag: { $ne: [] } }
+                                    },
+                                    {
+                                        $limit: 1
+                                    },
+                                ]);
+                            // 64af7a7c0ac242710bbfbe4e
+                            if (
+                                posted.objective === null &&
+                                posted.objectiveTag === null) {
+                                await this.objectiveFunction(pageFindtag, pageSubscribe.pageId, posted.id, hashTagObjectiveIds);
+                                await this.updateCountObjecitve(pageSubscribe.pageId, hashTagObjectiveIds);
+                            }
+                            if (postMasterHashTagList.length > 0) {
+                                query = { _id: posted.id };
+                                newValues = { $set: { detail: message_webhooks, postsHashTags: postMasterHashTagList } };
+                                update = await this.postsService.update(query, newValues);
+                                if (update) {
+                                    const successResponseError = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
+                                    return res.status(200).send(successResponseError);
+                                }
+                            }
+                        }
+                        query = { _id: posted.id };
+                        newValues = { $set: { detail: message_webhooks } };
+                        update = await this.postsService.update(query, newValues);
                         if (update) {
                             const successResponseError = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                             return res.status(200).send(successResponseError);
@@ -904,47 +1174,54 @@ export class FacebookWebhookController {
     }
 
     private async emergencyEventFunction(hashTagMasters: any, pageId: string, postId: string): Promise<any> {
-        const findMostHashTag: any = await this.hashTagService.aggregate(
+        const emergencyEvent: any = await this.emergencyEventService.aggregate(
             [
                 {
-                    $match:
-                        { _id: { $in: hashTagMasters } }
+                    $match: {
+                        hashTag: { $in: hashTagMasters }
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'HashTag',
+                        let: { hashTag: '$hashTag' },
+                        pipeline: [
+                            {
+                                $match: {
+                                    $expr: {
+                                        $eq: ['$$hashTag', '$_id']
+                                    }
+                                }
+                            }
+                        ],
+                        as: 'hashTag'
+                    }
+                },
+                {
+                    $unwind: {
+                        path: '$hashTag',
+                        preserveNullAndEmptyArrays: true
+                    }
                 },
                 {
                     $sort:
                     {
-                        count: -1
+                        ordering: 1
                     }
                 },
                 {
                     $limit: 1
                 },
-                {
-                    $lookup: {
-                        from: 'EmergencyEvent',
-                        localField: '_id',
-                        foreignField: 'hashTag',
-                        as: 'emergencyHaghTag'
-                    }
-                },
-                {
-                    $match: { emergencyHaghTag: { $ne: [] } }
-                },
-                {
-                    $unwind: {
-                        path: '$emergencyHaghTag',
-                        preserveNullAndEmptyArrays: true
-                    }
-                },
+
             ]
         );
         const postObjIds = new ObjectID(postId);
         const pageObjIds = new ObjectID(pageId);
         const EmergencyFound = [];
-        if (findMostHashTag.length > 0) {
-            for (const EmergencyHash of findMostHashTag) {
-                if (EmergencyHash.emergencyHaghTag !== undefined && EmergencyHash.emergencyHaghTag !== null) {
-                    EmergencyFound.push(EmergencyHash.emergencyHaghTag);
+        if (emergencyEvent.length > 0) {
+            for (const EmergencyHash of emergencyEvent) {
+                if (EmergencyHash._id !== undefined && EmergencyHash.hashTag.name !== null) {
+                    EmergencyFound.push(EmergencyHash);
                 } else {
                     continue;
                 }
@@ -953,7 +1230,7 @@ export class FacebookWebhookController {
         if (EmergencyFound.length > 0) {
             for (const findEmergencyPost of EmergencyFound) {
                 const queryEmergency = { _id: postObjIds, pageId: pageObjIds };
-                const newValuesTagEmergency = { $set: { emergencyEvent: findEmergencyPost._id, emergencyEventTag: findEmergencyPost.title } };
+                const newValuesTagEmergency = { $set: { emergencyEvent: findEmergencyPost._id, emergencyEventTag: findEmergencyPost.hashTag.name } };
                 const updateEmeg = await this.postsService.update(queryEmergency, newValuesTagEmergency);
                 if (updateEmeg) {
                     break;
@@ -965,8 +1242,10 @@ export class FacebookWebhookController {
     private async objectiveFunction(objectiveObj: any, pageId: string, postIds: string, hashTag: any): Promise<any> {
         const postObjIds = new ObjectID(postIds);
         const pageObjIds = new ObjectID(pageId);
+        console.log('pass /???');
         const hashObjIds = hashTag.map(_id => new ObjectID(_id));
         if (objectiveObj.length > 0) {
+            console.log('pass1');
             const foundPageTag: any = objectiveObj.shift();
             // single objective
             if (foundPageTag) {
@@ -986,7 +1265,7 @@ export class FacebookWebhookController {
             }
 
         } else {
-
+            console.log('pass2');
             /* joiner objective !!!  */
             let joinerObjective: any;
             joinerObjective = await this.pageObjectiveJoinerService.aggregate(
@@ -1085,21 +1364,20 @@ export class FacebookWebhookController {
     private async updateCountHashTag(hashTagObj: any): Promise<any> {
         for (const hashTags of hashTagObj) {
             const count = parseInt(hashTags.count, 10);
-            const queryHashTag = { _id: new ObjectID(hashTags._id), type: null };
+            const queryHashTag = { _id: new ObjectID(hashTags._id) };
             const newValuesHashTag = { $set: { count: count + 1 } };
             await this.hashTagService.update(queryHashTag, newValuesHashTag);
         }
     }
 
     private async findHashTag(hashTagNameList: string[]): Promise<HashTag[]> {
-        return await this.hashTagService.aggregate(
+        const hashTag = await this.hashTagService.aggregate(
             [
                 {
                     $match:
                     {
                         name: { $in: hashTagNameList },
-                        type: 'OBJECTIVE',
-
+                        type: { $ne: 'OBJECTIVE' }
                     }
                 },
                 {
@@ -1107,6 +1385,41 @@ export class FacebookWebhookController {
                 }
             ]
         );
+        return hashTag;
+    }
+    // split hashTag function
+    private async splitHashTag(message: string): Promise<any> {
+        const hashTagList1 = [];
+        const hashTagList2 = [];
+        if (message !== undefined) {
+            for (let i = 1; i < message.length; i++) {
+                hashTagList1.push(message[i].split('\n')[0]);
+            }
+
+            for (let i = 0; i < hashTagList1.length; i++) {
+                hashTagList2.push(hashTagList1[i].split(' ')[0]);
+            }
+        }
+        return hashTagList2;
+    }
+
+    private async hashTagObjective(hashTagNameList: string[]): Promise<HashTag[]> {
+        const hashTag = await this.hashTagService.aggregate(
+            [
+                {
+                    $match:
+                    {
+                        name: { $in: hashTagNameList },
+                        type: 'OBJECTIVE',
+                        personal: true,
+                    }
+                },
+                {
+                    $sort: { count: -1 }
+                },
+            ]
+        );
+        return hashTag;
     }
 
     private async machineState(message: string): Promise<any> {
