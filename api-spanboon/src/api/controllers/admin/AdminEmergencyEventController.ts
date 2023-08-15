@@ -414,9 +414,25 @@ export class EmergencyEventController {
             const hashTagUpdate = await this.hashTagService.update(queryHash, newValuesHashTag);
             if (hashTagUpdate) {
                 const queryPost = { emergencyEvent: emergencyUpdate.id };
-                const newValuesPost = { $set: { emergencyEventTag: emergencyHashTag } };
+                const newValuesPost =
+                {
+                    $set:
+                    {
+                        emergencyEvent: emergencyUpdate.id,
+                        emergencyEventTag: emergencyHashTag
+                    }
+                };
                 await this.postsService.updateMany(queryPost, newValuesPost);
             }
+            
+            // update back
+            await this.postsService.updateMany
+                (
+                    { postsHashTags: emergencyUpdate.hashTag, emergencyEvent: null, emergencyEventTag: null },
+                    {
+                        $set: { emergencyEvent: emergencyUpdate.id, emergencyEventTag: emergencyHashTag }
+                    }
+                );
 
             const emergencySave = await this.emergencyEventService.update(updateQuery, newValue);
             if (ordering !== undefined) {
