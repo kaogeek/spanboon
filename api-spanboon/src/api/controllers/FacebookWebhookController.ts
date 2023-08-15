@@ -746,8 +746,7 @@ export class FacebookWebhookController {
                     const successResponseError = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                     return res.status(200).send(successResponseError);
                 }
-            }
-            else if (
+            } else if (
                 value_verb === Webhooks.value_verb_edited &&
                 change_value_link === undefined &&
                 value_photos === undefined &&
@@ -854,7 +853,7 @@ export class FacebookWebhookController {
                             }
                         }
                         query = { _id: posted.id };
-                        newValues = { $set: { detail: message_webhooks, postsHashTags: postMasterHashTagList } };
+                        newValues = { $set: { detail: message_webhooks } };
                         update = await this.postsService.update(query, newValues);
                         if (update) {
                             const successResponseError = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
@@ -980,7 +979,7 @@ export class FacebookWebhookController {
                             }
                         }
                         query = { _id: posted.id };
-                        newValues = { $set: { detail: message_webhooks, postsHashTags: postMasterHashTagList } };
+                        newValues = { $set: { detail: message_webhooks } };
                         update = await this.postsService.update(query, newValues);
                         if (update) {
                             const successResponseError = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
@@ -1242,10 +1241,8 @@ export class FacebookWebhookController {
     private async objectiveFunction(objectiveObj: any, pageId: string, postIds: string, hashTag: any): Promise<any> {
         const postObjIds = new ObjectID(postIds);
         const pageObjIds = new ObjectID(pageId);
-        console.log('pass /???');
         const hashObjIds = hashTag.map(_id => new ObjectID(_id));
         if (objectiveObj.length > 0) {
-            console.log('pass1');
             const foundPageTag: any = objectiveObj.shift();
             // single objective
             if (foundPageTag) {
@@ -1265,7 +1262,6 @@ export class FacebookWebhookController {
             }
 
         } else {
-            console.log('pass2');
             /* joiner objective !!!  */
             let joinerObjective: any;
             joinerObjective = await this.pageObjectiveJoinerService.aggregate(
@@ -1382,6 +1378,9 @@ export class FacebookWebhookController {
                 },
                 {
                     $sort: { count: -1 }
+                },
+                {
+                    $limit: hashTagNameList.length 
                 }
             ]
         );
