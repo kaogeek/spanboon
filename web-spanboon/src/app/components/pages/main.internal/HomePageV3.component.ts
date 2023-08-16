@@ -890,32 +890,34 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   }
 
   private _downloadApp() {
-    let dateStamp = localStorage.getItem('timeStampAppEx');
-    let date = Date.now();
-    let daysDiff = date - Number(dateStamp);
-    const dayCal = 24 * 60 * 60 * 1000
-    const daysCalDiff = Math.round(daysDiff / dayCal)
-    let appEx = localStorage.getItem('appExperience');
-    let platform;
-    if (this.platform.IOS) {
-      platform = 'ios';
-    }
-    if (this.platform.ANDROID) {
-      platform = 'android';
-    }
-    if (appEx !== 'downloaded' && daysCalDiff >= 30) {
-      this.dialog.open(DialogAlert, {
-        disableClose: true,
-        maxWidth: '100%',
-        data: {
-          text: 'testNakrub ',
-          bottomText1: 'ไม่ใช่ตอนนี้',
-          bottomText2: 'ดาวน์โหลดเลย',
-          options: 'download',
-          type: platform ? platform : 'browser'
-        },
-        position: this.isRes1 ? { bottom: '0' } : { top: '' },
-      });
+    if (this.platform.IOS || this.platform.ANDROID) {
+      let dateStamp = localStorage.getItem('timeStampAppEx');
+      let date = Date.now();
+      let daysDiff = date - Number(dateStamp);
+      const dayCal = 24 * 60 * 60 * 1000
+      const daysCalDiff = Math.round(daysDiff / dayCal)
+      let appEx = localStorage.getItem('appExperience');
+      let platform;
+      if (this.platform.IOS) {
+        platform = 'ios';
+      }
+      if (this.platform.ANDROID) {
+        platform = 'android';
+      }
+      if (appEx !== 'downloaded' && daysCalDiff >= 30) {
+        this.dialog.open(DialogAlert, {
+          disableClose: true,
+          maxWidth: '100%',
+          data: {
+            text: 'testNakrub ',
+            bottomText1: 'ไม่ใช่ตอนนี้',
+            bottomText2: 'ดาวน์โหลดเลย',
+            options: 'download',
+            type: platform ? platform : 'browser'
+          },
+          position: this.isRes1 ? { bottom: '0' } : { top: '' },
+        });
+      }
     }
   }
 
