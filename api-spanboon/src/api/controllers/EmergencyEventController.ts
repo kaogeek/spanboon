@@ -155,7 +155,6 @@ export class EmergencyEventController {
         emergencyEventAggr.push({ $project: { '_id': 0 } });
 
         const emergencyEventAggResult = await this.emergencyEventService.aggregate(emergencyEventAggr);
-        console.log('emergencyEventAggResult', emergencyEventAggResult);
         if (emergencyEventAggResult !== null && emergencyEventAggResult !== undefined) {
             // change hashTag from id to name string
             emergencyEventAggResult.map((data) => {
