@@ -155,7 +155,7 @@ export class EmergencyEventController {
         emergencyEventAggr.push({ $project: { '_id': 0 } });
 
         const emergencyEventAggResult = await this.emergencyEventService.aggregate(emergencyEventAggr);
-
+        console.log('emergencyEventAggResult', emergencyEventAggResult);
         if (emergencyEventAggResult !== null && emergencyEventAggResult !== undefined) {
             // change hashTag from id to name string
             emergencyEventAggResult.map((data) => {
@@ -354,6 +354,7 @@ export class EmergencyEventController {
                     continue;
                 }
                 // influencer section
+                /* 
                 const influencerProcessor = new EmergencyInfluencerProcessor(this.postsCommentService, this.userFollowService);
                 influencerProcessor.setData({
                     emergencyEventId: objId,
@@ -364,7 +365,7 @@ export class EmergencyEventController {
                 const influencerProcsResult = await influencerProcessor.process();
                 if (influencerProcsResult !== undefined) {
                     emergencyEventTimeline.timelines.push(influencerProcsResult);
-                }
+                } */
 
                 // need section
                 const needsProcessor = new EmergencyNeedsProcessor(this.emergencyEventService, this.postsService);
@@ -379,6 +380,7 @@ export class EmergencyEventController {
                 }
 
                 // share section
+                /* 
                 const shareProcessor = new EmergencyShareProcessor(this.userFollowService, this.socialPostService);
                 shareProcessor.setData({
                     emergencyEventId: objId,
@@ -390,9 +392,10 @@ export class EmergencyEventController {
                 const shareProcsResult = await shareProcessor.process();
                 if (shareProcsResult !== undefined) {
                     emergencyEventTimeline.timelines.push(shareProcsResult);
-                }
+                } */
 
                 // fulfill section
+                /* 
                 const fulfillrocessor = new EmergencyInfluencerFulfillProcessor(this.fulfillmentCaseService, this.userFollowService);
                 fulfillrocessor.setData({
                     emergencyEventId: objId,
@@ -404,9 +407,10 @@ export class EmergencyEventController {
                 const fulfillProcsResult = await fulfillrocessor.process();
                 if (fulfillProcsResult !== undefined) {
                     emergencyEventTimeline.timelines.push(fulfillProcsResult);
-                }
+                } */
 
                 // following section
+                /* 
                 const followingProcessor = new EmergencyInfluencerFollowedProcessor(this.userFollowService);
                 followingProcessor.setData({
                     emergencyEventId: objId,
@@ -416,9 +420,10 @@ export class EmergencyEventController {
                 const followingProcsResult = await followingProcessor.process();
                 if (followingProcsResult !== undefined) {
                     emergencyEventTimeline.timelines.push(followingProcsResult);
-                }
+                } */
 
                 // Like section
+                /* 
                 const postLikeProcessor = new EmergencyPostLikedProcessor(this.userLikeService);
                 postLikeProcessor.setData({
                     emergencyEventId: objId,
@@ -428,7 +433,7 @@ export class EmergencyEventController {
                 const postLikeProcsResult = await postLikeProcessor.process();
                 if (postLikeProcsResult !== undefined) {
                     emergencyEventTimeline.timelines.push(postLikeProcsResult);
-                }
+                } */
             }
 
             // current post section
