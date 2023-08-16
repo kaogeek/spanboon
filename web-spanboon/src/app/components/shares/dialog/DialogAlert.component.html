@@ -5,7 +5,7 @@
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
 
-<div class="dialog customize-alert">
+<div class="dialog customize-alert" *ngIf="data.options !== 'download'">
     <div class="newcon-alert-dialog">
         <div class="edit-h">
             <span class="edit-head-one">{{data.title}}</span>
@@ -30,6 +30,25 @@
                 {{data.bottomText1 ? data.bottomText1 : "ปิด"}}</div>
             <div class="butt but-submit" [ngStyle]="{'display': data.btDisplay2}" appDebounceClick
                 (debounceClick)="onConfirm() ">{{data.bottomText2 ? data.bottomText2 : "ยืนยัน"}}</div>
+        </div>
+    </div>
+</div>
+<div class="box-download" *ngIf="data.options === 'download'">
+    <div class="wrapper-download">
+        <div class="header">
+            <div class="image">
+                <img src="../../../../assets/img/logo/mfp.svg" alt="">
+            </div>
+        </div>
+        <div class="text">
+            <span>รับประสบการณ์ใช้งานแอปเต็มรูปแบบ</span>
+            <span>พบกับฟีเจอร์ใหม่ๆ และกิจกรรมอีกมากมายบนแอป</span>
+        </div>
+        <div class="bottom">
+            <div class="butt but-submit" [ngStyle]="{'display': data.btDisplay2}" appDebounceClick
+                (debounceClick)="downloadApp() ">{{data.bottomText2 ? data.bottomText2 : "ยืนยัน"}}</div>
+            <div class="butt but-cancel" [ngStyle]="{'display': data.btDisplay1}" (click)="cancel() ">
+                {{data.bottomText1 ? data.bottomText1 : "ปิด"}}</div>
         </div>
     </div>
 </div>

@@ -18,29 +18,33 @@ import { UserEngagement } from '../models/UserEngagement';
 import { UserEngagementService } from '../services/UserEngagementService';
 import { UserFollowService } from '../services/UserFollowService';
 import { PostsService } from '../services/PostsService';
-import { PostsCommentService } from '../services/PostsCommentService';
-import { SocialPostService } from '../services/SocialPostService';
-import { FulfillmentCaseService } from '../services/FulfillmentCaseService';
-import { UserLikeService } from '../services/UserLikeService';
+// import { PostsCommentService } from '../services/PostsCommentService';
+// import { SocialPostService } from '../services/SocialPostService';
+// import { FulfillmentCaseService } from '../services/FulfillmentCaseService';
+// import { UserLikeService } from '../services/UserLikeService';
 import { SUBJECT_TYPE } from '../../constants/FollowType';
 import { FULFILLMENT_STATUS } from '../../constants/FulfillmentStatus';
 import { ENGAGEMENT_CONTENT_TYPE, ENGAGEMENT_ACTION } from '../../constants/UserEngagementAction';
 import { EmergencyEventTimelineResponse } from './responses/EmergencyEventTimelineResponse';
 import { EmergencyStartPostProcessor } from '../processors/emergency/EmergencyStartPostProcessor';
 import { EmergencyNeedsProcessor } from '../processors/emergency/EmergencyNeedsProcessor';
-import { EmergencyInfluencerProcessor } from '../processors/emergency/EmergencyInfluencerProcessor';
-import { EmergencyInfluencerFulfillProcessor } from '../processors/emergency/EmergencyInfluencerFulfillProcessor';
-import { EmergencyInfluencerFollowedProcessor } from '../processors/emergency/EmergencyInfluencerFollowedProcessor';
+// import { EmergencyInfluencerProcessor } from '../processors/emergency/EmergencyInfluencerProcessor';
+// import { EmergencyInfluencerFulfillProcessor } from '../processors/emergency/EmergencyInfluencerFulfillProcessor';
+// import { EmergencyInfluencerFollowedProcessor } from '../processors/emergency/EmergencyInfluencerFollowedProcessor';
 import { EmergencyLastestProcessor } from '../processors/emergency/EmergencyLastestProcessor';
-import { EmergencyShareProcessor } from '../processors/emergency/EmergencyShareProcessor';
-import { EmergencyPostLikedProcessor } from '../processors/emergency/EmergencyPostLikedProcessor';
+// import { EmergencyShareProcessor } from '../processors/emergency/EmergencyShareProcessor';
+// import { EmergencyPostLikedProcessor } from '../processors/emergency/EmergencyPostLikedProcessor';
 import { DateTimeUtil } from '../../utils/DateTimeUtil';
 
 @JsonController('/emergency')
 export class EmergencyEventController {
     constructor(private emergencyEventService: EmergencyEventService, private hashTagService: HashTagService, private userFollowService: UserFollowService,
-        private userEngagementService: UserEngagementService, private postsService: PostsService, private postsCommentService: PostsCommentService,
-        private socialPostService: SocialPostService, private fulfillmentCaseService: FulfillmentCaseService, private userLikeService: UserLikeService) { }
+        private userEngagementService: UserEngagementService, private postsService: PostsService, 
+        // private postsCommentService: PostsCommentService,
+        // private socialPostService: SocialPostService, 
+        // private fulfillmentCaseService: FulfillmentCaseService, 
+        // private userLikeService: UserLikeService
+        ) { }
 
     // Find EmergencyEvent API
     /**
@@ -155,7 +159,6 @@ export class EmergencyEventController {
         emergencyEventAggr.push({ $project: { '_id': 0 } });
 
         const emergencyEventAggResult = await this.emergencyEventService.aggregate(emergencyEventAggr);
-
         if (emergencyEventAggResult !== null && emergencyEventAggResult !== undefined) {
             // change hashTag from id to name string
             emergencyEventAggResult.map((data) => {
@@ -354,6 +357,7 @@ export class EmergencyEventController {
                     continue;
                 }
                 // influencer section
+                /* 
                 const influencerProcessor = new EmergencyInfluencerProcessor(this.postsCommentService, this.userFollowService);
                 influencerProcessor.setData({
                     emergencyEventId: objId,
@@ -364,7 +368,7 @@ export class EmergencyEventController {
                 const influencerProcsResult = await influencerProcessor.process();
                 if (influencerProcsResult !== undefined) {
                     emergencyEventTimeline.timelines.push(influencerProcsResult);
-                }
+                } */
 
                 // need section
                 const needsProcessor = new EmergencyNeedsProcessor(this.emergencyEventService, this.postsService);
@@ -379,6 +383,7 @@ export class EmergencyEventController {
                 }
 
                 // share section
+                /* 
                 const shareProcessor = new EmergencyShareProcessor(this.userFollowService, this.socialPostService);
                 shareProcessor.setData({
                     emergencyEventId: objId,
@@ -390,9 +395,10 @@ export class EmergencyEventController {
                 const shareProcsResult = await shareProcessor.process();
                 if (shareProcsResult !== undefined) {
                     emergencyEventTimeline.timelines.push(shareProcsResult);
-                }
+                } */
 
                 // fulfill section
+                /* 
                 const fulfillrocessor = new EmergencyInfluencerFulfillProcessor(this.fulfillmentCaseService, this.userFollowService);
                 fulfillrocessor.setData({
                     emergencyEventId: objId,
@@ -404,9 +410,10 @@ export class EmergencyEventController {
                 const fulfillProcsResult = await fulfillrocessor.process();
                 if (fulfillProcsResult !== undefined) {
                     emergencyEventTimeline.timelines.push(fulfillProcsResult);
-                }
+                } */
 
                 // following section
+                /* 
                 const followingProcessor = new EmergencyInfluencerFollowedProcessor(this.userFollowService);
                 followingProcessor.setData({
                     emergencyEventId: objId,
@@ -416,9 +423,10 @@ export class EmergencyEventController {
                 const followingProcsResult = await followingProcessor.process();
                 if (followingProcsResult !== undefined) {
                     emergencyEventTimeline.timelines.push(followingProcsResult);
-                }
+                } */
 
                 // Like section
+                /* 
                 const postLikeProcessor = new EmergencyPostLikedProcessor(this.userLikeService);
                 postLikeProcessor.setData({
                     emergencyEventId: objId,
@@ -428,7 +436,7 @@ export class EmergencyEventController {
                 const postLikeProcsResult = await postLikeProcessor.process();
                 if (postLikeProcsResult !== undefined) {
                     emergencyEventTimeline.timelines.push(postLikeProcsResult);
-                }
+                } */
             }
 
             // current post section

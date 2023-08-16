@@ -982,9 +982,8 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
     } else {
       this.endActionCount = this.countEngagement
     }
-
     const keywordFilter: any = {
-      keyword: this.keyword,
+      keyword: this.matHashTag ? this.matHashTag : this.keyword,
       hashtag: this.matHashTag,
       onlyFollowed: this.follow ? this.follow : undefined,
       type: this.type ? this.type : '',
