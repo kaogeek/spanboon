@@ -633,7 +633,6 @@ export class FacebookWebhookController {
                         }
                         await this.updateCountHashTag(hashTagObjective);
                     }
-                    console.log('hashTagObjective_3', hashTagObjective);
                     const pageFindtag = await this.pageObjectiveService.aggregate(
                         [
                             { $match: { pageId: pageSubscribe.pageId, hashTag: { $in: hashTagObjectiveIds } } },
@@ -693,7 +692,7 @@ export class FacebookWebhookController {
                 }
             }
 
-            // delete Post
+            // delete post photos && with post no pic
 
             else if (
                 message_webhooks === undefined &&
@@ -722,11 +721,12 @@ export class FacebookWebhookController {
                 }
             }
 
-            // delete post photo
+            // delete Post with pic
+            // body.entry[0].changes[0].value.item === 'photo'
             else if (
                 change_value_link !== undefined &&
                 message_webhooks === undefined &&
-                body.entry[0].changes[0].value.item === 'photo' &&
+                body.entry[0].changes[0].value.item === Webhooks.value_item_photo &&
                 value_photo_id !== undefined &&
                 published === 1 &&
                 value_verb === Webhooks.value_verb_edited
@@ -737,6 +737,10 @@ export class FacebookWebhookController {
                     if (posted) {
                         const query = { _id: posted.id };
                         const update = await this.postsService.delete(query);
+                        const deletePhotos = await this.postsGalleryService.find({ post: posted.id });
+                        if (deletePhotos.length > 0) {
+                            await this.postsGalleryService.deleteMany({ post: posted.id });
+                        }
                         if (update) {
                             const successResponseError = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                             return res.status(200).send(successResponseError);
@@ -746,11 +750,13 @@ export class FacebookWebhookController {
                     const successResponseError = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                     return res.status(200).send(successResponseError);
                 }
+            // update post with no pic
             } else if (
+                message_webhooks !== undefined &&
                 value_verb === Webhooks.value_verb_edited &&
                 change_value_link === undefined &&
                 value_photos === undefined &&
-                value_item === 'status' &&
+                value_item ===  Webhooks.value_item_status &&
                 published === 1) {
                 let query = undefined;
                 let newValues = undefined;
@@ -864,13 +870,13 @@ export class FacebookWebhookController {
                     const successResponseError = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                     return res.status(200).send(successResponseError);
                 }
-
+            // update post with pic
             } else if (
                 message_webhooks !== undefined &&
                 value_verb === Webhooks.value_verb_edited &&
                 change_value_link !== undefined &&
                 value_photos === undefined &&
-                value_item === 'photo' &&
+                value_item ===  Webhooks.value_item_photo &&
                 published === 1) {
                 // message_webhooks = message_webhooks
                 if (message_webhooks === undefined) {
@@ -990,8 +996,9 @@ export class FacebookWebhookController {
                     const successResponseError = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                     return res.status(200).send(successResponseError);
                 }
-
+            // update post with pics
             } else if (
+                message_webhooks !== undefined &&
                 value_verb === Webhooks.value_verb_edited &&
                 change_value_link === undefined &&
                 value_photos.length > 0 &&
