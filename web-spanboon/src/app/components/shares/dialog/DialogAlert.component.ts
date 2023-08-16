@@ -51,13 +51,14 @@ export class DialogAlert {
 
   public downloadApp() {
     this.deviceInfo = this.deviceService.getDeviceInfo();
-    if (this.data.type === 'ios' || this.deviceInfo.os === 'Mac') {
+    if (this.data.type === 'ios') {
       window.open(environment.apple_app_link);
-      localStorage.setItem('appExperience', 'downloaded');
+    } else if (this.deviceInfo.os === 'Mac') {
+      window.open('https://apps.apple.com/us/app/mfp-today/id6444463783', "_blank");
     } else {
-      window.open('.well-known/assetlinks.json', "_blank");
-      localStorage.setItem('appExperience', 'downloaded');
+      window.open('https://play.google.com/store/search?q=mfp+today&c=apps', "_blank");
     }
+    localStorage.setItem('appExperience', 'downloaded');
     this.isbottom = false
     this.dialogRef.close(this.isbottom);
   }
