@@ -52,10 +52,10 @@ export class DialogAlert {
   public downloadApp() {
     this.deviceInfo = this.deviceService.getDeviceInfo();
     if (this.data.type === 'ios' || this.deviceInfo.os === 'Mac') {
-      window.open(environment.apple_app_link);
+      window.open('https://apps.apple.com/us/app/mfp-today/id6444463783', "_blank");
       localStorage.setItem('appExperience', 'downloaded');
     } else {
-      window.open('.well-known/assetlinks.json', "_blank");
+      window.open('https://play.google.com/store/search?q=mfp+today&c=apps', "_blank");
       localStorage.setItem('appExperience', 'downloaded');
     }
     this.isbottom = false
