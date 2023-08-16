@@ -9,6 +9,7 @@ import { Component, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { DialogData } from '../../../models/models';
 import { environment } from '../../../../environments/environment';
+import { DeviceDetectorService } from 'ngx-device-detector';
 
 @Component({
   selector: 'dialog-alert',
@@ -17,12 +18,13 @@ import { environment } from '../../../../environments/environment';
 })
 
 export class DialogAlert {
+  deviceInfo = null;
 
   private isbottom: boolean
   public apiBaseURL = environment.apiBaseURL;
 
   constructor(public dialogRef: MatDialogRef<DialogAlert>,
-    @Inject(MAT_DIALOG_DATA) public data: DialogData) {
+    @Inject(MAT_DIALOG_DATA) public data: DialogData, private deviceService: DeviceDetectorService) {
 
   }
 
@@ -45,5 +47,25 @@ export class DialogAlert {
   }
 
   public ngOnInit(): void {
+  }
+
+  public downloadApp() {
+    this.deviceInfo = this.deviceService.getDeviceInfo();
+    if (this.data.type === 'ios' || this.deviceInfo.os === 'Mac') {
+      window.open(environment.apple_app_link);
+      localStorage.setItem('appExperience', 'downloaded');
+    } else {
+      window.open('.well-known/assetlinks.json', "_blank");
+      localStorage.setItem('appExperience', 'downloaded');
+    }
+    this.isbottom = false
+    this.dialogRef.close(this.isbottom);
+  }
+
+  public cancel() {
+    let date = Date.now();
+    localStorage.setItem('timeStampAppEx', JSON.stringify(date));
+    this.isbottom = false
+    this.dialogRef.close(this.isbottom);
   }
 }

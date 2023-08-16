@@ -28,6 +28,12 @@ import { DialogPostCrad } from '../../shares/dialog/DialogPostCrad.component';
 import { debounce } from '../../shares/directive/DebounceScroll.directive';
 import { ObservableManager } from 'src/app/services/ObservableManager.service';
 import { DialogDropdown } from '../../shares/dialog/DialogDropdown.component';
+import {
+  getSupportedInputTypes,
+  Platform,
+  supportsPassiveEventListeners,
+  supportsScrollBehavior,
+} from '@angular/cdk/platform';
 
 declare var $: any;
 
@@ -39,6 +45,10 @@ const ANNOUNCE_DEFAULT: string = 'ต้องก้าวไกลให้ไ�
   templateUrl: './HomePageV3.component.html',
 })
 export class HomePageV3 extends AbstractPage implements OnInit {
+  supportedInputTypes = Array.from(getSupportedInputTypes()).join(', ');
+  supportsPassiveEventListeners = supportsPassiveEventListeners();
+  supportsScrollBehavior = supportsScrollBehavior();
+
   startDate: Date;
   public static readonly PAGE_NAME: string = PAGE_NAME;
   public userCloneDatas: any;
@@ -115,7 +125,8 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     seoService: SeoService,
     userSubject: UserSubjectFacade,
     private route: ActivatedRoute,
-    observManager: ObservableManager
+    observManager: ObservableManager,
+    public platform: Platform
   ) {
 
     super(null, authenManager, dialog, router);
@@ -174,6 +185,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     this.stopIsloading();
     this.getScreenSize();
     this.getDateFilter();
+    this._downloadApp();
     this.hidebar = this.authenManager.getHidebar();
     super.ngOnInit();
   }
@@ -875,6 +887,36 @@ export class HomePageV3 extends AbstractPage implements OnInit {
       await this.getBottomContent();
     }
 
+  }
+
+  private _downloadApp() {
+    let dateStamp = localStorage.getItem('timeStampAppEx');
+    let date = Date.now();
+    let daysDiff = date - Number(dateStamp);
+    const dayCal = 24 * 60 * 60 * 1000
+    const daysCalDiff = Math.round(daysDiff / dayCal)
+    let appEx = localStorage.getItem('appExperience');
+    let platform;
+    if (this.platform.IOS) {
+      platform = 'ios';
+    }
+    if (this.platform.ANDROID) {
+      platform = 'android';
+    }
+    if (appEx !== 'downloaded' && daysCalDiff >= 30) {
+      this.dialog.open(DialogAlert, {
+        disableClose: true,
+        maxWidth: '100%',
+        data: {
+          text: 'testNakrub ',
+          bottomText1: 'ไม่ใช่ตอนนี้',
+          bottomText2: 'ดาวน์โหลดเลย',
+          options: 'download',
+          type: platform ? platform : 'browser'
+        },
+        position: this.isRes1 ? { bottom: '0' } : { top: '' },
+      });
+    }
   }
 
   public stopIsloading() {

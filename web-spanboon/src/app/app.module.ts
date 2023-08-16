@@ -56,6 +56,7 @@ import {
   MatTooltipModule, MatSnackBarModule, MatTableModule, MatSortModule, MatPaginatorModule, MatNativeDateModule, MatCardModule, MatRippleModule, MAT_DIALOG_DATA, MatDialogRef, MatBadgeModule, DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MAT_SNACK_BAR_DEFAULT_OPTIONS
 } from '@angular/material';
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
+import { DeviceDetectorModule } from 'ngx-device-detector';
 
 import {
   PrefixNumberPipe, ShortNumberPipe, SafePipe, RemoveBadWords, PipeDatetime, PipeThFormatDatetime,
@@ -594,6 +595,7 @@ registerLocaleData(localeFr, 'th-TH', localeFrExtra);
     MatTooltipModule, MatSnackBarModule, MatTableModule, MatSortModule, MatPaginatorModule, MatNativeDateModule, MatCardModule,
     MatRippleModule, MatBadgeModule, OverlayModule,
     CommonModule,
+    DeviceDetectorModule.forRoot(),
     ToastrModule.forRoot({
       maxOpened: 10,
       newestOnTop: true
