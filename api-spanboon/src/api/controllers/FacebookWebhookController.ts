@@ -360,6 +360,7 @@ export class FacebookWebhookController {
                 published === 1 &&
                 value_verb === Webhooks.value_verb_add
             ) {
+                console.log('post with no pic && pics');
                 const checkPost = await this.socialPostService.find({ socialId: value_post_id });
                 const checkFeed = checkPost.shift();
                 if (checkFeed === undefined) {
@@ -467,6 +468,7 @@ export class FacebookWebhookController {
                 published === 1 &&
                 value_verb === Webhooks.value_verb_add
             ) {
+                console.log('post with with pic && no pics');
                 const assetPic = await this.assetService.createAssetFromURL(change_value_link, pageIdFB.ownerUser);
                 const checkPost = await this.socialPostService.find({ socialId: value_post_id });
                 const checkFeed = checkPost.shift();
@@ -582,6 +584,7 @@ export class FacebookWebhookController {
                 value_photos !== undefined &&
                 value_item !== Webhooks.value_item_share &&
                 published === 1) {
+                console.log('post with no pic but pics');
                 const multiPics = [];
                 for (let i = 0; i < value_photos.length; i++) {
                     if (i === 4) {
@@ -701,6 +704,7 @@ export class FacebookWebhookController {
                 value_photo_id === undefined &&
                 published === 1 &&
                 value_verb === Webhooks.value_verb_edited) {
+                console.log('delete with no pic but pics');
                 const findPost = await this.socialPostService.findOne({ socialId: value_post_id, socialType: Webhooks.socialType });
                 if (findPost !== undefined && findPost !== null) {
                     const posted = await this.postsService.findOne({ _id: findPost.postId });
@@ -721,18 +725,54 @@ export class FacebookWebhookController {
                     return res.status(200).send(successResponseError);
                 }
             }
-
             // delete Post with pic
-            // body.entry[0].changes[0].value.item === 'photo'
             else if (
-                change_value_link !== undefined &&
-                (message_webhooks === undefined ||
-                message_webhooks === null) &&                
+                (
+                message_webhooks === undefined ||
+                message_webhooks === null) &&
+                change_value_link === undefined && 
+                value_photos === undefined &&
                 body.entry[0].changes[0].value.item === Webhooks.value_item_photo &&
                 value_photo_id !== undefined &&
                 published === 1 &&
                 value_verb === Webhooks.value_verb_edited
             ) {
+                console.log('delete with pic no pics');
+                const findPost = await this.socialPostService.findOne({ socialId: value_post_id, socialType: Webhooks.socialType });
+                if (findPost !== undefined && findPost !== null) {
+                    const posted = await this.postsService.findOne({ _id: findPost.postId });
+                    if (posted) {
+                        const query = { _id: posted.id };
+                        const update = await this.postsService.delete(query);
+                        const deletePhotos = await this.postsGalleryService.find({ post: posted.id });
+                        if (deletePhotos.length > 0) {
+                            await this.postsGalleryService.deleteMany({ post: posted.id });
+                        }
+                        if (update) {
+                            const successResponseError = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
+                            return res.status(200).send(successResponseError);
+                        }
+                    }
+                } else {
+                    const successResponseError = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
+                    return res.status(200).send(successResponseError);
+                }
+                // update post with no pic
+            } 
+            // delete Post with pics
+            // body.entry[0].changes[0].value.item === 'photo'
+            else if (
+                (
+                message_webhooks === undefined ||
+                message_webhooks === null) &&
+                change_value_link !== undefined && 
+                value_photos !== undefined &&
+                body.entry[0].changes[0].value.item === Webhooks.value_item_photo &&
+                value_photo_id !== undefined &&
+                published === 1 &&
+                value_verb === Webhooks.value_verb_edited
+            ) {
+                console.log('delete post with no pic but pics');
                 const findPost = await this.socialPostService.findOne({ socialId: value_post_id, socialType: Webhooks.socialType });
                 if (findPost !== undefined && findPost !== null) {
                     const posted = await this.postsService.findOne({ _id: findPost.postId });
@@ -755,12 +795,12 @@ export class FacebookWebhookController {
                 // update post with no pic
             } else if (
                 message_webhooks !== undefined &&
-                message_webhooks !== null &&                
                 value_verb === Webhooks.value_verb_edited &&
                 change_value_link === undefined &&
                 value_photos === undefined &&
                 value_item === Webhooks.value_item_status &&
                 published === 1) {
+                console.log('edit post with no pic && pics');
                 let query = undefined;
                 let newValues = undefined;
                 let update = undefined;
@@ -876,12 +916,12 @@ export class FacebookWebhookController {
                 // update post with pic
             } else if (
                 message_webhooks !== undefined &&
-                message_webhooks !== null &&
                 value_verb === Webhooks.value_verb_edited &&
                 change_value_link !== undefined &&
                 value_photos === undefined &&
                 value_item === Webhooks.value_item_photo &&
                 published === 1) {
+                console.log('edit post with pic && no pics');
                 // message_webhooks = message_webhooks
                 if (message_webhooks === undefined) {
                     const successResponseError = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
@@ -1003,12 +1043,12 @@ export class FacebookWebhookController {
                 // update post with pics
             } else if (
                 message_webhooks !== undefined &&
-                message_webhooks !== null &&                
                 value_verb === Webhooks.value_verb_edited &&
                 change_value_link === undefined &&
                 value_photos.length > 0 &&
                 value_item === Webhooks.value_item_status &&
                 published === 1) {
+                console.log('edit post no pic && but pics');
                 // message_webhooks = message_webhooks
                 if (message_webhooks === undefined) {
                     const successResponseError = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
@@ -1123,14 +1163,17 @@ export class FacebookWebhookController {
                         }
                     }
                 } else {
+                    console.log('Error_no_message_no_permission');
                     const successResponseError = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                     return res.status(200).send(successResponseError);
                 }
             } else {
+                console.log('Error_No_case_switch');
                 const successResponse = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                 return res.status(200).send(successResponse);
             }
         } else {
+            console.log('pass11');
             const successResponse = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
             return res.status(200).send(successResponse);
         }
