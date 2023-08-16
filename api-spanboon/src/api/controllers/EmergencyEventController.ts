@@ -18,29 +18,33 @@ import { UserEngagement } from '../models/UserEngagement';
 import { UserEngagementService } from '../services/UserEngagementService';
 import { UserFollowService } from '../services/UserFollowService';
 import { PostsService } from '../services/PostsService';
-import { PostsCommentService } from '../services/PostsCommentService';
-import { SocialPostService } from '../services/SocialPostService';
-import { FulfillmentCaseService } from '../services/FulfillmentCaseService';
-import { UserLikeService } from '../services/UserLikeService';
+// import { PostsCommentService } from '../services/PostsCommentService';
+// import { SocialPostService } from '../services/SocialPostService';
+// import { FulfillmentCaseService } from '../services/FulfillmentCaseService';
+// import { UserLikeService } from '../services/UserLikeService';
 import { SUBJECT_TYPE } from '../../constants/FollowType';
 import { FULFILLMENT_STATUS } from '../../constants/FulfillmentStatus';
 import { ENGAGEMENT_CONTENT_TYPE, ENGAGEMENT_ACTION } from '../../constants/UserEngagementAction';
 import { EmergencyEventTimelineResponse } from './responses/EmergencyEventTimelineResponse';
 import { EmergencyStartPostProcessor } from '../processors/emergency/EmergencyStartPostProcessor';
 import { EmergencyNeedsProcessor } from '../processors/emergency/EmergencyNeedsProcessor';
-import { EmergencyInfluencerProcessor } from '../processors/emergency/EmergencyInfluencerProcessor';
-import { EmergencyInfluencerFulfillProcessor } from '../processors/emergency/EmergencyInfluencerFulfillProcessor';
-import { EmergencyInfluencerFollowedProcessor } from '../processors/emergency/EmergencyInfluencerFollowedProcessor';
+// import { EmergencyInfluencerProcessor } from '../processors/emergency/EmergencyInfluencerProcessor';
+// import { EmergencyInfluencerFulfillProcessor } from '../processors/emergency/EmergencyInfluencerFulfillProcessor';
+// import { EmergencyInfluencerFollowedProcessor } from '../processors/emergency/EmergencyInfluencerFollowedProcessor';
 import { EmergencyLastestProcessor } from '../processors/emergency/EmergencyLastestProcessor';
-import { EmergencyShareProcessor } from '../processors/emergency/EmergencyShareProcessor';
-import { EmergencyPostLikedProcessor } from '../processors/emergency/EmergencyPostLikedProcessor';
+// import { EmergencyShareProcessor } from '../processors/emergency/EmergencyShareProcessor';
+// import { EmergencyPostLikedProcessor } from '../processors/emergency/EmergencyPostLikedProcessor';
 import { DateTimeUtil } from '../../utils/DateTimeUtil';
 
 @JsonController('/emergency')
 export class EmergencyEventController {
     constructor(private emergencyEventService: EmergencyEventService, private hashTagService: HashTagService, private userFollowService: UserFollowService,
-        private userEngagementService: UserEngagementService, private postsService: PostsService, private postsCommentService: PostsCommentService,
-        private socialPostService: SocialPostService, private fulfillmentCaseService: FulfillmentCaseService, private userLikeService: UserLikeService) { }
+        private userEngagementService: UserEngagementService, private postsService: PostsService, 
+        // private postsCommentService: PostsCommentService,
+        // private socialPostService: SocialPostService, 
+        // private fulfillmentCaseService: FulfillmentCaseService, 
+        // private userLikeService: UserLikeService
+        ) { }
 
     // Find EmergencyEvent API
     /**
