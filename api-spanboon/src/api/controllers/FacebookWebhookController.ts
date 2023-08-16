@@ -182,7 +182,7 @@ export class FacebookWebhookController {
         let realText = undefined;
         let TrimText = undefined;
         let hashTagList2: any;
-
+        console.log('message_webhooks', message_webhooks);
         if (message_webhooks !== undefined) {
 
             const msgSplit = message_webhooks.split('#');
@@ -695,7 +695,8 @@ export class FacebookWebhookController {
             // delete post photos && with post no pic
 
             else if (
-                message_webhooks === undefined &&
+                (message_webhooks === undefined ||
+                message_webhooks === null) &&                
                 value_item === Webhooks.value_item_status &&
                 value_photo_id === undefined &&
                 published === 1 &&
@@ -725,7 +726,8 @@ export class FacebookWebhookController {
             // body.entry[0].changes[0].value.item === 'photo'
             else if (
                 change_value_link !== undefined &&
-                message_webhooks === undefined &&
+                (message_webhooks === undefined ||
+                message_webhooks === null) &&                
                 body.entry[0].changes[0].value.item === Webhooks.value_item_photo &&
                 value_photo_id !== undefined &&
                 published === 1 &&
@@ -750,13 +752,14 @@ export class FacebookWebhookController {
                     const successResponseError = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                     return res.status(200).send(successResponseError);
                 }
-            // update post with no pic
+                // update post with no pic
             } else if (
                 message_webhooks !== undefined &&
+                message_webhooks !== null &&                
                 value_verb === Webhooks.value_verb_edited &&
                 change_value_link === undefined &&
                 value_photos === undefined &&
-                value_item ===  Webhooks.value_item_status &&
+                value_item === Webhooks.value_item_status &&
                 published === 1) {
                 let query = undefined;
                 let newValues = undefined;
@@ -870,13 +873,14 @@ export class FacebookWebhookController {
                     const successResponseError = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                     return res.status(200).send(successResponseError);
                 }
-            // update post with pic
+                // update post with pic
             } else if (
                 message_webhooks !== undefined &&
+                message_webhooks !== null &&
                 value_verb === Webhooks.value_verb_edited &&
                 change_value_link !== undefined &&
                 value_photos === undefined &&
-                value_item ===  Webhooks.value_item_photo &&
+                value_item === Webhooks.value_item_photo &&
                 published === 1) {
                 // message_webhooks = message_webhooks
                 if (message_webhooks === undefined) {
@@ -996,9 +1000,10 @@ export class FacebookWebhookController {
                     const successResponseError = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                     return res.status(200).send(successResponseError);
                 }
-            // update post with pics
+                // update post with pics
             } else if (
                 message_webhooks !== undefined &&
+                message_webhooks !== null &&                
                 value_verb === Webhooks.value_verb_edited &&
                 change_value_link === undefined &&
                 value_photos.length > 0 &&
@@ -1387,7 +1392,7 @@ export class FacebookWebhookController {
                     $sort: { count: -1 }
                 },
                 {
-                    $limit: hashTagNameList.length 
+                    $limit: hashTagNameList.length
                 }
             ]
         );
