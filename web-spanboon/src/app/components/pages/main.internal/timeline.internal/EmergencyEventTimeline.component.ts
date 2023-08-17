@@ -133,8 +133,8 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
                 for (let hashtag of res.relatedHashTags) {
                     hashTags.push("#" + hashtag.name + " ")
                 }
-                this.seoService.updateTitle("#" + emer.hashTagName);
-                this.meta.updateTag({ name: 'title', content: "#" + emer.hashTagName });
+                this.seoService.updateTitle("#" + emer.title);
+                this.meta.updateTag({ name: 'title', content: "#" + emer.title });
                 this.meta.updateTag({ name: 'keywords', content: (res.relatedHashTags.length > 0 ? hashTags.toString() : '') });
                 this.meta.updateTag({ name: 'description', content: "#" + emer.title + (emer.detail ? (" - " + emer.detail) : '') });
                 this.objectiveData.page;
