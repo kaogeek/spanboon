@@ -61,11 +61,6 @@
                                     </div>
                                     <div class="score-type">
                                         <span class="title">{{objectiveData.timelines[0] ?
-                                            objectiveData.timelines[0].post.repostCount : '0'}}</span>
-                                        <span class="disiption">บอกต่อ</span>
-                                    </div>
-                                    <div class="score-type">
-                                        <span class="title">{{objectiveData.timelines[0] ?
                                             objectiveData.timelines[0].post.shareCount : '0'}}</span>
                                         <span class="disiption">แชร์</span>
                                     </div>
@@ -87,11 +82,6 @@
                                             <span class="title">{{objectiveData.timelines[0] ?
                                                 objectiveData.timelines[0].post.repostCount : '0'}}</span>
                                             <span class="disiption">การพูดถึง</span>
-                                        </div>
-                                        <div class="score-type">
-                                            <span class="title">{{objectiveData.timelines[0] ?
-                                                objectiveData.timelines[0].post.shareCount : '0'}}</span>
-                                            <span class="disiption">บอกต่อ</span>
                                         </div>
                                     </div>
                                 </div>
@@ -126,9 +116,7 @@
                     class="strat-section-point">
                     <div class="head">
                         <div class="line"></div>
-                        <div class="strat-point" data-aos="fade-up" data-aos-offset="10" data-aos-delay="15"
-                            data-aos-duration="500" data-aos-easing="ease-in-out" data-aos-mirror="false"
-                            data-aos-once="false" data-aos-anchor-placement="top-center">
+                        <div class="strat-point">
                             <span class="title" id="point">{{index === 0 ? 'จุดเริ่มต้น':currentDate |
                                 thdatetime}}</span>
                         </div>
@@ -196,11 +184,6 @@
                                                     <span
                                                         class="title">{{objectiveData.timelines[0].post.repostCount}}</span>
                                                     <span class="disiption">การพูดถึง</span>
-                                                </div>
-                                                <div class="score-type">
-                                                    <span
-                                                        class="title">{{objectiveData.timelines[0].post.viewCount}}</span>
-                                                    <span class="disiption">บอกต่อ</span>
                                                 </div>
                                                 <div class="score-type">
                                                     <span
@@ -1269,10 +1252,6 @@
                                                             <span class="disiption">การพูดถึง</span>
                                                         </div>
                                                         <div class="score-type">
-                                                            <span class="title">{{post.repostCount}}</span>
-                                                            <span class="disiption">บอกต่อ</span>
-                                                        </div>
-                                                        <div class="score-type">
                                                             <span class="title">{{post.likeCount}}</span>
                                                             <span class="disiption">ถูกใจ</span>
                                                         </div>
@@ -1348,10 +1327,6 @@
                                                         <div class="score-type">
                                                             <span class="title">{{post.commentCount}}</span>
                                                             <span class="disiption">การพูดถึง</span>
-                                                        </div>
-                                                        <div class="score-type">
-                                                            <span class="title">{{post.repostCount}}</span>
-                                                            <span class="disiption">บอกต่อ</span>
                                                         </div>
                                                         <div class="score-type">
                                                             <span class="title">{{post.likeCount}}</span>
