@@ -173,6 +173,7 @@ export class FacebookWebhookController {
         const value_created_time = body.entry[0].changes[0].value.created_time;
         // body.entry[0].changes[0].value.photo_id
         const value_photo_id = body.entry[0].changes[0].value.photo_id;
+
         const pageSubscribe = await this.socialPostLogsService.findOne({ providerUserId: String(body.entry[0].changes[0].value.from.id) });
         if (pageSubscribe === undefined) {
             const successResponse = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
@@ -182,11 +183,11 @@ export class FacebookWebhookController {
         let realText = undefined;
         let TrimText = undefined;
         let hashTagList2: any;
-        console.log('message_webhooks', message_webhooks);
         if (message_webhooks !== undefined) {
 
             const msgSplit = message_webhooks.split('#');
             const hashTag = await this.splitHashTag(msgSplit);
+            console.log('hashTag', hashTag);
             hashTagList2 = hashTag;
             /*
             if (msgSplit !== undefined) {
@@ -609,7 +610,7 @@ export class FacebookWebhookController {
                             postMasterHashTagList.push(new ObjectID(id));
                             masterHashTagMap[name] = hashTag;
                         }
-                        if(masterHashTagList.length === 0){
+                        if (masterHashTagList.length === 0) {
                             for (const hashTag of hashTagList2) {
                                 if (masterHashTagMap[hashTag] === undefined) {
                                     const newHashTag: HashTag = new HashTag();
@@ -707,7 +708,9 @@ export class FacebookWebhookController {
                 value_item === Webhooks.value_item_status &&
                 value_photo_id === undefined &&
                 published === 1 &&
-                value_verb === Webhooks.value_verb_edited) {
+                value_verb === Webhooks.value_verb_edited &&
+                value_share_id === undefined
+            ) {
                 console.log('delete with no pic but pics');
                 const findPost = await this.socialPostService.findOne({ socialId: value_post_id, socialType: Webhooks.socialType });
                 if (findPost !== undefined && findPost !== null) {
@@ -739,7 +742,8 @@ export class FacebookWebhookController {
                 body.entry[0].changes[0].value.item === Webhooks.value_item_photo &&
                 value_photo_id !== undefined &&
                 published === 1 &&
-                value_verb === Webhooks.value_verb_edited
+                value_verb === Webhooks.value_verb_edited &&
+                value_share_id === undefined
             ) {
                 console.log('delete with pic no pics');
                 const findPost = await this.socialPostService.findOne({ socialId: value_post_id, socialType: Webhooks.socialType });
@@ -774,7 +778,9 @@ export class FacebookWebhookController {
                 body.entry[0].changes[0].value.item === Webhooks.value_item_photo &&
                 value_photo_id !== undefined &&
                 published === 1 &&
-                value_verb === Webhooks.value_verb_edited
+                value_verb === Webhooks.value_verb_edited &&
+                value_share_id === undefined
+
             ) {
                 console.log('delete post with no pic but pics');
                 const findPost = await this.socialPostService.findOne({ socialId: value_post_id, socialType: Webhooks.socialType });
@@ -803,33 +809,39 @@ export class FacebookWebhookController {
                 change_value_link === undefined &&
                 value_photos === undefined &&
                 value_item === Webhooks.value_item_status &&
-                published === 1) {
+                published === 1 &&
+                value_share_id === undefined
+            ) {
                 console.log('edit post with no pic && pics');
                 let query = undefined;
                 let newValues = undefined;
                 let update = undefined;
                 const findPost = await this.socialPostService.findOne({ socialId: value_post_id, socialType: Webhooks.socialType });
+                console.log('findPost --- > 1',findPost);
                 if (findPost !== undefined && findPost !== null) {
                     const posted = await this.postsService.findOne({ _id: findPost.postId });
-                    if (posted) {
+                    console.log('posted',posted);
+                    if (posted !== undefined && posted !== null) {
                         if (message_webhooks !== undefined) {
 
                             const msgSplit = message_webhooks.split('#');
                             const hashTag = await this.splitHashTag(msgSplit);
+                            console.log('hashTag ____ 1', hashTag);
                             hashTagList2 = hashTag;
+                            console.log('hashTagList1 ----- >>>> 1', hashTagList2);
                         }
-                        console.log('hashTagList2_post_edit_with_no_pic&&pics >>> 1',hashTagList2);
                         if (hashTagList2 !== null && hashTagList2 !== undefined && hashTagList2.length > 0) {
+                            console.log('pass 1 - >>>> ');
                             const masterHashTagList: any = await this.findHashTag(hashTagList2);
-                            console.log('masterHashTagList_post_edit_with_no_pic&&pics >>> 1',masterHashTagList);
+                            console.log('masterHashTagList_____ 1', masterHashTagList);
+                            console.log('masterHashTagList _____ .length',masterHashTagList);
                             for (const hashTag of masterHashTagList) {
                                 const id = hashTag._id;
                                 const name = hashTag.name;
                                 postMasterHashTagList.push(new ObjectID(id));
                                 masterHashTagMap[name] = hashTag;
                             }
-                            if(masterHashTagList.length === 0){
-                                console.log('masterHashTagList_post_edit_with_no_pic&&pics_2 >>> 1');
+                            if (masterHashTagList.length === 0) {
                                 for (const hashTag of hashTagList2) {
                                     if (masterHashTagMap[hashTag] === undefined) {
                                         const newHashTag: HashTag = new HashTag();
@@ -929,7 +941,9 @@ export class FacebookWebhookController {
                 change_value_link !== undefined &&
                 value_photos === undefined &&
                 value_item === Webhooks.value_item_photo &&
-                published === 1) {
+                published === 1 &&
+                value_share_id === undefined
+            ) {
                 console.log('edit post with pic && no pics');
                 // message_webhooks = message_webhooks
                 if (message_webhooks === undefined) {
@@ -940,27 +954,31 @@ export class FacebookWebhookController {
                 let newValues = undefined;
                 let update = undefined;
                 const findPost = await this.socialPostService.findOne({ socialId: value_post_id, socialType: Webhooks.socialType });
+                console.log('findPost --- > 2',findPost);
                 if (findPost !== undefined && findPost !== null) {
                     const posted = await this.postsService.findOne({ _id: findPost.postId });
-                    if (posted) {
+                    console.log('posted',posted);
+                    if (posted !== undefined && posted !== null) {
                         if (message_webhooks !== undefined) {
 
                             const msgSplit = message_webhooks.split('#');
                             const hashTag = await this.splitHashTag(msgSplit);
+                            console.log('hashTag ____ 2', hashTag);
                             hashTagList2 = hashTag;
+                            console.log('hashTagList2 ----- >>>> 2', hashTagList2);
                         }
-                        console.log('hashTagList2_post_edit_with_no_pic&&pics >>> 2',hashTagList2);
                         if (hashTagList2 !== null && hashTagList2 !== undefined && hashTagList2.length > 0) {
+                            console.log('pass 2222 - >>>> ');
                             const masterHashTagList: any = await this.findHashTag(hashTagList2);
-                            console.log('masterHashTagList_post_edit_with_yes_pic but no pics >>> 2',masterHashTagList);
+                            console.log('masterHashTagList_____ 2', masterHashTagList);
+                            console.log('masterHashTagList _____ .length',masterHashTagList);
                             for (const hashTag of masterHashTagList) {
                                 const id = hashTag._id;
                                 const name = hashTag.name;
                                 postMasterHashTagList.push(new ObjectID(id));
                                 masterHashTagMap[name] = hashTag;
                             }
-                            if(masterHashTagList.length === 0){
-                                console.log('masterHashTagList_post_edit_with_yes_pic but no pics_2 >>> 2');
+                            if (masterHashTagList.length === 0) {
                                 for (const hashTag of hashTagList2) {
                                     if (masterHashTagMap[hashTag] === undefined) {
                                         const newHashTag: HashTag = new HashTag();
@@ -1061,7 +1079,9 @@ export class FacebookWebhookController {
                 change_value_link === undefined &&
                 value_photos.length > 0 &&
                 value_item === Webhooks.value_item_status &&
-                published === 1) {
+                published === 1 &&
+                value_share_id === undefined
+            ) {
                 console.log('edit post no pic && but pics');
                 // message_webhooks = message_webhooks
                 if (message_webhooks === undefined) {
@@ -1072,28 +1092,32 @@ export class FacebookWebhookController {
                 let newValues = undefined;
                 let update = undefined;
                 const findPost = await this.socialPostService.findOne({ socialId: value_post_id, socialType: Webhooks.socialType });
+                console.log('findPost --- > 3',findPost);
                 if (findPost !== undefined && findPost !== null) {
                     const posted = await this.postsService.findOne({ _id: findPost.postId });
-                    if (posted) {
+                    console.log('posted',posted);
+                    if (posted !== undefined && posted !== null) {
                         if (message_webhooks !== undefined) {
 
                             const msgSplit = message_webhooks.split('#');
                             const hashTag = await this.splitHashTag(msgSplit);
+                            console.log('hashTag ____ 3', hashTag);
                             hashTagList2 = hashTag;
+                            console.log('hashTagList3 ----- >>>> 1', hashTagList2);
                         }
-                        console.log('hashTagList2_post_edit_with_no_pic&& yes pics >>> 3',hashTagList2);
                         if (hashTagList2 !== null && hashTagList2 !== undefined && hashTagList2.length > 0) {
+                            console.log('pass 3333 - >>>> ');
                             const masterHashTagList: any = await this.findHashTag(hashTagList2);
-                            console.log('masterHashTagList_post_edit_with_no_pic but yes pics >>> 3',masterHashTagList);
+                            console.log('masterHashTagList_____ 3', masterHashTagList);
+                            console.log('masterHashTagList _____ .length',masterHashTagList);
                             for (const hashTag of masterHashTagList) {
                                 const id = hashTag._id;
                                 const name = hashTag.name;
                                 postMasterHashTagList.push(new ObjectID(id));
                                 masterHashTagMap[name] = hashTag;
                             }
-                            
-                            if(masterHashTagList.length === 0){
-                                console.log('masterHashTagList_post_edit_with_no_pic but yes pics_2 >>> 3');
+
+                            if (masterHashTagList.length === 0) {
                                 for (const hashTag of hashTagList2) {
                                     if (masterHashTagMap[hashTag] === undefined) {
                                         const newHashTag: HashTag = new HashTag();
@@ -1112,6 +1136,7 @@ export class FacebookWebhookController {
                                     }
                                 }
                             }
+                            console.log('postMasterHashTagList',postMasterHashTagList);
                             if (masterHashTagList.length > 0) {
                                 await this.updateCountHashTag(masterHashTagList);
                             }
@@ -1187,6 +1212,151 @@ export class FacebookWebhookController {
                     const successResponseError = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
                     return res.status(200).send(successResponseError);
                 }
+                // edit old
+                // message
+                // post_id
+                // item photo || status
+                // published
+                // verb: 'edited
+                // no share_id
+                // ---------------------
+                // edit new
+                // link
+                // message
+                // post_id
+                // item share
+                // published
+                // share_id
+                // verb
+            } else if (
+                change_value_link !== undefined &&
+                message_webhooks !== undefined &&
+                value_post_id !== undefined &&
+                value_item === Webhooks.value_item_share &&
+                published === 1 &&
+                value_share_id !== undefined &&
+                value_verb === Webhooks.value_verb_edited
+            ) {
+                console.log('Edit_new_status_item_share');
+                if (message_webhooks === undefined) {
+                    const successResponseError = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
+                    return res.status(200).send(successResponseError);
+                }
+                let query = undefined;
+                let newValues = undefined;
+                let update = undefined;
+                const findPost = await this.socialPostService.findOne({ socialId: value_post_id, socialType: Webhooks.socialType });
+                console.log('findPost --- > 4',findPost);
+                if (findPost !== undefined && findPost !== null) {
+                    const posted = await this.postsService.findOne({ _id: findPost.postId });
+                    console.log('posted ----- >> 4',posted);
+                    if (posted !== undefined && posted !== null) {
+                        if (message_webhooks !== undefined) {
+
+                            const msgSplit = message_webhooks.split('#');
+                            const hashTag = await this.splitHashTag(msgSplit);
+                            hashTagList2 = hashTag;
+                        }
+                        if (hashTagList2 !== null && hashTagList2 !== undefined && hashTagList2.length > 0) {
+                            const masterHashTagList: any = await this.findHashTag(hashTagList2);
+                            for (const hashTag of masterHashTagList) {
+                                const id = hashTag._id;
+                                const name = hashTag.name;
+                                postMasterHashTagList.push(new ObjectID(id));
+                                masterHashTagMap[name] = hashTag;
+                            }
+                            if (masterHashTagList.length === 0) {
+                                console.log('masterHashTagList_post_edit_with_yes_pic but no pics_2 >>> 2');
+                                for (const hashTag of hashTagList2) {
+                                    if (masterHashTagMap[hashTag] === undefined) {
+                                        const newHashTag: HashTag = new HashTag();
+                                        newHashTag.name = hashTag;
+                                        newHashTag.lastActiveDate = today;
+                                        newHashTag.count = 0;
+                                        newHashTag.iconURL = '';
+
+                                        const newMasterHashTag: HashTag = await this.hashTagService.create(newHashTag);
+
+                                        if (newMasterHashTag !== null && newMasterHashTag !== undefined) {
+                                            postMasterHashTagList.push(new ObjectID(newMasterHashTag.id));
+
+                                            masterHashTagMap[hashTag] = newMasterHashTag;
+                                        }
+                                    }
+                                }
+                            }
+                            if (masterHashTagList.length > 0) {
+                                await this.updateCountHashTag(masterHashTagList);
+                            }
+                            if (postMasterHashTagList.length > 0 &&
+                                posted.emergencyEvent === null &&
+                                posted.emergencyEventTag === null) {
+                                await this.emergencyEventFunction(postMasterHashTagList, pageSubscribe.pageId, posted.id);
+                            }
+                            const hashTagObjectiveIds = [];
+                            const hashTagObjective: any = await this.hashTagObjective(hashTagList2);
+                            if (hashTagObjective.length > 0) {
+                                for (const hashTagObjIds of hashTagObjective) {
+                                    hashTagObjectiveIds.push(new ObjectID(hashTagObjIds._id));
+                                }
+                                await this.updateCountHashTag(hashTagObjective);
+                            }
+                            const pageFindtag = await this.pageObjectiveService.aggregate(
+                                [
+                                    { $match: { pageId: pageSubscribe.pageId, hashTag: { $in: hashTagObjectiveIds } } },
+                                    {
+                                        $lookup: {
+                                            from: 'HashTag',
+                                            let: { hashTag: '$hashTag' },
+                                            pipeline: [
+                                                {
+                                                    $match: {
+                                                        $expr: {
+                                                            $eq: ['$$hashTag', '$_id']
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    $match: { type: 'OBJECTIVE' }
+                                                }
+                                            ],
+                                            as: 'hashTag'
+                                        }
+                                    },
+                                    {
+                                        $match: { hashTag: { $ne: [] } }
+                                    },
+                                    {
+                                        $limit: 1
+                                    },
+                                ]);
+                            // 64af7a7c0ac242710bbfbe4e
+                            if (
+                                posted.objective === null &&
+                                posted.objectiveTag === null) {
+                                await this.objectiveFunction(pageFindtag, pageSubscribe.pageId, posted.id, hashTagObjectiveIds);
+                                await this.updateCountObjecitve(pageSubscribe.pageId, hashTagObjectiveIds);
+                            }
+
+                            if (postMasterHashTagList.length > 0) {
+                                query = { _id: posted.id };
+                                newValues = { $set: { detail: message_webhooks, postsHashTags: postMasterHashTagList } };
+                                update = await this.postsService.update(query, newValues);
+                                if (update) {
+                                    const successResponseError = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
+                                    return res.status(200).send(successResponseError);
+                                }
+                            }
+                        }
+                        query = { _id: posted.id };
+                        newValues = { $set: { detail: message_webhooks } };
+                        update = await this.postsService.update(query, newValues);
+                        if (update) {
+                            const successResponseError = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
+                            return res.status(200).send(successResponseError);
+                        }
+                    }
+                }
             } else {
                 console.log('Error_No_case_switch');
                 const successResponse = ResponseUtil.getSuccessResponse(Webhooks.thank_service_webhooks, undefined);
@@ -1248,6 +1418,7 @@ export class FacebookWebhookController {
     }
 
     private async emergencyEventFunction(hashTagMasters: any, pageId: string, postId: string): Promise<any> {
+        console.log('pass2');
         const emergencyEvent: any = await this.emergencyEventService.aggregate(
             [
                 {
@@ -1289,6 +1460,7 @@ export class FacebookWebhookController {
 
             ]
         );
+        console.log('emergencyEvent',emergencyEvent);
         const postObjIds = new ObjectID(postId);
         const pageObjIds = new ObjectID(pageId);
         const EmergencyFound = [];
