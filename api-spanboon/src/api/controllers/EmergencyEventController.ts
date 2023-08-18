@@ -39,12 +39,12 @@ import { DateTimeUtil } from '../../utils/DateTimeUtil';
 @JsonController('/emergency')
 export class EmergencyEventController {
     constructor(private emergencyEventService: EmergencyEventService, private hashTagService: HashTagService, private userFollowService: UserFollowService,
-        private userEngagementService: UserEngagementService, private postsService: PostsService, 
+        private userEngagementService: UserEngagementService, private postsService: PostsService,
         // private postsCommentService: PostsCommentService,
         // private socialPostService: SocialPostService, 
         // private fulfillmentCaseService: FulfillmentCaseService, 
         // private userLikeService: UserLikeService
-        ) { }
+    ) { }
 
     // Find EmergencyEvent API
     /**

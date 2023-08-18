@@ -84,7 +84,6 @@ export class EmergencyStartPostProcessor extends AbstractTypeSectionProcessor {
                     }
                 ];
                 const searchResult = await this.postsService.aggregate(postAgg);
-
                 let result = undefined;
                 if (searchResult !== undefined && searchResult.length > 0) {
                     const post = searchResult[0];
