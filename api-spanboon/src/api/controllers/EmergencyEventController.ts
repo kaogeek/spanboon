@@ -350,7 +350,6 @@ export class EmergencyEventController {
             if (startObjvResult !== undefined) {
                 emergencyEventTimeline.timelines.push(startObjvResult);
             }
-
             const datetimeRange: any[] = DateTimeUtil.generateCurrentMonthRanges(); // [[startdate, enddate], [startdate, enddate]]
             for (const ranges of datetimeRange) {
                 if (ranges !== undefined && ranges.length < 2) {
@@ -440,6 +439,7 @@ export class EmergencyEventController {
             }
 
             // current post section
+            let countShare: number = 0;
             const lastestPostProcessor = new EmergencyLastestProcessor(this.postsService);
             lastestPostProcessor.setData({
                 emergencyEventId: objId,
@@ -448,10 +448,15 @@ export class EmergencyEventController {
                 userId
             });
             const lastestProcsResult = await lastestPostProcessor.process();
+            if (lastestProcsResult.length > 0) {
+                for (let i = 0; i < lastestProcsResult.length; i++) {
+                    countShare += lastestProcsResult[i].shareCountFB + lastestProcsResult[i].shareCount + countShare;
+                }
+            }
             if (lastestProcsResult !== undefined) {
                 emergencyEventTimeline.timelines.push(lastestProcsResult);
             }
-
+            emergencyEventTimeline.shareCountTotal = countShare;
             const successResponse = ResponseUtil.getSuccessResponse('Successfully got EmergencyEvent', emergencyEventTimeline);
             return res.status(200).send(successResponse);
         } else {

@@ -18,4 +18,5 @@ export class EmergencyEventTimelineResponse {
     public endDateTime: Date;
     public timelines: any[];
     public needItems: any[];
+    public shareCountTotal: number;
 }
