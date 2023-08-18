@@ -14,6 +14,7 @@ import { Router } from '@angular/router';
 import { FileHandle } from '../directive/DragAndDrop.directive';
 import { RePost } from '../../../models/RePost';
 import { CommentPosts } from '../../../models/CommentPosts';
+import { DialogShare } from './DialogShare.component';
 
 const PAGE_NAME: string = 'postcard';
 const SEARCH_LIMIT: number = 10;
@@ -103,6 +104,14 @@ export class DialogPostCrad extends AbstractPage {
     } else if (action.mod === 'LIKE') {
       this.postLike(action, index);
     } else if (action.mod === 'SHARE') {
+      let dialog = this.dialog.open(DialogShare, {
+        disableClose: true,
+        autoFocus: false,
+        data: {
+          title: "แชร์",
+          text: action.linkPost
+        }
+      });
     } else if (action.mod === 'COMMENT') {
     } else if (action.mod === 'POST') {
       this.router.navigateByUrl('/post/' + action.pageId);

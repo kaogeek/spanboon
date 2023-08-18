@@ -168,6 +168,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   }
 
   public ngOnInit(): void {
+    this.hidebar = this.authenManager.getHidebar();
     let user = this.authenManager.getCurrentUser();
     this.userCloneDatas = JSON.parse(JSON.stringify(user));
     if (this.userCloneDatas !== undefined && this.userCloneDatas !== null) {
@@ -186,7 +187,6 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     this.getScreenSize();
     this.getDateFilter();
     this._downloadApp();
-    this.hidebar = this.authenManager.getHidebar();
     super.ngOnInit();
   }
 
@@ -890,7 +890,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
   }
 
   private _downloadApp() {
-    if (this.platform.IOS || this.platform.ANDROID) {
+    if ((this.platform.IOS || this.platform.ANDROID) && this.hidebar) {
       let dateStamp = localStorage.getItem('timeStampAppEx');
       let date = Date.now();
       let daysDiff = date - Number(dateStamp);

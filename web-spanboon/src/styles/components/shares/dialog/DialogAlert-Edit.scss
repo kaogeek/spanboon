@@ -286,10 +286,7 @@
 }
 
 .cdk-global-overlay-wrapper > .cdk-overlay-pane .mat-dialog-container {
-  border-radius: 25px;
-
   @media (max-width: $small) {
-    border-radius: unset;
     border-top-left-radius: 25px;
     border-top-right-radius: 25px;
   }
