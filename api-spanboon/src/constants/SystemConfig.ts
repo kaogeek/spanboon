@@ -99,3 +99,5 @@ export const FILTER_NEWS = 'filter.news';
 
 export const DEFAULT_ADMIN_EMAIL = 'example@hotmail.com';
 export const ADMIN_EMAIL = 'admin.email';
+
+export const VOTE_DASHBOARD ='vote.dashboard';

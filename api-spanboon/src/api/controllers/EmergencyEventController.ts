@@ -439,7 +439,7 @@ export class EmergencyEventController {
             }
 
             // current post section
-            let countShare: number = 0;
+            let countShare = 0;
             const lastestPostProcessor = new EmergencyLastestProcessor(this.postsService);
             lastestPostProcessor.setData({
                 emergencyEventId: objId,
