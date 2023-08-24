@@ -135,7 +135,7 @@ export class DialogPostCrad extends AbstractPage {
     } else {
       userId = this.data.user.id
     }
-    this.postFacade.like(data.postData._id, userId).then((res: any) => {
+    this.postFacade.like(data.postData._id, data.userAsPage.username ? null : userId).then((res: any) => {
       if (res.isLike) {
         if (data.postData._id === res.posts.id) {
           this.data.post.likeCount = res.likeCount;

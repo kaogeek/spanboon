@@ -5,10 +5,10 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-import { Component, OnInit, Input, EventEmitter, Output, ViewContainerRef } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output, ViewContainerRef, HostListener } from '@angular/core';
 import { AuthenManager, ObservableManager, EmergencyEventFacade, HashTagFacade, AssetFacade, PostActionService, PostFacade, SeoService } from '../../../../services/services';
 import { MatDialog } from '@angular/material';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, NavigationExtras } from '@angular/router';
 import { environment } from '../../../../../environments/environment';
 import { TooltipProfile } from '../../../shares/tooltip/TooltipProfile.component';
 import { AbstractPage } from '../../AbstractPage';
@@ -72,6 +72,9 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
     public isLoginUser: boolean = false;
 
     public objectiveId: string;
+    public hidebar: boolean = true;
+    public isRes: boolean = false;
+    public windowWidth: any;
 
     public apiBaseURL = environment.apiBaseURL;
     private routeActivated: ActivatedRoute;
@@ -120,10 +123,10 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
 
     public async ngOnInit(): Promise<void> {
         this.isLoginUser = this.isLogin();
+        this.hidebar = this.authenManager.getHidebar();
         this.routeActivated.params.subscribe((params) => {
             this.objectiveId = params['id'];
         })
-
         this.currentDate = new Date();
         this.emergencyEventFacade.getEmergencyTimeline(this.objectiveId).then((res) => {
             if (res) {
@@ -137,8 +140,6 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
                 this.meta.updateTag({ name: 'title', content: "#" + emer.title });
                 this.meta.updateTag({ name: 'keywords', content: (res.relatedHashTags.length > 0 ? hashTags.toString() : '') });
                 this.meta.updateTag({ name: 'description', content: "#" + emer.title + (emer.detail ? (" - " + emer.detail) : '') });
-                this.objectiveData.page;
-                this.objectiveData.timelines;
                 const pageType = { type: "PAGE" };
                 const origin = this.objectiveData.page;
                 const dataPageTypeAssign = Object.assign(pageType, origin);
@@ -193,10 +194,34 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
         });
     }
 
-    public clickToPage(dataId: any, type?: any) {
-        this.router.navigate([]).then(() => {
-            window.open('/search?hashtag=' + dataId, '_blank');
-        });
+    public clickToPage(data: any, type?: any) {
+        // let navigationExtras: NavigationExtras = {
+        //     state: {
+        //         hashTag: this.pageObjective.hashTagName,
+        //     },
+        // }
+        // this.router.navigate([], navigationExtras).then(() => {
+        //     window.open('/search?hashtag=' + data.name, '_blank');
+        // });
+        if (this.hidebar) {
+            let navigationExtras: NavigationExtras = {
+                state: {
+                    hashTag: this.pageObjective.hashTagName,
+                    id: this.pageObjective.id,
+                },
+                queryParams: { hashtag: data.name }
+            }
+            this.router.navigate(['/search'], navigationExtras);
+        } else {
+            let navigationExtras: NavigationExtras = {
+                state: {
+                    hashTag: this.pageObjective.hashTagName,
+                    id: this.pageObjective.id,
+                },
+                queryParams: { hashtag: data.name, hidebar: this.hidebar ? false : true }
+            }
+            this.router.navigate(['/search'], navigationExtras);
+        }
     }
 
     public async actionComment(action: any, index: number, indexa: number) {
@@ -280,6 +305,16 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
             }
 
         }, 400);
+    }
+
+    @HostListener('window:resize', ['$event'])
+    public getScreenSize(event?) {
+        this.windowWidth = window.innerWidth;
+        if (this.windowWidth <= 768) {
+            this.isRes = true;
+        } else {
+            this.isRes = false;
+        }
     }
 
     isPageDirty(): boolean {

@@ -40,7 +40,7 @@
                                     <div class="wrap-description">
                                         <span class="disiption"
                                             *ngFor="let item of objectiveData? objectiveData.relatedHashTags:[]; let index = index"
-                                            (click)="clickToPage(item.name)">#{{item.name}}</span>
+                                            (click)="clickToPage(item)">#{{item.name}}</span>
                                     </div>
                                 </div>
                             </div>
@@ -95,6 +95,16 @@
                                         [bgColor]="'##FFE7D7'" [text]="'ยกเลิกติดตาม'">
                                     </button-follow>
                                 </div>
+                                <ng-container *ngIf="isRes">
+                                    <div class="detail" *ngIf="objectiveData.relatedHashTags.length > 0">
+                                        <span class="title">แท็กที่เกี่ยวข้อง</span>
+                                        <div class="wrap-description">
+                                            <span class="disiption"
+                                                *ngFor="let item of objectiveData? objectiveData.relatedHashTags:[]; let index = index"
+                                                (click)="clickToPage(item)">#{{item.name}}</span>
+                                        </div>
+                                    </div>
+                                </ng-container>
                             </div>
                         </div>
                     </div>
@@ -116,7 +126,8 @@
                     <div class="head">
                         <div class="line"></div>
                         <div class="strat-point">
-                            <span class="title" id="point">{{index === 0 ? 'จุดเริ่มต้น':currentDate |
+                            <span class="title" id="point">{{index === 0 ? 'จุดเริ่มต้น' :
+                                item.posts[0].post[0].createdDate|
                                 thdatetime}}</span>
                         </div>
                     </div>
@@ -1187,167 +1198,177 @@
 
                         <div *ngIf="item.type === 'EMERGENCY_LASTEST'" class="objective_lastest_card">
                             <div class="body">
-                                <ng-container *ngFor="let post of item.posts; let indexa = index; let odd = odd;">
-                                    <ng-container *ngIf="!odd; else elseTemplateFade">
-                                        <div class="wrapper-objective">
-                                            <div class="wrapper-gallery" id="point" data-aos="fade-left"
-                                                data-aos-offset="10" data-aos-delay="15" data-aos-duration="500"
-                                                data-aos-easing="ease-in-out" data-aos-mirror="false"
-                                                data-aos-once="false" data-aos-anchor-placement="top-center">
-                                                <div class="wrapper-image">
-                                                    <ng-container
-                                                        *ngFor="let image of post.postGallery; let image_index = index">
-                                                        <img *ngIf="image_index === 0"
-                                                            [src]="image.imageSignURL ? image.imageSignURL : apiBaseURL + image.imageURL + '/image'"
-                                                            alt="">
-                                                    </ng-container>
-                                                    <div class="wrapper-image-cloud">
+                                <ng-container *ngFor="let posts of item.posts; let indexa = index; let odd = odd;">
+                                    <div class="head" *ngIf="item.posts.length > 1 && indexa > 0">
+                                        <div class="line"></div>
+                                        <div class="strat-point">
+                                            <span class="title" id="point">{{item.posts[indexa].post[0].createdDate
+                                                |
+                                                thdatetime}}</span>
+                                        </div>
+                                    </div>
+                                    <ng-container *ngFor="let post of posts.post;let i = index">
+                                        <ng-container *ngIf="!odd; else elseTemplateFade">
+                                            <div class="wrapper-objective">
+                                                <div class="wrapper-gallery" id="point" data-aos="fade-left"
+                                                    data-aos-offset="10" data-aos-delay="15" data-aos-duration="500"
+                                                    data-aos-easing="ease-in-out" data-aos-mirror="false"
+                                                    data-aos-once="false" data-aos-anchor-placement="top-center">
+                                                    <div class="wrapper-image">
                                                         <ng-container
                                                             *ngFor="let image of post.postGallery; let image_index = index">
-                                                            <img *ngIf="image_index !== 0 && image_index <= 3"
+                                                            <img *ngIf="image_index === 0"
                                                                 [src]="image.imageSignURL ? image.imageSignURL : apiBaseURL + image.imageURL + '/image'"
-                                                                alt=""
-                                                                [ngStyle]=" {'transform': image_index===1 ? 'rotate(-5deg)'
-                                                                : image_index===2 ? 'rotate(-10deg)' : 'rotate(10deg)' }">
+                                                                alt="">
                                                         </ng-container>
+                                                        <div class="wrapper-image-cloud">
+                                                            <ng-container
+                                                                *ngFor="let image of post.postGallery; let image_index = index">
+                                                                <img *ngIf="image_index !== 0 && image_index <= 3"
+                                                                    [src]="image.imageSignURL ? image.imageSignURL : apiBaseURL + image.imageURL + '/image'"
+                                                                    alt=""
+                                                                    [ngStyle]=" {'transform': image_index===1 ? 'rotate(-5deg)'
+                                                                    : image_index===2 ? 'rotate(-10deg)' : 'rotate(10deg)' }">
+                                                            </ng-container>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="wrapper-content" data-aos="fade-right" data-aos-offset="10"
-                                                data-aos-delay="15" data-aos-duration="500"
-                                                data-aos-easing="ease-in-out" data-aos-mirror="false"
-                                                data-aos-once="false" data-aos-anchor-placement="top-center">
-                                                <span class="drot">•</span>
-                                                <span class="createdDate">
-                                                    <svg class="icon-time" height="10pt" viewBox="0 0 512 512"
-                                                        width="10pt" xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
-                                                            fill="black" />
-                                                        <path
-                                                            d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
-                                                            fill="black" />
-                                                    </svg>
-                                                    {{post.createdDate | dateFormat}}
-                                                </span>
-                                                <div class="head-title">
-                                                    <span class="title">#{{post.title}}</span>
-                                                </div>
-                                                <div class="detail">
-                                                    {{post.detail}}
-                                                </div>
-                                                <div class="buttom">
-                                                    <a [href]="post.pageId ? '/post/' + (post._id || post.id) : '/profile/' + post.ownerUser + '/post/' + (post._id || post.id)"
-                                                        target="_blank" class="botton">
-                                                        <span>ไปที่โพสต์</span>
-                                                        <svg style="margin: 0px 10px;" height="15pt" class="icon-time"
-                                                            width="15pt" viewBox="0 -22 512 511"
-                                                            xmlns="http://www.w3.org/2000/svg">
-                                                            <path fill="white"
-                                                                d="m512 233.820312-212.777344-233.320312v139.203125h-45.238281c-140.273437 0-253.984375 113.710937-253.984375 253.984375v73.769531l20.09375-22.019531c68.316406-74.851562 164.980469-117.5 266.324219-117.5h12.804687v139.203125zm0 0" />
+                                                <div class="wrapper-content" data-aos="fade-right" data-aos-offset="10"
+                                                    data-aos-delay="15" data-aos-duration="500"
+                                                    data-aos-easing="ease-in-out" data-aos-mirror="false"
+                                                    data-aos-once="false" data-aos-anchor-placement="top-center">
+                                                    <span class="drot">•</span>
+                                                    <span class="createdDate">
+                                                        <svg class="icon-time" height="10pt" viewBox="0 0 512 512"
+                                                            width="10pt" xmlns="http://www.w3.org/2000/svg">
+                                                            <path
+                                                                d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
+                                                                fill="black" />
+                                                            <path
+                                                                d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
+                                                                fill="black" />
                                                         </svg>
-                                                    </a>
-                                                    <div class="score">
-                                                        <div class="score-type">
-                                                            <span class="title">{{post.repostCount}}</span>
-                                                            <span class="disiption">การพูดถึง</span>
-                                                        </div>
-                                                        <div class="score-type">
-                                                            <span class="title">{{post.likeCount +
-                                                                post.likeCountFB}}</span>
-                                                            <span class="disiption">ถูกใจ</span>
-                                                        </div>
-                                                        <div class="score-type">
-                                                            <span class="title">{{post.shareCount +
-                                                                post.shareCountFB}}</span>
-                                                            <span class="disiption">แชร์</span>
+                                                        {{post.createdDate | dateFormat}}
+                                                    </span>
+                                                    <div class="head-title">
+                                                        <span class="title">#{{post.title}}</span>
+                                                    </div>
+                                                    <div class="detail">
+                                                        {{post.detail}}
+                                                    </div>
+                                                    <div class="buttom">
+                                                        <a [href]="post.pageId ? '/post/' + (post._id || post.id) : '/profile/' + post.ownerUser + '/post/' + (post._id || post.id)"
+                                                            target="_blank" class="botton">
+                                                            <span>ไปที่โพสต์</span>
+                                                            <svg style="margin: 0px 10px;" height="15pt"
+                                                                class="icon-time" width="15pt" viewBox="0 -22 512 511"
+                                                                xmlns="http://www.w3.org/2000/svg">
+                                                                <path fill="white"
+                                                                    d="m512 233.820312-212.777344-233.320312v139.203125h-45.238281c-140.273437 0-253.984375 113.710937-253.984375 253.984375v73.769531l20.09375-22.019531c68.316406-74.851562 164.980469-117.5 266.324219-117.5h12.804687v139.203125zm0 0" />
+                                                            </svg>
+                                                        </a>
+                                                        <div class="score">
+                                                            <div class="score-type">
+                                                                <span class="title">{{post.repostCount}}</span>
+                                                                <span class="disiption">การพูดถึง</span>
+                                                            </div>
+                                                            <div class="score-type">
+                                                                <span class="title">{{post.likeCount +
+                                                                    post.likeCountFB}}</span>
+                                                                <span class="disiption">ถูกใจ</span>
+                                                            </div>
+                                                            <div class="score-type">
+                                                                <span class="title">{{post.shareCount +
+                                                                    post.shareCountFB}}</span>
+                                                                <span class="disiption">แชร์</span>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </ng-container>
+                                        <ng-template #elseTemplateFade>
+                                            <div class="wrapper-objective">
+                                                <div class="wrapper-gallery" id="point" data-aos="fade-right"
+                                                    data-aos-offset="10" data-aos-delay="15" data-aos-duration="500"
+                                                    data-aos-easing="ease-in-out" data-aos-mirror="false"
+                                                    data-aos-once="false" data-aos-anchor-placement="top-center">
+                                                    <div class="wrapper-image">
+                                                        <ng-container
+                                                            *ngFor="let image of post.postGallery; let image_index = index">
+                                                            <img *ngIf="image_index === 0"
+                                                                [src]="image.imageSignURL ? image.imageSignURL : apiBaseURL + image.imageURL + '/image'"
+                                                                alt="">
+                                                        </ng-container>
+                                                        <div class="wrapper-image-cloud">
+                                                            <ng-container
+                                                                *ngFor="let image of post.postGallery; let image_index = index">
+                                                                <img *ngIf="image_index !== 0 && image_index <= 3"
+                                                                    [src]="image.imageSignURL ? image.imageSignURL : apiBaseURL + image.imageURL + '/image'"
+                                                                    alt=""
+                                                                    [ngStyle]=" {'transform': image_index===1 ? 'rotate(-5deg)'
+                                                                    : image_index===2 ? 'rotate(-10deg)' : 'rotate(10deg)' }">
+                                                            </ng-container>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="wrapper-content" data-aos="fade-left" data-aos-offset="10"
+                                                    data-aos-delay="15" data-aos-duration="500"
+                                                    data-aos-easing="ease-in-out" data-aos-mirror="false"
+                                                    data-aos-once="false" data-aos-anchor-placement="top-center">
+                                                    <span class="drot">•</span>
+                                                    <span class="createdDate">
+                                                        <svg class="icon-time" height="10pt" viewBox="0 0 512 512"
+                                                            width="10pt" xmlns="http://www.w3.org/2000/svg">
+                                                            <path
+                                                                d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
+                                                                fill="black" />
+                                                            <path
+                                                                d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
+                                                                fill="black" />
+                                                        </svg>
+                                                        {{post.createdDate | dateFormat}}
+                                                    </span>
+                                                    <div class="head-title">
+                                                        <span class="title">#{{post.title}}</span>
+                                                    </div>
+                                                    <div class="detail">
+                                                        {{post.detail}}
+                                                    </div>
+                                                    <div class="buttom">
+                                                        <a [href]="post.pageId ? '/post/' + (post._id || post.id) : '/profile/' + post.ownerUser + '/post/' + (post._id || post.id)"
+                                                            target="_blank" class="botton">
+                                                            <span>ไปที่โพสต์</span>
+                                                            <svg style="margin: 0px 10px;" height="15pt"
+                                                                class="icon-time" width="15pt" viewBox="0 -22 512 511"
+                                                                xmlns="http://www.w3.org/2000/svg">
+                                                                <path fill="white"
+                                                                    d="m512 233.820312-212.777344-233.320312v139.203125h-45.238281c-140.273437 0-253.984375 113.710937-253.984375 253.984375v73.769531l20.09375-22.019531c68.316406-74.851562 164.980469-117.5 266.324219-117.5h12.804687v139.203125zm0 0" />
+                                                            </svg>
+                                                        </a>
+                                                        <div class="score">
+                                                            <div class="score-type">
+                                                                <span class="title">{{post.repostCount}}</span>
+                                                                <span class="disiption">การพูดถึง</span>
+                                                            </div>
+                                                            <div class="score-type">
+                                                                <span class="title">{{post.likeCount +
+                                                                    post.likeCountFB}}</span>
+                                                                <span class="disiption">ถูกใจ</span>
+                                                            </div>
+                                                            <div class="score-type">
+                                                                <span class="title">{{post.shareCount +
+                                                                    post.shareCountFB}}</span>
+                                                                <span class="disiption">แชร์</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </ng-template>
                                     </ng-container>
-                                    <ng-template #elseTemplateFade>
-                                        <div class="wrapper-objective">
-                                            <div class="wrapper-gallery" id="point" data-aos="fade-right"
-                                                data-aos-offset="10" data-aos-delay="15" data-aos-duration="500"
-                                                data-aos-easing="ease-in-out" data-aos-mirror="false"
-                                                data-aos-once="false" data-aos-anchor-placement="top-center">
-                                                <div class="wrapper-image">
-                                                    <ng-container
-                                                        *ngFor="let image of post.postGallery; let image_index = index">
-                                                        <img *ngIf="image_index === 0"
-                                                            [src]="image.imageSignURL ? image.imageSignURL : apiBaseURL + image.imageURL + '/image'"
-                                                            alt="">
-                                                    </ng-container>
-                                                    <div class="wrapper-image-cloud">
-                                                        <ng-container
-                                                            *ngFor="let image of post.postGallery; let image_index = index">
-                                                            <img *ngIf="image_index !== 0 && image_index <= 3"
-                                                                [src]="image.imageSignURL ? image.imageSignURL : apiBaseURL + image.imageURL + '/image'"
-                                                                alt=""
-                                                                [ngStyle]=" {'transform': image_index===1 ? 'rotate(-5deg)'
-                                                                : image_index===2 ? 'rotate(-10deg)' : 'rotate(10deg)' }">
-                                                        </ng-container>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="wrapper-content" data-aos="fade-left" data-aos-offset="10"
-                                                data-aos-delay="15" data-aos-duration="500"
-                                                data-aos-easing="ease-in-out" data-aos-mirror="false"
-                                                data-aos-once="false" data-aos-anchor-placement="top-center">
-                                                <span class="drot">•</span>
-                                                <span class="createdDate">
-                                                    <svg class="icon-time" height="10pt" viewBox="0 0 512 512"
-                                                        width="10pt" xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
-                                                            fill="black" />
-                                                        <path
-                                                            d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
-                                                            fill="black" />
-                                                    </svg>
-                                                    {{post.createdDate | dateFormat}}
-                                                </span>
-                                                <div class="head-title">
-                                                    <span class="title">#{{post.title}}</span>
-                                                </div>
-                                                <div class="detail">
-                                                    {{post.detail}}
-                                                </div>
-                                                <div class="buttom">
-                                                    <a [href]="post.pageId ? '/post/' + (post._id || post.id) : '/profile/' + post.ownerUser + '/post/' + (post._id || post.id)"
-                                                        target="_blank" class="botton">
-                                                        <span>ไปที่โพสต์</span>
-                                                        <svg style="margin: 0px 10px;" height="15pt" class="icon-time"
-                                                            width="15pt" viewBox="0 -22 512 511"
-                                                            xmlns="http://www.w3.org/2000/svg">
-                                                            <path fill="white"
-                                                                d="m512 233.820312-212.777344-233.320312v139.203125h-45.238281c-140.273437 0-253.984375 113.710937-253.984375 253.984375v73.769531l20.09375-22.019531c68.316406-74.851562 164.980469-117.5 266.324219-117.5h12.804687v139.203125zm0 0" />
-                                                        </svg>
-                                                    </a>
-                                                    <div class="score">
-                                                        <div class="score-type">
-                                                            <span class="title">{{post.repostCount}}</span>
-                                                            <span class="disiption">การพูดถึง</span>
-                                                        </div>
-                                                        <div class="score-type">
-                                                            <span class="title">{{post.likeCount +
-                                                                post.likeCountFB}}</span>
-                                                            <span class="disiption">ถูกใจ</span>
-                                                        </div>
-                                                        <div class="score-type">
-                                                            <span class="title">{{post.shareCount +
-                                                                post.shareCountFB}}</span>
-                                                            <span class="disiption">แชร์</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </ng-template>
-
                                 </ng-container>
+
                                 <!-- <div class="top">
                                     <span data-aos="fade-up" data-aos-offset="10" data-aos-delay="70"
                                         data-aos-duration="500" data-aos-easing="ease-in-out" data-aos-mirror="false"

@@ -61,6 +61,7 @@
             }
 
             > .wrapper-left {
+              width: 35%;
               display: flex;
               flex-direction: column;
               align-items: center;
@@ -102,6 +103,10 @@
                     padding: 4px 12px 4px 12px;
                     background-color: white;
                     border-radius: 40px;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 1;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
                     @include font-size-10($font-head-100);
                     cursor: pointer;
 
@@ -129,6 +134,7 @@
             }
 
             > .data-text {
+              width: 65%;
               margin-left: 40pt;
 
               @media (max-width: $large) {
@@ -186,7 +192,12 @@
 
                   > span {
                     @include font-size-10($font-head-400);
+                    cursor: pointer;
                     color: #0085ff;
+
+                    &:hover {
+                      text-decoration: underline;
+                    }
                   }
                 }
               }
@@ -203,9 +214,6 @@
                 @media (max-width: $medium) {
                   justify-content: center;
                   margin-top: 20pt;
-                }
-
-                @media (max-width: $small) {
                   flex-direction: column;
                 }
 
@@ -286,6 +294,7 @@
               > .score {
                 border-radius: 16px;
                 display: inline-flex;
+                justify-content: center;
                 gap: 25px;
                 margin-top: 15px;
                 border: 1px solid #fff;
@@ -301,6 +310,11 @@
 
                 @media (max-width: 520) {
                   gap: 20px;
+                }
+
+                @media (max-width: $medium) {
+                  padding: 24px 0 24px 0;
+                  width: 100%;
                 }
 
                 @media (max-width: $small) {
@@ -463,14 +477,14 @@
 
         > .card {
           position: relative;
-          margin: 80px 0px;
+          margin: 40px 0px;
           display: flex;
           align-content: center;
           justify-content: center;
 
           > .objective_start_card {
             width: 100%;
-            padding: 60px 30px;
+            padding: 40px 30px;
             display: flex;
 
             > .left {
@@ -1960,6 +1974,38 @@
               align-content: center;
               justify-content: center;
               align-items: center;
+
+              > .head {
+                width: 100%;
+                position: relative;
+                display: flex;
+                align-items: center;
+                justify-self: center;
+                justify-content: center;
+
+                > .line {
+                  border-top: dashed 1px #d0d0d0;
+                  position: absolute;
+                  top: 50%;
+                  width: 100%;
+                  z-index: 2;
+                }
+
+                > .strat-point {
+                  padding: 10px 30px;
+                  background-color: #fff2f2;
+                  border-radius: 10px;
+                  position: relative;
+                  z-index: 3;
+                  box-shadow: rgb(0 0 0 / 19%) 0px 10px 20px,
+                    rgb(0 0 0 / 10%) 0px 17px 6px;
+
+                  > .title {
+                    @include font-size-3($font-head-500);
+                    color: $brandcolor2;
+                  }
+                }
+              }
 
               > .top {
                 > .title {

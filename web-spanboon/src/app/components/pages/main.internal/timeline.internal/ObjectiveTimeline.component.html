@@ -46,7 +46,8 @@
                                 <div class="text">
                                     <span class="title">#{{pageObjective.hashTagName}}</span>
                                     <span class="disiption">#{{pageObjective.title}}</span>
-                                    <span class="create-by">สร้างโดย<span>{{pageOwner.owner.name}}</span></span>
+                                    <span class="create-by"
+                                        (click)="clickToPage(pageOwner.owner)">สร้างโดย<span>{{pageOwner.owner.name}}</span></span>
                                 </div>
                                 <!-- #EE7623 #f8f8f8 -->
                                 <div class="buttom" *ngIf="isLoginUser">
