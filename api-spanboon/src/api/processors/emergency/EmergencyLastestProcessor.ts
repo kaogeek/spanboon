@@ -101,12 +101,25 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                         }
                     }
                 }
+
+                const groupedData = content.reduce((accumulator, current) => {
+                    const existingMonthEntry = accumulator.find(entry => entry.month === current.month);
+
+                    if (existingMonthEntry) {
+                        existingMonthEntry.post.push(current.post);
+                    } else {
+                        accumulator.push({ month: current.month, post: [current.post] });
+                    }
+
+                    return accumulator;
+                }, []);
+
                 if (content.length > 0) {
                     result = {
                         title: 'โพสต์ต่างๆ ในช่วงนี้', // as a emergencyEvent name
                         subTitle: '',
                         detail: '',
-                        posts: content,
+                        posts: groupedData,
                         type: this.type
                     };
                 }
