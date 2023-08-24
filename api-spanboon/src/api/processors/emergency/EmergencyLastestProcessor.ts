@@ -24,11 +24,16 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                 let limit = undefined;
                 let offset = undefined;
                 let userId = undefined;
+                let startDateTime = undefined;
+                let endDateTime = undefined;
+
                 if (this.data !== undefined && this.data !== null) {
                     emergencyEventId = this.data.emergencyEventId;
                     limit = this.data.limit;
                     offset = this.data.offset;
                     userId = this.data.userId;
+                    startDateTime = this.data.startDateTime;
+                    endDateTime = this.data.endDateTime;
                 }
 
                 if (emergencyEventId === undefined || emergencyEventId === null || emergencyEventId === '') {
@@ -46,7 +51,7 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
 
                 // search first post of emergencyEvent and join gallery
                 const postAgg = [
-                    { $match: { emergencyEvent: emergencyEventId, deleted: false } },
+                    { $match: { emergencyEvent: emergencyEventId, deleted: false, createdDate: { $lte: startDateTime, $gte: endDateTime } } },
                     { $sort: { startDateTime: -1 } },
                     { $limit: limit },
                     { $skip: offset },
@@ -78,7 +83,6 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                         }
                     }
                 ];
-                console.log('postAgg >>>> ', JSON.stringify(postAgg));
                 const searchResult = await this.postsService.aggregate(postAgg);
 
                 let result = undefined;

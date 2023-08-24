@@ -18,6 +18,7 @@ import { UserEngagement } from '../models/UserEngagement';
 import { UserEngagementService } from '../services/UserEngagementService';
 import { UserFollowService } from '../services/UserFollowService';
 import { PostsService } from '../services/PostsService';
+import moment from 'moment';
 // import { PostsCommentService } from '../services/PostsCommentService';
 // import { SocialPostService } from '../services/SocialPostService';
 // import { FulfillmentCaseService } from '../services/FulfillmentCaseService';
@@ -34,7 +35,6 @@ import { EmergencyNeedsProcessor } from '../processors/emergency/EmergencyNeedsP
 import { EmergencyLastestProcessor } from '../processors/emergency/EmergencyLastestProcessor';
 // import { EmergencyShareProcessor } from '../processors/emergency/EmergencyShareProcessor';
 // import { EmergencyPostLikedProcessor } from '../processors/emergency/EmergencyPostLikedProcessor';
-import { DateTimeUtil } from '../../utils/DateTimeUtil';
 
 @JsonController('/emergency')
 export class EmergencyEventController {
@@ -285,7 +285,9 @@ export class EmergencyEventController {
      */
     @Get('/:id/timeline')
     public async getEmergencyEventTimeline(@QueryParam('limit') limit: number, @QueryParam('offset') offset: number, @Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
-        // ????? >>>>
+        // ????? >>>> look after 3 months timeline.
+        const today = moment().toDate(); // now
+        const threeMonth = moment(today).clone().utcOffset(0).set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(3, 'months').toDate();// look after 3 months
         const userId = req.headers.userid;
         let emergencyEvent: EmergencyEvent;
         const objId = new ObjectID(id);
@@ -350,13 +352,14 @@ export class EmergencyEventController {
             if (startObjvResult !== undefined) {
                 emergencyEventTimeline.timelines.push(startObjvResult);
             }
+            /* 
             const datetimeRange: any[] = DateTimeUtil.generateCurrentMonthRanges(); // [[startdate, enddate], [startdate, enddate]]
             for (const ranges of datetimeRange) {
                 if (ranges !== undefined && ranges.length < 2) {
                     continue;
                 }
                 // influencer section
-                /* 
+
                 const influencerProcessor = new EmergencyInfluencerProcessor(this.postsCommentService, this.userFollowService);
                 influencerProcessor.setData({
                     emergencyEventId: objId,
@@ -370,16 +373,6 @@ export class EmergencyEventController {
                 } */
 
                 // need section
-                const needsProcessor = new EmergencyNeedsProcessor(this.emergencyEventService, this.postsService);
-                needsProcessor.setData({
-                    emergencyEventId: objId,
-                    startDateTime: ranges[0],
-                    endDateTime: ranges[1]
-                });
-                const needsProcsResult = await needsProcessor.process();
-                if (needsProcsResult !== undefined) {
-                    emergencyEventTimeline.timelines.push(needsProcsResult);
-                }
 
                 // share section
                 /* 
@@ -435,9 +428,19 @@ export class EmergencyEventController {
                 const postLikeProcsResult = await postLikeProcessor.process();
                 if (postLikeProcsResult !== undefined) {
                     emergencyEventTimeline.timelines.push(postLikeProcsResult);
-                } */
+                } 
             }
-
+            */
+            const needsProcessor = new EmergencyNeedsProcessor(this.emergencyEventService, this.postsService);
+            needsProcessor.setData({
+                emergencyEventId: objId,
+                startDateTime: today,
+                endDateTime: threeMonth
+            });
+            const needsProcsResult = await needsProcessor.process();
+            if (needsProcsResult !== undefined) {
+                emergencyEventTimeline.timelines.push(needsProcsResult);
+            }
             // current post section
             let countShare = 0;
             const lastestPostProcessor = new EmergencyLastestProcessor(this.postsService);
@@ -445,7 +448,9 @@ export class EmergencyEventController {
                 emergencyEventId: objId,
                 limit,
                 offset,
-                userId
+                userId,
+                startDateTime: today,
+                endDateTime: threeMonth
             });
             const lastestProcsResult = await lastestPostProcessor.process();
             if (lastestProcsResult.length > 0) {
