@@ -7,6 +7,7 @@
 
 import { AbstractTypeSectionProcessor } from '../AbstractTypeSectionProcessor';
 import { PostsService } from '../../services/PostsService';
+import moment from 'moment';
 
 export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
 
@@ -86,28 +87,26 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                 const searchResult = await this.postsService.aggregate(postAgg);
 
                 let result = undefined;
+                const content: any = [];
                 if (searchResult !== undefined && searchResult.length > 0) {
                     // insert isLike Action
                     if (userId !== undefined && userId !== null && userId !== '') {
                         for (const post of searchResult) {
-                            const userAction: any = await this.postsService.getUserPostAction(post._id + '', userId, true, true, true, true);
-                            const isLike = userAction.isLike;
-                            const isRepost = userAction.isRepost;
-                            const isComment = userAction.isComment;
-                            const isShare = userAction.isShare;
-
-                            post.isLike = isLike;
-                            post.isRepost = isRepost;
-                            post.isComment = isComment;
-                            post.isShare = isShare;
+                            const results: any = {};
+                            const parsedTimestamp = moment(post.createdDate);
+                            const monthString = parsedTimestamp.format('MMMM'); // Output: "months"
+                            results.months = String(monthString);
+                            results.post = post;
+                            content.push(results);
                         }
                     }
-
+                }
+                if (content.length > 0) {
                     result = {
                         title: 'โพสต์ต่างๆ ในช่วงนี้', // as a emergencyEvent name
                         subTitle: '',
                         detail: '',
-                        posts: searchResult,
+                        posts: content,
                         type: this.type
                     };
                 }
