@@ -8,6 +8,7 @@
 import { AbstractTypeSectionProcessor } from '../AbstractTypeSectionProcessor';
 import { PostsService } from '../../services/PostsService';
 import moment from 'moment';
+// import { MONTHS } from '../../../constants/MonthsType';
 
 export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
 
@@ -85,31 +86,38 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                     }
                 ];
                 const searchResult = await this.postsService.aggregate(postAgg);
-
+                const listMonths = {
+                    'January': [],
+                    'February': [],
+                    'March': [],
+                    'April': [],
+                    'May': [],
+                    'June': [],
+                    'July': [],
+                    'August': [],
+                    'September': [],
+                    'October': [],
+                    'November': [],
+                    'December': []
+                };
                 let result = undefined;
-                const content: any = [];
                 if (searchResult !== undefined && searchResult.length > 0) {
                     // insert isLike Action
                     if (userId !== undefined && userId !== null && userId !== '') {
                         for (const post of searchResult) {
-                            const results: any = {};
                             const parsedTimestamp = moment(post.createdDate);
                             const monthString = parsedTimestamp.format('MMMM'); // Output: "months"
-                            results.months = String(monthString);
-                            results.post = post;
-                            content.push(results);
+                            listMonths[monthString].push(post);
                         }
                     }
                 }
-                if (content.length > 0) {
-                    result = {
-                        title: 'โพสต์ต่างๆ ในช่วงนี้', // as a emergencyEvent name
-                        subTitle: '',
-                        detail: '',
-                        posts: content,
-                        type: this.type
-                    };
-                }
+                result = {
+                    title: 'โพสต์ต่างๆ ในช่วงนี้', // as a emergencyEvent name
+                    subTitle: '',
+                    detail: '',
+                    posts: listMonths,
+                    type: this.type
+                };
 
                 resolve(result);
             } catch (error) {
