@@ -126,8 +126,6 @@ export class EmergencyEventController {
                             hashTag:hashTags.id
                         }
                     },
-                    { $skip: filter.offset },
-                    { $limit: filter.limit }
                     
                 ]
             );
