@@ -1735,7 +1735,6 @@ export class PagePostController {
                 const deleteGalleryList = [];
                 const UpdateGalleryList = [];
                 const createGalleyList = [];
-
                 for (const image of postGallery) {
                     postIdGallery = new ObjectID(image.postId);
                     deleteGalleryList.push(new ObjectID(image.fileId));
