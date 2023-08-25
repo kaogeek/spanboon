@@ -88,6 +88,7 @@ import {
     RETROSPECT,
     DEFAULT_FILTER_NEWS,
     FILTER_NEWS,
+    VOTE_DASHBOARD
 } from '../../constants/SystemConfig';
 import { ConfigService } from '../services/ConfigService';
 import { KaokaiTodaySnapShotService } from '../services/KaokaiTodaySnapShot';
@@ -619,6 +620,26 @@ export class MainPageController {
         const successResponse = ResponseUtil.getSuccessResponse('Successfully create isRead.', result);
         return res.status(200).send(successResponse);
 
+    }
+
+    @Get('/dashboard')
+    public async getDashboard(@Res() res: any, @Req() req: any): Promise<any> {
+        const voteDashboard = await this.configService.aggregate(
+            [
+                {
+                    $match: {
+                        name: VOTE_DASHBOARD
+                    }
+                }
+            ]
+        );
+        if (voteDashboard.length > 0) {
+            const successResponse = ResponseUtil.getSuccessResponse('Successfully create isRead.', voteDashboard);
+            return res.status(200).send(successResponse);
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Error cannot find the dashboard.', undefined);
+            return res.status(400).send(errorResponse);
+        }
     }
 
     @Post('/is/read')

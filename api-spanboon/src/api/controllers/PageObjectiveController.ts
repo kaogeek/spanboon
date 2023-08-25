@@ -178,6 +178,14 @@ export class ObjectiveController {
                     return res.status(400).send(ResponseUtil.getSuccessResponse('HashTag is Duplicate.', undefined));
                 }
             }
+
+            if (title === undefined) {
+                return res.status(400).send(ResponseUtil.getSuccessResponse('Title is missing.', undefined));
+            }
+
+            if (detail === undefined) {
+                return res.status(400).send(ResponseUtil.getSuccessResponse('Detail is missing.', undefined));
+            }
             if (masterHashTag !== null && masterHashTag !== undefined) {
                 hashTag = new ObjectID(masterHashTag.id);
             } else {
@@ -283,6 +291,14 @@ export class ObjectiveController {
             const checkhashTagName = await this.hashTagService.findOne({ name: hashTagName, pageId: pageObjId, type: 'OBJECTIVE', personal: objectives.personal });
             if (checkhashTagName !== undefined) {
                 return res.status(400).send(ResponseUtil.getSuccessResponse('HashTag is Duplicate.', undefined));
+            }
+            if (title === undefined) {
+                return res.status(400).send(ResponseUtil.getSuccessResponse('Title is missing.', undefined));
+            }
+
+            if (detail === undefined) {
+                return res.status(400).send(ResponseUtil.getSuccessResponse('Detail is missing.', undefined));
+
             }
             const newHashTag: HashTag = new HashTag();
             newHashTag.name = name;
@@ -1916,6 +1932,13 @@ export class ObjectiveController {
         let newValueHashTag;
         const checkObjective = await this.pageObjectiveService.findOne({ _id: objId, pageId: pageObjId });
         if (checkObjective.personal === true) {
+            if (titleRequest === undefined) {
+                return res.status(400).send(ResponseUtil.getSuccessResponse('Title is missing.', undefined));
+            }
+
+            if (detailRequest === undefined) {
+                return res.status(400).send(ResponseUtil.getSuccessResponse('Detail is missing.', undefined));
+            }
             hashTagName = name;
             const hashTag = await this.hashTagService.findOne({ _id: checkObjective.hashTag, pageId: checkObjective.pageId, objectiveId: checkObjective.id, personal: checkObjective.personal, type: 'OBJECTIVE' });
             if (hashTag !== undefined && hashTag.name === name && hashTag.personal === true && objectives.personal === false) {
@@ -1979,7 +2002,6 @@ export class ObjectiveController {
                     return res.status(400).send(ResponseUtil.getSuccessResponse('HashTag is Duplicate.', undefined));
                 }
             }
-
             pageObjective = await this.pageObjectiveService.findOne({ _id: objId, pageId: pageObjId });
             objectiveIconURL = pageObjective.iconURL;
             objectiveAsset = objectives.asset;
@@ -2053,6 +2075,13 @@ export class ObjectiveController {
             }
 
         } else {
+            if (titleRequest === undefined) {
+                return res.status(400).send(ResponseUtil.getSuccessResponse('Title is missing.', undefined));
+            }
+
+            if (detailRequest === undefined) {
+                return res.status(400).send(ResponseUtil.getSuccessResponse('Detail is missing.', undefined));
+            }
             // check objective private !
             // change private to public 
             // check duplicate to another or itself ?

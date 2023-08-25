@@ -1506,6 +1506,8 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   }
 
   public createComment(comment: any, index?: number) {
+    const url: string = decodeURI(this.router.url);
+    const pathPost = url.split('/')[1];
     let commentPosts = new CommentPosts
     if (comment.userAsPage.id !== undefined && comment.userAsPage.id !== null) {
       commentPosts.commentAsPage = comment.userAsPage.id
@@ -1513,9 +1515,12 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     commentPosts.comment = comment.value
     commentPosts.asset = undefined
     this.postCommentFacade.create(commentPosts, comment.pageId).then((res: any) => {
-      this.resPost.posts[index].commentCount++
-      this.resPost.posts[index].isComment = true
-      this.resPost.posts[index]
+      if (pathPost === 'post') {
+        this.resDataPost[0].commentCount++
+      } else {
+        this.resPost.posts[index].commentCount++
+        this.resPost.posts[index].isComment = true
+      }
     }).catch((err: any) => {
     })
   }

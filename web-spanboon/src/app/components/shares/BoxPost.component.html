@@ -287,7 +287,7 @@
                                 <mat-option class="list" *ngFor="let item of resEmergency" [value]="item.hashTag"
                                     (click)="selectEvent(item)">
                                     <div class="list-hashtag">
-                                        {{'#'+item.hashTag}}
+                                        {{'#'+item.title}}
                                         <div class="tag-count">
                                             <span>
                                                 {{item.view ? item.view : 0 | shortNumber }} ครั้ง

@@ -1052,7 +1052,28 @@ export class GuestController {
                 }
             }
         }
-
+        // MFP API LOGIN
+        else if (mode === PROVIDER.MFP){
+            // axios.post MFP API LOGIN.
+            // const axios.post = await axios.post(process.env['MFP.API']);
+            /* !Terminated */
+            // if(axios.post === 200){
+                // create register member.
+                // create authen terminated time.
+                // check if not terminated then can login.
+                // if terminated return 400 can't login.
+                // return 200
+            // }else {
+                // return 400
+            // }
+            // check something.
+            // all things are correct.
+                // - create authen
+            // terminated-memberships
+            // not correct.
+            // ---------------------------------------------
+            // merge user 
+        }
         else if (mode === PROVIDER.FACEBOOK) {
             const tokenFcmFB = req.body.tokenFCM;
             const deviceFB = req.body.deviceName;

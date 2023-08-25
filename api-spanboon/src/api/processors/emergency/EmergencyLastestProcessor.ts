@@ -7,6 +7,8 @@
 
 import { AbstractTypeSectionProcessor } from '../AbstractTypeSectionProcessor';
 import { PostsService } from '../../services/PostsService';
+import moment from 'moment';
+// import { MONTHS } from '../../../constants/MonthsType';
 
 export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
 
@@ -24,11 +26,16 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                 let limit = undefined;
                 let offset = undefined;
                 let userId = undefined;
+                let startDateTime = undefined;
+                let endDateTime = undefined;
+
                 if (this.data !== undefined && this.data !== null) {
                     emergencyEventId = this.data.emergencyEventId;
                     limit = this.data.limit;
                     offset = this.data.offset;
                     userId = this.data.userId;
+                    startDateTime = this.data.startDateTime;
+                    endDateTime = this.data.endDateTime;
                 }
 
                 if (emergencyEventId === undefined || emergencyEventId === null || emergencyEventId === '') {
@@ -46,7 +53,7 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
 
                 // search first post of emergencyEvent and join gallery
                 const postAgg = [
-                    { $match: { emergencyEvent: emergencyEventId, deleted: false } },
+                    { $match: { emergencyEvent: emergencyEventId, deleted: false, createdDate: { $lte: startDateTime, $gte: endDateTime } } },
                     { $sort: { startDateTime: -1 } },
                     { $limit: limit },
                     { $skip: offset },
@@ -78,32 +85,41 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                         }
                     }
                 ];
-                console.log('postAgg >>>> ', JSON.stringify(postAgg));
                 const searchResult = await this.postsService.aggregate(postAgg);
-
                 let result = undefined;
+                const content: any = [];
                 if (searchResult !== undefined && searchResult.length > 0) {
                     // insert isLike Action
                     if (userId !== undefined && userId !== null && userId !== '') {
                         for (const post of searchResult) {
-                            const userAction: any = await this.postsService.getUserPostAction(post._id + '', userId, true, true, true, true);
-                            const isLike = userAction.isLike;
-                            const isRepost = userAction.isRepost;
-                            const isComment = userAction.isComment;
-                            const isShare = userAction.isShare;
-
-                            post.isLike = isLike;
-                            post.isRepost = isRepost;
-                            post.isComment = isComment;
-                            post.isShare = isShare;
+                            const results: any = {};
+                            const parsedTimestamp = moment(post.createdDate);
+                            const monthString = parsedTimestamp.format('MMMM'); // Output: "months"
+                            results.month = String(monthString);
+                            results.post = post;
+                            content.push(results);
                         }
                     }
+                }
 
+                const groupedData = content.reduce((accumulator, current) => {
+                    const existingMonthEntry = accumulator.find(entry => entry.month === current.month);
+
+                    if (existingMonthEntry) {
+                        existingMonthEntry.post.push(current.post);
+                    } else {
+                        accumulator.push({ month: current.month, post: [current.post] });
+                    }
+
+                    return accumulator;
+                }, []);
+
+                if (content.length > 0) {
                     result = {
                         title: 'โพสต์ต่างๆ ในช่วงนี้', // as a emergencyEvent name
                         subTitle: '',
                         detail: '',
-                        posts: searchResult,
+                        posts: groupedData,
                         type: this.type
                     };
                 }
