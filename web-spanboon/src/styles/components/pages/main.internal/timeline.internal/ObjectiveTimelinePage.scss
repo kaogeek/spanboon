@@ -2211,6 +2211,7 @@
 
                     @media (max-width: $lmedium) {
                       justify-content: center;
+                      flex-direction: column;
                     }
 
                     > .botton {
@@ -2239,7 +2240,9 @@
                       gap: 8px;
 
                       @media (max-width: $lmedium) {
-                        display: none;
+                        // display: none;
+                        width: 100%;
+                        justify-content: center;
                       }
 
                       > .score-type {
@@ -2250,7 +2253,7 @@
                         width: 25%;
 
                         > .title {
-                          @include font-size-5($font-head-500);
+                          @include font-size-7($font-head-100);
                         }
 
                         > .disiption {
