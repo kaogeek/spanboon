@@ -18,6 +18,7 @@ import 'aos/dist/aos.css'; // You can also use <link> for styles
 import './../../../../../assets/script/canvas';
 import { E } from '@angular/cdk/keycodes';
 import { Meta } from '@angular/platform-browser';
+import { DialogShare } from 'src/app/components/shares/dialog/DialogShare.component';
 
 const PAGE_NAME: string = 'emergencyevent';
 
@@ -215,13 +216,20 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
         //     this.router.navigate(['/search'], navigationExtras);
         // }
 
-        let navigationExtras: NavigationExtras = {
-            queryParams: { hashtag: data.name, emertag: this.pageObjective.title }
+        if (this.hidebar) {
+            let navigationExtras: NavigationExtras = {
+                queryParams: { hashtag: data.name, emertag: this.pageObjective.title }
+            }
+            this.router.navigate([this.router.url + '/search'], navigationExtras);
+        } else {
+            let navigationExtras: NavigationExtras = {
+                queryParams: { hashtag: data.name, emertag: this.pageObjective.title, hidebar: this.hidebar ? false : true }
+            }
+            this.router.navigate([this.router.url + '/search'], navigationExtras);
         }
-        this.router.navigate([this.router.url + '/search'], navigationExtras);
     }
 
-    public async actionComment(action: any, index: number, indexa: number) {
+    public async actionComment(action: any, index?: number, indexa?: number) {
 
         await this.postActionService.actionPost(action, index, undefined, "PAGE").then((res: any) => {
             if (res !== undefined && res !== null) {
@@ -246,17 +254,39 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
         });
     }
 
-    public postLike(data: any, index: number) {
+    public dialogShare(data: any, index?: number, i?: number) {
+        let mainPostLink = window.location.origin + '/post/';
+        let linkPost = (mainPostLink + data._id);
+        let dialog = this.dialog.open(DialogShare, {
+            disableClose: true,
+            autoFocus: false,
+            data: {
+                title: "แชร์",
+                text: linkPost
+            }
+        });
+    }
+
+    public postLike(data: any, index?: number, i?: number) {
+        if (data.like) {
+            data.isLike = !data.isLike;
+            data.likeCount--;
+            data.like = false;
+        } else {
+            data.isLike = !data.isLike;
+            data.likeCount++;
+            data.like = true;
+        }
         if (!this.isLogin()) {
         } else {
-            this.postFacade.like(data.postData._id).then((res: any) => {
-                if (res.isLike) {
-                    if (data.postData._id === res.posts.id) {
-                    }
-                } else {
-                    if (data.postData._id === res.posts.id) {
-                    }
-                }
+            this.postFacade.like(data._id).then((res: any) => {
+                // if (res.isLike) {
+                //     if (data._id === res.posts.id) {
+                //     }
+                // } else {
+                //     if (data._id === res.posts.id) {
+                //     }
+                // }
             }).catch((err: any) => {
                 console.log(err)
             });

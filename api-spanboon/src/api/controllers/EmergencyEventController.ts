@@ -22,7 +22,7 @@ import moment from 'moment';
 // import { PostsCommentService } from '../services/PostsCommentService';
 // import { SocialPostService } from '../services/SocialPostService';
 // import { FulfillmentCaseService } from '../services/FulfillmentCaseService';
-// import { UserLikeService } from '../services/UserLikeService';
+import { UserLikeService } from '../services/UserLikeService';
 import { SUBJECT_TYPE } from '../../constants/FollowType';
 import { FULFILLMENT_STATUS } from '../../constants/FulfillmentStatus';
 import { ENGAGEMENT_CONTENT_TYPE, ENGAGEMENT_ACTION } from '../../constants/UserEngagementAction';
@@ -35,7 +35,6 @@ import { EmergencyNeedsProcessor } from '../processors/emergency/EmergencyNeedsP
 import { EmergencyLastestProcessor } from '../processors/emergency/EmergencyLastestProcessor';
 // import { EmergencyShareProcessor } from '../processors/emergency/EmergencyShareProcessor';
 // import { EmergencyPostLikedProcessor } from '../processors/emergency/EmergencyPostLikedProcessor';
-
 @JsonController('/emergency')
 export class EmergencyEventController {
     constructor(private emergencyEventService: EmergencyEventService, private hashTagService: HashTagService, private userFollowService: UserFollowService,
@@ -43,7 +42,7 @@ export class EmergencyEventController {
         // private postsCommentService: PostsCommentService,
         // private socialPostService: SocialPostService, 
         // private fulfillmentCaseService: FulfillmentCaseService, 
-        // private userLikeService: UserLikeService
+        private userLikeService: UserLikeService
     ) { }
 
     // Find EmergencyEvent API
@@ -314,6 +313,7 @@ export class EmergencyEventController {
         const today = moment().toDate(); // now
         const threeMonth = moment(today).clone().utcOffset(0).set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(3, 'months').toDate();// look after 3 months
         const userId = req.headers.userid;
+        const userObjIds = new ObjectID(userId);
         let emergencyEvent: EmergencyEvent;
         const objId = new ObjectID(id);
 
@@ -444,18 +444,15 @@ export class EmergencyEventController {
 
             // Like section
             /* 
-            const postLikeProcessor = new EmergencyPostLikedProcessor(this.userLikeService);
-            postLikeProcessor.setData({
-                emergencyEventId: objId,
-                sampleCount: 10,
-                userId
-            });
-            const postLikeProcsResult = await postLikeProcessor.process();
-            if (postLikeProcsResult !== undefined) {
-                emergencyEventTimeline.timelines.push(postLikeProcsResult);
-            } 
+
         }
         */
+            if (userObjIds) {
+                const isLikeUser = await this.userLikeService.find({ userId: userObjIds });
+                if (isLikeUser.length > 0) {
+                    emergencyEventTimeline.isLikeUser = isLikeUser;
+                }
+            }
             const needsProcessor = new EmergencyNeedsProcessor(this.emergencyEventService, this.postsService);
             needsProcessor.setData({
                 emergencyEventId: objId,
