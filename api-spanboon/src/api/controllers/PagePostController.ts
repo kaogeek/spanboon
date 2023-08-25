@@ -1676,6 +1676,10 @@ export class PagePostController {
             const objective = postPages.objective; // as id string
             const today = moment().toDate();
             let startDateTime = postPages.startDateTime;
+            const postMasterHashTagList: any[] = [];
+            const allHashTagsString = [];
+            let queryHashTag = undefined;
+            let newValuesHashTag = undefined;
 
             // page mode
             let isPageMode = false;
@@ -1788,8 +1792,6 @@ export class PagePostController {
                         await this.postGalleryService.create(gallery);
                     }
                 }
-                const successResponse = ResponseUtil.getSuccessResponse('You have been delete Post gallery ', UpdateGalleryList);
-                return res.status(200).send(successResponse);
             }
 
             let assetResult: Asset;
@@ -1843,29 +1845,52 @@ export class PagePostController {
                 }
             }
 
-            const allHashTagsString = [];
             if (post.postsHashTags !== undefined) {
                 for (const tagObjId of post.postsHashTags) {
                     allHashTagsString.push(tagObjId + '');
                 }
             }
-
             let postsHashTags: any[] = post.postsHashTags;
-            const postMasterHashTagList: any[] = [];
             // if postHashTag is undefined or null postHashTags will use an old value
             if (postHashTag !== null && postHashTag !== undefined && postHashTag.length > 0) {
-                const masterHashTagList: HashTag[] = await this.findMasterHashTag(postHashTag);
+                if (postHashTag.length > 0) {
+                    for (const hashEdit of postHashTag) {
+                        const stringHashTag: string = String(hashEdit);
+                        // check if hashtag exists.
+                        const hashTagCheck = await this.hashTagService.findOne({ name: stringHashTag });
+                        if (hashTagCheck !== undefined) {
+                            const id = hashTagCheck.id + '';
+                            if (allHashTagsString.indexOf(id) < 0) {
+                                allHashTagsString.push(id);
+                            }
+                            postMasterHashTagList.push(new ObjectID(id));
+                        } else {
+                            const newHashTag: HashTag = new HashTag();
+                            newHashTag.name = stringHashTag;
+                            newHashTag.lastActiveDate = today;
+                            newHashTag.count = 0;
+                            newHashTag.iconURL = '';
 
-                for (const hashTag of masterHashTagList) {
-                    const id = hashTag.id + '';
-                    if (allHashTagsString.indexOf(id) < 0) {
-                        allHashTagsString.push(id);
+                            const newMasterHashTag: HashTag = await this.hashTagService.create(newHashTag);
+                            if (newMasterHashTag !== null && newMasterHashTag !== undefined) {
+                                postMasterHashTagList.push(new ObjectID(newMasterHashTag.id));
+
+                            }
+                        }
                     }
-                    postMasterHashTagList.push(new ObjectID(id));
                 }
 
                 postsHashTags = postMasterHashTagList;
+                for (const hashTags of postsHashTags) {
+                    const count = parseInt(hashTags.count, 10);
+                    queryHashTag = { _id: new ObjectID(hashTags._id) };
+                    newValuesHashTag = { $set: { count: count + 1 } };
+                    await this.hashTagService.update(queryHashTag, newValuesHashTag);
+                }
             }
+            const queryTag = { _id: pagePostsObjId };
+            const newValuesTag = { $set: { postsHashTags: postMasterHashTagList } };
+            await this.postsService.update(queryTag, newValuesTag);
 
             const allHashTags = [];
             for (const hashTagString of allHashTagsString) {

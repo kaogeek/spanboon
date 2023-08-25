@@ -115,10 +115,38 @@ export class EmergencyEventController {
         if (ObjectUtil.isObjectEmpty(search)) {
             return res.status(400).send(ResponseUtil.getErrorResponse('Cannot Search EmergencyEvent', undefined));
         }
-
         const filter = search.filter;
         const hashTag = search.hashTag;
-
+        const hashTags = await this.hashTagService.findOne({ name: search.filter.whereConditions.hashTag });
+        if (search.filter.whereConditions.hashTag !== undefined && hashTags !== undefined) {
+            const emergencyEvent = await this.emergencyEventService.aggregate(
+                [
+                    {
+                        $match:{
+                            hashTag:hashTags.id
+                        }
+                    },
+                    { $skip: filter.offset },
+                    { $limit: filter.limit }
+                    
+                ]
+            );
+            if (emergencyEvent !== null && emergencyEvent !== undefined) {
+                // change hashTag from id to name string
+                emergencyEvent.map((data) => {
+                    if (data.hasTagObj) {
+                        const hashTagName = data.hasTagObj.name;
+                        data.hashTag = hashTagName;
+                    }
+                });
+    
+                const successResponse = ResponseUtil.getSuccessResponse('Successfully Search EmergencyEvent', emergencyEvent);
+                return res.status(200).send(successResponse);
+            } else {
+                const errorResponse = ResponseUtil.getSuccessResponse('EmergencyEvent Not Found', []);
+                return res.status(200).send(errorResponse);
+            }
+        }
         //  whereConditions will be in object search only
         const emergencyEventAggr: any[] = [];
         if (filter.whereConditions !== undefined && typeof filter.whereConditions === 'object') {
@@ -157,7 +185,6 @@ export class EmergencyEventController {
         emergencyEventAggr.push({ $limit: filter.limit });
         emergencyEventAggr.push({ $addFields: { id: '$_id' } });
         emergencyEventAggr.push({ $project: { '_id': 0 } });
-
         const emergencyEventAggResult = await this.emergencyEventService.aggregate(emergencyEventAggr);
         if (emergencyEventAggResult !== null && emergencyEventAggResult !== undefined) {
             // change hashTag from id to name string
@@ -372,65 +399,65 @@ export class EmergencyEventController {
                     emergencyEventTimeline.timelines.push(influencerProcsResult);
                 } */
 
-                // need section
+            // need section
 
-                // share section
-                /* 
-                const shareProcessor = new EmergencyShareProcessor(this.userFollowService, this.socialPostService);
-                shareProcessor.setData({
-                    emergencyEventId: objId,
-                    startDateTime: ranges[0],
-                    endDateTime: ranges[1],
-                    sampleCount: 10,
-                    userId
-                });
-                const shareProcsResult = await shareProcessor.process();
-                if (shareProcsResult !== undefined) {
-                    emergencyEventTimeline.timelines.push(shareProcsResult);
-                } */
+            // share section
+            /* 
+            const shareProcessor = new EmergencyShareProcessor(this.userFollowService, this.socialPostService);
+            shareProcessor.setData({
+                emergencyEventId: objId,
+                startDateTime: ranges[0],
+                endDateTime: ranges[1],
+                sampleCount: 10,
+                userId
+            });
+            const shareProcsResult = await shareProcessor.process();
+            if (shareProcsResult !== undefined) {
+                emergencyEventTimeline.timelines.push(shareProcsResult);
+            } */
 
-                // fulfill section
-                /* 
-                const fulfillrocessor = new EmergencyInfluencerFulfillProcessor(this.fulfillmentCaseService, this.userFollowService);
-                fulfillrocessor.setData({
-                    emergencyEventId: objId,
-                    startDateTime: ranges[0],
-                    endDateTime: ranges[1],
-                    sampleCount: 10,
-                    userId
-                });
-                const fulfillProcsResult = await fulfillrocessor.process();
-                if (fulfillProcsResult !== undefined) {
-                    emergencyEventTimeline.timelines.push(fulfillProcsResult);
-                } */
+            // fulfill section
+            /* 
+            const fulfillrocessor = new EmergencyInfluencerFulfillProcessor(this.fulfillmentCaseService, this.userFollowService);
+            fulfillrocessor.setData({
+                emergencyEventId: objId,
+                startDateTime: ranges[0],
+                endDateTime: ranges[1],
+                sampleCount: 10,
+                userId
+            });
+            const fulfillProcsResult = await fulfillrocessor.process();
+            if (fulfillProcsResult !== undefined) {
+                emergencyEventTimeline.timelines.push(fulfillProcsResult);
+            } */
 
-                // following section
-                /* 
-                const followingProcessor = new EmergencyInfluencerFollowedProcessor(this.userFollowService);
-                followingProcessor.setData({
-                    emergencyEventId: objId,
-                    sampleCount: 10,
-                    userId
-                });
-                const followingProcsResult = await followingProcessor.process();
-                if (followingProcsResult !== undefined) {
-                    emergencyEventTimeline.timelines.push(followingProcsResult);
-                } */
+            // following section
+            /* 
+            const followingProcessor = new EmergencyInfluencerFollowedProcessor(this.userFollowService);
+            followingProcessor.setData({
+                emergencyEventId: objId,
+                sampleCount: 10,
+                userId
+            });
+            const followingProcsResult = await followingProcessor.process();
+            if (followingProcsResult !== undefined) {
+                emergencyEventTimeline.timelines.push(followingProcsResult);
+            } */
 
-                // Like section
-                /* 
-                const postLikeProcessor = new EmergencyPostLikedProcessor(this.userLikeService);
-                postLikeProcessor.setData({
-                    emergencyEventId: objId,
-                    sampleCount: 10,
-                    userId
-                });
-                const postLikeProcsResult = await postLikeProcessor.process();
-                if (postLikeProcsResult !== undefined) {
-                    emergencyEventTimeline.timelines.push(postLikeProcsResult);
-                } 
-            }
-            */
+            // Like section
+            /* 
+            const postLikeProcessor = new EmergencyPostLikedProcessor(this.userLikeService);
+            postLikeProcessor.setData({
+                emergencyEventId: objId,
+                sampleCount: 10,
+                userId
+            });
+            const postLikeProcsResult = await postLikeProcessor.process();
+            if (postLikeProcsResult !== undefined) {
+                emergencyEventTimeline.timelines.push(postLikeProcsResult);
+            } 
+        }
+        */
             const needsProcessor = new EmergencyNeedsProcessor(this.emergencyEventService, this.postsService);
             needsProcessor.setData({
                 emergencyEventId: objId,
