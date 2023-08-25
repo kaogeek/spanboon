@@ -21,7 +21,7 @@ import {
   PageHashTag,
   PageRecommended,
   SettingsFanPage, forgotPasswordPage, ObjectiveTimeline,
-  EmergencyEventTimeline, Redirect, SettingAccount, AboutPage, SettingsAdminRoles, SecurityInfo, HomePageV3, PolicyPage, TermsOfServicePage,
+  EmergencyEventTimeline, Redirect, SettingAccount, AboutPage, SettingsAdminRoles, SecurityInfo, HomePageV3, PolicyPage, TermsOfServicePage, EventSearch,
 } from './components/components';
 
 import { TestComponent } from './components/TestComponent.component';
@@ -149,13 +149,17 @@ export const APP_ROUTES: Routes = [
         path: ObjectiveTimeline.PAGE_NAME + "/:id",
         component: ObjectiveTimeline,
       },
-      {
-        path: ObjectiveTimeline.PAGE_NAME,
-        redirectTo: '/home',
-      },
+      // {
+      //   path: ObjectiveTimeline.PAGE_NAME,
+      //   redirectTo: '/home',
+      // },
       {
         path: EmergencyEventTimeline.PAGE_NAME + "/:id",
         component: EmergencyEventTimeline,
+      },
+      {
+        path: ":hash" + "/:id" + "/search",
+        component: EventSearch,
       },
       // {
       //   path: SettingsFanPage.PAGE_NAME,

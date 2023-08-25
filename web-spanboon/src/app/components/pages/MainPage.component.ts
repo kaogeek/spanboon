@@ -422,3 +422,4 @@ export * from './main.internal/timeline.internal/timeline';
 export * from './main.internal/NotificationAllPage.component';
 export * from './main.internal/PolicyPage.component';
 export * from './main.internal/TermsOfServicePage.component';
+export * from './main.internal/EventSearch.component';

@@ -342,8 +342,12 @@
 
               > .detail {
                 margin-top: 30pt;
-                display: flex;
+                display: none;
                 flex-direction: column;
+
+                @media (max-width: $medium) {
+                  display: flex;
+                }
 
                 @media (max-width: $small) {
                   padding: 10px;
@@ -355,7 +359,7 @@
 
                 > .wrap-description {
                   margin-top: 8px;
-                  grid-template-columns: 1fr 1fr 1fr 1fr;
+                  grid-template-columns: 1fr 1fr 1fr;
                   display: grid;
                   gap: 10px;
                   color: #000;
