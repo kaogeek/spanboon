@@ -1853,29 +1853,27 @@ export class PagePostController {
             let postsHashTags: any[] = post.postsHashTags;
             // if postHashTag is undefined or null postHashTags will use an old value
             if (postHashTag !== null && postHashTag !== undefined && postHashTag.length > 0) {
-                if (postHashTag.length > 0) {
-                    for (const hashEdit of postHashTag) {
-                        const stringHashTag: string = String(hashEdit);
-                        // check if hashtag exists.
-                        const hashTagCheck = await this.hashTagService.findOne({ name: stringHashTag });
-                        if (hashTagCheck !== undefined) {
-                            const id = hashTagCheck.id + '';
-                            if (allHashTagsString.indexOf(id) < 0) {
-                                allHashTagsString.push(id);
-                            }
-                            postMasterHashTagList.push(new ObjectID(id));
-                        } else {
-                            const newHashTag: HashTag = new HashTag();
-                            newHashTag.name = stringHashTag;
-                            newHashTag.lastActiveDate = today;
-                            newHashTag.count = 0;
-                            newHashTag.iconURL = '';
+                for (const hashEdit of postHashTag) {
+                    const stringHashTag: string = String(hashEdit);
+                    // check if hashtag exists.
+                    const hashTagCheck = await this.hashTagService.findOne({ name: stringHashTag });
+                    if (hashTagCheck !== undefined) {
+                        const id = hashTagCheck.id + '';
+                        if (allHashTagsString.indexOf(id) < 0) {
+                            allHashTagsString.push(id);
+                        }
+                        postMasterHashTagList.push(new ObjectID(id));
+                    } else {
+                        const newHashTag: HashTag = new HashTag();
+                        newHashTag.name = stringHashTag;
+                        newHashTag.lastActiveDate = today;
+                        newHashTag.count = 0;
+                        newHashTag.iconURL = '';
 
-                            const newMasterHashTag: HashTag = await this.hashTagService.create(newHashTag);
-                            if (newMasterHashTag !== null && newMasterHashTag !== undefined) {
-                                postMasterHashTagList.push(new ObjectID(newMasterHashTag.id));
+                        const newMasterHashTag: HashTag = await this.hashTagService.create(newHashTag);
+                        if (newMasterHashTag !== null && newMasterHashTag !== undefined) {
+                            postMasterHashTagList.push(new ObjectID(newMasterHashTag.id));
 
-                            }
                         }
                     }
                 }

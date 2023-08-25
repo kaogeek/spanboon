@@ -122,11 +122,11 @@ export class EmergencyEventController {
             const emergencyEvent = await this.emergencyEventService.aggregate(
                 [
                     {
-                        $match:{
-                            hashTag:hashTags.id
+                        $match: {
+                            hashTag: hashTags.id
                         }
                     },
-                    
+
                 ]
             );
             if (emergencyEvent !== null && emergencyEvent !== undefined) {
@@ -137,7 +137,7 @@ export class EmergencyEventController {
                         data.hashTag = hashTagName;
                     }
                 });
-    
+
                 const successResponse = ResponseUtil.getSuccessResponse('Successfully Search EmergencyEvent', emergencyEvent);
                 return res.status(200).send(successResponse);
             } else {
@@ -478,7 +478,7 @@ export class EmergencyEventController {
                 endDateTime: threeMonth
             });
             const lastestProcsResult = await lastestPostProcessor.process();
-            if (lastestProcsResult.length > 0) {
+            if (lastestProcsResult !== undefined && lastestProcsResult.length > 0) {
                 for (let i = 0; i < lastestProcsResult.length; i++) {
                     countShare += lastestProcsResult[i].shareCountFB + lastestProcsResult[i].shareCount + countShare;
                 }
