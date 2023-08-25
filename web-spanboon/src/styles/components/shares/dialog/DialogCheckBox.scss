@@ -17,6 +17,10 @@
     transition: 0.3s;
     overflow: hidden;
 
+    @media (max-width: $small) {
+      width: unset;
+    }
+
     > .edit-h {
       width: auto;
       height: 20pt;

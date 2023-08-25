@@ -149,7 +149,7 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
             }
         }).catch((error) => {
             if (error) {
-                this.router.navigate(['home']);
+                // this.router.navigate(['home']);
                 console.log("error", error);
             }
         });
@@ -195,33 +195,30 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
     }
 
     public clickToPage(data: any, type?: any) {
-        // let navigationExtras: NavigationExtras = {
-        //     state: {
-        //         hashTag: this.pageObjective.hashTagName,
-        //     },
+        // if (this.hidebar) {
+        //     let navigationExtras: NavigationExtras = {
+        //         state: {
+        //             hashTag: this.pageObjective.hashTagName,
+        //             id: this.pageObjective.id,
+        //         },
+        //         queryParams: { hashtag: data.name }
+        //     }
+        //     this.router.navigate(['/search'], navigationExtras);
+        // } else {
+        //     let navigationExtras: NavigationExtras = {
+        //         state: {
+        //             hashTag: this.pageObjective.hashTagName,
+        //             id: this.pageObjective.id,
+        //         },
+        //         queryParams: { hashtag: data.name, hidebar: this.hidebar ? false : true }
+        //     }
+        //     this.router.navigate(['/search'], navigationExtras);
         // }
-        // this.router.navigate([], navigationExtras).then(() => {
-        //     window.open('/search?hashtag=' + data.name, '_blank');
-        // });
-        if (this.hidebar) {
-            let navigationExtras: NavigationExtras = {
-                state: {
-                    hashTag: this.pageObjective.hashTagName,
-                    id: this.pageObjective.id,
-                },
-                queryParams: { hashtag: data.name }
-            }
-            this.router.navigate(['/search'], navigationExtras);
-        } else {
-            let navigationExtras: NavigationExtras = {
-                state: {
-                    hashTag: this.pageObjective.hashTagName,
-                    id: this.pageObjective.id,
-                },
-                queryParams: { hashtag: data.name, hidebar: this.hidebar ? false : true }
-            }
-            this.router.navigate(['/search'], navigationExtras);
+
+        let navigationExtras: NavigationExtras = {
+            queryParams: { hashtag: data.name, emertag: this.pageObjective.title }
         }
+        this.router.navigate([this.router.url + '/search'], navigationExtras);
     }
 
     public async actionComment(action: any, index: number, indexa: number) {

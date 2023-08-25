@@ -453,6 +453,34 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       }
     });
 
+    const navigation = this.router.getCurrentNavigation();
+    const state = navigation.extras.state;
+    if (state) {
+      // this.emergency = data.item.hashTag;
+      // this.emergencyId = data.item.hasTagObj._id;
+    }
+    // if (this.mode !== "normal") {
+    //   if (state) {
+    //     this.redirection = state.redirection;
+    //     this.accessToken = state.accessToken;
+    //     this.objectMerge = {
+    //       email: state.email,
+    //       token: state.token
+    //     }
+    //     this.isInputEmail = true;
+
+    //     if (this.mode === "facebook") {
+    //       this.getCurrentUserInfo();
+    //     } else if (this.mode === "google") {
+    //       this.getGoogleUser();
+    //     } else if (this.mode === "twitter") {
+    //       this.getTwitterUser();
+    //     }
+    //   } else {
+    //     this.router.navigateByUrl("/login");
+    //   }
+    // }
+
     /* // this is for query param check
     this.routeActivated.queryParams.subscribe(params => {
     });*/

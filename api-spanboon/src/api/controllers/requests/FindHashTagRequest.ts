@@ -12,4 +12,5 @@ export class FindHashTagRequest {
 
     public filter: SearchFilter;
     public hashTag: string;
+    public whereConditions: any;
 }
