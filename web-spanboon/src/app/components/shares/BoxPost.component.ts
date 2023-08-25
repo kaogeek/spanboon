@@ -2523,7 +2523,7 @@ export class BoxPost extends AbstractPage implements OnInit {
       }
       this.isLoading = true;
       let pageId = this.dataPageId.id;
-      const dataDoing = this.objDoing ? this.objDoing : this.selectedValue;
+      const dataDoing = this.objDoing ? this.objDoing : '';
       const tagName = this.tagObjDoing ? this.tagObjDoing : '';
       const category = this.selectedValue;
       const isPublic = this.isPublic;

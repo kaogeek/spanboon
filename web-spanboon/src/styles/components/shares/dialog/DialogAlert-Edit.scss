@@ -285,9 +285,9 @@
   }
 }
 
-.cdk-global-overlay-wrapper > .cdk-overlay-pane .mat-dialog-container {
-  @media (max-width: $small) {
-    border-top-left-radius: 25px;
-    border-top-right-radius: 25px;
-  }
-}
+// .cdk-global-overlay-wrapper > .cdk-overlay-pane .mat-dialog-container {
+//   @media (max-width: $small) {
+//     border-top-left-radius: 25px;
+//     border-top-right-radius: 25px;
+//   }
+// }

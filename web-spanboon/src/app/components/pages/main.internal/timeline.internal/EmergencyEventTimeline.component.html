@@ -55,8 +55,13 @@
                                         <span class="disiption">ติดตาม</span>
                                     </div>
                                     <div class="score-type">
-                                        <span class="title">{{objectiveData.timelines[0] ?
-                                            objectiveData.timelines[1].posts.length : '0'}}</span>
+                                        <ng-container *ngIf="objectiveData.timelines[1]; else elseTimeLine">
+                                            <span class="title">{{objectiveData.timelines[0] ?
+                                                objectiveData.timelines[1].posts.length : '0'}}</span>
+                                        </ng-container>
+                                        <ng-template #elseTimeLine>
+                                            <span class="title">{{1}}</span>
+                                        </ng-template>
                                         <span class="disiption">การพูดถึง</span>
                                     </div>
                                     <div class="score-type">
@@ -95,16 +100,14 @@
                                         [bgColor]="'##FFE7D7'" [text]="'ยกเลิกติดตาม'">
                                     </button-follow>
                                 </div>
-                                <ng-container *ngIf="isRes">
-                                    <div class="detail" *ngIf="objectiveData.relatedHashTags.length > 0">
-                                        <span class="title">แท็กที่เกี่ยวข้อง</span>
-                                        <div class="wrap-description">
-                                            <span class="disiption"
-                                                *ngFor="let item of objectiveData? objectiveData.relatedHashTags:[]; let index = index"
-                                                (click)="clickToPage(item)">#{{item.name}}</span>
-                                        </div>
+                                <div class="detail" *ngIf="objectiveData.relatedHashTags.length > 0">
+                                    <span class="title">แท็กที่เกี่ยวข้อง</span>
+                                    <div class="wrap-description">
+                                        <span class="disiption"
+                                            *ngFor="let item of objectiveData? objectiveData.relatedHashTags:[]; let index = index"
+                                            (click)="clickToPage(item)">#{{item.name}}</span>
                                     </div>
-                                </ng-container>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1251,11 +1254,9 @@
                                                         {{post.createdDate | dateFormat}}
                                                     </span>
                                                     <div class="head-title">
-                                                        <span class="title">#{{post.title}}</span>
+                                                        <span class="title" [innerHTML]="post.title | highlight"></span>
                                                     </div>
-                                                    <div class="detail">
-                                                        {{post.detail}}
-                                                    </div>
+                                                    <div class="detail" [innerHTML]="post.detail | highlight"></div>
                                                     <div class="buttom">
                                                         <a [href]="post.pageId ? '/post/' + (post._id || post.id) : '/profile/' + post.ownerUser + '/post/' + (post._id || post.id)"
                                                             target="_blank" class="botton">
