@@ -376,22 +376,20 @@ export class FacebookWebhookController {
                             postMasterHashTagList.push(new ObjectID(id));
                             masterHashTagMap[name] = hashTag;
                         }
-                        if (masterHashTagList.length === 0) {
-                            for (const hashTag of hashTagList2) {
-                                if (masterHashTagMap[hashTag] === undefined) {
-                                    const newHashTag: HashTag = new HashTag();
-                                    newHashTag.name = hashTag;
-                                    newHashTag.lastActiveDate = today;
-                                    newHashTag.count = 0;
-                                    newHashTag.iconURL = '';
+                        for (const hashTag of hashTagList2) {
+                            if (masterHashTagMap[hashTag] === undefined) {
+                                const newHashTag: HashTag = new HashTag();
+                                newHashTag.name = hashTag;
+                                newHashTag.lastActiveDate = today;
+                                newHashTag.count = 0;
+                                newHashTag.iconURL = '';
 
-                                    const newMasterHashTag: HashTag = await this.hashTagService.create(newHashTag);
+                                const newMasterHashTag: HashTag = await this.hashTagService.create(newHashTag);
 
-                                    if (newMasterHashTag !== null && newMasterHashTag !== undefined) {
-                                        postMasterHashTagList.push(new ObjectID(newMasterHashTag.id));
+                                if (newMasterHashTag !== null && newMasterHashTag !== undefined) {
+                                    postMasterHashTagList.push(new ObjectID(newMasterHashTag.id));
 
-                                        masterHashTagMap[hashTag] = newMasterHashTag;
-                                    }
+                                    masterHashTagMap[hashTag] = newMasterHashTag;
                                 }
                             }
                         }
@@ -486,22 +484,20 @@ export class FacebookWebhookController {
                             postMasterHashTagList.push(new ObjectID(id));
                             masterHashTagMap[name] = hashTag;
                         }
-                        if (masterHashTagList.length === 0) {
-                            for (const hashTag of hashTagList2) {
-                                if (masterHashTagMap[hashTag] === undefined) {
-                                    const newHashTag: HashTag = new HashTag();
-                                    newHashTag.name = hashTag;
-                                    newHashTag.lastActiveDate = today;
-                                    newHashTag.count = 0;
-                                    newHashTag.iconURL = '';
+                        for (const hashTag of hashTagList2) {
+                            if (masterHashTagMap[hashTag] === undefined) {
+                                const newHashTag: HashTag = new HashTag();
+                                newHashTag.name = hashTag;
+                                newHashTag.lastActiveDate = today;
+                                newHashTag.count = 0;
+                                newHashTag.iconURL = '';
 
-                                    const newMasterHashTag: HashTag = await this.hashTagService.create(newHashTag);
+                                const newMasterHashTag: HashTag = await this.hashTagService.create(newHashTag);
 
-                                    if (newMasterHashTag !== null && newMasterHashTag !== undefined) {
-                                        postMasterHashTagList.push(new ObjectID(newMasterHashTag.id));
+                                if (newMasterHashTag !== null && newMasterHashTag !== undefined) {
+                                    postMasterHashTagList.push(new ObjectID(newMasterHashTag.id));
 
-                                        masterHashTagMap[hashTag] = newMasterHashTag;
-                                    }
+                                    masterHashTagMap[hashTag] = newMasterHashTag;
                                 }
                             }
                         }
@@ -610,22 +606,20 @@ export class FacebookWebhookController {
                             postMasterHashTagList.push(new ObjectID(id));
                             masterHashTagMap[name] = hashTag;
                         }
-                        if (masterHashTagList.length === 0) {
-                            for (const hashTag of hashTagList2) {
-                                if (masterHashTagMap[hashTag] === undefined) {
-                                    const newHashTag: HashTag = new HashTag();
-                                    newHashTag.name = hashTag;
-                                    newHashTag.lastActiveDate = today;
-                                    newHashTag.count = 0;
-                                    newHashTag.iconURL = '';
+                        for (const hashTag of hashTagList2) {
+                            if (masterHashTagMap[hashTag] === undefined) {
+                                const newHashTag: HashTag = new HashTag();
+                                newHashTag.name = hashTag;
+                                newHashTag.lastActiveDate = today;
+                                newHashTag.count = 0;
+                                newHashTag.iconURL = '';
 
-                                    const newMasterHashTag: HashTag = await this.hashTagService.create(newHashTag);
+                                const newMasterHashTag: HashTag = await this.hashTagService.create(newHashTag);
 
-                                    if (newMasterHashTag !== null && newMasterHashTag !== undefined) {
-                                        postMasterHashTagList.push(new ObjectID(newMasterHashTag.id));
+                                if (newMasterHashTag !== null && newMasterHashTag !== undefined) {
+                                    postMasterHashTagList.push(new ObjectID(newMasterHashTag.id));
 
-                                        masterHashTagMap[hashTag] = newMasterHashTag;
-                                    }
+                                    masterHashTagMap[hashTag] = newMasterHashTag;
                                 }
                             }
                         }
@@ -1391,7 +1385,6 @@ export class FacebookWebhookController {
     }
 
     private async emergencyEventFunction(hashTagMasters: any, pageId: string, postId: string): Promise<any> {
-        console.log('pass2', hashTagMasters);
         const emergencyEvent: any = await this.emergencyEventService.aggregate(
             [
                 {
