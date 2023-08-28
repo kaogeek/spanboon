@@ -39,7 +39,7 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                     startDateTime = this.data.startDateTime;
                     endDateTime = this.data.endDateTime;
                 }
-
+                
                 if (emergencyEventId === undefined || emergencyEventId === null || emergencyEventId === '') {
                     resolve(undefined);
                     return;
@@ -88,7 +88,7 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                         }
                     }
                 ];
-                if(userId !== undefined){
+                if (userId !== undefined && userId !== null && userId !== '') {
                     const userObjIds = new ObjectID(userId);
                     postAgg.push(
                         {
