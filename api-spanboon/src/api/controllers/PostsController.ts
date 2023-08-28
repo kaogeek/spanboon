@@ -987,7 +987,7 @@ export class PostsController {
             // check authenticate membership MFP 
             const postObject = await this.postsService.findOne({ _id: postObjId });
             const authenticateMFP = await this.authenticationIdService.findOne({ providerName: PROVIDER.MFP, user: userObjId, membership: true });
-            if (postObject.postType === 'membership') {
+            if (postObject.type === 'membership') {
                 if (authenticateMFP === undefined) {
                     const errorResponse = ResponseUtil.getErrorResponse('You cannot like this post type MFP.', undefined);
                     return res.status(400).send(errorResponse);
