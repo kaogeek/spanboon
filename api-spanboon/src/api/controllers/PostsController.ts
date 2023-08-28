@@ -50,6 +50,8 @@ import { UserService } from '../services/UserService';
 import { DeviceTokenService } from '../services/DeviceToken';
 import { ManipulateService } from '../services/ManipulateService';
 import { HidePostService } from '../services/HidePostService';
+import { AuthenticationIdService } from '../services/AuthenticationIdService';
+import { PROVIDER } from '../../constants/LoginProvider';
 @JsonController('/post')
 export class PostsController {
     constructor(
@@ -71,7 +73,8 @@ export class PostsController {
         private deviceTokenService: DeviceTokenService,
         private userService: UserService,
         private manipulateService: ManipulateService,
-        private hidePostService: HidePostService
+        private hidePostService: HidePostService,
+        private authenticationIdService: AuthenticationIdService
 
     ) { }
 
@@ -264,7 +267,7 @@ export class PostsController {
                 const postIds = postId;
                 const userId = req.headers.userid;
                 let objIds = undefined;
-                if(userId){
+                if (userId) {
                     objIds = new ObjectID(userId);
                 }
                 if (objIds !== undefined && objIds !== null) {
@@ -980,7 +983,16 @@ export class PostsController {
             } else {
                 userLike.likeAsPage = null;
             }
-
+            // like user post membership MFP
+            // check authenticate membership MFP 
+            const postObject = await this.postsService.findOne({ _id: postObjId });
+            const authenticateMFP = await this.authenticationIdService.findOne({ providerName: PROVIDER.MFP, user: userObjId, membership: true });
+            if (postObject.postType === 'membership') {
+                if (authenticateMFP === undefined) {
+                    const errorResponse = ResponseUtil.getErrorResponse('You cannot like this post type MFP.', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+            }
             const likeCreate: UserLike = await this.userLikeService.create(userLike);
             if (likeCreate) {
                 result = likeCreate;
@@ -994,6 +1006,7 @@ export class PostsController {
                 const post_who = await this.postsService.findOne({ _id: likeCreate.subjectId });
                 const page = await this.pageService.findOne({ ownerUser: post_who.ownerUser });
                 if (likeCreate.likeAsPage !== null) {
+                    // like post page
                     // page to page
                     const likePosts = await this.userLikeService.aggregate(
                         [
@@ -1193,6 +1206,7 @@ export class PostsController {
                     }
                 }
                 else {
+                    // like post user
                     // user to page
                     const likePosts = await this.userLikeService.aggregate(
                         [

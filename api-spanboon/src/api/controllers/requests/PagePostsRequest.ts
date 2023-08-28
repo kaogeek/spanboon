@@ -26,4 +26,5 @@ export class PagePostRequest {
     public emergencyEvent: string;
     public postGallery: any[];
     public startDateTime: Date;
+    public postType: string;
 }

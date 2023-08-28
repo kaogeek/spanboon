@@ -138,6 +138,9 @@ export class Posts extends BaseModel {
     @Column({ name: 'banned' })
     public banned: boolean;
 
+    @Column({ name: 'postType'})
+    public postType: string;
+
     @BeforeInsert()
     public createDetails(): any {
         this.createdDate = moment().toDate();

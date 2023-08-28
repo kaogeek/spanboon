@@ -46,6 +46,12 @@ export class AuthenticationId extends BaseModel {
     @Column({ name: 'expirationDate' })
     public expirationDate: Date;
 
+    @Column({ name: 'membership' })
+    public membership: boolean;
+
+    @Column({ name: 'terminated' })
+    public terminated: Date;
+
     @BeforeInsert()
     public createDetails(): any {
         this.createdDate = moment().toDate();

@@ -1010,8 +1010,10 @@ export class GuestController {
                 }
             }
         }
+        // Auth
         // MFP API LOGIN
         else if (mode === PROVIDER.MFP){
+            // const membership = loginParam.membership;
             // axios.post MFP API LOGIN.
             // const axios.post = await axios.post(process.env['MFP.API']);
             /* !Terminated */
@@ -1299,7 +1301,9 @@ export class GuestController {
                 const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
                 return res.status(400).send(errorResponse);
             }
-        } else if (mode === PROVIDER.FACEBOOK) {
+        } // else if(mode === PROVIDER.MFP){
+        // }
+        else if (mode === PROVIDER.FACEBOOK) {
             let authenFB = undefined;
             const stackAuth = [];
             const pic = [];
@@ -2007,7 +2011,11 @@ export class GuestController {
                 const errorResponse = ResponseUtil.getErrorResponse('The OTP is not correct.', undefined);
                 return res.status(400).send(errorResponse);
             }
-        } else if (user && mode === PROVIDER.GOOGLE) {
+        } // else if(user && mode === PROVIDER.MFP) {
+
+        // }
+        
+        else if (user && mode === PROVIDER.GOOGLE) {
             // check merge curl
             const checkAuthen = await this.authenticationIdService.findOne({ user: user.id, providerName: mode });
             if (checkAuthen !== undefined) {
@@ -2501,7 +2509,9 @@ export class GuestController {
                 const errorResponse: any = { status: 0, message: ex.message };
                 return response.status(400).send(errorResponse);
             }
-        }
+        } // if (isMode !== undefined && isMode === 'MFP Auth') {
+
+        // }
 
         else {
             const pageUserId = await this.authService.decryptToken(tokenParam);
@@ -2572,7 +2582,10 @@ export class GuestController {
                 await this.deviceToken.delete({ userId: authenId.user });
                 return response.status(400).send(errorUserNameResponse);
             }
-        } else {
+        } // else if ( MFP Auth ){
+
+        // }
+        else {
             // normal mode
             const authenId: AuthenticationId = await this.authenticationIdService.findOne({ where: { user: user.id, providerName: PROVIDER.EMAIL } });
             if (authenId === undefined) {
