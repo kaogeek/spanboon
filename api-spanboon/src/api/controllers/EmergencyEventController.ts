@@ -313,7 +313,6 @@ export class EmergencyEventController {
         const today = moment().toDate(); // now
         const threeMonth = moment(today).clone().utcOffset(0).set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(3, 'months').toDate();// look after 3 months
         const userId = req.headers.userid;
-        const userObjIds = new ObjectID(userId);
         let emergencyEvent: EmergencyEvent;
         const objId = new ObjectID(id);
 
@@ -447,7 +446,8 @@ export class EmergencyEventController {
 
         }
         */
-            if (userObjIds) {
+            if (userId) {
+                const userObjIds = new ObjectID(userId);
                 const isLikeUser = await this.userLikeService.find({ userId: userObjIds });
                 if (isLikeUser.length > 0) {
                     emergencyEventTimeline.isLikeUser = isLikeUser;
