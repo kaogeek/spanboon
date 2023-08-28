@@ -326,7 +326,7 @@ export class PagePostController {
         const postUserTag = pagePost.userTags;
         const postEmergencyEvent = pagePost.emergencyEvent;
         const startDateTime = moment(pagePost.startDateTime).toDate();
-        const membership = pagePost.postType ? pagePost.postType : undefined;
+        const membership = pagePost.type ? pagePost.type : undefined;
         const today = moment().toDate();
         let pageData: Page[];
         let pageObjId = null;
@@ -469,7 +469,7 @@ export class PagePostController {
         postPage.createdDate = createdDate;
         postPage.startDateTime = postDateTime;
         postPage.story = (postStory !== null && postStory !== undefined) ? postStory : null;
-        postPage.postType = membership; // type post membership MFP
+        postPage.type = membership; // type post membership MFP
         const masterHashTagMap = {};
         const postMasterHashTagList = [];
         const imageBase64sForTw = [];
