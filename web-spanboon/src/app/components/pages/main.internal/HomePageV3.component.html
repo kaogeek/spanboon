@@ -367,12 +367,12 @@
                                                 *ngIf="model && model.postSectionModel.contents[1].coverPageUrl; else elsePostImg">
                                                 <img src="{{model && model.postSectionModel.contents[1].coverPageSignUrl ? model && model.postSectionModel.contents[1].coverPageSignUrl : apiBaseURL + (model && model.postSectionModel.contents[1].coverPageUrl) + '/image'}}"
                                                     alt=""
-                                                    (click)="isPostNewTab && hidebar ? openDilogPost(model && model.postSectionModel.contents[1]) : clickToPost(model && model.postSectionModel.contents[1].post._id)">
+                                                    (click)="!hidebar ? openDilogPost(model && model.postSectionModel.contents[1]) : clickToPost(model && model.postSectionModel.contents[1].post._id)">
                                             </ng-container>
                                             <ng-template #elsePostImg>
                                                 <span
                                                     [innerHTML]="model && model.postSectionModel.contents[1].post.title"
-                                                    (click)="isPostNewTab && hidebar ? openDilogPost(model && model.postSectionModel.contents[1]) : clickToPost(model && model.postSectionModel.contents[1].post._id)"></span>
+                                                    (click)="!hidebar ? openDilogPost(model && model.postSectionModel.contents[1]) : clickToPost(model && model.postSectionModel.contents[1].post._id)"></span>
                                             </ng-template>
                                         </div>
                                     </ng-container>
@@ -380,13 +380,13 @@
                                         <ng-container
                                             *ngIf="model && model.postSectionModel.contents[1]; else elseCoverImageSec2">
                                             <div class="wrapper-news-post-img"
-                                                (click)="isPostNewTab && hidebar ? openDilogPost(model && model.postSectionModel.contents[1]) : clickToPost(model && model.postSectionModel.contents[1].post._id)"
+                                                (click)="!hidebar ? openDilogPost(model && model.postSectionModel.contents[1]) : clickToPost(model && model.postSectionModel.contents[1].post._id)"
                                                 [ngClass]="!isRes && (model && model.emergencyEvents.contents.length === 0) && model && model.postSectionModel.contents.length === 2 ? 'post-wid' : ''">
                                                 <ng-container
                                                     *ngIf="model && model.postSectionModel.contents[1].coverPageUrl; else elseTextTitle">
                                                     <img src="{{model.postSectionModel.contents[1].coverPageSignUrl ? model.postSectionModel.contents[1].coverPageSignUrl : apiBaseURL + (model && model.postSectionModel.contents[1].coverPageUrl) + '/image'}}"
                                                         alt=""
-                                                        (click)="isPostNewTab && hidebar ? openDilogPost(model && model.postSectionModel.contents[1]) : clickToPost(model && model.postSectionModel.contents[1].post._id)">
+                                                        (click)="!hidebar ? openDilogPost(model && model.postSectionModel.contents[1]) : clickToPost(model && model.postSectionModel.contents[1].post._id)">
                                                 </ng-container>
                                                 <ng-template #elseTextTitle>
                                                     <span
@@ -424,7 +424,7 @@
                                         <ng-container
                                             *ngIf="model && model.postSectionModel.contents.length === 2; else elseTitleDetail">
                                             <p class="title md-none-min"
-                                                (click)="isPostNewTab && hidebar ? openDilogPost(model && model.postSectionModel.contents[1]) : clickToPost(model && model.postSectionModel.contents[1].post._id)"
+                                                (click)="!hidebar ? openDilogPost(model && model.postSectionModel.contents[1]) : clickToPost(model && model.postSectionModel.contents[1].post._id)"
                                                 [innerHTML]="model && model.postSectionModel.contents[1].coverPageUrl ? (model && model.postSectionModel.contents[1].post.title | highlight) : model && model.postSectionModel.contents[1].post.detail | highlight">
                                             </p>
                                         </ng-container>
@@ -432,7 +432,7 @@
                                             <ng-container
                                                 *ngIf="model && model.postSectionModel.contents.length >= 3; else elseTitleMd">
                                                 <p class="title md-none-min"
-                                                    (click)="isPostNewTab && hidebar ? openDilogPost(model && model.postSectionModel.contents[1]) : clickToPost(model && model.postSectionModel.contents[1].post._id)"
+                                                    (click)="!hidebar ? openDilogPost(model && model.postSectionModel.contents[1]) : clickToPost(model && model.postSectionModel.contents[1].post._id)"
                                                     [innerHTML]="model && model.postSectionModel.contents[1].coverPageUrl ? (model && model.postSectionModel.contents[1].post.title | highlight) : model && model.postSectionModel.contents[1].post.detail | highlight">
                                                 </p>
                                             </ng-container>
@@ -474,7 +474,7 @@
                                             <ng-container
                                                 *ngIf="model && model.postSectionModel.contents.length === 2; else elseTitleTopic">
                                                 <p class="title-topic"
-                                                    (click)="isPostNewTab && hidebar ? openDilogPost(model && model.postSectionModel.contents[1]) : clickToPost(model && model.postSectionModel.contents[1].post._id)"
+                                                    (click)="!hidebar ? openDilogPost(model && model.postSectionModel.contents[1]) : clickToPost(model && model.postSectionModel.contents[1].post._id)"
                                                     [innerHTML]="model && model.postSectionModel.contents[1].coverPageUrl ? (model && model.postSectionModel.contents[1].post.title | highlight) : model && model.postSectionModel.contents[1].post.detail | highlight">
                                                 </p>
                                             </ng-container>
@@ -482,7 +482,7 @@
                                                 <ng-container
                                                     *ngIf="model && model.postSectionModel.contents.length >= 3; else elseContent3">
                                                     <p class="title-topic"
-                                                        (click)="isPostNewTab && hidebar ? openDilogPost(model && model.postSectionModel.contents[1]) : clickToPost(model && model.postSectionModel.contents[1].post._id)"
+                                                        (click)="!hidebar ? openDilogPost(model && model.postSectionModel.contents[1]) : clickToPost(model && model.postSectionModel.contents[1].post._id)"
                                                         [innerHTML]="model && model.postSectionModel.contents[1].coverPageUrl ? (model && model.postSectionModel.contents[1].post.title | highlight) : model && model.postSectionModel.contents[1].post.detail | highlight">
                                                     </p>
                                                 </ng-container>
