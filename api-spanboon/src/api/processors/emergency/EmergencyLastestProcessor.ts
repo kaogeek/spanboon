@@ -99,6 +99,15 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                             results.post = post;
                             content.push(results);
                         }
+                    } else {
+                        for (const post of searchResult) {
+                            const results: any = {};
+                            const parsedTimestamp = moment(post.createdDate);
+                            const monthString = parsedTimestamp.format('MMMM'); // Output: "months"
+                            results.month = String(monthString);
+                            results.post = post;
+                            content.push(results);
+                        }
                     }
                 }
 
