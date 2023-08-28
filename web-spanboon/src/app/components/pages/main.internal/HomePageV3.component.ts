@@ -135,9 +135,20 @@ export class HomePageV3 extends AbstractPage implements OnInit {
       const tokens = params['token'];
       const userid = params['userid'];
       const mode = params['mode'];
-      if (tokens) this.paramToken = tokens;
+      if (tokens) {
+        this.paramToken = tokens;
+        localStorage.setItem('token', this.paramToken);
+        sessionStorage.setItem('token', this.paramToken);
+      }
       if (userid) this.paramUserId = userid;
-      if (mode) this.paramMode = mode;
+      if (mode) {
+        this.paramMode = mode;
+        localStorage.setItem('mode', this.paramMode);
+        sessionStorage.setItem('mode', this.paramMode);
+      }
+      if (tokens && mode) {
+        this.authenManager.checkAccountStatus(tokens, mode, { updateUser: true });
+      }
       if (rawDate) {
         const dateParts = rawDate.split('-');
         this.queryParamsUrl = new Date(`${dateParts[1]}-${dateParts[0]}-${dateParts[2]}`).getTime();
