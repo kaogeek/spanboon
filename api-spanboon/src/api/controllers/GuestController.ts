@@ -2303,11 +2303,9 @@ export class GuestController {
     }
     @Post('/guest/users')
     public async guestUsers(@Body({ validate: true }) firebaseGuestUser: FirebaseGuestUser, @Res() res: any, @Req() req: any): Promise<any> {
-        console.log('firebaseGuestUser', firebaseGuestUser);
         const tokenFCM = String(firebaseGuestUser.token);
         const checkTokenFcm = await this.deviceToken.find({ token: tokenFCM });
         if (checkTokenFcm.length > 0) {
-            console.log('pass2 guest firebase user.');
             const errorResponse = ResponseUtil.getErrorResponse('Token already exist.', undefined);
             return res.status(400).send(errorResponse);
         }
@@ -2316,9 +2314,7 @@ export class GuestController {
         result.token = tokenFCM;
         result.os = firebaseGuestUser.os;
         const createToken = await this.deviceToken.createDeviceToken(result);
-        console.log('createToken', createToken);
         if (createToken) {
-            console.log('pass1 guest firebase user.');
             const successResponse = ResponseUtil.getSuccessResponse('Create Guest User Firebase', createToken);
             return res.status(200).send(successResponse);
         } else {
