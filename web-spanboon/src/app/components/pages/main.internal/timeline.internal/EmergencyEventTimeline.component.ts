@@ -76,6 +76,10 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
     public hidebar: boolean = true;
     public isRes: boolean = false;
     public windowWidth: any;
+    public paramToken: string;
+    public paramUserId: string;
+    public paramMode: string;
+    public currentUrl: any;
 
     public apiBaseURL = environment.apiBaseURL;
     private routeActivated: ActivatedRoute;
@@ -120,6 +124,28 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
 
         });
 
+        const url = this.router.url.split('/');
+        this.currentUrl = (url[1] + '/' + url[2]);
+
+        this.routeActivated.queryParams.subscribe(params => {
+            const tokens = params['token'];
+            const userid = params['userid'];
+            const mode = params['mode'];
+            if (tokens) {
+                this.paramToken = tokens;
+                localStorage.setItem('token', this.paramToken);
+                sessionStorage.setItem('token', this.paramToken);
+            }
+            if (userid) this.paramUserId = userid;
+            if (mode) {
+                this.paramMode = mode;
+                localStorage.setItem('mode', this.paramMode);
+                sessionStorage.setItem('mode', this.paramMode);
+            }
+            if (tokens && mode) {
+                this.authenManager.checkAccountStatus(tokens, mode, { updateUser: true });
+            }
+        });
     }
 
     public async ngOnInit(): Promise<void> {
@@ -268,25 +294,14 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
     }
 
     public postLike(data: any, index?: number, i?: number) {
-        if (data.like) {
-            data.isLike = !data.isLike;
-            data.likeCount--;
-            data.like = false;
-        } else {
-            data.isLike = !data.isLike;
-            data.likeCount++;
-            data.like = true;
-        }
         if (!this.isLogin()) {
         } else {
             this.postFacade.like(data._id).then((res: any) => {
-                // if (res.isLike) {
-                //     if (data._id === res.posts.id) {
-                //     }
-                // } else {
-                //     if (data._id === res.posts.id) {
-                //     }
-                // }
+                if (res.isLike) {
+                    data.userLike.push(res.data);
+                } else {
+                    data.userLike.splice(0, 1);
+                }
             }).catch((err: any) => {
                 console.log(err)
             });

@@ -13,4 +13,5 @@ export * from './PipeDatetime.pipe';
 export * from './PipeThFormatDatetime.pipe';
 export * from './PipeThDatetime.pipe';
 export * from './HighlightText.pipe';
+export * from './HighlightTextEvent.pipe';
 export * from './ConvertTextNotification.pipe';
