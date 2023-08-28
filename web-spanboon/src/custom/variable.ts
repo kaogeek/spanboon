@@ -50,6 +50,7 @@ export enum MESSAGE {
 export const PLATFORM_FULFILL_TEXT: string = 'เติมเต็ม';
 export const PLATFORM_NEEDS_TEXT: string = 'มองหา';
 export const PLATFORM_GENERAL_TEXT: string = 'ทั่วไป';
+export const PLATFORM_MEMBERSHIP_TEXT: string = 'สมาชิกพรรค';
 
 // Web 
 

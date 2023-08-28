@@ -30,7 +30,7 @@ declare const window: any;
 
 const SEARCH_LIMIT: number = 10;
 const SEARCH_OFFSET: number = 0;
-const TEXT_LIMIT: number = 230;
+const TEXT_LIMIT: number = 999999;
 
 @Component({
   selector: 'box-post',
@@ -263,7 +263,7 @@ export class BoxPost extends AbstractPage implements OnInit {
 
   chooseStory: any[] = [
     { value: this.PLATFORM_GENERAL_TEXT, viewValue: this.PLATFORM_GENERAL_TEXT, class: 'icon-feed' },
-    // { value: this.PLATFORM_NEEDS_TEXT, viewValue: this.PLATFORM_NEEDS_TEXT, class: 'icon-feed looking' },
+    // { value: this.PLATFORM_MEMBERSHIP_TEXT, viewValue: this.PLATFORM_MEMBERSHIP_TEXT, class: 'icon-feed looking' },
   ];
   chooseStorys: any[] = [
     { value: this.PLATFORM_GENERAL_TEXT, viewValue: this.PLATFORM_GENERAL_TEXT, class: 'icon-feed' },
@@ -827,7 +827,6 @@ export class BoxPost extends AbstractPage implements OnInit {
     } else if (value === this.PLATFORM_NEEDS_TEXT) {
       this.typeStroy = POST_TYPE.NEEDS;
       this.showDialogDoing();
-
     } else {
       this.typeStroy = POST_TYPE.GENERAL;
     }
@@ -1297,7 +1296,6 @@ export class BoxPost extends AbstractPage implements OnInit {
   }
 
   public onKeyup(event) {
-
     clearTimeout(this.setTimeKeyup);
     this.setTimeKeyup = setTimeout(() => {
       $('.list-add-hashtaggg').click((dom) => {
@@ -1330,6 +1328,7 @@ export class BoxPost extends AbstractPage implements OnInit {
 
     let tagClass;
     var topicAlert;
+
     if (this.isListPage) {
       tagClass = $('#' + this.prefix.detail + 'editableStoryPost').find('font');
     } else {
