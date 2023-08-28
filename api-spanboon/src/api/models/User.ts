@@ -153,6 +153,9 @@ export class User extends BaseModel {
     @Column({ name: 'isOfficial' })
     public isOfficial: boolean;
 
+    @Column({ name: 'membership'})
+    public membership: boolean;
+
     // @Column(type => AuthenticationId)
     // public authenticationId: AuthenticationId;
 

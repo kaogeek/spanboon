@@ -326,6 +326,7 @@ export class PagePostController {
         const postUserTag = pagePost.userTags;
         const postEmergencyEvent = pagePost.emergencyEvent;
         const startDateTime = moment(pagePost.startDateTime).toDate();
+        const membership = pagePost.type ? pagePost.type : undefined;
         const today = moment().toDate();
         let pageData: Page[];
         let pageObjId = null;
@@ -446,7 +447,8 @@ export class PagePostController {
         if (postDetail !== null && postDetail !== undefined && postDetail !== '') {
             postDetail = postDetail.replace(/^\s*[\r\n]/gm, '\n');
         }
-
+        // before create the post type membership 
+        // first we need to check authenticate that user is membership ?
         const postPage: Posts = new Posts();
         postPage.title = pagePost.title;
         postPage.detail = postDetail;
@@ -467,6 +469,7 @@ export class PagePostController {
         postPage.createdDate = createdDate;
         postPage.startDateTime = postDateTime;
         postPage.story = (postStory !== null && postStory !== undefined) ? postStory : null;
+        postPage.type = membership; // type post membership MFP
         const masterHashTagMap = {};
         const postMasterHashTagList = [];
         const imageBase64sForTw = [];
@@ -498,7 +501,7 @@ export class PagePostController {
                 }
             }
         }
-
+        
         postPage.postsHashTags = postMasterHashTagList;
 
         let ht: HashTag;
@@ -707,6 +710,7 @@ export class PagePostController {
 
                 }
                 else {
+                    // type post membership MFP. (user post)
                     // user to user
                     const userPost = await this.userService.findOne({ _id: createPostPageData.ownerUser });
                     notificationTextPOST = 'มีโพสต์ใหม่จาก' + space + userPost.displayName;
@@ -726,7 +730,7 @@ export class PagePostController {
                             userPost.imageURL
                         );
                     }
-                    if (tokenFCMId.length > 0) {
+                    if (tokenFCMId !== undefined && tokenFCMId.length > 0) {
                         if (userFollow.length > 0 && userFollow.length <= 5) {
                             for (const tokenFCM of tokenFCMId) {
                                 if (tokenFCM.Tokens !== undefined && tokenFCM.Tokens !== null && tokenFCM.Tokens !== '') {

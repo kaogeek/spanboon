@@ -100,7 +100,7 @@ export class AuthService {
                     if(UserId !== undefined){
                         UserId += ';AP';
                     }
-                }
+                } // MFP Auth
                 else {
                     UserId = await this.decryptToken(token);
 
@@ -142,7 +142,7 @@ export class AuthService {
                 providerName = PROVIDER.GOOGLE;
             } else if ('AP' === type){
                 providerName = PROVIDER.APPLE;
-            }
+            } // MFP Auth
 
         }
 

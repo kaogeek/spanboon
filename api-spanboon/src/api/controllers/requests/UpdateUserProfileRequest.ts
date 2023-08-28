@@ -15,4 +15,5 @@ export class UpdateUserProfileRequest {
     public gender: number;
     public customGender: string;
     public province:string;
+    public membership:boolean;
 }

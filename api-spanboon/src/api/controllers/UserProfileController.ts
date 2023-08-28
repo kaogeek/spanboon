@@ -608,7 +608,8 @@ export class UserProfileController {
             let userGender = users.gender;
             let userCustomGender = users.customGender;
             let userProvince = users.province;
-
+            let userMembership = users.membership;
+            console.log('userMembership', userMembership);
             if (userDisplayName === null || userDisplayName === undefined) {
                 userDisplayName = findUser.displayName;
             }
@@ -635,7 +636,11 @@ export class UserProfileController {
             if (userProvince === null || userProvince === undefined) {
                 userProvince = findUser.province;
             }
-
+            // check authen
+            // mode MFP membership
+            if (userMembership === null || userMembership === undefined) {
+                userMembership = findUser.membership;
+            }
             const updateQuery = { _id: userObjId };
             const newValue = {
                 $set: {
@@ -645,7 +650,8 @@ export class UserProfileController {
                     birthdate: userBirthdate,
                     gender: userGender,
                     customGender: userCustomGender,
-                    province: userProvince
+                    province: userProvince,
+                    membership: userMembership
                 }
             };
 
