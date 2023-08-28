@@ -80,6 +80,7 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
     public paramUserId: string;
     public paramMode: string;
     public currentUrl: any;
+    public checkLike: boolean = false;
 
     public apiBaseURL = environment.apiBaseURL;
     private routeActivated: ActivatedRoute;
@@ -295,16 +296,32 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
 
     public postLike(data: any, index?: number, i?: number) {
         if (!this.isLogin()) {
+            this.showAlertDialog('กรุณาเข้าสู่ระบบ');
         } else {
-            this.postFacade.like(data._id).then((res: any) => {
-                if (res.isLike) {
-                    data.userLike.push(res.data);
+            let check = data.userLike.length > 0 ? true : false;
+            if (!this.checkLike) {
+                this.checkLike = true;
+                if (check) {
+                    data.likeCount--;
                 } else {
-                    data.userLike.splice(0, 1);
+                    data.likeCount++;
                 }
-            }).catch((err: any) => {
-                console.log(err)
-            });
+                if (!this.isLogin()) {
+                } else {
+                    this.postFacade.like(data._id).then((res: any) => {
+                        if (res.isLike) {
+                            data.userLike.push(res.data);
+                            this.checkLike = false;
+                        } else {
+                            data.userLike.splice(0, 1);
+                            this.checkLike = false;
+                        }
+                    }).catch((err: any) => {
+                        console.log(err)
+                        this.checkLike = false;
+                    });
+                }
+            }
         }
     }
 

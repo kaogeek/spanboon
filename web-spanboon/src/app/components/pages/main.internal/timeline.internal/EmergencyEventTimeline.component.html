@@ -1301,7 +1301,7 @@
                                                                 <span class="disiption"
                                                                     (click)="postLike(post,indexa,i)">
                                                                     <ng-container
-                                                                        *ngIf="post.userLike.length > 0; else elseNotLike">
+                                                                        *ngIf="post && post.userLike && post.userLike.length > 0; else elseNotLike">
                                                                         <svg class="img-action"
                                                                             xmlns="http://www.w3.org/2000/svg"
                                                                             width="23" height="23"
@@ -1433,7 +1433,7 @@
                                                                 <span class="disiption"
                                                                     (click)="postLike(post,indexa,i)">
                                                                     <ng-container
-                                                                        *ngIf="post.userLike.length > 0; else elseNotLikeEven">
+                                                                        *ngIf="post && post.userLike && post.userLike.length > 0; else elseNotLikeEven">
                                                                         <svg class="img-action"
                                                                             xmlns="http://www.w3.org/2000/svg"
                                                                             width="23" height="23"
