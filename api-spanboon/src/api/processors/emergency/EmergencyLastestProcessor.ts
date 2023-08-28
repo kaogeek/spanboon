@@ -8,6 +8,8 @@
 import { AbstractTypeSectionProcessor } from '../AbstractTypeSectionProcessor';
 import { PostsService } from '../../services/PostsService';
 import moment from 'moment';
+import { ObjectID } from 'mongodb';
+
 // import { MONTHS } from '../../../constants/MonthsType';
 
 export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
@@ -28,7 +30,7 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                 let userId = undefined;
                 let startDateTime = undefined;
                 let endDateTime = undefined;
-
+                let postAgg = undefined;
                 if (this.data !== undefined && this.data !== null) {
                     emergencyEventId = this.data.emergencyEventId;
                     limit = this.data.limit;
@@ -52,7 +54,8 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                 }
 
                 // search first post of emergencyEvent and join gallery
-                const postAgg = [
+
+                postAgg = [
                     { $match: { emergencyEvent: emergencyEventId, deleted: false, createdDate: { $lte: startDateTime, $gte: endDateTime } } },
                     { $sort: { startDateTime: -1 } },
                     { $limit: limit },
@@ -85,6 +88,30 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                         }
                     }
                 ];
+                if(userId !== undefined){
+                    const userObjIds = new ObjectID(userId);
+                    postAgg.push(
+                        {
+                            $lookup: {
+                                from: 'UserLike',
+                                let: { id: '$_id' },
+                                pipeline: [
+                                    {
+                                        $match: {
+                                            $expr: {
+                                                $eq: ['$$id', '$subjectId']
+                                            }
+                                        }
+                                    },
+                                    {
+                                        $match: { userId: userObjIds }
+                                    }
+                                ],
+                                as: 'userLike'
+                            }
+                        },
+                    );
+                }
                 const searchResult = await this.postsService.aggregate(postAgg);
                 let result = undefined;
                 const content: any = [];
