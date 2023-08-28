@@ -2007,6 +2007,10 @@
                   > .title {
                     @include font-size-3($font-head-500);
                     color: $brandcolor2;
+                    
+                    @media (max-width: $small) {
+                      @include font-size-6($font-head-500);
+                    }
                   }
                 }
               }
@@ -2175,8 +2179,9 @@
                     margin-top: 30px;
                     @include font-size-7($font-content-light);
                     line-height: 40px;
+                    white-space: pre-wrap;
                     display: -webkit-box;
-                    -webkit-line-clamp: 4;
+                    -webkit-line-clamp: 10;
                     -webkit-box-orient: vertical;
                     overflow: hidden;
                     word-break: break-word;
@@ -2257,6 +2262,7 @@
                         }
 
                         > .disiption {
+                          cursor: pointer;
                           @include font-size-9($font-head-400);
                         }
                       }

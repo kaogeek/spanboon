@@ -191,7 +191,7 @@
         </ng-container>
         <div matInput contentEditable="true" [ngStyle]="isRepost? {'display': 'block'} : {'display': 'none'}"
             id="{{prefix && prefix.header !== '' ? prefix.header : '' }}topic" #topic class="header-story"
-            placeholder="หัวข้อ" (keyup)="onKeyupTopic($event)" maxlength="75">
+            placeholder="หัวข้อ" (keyup)="onKeyupTopic($event)">
         </div>
         <div *ngIf="isRepost" #storyPost id="{{prefix &&  prefix.detail? prefix.detail : ''}}editableStoryPost"
             class="textarea-editor" contentEditable="true" attr.placeholder="{{PLATFORM_STORY_TALE}}ของ {{dataPage}}"
@@ -217,10 +217,10 @@
             [isNeedBoxPost]="false" [isButtonFulfill]="isButtonFulfill"></needs-card>
         <div class="wrapper-event-tag" #tagEvent [class.active]="isMobilePost && isMobileText">
             <div class="wrapper-right" *ngIf="isRepost && isMobilePost  && isMobileText">
-                <div class="text-limit" [class.validate]="getTextLength() > 230"
+                <!-- <div class="text-limit" [class.validate]="getTextLength() > 230"
                     [class.active]="isMobilePost  && isMobileText">
                     {{getTextLength() ? getTextLength() : 0 }} <span>/230</span>
-                </div>
+                </div> -->
             </div>
 
             <div *ngIf="isRepost" class="wrapper-left">
@@ -702,15 +702,15 @@
             <div class="wrapper-right">
                 <ng-container *ngIf="isTablet; else elseTemplateisTablet">
                     <!-- version tablet -->
-                    <div class="text-limit" [class.validate]="getTextLength() > 230">
+                    <!-- <div class="text-limit" [class.validate]="getTextLength() > 230">
                         {{getTextLength() ? getTextLength() : 0 }}/230
-                    </div>
+                    </div> -->
                 </ng-container>
                 <ng-template #elseTemplateisTablet>
-                    <div *ngIf="isRepost && !isMobilePost && !isMobileText " class="text-limit"
+                    <!-- <div *ngIf="isRepost && !isMobilePost && !isMobileText " class="text-limit"
                         [class.validate]="getTextLength() > 230">
                         {{getTextLength() ? getTextLength() : 0 }}/230
-                    </div>
+                    </div> -->
                 </ng-template>
             </div>
         </div>
@@ -735,6 +735,15 @@
                                 <div appDebounceClick class="butt" (click)="selectType(data.value)">
                                     {{data.viewValue}}
                                 </div>
+                                <!-- <mat-select>
+                                    <mat-option *ngFor="let data of chooseStory" [value]="data.value"
+                                        (click)="selectType(data.value)">
+                                        <div class="wrapper-body-action">
+                                            <div class="{{data.class}}"></div>
+                                            {{data.viewValue}}
+                                        </div>
+                                    </mat-option>
+                                </mat-select> -->
                             </ng-container>
                         </ng-template>
                     </ng-container>
