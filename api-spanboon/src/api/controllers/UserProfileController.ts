@@ -609,7 +609,6 @@ export class UserProfileController {
             let userCustomGender = users.customGender;
             let userProvince = users.province;
             let userMembership = users.membership;
-            console.log('userMembership', userMembership);
             if (userDisplayName === null || userDisplayName === undefined) {
                 userDisplayName = findUser.displayName;
             }
@@ -640,6 +639,8 @@ export class UserProfileController {
             // mode MFP membership
             if (userMembership === null || userMembership === undefined) {
                 userMembership = findUser.membership;
+                // create authentication 
+                
             }
             const updateQuery = { _id: userObjId };
             const newValue = {
