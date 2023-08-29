@@ -8,7 +8,8 @@
 export enum POST_TYPE {
     GENERAL = 'GENERAL',
     FULFILLMENT = 'FULFILLMENT',
-    NEEDS = 'NEEDS'
+    NEEDS = 'NEEDS',
+    MEMBERSHIP = 'MEMBERSHIP'
 }
 export enum SORT_BY {
     LASTEST_DATE = 'LASTEST_DATE',
