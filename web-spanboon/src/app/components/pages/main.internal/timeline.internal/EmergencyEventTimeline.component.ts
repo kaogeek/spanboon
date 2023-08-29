@@ -245,14 +245,11 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
 
         if (this.hidebar) {
             let navigationExtras: NavigationExtras = {
-                queryParams: { hashtag: data.name, emertag: this.pageObjective.title }
+                queryParams: { hashtag: data.name, emertag: this.pageObjective.hashTagName }
             }
             this.router.navigate([this.router.url + '/search'], navigationExtras);
         } else {
-            let navigationExtras: NavigationExtras = {
-                queryParams: { hashtag: data.name, emertag: this.pageObjective.title, hidebar: this.hidebar ? false : true }
-            }
-            this.router.navigate([this.router.url + '/search'], navigationExtras);
+            window.open('/emergencyevent/' + this.pageObjective.id + '/search' + '?hashtag=' + data.name + '&emertag=' + this.pageObjective.hashTagName)
         }
     }
 
