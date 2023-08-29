@@ -124,9 +124,14 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
             anchorPlacement: 'top-bottom', // defines which position of the element regarding to window should trigger the animation
 
         });
-
+        this.hidebar = this.authenManager.getHidebar();
         const url = this.router.url.split('/');
-        this.currentUrl = (url[1] + '/' + url[2]);
+        if (!this.hidebar) {
+            let url2 = url[2].split('?')[0];
+            this.currentUrl = (url[1] + '/' + url2);
+        } else {
+            this.currentUrl = (url[1] + '/' + url[2]);
+        }
 
         this.routeActivated.queryParams.subscribe(params => {
             const tokens = params['token'];
@@ -151,7 +156,6 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
 
     public async ngOnInit(): Promise<void> {
         this.isLoginUser = this.isLogin();
-        this.hidebar = this.authenManager.getHidebar();
         this.routeActivated.params.subscribe((params) => {
             this.objectiveId = params['id'];
         })
@@ -245,14 +249,11 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
 
         if (this.hidebar) {
             let navigationExtras: NavigationExtras = {
-                queryParams: { hashtag: data.name, emertag: this.pageObjective.title }
+                queryParams: { hashtag: data.name, emertag: this.pageObjective.hashTagName }
             }
             this.router.navigate([this.router.url + '/search'], navigationExtras);
         } else {
-            let navigationExtras: NavigationExtras = {
-                queryParams: { hashtag: data.name, emertag: this.pageObjective.title, hidebar: this.hidebar ? false : true }
-            }
-            this.router.navigate([this.router.url + '/search'], navigationExtras);
+            window.open('/emergencyevent/' + this.pageObjective.id + '/search' + '?hashtag=' + data.name + '&emertag=' + this.pageObjective.hashTagName)
         }
     }
 

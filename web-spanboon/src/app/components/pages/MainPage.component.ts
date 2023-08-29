@@ -85,6 +85,7 @@ export class MainPage extends AbstractPage implements OnInit {
 
     this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(async (event: NavigationEnd) => {
       if (event instanceof NavigationEnd) {
+        this.hidebar = this.authenManager.getHidebar();
         const url: string = decodeURI(this.router.url);
         const path = url.split('/')[1];
         if (url === "/home" || '/' + path === "/page" || '/' + path === "/profile" || url === "/recommend") {
@@ -93,7 +94,7 @@ export class MainPage extends AbstractPage implements OnInit {
         if (url === '/login' || (path === "fulfill")) {
           this.isPost = false;
         }
-        if (this.isLogin()) {
+        if (this.isLogin() && this.hidebar) {
           let token = localStorage.getItem('token');
           let mode = localStorage.getItem('mode');
           this.authenManager.checkAccountStatus(token, mode, { updateUser: true }).then((res) => {
@@ -133,7 +134,6 @@ export class MainPage extends AbstractPage implements OnInit {
   }
 
   public ngOnInit(): void {
-    this.hidebar = this.authenManager.getHidebar();
     const isLogin: boolean = this.isLogin();
 
     // if (isLogin) {
