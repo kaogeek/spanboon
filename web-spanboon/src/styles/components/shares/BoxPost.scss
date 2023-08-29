@@ -281,6 +281,10 @@
 
               > .mat-select-trigger {
                 > .mat-select-value {
+                  max-width: 100%;
+                  width: 110px;
+                  display: flex;
+                  justify-content: center;
                 }
               }
             }

@@ -7,6 +7,39 @@
 
 <div class="control-action" *ngIf="isAction">
     <div class="collis">
+        <div class="wrapper-action" *ngIf="isLike" (click)="postLike();"
+            [ngStyle]="{'margin-right': marginPerAction, 'color': isRed ? '#FD545A' : isBlack ? '#212721' : '#F8F7F2'}">
+            <span class="label-count" [class.activate]="userLike"> {{like | shortNumber}} </span>
+            <ng-container *ngIf="userLike; else elseNotLike">
+                <svg class="img-action" [ngStyle]="{'width' : widthBtnAction , 'height' : widthBtnAction }"
+                    xmlns="http://www.w3.org/2000/svg" width="56.85" height="48.58" viewBox="0 0 56.85 48.58">
+                    <path class="svg-icon-color-activate" id="Path_3669" data-name="Path 3669"
+                        d="M196.9,74.77h-.05a17.223,17.223,0,0,0-11.07,4,17.029,17.029,0,0,0-10.99-4,17.259,17.259,0,0,0-17.45,17.31c0,15.15,23.76,28.7,26.47,30.2l1.94,1.07,1.95-1.06c2.71-1.48,26.49-14.86,26.49-30.23A17.438,17.438,0,0,0,196.9,74.77Z"
+                        transform="translate(-157.34 -74.77)" fill="#F8F7F2" />
+                </svg>
+                <!-- <svg class="img-action" [ngStyle]="{'width' : widthBtnAction , 'height' : widthBtnAction }"
+                xmlns="http://www.w3.org/2000/svg" width="15.474" height="13.059" viewBox="0 0 15.474 13.059">
+                <path class="svg-icon-color-activate" id="Path_3804" data-name="Path 3804"
+                    d="M701.4,704.7a4.581,4.581,0,0,1-6.336,0,4.57,4.57,0,0,0-4.565,4.564c0,4.183,7.062,8.124,7.361,8.289l.373.206.375-.2c.3-.164,7.365-4.06,7.365-8.3A4.6,4.6,0,0,0,701.4,704.7Zm3.017,4.564c0,2.855-4.893,5.947-6.182,6.712-2.21-1.306-6.18-4.284-6.18-6.712a3.014,3.014,0,0,1,3.012-3.008h.026a2.961,2.961,0,0,1,2.491,1.352l.649,1,.654-.995a3,3,0,0,1,2.519-1.356A3.034,3.034,0,0,1,704.413,709.262Z"
+                    transform="translate(-690.495 -704.698)" fill="#F8F7F2" />
+            </svg> -->
+            </ng-container>
+            <ng-template #elseNotLike>
+                <svg class="img-action" [ngStyle]="{'width' : widthBtnAction , 'height' : widthBtnAction }"
+                    xmlns="http://www.w3.org/2000/svg" width="15.474" height="13.059" viewBox="0 0 15.474 13.059">
+                    <path [ngClass]="{'svg-icon-color-black': isBlack}" id="Path_3804" data-name="Path 3804"
+                        d="M701.4,704.7a4.581,4.581,0,0,1-6.336,0,4.57,4.57,0,0,0-4.565,4.564c0,4.183,7.062,8.124,7.361,8.289l.373.206.375-.2c.3-.164,7.365-4.06,7.365-8.3A4.6,4.6,0,0,0,701.4,704.7Zm3.017,4.564c0,2.855-4.893,5.947-6.182,6.712-2.21-1.306-6.18-4.284-6.18-6.712a3.014,3.014,0,0,1,3.012-3.008h.026a2.961,2.961,0,0,1,2.491,1.352l.649,1,.654-.995a3,3,0,0,1,2.519-1.356A3.034,3.034,0,0,1,704.413,709.262Z"
+                        transform="translate(-690.495 -704.698)" fill="#F8F7F2" />
+                </svg>
+
+                <!-- <svg class="img-action" [ngStyle]="{'width' : widthBtnAction , 'height' : widthBtnAction }"
+                xmlns="http://www.w3.org/2000/svg" width="56.85" height="48.58" viewBox="0 0 56.85 48.58">
+                <path [ngClass]="{'svg-icon-color-black': isBlack}" id="Path_3663" data-name="Path 3663"
+                    d="M196.9.7h-.05a17.223,17.223,0,0,0-11.07,4,17.029,17.029,0,0,0-10.99-4,17.259,17.259,0,0,0-17.45,17.31c0,15.15,23.76,28.7,26.47,30.2l1.94,1.07,1.95-1.06c2.71-1.48,26.49-14.86,26.49-30.23A17.432,17.432,0,0,0,196.9.7ZM185.77,40c-8.59-5.15-20.36-14.71-20.36-22a9.244,9.244,0,0,1,9.25-9.23h.08a9.03,9.03,0,0,1,7.62,4.14l3.37,5.2,3.4-5.18a9.2,9.2,0,0,1,7.71-4.16h.02A9.32,9.32,0,0,1,206.1,18C206.1,25.41,194.35,34.91,185.77,40Z"
+                    transform="translate(-157.34 -0.7)" fill="#F8F7F2" />
+            </svg> -->
+            </ng-template>
+        </div>
         <div class="wrapper-action" *ngIf="isComment" (click)="postComment();"
             [ngStyle]="{'margin-right': marginPerAction, 'color': isRed ? '#FD545A' : isBlack ? '#212721' : '#F8F7F2'}">
             <span class="label-count" [class.activate]="userComment"> {{comment | shortNumber }}</span>
@@ -103,39 +136,6 @@
                 </mat-menu>
             </ng-template>
         </div> -->
-        <div class="wrapper-action" *ngIf="isLike" (click)="postLike();"
-            [ngStyle]="{'margin-right': marginPerAction, 'color': isRed ? '#FD545A' : isBlack ? '#212721' : '#F8F7F2'}">
-            <span class="label-count" [class.activate]="userLike"> {{like | shortNumber}} </span>
-            <ng-container *ngIf="userLike; else elseNotLike">
-                <svg class="img-action" [ngStyle]="{'width' : widthBtnAction , 'height' : widthBtnAction }"
-                    xmlns="http://www.w3.org/2000/svg" width="56.85" height="48.58" viewBox="0 0 56.85 48.58">
-                    <path class="svg-icon-color-activate" id="Path_3669" data-name="Path 3669"
-                        d="M196.9,74.77h-.05a17.223,17.223,0,0,0-11.07,4,17.029,17.029,0,0,0-10.99-4,17.259,17.259,0,0,0-17.45,17.31c0,15.15,23.76,28.7,26.47,30.2l1.94,1.07,1.95-1.06c2.71-1.48,26.49-14.86,26.49-30.23A17.438,17.438,0,0,0,196.9,74.77Z"
-                        transform="translate(-157.34 -74.77)" fill="#F8F7F2" />
-                </svg>
-                <!-- <svg class="img-action" [ngStyle]="{'width' : widthBtnAction , 'height' : widthBtnAction }"
-                    xmlns="http://www.w3.org/2000/svg" width="15.474" height="13.059" viewBox="0 0 15.474 13.059">
-                    <path class="svg-icon-color-activate" id="Path_3804" data-name="Path 3804"
-                        d="M701.4,704.7a4.581,4.581,0,0,1-6.336,0,4.57,4.57,0,0,0-4.565,4.564c0,4.183,7.062,8.124,7.361,8.289l.373.206.375-.2c.3-.164,7.365-4.06,7.365-8.3A4.6,4.6,0,0,0,701.4,704.7Zm3.017,4.564c0,2.855-4.893,5.947-6.182,6.712-2.21-1.306-6.18-4.284-6.18-6.712a3.014,3.014,0,0,1,3.012-3.008h.026a2.961,2.961,0,0,1,2.491,1.352l.649,1,.654-.995a3,3,0,0,1,2.519-1.356A3.034,3.034,0,0,1,704.413,709.262Z"
-                        transform="translate(-690.495 -704.698)" fill="#F8F7F2" />
-                </svg> -->
-            </ng-container>
-            <ng-template #elseNotLike>
-                <svg class="img-action" [ngStyle]="{'width' : widthBtnAction , 'height' : widthBtnAction }"
-                    xmlns="http://www.w3.org/2000/svg" width="15.474" height="13.059" viewBox="0 0 15.474 13.059">
-                    <path [ngClass]="{'svg-icon-color-black': isBlack}" id="Path_3804" data-name="Path 3804"
-                        d="M701.4,704.7a4.581,4.581,0,0,1-6.336,0,4.57,4.57,0,0,0-4.565,4.564c0,4.183,7.062,8.124,7.361,8.289l.373.206.375-.2c.3-.164,7.365-4.06,7.365-8.3A4.6,4.6,0,0,0,701.4,704.7Zm3.017,4.564c0,2.855-4.893,5.947-6.182,6.712-2.21-1.306-6.18-4.284-6.18-6.712a3.014,3.014,0,0,1,3.012-3.008h.026a2.961,2.961,0,0,1,2.491,1.352l.649,1,.654-.995a3,3,0,0,1,2.519-1.356A3.034,3.034,0,0,1,704.413,709.262Z"
-                        transform="translate(-690.495 -704.698)" fill="#F8F7F2" />
-                </svg>
-
-                <!-- <svg class="img-action" [ngStyle]="{'width' : widthBtnAction , 'height' : widthBtnAction }"
-                    xmlns="http://www.w3.org/2000/svg" width="56.85" height="48.58" viewBox="0 0 56.85 48.58">
-                    <path [ngClass]="{'svg-icon-color-black': isBlack}" id="Path_3663" data-name="Path 3663"
-                        d="M196.9.7h-.05a17.223,17.223,0,0,0-11.07,4,17.029,17.029,0,0,0-10.99-4,17.259,17.259,0,0,0-17.45,17.31c0,15.15,23.76,28.7,26.47,30.2l1.94,1.07,1.95-1.06c2.71-1.48,26.49-14.86,26.49-30.23A17.432,17.432,0,0,0,196.9.7ZM185.77,40c-8.59-5.15-20.36-14.71-20.36-22a9.244,9.244,0,0,1,9.25-9.23h.08a9.03,9.03,0,0,1,7.62,4.14l3.37,5.2,3.4-5.18a9.2,9.2,0,0,1,7.71-4.16h.02A9.32,9.32,0,0,1,206.1,18C206.1,25.41,194.35,34.91,185.77,40Z"
-                        transform="translate(-157.34 -0.7)" fill="#F8F7F2" />
-                </svg> -->
-            </ng-template>
-        </div>
         <div class="wrapper-action" *ngIf="isShare" (click)="postShare()"
             [ngStyle]="{'margin-right': marginPerAction, 'color': isRed ? '#FD545A' : isBlack ? '#212721' : '#F8F7F2'}">
             <span class="label-count"> {{share | shortNumber }}</span>

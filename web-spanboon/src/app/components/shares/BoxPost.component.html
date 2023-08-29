@@ -724,18 +724,40 @@
                 <ng-container *ngIf="!isFulfill">
                     <ng-container *ngIf="isRepost; else elseIsRepost">
                         <ng-container *ngIf="modeDoIng; else elseDoIng">
-                            <ng-container *ngFor="let data of chooseStorys">
-                                <div appDebounceClick class="butt" (click)="selectType(data.value)">
+                            <!-- <div appDebounceClick class="butt" (click)="selectType(data.value)">
                                     {{data.viewValue}}
-                                </div>
-                            </ng-container>
+                                </div> -->
+                            <!-- <mat-form-field appearance="none">
+                                    <mat-select class="butt">
+                                        <mat-option *ngFor="let data of chooseStorys" [value]="data.value"
+                                            (click)="selectType(data.value)">
+                                            <div class="wrapper-body-action">
+                                                <div class="{{data.class}}"></div>
+                                                {{data.viewValue}}
+                                            </div>
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field> -->
+                            <mat-form-field appearance="none">
+                                <mat-select name="mode" [(value)]="typePost">
+                                    <mat-option *ngFor="let data of chooseStorys" [value]="data.value"
+                                        (click)="selectType(data.value)">
+                                        <div class="wrapper-body-action">
+                                            <div class="{{data.class}}"></div>
+                                            {{data.viewValue}}
+                                        </div>
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
                         </ng-container>
                         <ng-template #elseDoIng>
-                            <ng-container *ngFor="let data of chooseStory">
+                            <!-- <ng-container *ngFor="let data of chooseStory">
                                 <div appDebounceClick class="butt" (click)="selectType(data.value)">
                                     {{data.viewValue}}
                                 </div>
-                                <!-- <mat-select>
+                            </ng-container> -->
+                            <mat-form-field appearance="none">
+                                <mat-select name="mode" [(value)]="typePost">
                                     <mat-option *ngFor="let data of chooseStory" [value]="data.value"
                                         (click)="selectType(data.value)">
                                         <div class="wrapper-body-action">
@@ -743,8 +765,8 @@
                                             {{data.viewValue}}
                                         </div>
                                     </mat-option>
-                                </mat-select> -->
-                            </ng-container>
+                                </mat-select>
+                            </mat-form-field>
                         </ng-template>
                     </ng-container>
                     <ng-template #elseIsRepost>

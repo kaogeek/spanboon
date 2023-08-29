@@ -153,6 +153,8 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   public resListPage: any;
   public pageId: any;
 
+  private checkLike: boolean = false;
+
   canDeactivate(): boolean {
     return this.isDirty;
   }
@@ -1190,45 +1192,63 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   }
 
   public postLike(data: any, index: number) {
-    if (!this.isLogin()) {
-      // this.showAlertLoginDialog("/page/" + this.resDataPage.id);
-    } else {
-      if (this.resPost.posts.length == 0) {
-        this.resDataPost[index].isLike = true;
-        this.postFacade.like(data.postData._id, data.userAsPage.id).then((res: any) => {
-          if (res.isLike) {
-            if (data.postData._id === res.posts.id) {
-              this.resDataPost[index].likeCount = res.likeCount;
-              this.resDataPost[index].isLike = res.isLike;
-            }
-          } else {
-            // unLike 
-            if (data.postData._id === res.posts.id) {
-              this.resDataPost[index].likeCount = res.likeCount;
-              this.resDataPost[index].isLike = res.isLike;
-            }
-          }
-        }).catch((err: any) => {
-          console.log(err)
-        });
+    if (!this.checkLike) {
+      this.checkLike = true;
+      if (!this.isLogin()) {
+        this.checkLike = false;
+        // this.showAlertLoginDialog("/page/" + this.resDataPage.id);
       } else {
-        this.resPost.posts[index].isLike = true;
-        this.postFacade.like(data.postData._id, data.userAsPage.id).then((res: any) => {
-          if (res.isLike) {
-            if (data.postData._id === res.posts.id) {
-              this.resPost.posts[index].likeCount = res.likeCount;
-              this.resPost.posts[index].isLike = res.isLike;
+        if (this.resPost.posts.length == 0) {
+          this.resDataPost[index].isLike = true;
+          this.postFacade.like(data.postData._id, data.userAsPage.id).then((res: any) => {
+            if (res.isLike) {
+              if (data.postData._id === res.posts.id) {
+                this.resDataPost[index].likeCount = res.likeCount;
+                this.resDataPost[index].isLike = res.isLike;
+              }
+              this.checkLike = false;
+            } else {
+              // unLike 
+              if (data.postData._id === res.posts.id) {
+                this.resDataPost[index].likeCount = res.likeCount;
+                this.resDataPost[index].isLike = res.isLike;
+              }
+              this.checkLike = false;
             }
-          } else {
-            // unLike 
-            if (data.postData._id === res.posts.id) {
-              this.resPost.posts[index].likeCount = res.likeCount;
-              this.resPost.posts[index].isLike = res.isLike;
+          }).catch((err: any) => {
+            console.log(err)
+            this.resDataPost[index].isLike = false;
+            if (err.error.message === 'You cannot like this post type MFP.') {
+              this.showAlertDialog('กดไลค์สำหรับสมาชิกพรรคเท่านั้น');
+              this.checkLike = false;
             }
-          }
-        }).catch((err: any) => {
-          console.log(err)
-        });
+          });
+        } else {
+          this.resPost.posts[index].isLike = true;
+          this.postFacade.like(data.postData._id, data.userAsPage.id).then((res: any) => {
+            if (res.isLike) {
+              if (data.postData._id === res.posts.id) {
+                this.resPost.posts[index].likeCount = res.likeCount;
+                this.resPost.posts[index].isLike = res.isLike;
+              }
+              this.checkLike = false;
+            } else {
+              // unLike 
+              if (data.postData._id === res.posts.id) {
+                this.resPost.posts[index].likeCount = res.likeCount;
+                this.resPost.posts[index].isLike = res.isLike;
+              }
+              this.checkLike = false;
+            }
+          }).catch((err: any) => {
+            console.log(err)
+            this.resPost.posts[index].isLike = false;
+            if (err.error.message === 'You cannot like this post type MFP.') {
+              this.showAlertDialog('กดไลค์สำหรับสมาชิกพรรคเท่านั้น');
+              this.checkLike = false;
+            }
+          });
+        }
       }
     }
   }
