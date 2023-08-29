@@ -181,10 +181,10 @@
                                             </span>
                                         </div>
                                         <div class="title"
-                                            [innerHTML]="item.post.title | highlightevent:pageObjective.title:currentUrl">
+                                            [innerHTML]="item.post.title | highlightevent:pageObjective.title:currentUrl:hidebar">
                                         </div>
                                         <div class="detail"
-                                            [innerHTML]="item.post.detail | highlightevent:pageObjective.title:currentUrl">
+                                            [innerHTML]="item.post.detail | highlightevent:pageObjective.title:currentUrl:hidebar">
                                         </div>
                                         <div class="buttom">
                                             <div class="botton" (click)="clickDataSearch(item)">
@@ -1259,10 +1259,10 @@
                                                     </span>
                                                     <div class="head-title">
                                                         <span class="title"
-                                                            [innerHTML]="post.title | highlightevent:pageObjective.title:currentUrl"></span>
+                                                            [innerHTML]="post.title | highlightevent:pageObjective.title:currentUrl:hidebar"></span>
                                                     </div>
                                                     <div class="detail"
-                                                        [innerHTML]="post.detail | highlightevent:pageObjective.title:currentUrl">
+                                                        [innerHTML]="post.detail | highlightevent:pageObjective.title:currentUrl:hidebar">
                                                     </div>
                                                     <div class="buttom">
                                                         <a [href]="post.pageId ? '/post/' + (post._id || post.id) : '/profile/' + post.ownerUser + '/post/' + (post._id || post.id)"
