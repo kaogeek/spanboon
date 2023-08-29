@@ -1936,9 +1936,6 @@ export class ObjectiveController {
                 return res.status(400).send(ResponseUtil.getSuccessResponse('Title is missing.', undefined));
             }
 
-            if (detailRequest === undefined) {
-                return res.status(400).send(ResponseUtil.getSuccessResponse('Detail is missing.', undefined));
-            }
             hashTagName = name;
             const hashTag = await this.hashTagService.findOne({ _id: checkObjective.hashTag, pageId: checkObjective.pageId, objectiveId: checkObjective.id, personal: checkObjective.personal, type: 'OBJECTIVE' });
             if (hashTag !== undefined && hashTag.name === name && hashTag.personal === true && objectives.personal === false) {
@@ -2079,9 +2076,6 @@ export class ObjectiveController {
                 return res.status(400).send(ResponseUtil.getSuccessResponse('Title is missing.', undefined));
             }
 
-            if (detailRequest === undefined) {
-                return res.status(400).send(ResponseUtil.getSuccessResponse('Detail is missing.', undefined));
-            }
             // check objective private !
             // change private to public 
             // check duplicate to another or itself ?
