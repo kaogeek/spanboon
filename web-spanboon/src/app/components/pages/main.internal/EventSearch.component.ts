@@ -14,6 +14,7 @@ import { DialogShare } from '../../shares/dialog/DialogShare.component';
 import { CommentPosts } from 'src/app/models/CommentPosts';
 import { DialogAlert } from '../../shares/dialog/DialogAlert.component';
 import { DialogCheckBox } from '../../shares/dialog/DialogCheckBox.component';
+import { Location } from '@angular/common';
 
 const PAGE_NAME: string = 'search';
 
@@ -25,11 +26,13 @@ export class EventSearch extends AbstractPageImageLoader implements OnInit {
   public params: any;
   public route: ActivatedRoute;
   public url: any;
+  private currentUrl: any;
   private mainPageFacade: MainPageSlideFacade;
   private emergencyEventFacade: EmergencyEventFacade;
   private postFacade: PostFacade;
   private postCommentFacade: PostCommentFacade;
   private pageFacade: PageFacade;
+  private checkLike: boolean = false;
 
   public data: any;
   public dataId: any;
@@ -46,7 +49,8 @@ export class EventSearch extends AbstractPageImageLoader implements OnInit {
     emergencyEventFacade: EmergencyEventFacade,
     postFacade: PostFacade,
     postCommentFacade: PostCommentFacade,
-    pageFacade: PageFacade) {
+    pageFacade: PageFacade,
+    private location: Location) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.pageFacade = pageFacade;
     this.postCommentFacade = postCommentFacade;
@@ -57,7 +61,12 @@ export class EventSearch extends AbstractPageImageLoader implements OnInit {
 
     this.url = this.router.url.split('/');
     this.route.queryParams.subscribe(params => {
-      this.params = params;
+      if (Object.keys(params).length !== 0) {
+        this.params = params;
+        this.currentUrl = this.router.url;
+      } else {
+        this.location.replaceState(this.currentUrl);
+      }
     });
   }
 
@@ -125,26 +134,36 @@ export class EventSearch extends AbstractPageImageLoader implements OnInit {
   }
 
   public postLike(data: any, index: number) {
-    if (!this.isLogin()) {
-      this.showAlertLoginDialog(this.url);
-    } else {
-      this.postFacade.like(data.postData._id).then((res: any) => {
-        if (res.isLike) {
-          if (data.postData._id === res.posts.id) {
-            this.data[index].post.likeCount = res.likeCount;
-            this.data[index].post.isLike = res.isLike;
+    if (!this.checkLike) {
+      this.checkLike = true;
+      if (!this.isLogin()) {
+        this.showAlertLoginDialog(this.url);
+        this.checkLike = false;
+      } else {
+        this.postFacade.like(data.postData._id).then((res: any) => {
+          if (res.isLike) {
+            if (data.postData._id === res.posts.id) {
+              this.data[index].post.likeCount = res.likeCount;
+              this.data[index].post.isLike = res.isLike;
+            }
+            this.checkLike = false;
+          } else {
+            // unLike 
+            if (data.postData._id === res.posts.id) {
+              this.data[index].post.likeCount = res.likeCount;
+              this.data[index].post.isLike = res.isLike;
+            }
+            this.checkLike = false;
           }
-        } else {
-          // unLike 
-          if (data.postData._id === res.posts.id) {
-            this.data[index].post.likeCount = res.likeCount;
-            this.data[index].post.isLike = res.isLike;
+        }).catch((err: any) => {
+          console.log(err)
+          // this.isLoading = false;
+          if (err.error.message === 'You cannot like this post type MFP.') {
+            this.showAlertDialog('กดไลค์สำหรับสมาชิกพรรคเท่านั้น');
+            this.checkLike = false;
           }
-        }
-      }).catch((err: any) => {
-        console.log(err)
-        // this.isLoading = false;
-      });
+        });
+      }
     }
   }
 

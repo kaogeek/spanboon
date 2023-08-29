@@ -192,6 +192,8 @@
 
                   @media (max-width: $medium) {
                     justify-content: center;
+                    gap: 2px;
+                    flex-direction: column;
                   }
 
                   > span {

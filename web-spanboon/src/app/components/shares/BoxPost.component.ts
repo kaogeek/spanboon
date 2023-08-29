@@ -176,7 +176,8 @@ export class BoxPost extends AbstractPage implements OnInit {
   public isButtonFulfill: boolean;
   public isShowText: boolean;
   public isTypeNeed: boolean = true;
-  public typeStroy: any;
+  public typeStroy: any = 'GENERAL';
+  public typePost: any = 'ทั่วไป';
   public dataAutoComp: any; // 2: click, 1: totic, 0: content
   public dataObjective: any; // 2: click, 1: totic, 0: content
   public names: string;
@@ -263,10 +264,11 @@ export class BoxPost extends AbstractPage implements OnInit {
 
   chooseStory: any[] = [
     { value: this.PLATFORM_GENERAL_TEXT, viewValue: this.PLATFORM_GENERAL_TEXT, class: 'icon-feed' },
-    // { value: this.PLATFORM_MEMBERSHIP_TEXT, viewValue: this.PLATFORM_MEMBERSHIP_TEXT, class: 'icon-feed looking' },
+    { value: this.PLATFORM_MEMBERSHIP_TEXT, viewValue: this.PLATFORM_MEMBERSHIP_TEXT, class: 'icon-feed looking' },
   ];
   chooseStorys: any[] = [
     { value: this.PLATFORM_GENERAL_TEXT, viewValue: this.PLATFORM_GENERAL_TEXT, class: 'icon-feed' },
+    { value: this.PLATFORM_MEMBERSHIP_TEXT, viewValue: this.PLATFORM_MEMBERSHIP_TEXT, class: 'icon-feed looking' },
   ];
 
   selected: string = this.PLATFORM_GENERAL_TEXT;
@@ -827,6 +829,8 @@ export class BoxPost extends AbstractPage implements OnInit {
     } else if (value === this.PLATFORM_NEEDS_TEXT) {
       this.typeStroy = POST_TYPE.NEEDS;
       this.showDialogDoing();
+    } else if (value === this.PLATFORM_MEMBERSHIP_TEXT) {
+      this.typeStroy = POST_TYPE.MEMBERSHIP;
     } else {
       this.typeStroy = POST_TYPE.GENERAL;
     }
@@ -1601,7 +1605,8 @@ export class BoxPost extends AbstractPage implements OnInit {
           pageId: this.selectedPage,
           coverImage: this.coverImage,
           postSocialTW: this.twitterConection && this.isAutoPostTwitter ? true : false,
-          postSocialFB: this.facebookConection && this.isAutoPostFacebook ? true : false
+          postSocialFB: this.facebookConection && this.isAutoPostFacebook ? true : false,
+          type: this.typeStroy
         }
         dataPost = data;
       } else if (Object.keys(this.dataPageId).length === 0) {
@@ -1623,7 +1628,8 @@ export class BoxPost extends AbstractPage implements OnInit {
           pageId: this.selectedPage,
           coverImage: this.coverImage,
           postSocialTW: this.twitterConection && this.isAutoPostTwitter ? true : false,
-          postSocialFB: this.facebookConection && this.isAutoPostFacebook ? true : false
+          postSocialFB: this.facebookConection && this.isAutoPostFacebook ? true : false,
+          type: this.typeStroy
         }
         dataPost = data;
       } else {

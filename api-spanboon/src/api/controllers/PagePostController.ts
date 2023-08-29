@@ -455,7 +455,10 @@ export class PagePostController {
         if (membership !== undefined && membership !== null && membership !== '') {
             const userMemberShip = await this.userService.findOne({ _id: userObjId });
             const authMemberShip = await this.authenticationIdService.findOne({ providerName: PROVIDER.MFP, user: userObjId, membership: true });
-            if(userMemberShip.membership === true && authMemberShip === undefined){
+            if (
+                (userMemberShip.membership === undefined || userMemberShip.membership === false )
+                && 
+                authMemberShip === undefined) {
                 return res.status(400).send(ResponseUtil.getErrorResponse('You cannot post type memberShip.', undefined));
             }
         }
@@ -1743,7 +1746,6 @@ export class PagePostController {
             }
 
             let assetResultUpload: Asset;
-
             if (postGallery !== undefined && postGallery !== null && postGallery.length > 0) {
                 let isCreateAssetGallery = false;
                 let postIdGallery;
@@ -1805,6 +1807,14 @@ export class PagePostController {
                         gallery.ordering = image.asset.ordering;
                         await this.postGalleryService.create(gallery);
                     }
+                }
+            }
+            // check if post.length > 0, but in the post gallery have valued.
+            // that's meaning delete the one picture.
+            if (postGallery !== undefined && postGallery !== null && postGallery.length === 0) {
+                const picGallery = await this.postGalleryService.findOne({ post: pagePostsObjId });
+                if (picGallery !== undefined && picGallery !== null) {
+                    await this.postGalleryService.delete({ post: pagePostsObjId });
                 }
             }
 

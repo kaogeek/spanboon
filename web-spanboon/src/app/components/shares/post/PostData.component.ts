@@ -16,7 +16,7 @@ import { MatDialog } from '@angular/material';
 import { ValidBase64ImageUtil } from '../../../utils/ValidBase64ImageUtil';
 import { DialogAlert } from '../dialog/DialogAlert.component';
 import { environment } from '../../../../environments/environment';
-import { PLATFORM_FULFILL_TEXT, PLATFORM_NEEDS_TEXT, PLATFORM_GENERAL_TEXT, PLATFORM_STORY, PLATFORM_STORY_TALE } from '../../../../custom/variable';
+import { PLATFORM_FULFILL_TEXT, PLATFORM_NEEDS_TEXT, PLATFORM_GENERAL_TEXT, PLATFORM_STORY, PLATFORM_STORY_TALE, PLATFORM_MEMBERSHIP_TEXT } from '../../../../custom/variable';
 import { MESSAGE } from '../../../../custom/variable';
 import { Router } from '@angular/router';
 import Glightbox from 'glightbox';
@@ -115,6 +115,7 @@ export class PostData {
   private mainPageLink: string = window.location.origin + '/page/';
 
   public PLATFORM_FULFILL_TEXT: string = PLATFORM_FULFILL_TEXT;
+  public PLATFORM_MEMBERSHIP_TEXT: string = PLATFORM_MEMBERSHIP_TEXT;
   public PLATFORM_NEEDS_TEXT: string = PLATFORM_NEEDS_TEXT;
   public PLATFORM_GENERAL_TEXT: string = PLATFORM_GENERAL_TEXT;
   public PLATFORM_STORY: string = PLATFORM_STORY;

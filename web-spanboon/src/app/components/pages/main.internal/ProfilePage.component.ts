@@ -105,6 +105,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
   public isPostLoading: boolean = false;
 
   private coverImageoldValue = 50;
+  private checkLike: boolean = false;
 
   mySubscription: any;
   files: FileHandle[] = [];
@@ -418,21 +419,33 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
         }
       }).catch((err: any) => {
         console.log(err);
+        this.isPostLoading = false;
+        this.showAlertDialog('โพสต์ประเภทสมาชิกสามารถสร้างได้โดยสมาชิกเท่านั้น');
       })
     }
   }
 
   public postLike(post, index: number) {
-    if (!this.isLogin()) {
-      this.showAlertLoginDialog("/profile/" + this.resProfile.id);
-    } else {
-      this.resPost.posts[index].isLike = true;
-      this.postFacade.like(post.postData._id, post.userAsPage.id).then((res: any) => {
-        this.resPost.posts[index].isLike = res.isLike
-        this.resPost.posts[index].likeCount = res.likeCount
-      }).catch((err: any) => {
-        console.log(err)
-      });
+    if (!this.checkLike) {
+      this.checkLike = true;
+      if (!this.isLogin()) {
+        this.showAlertLoginDialog("/profile/" + this.resProfile.id);
+        this.checkLike = false;
+      } else {
+        this.resPost.posts[index].isLike = true;
+        this.postFacade.like(post.postData._id, post.userAsPage.id).then((res: any) => {
+          this.resPost.posts[index].isLike = res.isLike
+          this.resPost.posts[index].likeCount = res.likeCount
+          this.checkLike = false;
+        }).catch((err: any) => {
+          console.log(err)
+          this.resPost.posts[index].isLike = false;
+          if (err.error.message === 'You cannot like this post type MFP.') {
+            this.showAlertDialog('กดไลค์สำหรับสมาชิกพรรคเท่านั้น');
+            this.checkLike = false;
+          }
+        });
+      }
     }
   }
 
