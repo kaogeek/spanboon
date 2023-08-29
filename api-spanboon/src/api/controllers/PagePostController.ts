@@ -456,7 +456,8 @@ export class PagePostController {
             const userMemberShip = await this.userService.findOne({ _id: userObjId });
             const authMemberShip = await this.authenticationIdService.findOne({ providerName: PROVIDER.MFP, user: userObjId, membership: true });
             if (
-                userMemberShip.membership === undefined && 
+                (userMemberShip.membership === undefined || userMemberShip.membership === false )
+                && 
                 authMemberShip === undefined) {
                 return res.status(400).send(ResponseUtil.getErrorResponse('You cannot post type memberShip.', undefined));
             }
