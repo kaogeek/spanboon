@@ -142,10 +142,11 @@ export class AuthService {
                 providerName = PROVIDER.GOOGLE;
             } else if ('AP' === type){
                 providerName = PROVIDER.APPLE;
-            } // MFP Auth
-
+            } else if ('MFP' === type){
+                providerName = PROVIDER.MFP;
+            }
         }
-
+        
         // check token expired
         const authenId: AuthenticationId = await this.authenticationIdService.findOne({ where: { user: uid, providerName } });
         if (authenId !== undefined && authenId.expirationDate !== undefined) {

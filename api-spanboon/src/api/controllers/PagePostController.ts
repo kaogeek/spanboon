@@ -62,6 +62,8 @@ import { PostUtil } from '../../utils/PostUtil';
 import { DeviceTokenService } from '../services/DeviceToken';
 import { UserFollowService } from '../services/UserFollowService';
 import { HidePostService } from '../services/HidePostService';
+import { AuthenticationIdService } from '../services/AuthenticationIdService';
+import { PROVIDER } from '../../constants/LoginProvider';
 @JsonController('/page')
 export class PagePostController {
     constructor(
@@ -88,7 +90,8 @@ export class PagePostController {
         private s3Service: S3Service,
         private deviceToken: DeviceTokenService,
         private userFollowService: UserFollowService,
-        private hidePostService: HidePostService
+        private hidePostService: HidePostService,
+        private authenticationIdService: AuthenticationIdService
     ) { }
     // @Get('/test/post')
     // public async test(@Req() req:any):Promise<any>{
@@ -449,6 +452,14 @@ export class PagePostController {
         }
         // before create the post type membership 
         // first we need to check authenticate that user is membership ?
+        if (membership !== undefined && membership !== null && membership !== '') {
+            const userMemberShip = await this.userService.findOne({ _id: userObjId });
+            const authMemberShip = await this.authenticationIdService.findOne({ providerName: PROVIDER.MFP, user: userObjId, membership: true });
+            if(userMemberShip.membership === true && authMemberShip === undefined){
+                return res.status(400).send(ResponseUtil.getErrorResponse('You cannot post type memberShip.', undefined));
+            }
+        }
+
         const postPage: Posts = new Posts();
         postPage.title = pagePost.title;
         postPage.detail = postDetail;
@@ -501,7 +512,7 @@ export class PagePostController {
                 }
             }
         }
-        
+
         postPage.postsHashTags = postMasterHashTagList;
 
         let ht: HashTag;
