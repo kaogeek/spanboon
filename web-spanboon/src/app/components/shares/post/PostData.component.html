@@ -163,13 +163,13 @@
             </ng-container>
 
             <ng-container *ngIf="!isShowProfile">
-                <ng-container *ngIf="itemPost.type === 'GENERAL'; else elseTemplateGeneral">
-                    <div class="icon-feed"></div>
+                <ng-container *ngIf="itemPost.type === 'FULFILLMENT'; else elseTemplateFulfill">
+                    <div class="icon-feed fulfill"></div>
                     <span>
-                        {{PLATFORM_GENERAL_TEXT}}
+                        {{PLATFORM_FULFILL_TEXT}}
                     </span>
                 </ng-container>
-                <ng-template #elseTemplateGeneral>
+                <ng-template #elseTemplateFulfill>
                     <ng-container *ngIf="itemPost.type === 'NEEDS'; else elseTemplateMember">
                         <div class="icon-feed looking"></div>
                         <span>
@@ -177,16 +177,16 @@
                         </span>
                     </ng-container>
                     <ng-template #elseTemplateMember>
-                        <ng-container *ngIf="itemPost.type === 'MEMBERSHIP'; else elseTemplateFulfil">
+                        <ng-container *ngIf="itemPost.type === 'MEMBERSHIP'; else elseTemplateGeneral">
                             <div class="icon-feed member"></div>
                             <span>
                                 {{PLATFORM_MEMBERSHIP_TEXT}}
                             </span>
                         </ng-container>
-                        <ng-template #elseTemplateFulfil>
-                            <div class="icon-feed fulfill"></div>
+                        <ng-template #elseTemplateGeneral>
+                            <div class="icon-feed"></div>
                             <span>
-                                {{PLATFORM_FULFILL_TEXT}}
+                                {{PLATFORM_GENERAL_TEXT}}
                             </span>
                         </ng-template>
                     </ng-template>
