@@ -36,4 +36,5 @@ export class CreateUserRequest extends BasePageUserRegisterRequest {
     public province: string;
     public uaAcceptDate:Date;
     public uaVersion:number;
+    public membership:boolean;
 }
