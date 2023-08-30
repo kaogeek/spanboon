@@ -38,6 +38,8 @@ import { DeviceTokenService } from '../services/DeviceToken';
 import { PageService } from '../services/PageService';
 import { UserService } from '../services/UserService';
 // import { ConfigService } from '../services/ConfigService';
+import { AuthenticationIdService } from '../services/AuthenticationIdService';
+import { PROVIDER } from '../../constants/LoginProvider';
 @JsonController('/post')
 export class PostsCommentController {
     constructor(
@@ -53,6 +55,7 @@ export class PostsCommentController {
         private deviceTokenService: DeviceTokenService,
         private pageService: PageService,
         private userService: UserService,
+        private authenticationIdService: AuthenticationIdService
     ) { }
 
     // PostsComment List API
@@ -127,6 +130,17 @@ export class PostsCommentController {
         const hours = now.getHours();
         const minutes = now.getMinutes();
         const interval = 30;
+        // comment user post membership MFP
+        // check authenticate membership MFP 
+        const postObject = await this.postsService.findOne({ _id: postObjId });
+        const authenticateMFP = await this.authenticationIdService.findOne({ providerName: PROVIDER.MFP, user: userObjId, membership: true });
+        if (postObject.type === 'MEMBERSHIP') {
+            if (authenticateMFP === undefined) {
+                const errorResponse = ResponseUtil.getErrorResponse('You cannot comment this post type MFP.', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        }
+
         const posts: Posts = await this.postsService.findOne({ where: { _id: postObjId } });
         if (posts !== null && posts !== undefined) {
             if (assets !== null && assets !== undefined) {
@@ -1063,7 +1077,16 @@ export class PostsCommentController {
         let likeCount;
         let likeAsPageObjId;
         let likeStmt;
-
+        // like comment user post membership MFP
+        // check authenticate membership MFP 
+        const postObject = await this.postsService.findOne({ _id: postObjId });
+        const authenticateMFP = await this.authenticationIdService.findOne({ providerName: PROVIDER.MFP, user: userObjId, membership: true });
+        if (postObject.type === 'MEMBERSHIP') {
+            if (authenticateMFP === undefined) {
+                const errorResponse = ResponseUtil.getErrorResponse('You cannot like comment this post type MFP.', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        }
         if (likeAsPage !== null && likeAsPage !== undefined && likeAsPage !== '') {
             likeAsPageObjId = new ObjectID(likeAsPage);
             likeStmt = { where: { userId: userObjId, subjectId: commentObjId, subjectType: LIKE_TYPE.POST_COMMENT, likeAsPage: likeAsPageObjId } };
