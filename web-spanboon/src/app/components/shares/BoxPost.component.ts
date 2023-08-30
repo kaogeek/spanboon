@@ -1657,7 +1657,8 @@ export class BoxPost extends AbstractPage implements OnInit {
           pageId: this.selectedPage,
           coverImage: this.coverImage,
           postSocialTW: this.twitterConection && this.isAutoPostTwitter ? true : false,
-          postSocialFB: this.facebookConection && this.isAutoPostFacebook ? true : false
+          postSocialFB: this.facebookConection && this.isAutoPostFacebook ? true : false,
+          type: this.typeStroy
         }
         dataPost = data;
       }
