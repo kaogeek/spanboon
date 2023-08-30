@@ -452,7 +452,7 @@ export class PagePostController {
         }
         // before create the post type membership 
         // first we need to check authenticate that user is membership ?
-        if (membership !== undefined && membership !== null && membership !== '') {
+        if (membership !== undefined && membership !== null && membership !== '' && membership === 'MEMBERSHIP') {
             const userMemberShip = await this.userService.findOne({ _id: userObjId });
             const authMemberShip = await this.authenticationIdService.findOne({ providerName: PROVIDER.MFP, user: userObjId, membership: true });
             if (
