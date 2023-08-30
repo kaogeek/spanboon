@@ -369,11 +369,11 @@
                                 <post-data [itemPost]="itemPost" [user]="userImage" [isComments]="isLogin()"
                                     [mainPostLink]="itemPost && itemPost.name ? 'profile/'+name+'/post/' : 'profile/'+name+'/post/' "
                                     [isUserPage]="false" (action)="actionComment($event,index)" [isShowUser]="true"
-                                    (comment)="createComment($event,index)" [pageUser]="pageUser" [isPage]="isNotAccess"
-                                    [isNotAccess]="isNotAccess" (userpage)="getAaaPost($event,index)"
-                                    (delete)="deletePost($event,index)" (update)="editPost($event,index)"
-                                    (engagement)="engagement($event)" (hide)="hidePost($event,index)"
-                                    (report)="reportPost($event,index)"></post-data>
+                                    [isMemberShip]="isMemberShip" (comment)="createComment($event,index)"
+                                    [pageUser]="pageUser" [isPage]="isNotAccess" [isNotAccess]="isNotAccess"
+                                    (userpage)="getAaaPost($event,index)" (delete)="deletePost($event,index)"
+                                    (update)="editPost($event,index)" (engagement)="engagement($event)"
+                                    (hide)="hidePost($event,index)" (report)="reportPost($event,index)"></post-data>
                             </ng-container>
                             <Preload-card *ngIf="isLoadingPost" [isShowCard1]="true" [isShowCard2]="true">
                             </Preload-card>

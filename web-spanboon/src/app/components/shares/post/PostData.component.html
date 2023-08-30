@@ -521,8 +521,29 @@
                     <div class="send-button"><span class="material-icons" (click)="onClickComment($event)"> send </span>
                     </div>
 
-                    <input class="comment-text" placeholder="แสดงความคิดเห็น..." (keyup.enter)="onClickComment($event);"
-                        [(ngModel)]="value" type="text">
+                    <ng-container *ngIf="isUserPage; else elseProfile">
+                        <input class="comment-text" placeholder="แสดงความคิดเห็น..."
+                            (keyup.enter)="onClickComment($event);" [(ngModel)]="value" type="text">
+                    </ng-container>
+                    <ng-template #elseProfile>
+                        <ng-container *ngIf="itemPost.type === 'MEMBERSHIP'; else elseGeneral">
+                            <ng-container *ngIf="isMemberShip; else elseMember">
+                                <input class="comment-text" [ngClass]="{'disable': !isMemberShip}"
+                                    [placeholder]="isMemberShip ? 'แสดงความคิดเห็น...' : 'เฉพาะสมาชิกพรรคเท่านั้น'"
+                                    (keyup.enter)="onClickComment($event);" [(ngModel)]="value" type="text">
+                            </ng-container>
+                            <ng-template #elseMember>
+                                <input class="comment-text" [ngClass]="{'disable': !isMemberShip}"
+                                    [placeholder]="isMemberShip ? 'แสดงความคิดเห็น...' : 'เฉพาะสมาชิกพรรคเท่านั้น'"
+                                    (keyup.enter)="onClickComment($event);" [(ngModel)]="value" type="text" disabled>
+                            </ng-template>
+                        </ng-container>
+                        <ng-template #elseGeneral>
+                            <input class="comment-text" [placeholder]="'แสดงความคิดเห็น...'"
+                                (keyup.enter)="onClickComment($event);" [(ngModel)]="value" type="text">
+                        </ng-template>
+                    </ng-template>
+
                 </div>
             </div>
             <ng-container *ngIf="commentpost.length > 0">
