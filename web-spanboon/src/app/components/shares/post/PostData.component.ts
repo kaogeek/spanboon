@@ -71,6 +71,8 @@ export class PostData {
   @Input()
   public isShowUser: boolean;
   @Input()
+  public isMemberShip: boolean;
+  @Input()
   public isShowProfile: boolean = false;
   @Input()
   public pageUser: any;

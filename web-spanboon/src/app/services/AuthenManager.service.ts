@@ -19,6 +19,7 @@ import { GenerateUUIDUtil } from '../utils/GenerateUUIDUtil';
 
 const PAGE_USER: string = 'pageUser';
 const TOKEN_KEY: string = 'token';
+const USER_MEMBERSHIP: string = 'membership';
 const TOKEN_MODE_KEY: string = 'mode';
 const REGISTERED_SUBJECT: string = 'authen.registered';
 const TOKEN_FCM: string = 'tokenFCM';
@@ -117,7 +118,6 @@ export class AuthenManager {
           token: response.data.token,
           user: response.data.user
         };
-
         this.token = result.token;
         this.user = result.user;
         localStorage.setItem(TOKEN_KEY, result.token);
@@ -462,6 +462,8 @@ export class AuthenManager {
     localStorage.removeItem(TOKEN_MODE_KEY);
     sessionStorage.removeItem(TOKEN_MODE_KEY);
     localStorage.removeItem(TOKEN_FCM);
+    sessionStorage.removeItem(USER_MEMBERSHIP);
+    localStorage.removeItem(USER_MEMBERSHIP);
   }
 
   public getDefaultOptions(id?: string): any {
@@ -552,7 +554,6 @@ export class AuthenManager {
           ggMode = true;
           this.googleMode = true;
         }
-
         if (isUpdateUser) {
           this.token = result.token;
           this.user = result.user;
@@ -561,6 +562,8 @@ export class AuthenManager {
           this.googleMode = ggMode;
           localStorage.setItem(PAGE_USER, JSON.stringify(result.user));
           sessionStorage.setItem(PAGE_USER, JSON.stringify(result.user));
+          localStorage.setItem(USER_MEMBERSHIP, JSON.stringify(result.user.membership));
+          sessionStorage.setItem(USER_MEMBERSHIP, JSON.stringify(result.user.membership));
           localStorage.setItem(TOKEN_KEY, result.token);
           sessionStorage.setItem(TOKEN_KEY, result.token);
           if (fbMode) {
@@ -604,6 +607,15 @@ export class AuthenManager {
     }
 
     return user;
+  }
+
+  public getUserMember(): any {
+    let member = localStorage.getItem(USER_MEMBERSHIP);
+    if (member === "false") {
+      return false;
+    } else {
+      return true;
+    }
   }
 
   public getToken(): any {

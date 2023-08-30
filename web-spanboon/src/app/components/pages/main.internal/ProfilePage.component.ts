@@ -97,6 +97,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
   public selectedIndex: number;
   public pathPostId: string;
   public linkPost: string;
+  public isMemberShip: boolean = false;
 
   public postId: any
   public userCloneDatas: any
@@ -245,6 +246,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
     this.getRecommend();
     // this.openLoading();
     if (this.isLogin()) {
+      this.isMemberShip = this.authenManager.getUserMember();
       this.getProfileImage();
     }
     // this.searchPostById('6051c688fb3585b175ab4765')

@@ -1582,6 +1582,8 @@ export class BoxPost extends AbstractPage implements OnInit {
 
         }
       }
+    } else {
+      this.dataImage = [];
     }
 
     this.listTag.forEach(element => {
@@ -1662,9 +1664,9 @@ export class BoxPost extends AbstractPage implements OnInit {
         }
         dataPost = data;
       }
-      if (this.imagesTimeline.length === 0 && !!this.content) {
-        Object.assign(dataPost, { postGallery: this.content.gallery })
-      }
+      // if (this.imagesTimeline.length === 0 && !!this.content) {
+      //   Object.assign(dataPost, { postGallery: this.content.gallery })
+      // }
       if (this.selectedObjectiveId === null) {
         Object.assign(dataPost, { objective: this.selectedObjectiveId })
       }
