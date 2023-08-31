@@ -47,6 +47,7 @@ import { OtpService } from '../services/OtpService';
 import { DeviceToken } from '../models/DeviceToken';
 import axios from 'axios';
 import qs from 'qs';
+
 @JsonController()
 export class GuestController {
     constructor(
@@ -1020,13 +1021,15 @@ export class GuestController {
         // Auth
         // MFP API LOGIN
         else if (mode === PROVIDER.MFP) {
+            // const testApi = await this.googleService.gmailAPI();
+            // console.log('testApi',testApi);
             const requestBody = {
                 'grant_type': process.env.GRANT_TYPE,
                 'client_id': process.env.CLIENT_ID,
                 'client_secret': process.env.CLIENT_SECRET,
                 'scope': process.env.SCOPE
             };
-            const url = process.env.APP_MFP_API;
+            const url = process.env.APP_MFP_API + '/oauth/token';
             const options = {
                 method: 'POST',
                 headers: { 'content-type': 'application/x-www-form-urlencoded', 'Accept': 'application/json' },
@@ -1035,6 +1038,7 @@ export class GuestController {
             };
             const response = await axios(options);
             if (response.data !== undefined) {
+                const accessToken = response.data.accessToken;
                 const successResponseMFP = ResponseUtil.getSuccessResponse('Grant Client Credential MFP is successful.', response.data);
                 return res.status(200).send(successResponseMFP);
             } else {
