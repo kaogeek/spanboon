@@ -1038,7 +1038,7 @@ export class GuestController {
             };
             const response = await axios(options);
             if (response.data !== undefined) {
-                const accessToken = response.data.accessToken;
+                // const accessToken = response.data.accessToken;
                 const successResponseMFP = ResponseUtil.getSuccessResponse('Grant Client Credential MFP is successful.', response.data);
                 return res.status(200).send(successResponseMFP);
             } else {
