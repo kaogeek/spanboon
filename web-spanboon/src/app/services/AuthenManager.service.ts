@@ -217,13 +217,17 @@ export class AuthenManager {
     });
   }
 
-  public loginMember(): Promise<any> {
+  public loginMember(mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/login';
       let body: any = {};
+
       let headers = new HttpHeaders({
         'Content-Type': 'application/json',
       });
+      if (mode !== undefined || mode !== "") {
+        headers = headers.set('mode', mode);
+      }
 
       let httpOptions = {
         headers: headers
