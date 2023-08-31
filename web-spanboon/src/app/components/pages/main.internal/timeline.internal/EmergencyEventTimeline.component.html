@@ -160,25 +160,36 @@
                                     </div>
                                     <div class="post">
                                         <div class="head">
-                                            <div class="type" *ngIf="item.post.type === 'NEEDS'">
-                                                <div class="point"></div>
-                                                <div class="type_name">
-                                                    <span>มองหา</span>
+                                            <div class="wrapper-type-post">
+                                                <!-- <span class="drot">•</span> -->
+                                                <div class="type">
+                                                    <div class="point"
+                                                        [ngClass]="{'looking': item.post.type === 'NEEDS', 'member': item.post.type === 'MEMBERSHIP', 'fulfill': item.post.type === 'FULFILLMENT'}">
+                                                    </div>
+                                                    <div class="type_name">
+                                                        <span *ngIf="item.post.type === 'GENERAL'"
+                                                            [innerHTML]="'ทั่วไป'"></span>
+                                                        <span *ngIf="item.post.type === 'NEEDS'"
+                                                            [innerHTML]="'มองหา'"></span>
+                                                        <span *ngIf="item.post.type === 'MEMBERSHIP'"
+                                                            [innerHTML]="'สมาชิกพรรค'"></span>
+                                                        <span *ngIf="item.post.type === 'FULFILLMENT'"
+                                                            [innerHTML]="'เติมเต็ม'"></span>
+                                                    </div>
                                                 </div>
+                                                <span class="createdDate">
+                                                    <svg class="icon-time" height="10pt" viewBox="0 0 512 512"
+                                                        width="10pt" xmlns="http://www.w3.org/2000/svg">
+                                                        <path
+                                                            d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
+                                                            fill="black" />
+                                                        <path
+                                                            d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
+                                                            fill="black" />
+                                                    </svg>
+                                                    {{item.post.createdDate | dateFormat}}
+                                                </span>
                                             </div>
-                                            <span class="drot">•</span>
-                                            <span class="createdDate">
-                                                <svg class="icon-time" height="10pt" viewBox="0 0 512 512" width="10pt"
-                                                    xmlns="http://www.w3.org/2000/svg">
-                                                    <path
-                                                        d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
-                                                        fill="black" />
-                                                    <path
-                                                        d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
-                                                        fill="black" />
-                                                </svg>
-                                                {{item.post.createdDate | dateFormat}}
-                                            </span>
                                         </div>
                                         <div class="title"
                                             [innerHTML]="item.post.title | highlightevent:pageObjective.title:currentUrl:hidebar">
@@ -1244,19 +1255,36 @@
                                                     data-aos-delay="15" data-aos-duration="500"
                                                     data-aos-easing="ease-in-out" data-aos-mirror="false"
                                                     data-aos-once="false" data-aos-anchor-placement="top-center">
-                                                    <span class="drot">•</span>
-                                                    <span class="createdDate">
-                                                        <svg class="icon-time" height="10pt" viewBox="0 0 512 512"
-                                                            width="10pt" xmlns="http://www.w3.org/2000/svg">
-                                                            <path
-                                                                d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
-                                                                fill="black" />
-                                                            <path
-                                                                d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
-                                                                fill="black" />
-                                                        </svg>
-                                                        {{post.createdDate | dateFormat}}
-                                                    </span>
+                                                    <div class="wrapper-type-post">
+                                                        <!-- <span class="drot">•</span> -->
+                                                        <div class="type">
+                                                            <div class="point"
+                                                                [ngClass]="{'looking': post.type === 'NEEDS', 'member': post.type === 'MEMBERSHIP', 'fulfill': post.type === 'FULFILLMENT'}">
+                                                            </div>
+                                                            <div class="type_name">
+                                                                <span *ngIf="post.type === 'GENERAL'"
+                                                                    [innerHTML]="'ทั่วไป'"></span>
+                                                                <span *ngIf="post.type === 'NEEDS'"
+                                                                    [innerHTML]="'มองหา'"></span>
+                                                                <span *ngIf="post.type === 'MEMBERSHIP'"
+                                                                    [innerHTML]="'สมาชิกพรรค'"></span>
+                                                                <span *ngIf="post.type === 'FULFILLMENT'"
+                                                                    [innerHTML]="'เติมเต็ม'"></span>
+                                                            </div>
+                                                        </div>
+                                                        <span class="createdDate">
+                                                            <svg class="icon-time" height="10pt" viewBox="0 0 512 512"
+                                                                width="10pt" xmlns="http://www.w3.org/2000/svg">
+                                                                <path
+                                                                    d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
+                                                                    fill="black" />
+                                                                <path
+                                                                    d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
+                                                                    fill="black" />
+                                                            </svg>
+                                                            {{post.createdDate | dateFormat}}
+                                                        </span>
+                                                    </div>
                                                     <div class="head-title">
                                                         <span class="title"
                                                             [innerHTML]="post.title | highlightevent:pageObjective.title:currentUrl:hidebar"></span>
@@ -1377,19 +1405,36 @@
                                                     data-aos-delay="15" data-aos-duration="500"
                                                     data-aos-easing="ease-in-out" data-aos-mirror="false"
                                                     data-aos-once="false" data-aos-anchor-placement="top-center">
-                                                    <span class="drot">•</span>
-                                                    <span class="createdDate">
-                                                        <svg class="icon-time" height="10pt" viewBox="0 0 512 512"
-                                                            width="10pt" xmlns="http://www.w3.org/2000/svg">
-                                                            <path
-                                                                d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
-                                                                fill="black" />
-                                                            <path
-                                                                d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
-                                                                fill="black" />
-                                                        </svg>
-                                                        {{post.createdDate | dateFormat}}
-                                                    </span>
+                                                    <div class="wrapper-type-post">
+                                                        <!-- <span class="drot">•</span> -->
+                                                        <div class="type">
+                                                            <div class="point"
+                                                                [ngClass]="{'looking': post.type === 'NEEDS', 'member': post.type === 'MEMBERSHIP', 'fulfill': post.type === 'FULFILLMENT'}">
+                                                            </div>
+                                                            <div class="type_name">
+                                                                <span *ngIf="post.type === 'GENERAL'"
+                                                                    [innerHTML]="'ทั่วไป'"></span>
+                                                                <span *ngIf="post.type === 'NEEDS'"
+                                                                    [innerHTML]="'มองหา'"></span>
+                                                                <span *ngIf="post.type === 'MEMBERSHIP'"
+                                                                    [innerHTML]="'สมาชิกพรรค'"></span>
+                                                                <span *ngIf="post.type === 'FULFILLMENT'"
+                                                                    [innerHTML]="'เติมเต็ม'"></span>
+                                                            </div>
+                                                        </div>
+                                                        <span class="createdDate">
+                                                            <svg class="icon-time" height="10pt" viewBox="0 0 512 512"
+                                                                width="10pt" xmlns="http://www.w3.org/2000/svg">
+                                                                <path
+                                                                    d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"
+                                                                    fill="black" />
+                                                                <path
+                                                                    d="m368 394.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-112-112c-3.007812-3.007812-4.691406-7.082031-4.691406-11.304687v-149.335938c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v142.699219l107.308594 107.308594c6.25 6.25 6.25 16.382812 0 22.632812-3.117188 3.136719-7.210938 4.695313-11.308594 4.695313zm0 0 "
+                                                                    fill="black" />
+                                                            </svg>
+                                                            {{post.createdDate | dateFormat}}
+                                                        </span>
+                                                    </div>
                                                     <div class="head-title">
                                                         <span class="title">#{{post.title}}</span>
                                                     </div>
