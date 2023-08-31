@@ -45,6 +45,8 @@ import { AutoSynz } from './requests/AutoSynz';
 import { FirebaseGuestUser } from './requests/FirebaseGuestUsers';
 import { OtpService } from '../services/OtpService';
 import { DeviceToken } from '../models/DeviceToken';
+import axios from 'axios';
+import qs from 'qs';
 @JsonController()
 export class GuestController {
     constructor(
@@ -1059,27 +1061,28 @@ export class GuestController {
         }
         // Auth
         // MFP API LOGIN
-        else if (mode === PROVIDER.MFP){
-            // const membership = loginParam.membership;
-            // axios.post MFP API LOGIN.
-            // const axios.post = await axios.post(process.env['MFP.API']);
-            /* !Terminated */
-            // if(axios.post === 200){
-                // create register member.
-                // create authen terminated time.
-                // check if not terminated then can login.
-                // if terminated return 400 can't login.
-                // return 200
-            // }else {
-                // return 400
-            // }
-            // check something.
-            // all things are correct.
-                // - create authen
-            // terminated-memberships
-            // not correct.
-            // ---------------------------------------------
-            // merge user 
+        else if (mode === PROVIDER.MFP) {
+            const requestBody = {
+                'grant_type': process.env.GRANT_TYPE,
+                'client_id': process.env.CLIENT_ID,
+                'client_secret': process.env.CLIENT_SECRET,
+                'scope': process.env.SCOPE
+            };
+            const url = process.env.APP_MFP_API;
+            const options = {
+                method: 'POST',
+                headers: { 'content-type': 'application/x-www-form-urlencoded', 'Accept': 'application/json' },
+                data: qs.stringify(requestBody),
+                url,
+            };
+            const response = await axios(options);
+            if (response.data !== undefined) {
+                const successResponseMFP = ResponseUtil.getSuccessResponse('Grant Client Credential MFP is successful.', response.data);
+                return res.status(200).send(successResponseMFP);
+            } else {
+                const errorResponse: any = { status: 0, message: 'axios invalid.' };
+                return res.status(400).send(errorResponse);            
+            } 
         }
         else if (mode === PROVIDER.FACEBOOK) {
             const tokenFcmFB = req.body.tokenFCM;
@@ -1257,7 +1260,7 @@ export class GuestController {
         const userEmail: string = users.email ? users.email.toLowerCase() : '';
         let authen = undefined;
         if (mode === PROVIDER.EMAIL) {
-            
+
             const modeAuthen = [];
             const data: User = await this.userService.findOne({ where: { username: userEmail } });
 
@@ -2061,7 +2064,7 @@ export class GuestController {
         } // else if(user && mode === PROVIDER.MFP) {
 
         // }
-        
+
         else if (user && mode === PROVIDER.GOOGLE) {
             // check merge curl
             const checkAuthen = await this.authenticationIdService.findOne({ user: user.id, providerName: mode });

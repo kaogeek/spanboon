@@ -2239,6 +2239,9 @@
                       @include font-size-8($font-head-500);
 
                       @media (max-width: $small) {
+                        align-items: center;
+                        display: flex;
+                        gap: 5px;
                         @include font-size-10($font-head-500);
                       }
                     }
