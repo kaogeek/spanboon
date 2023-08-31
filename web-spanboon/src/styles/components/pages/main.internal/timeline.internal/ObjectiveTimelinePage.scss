@@ -904,34 +904,55 @@
                     display: flex;
                     margin-bottom: 10px;
 
-                    > .type {
+                    > .wrapper-type-post {
                       display: flex;
-                      align-content: center;
-                      align-items: center;
+                      gap: 15px;
 
-                      > .point {
-                        width: 15px;
-                        height: 15px;
-                        border-radius: 50%;
-                        margin: 0px 10px 0px 0px;
-                        background-color: $status-post-need;
-                      }
-
-                      > .type_name {
+                      > .drot {
                         opacity: 0.2;
                         @include font-size-8($font-head-500);
+                        margin: 0 5pt;
                       }
-                    }
 
-                    > .drot {
-                      opacity: 0.2;
-                      @include font-size-8($font-head-500);
-                      margin: 0 5pt;
-                    }
+                      > .type {
+                        display: flex;
+                        align-content: center;
+                        align-items: center;
 
-                    > .createdDate {
-                      opacity: 0.2;
-                      @include font-size-8($font-head-500);
+                        > .point {
+                          width: 15px;
+                          height: 15px;
+                          border-radius: 50%;
+                          margin: 0px 10px 0px 0px;
+                          background-color: $color-gray;
+
+                          &.looking {
+                            background-color: $status-post-need;
+                          }
+
+                          &.member {
+                            background-color: $status-post-need;
+                          }
+
+                          &.fulfill {
+                            background-color: $status-post-fulfill;
+                          }
+                        }
+
+                        > .type_name {
+                          opacity: 0.2;
+                          @include font-size-8($font-head-500);
+                        }
+                      }
+
+                      > .createdDate {
+                        opacity: 0.2;
+                        @include font-size-8($font-head-500);
+
+                        @media (max-width: $small) {
+                          @include font-size-10($font-head-500);
+                        }
+                      }
                     }
                   }
 
@@ -2172,6 +2193,57 @@
                     padding: 30px;
                   }
 
+                  > .wrapper-type-post {
+                    display: flex;
+                    gap: 15px;
+
+                    > .drot {
+                      opacity: 0.2;
+                      @include font-size-8($font-head-500);
+                      margin: 0 5pt;
+                    }
+
+                    > .type {
+                      display: flex;
+                      align-content: center;
+                      align-items: center;
+
+                      > .point {
+                        width: 15px;
+                        height: 15px;
+                        border-radius: 50%;
+                        margin: 0px 10px 0px 0px;
+                        background-color: $color-gray;
+
+                        &.looking {
+                          background-color: $status-post-need;
+                        }
+
+                        &.member {
+                          background-color: $status-post-need;
+                        }
+
+                        &.fulfill {
+                          background-color: $status-post-fulfill;
+                        }
+                      }
+
+                      > .type_name {
+                        opacity: 0.2;
+                        @include font-size-8($font-head-500);
+                      }
+                    }
+
+                    > .createdDate {
+                      opacity: 0.2;
+                      @include font-size-8($font-head-500);
+
+                      @media (max-width: $small) {
+                        @include font-size-10($font-head-500);
+                      }
+                    }
+                  }
+
                   > .head-title {
                     margin-top: 10px;
                     @include font-size-5($font-head-500);
@@ -2195,21 +2267,6 @@
                     @media (max-width: $small) {
                       word-break: break-all;
                       @include font-size-9($font-content-light);
-                    }
-                  }
-
-                  > .drot {
-                    opacity: 0.2;
-                    @include font-size-8($font-head-500);
-                    margin: 0 5pt;
-                  }
-
-                  > .createdDate {
-                    opacity: 0.2;
-                    @include font-size-8($font-head-500);
-
-                    @media (max-width: $small) {
-                      @include font-size-10($font-head-500);
                     }
                   }
 

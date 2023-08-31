@@ -296,31 +296,33 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
     }
 
     public postLike(data: any, index?: number, i?: number) {
-        if (!this.isLogin()) {
-            this.showAlertDialog('กรุณาเข้าสู่ระบบ');
-        } else {
-            let check = data.userLike.length > 0 ? true : false;
-            if (!this.checkLike) {
+        let check = data.userLike.length > 0 ? true : false;
+        if (!this.checkLike) {
+            if (!this.isLogin()) {
+                this.showAlertDialog('กรุณาเข้าสู่ระบบ');
+            } else {
                 this.checkLike = true;
                 if (check) {
+                    data.userLike.splice(0, 1);
                     data.likeCount--;
                 } else {
+                    data.userLike.push(true);
                     data.likeCount++;
                 }
                 if (!this.isLogin()) {
                 } else {
                     this.postFacade.like(data._id).then((res: any) => {
                         if (res.isLike) {
-                            data.userLike.push(res.data);
                             this.checkLike = false;
                         } else {
-                            data.userLike.splice(0, 1);
                             this.checkLike = false;
                         }
                     }).catch((err: any) => {
                         console.log(err)
                         this.checkLike = false;
                         if (err.error.message === 'You cannot like this post type MFP.') {
+                            data.userLike.splice(0, 1);
+                            data.likeCount--;
                             this.showAlertDialog('กดไลค์สำหรับสมาชิกพรรคเท่านั้น');
                         }
                     });
