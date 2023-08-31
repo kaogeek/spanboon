@@ -216,6 +216,27 @@ export class AuthenManager {
       });
     });
   }
+
+  public loginMember(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/login';
+      let body: any = {};
+      let headers = new HttpHeaders({
+        'Content-Type': 'application/json',
+      });
+
+      let httpOptions = {
+        headers: headers
+      };
+
+      this.http.post(url, body, httpOptions).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
   public syncWithTwitter(twitter: PageSocialTW, mode?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/page/sync/tw';

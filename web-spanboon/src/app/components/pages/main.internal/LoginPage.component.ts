@@ -549,6 +549,15 @@ export class LoginPage extends AbstractPage implements OnInit {
 
   }
 
+  public clickLoginMember() {
+    this.authenManager.loginMember().then((res) => {
+      if (res) {
+      }
+    }).catch((err) => {
+      if (err) { }
+    });
+  }
+
   public clickLoginFB() {
     if (!this.isFBLogin) {
       this.isFBLogin = true;
