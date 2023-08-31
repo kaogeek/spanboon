@@ -206,6 +206,9 @@ export class DialogPost extends AbstractPage {
             if (res.message === 'Update PagePost Successful') {
               alertMessages = 'แก้ไขโพสต์สำเร็จ'
               this.showAlertDialogWarming(alertMessages, "none");
+              if (data && data.gallery && data.gallery.length === 0) {
+                res.data.gallery = data.gallery;
+              }
               this.observManager.publish(REFRESH_DATA, res);
               this.boxPost.clearDataAll();
               delete res.data.id;

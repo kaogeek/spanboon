@@ -9,8 +9,8 @@
     <ng-container *ngFor="let image of gallery; let index = index">
         <ng-container *ngIf="index === 0">
             <display-image class="cover-img" [isLoaded]="image.isLoaded || true"
-                [base64]="image.signURL ? image.signURL : (image.imageURL ? apiBaseURL + image.imageURL + '/image' : apiBaseURL + image.galleryBase64 + '/image')"
-                [class]="'gallery'" (click)="showDialogGallery(index)"></display-image>
+                [base64]="image.signURL ? image.signURL : apiBaseURL + image.imageURL + '/image'" [class]="'gallery'"
+                (click)="showDialogGallery(index)"></display-image>
         </ng-container>
     </ng-container>
     <div class="box-sub-image" [ngStyle]="{'margin-top': gallery.length > 1 && !!gallery ? '3pt' : 'unset'}">

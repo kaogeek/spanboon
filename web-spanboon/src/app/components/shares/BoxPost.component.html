@@ -149,7 +149,8 @@
                     <ng-container *ngIf="!isLoading; else elseLoadImage">
                         <div class="image-top"
                             *ngIf="(item.image !== undefined || item.galleryBase64 ) && index === 0 ">
-                            <img class="list-image" src="{{item.image || item.galleryBase64}}"
+                            <img class="list-image"
+                                src="{{item.galleryBase64 ? item.galleryBase64 : item.image ? item.image : apiBaseURL + item.imageURL + '/image'}}"
                                 (click)="onShowDragandDrop()">
                         </div>
                     </ng-container>

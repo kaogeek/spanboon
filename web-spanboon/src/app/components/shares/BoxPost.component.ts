@@ -445,7 +445,7 @@ export class BoxPost extends AbstractPage implements OnInit {
         }
 
         if (this.isEdit) {
-          this.selected1 = "แก้ไขโพสต์"
+          this.selected1 = "แก้ไขโพสต์";
           if (this.content && this.content.gallery && this.content.gallery.length > 0) {
             this.isLoading = true;
             for (let image of this.content.gallery) {
@@ -1527,7 +1527,6 @@ export class BoxPost extends AbstractPage implements OnInit {
         return;
       }
     }
-
     var item = $('div.textarea-editor:contains("@")').text();
     // const replace = mention.match(/@[\wก-๙]+/g) || [];
     // this.userTag = user
@@ -1549,7 +1548,6 @@ export class BoxPost extends AbstractPage implements OnInit {
       }
       this.userTag.push(result.id);
     }
-
     if (this.imagesTimeline.length > 0) {
       this.dataImage = [];
       for (let [index, image] of this.imagesTimeline.entries()) {
@@ -1560,6 +1558,7 @@ export class BoxPost extends AbstractPage implements OnInit {
           const typeImage = data.split(':')[1];
           asset.mimeType = typeImage.split(';')[0];
           asset.data = image.image.split(',')[1];
+          // asset.data = 'data:image/png;base64,' + image.image.split(',')[1];
           asset.size = image.size;
           asset.ordering = index + 1;
 
@@ -1573,7 +1572,7 @@ export class BoxPost extends AbstractPage implements OnInit {
             asset.ordering = image.ordering;
             this.dataImage.push({
               fileId: image.fileId,
-              id: image.id,
+              id: image._id ? image._id : image.id,
               imageURL: image.imageURL,
               postId: image.post,
               asset
@@ -1585,7 +1584,6 @@ export class BoxPost extends AbstractPage implements OnInit {
     } else {
       this.dataImage = [];
     }
-
     this.listTag.forEach(element => {
       this.hashTag.push(element.name);
     });
