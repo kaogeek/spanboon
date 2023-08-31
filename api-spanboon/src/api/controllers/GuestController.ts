@@ -8,7 +8,7 @@
 import 'reflect-metadata';
 import jwt from 'jsonwebtoken';
 import { env } from '../../env';
-import { JsonController, Res, Post, Body, Req, Get, QueryParam } from 'routing-controllers';
+import { JsonController, Res, Post, Body, Req, Get, QueryParams, QueryParam } from 'routing-controllers';
 import { ResponseUtil } from '../../utils/ResponseUtil';
 import { UserService } from '../services/UserService';
 import { User } from '../models/User';
@@ -47,6 +47,7 @@ import { OtpService } from '../services/OtpService';
 import { DeviceToken } from '../models/DeviceToken';
 import axios from 'axios';
 import qs from 'qs';
+
 @JsonController()
 export class GuestController {
     constructor(
@@ -932,7 +933,13 @@ export class GuestController {
             }
         }
     }
-
+    @Get('/today')
+    public async verifyPageFeedWebhook(@QueryParams() params: any, @Body({ validate: true }) body: any, @Res() res: any, @Req() req: any): Promise<any> {
+        console.log('params', params);
+        console.log('body', req.body);
+        const successResponse = ResponseUtil.getSuccessResponse('Register With Twitter Success', undefined);
+        return res.status(200).send(successResponse);
+    }
     // Login API
     /**
      * @api {post} /api/login Login
@@ -1062,13 +1069,15 @@ export class GuestController {
         // Auth
         // MFP API LOGIN
         else if (mode === PROVIDER.MFP) {
+            // const testApi = await this.googleService.gmailAPI();
+            // console.log('testApi',testApi);
             const requestBody = {
                 'grant_type': process.env.GRANT_TYPE,
                 'client_id': process.env.CLIENT_ID,
                 'client_secret': process.env.CLIENT_SECRET,
                 'scope': process.env.SCOPE
             };
-            const url = process.env.APP_MFP_API;
+            const url = process.env.APP_MFP_API + '/oauth/token';
             const options = {
                 method: 'POST',
                 headers: { 'content-type': 'application/x-www-form-urlencoded', 'Accept': 'application/json' },
@@ -1077,12 +1086,16 @@ export class GuestController {
             };
             const response = await axios(options);
             if (response.data !== undefined) {
+                const accessToken = response.data.access_token;
+                const url_sso = process.env.APP_MFP_API + '/sso?client_id=' + process.env.CLIENT_ID + '&token=' + accessToken + 'redirect_uri=' + process.env.APP_TEST_TODAY;
+                const testAxios = await axios.get(url_sso);
+                console.log('testAxios',testAxios);
                 const successResponseMFP = ResponseUtil.getSuccessResponse('Grant Client Credential MFP is successful.', response.data);
                 return res.status(200).send(successResponseMFP);
             } else {
                 const errorResponse: any = { status: 0, message: 'axios invalid.' };
-                return res.status(400).send(errorResponse);            
-            } 
+                return res.status(400).send(errorResponse);
+            }
         }
         else if (mode === PROVIDER.FACEBOOK) {
             const tokenFcmFB = req.body.tokenFCM;
