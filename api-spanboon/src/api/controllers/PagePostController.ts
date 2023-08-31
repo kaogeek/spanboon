@@ -456,8 +456,8 @@ export class PagePostController {
             const userMemberShip = await this.userService.findOne({ _id: userObjId });
             const authMemberShip = await this.authenticationIdService.findOne({ providerName: PROVIDER.MFP, user: userObjId, membership: true });
             if (
-                (userMemberShip.membership === undefined || userMemberShip.membership === false )
-                && 
+                (userMemberShip.membership === undefined || userMemberShip.membership === false)
+                &&
                 authMemberShip === undefined) {
                 return res.status(400).send(ResponseUtil.getErrorResponse('You cannot post type memberShip.', undefined));
             }
@@ -1698,7 +1698,6 @@ export class PagePostController {
             const allHashTagsString = [];
             let queryHashTag = undefined;
             let newValuesHashTag = undefined;
-
             // page mode
             let isPageMode = false;
             if (pageId !== undefined && pageId !== '' && pageId !== 'null' && pageId !== null && pageId !== 'undefined') {
@@ -1757,27 +1756,40 @@ export class PagePostController {
                     deleteGalleryList.push(new ObjectID(image.fileId));
                     UpdateGalleryList.push(image);
                 }
+                await this.postGalleryService.deleteMany({
+                    // where: {
+                    $and: [
+                        {
+                            post: postIdGallery
+                        }, {
+                            fileId: {
+                                $nin: deleteGalleryList
+                            }
+                        }
+                    ]
+                    // }
+                });
                 // find post have not in image  
+                /*
                 await this.postGalleryService.deleteMany({ $and: [{ post: postIdGallery }, { fileId: { $nin: deleteGalleryList } }] });
                 for (const deleteGallery of deleteGalleryList) {
-                    const deleteGallerySuc = await this.postGalleryService.delete({ fileId: deleteGallery });
-                    if (deleteGallerySuc) {
-                        await this.assetService.delete({ _id: deleteGallery });
-                    }
+                    await this.postGalleryService.delete({ fileId: deleteGallery });
                 }
-                for (const data of UpdateGalleryList) {
+                await this.assetService.delete({ _id: deleteGallery }); */
+
+                for (let i = 0; i < UpdateGalleryList.length; i++) {
                     // find gallery update ordering
-                    const gallery: PostsGallery[] = await this.postGalleryService.find({ where: { _id: new ObjectID(data._id) } });
+                    const gallery: PostsGallery[] = await this.postGalleryService.find({ where: { _id: new ObjectID(UpdateGalleryList[i].id) } });
                     if (gallery.length > 0) {
-                        const updateImageQuery = { _id: new ObjectID(data._id) };
+                        const updateImageQuery = { _id: new ObjectID(UpdateGalleryList[i].id) };
                         const newImageValue = {
                             $set: {
-                                ordering: data.ordering,
+                                ordering: UpdateGalleryList[i].asset.ordering,
                             }
                         };
                         await this.postGalleryService.update(updateImageQuery, newImageValue);
                     } else {
-                        createGalleyList.push(data);
+                        createGalleyList.push(UpdateGalleryList[i]);
                         isCreateAssetGallery = true;
                     }
                 }
