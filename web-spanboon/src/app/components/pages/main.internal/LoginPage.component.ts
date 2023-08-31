@@ -550,7 +550,7 @@ export class LoginPage extends AbstractPage implements OnInit {
   }
 
   public clickLoginMember() {
-    this.authenManager.loginMember().then((res) => {
+    this.authenManager.loginMember('MFP').then((res) => {
       if (res) {
       }
     }).catch((err) => {
