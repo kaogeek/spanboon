@@ -36,11 +36,11 @@ export class LoginMemberProcessing extends AbstractPageImageLoader implements On
     authenManager: AuthenManager) {
     super(PAGE_NAME, authenManager, dialog, router);
 
-    this.route.params.subscribe((param) => {
-      let token = param['token'];
-      let decoded = jwt_decode(token)
-      console.log("decoded", decoded)
-    });
+    // this.route.params.subscribe((param) => {
+    //   let token = param['token'];
+    //   let decoded = jwt_decode(token)
+    //   console.log("decoded", decoded)
+    // });
   }
 
   public ngOnInit(): void {
