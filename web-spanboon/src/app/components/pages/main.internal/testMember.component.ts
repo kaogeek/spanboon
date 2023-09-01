@@ -48,7 +48,16 @@ export class testMember extends AbstractPageImageLoader implements OnInit {
 
   public testButton() {
     this.authenManager.loginMember('MFP').then((res) => {
-      if (res) console.log("res", res)
+      if (res) {
+        console.log("res", res)
+        let token = res.data;
+        let url: string = 'https://auth.moveforwardparty.org/sso?';
+        if (token !== undefined) {
+          url += `client_id=5&process_type=login&token=${token}`;
+        }
+        console.log("url", url)
+        window.open(url, '_blank');
+      }
     }).catch((err) => {
       if (err) console.log(err)
     })

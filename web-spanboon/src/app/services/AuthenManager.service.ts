@@ -255,13 +255,7 @@ export class AuthenManager {
       // };
 
       this.http.post(url, body, httpOptions).toPromise().then((response: any) => {
-        if (response) {
-          this._getSSOAuth(response.data).then((res) => {
-            resolve(res);
-          }).catch((err) => {
-            reject(err);
-          });
-        }
+        resolve(response);
       }).catch((error: any) => {
         reject(error);
       });
