@@ -256,8 +256,11 @@ export class AuthenManager {
 
       this.http.post(url, body, httpOptions).toPromise().then((response: any) => {
         if (response) {
-          this._getSSOAuth(response.data);
-          resolve(response);
+          this._getSSOAuth(response.data).then((res) => {
+            resolve(res);
+          }).catch((err) => {
+            reject(err);
+          });
         }
       }).catch((error: any) => {
         reject(error);
@@ -281,6 +284,7 @@ export class AuthenManager {
       let body: any = {};
 
       this.http.get(url, body).toPromise().then((response: any) => {
+        console.log('>>>>>>>> ss0', response);
         resolve(response.data);
       }).catch((error: any) => {
         reject(error);

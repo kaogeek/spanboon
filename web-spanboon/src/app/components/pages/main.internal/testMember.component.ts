@@ -11,6 +11,7 @@ import { MatDialog } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AbstractPageImageLoader } from '../AbstractPageImageLoader';
 import { Location } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 
 const PAGE_NAME: string = 'testMember';
 
@@ -33,7 +34,8 @@ export class testMember extends AbstractPageImageLoader implements OnInit {
   constructor(
     router: Router,
     dialog: MatDialog,
-    authenManager: AuthenManager) {
+    authenManager: AuthenManager,
+    private http: HttpClient) {
     super(PAGE_NAME, authenManager, dialog, router);
   }
 
