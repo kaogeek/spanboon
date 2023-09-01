@@ -34,6 +34,7 @@ import { AuthenticationId } from '../models/AuthenticationId';
 import { AuthenticationIdService } from '../services/AuthenticationIdService';
 import { HidePostService } from '../services/HidePostService';
 import jwt from 'jsonwebtoken';
+import { PROVIDER } from '../../constants/LoginProvider';
 @JsonController('/profile')
 export class UserProfileController {
     constructor(
@@ -579,23 +580,75 @@ export class UserProfileController {
     @Authorized('user')
     public async bindingUserMFP(@Param('id') id: string, @Body({ validate: true }) bindingUser: BindingUserMFP, @Res() res: any, @Req() req: any): Promise<any> {
         const userObject = bindingUser;
-        console.log('userObject',userObject.membership);
-        if(userObject.membership.state === 'PENDING_PAYMENT' && userObject.membership.membership_type === 'UNKNOWN'){
+        const userObjId = new ObjectID(id);
+        let authIdCreate: AuthenticationId;
+        console.log('userObject', userObject.membership);
+        // PENDING_PAYMENT 400
+        if (userObject.membership.state === 'PENDING_PAYMENT' && userObject.membership.membership_type === 'UNKNOWN') {
             return res.status(400).send(ResponseUtil.getSuccessResponse('PENDING_PAYMENT', undefined));
         }
-        // PENDING_PAYMENT 400
         // PENDING_APPROVAL 400
-        // APPROVED 200
+        if (userObject.membership.state === 'PENDING_APPROVAL') {
+            return res.status(400).send(ResponseUtil.getSuccessResponse('PENDING_APPROVAL', undefined));
+        }
         // REJECTED 400
+        if (userObject.membership.state === 'REJECTED') {
+            return res.status(400).send(ResponseUtil.getSuccessResponse('REJECTED', undefined));
+        }
         // PROFILE_RECHECKED 400
-        // ARChIVED 400
-        if(userObject){
-            const successResponseMFP = ResponseUtil.getSuccessResponse('Binding User Is Successful.', userObject);
-            return res.status(200).send(successResponseMFP);
-        }else{
+        if (userObject.membership.state === 'PROFILE_RECHECKED') {
+            return res.status(400).send(ResponseUtil.getSuccessResponse('PROFILE_RECHECKED', undefined));
+        }
+        if (userObject.membership.state === 'ARCHIVED') {
+            return res.status(400).send(ResponseUtil.getSuccessResponse('ARCHIVED', undefined));
+        }
+
+        if (userObject.membership.state === 'APPROVED'
+            && (userObject.membership.membership_type === 'MEMBERSHIP_YEARLY' ||
+                userObject.membership.membership_type === 'MEMBERSHIP_PERMANENT')) {
+
+            const user = await this.userService.findOne({ _id: userObjId });
+            if (user) {
+                // check authentication MFP Is existing ?
+                const checkAuthentication = await this.authenIdService.findOne({ user: userObjId, providerName: PROVIDER.MFP });
+                if (checkAuthentication !== undefined && checkAuthentication !== null) {
+                    return res.status(400).send(ResponseUtil.getSuccessResponse('You have ever binded this user.', undefined));
+
+                }
+
+                const authenId = new AuthenticationId();
+                authenId.user = user.id;
+                authenId.lastAuthenTime = moment().toDate();
+                authenId.providerUserId = userObject.membership.id;
+                authenId.providerName = PROVIDER.MFP;
+                authenId.properties = userObject.membership;
+                authenId.expirationDate = userObject.membership.expired_at;
+                authenId.expirationDate_law_expired = userObject.membership.law_expired_at;
+                authenId.identificationNumber = userObject.membership.identification_number;
+                authenId.mobileNumber = userObject.membership.mobile_number;
+                authenId.membershipState = userObject.membership.state;
+                authenId.membershipType = userObject.membership.membership_type;
+                authIdCreate = await this.authenIdService.create(authenId);
+                if (authIdCreate) {
+                    // update status user membership = true
+                    const query = { _id: userObjId };
+                    const newValues = { $set: { banned: false, membership: true } };
+                    const update = await this.userService.update(query, newValues);
+                    if (update) {
+                        const successResponseMFP = ResponseUtil.getSuccessResponse('Binding User Is Successful.', userObject);
+                        return res.status(200).send(successResponseMFP);
+                    } else {
+                        return res.status(400).send(ResponseUtil.getSuccessResponse('Cannot Update Status Membership User.', undefined));
+                    }
+                }
+            } else {
+                return res.status(400).send(ResponseUtil.getSuccessResponse('User Not Found', undefined));
+            }
+        }
+        else {
             return res.status(400).send(ResponseUtil.getSuccessResponse('User Not Found', undefined));
         }
-    }   
+    }
 
     // Update User Profile API
     /**
