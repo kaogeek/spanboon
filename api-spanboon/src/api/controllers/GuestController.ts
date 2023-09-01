@@ -46,7 +46,6 @@ import { FirebaseGuestUser } from './requests/FirebaseGuestUsers';
 import { OtpService } from '../services/OtpService';
 import { DeviceToken } from '../models/DeviceToken';
 import axios from 'axios';
-import qs from 'qs';
 
 @JsonController()
 export class GuestController {
