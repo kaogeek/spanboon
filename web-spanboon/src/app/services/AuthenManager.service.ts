@@ -256,7 +256,7 @@ export class AuthenManager {
 
       this.http.post(url, body, httpOptions).toPromise().then((response: any) => {
         if (response) {
-          this._getSSOAuth(response.data.access_token);
+          this._getSSOAuth(response.data);
           resolve(response);
         }
       }).catch((error: any) => {
@@ -270,6 +270,9 @@ export class AuthenManager {
       let url: string = environment.memberShip.webBaseURL + '/sso?';
       if (token !== undefined) {
         url += `client_id=${environment.memberShip.clientId}`;
+      }
+      if (token !== undefined) {
+        url += `&process_type=login`;
       }
       if (token !== undefined) {
         url += `&token=${token}`;

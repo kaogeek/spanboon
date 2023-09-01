@@ -1069,10 +1069,9 @@ export class GuestController {
         // MFP API LOGIN
         else if (mode === PROVIDER.MFP) {
             const token = await jwt.sign({ redirect_uri: 'http://110.171.133.236:9001/api/today' }, env.SECRET_KEY, { algorithm: 'HS256' });
-            const url = 'https://auth.moveforwardparty.org/sso?client_id=5&process_type=login&token=' + token;
-            const response = await axios.get(url);
-            if (response) {
-                const successResponseMFP = ResponseUtil.getSuccessResponse('Grant Client Credential MFP is successful.', response);
+
+            if (token) {
+                const successResponseMFP = ResponseUtil.getSuccessResponse('Grant Client Credential MFP is successful.', token);
                 return res.status(200).send(successResponseMFP);
             } else {
                 const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'axios error.' };
