@@ -993,6 +993,18 @@ export class PostsController {
                     return res.status(400).send(errorResponse);
                 }
             }
+
+            const today = new Date();
+            const timeStampToday = today.getTime();
+            if (authenticateMFP !== undefined &&
+                authenticateMFP.membershipState === 'APPROVED' &&
+                authenticateMFP.membershipType === 'MEMBERSHIP_YEARLY') {
+                const timeStampSettings = Date.parse(authenticateMFP.expirationDate);
+                if (timeStampToday > timeStampSettings) {
+                    return res.status(400).send(ResponseUtil.getErrorResponse('Your account have already expired.', undefined));
+                }
+            }
+
             const likeCreate: UserLike = await this.userLikeService.create(userLike);
             if (likeCreate) {
                 result = likeCreate;

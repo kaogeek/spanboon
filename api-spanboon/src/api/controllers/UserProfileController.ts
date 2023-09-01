@@ -603,8 +603,14 @@ export class UserProfileController {
             return res.status(400).send(ResponseUtil.getSuccessResponse('ARCHIVED', undefined));
         }
 
+        if(userObject.membership.is_renewable === false){
+            return res.status(400).send(ResponseUtil.getSuccessResponse('Is_renewable', undefined));
+        }
+
         if (userObject.membership.state === 'APPROVED'
-            && (userObject.membership.membership_type === 'MEMBERSHIP_YEARLY' ||
+            && 
+            userObject.membership.is_renewable === true &&
+            (userObject.membership.membership_type === 'MEMBERSHIP_YEARLY' ||
                 userObject.membership.membership_type === 'MEMBERSHIP_PERMANENT')) {
 
             const user = await this.userService.findOne({ _id: userObjId });

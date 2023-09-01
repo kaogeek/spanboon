@@ -141,6 +141,17 @@ export class PostsCommentController {
             }
         }
 
+        const today = new Date();
+        const timeStampToday = today.getTime();
+        if (authenticateMFP !== undefined &&
+            authenticateMFP.membershipState === 'APPROVED' &&
+            authenticateMFP.membershipType === 'MEMBERSHIP_YEARLY') {
+            const timeStampSettings = Date.parse(authenticateMFP.expirationDate);
+            if (timeStampToday > timeStampSettings) {
+                return res.status(400).send(ResponseUtil.getErrorResponse('Your account have already expired.', undefined));
+            }
+        }
+
         const posts: Posts = await this.postsService.findOne({ where: { _id: postObjId } });
         if (posts !== null && posts !== undefined) {
             if (assets !== null && assets !== undefined) {
@@ -1085,6 +1096,16 @@ export class PostsCommentController {
             if (authenticateMFP === undefined) {
                 const errorResponse = ResponseUtil.getErrorResponse('You cannot like comment this post type MFP.', undefined);
                 return res.status(400).send(errorResponse);
+            }
+        }
+        const today = new Date();
+        const timeStampToday = today.getTime();
+        if (authenticateMFP !== undefined &&
+            authenticateMFP.membershipState === 'APPROVED' &&
+            authenticateMFP.membershipType === 'MEMBERSHIP_YEARLY') {
+            const timeStampSettings = Date.parse(authenticateMFP.expirationDate);
+            if (timeStampToday > timeStampSettings) {
+                return res.status(400).send(ResponseUtil.getErrorResponse('Your account have already expired.', undefined));
             }
         }
         if (likeAsPage !== null && likeAsPage !== undefined && likeAsPage !== '') {
