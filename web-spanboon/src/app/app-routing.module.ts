@@ -21,7 +21,7 @@ import {
   PageHashTag,
   PageRecommended,
   SettingsFanPage, forgotPasswordPage, ObjectiveTimeline,
-  EmergencyEventTimeline, Redirect, SettingAccount, AboutPage, SettingsAdminRoles, SecurityInfo, HomePageV3, PolicyPage, TermsOfServicePage, EventSearch,
+  EmergencyEventTimeline, Redirect, SettingAccount, AboutPage, SettingsAdminRoles, SecurityInfo, HomePageV3, PolicyPage, TermsOfServicePage, EventSearch, testMember,
 } from './components/components';
 
 import { TestComponent } from './components/TestComponent.component';
@@ -37,6 +37,10 @@ export const APP_ROUTES: Routes = [
   {
     path: AppleAppSite.PAGE_NAME + '/assetlinks.json',
     component: AppleAppSite,
+  },
+  {
+    path: testMember.PAGE_NAME,
+    component: testMember,
   },
   {
     path: AppleAppSite.PAGE_NAME + AppleAppSite.PAGE_NAME_APPLE,
@@ -266,11 +270,6 @@ export const APP_ROUTES: Routes = [
         component: Redirect,
       },
     ]
-  },
-  {
-    path: 'test',
-    component: TestComponent,
-    canDeactivate: [DirtyCheckGuard]
   },
   {
     path: 'registerpage',
