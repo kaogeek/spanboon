@@ -1067,7 +1067,7 @@ export class GuestController {
         // Auth
         // MFP API LOGIN
         else if (mode === PROVIDER.MFP) {
-            const token = await jwt.sign({ redirect_uri: 'http://110.171.133.236:4200/processing' }, env.SECRET_KEY, { algorithm: 'HS256' });
+            const token = await jwt.sign({ redirect_uri: 'http://110.171.133.236:4200/processing' }, process.env.CLIENT_SECRET , { algorithm: 'HS256' });
 
             if (token) {
                 const successResponseMFP = ResponseUtil.getSuccessResponse('Grant Client Credential MFP is successful.', token);
