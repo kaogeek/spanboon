@@ -24,4 +24,5 @@ export class BindingUserMFP {
     public register_home_address: any;
     public state: string;
     public title: string;
+    public membership:any;
 }

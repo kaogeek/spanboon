@@ -579,6 +579,16 @@ export class UserProfileController {
     @Authorized('user')
     public async bindingUserMFP(@Param('id') id: string, @Body({ validate: true }) bindingUser: BindingUserMFP, @Res() res: any, @Req() req: any): Promise<any> {
         const userObject = bindingUser;
+        console.log('userObject',userObject.membership);
+        if(userObject.membership.state === 'PENDING_PAYMENT' && userObject.membership.membership_type === 'UNKNOWN'){
+            return res.status(400).send(ResponseUtil.getSuccessResponse('PENDING_PAYMENT', undefined));
+        }
+        // PENDING_PAYMENT 400
+        // PENDING_APPROVAL 400
+        // APPROVED 200
+        // REJECTED 400
+        // PROFILE_RECHECKED 400
+        // ARChIVED 400
         if(userObject){
             const successResponseMFP = ResponseUtil.getSuccessResponse('Binding User Is Successful.', userObject);
             return res.status(200).send(successResponseMFP);
