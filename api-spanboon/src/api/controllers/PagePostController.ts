@@ -453,21 +453,29 @@ export class PagePostController {
         // before create the post type membership 
         // first we need to check authenticate that user is membership ?
         // page official === false 
-        if (membership !== undefined && membership !== null && membership !== '' && membership === 'MEMBERSHIP') {
-            const userMemberShip = await this.userService.findOne({ _id: userObjId });
-            const authMemberShip = await this.authenticationIdService.findOne({ providerName: PROVIDER.MFP, user: userObjId, membership: true });
-            let pageOfficial = undefined;
-            if (pageId === 'null' || pageId === null || pageId === 'undefined' || pageId === undefined) {
-                pageOfficial = await this.pageService.findOne({ _id: pageId });
-            }
-            if (pageOfficial !== undefined && pageOfficial !== null && pageOfficial.official === false) {
+        const pageObjIds = new ObjectID(pageId);
+        let pageIds = undefined;
+        if (pageObjIds !== undefined) {
+            pageIds = await this.pageService.findOne({ _id: pageObjIds });
+        }
+
+        if (pageIds !== undefined && pageIds.official === false) {
+            if (membership !== undefined && membership !== null && membership !== '' && membership === 'MEMBERSHIP') {
+                const userMemberShip = await this.userService.findOne({ _id: userObjId });
+                const authMemberShip = await this.authenticationIdService.findOne({ providerName: PROVIDER.MFP, user: userObjId, membership: true });
                 if (
                     (userMemberShip.membership === undefined || userMemberShip.membership === false)
                     &&
                     authMemberShip === undefined) {
                     return res.status(400).send(ResponseUtil.getErrorResponse('You cannot post type memberShip.', undefined));
                 }
-            } else {
+            }
+        }
+
+        if (pageIds === undefined) {
+            if (membership !== undefined && membership !== null && membership !== '' && membership === 'MEMBERSHIP') {
+                const userMemberShip = await this.userService.findOne({ _id: userObjId });
+                const authMemberShip = await this.authenticationIdService.findOne({ providerName: PROVIDER.MFP, user: userObjId, membership: true });
                 if (
                     (userMemberShip.membership === undefined || userMemberShip.membership === false)
                     &&
