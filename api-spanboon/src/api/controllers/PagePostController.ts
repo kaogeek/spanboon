@@ -487,7 +487,6 @@ export class PagePostController {
         if (pageIds.official === true) {
             // check authentication
             const authMemberShip = await this.authenticationIdService.findOne({ providerName: PROVIDER.MFP, user: userObjId, membership: true });
-            const today = new Date();
             const timeStampToday = today.getTime();
             if (authMemberShip !== undefined &&
                 authMemberShip.membershipState === 'APPROVED' &&

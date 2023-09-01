@@ -603,12 +603,12 @@ export class UserProfileController {
             return res.status(400).send(ResponseUtil.getSuccessResponse('ARCHIVED', undefined));
         }
 
-        if(userObject.membership.is_renewable === false){
+        if (userObject.membership.is_renewable === false) {
             return res.status(400).send(ResponseUtil.getSuccessResponse('Is_renewable', undefined));
         }
 
         if (userObject.membership.state === 'APPROVED'
-            && 
+            &&
             userObject.membership.is_renewable === true &&
             (userObject.membership.membership_type === 'MEMBERSHIP_YEARLY' ||
                 userObject.membership.membership_type === 'MEMBERSHIP_PERMANENT')) {
@@ -616,7 +616,7 @@ export class UserProfileController {
             const user = await this.userService.findOne({ _id: userObjId });
             if (user) {
                 // check authentication MFP Is existing ?
-                const checkAuthentication = await this.authenIdService.findOne({ user: userObjId, providerName: PROVIDER.MFP });
+                const checkAuthentication = await this.authenIdService.findOne({ providerUserId: userObject.membership.id, providerName: PROVIDER.MFP });
                 if (checkAuthentication !== undefined && checkAuthentication !== null) {
                     return res.status(400).send(ResponseUtil.getSuccessResponse('You have ever binded this user.', undefined));
 
