@@ -1067,7 +1067,7 @@ export class GuestController {
         // Auth
         // MFP API LOGIN
         else if (mode === PROVIDER.MFP) {
-            const token = await jwt.sign({ redirect_uri: 'http://110.171.133.236:4200/processing' }, process.env.CLIENT_SECRET , { algorithm: 'HS256' });
+            const token = await jwt.sign({ redirect_uri: 'http://110.171.133.236:4200/processing' }, process.env.CLIENT_SECRET, { algorithm: 'HS256' });
 
             if (token) {
                 const successResponseMFP = ResponseUtil.getSuccessResponse('Grant Client Credential MFP is successful.', token);
@@ -1344,9 +1344,7 @@ export class GuestController {
                 const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
                 return res.status(400).send(errorResponse);
             }
-        } // else if(mode === PROVIDER.MFP){
-        // }
-        else if(mode === PROVIDER.MFP){
+        } else if (mode === PROVIDER.MFP) {
             const modeAuthen = [];
             const data: User = await this.userService.findOne({ where: { username: userEmail } });
 
@@ -1359,6 +1357,8 @@ export class GuestController {
             const AllAuthen = await this.authenticationIdService.find({ user: data.id });
             for (authen of AllAuthen) {
                 if (authen.providerName === 'EMAIL') {
+                    modeAuthen.push(authen.providerName);
+                } else if (authen.providerName === 'MFP') {
                     modeAuthen.push(authen.providerName);
                 } else if (authen.providerName === 'FACEBOOK') {
                     modeAuthen.push(authen.providerName);
@@ -2061,6 +2061,27 @@ export class GuestController {
                 }
             } else {
                 const errorResponse = ResponseUtil.getErrorResponse('The OTP is not correct.', undefined);
+                return res.status(400).send(errorResponse);
+            }
+
+        } else if (user && mode === PROVIDER.MFP) {
+            const checkAuthen = await this.authenticationIdService.findOne({ user: user.id, providerName: mode });
+            if (checkAuthen !== undefined) {
+                const data: User = new User();
+                data.username = user.username;
+                data.email = user.email;
+                data.uniqueId = user.uniqueId;
+                data.firstName = user.firstName;
+                data.lastName = user.lastName;
+                data.imageURL = user.imageURL;
+                data.coverURL = user.coverURL;
+                data.coverPosition = 0;
+                data.displayName = user.displayName;
+                data.birthdate = new Date(user.birthdate);
+                data.isAdmin = user.isAdmin;
+                data.isSubAdmin = user.isSubAdmin;
+                data.banned = user.banned;
+                const errorResponse: any = { status: 0, message: 'You cannot merge this user you have had one.', data };
                 return res.status(400).send(errorResponse);
             }
 
