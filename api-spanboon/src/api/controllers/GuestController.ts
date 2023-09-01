@@ -1063,10 +1063,7 @@ export class GuestController {
                     loginToken = jwt.sign({ token: updatedAuth.storedCredentials, userId: loginUser.id }, env.SECRET_KEY);
                 }
             }
-        }
-        // Auth
-        // MFP API LOGIN
-        else if (mode === PROVIDER.MFP) {
+        } else if (mode === PROVIDER.MFP) {
             const token = await jwt.sign({ redirect_uri: 'http://110.171.133.236:4200/processing' }, process.env.CLIENT_SECRET, { algorithm: 'HS256' });
 
             if (token) {
@@ -1075,9 +1072,8 @@ export class GuestController {
             } else {
                 const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'axios error.' };
                 return res.status(400).send(errorUserNameResponse);
-            }
-        }
-        else if (mode === PROVIDER.FACEBOOK) {
+            } 
+        } else if (mode === PROVIDER.FACEBOOK) {
             const tokenFcmFB = req.body.tokenFCM;
             const deviceFB = req.body.deviceName;
             // find email then -> authentication -> mode FB

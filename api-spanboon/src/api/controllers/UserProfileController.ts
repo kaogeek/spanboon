@@ -12,6 +12,7 @@ import { UserService } from '../services/UserService';
 import { ObjectID } from 'mongodb';
 import { LIKE_TYPE } from '../../constants/LikeType';
 import { UpdateUserProfileRequest } from './requests/UpdateUserProfileRequest';
+import { BindingUserMFP } from './requests/BindingUserMFPRequest';
 import { User } from '../models/User';
 import { AssetRequest } from './requests/AssetRequest';
 import { AssetService } from '../services/AssetService';
@@ -561,9 +562,9 @@ export class UserProfileController {
 
     @Post('/:id')
     @Authorized('user')
-    public async bindindUserMFP(@Param('id') id: string, @Body({ validate: true }) users: UpdateUserProfileRequest, @Res() res: any, @Req() req: any): Promise<any>{
-        console.log('users',users);
-        const token = await jwt.sign({ redirect_uri: 'http://110.171.133.236:4200/processing' }, process.env.CLIENT_SECRET , { algorithm: 'HS256' });
+    public async bindingUserMFPProcess(@Param('id') id: string, @Body({ validate: true }) users: UpdateUserProfileRequest, @Res() res: any, @Req() req: any): Promise<any> {
+        console.log('users', users);
+        const token = await jwt.sign({ redirect_uri: 'http://110.171.133.236:4200/processing' }, process.env.CLIENT_SECRET, { algorithm: 'HS256' });
 
         if (token) {
             const successResponseMFP = ResponseUtil.getSuccessResponse('Grant Client Credential MFP is successful.', token);
@@ -573,6 +574,18 @@ export class UserProfileController {
             return res.status(400).send(errorUserNameResponse);
         }
     }
+
+    @Post('/:id/binding')
+    @Authorized('user')
+    public async bindingUserMFP(@Param('id') id: string, @Body({ validate: true }) bindingUser: BindingUserMFP, @Res() res: any, @Req() req: any): Promise<any> {
+        const userObject = bindingUser;
+        if(userObject){
+            const successResponseMFP = ResponseUtil.getSuccessResponse('Binding User Is Successful.', userObject);
+            return res.status(200).send(successResponseMFP);
+        }else{
+            return res.status(400).send(ResponseUtil.getSuccessResponse('User Not Found', undefined));
+        }
+    }   
 
     // Update User Profile API
     /**
@@ -656,7 +669,7 @@ export class UserProfileController {
             if (userMembership === null || userMembership === undefined) {
                 userMembership = findUser.membership;
                 // create authentication 
-                
+
             }
             const updateQuery = { _id: userObjId };
             const newValue = {
