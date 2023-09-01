@@ -1044,10 +1044,7 @@ export class GuestController {
             };
             const response = await axios(options);
             if (response.data !== undefined) {
-                const accessToken = response.data.access_token;
-                const url_sso = process.env.APP_MFP_API + '/sso?client_id=' + process.env.CLIENT_ID + '&token=' + accessToken + 'redirect_uri=' + process.env.APP_TEST_TODAY;
-                const testAxios = await axios.get(url_sso);
-                console.log('testAxios',testAxios);
+                // const url_sso = process.env.APP_MFP_API + '/sso?client_id=' + process.env.CLIENT_ID + '&token=' + accessToken + '&redirect_uri=' + process.env.APP_TEST_TODAY;
                 const successResponseMFP = ResponseUtil.getSuccessResponse('Grant Client Credential MFP is successful.', response.data);
                 return res.status(200).send(successResponseMFP);
             } else {
