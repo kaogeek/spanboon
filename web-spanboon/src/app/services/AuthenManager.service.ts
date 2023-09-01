@@ -233,8 +233,52 @@ export class AuthenManager {
         headers: headers
       };
 
+      // const requestBody = {
+      //   'grant_type': environment.memberShip.grantType,
+      //   'client_id': environment.memberShip.clientId,
+      //   'client_secret': environment.memberShip.clientSecret,
+      //   'scope': environment.memberShip.scope
+      // };
+
+      // let url: string = environment.memberShip.webBaseURL + '/oauth/token';
+
+      // let headers = new HttpHeaders({
+      //   'Content-Type': 'application/json',
+      // });
+
+      // if (mode !== undefined || mode !== "") {
+      //   headers = headers.set('mode', mode);
+      // }
+
+      // let httpOptions = {
+      //   headers: headers
+      // };
+
       this.http.post(url, body, httpOptions).toPromise().then((response: any) => {
-        resolve(response);
+        if (response) {
+          this._getSSOAuth(response.data.access_token);
+          resolve(response);
+        }
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  private _getSSOAuth(token?: any) {
+    return new Promise((resolve, reject) => {
+      let url: string = environment.memberShip.webBaseURL + '/sso?';
+      if (token !== undefined) {
+        url += `client_id=${environment.memberShip.clientId}`;
+      }
+      if (token !== undefined) {
+        url += `&token=${token}`;
+      }
+
+      let body: any = {};
+
+      this.http.get(url, body).toPromise().then((response: any) => {
+        resolve(response.data);
       }).catch((error: any) => {
         reject(error);
       });

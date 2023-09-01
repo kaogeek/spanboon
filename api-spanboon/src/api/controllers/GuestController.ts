@@ -1069,32 +1069,15 @@ export class GuestController {
         // Auth
         // MFP API LOGIN
         else if (mode === PROVIDER.MFP) {
-            // const testApi = await this.googleService.gmailAPI();
-            // console.log('testApi',testApi);
-            const requestBody = {
-                'grant_type': process.env.GRANT_TYPE,
-                'client_id': process.env.CLIENT_ID,
-                'client_secret': process.env.CLIENT_SECRET,
-                'scope': process.env.SCOPE
-            };
-            const url = process.env.APP_MFP_API + '/oauth/token';
-            const options = {
-                method: 'POST',
-                headers: { 'content-type': 'application/x-www-form-urlencoded', 'Accept': 'application/json' },
-                data: qs.stringify(requestBody),
-                url,
-            };
-            const response = await axios(options);
-            if (response.data !== undefined) {
-                const accessToken = response.data.access_token;
-                const url_sso = process.env.APP_MFP_API + '/sso?client_id=' + process.env.CLIENT_ID + '&token=' + accessToken + 'redirect_uri=' + process.env.APP_TEST_TODAY;
-                const testAxios = await axios.get(url_sso);
-                console.log('testAxios',testAxios);
-                const successResponseMFP = ResponseUtil.getSuccessResponse('Grant Client Credential MFP is successful.', response.data);
+            const token = await jwt.sign({ redirect_uri: 'http://110.171.133.236:9001/api/today' }, env.SECRET_KEY, { algorithm: 'HS256' });
+            const url = 'https://auth.moveforwardparty.org/sso?client_id=5&process_type=login&token=' + token;
+            const response = await axios.get(url);
+            if (response) {
+                const successResponseMFP = ResponseUtil.getSuccessResponse('Grant Client Credential MFP is successful.', response);
                 return res.status(200).send(successResponseMFP);
             } else {
-                const errorResponse: any = { status: 0, message: 'axios invalid.' };
-                return res.status(400).send(errorResponse);
+                const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'axios error.' };
+                return res.status(400).send(errorUserNameResponse);
             }
         }
         else if (mode === PROVIDER.FACEBOOK) {
