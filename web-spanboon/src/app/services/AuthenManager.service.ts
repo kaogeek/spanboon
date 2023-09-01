@@ -270,7 +270,7 @@ export class AuthenManager {
 
   private _getSSOAuth(token?: any) {
     return new Promise((resolve, reject) => {
-      let url: string = environment.memberShip.webBaseURL + '/sso?';
+      let url: string = 'https://auth.moveforwardparty.org/sso?';
       if (token !== undefined) {
         url += `client_id=${environment.memberShip.clientId}`;
       }
@@ -287,6 +287,7 @@ export class AuthenManager {
         console.log('>>>>>>>> ss0', response);
         resolve(response.data);
       }).catch((error: any) => {
+        console.log('>>>>>>>> ss1', error);
         reject(error);
       });
     });
