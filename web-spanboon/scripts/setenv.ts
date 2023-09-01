@@ -44,7 +44,14 @@ export const environment = {
     appId: "${process.env["FIREBASE_APP_ID"]}",
     measurementId: "${process.env["FIREBASE_MEASUREMENT_ID"]}",
     vapidKey: "${process.env["FIREBASE_VAPID_KEY"]}"
-   }
+   },
+   memberShip: {
+    grantType: "${process.env["GRANT_TYPE"]}",
+    clientId: "${process.env["CLIENT_ID"]}",
+    clientSecret: "${process.env["CLIENT_SECRET"]}",
+    scope: "${process.env["SCOPE"]}",
+    webBaseURL: "${process.env["WEB_BASE_URL"]}",
+ }
 };
 `;
 
