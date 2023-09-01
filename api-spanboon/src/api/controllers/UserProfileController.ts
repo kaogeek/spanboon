@@ -32,6 +32,7 @@ import { PostsCommentService } from '../services/PostsCommentService';
 import { AuthenticationId } from '../models/AuthenticationId';
 import { AuthenticationIdService } from '../services/AuthenticationIdService';
 import { HidePostService } from '../services/HidePostService';
+import jwt from 'jsonwebtoken';
 @JsonController('/profile')
 export class UserProfileController {
     constructor(
@@ -555,6 +556,21 @@ export class UserProfileController {
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot Update Asset', undefined);
             return res.status(400).send(errorResponse);
+        }
+    }
+
+    @Post('/:id')
+    @Authorized('user')
+    public async bindindUserMFP(@Param('id') id: string, @Body({ validate: true }) users: UpdateUserProfileRequest, @Res() res: any, @Req() req: any): Promise<any>{
+        console.log('users',users);
+        const token = await jwt.sign({ redirect_uri: 'http://110.171.133.236:4200/processing' }, process.env.CLIENT_SECRET , { algorithm: 'HS256' });
+
+        if (token) {
+            const successResponseMFP = ResponseUtil.getSuccessResponse('Grant Client Credential MFP is successful.', token);
+            return res.status(200).send(successResponseMFP);
+        } else {
+            const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'axios error.' };
+            return res.status(400).send(errorUserNameResponse);
         }
     }
 

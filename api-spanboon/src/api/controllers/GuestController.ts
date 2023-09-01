@@ -1346,7 +1346,92 @@ export class GuestController {
             }
         } // else if(mode === PROVIDER.MFP){
         // }
-        else if (mode === PROVIDER.FACEBOOK) {
+        else if(mode === PROVIDER.MFP){
+            const modeAuthen = [];
+            const data: User = await this.userService.findOne({ where: { username: userEmail } });
+
+            if (data === undefined) {
+                const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
+                return res.status(400).send(errorUserNameResponse);
+            }
+
+            const checkAuth = await this.authenticationIdService.findOne({ where: { user: ObjectID(String(data.id)), providerName: mode } });
+            const AllAuthen = await this.authenticationIdService.find({ user: data.id });
+            for (authen of AllAuthen) {
+                if (authen.providerName === 'EMAIL') {
+                    modeAuthen.push(authen.providerName);
+                } else if (authen.providerName === 'FACEBOOK') {
+                    modeAuthen.push(authen.providerName);
+                } else if (authen.providerName === 'TWIITER') {
+                    modeAuthen.push(authen.providerName);
+                } else if (authen.providerName === 'GOOGLE') {
+                    modeAuthen.push(authen.providerName);
+                } else if (authen.providerName === 'APPLE') {
+                    modeAuthen.push(authen.providerName);
+                }
+            }
+
+            if (data.banned === true) {
+                const errorResponse = ResponseUtil.getErrorResponse('User Banned', undefined);
+                return res.status(400).send(errorResponse);
+            }
+            if (data && checkAuth === undefined) {
+                const user: User = new User();
+                user.username = data.username;
+                user.email = data.email;
+                user.uniqueId = data.uniqueId;
+                user.firstName = data.firstName;
+                user.lastName = data.lastName;
+                user.imageURL = data.imageURL;
+                user.coverURL = data.coverURL;
+                user.coverPosition = 0;
+                user.displayName = data.displayName;
+                user.birthdate = new Date(data.birthdate);
+                user.isAdmin = data.isAdmin;
+                user.isSubAdmin = data.isSubAdmin;
+                user.banned = data.banned;
+                if (user) {
+                    if (await User.comparePassword(data, loginPassword)) {
+                        const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', user, modeAuthen);
+                        return res.status(200).send(successResponse);
+                    } else {
+                        const errorResponse = ResponseUtil.getErrorResponse('Invalid Password', undefined);
+                        return res.status(400).send(errorResponse);
+                    }
+                }
+
+            } else if (data && checkAuth !== undefined) {
+                if (data) {
+                    const userObjId = new ObjectID(data.id);
+                    if (loginPassword === null && loginPassword === undefined && loginPassword === '') {
+                        const errorResponse = ResponseUtil.getErrorResponse('Invalid password', undefined);
+                        return res.status(400).send(errorResponse);
+                    }
+                    if (await User.comparePassword(data, loginPassword)) {
+                        // create a token
+                        const token = jwt.sign({ id: userObjId }, env.SECRET_KEY);
+                        loginUser = data;
+
+                        loginToken = token;
+                        loginUser = await this.userService.cleanUserField(loginUser);
+                        const result = { token: loginToken, user: loginUser };
+
+                        const successResponse = ResponseUtil.getSuccessResponse('Loggedin successful', result);
+                        return res.status(200).send(successResponse);
+                    } else {
+                        const errorResponse = ResponseUtil.getErrorResponse('Invalid Password', undefined);
+                        return res.status(400).send(errorResponse);
+                    }
+                } else {
+                    const errorResponse: any = { status: 0, message: 'Invalid username' };
+                    return res.status(400).send(errorResponse);
+                }
+            }
+            else {
+                const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        } else if (mode === PROVIDER.FACEBOOK) {
             let authenFB = undefined;
             const stackAuth = [];
             const pic = [];
