@@ -565,6 +565,8 @@ export class UserProfileController {
     @Authorized('user')
     public async bindingUserMFPProcess(@Param('id') id: string, @Body({ validate: true }) users: UpdateUserProfileRequest, @Res() res: any, @Req() req: any): Promise<any> {
         console.log('users', users);
+        console.log('process.env.CLIENT_SECRET', process.env.CLIENT_SECRET);
+        console.log('process.env.CLIENT_SECRET',typeof(process.env.CLIENT_SECRET));
         const token = await jwt.sign({ redirect_uri: 'http://110.171.133.236:4200/processing' }, process.env.CLIENT_SECRET, { algorithm: 'HS256' });
 
         if (token) {
