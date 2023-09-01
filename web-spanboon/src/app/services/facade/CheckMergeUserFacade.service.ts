@@ -61,11 +61,26 @@ export class CheckMergeUserFacade extends AbstractFacade {
       const tokenFCM = localStorage.getItem('tokenFCM') ? localStorage.getItem('tokenFCM') : '';
 
       let url: string = this.baseURL + '/check_email_user';
-      let body: any = {
-        "email": data.email,
-        "password": data.password,
-        "tokenFCM": tokenFCM
-      };
+      let body;
+      if (mode === 'MFP') {
+        body = {
+          "email": data.email,
+          "tokenFCM": tokenFCM
+        }
+        // body = {
+        //   "email": data.email,
+        //   "created_at": data.created_at,
+        //   "updated_at": data.updated_at,
+        //   "id": data.id,
+        //   "mobile": data.mobile,
+        // }
+      } else {
+        body = {
+          "email": data.email,
+          "password": data.password,
+          "tokenFCM": tokenFCM
+        };
+      }
 
       let headers = new HttpHeaders({
         "mode": mode

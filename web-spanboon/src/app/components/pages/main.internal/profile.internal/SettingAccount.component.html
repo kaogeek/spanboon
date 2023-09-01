@@ -21,8 +21,14 @@
                     </div>
                 </div>
             </div>
-            <div class="settings-right">
+            <div class="settings-right" *ngIf="selected === 'ทั่วไป'">
                 <edit-profile-card [dataProfile]="data"></edit-profile-card>
+            </div>
+            <div class="settings-right" style="align-items: center; display: flex;"
+                *ngIf="selected === 'ผูกสมาชิกพรรค'">
+                <spanboon-button style="margin-left: 20px;" [height]="'30pt'" [width]="'400px'" [text]="'ผูกสมาชิกพรรค'"
+                    (click)="binding()">
+                </spanboon-button>
             </div>
         </div>
     </div>

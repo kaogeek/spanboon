@@ -6,11 +6,13 @@
  */
 
 import { Component, EventEmitter, OnInit } from '@angular/core';
-import { AuthenManager } from '../../../services/services';
+import { AuthenManager, BindingMemberFacade, CheckMergeUserFacade } from '../../../services/services';
 import { MatDialog } from '@angular/material';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { AbstractPageImageLoader } from '../AbstractPageImageLoader';
 import jwt_decode from "jwt-decode";
+import { DialogAlert } from '../../shares/dialog/DialogAlert.component';
+import { MESSAGE } from '../../../../custom/variable';
 
 const PAGE_NAME: string = 'processing';
 
@@ -22,20 +24,26 @@ export class LoginMemberProcessing extends AbstractPageImageLoader implements On
   public static readonly PAGE_NAME: string = PAGE_NAME;
   public params: any;
   public route: ActivatedRoute;
+  public checkMergeUserFacade: CheckMergeUserFacade;
+  public bindingMemberFacade: BindingMemberFacade;
 
   public data: any;
   public dataId: any;
   public isNotAccess: any;
   public linkPost: any;
   public mainPostLink: string;
+  public decodedData: any;
 
   public isLoading: boolean = true;
   constructor(
     router: Router,
     dialog: MatDialog,
-    authenManager: AuthenManager) {
+    authenManager: AuthenManager,
+    checkMergeUserFacade: CheckMergeUserFacade,
+    bindingMemberFacade: BindingMemberFacade) {
     super(PAGE_NAME, authenManager, dialog, router);
-
+    this.checkMergeUserFacade = checkMergeUserFacade;
+    this.bindingMemberFacade = bindingMemberFacade;
     // this.route.params.subscribe((param) => {
     //   let token = param['token'];
     //   let decoded = jwt_decode(token)
@@ -44,6 +52,62 @@ export class LoginMemberProcessing extends AbstractPageImageLoader implements On
   }
 
   public ngOnInit(): void {
+    let url = this.router.url.split('=');
+    console.log("url", url)
+    this.decodedData = jwt_decode(url[1])
+    console.log("decoded", this.decodedData)
+    if (this.decodedData.membership) {
+      this.bindingMemberFacade.binding(this.decodedData, this.getIdUser()).then((res) => {
+        if (res) {
+          console.log("res", res)
+        }
+      }).catch((err) => {
+        if (err) console.log("err", err);
+      });
+    } else {
+      if (this.decodedData !== undefined) {
+        let data = {
+          email: this.decodedData.user.email,
+        }
+
+        this.checkMergeUserFacade.checkMergeUser('MFP', data).then((res) => {
+          if (res) console.log("res", res);
+        }).catch((error) => {
+          const statusMsg = error.error.message;
+          if (statusMsg === "User was not found.") {
+            let navigationExtras: NavigationExtras = {
+              queryParams: { mode: 'mfp' }
+            }
+            this.router.navigate(['/register'], navigationExtras);
+          } else if (error.error.message === 'You cannot merge this user you have had one.') {
+            // this.mockDataMergeSocial.social = mode;
+            // this.dataUser = error.error;
+            // this.emailOtp = error.error.data.email;
+            // this.modeSwitch = "mergeuser";
+          } else if (statusMsg === "This Email not exists") {
+            let navigationExtras: NavigationExtras = {
+              queryParams: { mode: 'mfp' }
+            }
+            this.router.navigate(['/register'], navigationExtras);
+          } else if (statusMsg === 'User Banned') {
+            this.dialog.open(DialogAlert, {
+              disableClose: true,
+              data: {
+                text: MESSAGE.TEXT_LOGIN_BANED,
+                bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+                bottomColorText2: "black",
+                btDisplay1: "none"
+              }
+            });
+          }
+        });
+      }
+    }
+  }
+
+  public getIdUser() {
+    let user = JSON.parse(localStorage.getItem('pageUser'));
+    return user.id;
   }
 
   public ngOnDestroy(): void {

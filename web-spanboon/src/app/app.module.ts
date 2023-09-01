@@ -273,6 +273,7 @@ import {
   UserEngagementFacade,
   CheckMergeUserFacade,
   UserSubjectFacade,
+  BindingMemberFacade,
 } from './services/services';
 
 import { registerLocaleData, DatePipe } from '@angular/common';
@@ -527,6 +528,7 @@ const SERVICE_CLASSES: any[] = [
   TwitterService,
   RecommendFacade,
   UserSubjectFacade,
+  BindingMemberFacade,
   UserEngagementFacade,
   {
     provide: SocialAuthService,
