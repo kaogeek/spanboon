@@ -45,7 +45,6 @@ import { AutoSynz } from './requests/AutoSynz';
 import { FirebaseGuestUser } from './requests/FirebaseGuestUsers';
 import { OtpService } from '../services/OtpService';
 import { DeviceToken } from '../models/DeviceToken';
-import axios from 'axios';
 
 @JsonController()
 export class GuestController {
