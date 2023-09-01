@@ -10,20 +10,18 @@ import { AuthenManager } from '../../../services/services';
 import { MatDialog } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AbstractPageImageLoader } from '../AbstractPageImageLoader';
-import { Location } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import jwt_decode from "jwt-decode";
 
-const PAGE_NAME: string = 'testMember';
+const PAGE_NAME: string = 'processing';
 
 @Component({
-  selector: 'testMember',
-  templateUrl: './testMember.component.html',
+  selector: 'login-member-process',
+  templateUrl: './LoginMemberProcessing.component.html',
 })
-export class testMember extends AbstractPageImageLoader implements OnInit {
+export class LoginMemberProcessing extends AbstractPageImageLoader implements OnInit {
   public static readonly PAGE_NAME: string = PAGE_NAME;
   public params: any;
   public route: ActivatedRoute;
-  public url: any;
 
   public data: any;
   public dataId: any;
@@ -31,12 +29,18 @@ export class testMember extends AbstractPageImageLoader implements OnInit {
   public linkPost: any;
   public mainPostLink: string;
 
+  public isLoading: boolean = true;
   constructor(
     router: Router,
     dialog: MatDialog,
-    authenManager: AuthenManager,
-    private http: HttpClient) {
+    authenManager: AuthenManager) {
     super(PAGE_NAME, authenManager, dialog, router);
+
+    // this.route.params.subscribe((param) => {
+    //   let token = param['token'];
+    //   let decoded = jwt_decode(token)
+    //   console.log("decoded", decoded)
+    // });
   }
 
   public ngOnInit(): void {
@@ -44,23 +48,6 @@ export class testMember extends AbstractPageImageLoader implements OnInit {
 
   public ngOnDestroy(): void {
 
-  }
-
-  public testButton() {
-    this.authenManager.loginMember('MFP').then((res) => {
-      if (res) {
-        console.log("res", res)
-        let token = res.data;
-        let url: string = 'https://auth.moveforwardparty.org/sso?';
-        if (token !== undefined) {
-          url += `client_id=5&process_type=login&token=${token}`;
-        }
-        console.log("url", url)
-        window.open(url, '_blank');
-      }
-    }).catch((err) => {
-      if (err) console.log(err)
-    })
   }
 
   public getImageSelector(): string[] {

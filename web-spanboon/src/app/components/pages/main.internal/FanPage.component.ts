@@ -850,6 +850,10 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
       }).catch((err: any) => {
         this.stopLoading();
         console.log(err);
+        if (err.error.message === 'You cannot post type memberShip.') {
+          this.showAlertDialog('โพสต์ประเภทสมาชิกสามารถสร้างได้โดยสมาชิกเท่านั้น');
+          this.isPostLoading = false;
+        }
       })
     }
   }
@@ -1329,6 +1333,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     dialogRef.afterClosed().subscribe(result => {
       if (!!result) {
         this.resPost.posts[index] = result;
+        this.searchPostPageType(data, true);
       }
       this.stopLoading();
     });

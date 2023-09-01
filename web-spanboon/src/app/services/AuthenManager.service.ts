@@ -255,10 +255,7 @@ export class AuthenManager {
       // };
 
       this.http.post(url, body, httpOptions).toPromise().then((response: any) => {
-        if (response) {
-          this._getSSOAuth(response.data);
-          resolve(response);
-        }
+        resolve(response);
       }).catch((error: any) => {
         reject(error);
       });
@@ -267,7 +264,7 @@ export class AuthenManager {
 
   private _getSSOAuth(token?: any) {
     return new Promise((resolve, reject) => {
-      let url: string = environment.memberShip.webBaseURL + '/sso?';
+      let url: string = 'https://auth.moveforwardparty.org/sso?';
       if (token !== undefined) {
         url += `client_id=${environment.memberShip.clientId}`;
       }
@@ -281,8 +278,10 @@ export class AuthenManager {
       let body: any = {};
 
       this.http.get(url, body).toPromise().then((response: any) => {
+        console.log('>>>>>>>> ss0', response);
         resolve(response.data);
       }).catch((error: any) => {
+        console.log('>>>>>>>> ss1', error);
         reject(error);
       });
     });
