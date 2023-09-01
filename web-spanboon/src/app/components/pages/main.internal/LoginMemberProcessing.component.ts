@@ -53,16 +53,37 @@ export class LoginMemberProcessing extends AbstractPageImageLoader implements On
 
   public ngOnInit(): void {
     let url = this.router.url.split('=');
-    console.log("url", url)
     this.decodedData = jwt_decode(url[1])
-    console.log("decoded", this.decodedData)
     if (this.decodedData.membership) {
-      this.bindingMemberFacade.binding(this.decodedData, this.getIdUser()).then((res) => {
+      this.bindingMemberFacade.binding(this.decodedData, this.getIdUser()).then((res: any) => {
         if (res) {
-          console.log("res", res)
+          if (res.membership.state === 'APPROVED') {
+            this.showAlertRedirectDialog('ผ่านการตรวจสอบแล้ว');
+            this.isLoading = false;
+          }
         }
       }).catch((err) => {
-        if (err) console.log("err", err);
+        if (err) {
+          console.log("err", err);
+          if (err.error.message === 'PENDING_PAYMENT') {
+            this.showAlertRedirectDialog('รอการชำระเงิน');
+          } else if (err.error.message === 'PENDING_APPROVAL') {
+            this.showAlertRedirectDialog('รอการตรวจสอบ');
+          } else if (err.error.message === 'REJECTED') {
+            this.showAlertRedirectDialog('ไม่ผ่านการตรวจสอบ');
+          } else if (err.error.message === 'PROFILE_RECHECKED') {
+            this.showAlertRedirectDialog('สมาชิกรอจัดเก็บ');
+          } else if (err.error.message === 'ARCHIVED') {
+            this.showAlertRedirectDialog('สมาชิกที่จัดเก็บแล้ว');
+          } else if (err.error.message === 'You have ever binded this user.') {
+            this.showAlertRedirectDialog('คุณเคยผูกสมาชิกไปแล้ว');
+          } else if (err.error.message === 'Cannot Update Status Membership User.') {
+            this.showAlertRedirectDialog('ไม่สามารถผูกสมาชิกได้');
+          } else if (err.error.message === 'User Not Found') {
+            this.showAlertRedirectDialog('ไม่พบบัญชีผู้ใช้');
+          }
+          this.isLoading = false;
+        }
       });
     } else {
       if (this.decodedData !== undefined) {
@@ -71,7 +92,7 @@ export class LoginMemberProcessing extends AbstractPageImageLoader implements On
         }
 
         this.checkMergeUserFacade.checkMergeUser('MFP', data).then((res) => {
-          if (res) console.log("res", res);
+
         }).catch((error) => {
           const statusMsg = error.error.message;
           if (statusMsg === "User was not found.") {

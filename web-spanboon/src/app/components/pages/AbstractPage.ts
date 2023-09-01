@@ -146,6 +146,24 @@ export abstract class AbstractPage implements OnInit {
     });
   }
 
+  public showAlertRedirectDialog(text: any, cancelText?: string): void {
+    let dialog = this.dialog.open(DialogAlert, {
+      disableClose: true,
+      data: {
+        text: text,
+        bottomText1: (cancelText) ? cancelText : MESSAGE.TEXT_BUTTON_CANCEL,
+        bottomText2: MESSAGE.TEXT_BUTTON_CONFIRM,
+        bottomColorText2: "black",
+        btDisplay1: "none"
+      }
+    });
+    dialog.afterClosed().subscribe((res) => {
+      if (res) {
+        this.router.navigateByUrl("/account/settings");
+      }
+    });
+  }
+
   public showDialogWithOptions(dialogOption: any): void {
     this.dialog.open(DialogAlert, {
       disableClose: true,

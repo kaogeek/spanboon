@@ -110,17 +110,14 @@ export class SettingAccount extends AbstractPage implements OnInit {
     }
 
     public binding() {
-        console.log("555555")
         this.profileFacade.updateMember(this.data.id).then((res) => {
             if (res) {
-                console.log("res", res)
                 let token = res;
                 let url: string = 'https://auth.moveforwardparty.org/sso?';
                 if (token !== undefined) {
                     url += `client_id=5&process_type=binding&token=${token}`;
                 }
-                console.log("url", url)
-                window.open(url, '_blank');
+                window.open(url, '_blank').focus();
             }
         }).catch((err) => {
             if (err) console.log("err", err);
