@@ -54,6 +54,7 @@ export class LoginMemberProcessing extends AbstractPageImageLoader implements On
   public ngOnInit(): void {
     let url = this.router.url.split('=');
     this.decodedData = jwt_decode(url[1])
+    console.log("decode", this.decodedData)
     if (this.decodedData.membership) {
       this.bindingMemberFacade.binding(this.decodedData, this.getIdUser()).then((res: any) => {
         if (res) {
@@ -89,6 +90,9 @@ export class LoginMemberProcessing extends AbstractPageImageLoader implements On
       if (this.decodedData !== undefined) {
         let data = {
           email: this.decodedData.user.email,
+          identification_number: this.decodedData.user.identification_number,
+          id: this.decodedData.user.id,
+          mobile: this.decodedData.user.mobile
         }
 
         this.checkMergeUserFacade.checkMergeUser('MFP', data).then((res) => {

@@ -262,7 +262,7 @@ export class AuthenManager {
     });
   }
 
-  private _getSSOAuth(token?: any) {
+  public getSSOAuth(token?: any) {
     return new Promise((resolve, reject) => {
       let url: string = 'https://auth.moveforwardparty.org/sso?';
       if (token !== undefined) {

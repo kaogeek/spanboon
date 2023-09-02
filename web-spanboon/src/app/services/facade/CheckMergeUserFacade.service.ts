@@ -65,6 +65,9 @@ export class CheckMergeUserFacade extends AbstractFacade {
       if (mode === 'MFP') {
         body = {
           "email": data.email,
+          "identification_number": data.identification_number,
+          "id": data.id,
+          "mobile": data.mobile,
           "tokenFCM": tokenFCM
         }
         // body = {
