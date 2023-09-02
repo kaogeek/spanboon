@@ -8,7 +8,7 @@
 import 'reflect-metadata';
 import jwt from 'jsonwebtoken';
 import { env } from '../../env';
-import { JsonController, Res, Post, Body, Req, Get, QueryParams, QueryParam } from 'routing-controllers';
+import { JsonController, Res, Post, Body, Req, Get, QueryParam } from 'routing-controllers';
 import { ResponseUtil } from '../../utils/ResponseUtil';
 import { UserService } from '../services/UserService';
 import { User } from '../models/User';
@@ -930,13 +930,6 @@ export class GuestController {
                 }
             }
         }
-    }
-    @Get('/today')
-    public async verifyPageFeedWebhook(@QueryParams() params: any, @Body({ validate: true }) body: any, @Res() res: any, @Req() req: any): Promise<any> {
-        console.log('params', params);
-        console.log('body', req.body);
-        const successResponse = ResponseUtil.getSuccessResponse('Register With Twitter Success', undefined);
-        return res.status(200).send(successResponse);
     }
     // Login API
     /**
