@@ -49,8 +49,20 @@ export class AuthenticationId extends BaseModel {
     @Column({ name: 'membership' })
     public membership: boolean;
 
-    @Column({ name: 'terminated' })
-    public terminated: Date;
+    @Column({ name: 'expirationDate_law_expired' })
+    public expirationDate_law_expired: Date;
+
+    @Column({ name: 'membershipState' })
+    public membershipState: string;
+
+    @Column({ name: 'membershipType' })
+    public membershipType: string;
+
+    @Column({ name: 'identificationNumber' })
+    public identificationNumber: any;
+
+    @Column({ name: 'mobileNumber' })
+    public mobileNumber: any;
 
     @BeforeInsert()
     public createDetails(): any {

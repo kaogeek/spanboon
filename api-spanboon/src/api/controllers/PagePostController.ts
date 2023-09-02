@@ -484,6 +484,19 @@ export class PagePostController {
                 }
             }
         }
+        if (pageIds.official === true) {
+            // check authentication
+            const authMemberShip = await this.authenticationIdService.findOne({ providerName: PROVIDER.MFP, user: userObjId, membership: true });
+            const timeStampToday = today.getTime();
+            if (authMemberShip !== undefined &&
+                authMemberShip.membershipState === 'APPROVED' &&
+                authMemberShip.membershipType === 'MEMBERSHIP_YEARLY') {
+                const timeStampSettings = Date.parse(authMemberShip.expirationDate);
+                if (timeStampToday > timeStampSettings) {
+                    return res.status(400).send(ResponseUtil.getErrorResponse('Your account have already expired.', undefined));
+                }
+            }
+        }
 
         const postPage: Posts = new Posts();
         postPage.title = pagePost.title;

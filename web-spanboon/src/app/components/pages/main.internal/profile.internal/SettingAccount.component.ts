@@ -30,11 +30,12 @@ export class SettingAccount extends AbstractPage implements OnInit {
     private assetFacade: AssetFacade;
     private profileFacade: ProfileFacade;
     private seoService: SeoService;
-    public selected: any;
+    public selected: any = 'ทั่วไป';
     public isSend: boolean;
     public isCheck: boolean;
     public dataUser: any;
     public user: any;
+    public bindingMember: boolean;
 
     minDate = new Date(1800, 0, 1);
     maxDate = new Date();
@@ -45,6 +46,11 @@ export class SettingAccount extends AbstractPage implements OnInit {
             link: "",
             icon: "settings",
             label: "ทั่วไป",
+        },
+        {
+            link: "",
+            icon: "security",
+            label: "ผูกสมาชิกพรรค",
         },
         // {
         //     link: "",
@@ -67,6 +73,7 @@ export class SettingAccount extends AbstractPage implements OnInit {
         dialog: MatDialog, profileFacade: ProfileFacade, @Inject(MAT_DIALOG_DATA) public data: any, dateAdapter: DateAdapter<Date>,
         seoService: SeoService) {
         super(PAGE_NAME, authenManager, dialog, router);
+        this.profileFacade = profileFacade;
         this.router = router;
         this.authenManager = authenManager;
         this.assetFacade = assetFacade;
@@ -100,5 +107,20 @@ export class SettingAccount extends AbstractPage implements OnInit {
 
     public selecedInformation(link: any) {
         this.selected = link.label;
+    }
+
+    public binding() {
+        this.profileFacade.updateMember(this.data.id).then((res) => {
+            if (res) {
+                let token = res;
+                let url: string = 'https://auth.moveforwardparty.org/sso?';
+                if (token !== undefined) {
+                    url += `client_id=5&process_type=binding&token=${token}`;
+                }
+                window.open(url, '_blank').focus();
+            }
+        }).catch((err) => {
+            if (err) console.log("err", err);
+        });
     }
 }

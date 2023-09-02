@@ -8,7 +8,7 @@
 import 'reflect-metadata';
 import jwt from 'jsonwebtoken';
 import { env } from '../../env';
-import { JsonController, Res, Post, Body, Req, Get, QueryParams, QueryParam } from 'routing-controllers';
+import { JsonController, Res, Post, Body, Req, Get, QueryParam } from 'routing-controllers';
 import { ResponseUtil } from '../../utils/ResponseUtil';
 import { UserService } from '../services/UserService';
 import { User } from '../models/User';
@@ -931,13 +931,6 @@ export class GuestController {
             }
         }
     }
-    @Get('/today')
-    public async verifyPageFeedWebhook(@QueryParams() params: any, @Body({ validate: true }) body: any, @Res() res: any, @Req() req: any): Promise<any> {
-        console.log('params', params);
-        console.log('body', req.body);
-        const successResponse = ResponseUtil.getSuccessResponse('Register With Twitter Success', undefined);
-        return res.status(200).send(successResponse);
-    }
     // Login API
     /**
      * @api {post} /api/login Login
@@ -1063,11 +1056,8 @@ export class GuestController {
                     loginToken = jwt.sign({ token: updatedAuth.storedCredentials, userId: loginUser.id }, env.SECRET_KEY);
                 }
             }
-        }
-        // Auth
-        // MFP API LOGIN
-        else if (mode === PROVIDER.MFP) {
-            const token = await jwt.sign({ redirect_uri: 'http://110.171.133.236:4200/processing' }, process.env.CLIENT_SECRET , { algorithm: 'HS256' });
+        } else if (mode === PROVIDER.MFP) {
+            const token = await jwt.sign({ redirect_uri: 'http://110.171.133.236:4200/processing' }, process.env.CLIENT_SECRET, { algorithm: 'HS256' });
 
             if (token) {
                 const successResponseMFP = ResponseUtil.getSuccessResponse('Grant Client Credential MFP is successful.', token);
@@ -1075,9 +1065,8 @@ export class GuestController {
             } else {
                 const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'axios error.' };
                 return res.status(400).send(errorUserNameResponse);
-            }
-        }
-        else if (mode === PROVIDER.FACEBOOK) {
+            } 
+        } else if (mode === PROVIDER.FACEBOOK) {
             const tokenFcmFB = req.body.tokenFCM;
             const deviceFB = req.body.deviceName;
             // find email then -> authentication -> mode FB
@@ -1344,9 +1333,94 @@ export class GuestController {
                 const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
                 return res.status(400).send(errorResponse);
             }
-        } // else if(mode === PROVIDER.MFP){
-        // }
-        else if (mode === PROVIDER.FACEBOOK) {
+        } else if (mode === PROVIDER.MFP) {
+            const modeAuthen = [];
+            const data: User = await this.userService.findOne({ where: { username: userEmail } });
+
+            if (data === undefined) {
+                const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
+                return res.status(400).send(errorUserNameResponse);
+            }
+
+            const checkAuth = await this.authenticationIdService.findOne({ where: { user: ObjectID(String(data.id)), providerName: mode } });
+            const AllAuthen = await this.authenticationIdService.find({ user: data.id });
+            for (authen of AllAuthen) {
+                if (authen.providerName === 'EMAIL') {
+                    modeAuthen.push(authen.providerName);
+                } else if (authen.providerName === 'MFP') {
+                    modeAuthen.push(authen.providerName);
+                } else if (authen.providerName === 'FACEBOOK') {
+                    modeAuthen.push(authen.providerName);
+                } else if (authen.providerName === 'TWIITER') {
+                    modeAuthen.push(authen.providerName);
+                } else if (authen.providerName === 'GOOGLE') {
+                    modeAuthen.push(authen.providerName);
+                } else if (authen.providerName === 'APPLE') {
+                    modeAuthen.push(authen.providerName);
+                }
+            }
+
+            if (data.banned === true) {
+                const errorResponse = ResponseUtil.getErrorResponse('User Banned', undefined);
+                return res.status(400).send(errorResponse);
+            }
+            if (data && checkAuth === undefined) {
+                const user: User = new User();
+                user.username = data.username;
+                user.email = data.email;
+                user.uniqueId = data.uniqueId;
+                user.firstName = data.firstName;
+                user.lastName = data.lastName;
+                user.imageURL = data.imageURL;
+                user.coverURL = data.coverURL;
+                user.coverPosition = 0;
+                user.displayName = data.displayName;
+                user.birthdate = new Date(data.birthdate);
+                user.isAdmin = data.isAdmin;
+                user.isSubAdmin = data.isSubAdmin;
+                user.banned = data.banned;
+                if (user) {
+                    if (await User.comparePassword(data, loginPassword)) {
+                        const successResponse = ResponseUtil.getSuccessResponseAuth('This Email already exists', user, modeAuthen);
+                        return res.status(200).send(successResponse);
+                    } else {
+                        const errorResponse = ResponseUtil.getErrorResponse('Invalid Password', undefined);
+                        return res.status(400).send(errorResponse);
+                    }
+                }
+
+            } else if (data && checkAuth !== undefined) {
+                if (data) {
+                    const userObjId = new ObjectID(data.id);
+                    if (loginPassword === null && loginPassword === undefined && loginPassword === '') {
+                        const errorResponse = ResponseUtil.getErrorResponse('Invalid password', undefined);
+                        return res.status(400).send(errorResponse);
+                    }
+                    if (await User.comparePassword(data, loginPassword)) {
+                        // create a token
+                        const token = jwt.sign({ id: userObjId }, env.SECRET_KEY);
+                        loginUser = data;
+
+                        loginToken = token;
+                        loginUser = await this.userService.cleanUserField(loginUser);
+                        const result = { token: loginToken, user: loginUser };
+
+                        const successResponse = ResponseUtil.getSuccessResponse('Loggedin successful', result);
+                        return res.status(200).send(successResponse);
+                    } else {
+                        const errorResponse = ResponseUtil.getErrorResponse('Invalid Password', undefined);
+                        return res.status(400).send(errorResponse);
+                    }
+                } else {
+                    const errorResponse: any = { status: 0, message: 'Invalid username' };
+                    return res.status(400).send(errorResponse);
+                }
+            }
+            else {
+                const errorResponse = ResponseUtil.getErrorResponse('This Email not exists', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        } else if (mode === PROVIDER.FACEBOOK) {
             let authenFB = undefined;
             const stackAuth = [];
             const pic = [];
@@ -1976,6 +2050,27 @@ export class GuestController {
                 }
             } else {
                 const errorResponse = ResponseUtil.getErrorResponse('The OTP is not correct.', undefined);
+                return res.status(400).send(errorResponse);
+            }
+
+        } else if (user && mode === PROVIDER.MFP) {
+            const checkAuthen = await this.authenticationIdService.findOne({ user: user.id, providerName: mode });
+            if (checkAuthen !== undefined) {
+                const data: User = new User();
+                data.username = user.username;
+                data.email = user.email;
+                data.uniqueId = user.uniqueId;
+                data.firstName = user.firstName;
+                data.lastName = user.lastName;
+                data.imageURL = user.imageURL;
+                data.coverURL = user.coverURL;
+                data.coverPosition = 0;
+                data.displayName = user.displayName;
+                data.birthdate = new Date(user.birthdate);
+                data.isAdmin = user.isAdmin;
+                data.isSubAdmin = user.isSubAdmin;
+                data.banned = user.banned;
+                const errorResponse: any = { status: 0, message: 'You cannot merge this user you have had one.', data };
                 return res.status(400).send(errorResponse);
             }
 

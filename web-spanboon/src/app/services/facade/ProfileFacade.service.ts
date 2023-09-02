@@ -120,6 +120,22 @@ export class ProfileFacade extends AbstractFacade {
     });
   }
 
+  public updateMember(userId: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/profile/' + userId;
+      let body: any = {
+        membership: true
+      };
+      let options = this.authMgr.getDefaultOptions();
+
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response.data);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
   public saveCoverImageProfile(id: any, data: any): Promise<any> {
     if (id === undefined || id === null || id === '') {
       new Error("id is required.");

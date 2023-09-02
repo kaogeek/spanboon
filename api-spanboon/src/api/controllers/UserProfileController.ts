@@ -12,6 +12,7 @@ import { UserService } from '../services/UserService';
 import { ObjectID } from 'mongodb';
 import { LIKE_TYPE } from '../../constants/LikeType';
 import { UpdateUserProfileRequest } from './requests/UpdateUserProfileRequest';
+import { BindingUserMFP } from './requests/BindingUserMFPRequest';
 import { User } from '../models/User';
 import { AssetRequest } from './requests/AssetRequest';
 import { AssetService } from '../services/AssetService';
@@ -32,6 +33,8 @@ import { PostsCommentService } from '../services/PostsCommentService';
 import { AuthenticationId } from '../models/AuthenticationId';
 import { AuthenticationIdService } from '../services/AuthenticationIdService';
 import { HidePostService } from '../services/HidePostService';
+import jwt from 'jsonwebtoken';
+import { PROVIDER } from '../../constants/LoginProvider';
 @JsonController('/profile')
 export class UserProfileController {
     constructor(
@@ -558,6 +561,103 @@ export class UserProfileController {
         }
     }
 
+    @Post('/:id')
+    @Authorized('user')
+    public async bindingUserMFPProcess(@Param('id') id: string, @Body({ validate: true }) users: UpdateUserProfileRequest, @Res() res: any, @Req() req: any): Promise<any> {
+        console.log('users', users);
+        console.log('process.env.CLIENT_SECRET', process.env.CLIENT_SECRET);
+        console.log('process.env.CLIENT_SECRET',typeof(process.env.CLIENT_SECRET));
+        const token = await jwt.sign({ redirect_uri: 'http://110.171.133.236:4200/processing' }, process.env.CLIENT_SECRET, { algorithm: 'HS256' });
+        console.log('token',token);
+        if (token) {
+            const successResponseMFP = ResponseUtil.getSuccessResponse('Grant Client Credential MFP is successful.', token);
+            return res.status(200).send(successResponseMFP);
+        } else {
+            const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'axios error.' };
+            return res.status(400).send(errorUserNameResponse);
+        }
+    }
+
+    @Post('/:id/binding')
+    @Authorized('user')
+    public async bindingUserMFP(@Param('id') id: string, @Body({ validate: true }) bindingUser: BindingUserMFP, @Res() res: any, @Req() req: any): Promise<any> {
+        const userObject = bindingUser;
+        const userObjId = new ObjectID(id);
+        let authIdCreate: AuthenticationId;
+        console.log('userObject', userObject.membership);
+        // PENDING_PAYMENT 400
+        if (userObject.membership.state === 'PENDING_PAYMENT' && userObject.membership.membership_type === 'UNKNOWN') {
+            return res.status(400).send(ResponseUtil.getSuccessResponse('PENDING_PAYMENT', undefined));
+        }
+        // PENDING_APPROVAL 400
+        if (userObject.membership.state === 'PENDING_APPROVAL') {
+            return res.status(400).send(ResponseUtil.getSuccessResponse('PENDING_APPROVAL', undefined));
+        }
+        // REJECTED 400
+        if (userObject.membership.state === 'REJECTED') {
+            return res.status(400).send(ResponseUtil.getSuccessResponse('REJECTED', undefined));
+        }
+        // PROFILE_RECHECKED 400
+        if (userObject.membership.state === 'PROFILE_RECHECKED') {
+            return res.status(400).send(ResponseUtil.getSuccessResponse('PROFILE_RECHECKED', undefined));
+        }
+        if (userObject.membership.state === 'ARCHIVED') {
+            return res.status(400).send(ResponseUtil.getSuccessResponse('ARCHIVED', undefined));
+        }
+
+        if (userObject.membership.is_renewable === false) {
+            return res.status(400).send(ResponseUtil.getSuccessResponse('Is_renewable', undefined));
+        }
+
+        if (userObject.membership.state === 'APPROVED'
+            &&
+            userObject.membership.is_renewable === true &&
+            (userObject.membership.membership_type === 'MEMBERSHIP_YEARLY' ||
+                userObject.membership.membership_type === 'MEMBERSHIP_PERMANENT')) {
+
+            const user = await this.userService.findOne({ _id: userObjId });
+            if (user) {
+                // check authentication MFP Is existing ?
+                const checkAuthentication = await this.authenIdService.findOne({ providerUserId: userObject.membership.id, providerName: PROVIDER.MFP });
+                if (checkAuthentication !== undefined && checkAuthentication !== null) {
+                    return res.status(400).send(ResponseUtil.getSuccessResponse('You have ever binded this user.', undefined));
+
+                }
+
+                const authenId = new AuthenticationId();
+                authenId.user = user.id;
+                authenId.lastAuthenTime = moment().toDate();
+                authenId.providerUserId = userObject.membership.id;
+                authenId.providerName = PROVIDER.MFP;
+                authenId.properties = userObject.membership;
+                authenId.expirationDate = userObject.membership.expired_at;
+                authenId.expirationDate_law_expired = userObject.membership.law_expired_at;
+                authenId.identificationNumber = userObject.membership.identification_number;
+                authenId.mobileNumber = userObject.membership.mobile_number;
+                authenId.membershipState = userObject.membership.state;
+                authenId.membershipType = userObject.membership.membership_type;
+                authIdCreate = await this.authenIdService.create(authenId);
+                if (authIdCreate) {
+                    // update status user membership = true
+                    const query = { _id: userObjId };
+                    const newValues = { $set: { banned: false, membership: true } };
+                    const update = await this.userService.update(query, newValues);
+                    if (update) {
+                        const successResponseMFP = ResponseUtil.getSuccessResponse('Binding User Is Successful.', userObject);
+                        return res.status(200).send(successResponseMFP);
+                    } else {
+                        return res.status(400).send(ResponseUtil.getSuccessResponse('Cannot Update Status Membership User.', undefined));
+                    }
+                }
+            } else {
+                return res.status(400).send(ResponseUtil.getSuccessResponse('User Not Found', undefined));
+            }
+        }
+        else {
+            return res.status(400).send(ResponseUtil.getSuccessResponse('User Not Found', undefined));
+        }
+    }
+
     // Update User Profile API
     /**
      * @api {put} /api/profile/:id Update User Profile API
@@ -640,7 +740,7 @@ export class UserProfileController {
             if (userMembership === null || userMembership === undefined) {
                 userMembership = findUser.membership;
                 // create authentication 
-                
+
             }
             const updateQuery = { _id: userObjId };
             const newValue = {
