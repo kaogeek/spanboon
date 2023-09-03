@@ -25,12 +25,12 @@ import { PROVIDER } from '../constants/LoginProvider';
 @Service()
 export class AuthService {
 
-    constructor(@OrmRepository() 
+    constructor(@OrmRepository()
     private userRepository: UserRepository,
-    private facebookService: FacebookService,
-    private twitterService: TwitterService, 
-    private authenticationIdService: AuthenticationIdService,
-    private googleService: GoogleService,
+        private facebookService: FacebookService,
+        private twitterService: TwitterService,
+        private authenticationIdService: AuthenticationIdService,
+        private googleService: GoogleService,
     ) { }
 
     public async parseBasicAuthFromRequest(req: express.Request): Promise<any> {
@@ -49,19 +49,19 @@ export class AuthService {
                 let UserId = undefined;
                 // check in fb mode
                 if (mode === 'FB') {
-                    const fbToken:any = await jwt.verify(token, env.SECRET_KEY);
+                    const fbToken: any = await jwt.verify(token, env.SECRET_KEY);
                     if (fbToken.token !== undefined) {
                         const fbUserObj = await this.facebookService.getFacebookUserFromToken(fbToken.token);
                         if (fbUserObj !== undefined && fbUserObj.user.id !== undefined) {
                             UserId = fbUserObj.user.id;
                         }
                     }
-                    
+
                     if (UserId !== undefined) {
                         UserId += ';FB';
                     }
                 } else if (mode === 'TW') {
-                    const twToken:any = await jwt.verify(token, env.SECRET_KEY);
+                    const twToken: any = await jwt.verify(token, env.SECRET_KEY);
                     if (twToken.token !== undefined) {
                         const keyMap = ObjectUtil.parseQueryParamToMap(twToken.token);
 
@@ -77,31 +77,41 @@ export class AuthService {
                     if (UserId !== undefined) {
                         UserId += ';TW';
                     }
-                } else if (mode === 'GG'){
-                    const ggToken:any = await jwt.verify(token,env.SECRET_KEY);
-                    if(ggToken.token !== undefined){
-                        const ggUserObj = await this.googleService.getGoogleUser(ggToken.userId,ggToken.token);
-                        if(ggUserObj !== undefined && ggUserObj.authId.user !== undefined){
+                } else if (mode === 'GG') {
+                    const ggToken: any = await jwt.verify(token, env.SECRET_KEY);
+                    if (ggToken.token !== undefined) {
+                        const ggUserObj = await this.googleService.getGoogleUser(ggToken.userId, ggToken.token);
+                        if (ggUserObj !== undefined && ggUserObj.authId.user !== undefined) {
                             UserId = ggUserObj.authId.user;
                         }
                     }
-                    if(UserId !== undefined){
+                    if (UserId !== undefined) {
                         UserId += ';GG';
                     }
                 }
-                else if (mode === 'AP'){
-                    const appleToken:any = await jwt.verify(token,env.SECRET_KEY);
-                    if(appleToken.token !== undefined){
-                        const authenAp = await this.authenticationIdService.findOne({where: {user:ObjectID(appleToken.userId)}});
-                        if(authenAp.user !== undefined){
+                else if (mode === 'AP') {
+                    const appleToken: any = await jwt.verify(token, env.SECRET_KEY);
+                    if (appleToken.token !== undefined) {
+                        const authenAp = await this.authenticationIdService.findOne({ where: { user: ObjectID(appleToken.userId) } });
+                        if (authenAp.user !== undefined) {
                             UserId = authenAp.user;
                         }
                     }
-                    if(UserId !== undefined){
+                    if (UserId !== undefined) {
                         UserId += ';AP';
                     }
-                } // MFP Auth
-                else {
+                } else if (mode === 'MFP') {
+                    const mfpToken: any = await jwt.verify(token, env.SECRET_KEY);
+                    if (mfpToken.token !== undefined) {
+                        const authenMFP = await this.authenticationIdService.findOne({ where: { user: ObjectID(mfpToken.userId) } });
+                        if (authenMFP.user !== undefined) {
+                            UserId = authenMFP.user;
+                        }
+                    }
+                    if (UserId !== undefined) {
+                        UserId += ';MFP';
+                    }
+                } else {
                     UserId = await this.decryptToken(token);
 
                     if (UserId !== undefined) {
@@ -118,7 +128,7 @@ export class AuthService {
 
     public async decryptToken(encryptString: string): Promise<number> {
         return new Promise<number>((subresolve, subreject) => {
-            jwt.verify(encryptString, env.SECRET_KEY, (err, decoded:any) => {
+            jwt.verify(encryptString, env.SECRET_KEY, (err, decoded: any) => {
                 if (err) {
                     return subresolve(undefined);
                 }
@@ -140,13 +150,13 @@ export class AuthService {
                 providerName = PROVIDER.TWITTER;
             } else if ('GG' === type) {
                 providerName = PROVIDER.GOOGLE;
-            } else if ('AP' === type){
+            } else if ('AP' === type) {
                 providerName = PROVIDER.APPLE;
-            } else if ('MFP' === type){
+            } else if ('MFP' === type) {
                 providerName = PROVIDER.MFP;
             }
         }
-        
+
         // check token expired
         const authenId: AuthenticationId = await this.authenticationIdService.findOne({ where: { user: uid, providerName } });
         if (authenId !== undefined && authenId.expirationDate !== undefined) {

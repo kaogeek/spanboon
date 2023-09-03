@@ -45,7 +45,8 @@ import { AutoSynz } from './requests/AutoSynz';
 import { FirebaseGuestUser } from './requests/FirebaseGuestUsers';
 import { OtpService } from '../services/OtpService';
 import { DeviceToken } from '../models/DeviceToken';
-
+import axios from 'axios';
+import qs from 'qs';
 @JsonController()
 export class GuestController {
     constructor(
@@ -1024,9 +1025,7 @@ export class GuestController {
                 const errorResponse: any = { status: 0, message: 'Invalid username' };
                 return res.status(400).send(errorResponse);
             }
-        }
-
-        else if (mode === PROVIDER.APPLE) {
+        } else if (mode === PROVIDER.APPLE) {
             const appleId: any = req.body.apple.result.user;
             const tokenFCM_AP = req.body.tokenFCM;
             const deviceAP = req.body.deviceName;
@@ -1065,7 +1064,7 @@ export class GuestController {
             } else {
                 const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'axios error.' };
                 return res.status(400).send(errorUserNameResponse);
-            } 
+            }
         } else if (mode === PROVIDER.FACEBOOK) {
             const tokenFcmFB = req.body.tokenFCM;
             const deviceFB = req.body.deviceName;
@@ -1334,6 +1333,60 @@ export class GuestController {
                 return res.status(400).send(errorResponse);
             }
         } else if (mode === PROVIDER.MFP) {
+            const requestBody = {
+                'grant_type': process.env.GRANT_TYPE,
+                'client_id': process.env.CLIENT_ID,
+                'client_secret': process.env.CLIENT_SECRET,
+                'scope': process.env.SCOPE
+            };
+            const formattedData = qs.stringify(requestBody);
+
+            const response = await axios.post(
+                process.env.APP_MFP_API_OAUTH,
+                formattedData, {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    Accept: 'application/json'
+                }
+            });
+            // check the status user MFP
+            const toeknCredential = response.data.access_token;
+            const getMembershipById = await axios.get(
+                process.env.API_MFP_GET_ID + users.id,
+                {
+                    headers: {
+                        Authorization: `Bearer ${toeknCredential}`
+                    }
+                }
+            );
+            if (getMembershipById.data.data.state !== 'APPROVED') {
+                const errorResponse = ResponseUtil.getErrorResponse('Cannot Login Your state is not APPROVED.', undefined);
+                return res.status(400).send(errorResponse);
+            }
+            // check authentication by id or mobile or identification_number
+
+            const mfpAuthentication = await this.authenticationIdService.findOne
+                ({
+                    providerName: PROVIDER.MFP,
+                    providerUserId: getMembershipById.data.data.id,
+                    mobileNumber: getMembershipById.data.data.mobile_number,
+                    identificationNumber: getMembershipById.data.data.identification_number
+                });
+            if (mfpAuthentication !== undefined && mfpAuthentication !== null) {
+                const userExrTime = await this.getUserLoginExpireTime();
+                const expirationDate = moment().add(userExrTime, 'days').toDate();
+                const token = jwt.sign({ id: mfpAuthentication.user }, env.SECRET_KEY);
+                const user: User = await this.userService.findOne({ where: { username: userEmail } });
+                loginUser = user;
+
+                loginToken = token;
+                loginUser = await this.userService.cleanUserField(loginUser);
+                const result = { token: loginToken, user: loginUser, expire_at: expirationDate };
+
+                const successResponse = ResponseUtil.getSuccessResponse('Loggedin successful', result);
+                return res.status(200).send(successResponse);
+            }
+
             const modeAuthen = [];
             const data: User = await this.userService.findOne({ where: { username: userEmail } });
 
@@ -2599,8 +2652,7 @@ export class GuestController {
                 const errorResponse: any = { status: 0, message: ex.message };
                 return response.status(400).send(errorResponse);
             }
-        }
-        if (isMode !== undefined && isMode === 'GG') {
+        } if (isMode !== undefined && isMode === 'GG') {
             try {
                 const decryptToken: any = await jwt.verify(tokenParam, env.SECRET_KEY);
                 if (decryptToken.token === undefined) {
@@ -2643,11 +2695,21 @@ export class GuestController {
                 const errorResponse: any = { status: 0, message: ex.message };
                 return response.status(400).send(errorResponse);
             }
-        } // if (isMode !== undefined && isMode === 'MFP Auth') {
-
-        // }
-
-        else {
+        } if (isMode !== undefined && isMode === 'MFP') {
+            try {
+                const decryptToken: any = await jwt.verify(tokenParam, env.SECRET_KEY);
+                if (decryptToken.token === undefined) {
+                    const errorUserNameResponse: any = { status: 0, message: 'Token was not found.' };
+                    return response.status(400).send(errorUserNameResponse);
+                }
+                const mfpUser = await this.authenticationIdService.findOne({ user: ObjectID(decryptToken.userId), providerName: PROVIDER.MFP });
+                const findUser = await this.userService.findOne({ _id: ObjectID(mfpUser.user) });
+                user = findUser;
+            } catch (ex: any) {
+                const errorResponse: any = { status: 0, message: ex.message };
+                return response.status(400).send(errorResponse);
+            }
+        } else {
             const pageUserId = await this.authService.decryptToken(tokenParam);
             if (pageUserId !== undefined) {
                 user = await this.userService.findOne({ where: { _id: new ObjectID(pageUserId) } }, { signURL: true });
@@ -2716,10 +2778,28 @@ export class GuestController {
                 await this.deviceToken.delete({ userId: authenId.user });
                 return response.status(400).send(errorUserNameResponse);
             }
-        } // else if ( MFP Auth ){
-
-        // }
-        else {
+        } else if (isMode !== undefined && isMode === 'MFP') {
+            const decryptToken: any = await jwt.verify(tokenParam, env.SECRET_KEY);
+            const authenId = await this.authenticationIdService.findOne({ user: user.id, providerName: PROVIDER.MFP });
+            if (authenId === undefined) {
+                const errorUserNameResponse: any = { status: 0, message: 'User token invalid.' };
+                await this.deviceToken.delete({ userId: authenId.user });
+                return response.status(400).send(errorUserNameResponse);
+            }
+            const expiresAt = authenId.expirationDate;
+            if (authenId.membershipType === 'MEMBERSHIP_YEARLY') {
+                if (expiresAt !== undefined && expiresAt !== null && expiresAt.getTime() <= today.getTime()) {
+                    const errorUserNameResponse: any = { status: 0, message: 'Membership has expired.' };
+                    await this.deviceToken.delete({ userId: authenId.user });
+                    return response.status(400).send(errorUserNameResponse);
+                }
+            }
+            if (decryptToken.expire_at !== undefined && decryptToken.expire_at !== null && decryptToken.expire_at.getTime() <= today.getTime()) {
+                const errorUserNameResponse: any = { status: 0, message: 'User token expired.'  };
+                await this.deviceToken.delete({ userId: authenId.user });
+                return response.status(400).send(errorUserNameResponse);
+            }
+        } else {
             // normal mode
             const authenId: AuthenticationId = await this.authenticationIdService.findOne({ where: { user: user.id, providerName: PROVIDER.EMAIL } });
             if (authenId === undefined) {
