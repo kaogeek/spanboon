@@ -96,18 +96,20 @@ export class UserProfileController {
                     }
                 },
                 {
-                    $project: { 
-                        uniqueId: 1, 
+                    $project: {
+                        uniqueId: 1,
                         firstName: 1,
-                        lastName: 1, 
-                        displayName: 1, 
-                        birthdate: 1, 
-                        customGender: 1, 
-                        gender: 1, 
-                        imageURL: 1, 
-                        coverURL: 1, 
-                        coverPosition: 1, 
-                        provideItems: 1 }
+                        lastName: 1,
+                        displayName: 1,
+                        birthdate: 1,
+                        customGender: 1,
+                        gender: 1,
+                        imageURL: 1,
+                        coverURL: 1,
+                        coverPosition: 1,
+                        provideItems: 1,
+                        membership: 1
+                    }
                 }
             ]
         );
@@ -576,11 +578,7 @@ export class UserProfileController {
     @Post('/:id')
     @Authorized('user')
     public async bindingUserMFPProcess(@Param('id') id: string, @Body({ validate: true }) users: UpdateUserProfileRequest, @Res() res: any, @Req() req: any): Promise<any> {
-        console.log('users', users);
-        console.log('process.env.CLIENT_SECRET', process.env.CLIENT_SECRET);
-        console.log('process.env.CLIENT_SECRET',typeof(process.env.CLIENT_SECRET));
         const token = await jwt.sign({ redirect_uri: 'http://110.171.133.236:4200/processing' }, process.env.CLIENT_SECRET, { algorithm: 'HS256' });
-        console.log('token',token);
         if (token) {
             const successResponseMFP = ResponseUtil.getSuccessResponse('Grant Client Credential MFP is successful.', token);
             return res.status(200).send(successResponseMFP);

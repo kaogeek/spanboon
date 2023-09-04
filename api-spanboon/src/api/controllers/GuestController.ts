@@ -1352,7 +1352,6 @@ export class GuestController {
                 }
             });
             // check the status user MFP
-            console.log(' response.data', response.data);
             const tokenCredential = response.data.access_token;
             const getMembershipById = await axios.get(
                 process.env.API_MFP_GET_ID + users.id,
@@ -2830,6 +2829,9 @@ export class GuestController {
             }
             const expiresAt = authenId.expirationDate;
             if (expiresAt !== undefined && expiresAt !== null && expiresAt.getTime() <= today.getTime()) {
+                const query = { _id: authenId.providerUserId };
+                const newValues = { $set: { membership: false } };
+                await this.userService.update(query, newValues);
                 const errorUserNameResponse: any = { status: 0, message: 'User token expired.' };
                 await this.deviceToken.delete({ userId: user.id });
                 return response.status(400).send(errorUserNameResponse);
