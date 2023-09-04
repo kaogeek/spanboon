@@ -424,4 +424,4 @@ export * from './main.internal/PolicyPage.component';
 export * from './main.internal/TermsOfServicePage.component';
 export * from './main.internal/EventSearch.component';
 export * from './main.internal/LoginMemberProcessing.component';
-export * from './main.internal/testMember.component';
+export * from './main.internal/MemberProcess.component';

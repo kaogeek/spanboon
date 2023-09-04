@@ -53,13 +53,13 @@ export class LoginMemberProcessing extends AbstractPageImageLoader implements On
 
   public ngOnInit(): void {
     let url = this.router.url.split('=');
-    this.decodedData = jwt_decode(url[1])
-    console.log("decode", this.decodedData)
-    if (this.decodedData.membership) {
+    this.decodedData = jwt_decode(url[1]);
+    let methodMFP = localStorage.getItem('methodMFP');
+    if (methodMFP === 'binding') {
       this.bindingMemberFacade.binding(this.decodedData, this.getIdUser()).then((res: any) => {
         if (res) {
           if (res.membership.state === 'APPROVED') {
-            this.showAlertRedirectDialog('ผ่านการตรวจสอบแล้ว');
+            this.showAlertRedirectDialog('ผูกสมาชิกสำเร็จ', '', '/process/success');
             this.isLoading = false;
           }
         }
@@ -67,50 +67,63 @@ export class LoginMemberProcessing extends AbstractPageImageLoader implements On
         if (err) {
           console.log("err", err);
           if (err.error.message === 'PENDING_PAYMENT') {
-            this.showAlertRedirectDialog('รอการชำระเงิน');
+            this.showAlertRedirectDialog('รอการชำระเงิน', '', '/process/reject');
           } else if (err.error.message === 'PENDING_APPROVAL') {
-            this.showAlertRedirectDialog('รอการตรวจสอบ');
+            this.showAlertRedirectDialog('รอการตรวจสอบ', '', '/process/reject');
           } else if (err.error.message === 'REJECTED') {
-            this.showAlertRedirectDialog('ไม่ผ่านการตรวจสอบ');
+            this.showAlertRedirectDialog('ไม่ผ่านการตรวจสอบ', '', '/process/reject');
           } else if (err.error.message === 'PROFILE_RECHECKED') {
-            this.showAlertRedirectDialog('สมาชิกรอจัดเก็บ');
+            this.showAlertRedirectDialog('สมาชิกรอจัดเก็บ', '', '/process/reject');
           } else if (err.error.message === 'ARCHIVED') {
-            this.showAlertRedirectDialog('สมาชิกที่จัดเก็บแล้ว');
+            this.showAlertRedirectDialog('สมาชิกที่จัดเก็บแล้ว', '', '/process/reject');
           } else if (err.error.message === 'You have ever binded this user.') {
-            this.showAlertRedirectDialog('คุณเคยผูกสมาชิกไปแล้ว');
+            this.showAlertRedirectDialog('คุณเคยผูกสมาชิกไปแล้ว', '', '/process/reject');
           } else if (err.error.message === 'Cannot Update Status Membership User.') {
-            this.showAlertRedirectDialog('ไม่สามารถผูกสมาชิกได้');
+            this.showAlertRedirectDialog('ไม่สามารถผูกสมาชิกได้', '', '/process/reject');
           } else if (err.error.message === 'User Not Found') {
-            this.showAlertRedirectDialog('ไม่พบบัญชีผู้ใช้');
+            this.showAlertRedirectDialog('ไม่พบบัญชีผู้ใช้', '', '/process/reject');
           }
           this.isLoading = false;
         }
       });
     } else {
-      if (this.decodedData !== undefined) {
+      if (methodMFP === 'login') {
         let data = {
-          email: this.decodedData.user.email,
-          identification_number: this.decodedData.user.identification_number,
-          id: this.decodedData.user.id,
-          mobile: this.decodedData.user.mobile
+          email: this.decodedData.membership.email,
+          identification_number: this.decodedData.membership.identification_number,
+          id: this.decodedData.membership.id,
+          mobile: this.decodedData.membership.mobile
         }
-
         this.checkMergeUserFacade.checkMergeUser('MFP', data).then((res) => {
-
+          if (res) {
+            let token = res.token;
+            let navigationExtras: NavigationExtras = {
+              queryParams: { token: token }
+            }
+            this.router.navigate(['/process/success'], navigationExtras);
+          }
         }).catch((error) => {
           const statusMsg = error.error.message;
-          if (statusMsg === "User was not found.") {
+          if (statusMsg === 'User was not found.') {
             let navigationExtras: NavigationExtras = {
+              state: {
+                email: this.decodedData.membership.email
+              },
               queryParams: { mode: 'mfp' }
             }
             this.router.navigate(['/register'], navigationExtras);
+          } else if (statusMsg === 'Membership has expired.') {
+            this.router.navigate(['/home']);
           } else if (error.error.message === 'You cannot merge this user you have had one.') {
             // this.mockDataMergeSocial.social = mode;
             // this.dataUser = error.error;
             // this.emailOtp = error.error.data.email;
             // this.modeSwitch = "mergeuser";
-          } else if (statusMsg === "This Email not exists") {
+          } else if (statusMsg === 'This Email not exists') {
             let navigationExtras: NavigationExtras = {
+              state: {
+                email: this.decodedData.membership.email
+              },
               queryParams: { mode: 'mfp' }
             }
             this.router.navigate(['/register'], navigationExtras);

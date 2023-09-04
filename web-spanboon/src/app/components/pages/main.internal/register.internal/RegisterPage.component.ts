@@ -141,6 +141,8 @@ export class RegisterPage extends AbstractPage implements OnInit {
         this.mode = "twitter";
       } else if (params['mode'] === 'google') {
         this.mode = "google";
+      } else if (params['mode'] === 'mfp') {
+        this.mode = "mfp";
       } else {
         this.mode = "normal";
       }

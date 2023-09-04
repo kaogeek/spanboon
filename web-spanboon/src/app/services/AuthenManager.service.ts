@@ -535,6 +535,7 @@ export class AuthenManager {
     localStorage.removeItem(TOKEN_FCM);
     sessionStorage.removeItem(USER_MEMBERSHIP);
     localStorage.removeItem(USER_MEMBERSHIP);
+    localStorage.removeItem('methodMFP');
   }
 
   public getDefaultOptions(id?: string): any {

@@ -27,7 +27,7 @@
             <div class="settings-right" style="align-items: center; display: flex;"
                 *ngIf="selected === 'ผูกสมาชิกพรรค'">
                 <spanboon-button style="margin-left: 20px;" [height]="'30pt'" [width]="'400px'" [text]="'ผูกสมาชิกพรรค'"
-                    (click)="binding()">
+                    [isDisable]="isMember" (click)="isMember ? null : binding()">
                 </spanboon-button>
             </div>
         </div>

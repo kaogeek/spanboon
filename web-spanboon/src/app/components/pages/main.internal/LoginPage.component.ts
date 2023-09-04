@@ -555,8 +555,9 @@ export class LoginPage extends AbstractPage implements OnInit {
         let token = res.data;
         let url: string = 'https://auth.moveforwardparty.org/sso?';
         if (token !== undefined) {
-          url += `client_id=5&process_type=login&token=${token}`;
+          url += `client_id=5&process_type=binding&token=${token}`;
         }
+        localStorage.setItem('methodMFP', 'login');
         window.open(url, '_blank').focus();
         // this.authenManager.getSSOAuth(token).then((res) => {
         //   if (res) {

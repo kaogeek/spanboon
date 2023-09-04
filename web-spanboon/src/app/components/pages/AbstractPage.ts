@@ -146,7 +146,7 @@ export abstract class AbstractPage implements OnInit {
     });
   }
 
-  public showAlertRedirectDialog(text: any, cancelText?: string): void {
+  public showAlertRedirectDialog(text: any, cancelText?: string, redirect?: any): void {
     let dialog = this.dialog.open(DialogAlert, {
       disableClose: true,
       data: {
@@ -159,7 +159,7 @@ export abstract class AbstractPage implements OnInit {
     });
     dialog.afterClosed().subscribe((res) => {
       if (res) {
-        this.router.navigateByUrl("/account/settings");
+        this.router.navigateByUrl(redirect);
       }
     });
   }
