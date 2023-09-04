@@ -47,6 +47,7 @@ import { OtpService } from '../services/OtpService';
 import { DeviceToken } from '../models/DeviceToken';
 import axios from 'axios';
 import qs from 'qs';
+import * as bcrypt from 'bcrypt';
 @JsonController()
 export class GuestController {
     constructor(
@@ -1379,36 +1380,35 @@ export class GuestController {
                     providerName: PROVIDER.MFP,
                     providerUserId: getMembershipById.data.data.id,
                 });
-            console.log('mfpAuthentication',mfpAuthentication);
-            if (mfpAuthentication === undefined) {
+
+            if (mfpAuthentication === undefined && mfpAuthentication === null) {
                 const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
                 return res.status(400).send(errorUserNameResponse);
             }
 
             // bcrypt.compare(getMembershipById.data.data.identification_number, user.password)
-            const compareIdentification = await User.comparePassword(mfpAuthentication.identificationNumber, getMembershipById.data.data.identification_number);
-            console.log('compareIdentification', compareIdentification);
-            const mfpAuthenIdentification = await this.authenticationIdService.findOne
-                ({
-                    providerName: PROVIDER.MFP,
-                    providerUserId: getMembershipById.data.data.id,
-                    identificationNumber: getMembershipById.data.data.identification_number
-                });
-            if (mfpAuthenIdentification !== undefined && mfpAuthenIdentification !== null) {
-                const userExrTime = await this.getUserLoginExpireTime();
-                const expirationDate = moment().add(userExrTime, 'days').toDate();
-                const token = jwt.sign({ id: mfpAuthenIdentification.user }, env.SECRET_KEY);
-                const user: User = await this.userService.findOne({ where: { username: userEmail } });
-                loginUser = user;
+            const compareIdentification = await bcrypt.compare(getMembershipById.data.data.identification_number, mfpAuthentication.identificationNumber);
+            if(compareIdentification === true){
+                const mfpAuthenIdentification = await this.authenticationIdService.findOne
+                    ({
+                        providerName: PROVIDER.MFP,
+                        providerUserId: getMembershipById.data.data.id,
+                    });
+                if (mfpAuthenIdentification !== undefined && mfpAuthenIdentification !== null) {
+                    const userExrTime = await this.getUserLoginExpireTime();
+                    const expirationDate = moment().add(userExrTime, 'days').toDate();
+                    const token = jwt.sign({ id: mfpAuthenIdentification.user }, env.SECRET_KEY);
+                    const user: User = await this.userService.findOne({ where: { username: userEmail } });
+                    loginUser = user;
 
-                loginToken = token;
-                loginUser = await this.userService.cleanUserField(loginUser);
-                const result = { token: loginToken, user: loginUser, expire_at: expirationDate };
+                    loginToken = token;
+                    loginUser = await this.userService.cleanUserField(loginUser);
+                    const result = { token: loginToken, user: loginUser, expire_at: expirationDate };
 
-                const successResponse = ResponseUtil.getSuccessResponse('Loggedin successful', result);
-                return res.status(200).send(successResponse);
+                    const successResponse = ResponseUtil.getSuccessResponse('Loggedin successful', result);
+                    return res.status(200).send(successResponse);
+                }
             }
-
             const modeAuthen = [];
             const data: User = await this.userService.findOne({ where: { username: userEmail } });
 
