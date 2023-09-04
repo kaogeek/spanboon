@@ -64,6 +64,8 @@ import { UserFollowService } from '../services/UserFollowService';
 import { HidePostService } from '../services/HidePostService';
 import { AuthenticationIdService } from '../services/AuthenticationIdService';
 import { PROVIDER } from '../../constants/LoginProvider';
+import axios from 'axios';
+import qs from 'qs';
 @JsonController('/page')
 export class PagePostController {
     constructor(
@@ -453,16 +455,17 @@ export class PagePostController {
         // before create the post type membership 
         // first we need to check authenticate that user is membership ?
         // page official === false 
-        const pageObjIds = new ObjectID(pageId);
+        let authMemberShip = undefined;
         let pageIds = undefined;
-        if (pageObjIds !== undefined) {
+        if (String(pageObjId) !== null) {
+            const pageObjIds = new ObjectID(pageObjId);
             pageIds = await this.pageService.findOne({ _id: pageObjIds });
         }
 
         if (pageIds !== undefined && pageIds.official === false) {
             if (membership !== undefined && membership !== null && membership !== '' && membership === 'MEMBERSHIP') {
                 const userMemberShip = await this.userService.findOne({ _id: userObjId });
-                const authMemberShip = await this.authenticationIdService.findOne({ providerName: PROVIDER.MFP, user: userObjId, membership: true });
+                authMemberShip = await this.authenticationIdService.findOne({ providerName: PROVIDER.MFP, user: userObjId });
                 if (
                     (userMemberShip.membership === undefined || userMemberShip.membership === false)
                     &&
@@ -475,7 +478,7 @@ export class PagePostController {
         if (pageIds === undefined) {
             if (membership !== undefined && membership !== null && membership !== '' && membership === 'MEMBERSHIP') {
                 const userMemberShip = await this.userService.findOne({ _id: userObjId });
-                const authMemberShip = await this.authenticationIdService.findOne({ providerName: PROVIDER.MFP, user: userObjId, membership: true });
+                authMemberShip = await this.authenticationIdService.findOne({ providerName: PROVIDER.MFP, user: userObjId });
                 if (
                     (userMemberShip.membership === undefined || userMemberShip.membership === false)
                     &&
@@ -485,10 +488,39 @@ export class PagePostController {
             }
         }
         // check client credential
+        authMemberShip = await this.authenticationIdService.findOne({ providerName: PROVIDER.MFP, user: userObjId });
+        const requestBody = {
+            'grant_type': process.env.GRANT_TYPE,
+            'client_id': process.env.CLIENT_ID,
+            'client_secret': process.env.CLIENT_SECRET,
+            'scope': process.env.SCOPE
+        };
+        const formattedData = qs.stringify(requestBody);
 
-        if (pageIds.official === true) {
+        const response = await axios.post(
+            process.env.APP_MFP_API_OAUTH,
+            formattedData, {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                Accept: 'application/json'
+            }
+        });
+        const tokenCredential = response.data.access_token;
+        const getMembershipById = await axios.get(
+            process.env.API_MFP_GET_ID + authMemberShip.providerUserId,
+            {
+                headers: {
+                    Authorization: `Bearer ${tokenCredential}`
+                }
+            }
+        );
+        if (getMembershipById.data.data.state !== 'APPROVED') {
+            const errorResponse = ResponseUtil.getErrorResponse('Your status have not approved.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+        if (pageIds !== undefined && pageIds.official === true) {
             // check authentication
-            const authMemberShip = await this.authenticationIdService.findOne({ providerName: PROVIDER.MFP, user: userObjId, membership: true });
+            authMemberShip = await this.authenticationIdService.findOne({ providerName: PROVIDER.MFP, user: userObjId, membership: true });
             const timeStampToday = today.getTime();
             if (authMemberShip !== undefined &&
                 authMemberShip.membershipState === 'APPROVED' &&

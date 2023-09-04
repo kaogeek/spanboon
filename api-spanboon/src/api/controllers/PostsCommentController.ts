@@ -40,6 +40,8 @@ import { UserService } from '../services/UserService';
 // import { ConfigService } from '../services/ConfigService';
 import { AuthenticationIdService } from '../services/AuthenticationIdService';
 import { PROVIDER } from '../../constants/LoginProvider';
+import axios from 'axios';
+import qs from 'qs';
 @JsonController('/post')
 export class PostsCommentController {
     constructor(
@@ -133,14 +135,43 @@ export class PostsCommentController {
         // comment user post membership MFP
         // check authenticate membership MFP 
         const postObject = await this.postsService.findOne({ _id: postObjId });
-        const authenticateMFP = await this.authenticationIdService.findOne({ providerName: PROVIDER.MFP, user: userObjId, membership: true });
+        const authenticateMFP = await this.authenticationIdService.findOne({ providerName: PROVIDER.MFP, user: userObjId });
         if (postObject.type === 'MEMBERSHIP') {
             if (authenticateMFP === undefined) {
                 const errorResponse = ResponseUtil.getErrorResponse('You cannot comment this post type MFP.', undefined);
                 return res.status(400).send(errorResponse);
             }
         }
+        // check client credential
+        const requestBody = {
+            'grant_type': process.env.GRANT_TYPE,
+            'client_id': process.env.CLIENT_ID,
+            'client_secret': process.env.CLIENT_SECRET,
+            'scope': process.env.SCOPE
+        };
+        const formattedData = qs.stringify(requestBody);
 
+        const response = await axios.post(
+            process.env.APP_MFP_API_OAUTH,
+            formattedData, {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                Accept: 'application/json'
+            }
+        });
+        const tokenCredential = response.data.access_token;
+        const getMembershipById = await axios.get(
+            process.env.API_MFP_GET_ID + authenticateMFP.providerUserId,
+            {
+                headers: {
+                    Authorization: `Bearer ${tokenCredential}`
+                }
+            }
+        );
+        if (getMembershipById.data.data.state !== 'APPROVED') {
+            const errorResponse = ResponseUtil.getErrorResponse('Your status have not approved.', undefined);
+            return res.status(400).send(errorResponse);
+        }
         const today = new Date();
         const timeStampToday = today.getTime();
         if (authenticateMFP !== undefined &&
@@ -1097,6 +1128,36 @@ export class PostsCommentController {
                 const errorResponse = ResponseUtil.getErrorResponse('You cannot like comment this post type MFP.', undefined);
                 return res.status(400).send(errorResponse);
             }
+        }
+        // check client credential
+        const requestBody = {
+            'grant_type': process.env.GRANT_TYPE,
+            'client_id': process.env.CLIENT_ID,
+            'client_secret': process.env.CLIENT_SECRET,
+            'scope': process.env.SCOPE
+        };
+        const formattedData = qs.stringify(requestBody);
+
+        const response = await axios.post(
+            process.env.APP_MFP_API_OAUTH,
+            formattedData, {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                Accept: 'application/json'
+            }
+        });
+        const tokenCredential = response.data.access_token;
+        const getMembershipById = await axios.get(
+            process.env.API_MFP_GET_ID + authenticateMFP.providerUserId,
+            {
+                headers: {
+                    Authorization: `Bearer ${tokenCredential}`
+                }
+            }
+        );
+        if (getMembershipById.data.data.state !== 'APPROVED') {
+            const errorResponse = ResponseUtil.getErrorResponse('Your status have not approved.', undefined);
+            return res.status(400).send(errorResponse);
         }
         const today = new Date();
         const timeStampToday = today.getTime();

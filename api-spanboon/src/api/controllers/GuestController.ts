@@ -1352,12 +1352,13 @@ export class GuestController {
                 }
             });
             // check the status user MFP
-            const toeknCredential = response.data.access_token;
+            console.log(' response.data', response.data);
+            const tokenCredential = response.data.access_token;
             const getMembershipById = await axios.get(
                 process.env.API_MFP_GET_ID + users.id,
                 {
                     headers: {
-                        Authorization: `Bearer ${toeknCredential}`
+                        Authorization: `Bearer ${tokenCredential}`
                     }
                 }
             );
@@ -1380,8 +1381,7 @@ export class GuestController {
                     providerName: PROVIDER.MFP,
                     providerUserId: getMembershipById.data.data.id,
                 });
-
-            if (mfpAuthentication === undefined && mfpAuthentication === null) {
+            if (mfpAuthentication === undefined) {
                 const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
                 return res.status(400).send(errorUserNameResponse);
             }
