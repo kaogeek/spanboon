@@ -578,7 +578,7 @@ export class UserProfileController {
     @Post('/:id')
     @Authorized('user')
     public async bindingUserMFPProcess(@Param('id') id: string, @Body({ validate: true }) users: UpdateUserProfileRequest, @Res() res: any, @Req() req: any): Promise<any> {
-        const token = await jwt.sign({ redirect_uri: 'http://110.171.133.236:4200/processing' }, process.env.CLIENT_SECRET, { algorithm: 'HS256' });
+        const token = await jwt.sign({ redirect_uri: process.env.WEB_MFP_REDIRECT_URI }, process.env.CLIENT_SECRET, { algorithm: 'HS256' });
         if (token) {
             const successResponseMFP = ResponseUtil.getSuccessResponse('Grant Client Credential MFP is successful.', token);
             return res.status(200).send(successResponseMFP);
