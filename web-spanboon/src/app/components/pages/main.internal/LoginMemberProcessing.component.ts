@@ -59,7 +59,7 @@ export class LoginMemberProcessing extends AbstractPageImageLoader implements On
       this.bindingMemberFacade.binding(this.decodedData, this.getIdUser()).then((res: any) => {
         if (res) {
           if (res.membership.state === 'APPROVED') {
-            this.showAlertRedirectDialog('ผูกสมาชิกสำเร็จ', '', '/process/success');
+            this.router.navigateByUrl('/process/success');
             this.isLoading = false;
           }
         }

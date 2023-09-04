@@ -55,9 +55,19 @@ export class MemberProcess extends AbstractPageImageLoader implements OnInit {
   }
 
   public ngOnInit(): void {
+    let methodMFP = localStorage.getItem('methodMFP');
     setTimeout(() => {
-      this.router.navigateByUrl('/home');
-      localStorage.removeItem('methodMFP');
+      if (this.status === 'success') {
+        if (methodMFP === 'binding') {
+          this.router.navigateByUrl('/account/settings');
+        } else {
+          this.router.navigateByUrl('/home');
+        }
+        localStorage.removeItem('methodMFP');
+      } else {
+        this.router.navigateByUrl('/home');
+        localStorage.removeItem('methodMFP');
+      }
     }, 5000);
   }
 
