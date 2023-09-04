@@ -650,7 +650,7 @@ export class UserProfileController {
                     const newValues = { $set: { banned: false, membership: true } };
                     const update = await this.userService.update(query, newValues);
                     if (update) {
-                        const successResponseMFP = ResponseUtil.getSuccessResponse('Binding User Is Successful.', userObject);
+                        const successResponseMFP = ResponseUtil.getSuccessResponse('Binding User Is Successful.', undefined);
                         return res.status(200).send(successResponseMFP);
                     } else {
                         return res.status(400).send(ResponseUtil.getSuccessResponse('Cannot Update Status Membership User.', undefined));

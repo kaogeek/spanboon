@@ -1335,6 +1335,7 @@ export class GuestController {
             }
         } else if (mode === PROVIDER.MFP) {
             const today = moment().toDate();
+            let authIdCreate: AuthenticationId;
             const requestBody = {
                 'grant_type': process.env.GRANT_TYPE,
                 'client_id': process.env.CLIENT_ID,
@@ -1381,8 +1382,78 @@ export class GuestController {
                     providerUserId: getMembershipById.data.data.id,
                 });
             if (mfpAuthentication === undefined) {
-                const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
-                return res.status(400).send(errorUserNameResponse);
+                // check email
+                const userEmailMfp = await this.userService.findOne({ email: String(getMembershipById.data.data.email) });
+                if (userEmailMfp !== undefined && userEmailMfp !== null) {
+                    if (getMembershipById.data.data.state === 'PENDING_PAYMENT' && getMembershipById.data.data.membership_type === 'UNKNOWN') {
+                        return res.status(400).send(ResponseUtil.getSuccessResponse('PENDING_PAYMENT', undefined));
+                    }
+                    // PENDING_APPROVAL 400
+                    if (getMembershipById.data.data.state === 'PENDING_APPROVAL') {
+                        return res.status(400).send(ResponseUtil.getSuccessResponse('PENDING_APPROVAL', undefined));
+                    }
+                    // REJECTED 400
+                    if (getMembershipById.data.data.state === 'REJECTED') {
+                        return res.status(400).send(ResponseUtil.getSuccessResponse('REJECTED', undefined));
+                    }
+                    // PROFILE_RECHECKED 400
+                    if (getMembershipById.data.data.state === 'PROFILE_RECHECKED') {
+                        return res.status(400).send(ResponseUtil.getSuccessResponse('PROFILE_RECHECKED', undefined));
+                    }
+                    if (getMembershipById.data.data.state === 'ARCHIVED') {
+                        return res.status(400).send(ResponseUtil.getSuccessResponse('ARCHIVED', undefined));
+                    }
+                    if (getMembershipById.data.data.state === 'APPROVED'
+                        &&
+                        (getMembershipById.data.data.membership_type === 'MEMBERSHIP_YEARLY' ||
+                            getMembershipById.data.data.membership_type === 'MEMBERSHIP_PERMANENT')) {
+
+                        const user = await this.userService.findOne({ _id: userEmailMfp.id });
+                        if (user) {
+                            // check authentication MFP Is existing ?
+                            const encryptIdentification = await bcrypt.hash(getMembershipById.data.data.identification_number, 10);
+                            const checkAuthentication = await this.authenticationIdService.findOne({ providerUserId: getMembershipById.data.data.id, providerName: PROVIDER.MFP });
+                            if (checkAuthentication !== undefined && checkAuthentication !== null) {
+                                return res.status(400).send(ResponseUtil.getSuccessResponse('You have ever binded this user.', undefined));
+
+                            }
+                            // import * as bcrypt from 'bcrypt';
+
+                            const authenId = new AuthenticationId();
+                            authenId.user = user.id;
+                            authenId.lastAuthenTime = moment().toDate();
+                            authenId.providerUserId = getMembershipById.data.data.id;
+                            authenId.providerName = PROVIDER.MFP;
+                            authenId.properties = getMembershipById.data.data;
+                            authenId.expirationDate = getMembershipById.data.data.expired_at;
+                            authenId.expirationDate_law_expired = getMembershipById.data.data.law_expired_at;
+                            authenId.identificationNumber = encryptIdentification;
+                            authenId.mobileNumber = getMembershipById.data.data.mobile_number;
+                            authenId.membershipState = getMembershipById.data.data.state;
+                            authenId.membershipType = getMembershipById.data.data.membership_type;
+                            authenId.membership = true;
+                            authIdCreate = await this.authenticationIdService.create(authenId);
+                            if (authIdCreate) {
+                                // update status user membership = true
+                                const query = { _id: user.id };
+                                const newValues = { $set: { banned: false, membership: true } };
+                                const update = await this.userService.update(query, newValues);
+                                if (update) {
+                                    const successResponseMFP = ResponseUtil.getSuccessResponse('Binding User Is Successful.', user.id);
+                                    return res.status(200).send(successResponseMFP);
+                                } else {
+                                    return res.status(400).send(ResponseUtil.getSuccessResponse('Cannot Update Status Membership User.', undefined));
+                                }
+                            }
+                        } else {
+                            return res.status(400).send(ResponseUtil.getSuccessResponse('User Not Found', undefined));
+                        }
+                    }
+                } else {
+                    // check authentification
+                    const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
+                    return res.status(400).send(errorUserNameResponse);
+                }
             }
 
             // bcrypt.compare(getMembershipById.data.data.identification_number, user.password)
