@@ -585,7 +585,6 @@ export class UserProfileController {
         const userObject = bindingUser;
         const userObjId = new ObjectID(id);
         let authIdCreate: AuthenticationId;
-        console.log('userObject', userObject.membership);
         // PENDING_PAYMENT 400
         if (userObject.membership.state === 'PENDING_PAYMENT' && userObject.membership.membership_type === 'UNKNOWN') {
             return res.status(400).send(ResponseUtil.getSuccessResponse('PENDING_PAYMENT', undefined));
@@ -606,13 +605,8 @@ export class UserProfileController {
             return res.status(400).send(ResponseUtil.getSuccessResponse('ARCHIVED', undefined));
         }
 
-        if (userObject.membership.is_renewable === false) {
-            return res.status(400).send(ResponseUtil.getSuccessResponse('Is_renewable', undefined));
-        }
-
         if (userObject.membership.state === 'APPROVED'
             &&
-            userObject.membership.is_renewable === true &&
             (userObject.membership.membership_type === 'MEMBERSHIP_YEARLY' ||
                 userObject.membership.membership_type === 'MEMBERSHIP_PERMANENT')) {
 

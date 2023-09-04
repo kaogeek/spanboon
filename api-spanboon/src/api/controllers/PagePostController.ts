@@ -484,6 +484,8 @@ export class PagePostController {
                 }
             }
         }
+        // check client credential
+
         if (pageIds.official === true) {
             // check authentication
             const authMemberShip = await this.authenticationIdService.findOne({ providerName: PROVIDER.MFP, user: userObjId, membership: true });
