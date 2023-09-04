@@ -1,0 +1,12 @@
+<div class="member-process-box">
+    <div class="member-process-wrapper" *ngIf="status === 'reject'">
+        <img class="image" src="../../../../assets/img/status/deny.svg" alt="">
+        <span [innerHTML]="'ลองใหม่อีกครั้ง'"></span>
+        <span [innerHTML]="'คุณผูกสมาชิกไม่สำเร็จ'"></span>
+    </div>
+    <div class="member-process-wrapper" *ngIf="status === 'success'">
+        <img class="image" src="../../../../assets/img/status/approve.svg" alt="">
+        <span [innerHTML]="'เยี่ยมไปเลย!'"></span>
+        <span [innerHTML]="'คุณผูกสมาชิกสำเร็จ'"></span>
+    </div>
+</div>

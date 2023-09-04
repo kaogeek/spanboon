@@ -36,6 +36,7 @@ export class SettingAccount extends AbstractPage implements OnInit {
     public dataUser: any;
     public user: any;
     public bindingMember: boolean;
+    public isMember: boolean = false;
 
     minDate = new Date(1800, 0, 1);
     maxDate = new Date();
@@ -82,6 +83,7 @@ export class SettingAccount extends AbstractPage implements OnInit {
 
     public ngOnInit(): void {
         this.seoService.updateTitle("จัดการบัญชี - " + this.getUser());
+        this.isMember = this.authenManager.getUserMember();
     }
     public ngOnDestroy(): void {
         super.ngOnDestroy();
@@ -117,6 +119,7 @@ export class SettingAccount extends AbstractPage implements OnInit {
                 if (token !== undefined) {
                     url += `client_id=5&process_type=binding&token=${token}`;
                 }
+                localStorage.setItem('methodMFP', 'binding');
                 window.open(url, '_blank').focus();
             }
         }).catch((err) => {

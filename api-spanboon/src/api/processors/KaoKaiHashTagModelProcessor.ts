@@ -2353,7 +2353,7 @@ export class KaoKaiHashTagModelProcessor extends AbstractSeparateSectionProcesso
             userResult.id = user._id;
             userResult.displayName = user.displayName;
             userResult.imageURL = user.imageURL;
-            userResult.email = user.email;
+            // userResult.email = user.email;
             userResult.isAdmin = user.isAdmin;
             userResult.uniqueId = user.uniqueId;
             userResult.type = 'USER';

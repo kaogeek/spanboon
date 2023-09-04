@@ -145,7 +145,6 @@ export class UserService {
                 id: user.id,
                 username: user.username,
                 uniqueId: user.uniqueId,
-                email: user.email,
                 displayName: user.displayName,
                 firstName: user.firstName,
                 lastName: user.lastName,
@@ -180,7 +179,6 @@ export class UserService {
                 id: user._id,
                 username: user.username,
                 uniqueId: user.uniqueId,
-                email: user.email,
                 displayName: user.displayName,
                 firstName: user.firstName,
                 lastName: user.lastName,
@@ -197,7 +195,8 @@ export class UserService {
                 isSubAdmin: user.isSubAdmin,
                 createdDate: user.createdDate,
                 updateDate: user.updateDate,
-                province:user.province
+                province: user.province,
+                membership: user.membership
             };
             user = clearItem;
         }

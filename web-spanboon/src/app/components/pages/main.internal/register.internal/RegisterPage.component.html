@@ -60,7 +60,8 @@
 
                 <input type="text" id="lastName" name="lastName" placeholder="นามสกุล" class="input-text-group"
                     [(ngModel)]="data.lastName" shake [shake]="activeLastName" required>
-                <ng-container *ngIf="mode === 'facebook' || mode === 'google' || mode === 'twitter'; else elseEmail">
+                <ng-container
+                    *ngIf="mode === 'facebook' || mode === 'google' || mode === 'twitter' || mode === 'mfp'; else elseEmail">
                     <input #inputEmail type="email" id="email" name="email" placeholder="อีเมล" class="input-text" shake
                         [readonly]="data.email || objectMerge.email ? true : false"
                         [class.readonly]="data.email || objectMerge.email"
@@ -68,7 +69,8 @@
                 </ng-container>
                 <ng-template #elseEmail>
                     <input #inputEmail type="email" id="email" name="email" placeholder="อีเมล" class="input-text" shake
-                        [shake]="activeEmail" [(ngModel)]="data.email" [email]="true" required>
+                        [shake]="activeEmail" [(ngModel)]="data.email ? data.email : objectMerge.email" [email]="true"
+                        required>
                 </ng-template>
             </div>
             <ng-container *ngIf="mode === 'normal' ">

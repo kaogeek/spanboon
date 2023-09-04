@@ -35,6 +35,7 @@ import { AuthenticationIdService } from '../services/AuthenticationIdService';
 import { HidePostService } from '../services/HidePostService';
 import jwt from 'jsonwebtoken';
 import { PROVIDER } from '../../constants/LoginProvider';
+import * as bcrypt from 'bcrypt';
 @JsonController('/profile')
 export class UserProfileController {
     constructor(
@@ -95,7 +96,20 @@ export class UserProfileController {
                     }
                 },
                 {
-                    $project: { uniqueId: 1, username: 1, email: 1, firstName: 1, lastName: 1, displayName: 1, birthdate: 1, customGender: 1, gender: 1, imageURL: 1, coverURL: 1, coverPosition: 1, provideItems: 1 }
+                    $project: {
+                        uniqueId: 1,
+                        firstName: 1,
+                        lastName: 1,
+                        displayName: 1,
+                        birthdate: 1,
+                        customGender: 1,
+                        gender: 1,
+                        imageURL: 1,
+                        coverURL: 1,
+                        coverPosition: 1,
+                        provideItems: 1,
+                        membership: 1
+                    }
                 }
             ]
         );
@@ -564,11 +578,7 @@ export class UserProfileController {
     @Post('/:id')
     @Authorized('user')
     public async bindingUserMFPProcess(@Param('id') id: string, @Body({ validate: true }) users: UpdateUserProfileRequest, @Res() res: any, @Req() req: any): Promise<any> {
-        console.log('users', users);
-        console.log('process.env.CLIENT_SECRET', process.env.CLIENT_SECRET);
-        console.log('process.env.CLIENT_SECRET',typeof(process.env.CLIENT_SECRET));
-        const token = await jwt.sign({ redirect_uri: 'http://110.171.133.236:4200/processing' }, process.env.CLIENT_SECRET, { algorithm: 'HS256' });
-        console.log('token',token);
+        const token = await jwt.sign({ redirect_uri: process.env.WEB_MFP_REDIRECT_URI }, process.env.CLIENT_SECRET, { algorithm: 'HS256' });
         if (token) {
             const successResponseMFP = ResponseUtil.getSuccessResponse('Grant Client Credential MFP is successful.', token);
             return res.status(200).send(successResponseMFP);
@@ -584,7 +594,6 @@ export class UserProfileController {
         const userObject = bindingUser;
         const userObjId = new ObjectID(id);
         let authIdCreate: AuthenticationId;
-        console.log('userObject', userObject.membership);
         // PENDING_PAYMENT 400
         if (userObject.membership.state === 'PENDING_PAYMENT' && userObject.membership.membership_type === 'UNKNOWN') {
             return res.status(400).send(ResponseUtil.getSuccessResponse('PENDING_PAYMENT', undefined));
@@ -605,24 +614,21 @@ export class UserProfileController {
             return res.status(400).send(ResponseUtil.getSuccessResponse('ARCHIVED', undefined));
         }
 
-        if (userObject.membership.is_renewable === false) {
-            return res.status(400).send(ResponseUtil.getSuccessResponse('Is_renewable', undefined));
-        }
-
         if (userObject.membership.state === 'APPROVED'
             &&
-            userObject.membership.is_renewable === true &&
             (userObject.membership.membership_type === 'MEMBERSHIP_YEARLY' ||
                 userObject.membership.membership_type === 'MEMBERSHIP_PERMANENT')) {
 
             const user = await this.userService.findOne({ _id: userObjId });
             if (user) {
                 // check authentication MFP Is existing ?
+                const encryptIdentification = await bcrypt.hash(userObject.membership.identification_number, 10);
                 const checkAuthentication = await this.authenIdService.findOne({ providerUserId: userObject.membership.id, providerName: PROVIDER.MFP });
                 if (checkAuthentication !== undefined && checkAuthentication !== null) {
                     return res.status(400).send(ResponseUtil.getSuccessResponse('You have ever binded this user.', undefined));
 
                 }
+                // import * as bcrypt from 'bcrypt';
 
                 const authenId = new AuthenticationId();
                 authenId.user = user.id;
@@ -632,10 +638,11 @@ export class UserProfileController {
                 authenId.properties = userObject.membership;
                 authenId.expirationDate = userObject.membership.expired_at;
                 authenId.expirationDate_law_expired = userObject.membership.law_expired_at;
-                authenId.identificationNumber = userObject.membership.identification_number;
+                authenId.identificationNumber = encryptIdentification;
                 authenId.mobileNumber = userObject.membership.mobile_number;
                 authenId.membershipState = userObject.membership.state;
                 authenId.membershipType = userObject.membership.membership_type;
+                authenId.membership = true;
                 authIdCreate = await this.authenIdService.create(authenId);
                 if (authIdCreate) {
                     // update status user membership = true
@@ -643,7 +650,7 @@ export class UserProfileController {
                     const newValues = { $set: { banned: false, membership: true } };
                     const update = await this.userService.update(query, newValues);
                     if (update) {
-                        const successResponseMFP = ResponseUtil.getSuccessResponse('Binding User Is Successful.', userObject);
+                        const successResponseMFP = ResponseUtil.getSuccessResponse('Binding User Is Successful.', undefined);
                         return res.status(200).send(successResponseMFP);
                     } else {
                         return res.status(400).send(ResponseUtil.getSuccessResponse('Cannot Update Status Membership User.', undefined));

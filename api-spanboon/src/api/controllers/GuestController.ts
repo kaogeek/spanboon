@@ -45,7 +45,9 @@ import { AutoSynz } from './requests/AutoSynz';
 import { FirebaseGuestUser } from './requests/FirebaseGuestUsers';
 import { OtpService } from '../services/OtpService';
 import { DeviceToken } from '../models/DeviceToken';
-
+import axios from 'axios';
+import qs from 'qs';
+import * as bcrypt from 'bcrypt';
 @JsonController()
 export class GuestController {
     constructor(
@@ -1024,9 +1026,7 @@ export class GuestController {
                 const errorResponse: any = { status: 0, message: 'Invalid username' };
                 return res.status(400).send(errorResponse);
             }
-        }
-
-        else if (mode === PROVIDER.APPLE) {
+        } else if (mode === PROVIDER.APPLE) {
             const appleId: any = req.body.apple.result.user;
             const tokenFCM_AP = req.body.tokenFCM;
             const deviceAP = req.body.deviceName;
@@ -1057,7 +1057,7 @@ export class GuestController {
                 }
             }
         } else if (mode === PROVIDER.MFP) {
-            const token = await jwt.sign({ redirect_uri: 'http://110.171.133.236:4200/processing' }, process.env.CLIENT_SECRET, { algorithm: 'HS256' });
+            const token = await jwt.sign({ redirect_uri: process.env.WEB_MFP_REDIRECT_URI }, process.env.CLIENT_SECRET, { algorithm: 'HS256' });
 
             if (token) {
                 const successResponseMFP = ResponseUtil.getSuccessResponse('Grant Client Credential MFP is successful.', token);
@@ -1065,7 +1065,7 @@ export class GuestController {
             } else {
                 const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'axios error.' };
                 return res.status(400).send(errorUserNameResponse);
-            } 
+            }
         } else if (mode === PROVIDER.FACEBOOK) {
             const tokenFcmFB = req.body.tokenFCM;
             const deviceFB = req.body.deviceName;
@@ -1334,6 +1334,161 @@ export class GuestController {
                 return res.status(400).send(errorResponse);
             }
         } else if (mode === PROVIDER.MFP) {
+            const today = moment().toDate();
+            let authIdCreate: AuthenticationId;
+            const requestBody = {
+                'grant_type': process.env.GRANT_TYPE,
+                'client_id': process.env.CLIENT_ID,
+                'client_secret': process.env.CLIENT_SECRET,
+                'scope': process.env.SCOPE
+            };
+            const formattedData = qs.stringify(requestBody);
+
+            const response = await axios.post(
+                process.env.APP_MFP_API_OAUTH,
+                formattedData, {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    Accept: 'application/json'
+                }
+            });
+            // check the status user MFP
+            const tokenCredential = response.data.access_token;
+            const getMembershipById = await axios.get(
+                process.env.API_MFP_GET_ID + users.id,
+                {
+                    headers: {
+                        Authorization: `Bearer ${tokenCredential}`
+                    }
+                }
+            );
+            if (getMembershipById.data.data.state !== 'APPROVED') {
+                const errorResponse = ResponseUtil.getErrorResponse('Cannot Login Your state is not APPROVED.', undefined);
+                return res.status(400).send(errorResponse);
+            }
+
+            // check the expired_membership
+            const date = new Date(getMembershipById.data.data.expired_at);
+            const expired_at = date.getTime();
+            // check authentication by id or mobile or identification_number
+            // .getTime() <= today.getTime()
+            if (expired_at <= today.getTime()) {
+                const errorUserNameResponse: any = { status: 0, message: 'Membership has expired.' };
+                return res.status(400).send(errorUserNameResponse);
+            }
+            const mfpAuthentication = await this.authenticationIdService.findOne
+                ({
+                    providerName: PROVIDER.MFP,
+                    providerUserId: getMembershipById.data.data.id,
+                });
+            if (mfpAuthentication === undefined) {
+                // check email
+                const userEmailMfp = await this.userService.findOne({ email: String(getMembershipById.data.data.email) });
+                if (userEmailMfp !== undefined && userEmailMfp !== null) {
+                    if (getMembershipById.data.data.state === 'PENDING_PAYMENT' && getMembershipById.data.data.membership_type === 'UNKNOWN') {
+                        return res.status(400).send(ResponseUtil.getSuccessResponse('PENDING_PAYMENT', undefined));
+                    }
+                    // PENDING_APPROVAL 400
+                    if (getMembershipById.data.data.state === 'PENDING_APPROVAL') {
+                        return res.status(400).send(ResponseUtil.getSuccessResponse('PENDING_APPROVAL', undefined));
+                    }
+                    // REJECTED 400
+                    if (getMembershipById.data.data.state === 'REJECTED') {
+                        return res.status(400).send(ResponseUtil.getSuccessResponse('REJECTED', undefined));
+                    }
+                    // PROFILE_RECHECKED 400
+                    if (getMembershipById.data.data.state === 'PROFILE_RECHECKED') {
+                        return res.status(400).send(ResponseUtil.getSuccessResponse('PROFILE_RECHECKED', undefined));
+                    }
+                    if (getMembershipById.data.data.state === 'ARCHIVED') {
+                        return res.status(400).send(ResponseUtil.getSuccessResponse('ARCHIVED', undefined));
+                    }
+                    if (getMembershipById.data.data.state === 'APPROVED'
+                        &&
+                        (getMembershipById.data.data.membership_type === 'MEMBERSHIP_YEARLY' ||
+                            getMembershipById.data.data.membership_type === 'MEMBERSHIP_PERMANENT')) {
+
+                        const user = await this.userService.findOne({ _id: userEmailMfp.id });
+                        if (user) {
+                            // check authentication MFP Is existing ?
+                            const encryptIdentification = await bcrypt.hash(getMembershipById.data.data.identification_number, 10);
+                            const checkAuthentication = await this.authenticationIdService.findOne({ providerUserId: getMembershipById.data.data.id, providerName: PROVIDER.MFP });
+                            if (checkAuthentication !== undefined && checkAuthentication !== null) {
+                                return res.status(400).send(ResponseUtil.getSuccessResponse('You have ever binded this user.', undefined));
+
+                            }
+                            // import * as bcrypt from 'bcrypt';
+
+                            const authenId = new AuthenticationId();
+                            authenId.user = user.id;
+                            authenId.lastAuthenTime = moment().toDate();
+                            authenId.providerUserId = getMembershipById.data.data.id;
+                            authenId.providerName = PROVIDER.MFP;
+                            authenId.properties = getMembershipById.data.data;
+                            authenId.expirationDate = getMembershipById.data.data.expired_at;
+                            authenId.expirationDate_law_expired = getMembershipById.data.data.law_expired_at;
+                            authenId.identificationNumber = encryptIdentification;
+                            authenId.mobileNumber = getMembershipById.data.data.mobile_number;
+                            authenId.membershipState = getMembershipById.data.data.state;
+                            authenId.membershipType = getMembershipById.data.data.membership_type;
+                            authenId.membership = true;
+                            authIdCreate = await this.authenticationIdService.create(authenId);
+                            if (authIdCreate) {
+                                // update status user membership = true
+                                const query = { _id: user.id };
+                                const newValues = { $set: { banned: false, membership: true } };
+                                const update = await this.userService.update(query, newValues);
+                                if (update) {
+                                    const userObj: User = await this.userService.findOne({ where: { username: userEmail } });
+                                    const userExrTime = await this.getUserLoginExpireTime();
+                                    const expirationDate = moment().add(userExrTime, 'days').toDate();
+                                    const token = jwt.sign({ id: userObj.id }, env.SECRET_KEY);
+                                    loginUser = userObj;
+
+                                    loginToken = token;
+                                    loginUser = await this.userService.cleanUserField(loginUser);
+                                    const result = { token: loginToken, expire_at: expirationDate };
+
+                                    const successResponse = ResponseUtil.getSuccessResponse('Login successful.', result);
+                                    return res.status(200).send(successResponse);
+                                } else {
+                                    return res.status(400).send(ResponseUtil.getSuccessResponse('Cannot Update Status Membership User.', undefined));
+                                }
+                            }
+                        } else {
+                            return res.status(400).send(ResponseUtil.getSuccessResponse('User Not Found', undefined));
+                        }
+                    }
+                } else {
+                    // check authentification
+                    const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
+                    return res.status(400).send(errorUserNameResponse);
+                }
+            }
+
+            // bcrypt.compare(getMembershipById.data.data.identification_number, user.password)
+            const compareIdentification = await bcrypt.compare(getMembershipById.data.data.identification_number, mfpAuthentication.identificationNumber);
+            if (compareIdentification === true) {
+                const mfpAuthenIdentification = await this.authenticationIdService.findOne
+                    ({
+                        providerName: PROVIDER.MFP,
+                        providerUserId: getMembershipById.data.data.id,
+                    });
+                if (mfpAuthenIdentification !== undefined && mfpAuthenIdentification !== null) {
+                    const userExrTime = await this.getUserLoginExpireTime();
+                    const expirationDate = moment().add(userExrTime, 'days').toDate();
+                    const token = jwt.sign({ id: mfpAuthenIdentification.user }, env.SECRET_KEY);
+                    const user: User = await this.userService.findOne({ where: { username: userEmail } });
+                    loginUser = user;
+
+                    loginToken = token;
+                    loginUser = await this.userService.cleanUserField(loginUser);
+                    const result = { token: loginToken, expire_at: expirationDate };
+
+                    const successResponse = ResponseUtil.getSuccessResponse('Login successful.', result);
+                    return res.status(200).send(successResponse);
+                }
+            }
             const modeAuthen = [];
             const data: User = await this.userService.findOne({ where: { username: userEmail } });
 
@@ -2599,8 +2754,7 @@ export class GuestController {
                 const errorResponse: any = { status: 0, message: ex.message };
                 return response.status(400).send(errorResponse);
             }
-        }
-        if (isMode !== undefined && isMode === 'GG') {
+        } if (isMode !== undefined && isMode === 'GG') {
             try {
                 const decryptToken: any = await jwt.verify(tokenParam, env.SECRET_KEY);
                 if (decryptToken.token === undefined) {
@@ -2643,11 +2797,21 @@ export class GuestController {
                 const errorResponse: any = { status: 0, message: ex.message };
                 return response.status(400).send(errorResponse);
             }
-        } // if (isMode !== undefined && isMode === 'MFP Auth') {
-
-        // }
-
-        else {
+        } if (isMode !== undefined && isMode === 'MFP') {
+            try {
+                const decryptToken: any = await jwt.verify(tokenParam, env.SECRET_KEY);
+                if (decryptToken === undefined) {
+                    const errorUserNameResponse: any = { status: 0, message: 'Token was not found.' };
+                    return response.status(400).send(errorUserNameResponse);
+                }
+                const mfpUser = await this.authenticationIdService.findOne({ user: ObjectID(decryptToken.id), providerName: PROVIDER.MFP });
+                const findUser = await this.userService.findOne({ _id: ObjectID(mfpUser.user) });
+                user = findUser;
+            } catch (ex: any) {
+                const errorResponse: any = { status: 0, message: ex.message };
+                return response.status(400).send(errorResponse);
+            }
+        } else {
             const pageUserId = await this.authService.decryptToken(tokenParam);
             if (pageUserId !== undefined) {
                 user = await this.userService.findOne({ where: { _id: new ObjectID(pageUserId) } }, { signURL: true });
@@ -2716,10 +2880,28 @@ export class GuestController {
                 await this.deviceToken.delete({ userId: authenId.user });
                 return response.status(400).send(errorUserNameResponse);
             }
-        } // else if ( MFP Auth ){
-
-        // }
-        else {
+        } else if (isMode !== undefined && isMode === 'MFP') {
+            const decryptToken: any = await jwt.verify(tokenParam, env.SECRET_KEY);
+            const authenId = await this.authenticationIdService.findOne({ user: user.id, providerName: PROVIDER.MFP });
+            if (authenId === undefined) {
+                const errorUserNameResponse: any = { status: 0, message: 'User token invalid.' };
+                await this.deviceToken.delete({ userId: authenId.user });
+                return response.status(400).send(errorUserNameResponse);
+            }
+            const expiresAt = new Date(authenId.expirationDate);
+            if (authenId.membershipType === 'MEMBERSHIP_YEARLY') {
+                if (expiresAt !== undefined && expiresAt !== null && expiresAt.getTime() <= today.getTime()) {
+                    const errorUserNameResponse: any = { status: 0, message: 'Membership has expired.' };
+                    await this.deviceToken.delete({ userId: authenId.user });
+                    return response.status(400).send(errorUserNameResponse);
+                }
+            }
+            if (decryptToken.expire_at !== undefined && decryptToken.expire_at !== null && decryptToken.expire_at.getTime() <= today.getTime()) {
+                const errorUserNameResponse: any = { status: 0, message: 'User token expired.' };
+                await this.deviceToken.delete({ userId: authenId.user });
+                return response.status(400).send(errorUserNameResponse);
+            }
+        } else {
             // normal mode
             const authenId: AuthenticationId = await this.authenticationIdService.findOne({ where: { user: user.id, providerName: PROVIDER.EMAIL } });
             if (authenId === undefined) {
@@ -2728,16 +2910,30 @@ export class GuestController {
             }
             const expiresAt = authenId.expirationDate;
             if (expiresAt !== undefined && expiresAt !== null && expiresAt.getTime() <= today.getTime()) {
+                const query = { _id: authenId.providerUserId };
+                const queryAuthen = { providerUserId: authenId.providerUserId };
+                const newValues = { $set: { membership: false } };
+                await this.userService.update(query, newValues);
+                await this.authenticationIdService.update(queryAuthen, newValues);
                 const errorUserNameResponse: any = { status: 0, message: 'User token expired.' };
                 await this.deviceToken.delete({ userId: user.id });
                 return response.status(400).send(errorUserNameResponse);
             }
         }
+
         const userFollowings = await this.userFollowService.find({ where: { userId: user.id, subjectType: SUBJECT_TYPE.USER } });
         const userFollowers = await this.userFollowService.find({ where: { subjectId: user.id, subjectType: SUBJECT_TYPE.USER } });
+        const userAuthList: AuthenticationId[] = await this.authenticationIdService.find({ where: { user: user.id } });
+        const authProviderList: string[] = [];
 
+        if (userAuthList !== null && userAuthList !== undefined && userAuthList.length > 0) {
+            for (const userAuth of userAuthList) {
+                authProviderList.push(userAuth.providerName);
+            }
+        }
         user.followings = userFollowings.length;
         user.followers = userFollowers.length;
+        user.authUser = authProviderList;
 
         delete user.fbUserId;
         delete user.fbToken;
@@ -2749,6 +2945,7 @@ export class GuestController {
         delete user.createdByUsername;
         delete user.modifiedBy;
         delete user.modifiedByUsername;
+
         const successResponse: any = { status: 1, message: 'Account was valid.', data: { user, token: tokenParam, mode: isMode } };
 
         return response.status(200).send(successResponse);

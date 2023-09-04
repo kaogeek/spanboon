@@ -21,7 +21,7 @@ import {
   PageHashTag,
   PageRecommended,
   SettingsFanPage, forgotPasswordPage, ObjectiveTimeline,
-  EmergencyEventTimeline, Redirect, SettingAccount, AboutPage, SettingsAdminRoles, SecurityInfo, HomePageV3, PolicyPage, TermsOfServicePage, EventSearch, testMember, LoginMemberProcessing,
+  EmergencyEventTimeline, Redirect, SettingAccount, AboutPage, SettingsAdminRoles, SecurityInfo, HomePageV3, PolicyPage, TermsOfServicePage, EventSearch, LoginMemberProcessing, MemberProcess,
 } from './components/components';
 
 import { TestComponent } from './components/TestComponent.component';
@@ -39,10 +39,6 @@ export const APP_ROUTES: Routes = [
     component: AppleAppSite,
   },
   {
-    path: testMember.PAGE_NAME,
-    component: testMember,
-  },
-  {
     path: AppleAppSite.PAGE_NAME + AppleAppSite.PAGE_NAME_APPLE,
     component: AppleAppSite,
   },
@@ -53,6 +49,20 @@ export const APP_ROUTES: Routes = [
   {
     path: LoginMemberProcessing.PAGE_NAME,
     component: LoginMemberProcessing,
+  },
+  {
+    path: MemberProcess.PAGE_NAME,
+    component: MemberProcess,
+    children: [
+      {
+        path: 'success',
+        component: MemberProcess,
+      },
+      {
+        path: 'reject',
+        component: MemberProcess,
+      },
+    ]
   },
   {
     path: MainPage.PAGE_NAME,

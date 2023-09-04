@@ -6,59 +6,78 @@
  */
 
 import { Component, EventEmitter, OnInit } from '@angular/core';
-import { AuthenManager } from '../../../services/services';
+import { AuthenManager, BindingMemberFacade, CheckMergeUserFacade } from '../../../services/services';
 import { MatDialog } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AbstractPageImageLoader } from '../AbstractPageImageLoader';
-import { Location } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 
-const PAGE_NAME: string = 'testMember';
+const PAGE_NAME: string = 'process';
 
 @Component({
-  selector: 'testMember',
-  templateUrl: './testMember.component.html',
+  selector: 'member-process',
+  templateUrl: './MemberProcess.component.html',
 })
-export class testMember extends AbstractPageImageLoader implements OnInit {
+export class MemberProcess extends AbstractPageImageLoader implements OnInit {
   public static readonly PAGE_NAME: string = PAGE_NAME;
   public params: any;
   public route: ActivatedRoute;
-  public url: any;
+  public checkMergeUserFacade: CheckMergeUserFacade;
+  public bindingMemberFacade: BindingMemberFacade;
 
   public data: any;
   public dataId: any;
   public isNotAccess: any;
   public linkPost: any;
   public mainPostLink: string;
+  public decodedData: any;
+  public status: any;
+  public param: any;
 
+  public isLoading: boolean = true;
   constructor(
     router: Router,
     dialog: MatDialog,
     authenManager: AuthenManager,
-    private http: HttpClient) {
+    checkMergeUserFacade: CheckMergeUserFacade,
+    bindingMemberFacade: BindingMemberFacade) {
     super(PAGE_NAME, authenManager, dialog, router);
+    this.checkMergeUserFacade = checkMergeUserFacade;
+    this.bindingMemberFacade = bindingMemberFacade;
+
+    const splitUrl = this.router.url.split('/');
+    const url = splitUrl[2].split('?');
+    if (url[0] === 'success') {
+      this.status = 'success';
+    }
+    if (url[0] === 'reject') {
+      this.status = 'reject';
+    }
   }
 
   public ngOnInit(): void {
+    let methodMFP = localStorage.getItem('methodMFP');
+    setTimeout(() => {
+      if (this.status === 'success') {
+        if (methodMFP === 'binding') {
+          this.router.navigateByUrl('/account/settings');
+        } else {
+          this.router.navigateByUrl('/home');
+        }
+        localStorage.removeItem('methodMFP');
+      } else {
+        this.router.navigateByUrl('/home');
+        localStorage.removeItem('methodMFP');
+      }
+    }, 5000);
+  }
+
+  public getIdUser() {
+    let user = JSON.parse(localStorage.getItem('pageUser'));
+    return user.id;
   }
 
   public ngOnDestroy(): void {
 
-  }
-
-  public testButton() {
-    this.authenManager.loginMember('MFP').then((res) => {
-      if (res) {
-        let token = res.data;
-        let url: string = 'https://auth.moveforwardparty.org/sso?';
-        if (token !== undefined) {
-          url += `client_id=5&process_type=login&token=${token}`;
-        }
-        window.open(url, '_blank');
-      }
-    }).catch((err) => {
-      if (err) console.log(err)
-    })
   }
 
   public getImageSelector(): string[] {

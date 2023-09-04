@@ -133,7 +133,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
     // this.data.birthday = new Date();
     this.activatedRoute.queryParams.subscribe(params => {
       this.mode = params['mode'];
-      if (params['mode'] === 'normal') {
+      if (params['mode'] === 'normal' || params['mode'] === 'mfp') {
         this.mode = "normal";
       } else if (params['mode'] === 'facebook') {
         this.mode = "facebook";
@@ -166,6 +166,11 @@ export class RegisterPage extends AbstractPage implements OnInit {
           }
         } else {
           this.router.navigateByUrl("/login");
+        }
+      }
+      if (params['mode'] === 'mfp') {
+        this.objectMerge = {
+          email: state.email
         }
       }
     });
@@ -346,7 +351,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
       }
 
       let passwordPattern = " ";
-      if (this.mode === "normal") {
+      if (this.mode === "normal" || this.mode === "mfp") {
         if (formData.password === "" && formData.repassword === "") {
           this.activePass = true;
           document.getElementById('password').style.border = "1px solid red";
@@ -412,7 +417,7 @@ export class RegisterPage extends AbstractPage implements OnInit {
 
       let body = Object.assign(register, image)
 
-      if (this.mode === "normal") {
+      if (this.mode === "normal" || this.mode === "mfp") {
         let modeType = "EMAIL";
         this.isLoading = true;
         this.authenManager.register(body, modeType).then((res) => {
