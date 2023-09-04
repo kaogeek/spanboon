@@ -35,6 +35,7 @@ import { AuthenticationIdService } from '../services/AuthenticationIdService';
 import { HidePostService } from '../services/HidePostService';
 import jwt from 'jsonwebtoken';
 import { PROVIDER } from '../../constants/LoginProvider';
+import * as bcrypt from 'bcrypt';
 @JsonController('/profile')
 export class UserProfileController {
     constructor(
@@ -618,11 +619,13 @@ export class UserProfileController {
             const user = await this.userService.findOne({ _id: userObjId });
             if (user) {
                 // check authentication MFP Is existing ?
+                const encryptIdentification = await bcrypt.hash(userObject.membership.identification_number, 10);
                 const checkAuthentication = await this.authenIdService.findOne({ providerUserId: userObject.membership.id, providerName: PROVIDER.MFP });
                 if (checkAuthentication !== undefined && checkAuthentication !== null) {
                     return res.status(400).send(ResponseUtil.getSuccessResponse('You have ever binded this user.', undefined));
 
                 }
+                // import * as bcrypt from 'bcrypt';
 
                 const authenId = new AuthenticationId();
                 authenId.user = user.id;
@@ -632,7 +635,7 @@ export class UserProfileController {
                 authenId.properties = userObject.membership;
                 authenId.expirationDate = userObject.membership.expired_at;
                 authenId.expirationDate_law_expired = userObject.membership.law_expired_at;
-                authenId.identificationNumber = userObject.membership.identification_number;
+                authenId.identificationNumber = encryptIdentification;
                 authenId.mobileNumber = userObject.membership.mobile_number;
                 authenId.membershipState = userObject.membership.state;
                 authenId.membershipType = userObject.membership.membership_type;

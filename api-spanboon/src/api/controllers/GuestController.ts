@@ -1333,6 +1333,7 @@ export class GuestController {
                 return res.status(400).send(errorResponse);
             }
         } else if (mode === PROVIDER.MFP) {
+            const today = moment().toDate();
             const requestBody = {
                 'grant_type': process.env.GRANT_TYPE,
                 'client_id': process.env.CLIENT_ID,
@@ -1363,19 +1364,40 @@ export class GuestController {
                 const errorResponse = ResponseUtil.getErrorResponse('Cannot Login Your state is not APPROVED.', undefined);
                 return res.status(400).send(errorResponse);
             }
-            // check authentication by id or mobile or identification_number
 
+            // check the expired_membership
+            const date = new Date(getMembershipById.data.data.expired_at);
+            const expired_at = date.getTime();
+            // check authentication by id or mobile or identification_number
+            // .getTime() <= today.getTime()
+            if (expired_at <= today.getTime()) {
+                const errorUserNameResponse: any = { status: 0, message: 'Membership has expired.' };
+                return res.status(400).send(errorUserNameResponse);
+            }
             const mfpAuthentication = await this.authenticationIdService.findOne
                 ({
                     providerName: PROVIDER.MFP,
                     providerUserId: getMembershipById.data.data.id,
-                    mobileNumber: getMembershipById.data.data.mobile_number,
+                });
+            console.log('mfpAuthentication',mfpAuthentication);
+            if (mfpAuthentication === undefined) {
+                const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
+                return res.status(400).send(errorUserNameResponse);
+            }
+
+            // bcrypt.compare(getMembershipById.data.data.identification_number, user.password)
+            const compareIdentification = await User.comparePassword(mfpAuthentication.identificationNumber, getMembershipById.data.data.identification_number);
+            console.log('compareIdentification', compareIdentification);
+            const mfpAuthenIdentification = await this.authenticationIdService.findOne
+                ({
+                    providerName: PROVIDER.MFP,
+                    providerUserId: getMembershipById.data.data.id,
                     identificationNumber: getMembershipById.data.data.identification_number
                 });
-            if (mfpAuthentication !== undefined && mfpAuthentication !== null) {
+            if (mfpAuthenIdentification !== undefined && mfpAuthenIdentification !== null) {
                 const userExrTime = await this.getUserLoginExpireTime();
                 const expirationDate = moment().add(userExrTime, 'days').toDate();
-                const token = jwt.sign({ id: mfpAuthentication.user }, env.SECRET_KEY);
+                const token = jwt.sign({ id: mfpAuthenIdentification.user }, env.SECRET_KEY);
                 const user: User = await this.userService.findOne({ where: { username: userEmail } });
                 loginUser = user;
 
@@ -2795,7 +2817,7 @@ export class GuestController {
                 }
             }
             if (decryptToken.expire_at !== undefined && decryptToken.expire_at !== null && decryptToken.expire_at.getTime() <= today.getTime()) {
-                const errorUserNameResponse: any = { status: 0, message: 'User token expired.'  };
+                const errorUserNameResponse: any = { status: 0, message: 'User token expired.' };
                 await this.deviceToken.delete({ userId: authenId.user });
                 return response.status(400).send(errorUserNameResponse);
             }
