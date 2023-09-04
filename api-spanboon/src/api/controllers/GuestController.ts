@@ -1439,8 +1439,18 @@ export class GuestController {
                                 const newValues = { $set: { banned: false, membership: true } };
                                 const update = await this.userService.update(query, newValues);
                                 if (update) {
-                                    const successResponseMFP = ResponseUtil.getSuccessResponse('Binding User Is Successful.', user.id);
-                                    return res.status(200).send(successResponseMFP);
+                                    const userObj: User = await this.userService.findOne({ where: { username: userEmail } });
+                                    const userExrTime = await this.getUserLoginExpireTime();
+                                    const expirationDate = moment().add(userExrTime, 'days').toDate();
+                                    const token = jwt.sign({ id: userObj.id }, env.SECRET_KEY);
+                                    loginUser = userObj;
+
+                                    loginToken = token;
+                                    loginUser = await this.userService.cleanUserField(loginUser);
+                                    const result = { token: loginToken, expire_at: expirationDate };
+
+                                    const successResponse = ResponseUtil.getSuccessResponse('Login successful.', result);
+                                    return res.status(200).send(successResponse);
                                 } else {
                                     return res.status(400).send(ResponseUtil.getSuccessResponse('Cannot Update Status Membership User.', undefined));
                                 }
