@@ -337,7 +337,6 @@ export class MainPageController {
                 assetEmergenDays,
                 emergencyCheckEndDate
             });
-
             const emerSectionModelUn = await emerProcessorUn.process2();
             const postProcessorUn: PostSectionProcessor = new PostSectionProcessor(this.postsService, this.s3Service, this.userLikeService);
             postProcessorUn.setData({
@@ -1730,8 +1729,10 @@ export class MainPageController {
                                 $match: {
                                     $expr: { $and: [{ $eq: ['$$pageId', '$_id'] }] }
                                 }
-                            }
+                            },
+                            { $project: { email: 0 } }
                         ],
+                        
                     },
                 },
                 {
@@ -3816,7 +3817,7 @@ export class MainPageController {
             userResult.id = user._id;
             userResult.displayName = user.displayName;
             userResult.imageURL = user.imageURL;
-            userResult.email = user.email;
+            // userResult.email = user.email;
             userResult.isAdmin = user.isAdmin;
             userResult.uniqueId = user.uniqueId;
         }

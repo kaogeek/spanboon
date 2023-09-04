@@ -123,7 +123,7 @@ export class RecommendController {
                     { $sample: { size: randomLimitUser } },
                     { $skip: offset ? offset : 0 },
                     {
-                        $project: { _id: 1, displayName: 1, imageURL: 1, email: 1, username: 1, uniqueId: 1 },
+                        $project: { _id: 1, displayName: 1, imageURL: 1, username: 1, uniqueId: 1 },
                     }
                 );
                 const userFollow = await this.userService.aggregate(stmt);
@@ -143,7 +143,7 @@ export class RecommendController {
                         { $sample: { size: limitData } },
                         { $skip: offset ? offset : 0 },
                         {
-                            $project: { _id: 1, name: 1, imageURL: 1, email: 1, isOfficial: 1, pageUsername: 1, uniqueId: 1 },
+                            $project: { _id: 1, name: 1, imageURL: 1, isOfficial: 1, pageUsername: 1, uniqueId: 1 },
                         }
                     );
                 } else {
@@ -151,7 +151,7 @@ export class RecommendController {
                         { $sample: { size: randomLimitPage } },
                         { $skip: offset ? offset : 0 },
                         {
-                            $project: { _id: 1, name: 1, imageURL: 1, email: 1, isOfficial: 1, pageUsername: 1, uniqueId: 1 },
+                            $project: { _id: 1, name: 1, imageURL: 1, isOfficial: 1, pageUsername: 1, uniqueId: 1 },
                         }
                     );
                 }
@@ -174,7 +174,7 @@ export class RecommendController {
                         { $sample: { size: limitData } },
                         { $skip: offset ? offset : 0 },
                         {
-                            $project: { _id: 1, name: 1, imageURL: 1, email: 1, isOfficial: 1, pageUsername: 1 },
+                            $project: { _id: 1, name: 1, imageURL: 1, isOfficial: 1, pageUsername: 1 },
                         }
                     ];
                 } else {
@@ -182,7 +182,7 @@ export class RecommendController {
                         { $match: { $or: [{ $and: [{ _id: { $nin: orUserConditions } }, { _id: { $nin: orPageConditions } }, { isAdmin: false }, { banned: false }] }] } },
                         { $sample: { size: randomLimitUser } },
                         { $skip: offset ? offset : 0 },
-                        { $project: { _id: 1, displayName: 1, imageURL: 1, email: 1, username: 1, uniqueId: 1 } }
+                        { $project: { _id: 1, displayName: 1, imageURL: 1, username: 1, uniqueId: 1 } }
                     ];
 
                     const userFollow = await this.userService.aggregate(stmt);
@@ -209,7 +209,7 @@ export class RecommendController {
                         { $sample: { size: randomLimitPage } },
                         { $skip: offset ? offset : 0 },
                         {
-                            $project: { _id: 1, name: 1, imageURL: 1, email: 1, isOfficial: 1, pageUsername: 1 },
+                            $project: { _id: 1, name: 1, imageURL: 1, isOfficial: 1, pageUsername: 1 },
                         }
                     ];
                 }
@@ -273,7 +273,7 @@ export class RecommendController {
                     { $sample: { size: limitData } },
                     { $skip: offset ? offset : 0 },
                     {
-                        $project: { _id: 1, name: 1, imageURL: 1, email: 1, isOfficial: 1, pageUsername: 1 },
+                        $project: { _id: 1, name: 1, imageURL: 1, isOfficial: 1, pageUsername: 1 },
                     }
                 ];
             } else {
@@ -282,7 +282,7 @@ export class RecommendController {
                     { $sample: { size: randomLimitUser } },
                     { $skip: offset ? offset : 0 },
                     {
-                        $project: { _id: 1, displayName: 1, imageURL: 1, email: 1, username: 1, uniqueId: 1 },
+                        $project: { _id: 1, displayName: 1, imageURL: 1, username: 1, uniqueId: 1 },
                     }
                 ];
 
@@ -299,7 +299,7 @@ export class RecommendController {
                     { $sample: { size: randomLimitPage } },
                     { $skip: offset ? offset : 0 },
                     {
-                        $project: { _id: 1, name: 1, imageURL: 1, email: 1, isOfficial: 1, pageUsername: 1 },
+                        $project: { _id: 1, name: 1, imageURL: 1, isOfficial: 1, pageUsername: 1 },
                     }
                 ];
             }

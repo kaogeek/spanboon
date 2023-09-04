@@ -96,7 +96,18 @@ export class UserProfileController {
                     }
                 },
                 {
-                    $project: { uniqueId: 1, username: 1, email: 1, firstName: 1, lastName: 1, displayName: 1, birthdate: 1, customGender: 1, gender: 1, imageURL: 1, coverURL: 1, coverPosition: 1, provideItems: 1 }
+                    $project: { 
+                        uniqueId: 1, 
+                        firstName: 1,
+                        lastName: 1, 
+                        displayName: 1, 
+                        birthdate: 1, 
+                        customGender: 1, 
+                        gender: 1, 
+                        imageURL: 1, 
+                        coverURL: 1, 
+                        coverPosition: 1, 
+                        provideItems: 1 }
                 }
             ]
         );
