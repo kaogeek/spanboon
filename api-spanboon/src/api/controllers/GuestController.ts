@@ -1387,7 +1387,7 @@ export class GuestController {
 
             // bcrypt.compare(getMembershipById.data.data.identification_number, user.password)
             const compareIdentification = await bcrypt.compare(getMembershipById.data.data.identification_number, mfpAuthentication.identificationNumber);
-            if(compareIdentification === true){
+            if (compareIdentification === true) {
                 const mfpAuthenIdentification = await this.authenticationIdService.findOne
                     ({
                         providerName: PROVIDER.MFP,
@@ -1402,9 +1402,9 @@ export class GuestController {
 
                     loginToken = token;
                     loginUser = await this.userService.cleanUserField(loginUser);
-                    const result = { token: loginToken, user: loginUser, expire_at: expirationDate };
+                    const result = { token: loginToken, expire_at: expirationDate };
 
-                    const successResponse = ResponseUtil.getSuccessResponse('Loggedin successful', result);
+                    const successResponse = ResponseUtil.getSuccessResponse('Login successful.', result);
                     return res.status(200).send(successResponse);
                 }
             }
@@ -2719,11 +2719,11 @@ export class GuestController {
         } if (isMode !== undefined && isMode === 'MFP') {
             try {
                 const decryptToken: any = await jwt.verify(tokenParam, env.SECRET_KEY);
-                if (decryptToken.token === undefined) {
+                if (decryptToken === undefined) {
                     const errorUserNameResponse: any = { status: 0, message: 'Token was not found.' };
                     return response.status(400).send(errorUserNameResponse);
                 }
-                const mfpUser = await this.authenticationIdService.findOne({ user: ObjectID(decryptToken.userId), providerName: PROVIDER.MFP });
+                const mfpUser = await this.authenticationIdService.findOne({ user: ObjectID(decryptToken.id), providerName: PROVIDER.MFP });
                 const findUser = await this.userService.findOne({ _id: ObjectID(mfpUser.user) });
                 user = findUser;
             } catch (ex: any) {
@@ -2807,7 +2807,7 @@ export class GuestController {
                 await this.deviceToken.delete({ userId: authenId.user });
                 return response.status(400).send(errorUserNameResponse);
             }
-            const expiresAt = authenId.expirationDate;
+            const expiresAt = new Date(authenId.expirationDate);
             if (authenId.membershipType === 'MEMBERSHIP_YEARLY') {
                 if (expiresAt !== undefined && expiresAt !== null && expiresAt.getTime() <= today.getTime()) {
                     const errorUserNameResponse: any = { status: 0, message: 'Membership has expired.' };
@@ -2830,18 +2830,29 @@ export class GuestController {
             const expiresAt = authenId.expirationDate;
             if (expiresAt !== undefined && expiresAt !== null && expiresAt.getTime() <= today.getTime()) {
                 const query = { _id: authenId.providerUserId };
+                const queryAuthen = { providerUserId: authenId.providerUserId };
                 const newValues = { $set: { membership: false } };
                 await this.userService.update(query, newValues);
+                await this.authenticationIdService.update(queryAuthen, newValues);
                 const errorUserNameResponse: any = { status: 0, message: 'User token expired.' };
                 await this.deviceToken.delete({ userId: user.id });
                 return response.status(400).send(errorUserNameResponse);
             }
         }
+
         const userFollowings = await this.userFollowService.find({ where: { userId: user.id, subjectType: SUBJECT_TYPE.USER } });
         const userFollowers = await this.userFollowService.find({ where: { subjectId: user.id, subjectType: SUBJECT_TYPE.USER } });
+        const userAuthList: AuthenticationId[] = await this.authenticationIdService.find({ where: { user: user.id } });
+        const authProviderList: string[] = [];
 
+        if (userAuthList !== null && userAuthList !== undefined && userAuthList.length > 0) {
+            for (const userAuth of userAuthList) {
+                authProviderList.push(userAuth.providerName);
+            }
+        }
         user.followings = userFollowings.length;
         user.followers = userFollowers.length;
+        user.authUser = authProviderList;
 
         delete user.fbUserId;
         delete user.fbToken;
@@ -2853,6 +2864,7 @@ export class GuestController {
         delete user.createdByUsername;
         delete user.modifiedBy;
         delete user.modifiedByUsername;
+
         const successResponse: any = { status: 1, message: 'Account was valid.', data: { user, token: tokenParam, mode: isMode } };
 
         return response.status(200).send(successResponse);

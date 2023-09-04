@@ -642,6 +642,7 @@ export class UserProfileController {
                 authenId.mobileNumber = userObject.membership.mobile_number;
                 authenId.membershipState = userObject.membership.state;
                 authenId.membershipType = userObject.membership.membership_type;
+                authenId.membership = true;
                 authIdCreate = await this.authenIdService.create(authenId);
                 if (authIdCreate) {
                     // update status user membership = true
