@@ -581,10 +581,12 @@ export class UserProfileController {
         const userObj = new ObjectID(id);
         const tokenSecret = users.token;
         const membership = users.membership;
+        const mode = req.headers.mode;
+
         if (membership === true) {
             const token = await jwt.sign({
                 redirect_uri: process.env.WEB_MFP_REDIRECT_URI,
-                uid: userObj + '.' + tokenSecret,
+                uid: userObj + '.' + tokenSecret + '.' + mode,
             }, process.env.CLIENT_SECRET, { algorithm: 'HS256' });
             if (token) {
                 const successResponseMFP = ResponseUtil.getSuccessResponse('Grant Client Credential MFP is successful.', token);
