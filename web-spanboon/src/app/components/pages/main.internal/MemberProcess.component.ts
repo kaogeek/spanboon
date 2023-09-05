@@ -8,7 +8,7 @@
 import { Component, EventEmitter, OnInit } from '@angular/core';
 import { AuthenManager, BindingMemberFacade, CheckMergeUserFacade } from '../../../services/services';
 import { MatDialog } from '@angular/material';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { AbstractPageImageLoader } from '../AbstractPageImageLoader';
 
 const PAGE_NAME: string = 'process';
@@ -59,7 +59,12 @@ export class MemberProcess extends AbstractPageImageLoader implements OnInit {
     setTimeout(() => {
       if (this.status === 'success') {
         if (methodMFP === 'binding') {
-          this.router.navigateByUrl('/account/settings');
+          let navigationExtras: NavigationExtras = {
+            state: {
+              focus: 'การเชื่อมต่อ'
+            },
+          }
+          this.router.navigate(['/account/settings'], navigationExtras);
         } else {
           this.router.navigateByUrl('/home');
         }

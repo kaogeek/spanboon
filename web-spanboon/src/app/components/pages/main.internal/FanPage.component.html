@@ -689,7 +689,7 @@
                                                 <post-data [itemPost]="itemPost" [user]="userImage"
                                                     [isComments]="isLogin()" [isUserPage]="isLogin() && isNotAccess"
                                                     [isShowUser]="true" [isNotAccess]="isNotAccess"
-                                                    (action)="actionComment($event,index)"
+                                                    [isMemberShip]="isMemberShip" (action)="actionComment($event,index)"
                                                     (comment)="createComment($event,index)" [pageUser]="pageUser"
                                                     [isPage]="isNotAccess" (userpage)="getAaaPost($event,index)"
                                                     (delete)="deletePost($event,index)"
@@ -710,7 +710,8 @@
                                         <ng-container *ngFor="let itemPost of resDataPost; let index = index">
                                             <post-data [itemPost]="itemPost" [user]="userImage" [isComments]="isLogin()"
                                                 [isUserPage]="isLogin() && isNotAccess" [isShowUser]="true"
-                                                [isNotAccess]="isNotAccess" (action)="actionComment($event,index)"
+                                                [isMemberShip]="isMemberShip" [isNotAccess]="isNotAccess"
+                                                (action)="actionComment($event,index)"
                                                 (comment)="createComment($event,index)" [pageUser]="pageUser"
                                                 [isPage]="isNotAccess" (userpage)="getAaaPost($event,index)"
                                                 (delete)="deletePost($event,index)" (update)="editPost($event)"

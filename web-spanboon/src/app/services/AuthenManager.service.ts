@@ -682,7 +682,7 @@ export class AuthenManager {
   }
 
   public getUserMember(): any {
-    let member = localStorage.getItem(USER_MEMBERSHIP);
+    let member = localStorage.getItem(USER_MEMBERSHIP) ? localStorage.getItem(USER_MEMBERSHIP) : false;
     if (member === "false") {
       return false;
     } else {

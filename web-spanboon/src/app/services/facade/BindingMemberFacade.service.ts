@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthenManager } from '../AuthenManager.service';
 import { AbstractFacade } from "./AbstractFacade";
 import { LoginPage } from "src/app/components/components";
@@ -29,7 +29,7 @@ export class BindingMemberFacade extends AbstractFacade {
 
   }
 
-  public binding(data: any, userId: string): Promise<any[]> {
+  public binding(data: any, userId: string, mode?: any, token?: any): Promise<any[]> {
     return new Promise((resolve, reject) => {
       let url: string = this.baseURL + '/profile/' + userId + '/binding';
       let body: any = {};
@@ -37,7 +37,16 @@ export class BindingMemberFacade extends AbstractFacade {
       if (data !== null && data !== undefined) {
         body = Object.assign(data);
       }
-      let options = this.authMgr.getDefaultOptions();
+
+      let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+      if (token !== undefined || token !== "") {
+        headers = headers.set('Authorization', 'Bearer ' + token);
+        headers = headers.set('mode', mode);
+        headers = headers.set('userid', userId);
+      }
+
+      let options = { headers };
 
       this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response.data);

@@ -145,6 +145,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
   public mainPostLink: string;
   public groups: any = [];
   public resJoinObjective: any;
+  public isMemberShip: boolean = false;
 
   public CheckPost: boolean = true;
   public isPostLoading: boolean = false;
@@ -352,6 +353,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
     this.getRecommend();
 
     if (this.isLogin()) {
+      this.isMemberShip = this.authenManager.getUserMember();
       this.getProfileImage();
     }
     this.observManager.subscribe(REFRESH_DATA, (result: any) => {

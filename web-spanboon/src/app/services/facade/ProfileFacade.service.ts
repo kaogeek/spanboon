@@ -120,11 +120,13 @@ export class ProfileFacade extends AbstractFacade {
     });
   }
 
-  public updateMember(userId: string): Promise<any> {
-    return new Promise((resolve, reject) => {
+  public updateMember(userId: string, status?: boolean): Promise<any> {
+    return new Promise(async (resolve, reject) => {
       let url: string = this.baseURL + '/profile/' + userId;
+
       let body: any = {
-        membership: true
+        membership: status,
+        token: localStorage.getItem('token')
       };
       let options = this.authMgr.getDefaultOptions();
 

@@ -6,7 +6,7 @@
  */
 
 import { Component, EventEmitter, OnInit } from '@angular/core';
-import { AuthenManager, BindingMemberFacade, CheckMergeUserFacade } from '../../../services/services';
+import { AuthenManager, BindingMemberFacade, CheckMergeUserFacade, ProfileFacade } from '../../../services/services';
 import { MatDialog } from '@angular/material';
 import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { AbstractPageImageLoader } from '../AbstractPageImageLoader';
@@ -26,6 +26,7 @@ export class LoginMemberProcessing extends AbstractPageImageLoader implements On
   public route: ActivatedRoute;
   public checkMergeUserFacade: CheckMergeUserFacade;
   public bindingMemberFacade: BindingMemberFacade;
+  public profileFacade: ProfileFacade;
 
   public data: any;
   public dataId: any;
@@ -40,10 +41,12 @@ export class LoginMemberProcessing extends AbstractPageImageLoader implements On
     dialog: MatDialog,
     authenManager: AuthenManager,
     checkMergeUserFacade: CheckMergeUserFacade,
-    bindingMemberFacade: BindingMemberFacade) {
+    bindingMemberFacade: BindingMemberFacade,
+    profileFacade: ProfileFacade) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.checkMergeUserFacade = checkMergeUserFacade;
     this.bindingMemberFacade = bindingMemberFacade;
+    this.profileFacade = profileFacade;
     // this.route.params.subscribe((param) => {
     //   let token = param['token'];
     //   let decoded = jwt_decode(token)
@@ -53,35 +56,52 @@ export class LoginMemberProcessing extends AbstractPageImageLoader implements On
 
   public ngOnInit(): void {
     let url = this.router.url.split('=');
+    let userid;
+    let splitUrl;
+    let token;
+    let mode;
+    if (url[2]) {
+      userid = url[2].split('.')[0];
+      splitUrl = url[2].split('.');
+      mode = url[2].split('.')[4];
+      token = splitUrl[1] + '.' + splitUrl[2] + '.' + splitUrl[3];
+    }
     this.decodedData = jwt_decode(url[1]);
     let methodMFP = localStorage.getItem('methodMFP');
+    localStorage.setItem('methodMFP', (methodMFP === 'binding' ? 'binding' : (methodMFP === 'login' ? 'login' : 'binding')));
     if (methodMFP === 'binding') {
-      this.bindingMemberFacade.binding(this.decodedData, this.getIdUser()).then((res: any) => {
-        if (res) {
-          if (res.membership.state === 'APPROVED') {
-            this.router.navigateByUrl('/process/success');
-            this.isLoading = false;
-          }
+      this.bindingMemberFacade.binding(this.decodedData, userid ? userid : this.getIdUser(), mode, token).then((res: any) => {
+        if (res === 'APPROVED') {
+          window.open('/process/success', '_blank');
+          this.isLoading = false;
         }
       }).catch((err) => {
         if (err) {
           console.log("err", err);
           if (err.error.message === 'PENDING_PAYMENT') {
-            this.showAlertRedirectDialog('รอการชำระเงิน', '', '/process/reject');
+            window.open('/process/reject', '_blank');
+            // this.showAlertRedirectDialog('รอการชำระเงิน', '', '/process/reject');
           } else if (err.error.message === 'PENDING_APPROVAL') {
-            this.showAlertRedirectDialog('รอการตรวจสอบ', '', '/process/reject');
+            window.open('/process/reject', '_blank');
+            // this.showAlertRedirectDialog('รอการตรวจสอบ', '', '/process/reject');
           } else if (err.error.message === 'REJECTED') {
-            this.showAlertRedirectDialog('ไม่ผ่านการตรวจสอบ', '', '/process/reject');
+            window.open('/process/reject', '_blank');
+            // this.showAlertRedirectDialog('ไม่ผ่านการตรวจสอบ', '', '/process/reject');
           } else if (err.error.message === 'PROFILE_RECHECKED') {
-            this.showAlertRedirectDialog('สมาชิกรอจัดเก็บ', '', '/process/reject');
+            window.open('/process/reject', '_blank');
+            // this.showAlertRedirectDialog('สมาชิกรอจัดเก็บ', '', '/process/reject');
           } else if (err.error.message === 'ARCHIVED') {
-            this.showAlertRedirectDialog('สมาชิกที่จัดเก็บแล้ว', '', '/process/reject');
+            window.open('/process/reject', '_blank');
+            // this.showAlertRedirectDialog('สมาชิกที่จัดเก็บแล้ว', '', '/process/reject');
           } else if (err.error.message === 'You have ever binded this user.') {
-            this.showAlertRedirectDialog('คุณเคยผูกสมาชิกไปแล้ว', '', '/process/reject');
+            window.open('/process/reject', '_blank');
+            // this.showAlertRedirectDialog('คุณเคยผูกสมาชิกไปแล้ว', '', '/process/reject');
           } else if (err.error.message === 'Cannot Update Status Membership User.') {
-            this.showAlertRedirectDialog('ไม่สามารถผูกสมาชิกได้', '', '/process/reject');
+            window.open('/process/reject', '_blank');
+            // this.showAlertRedirectDialog('ไม่สามารถผูกสมาชิกได้', '', '/process/reject');
           } else if (err.error.message === 'User Not Found') {
-            this.showAlertRedirectDialog('ไม่พบบัญชีผู้ใช้', '', '/process/reject');
+            window.open('/process/reject', '_blank');
+            // this.showAlertRedirectDialog('ไม่พบบัญชีผู้ใช้', '', '/process/reject');
           }
           this.isLoading = false;
         }
@@ -105,13 +125,14 @@ export class LoginMemberProcessing extends AbstractPageImageLoader implements On
         }).catch((error) => {
           const statusMsg = error.error.message;
           if (statusMsg === 'User was not found.') {
-            let navigationExtras: NavigationExtras = {
-              state: {
-                email: this.decodedData.membership.email
-              },
-              queryParams: { mode: 'mfp' }
-            }
-            this.router.navigate(['/register'], navigationExtras);
+            // let navigationExtras: NavigationExtras = {
+            //   state: {
+            //     email: this.decodedData.membership.email
+            //   },
+            //   queryParams: { mode: 'mfp' }
+            // }
+            // this.router.navigate(['/register'], navigationExtras);
+            window.open('/register', '_blank');
           } else if (statusMsg === 'Membership has expired.') {
             this.router.navigate(['/home']);
           } else if (error.error.message === 'You cannot merge this user you have had one.') {
