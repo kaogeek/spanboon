@@ -24,11 +24,20 @@
             <div class="settings-right" *ngIf="selected === 'ทั่วไป'">
                 <edit-profile-card [dataProfile]="data"></edit-profile-card>
             </div>
-            <div class="settings-right" style="align-items: center; display: flex;"
-                *ngIf="selected === 'ผูกสมาชิกพรรค'">
-                <spanboon-button style="margin-left: 20px;" [height]="'30pt'" [width]="'400px'" [text]="'ผูกสมาชิกพรรค'"
-                    [isDisable]="isMember" (click)="isMember ? null : binding()">
-                </spanboon-button>
+            <div class="settings-right" style="align-items: center; display: flex;" *ngIf="selected === 'การเชื่อมต่อ'">
+                <div class="wrapper-right">
+                    <img src="../../../../assets/img/logo/mfp.svg" alt="">
+                    <span>Move Forward Party</span>
+                    <!-- <mat-slide-toggle [ngModelOptions]="{standalone: true}" [(ngModel)]="isMember" [checked]="isMember"
+                        (click)="binding($event)"></mat-slide-toggle> -->
+                    <spanboon-button *ngIf="isMember" style="margin-left: 20px;" [height]="'30pt'" [width]="'160px'"
+                        [text]="'ผูกสมาชิกพรรคแล้ว'" (click)="unbind()">
+                    </spanboon-button>
+
+                    <spanboon-button *ngIf="!isMember" style="margin-left: 20px;" [height]="'30pt'" [width]="'160px'"
+                        [text]="'ผูกสมาชิกพรรค'" (click)="binding()">
+                    </spanboon-button>
+                </div>
             </div>
         </div>
     </div>

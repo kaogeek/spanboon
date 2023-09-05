@@ -8,8 +8,10 @@
 import { Component, OnInit, ViewChild, ElementRef, Input, EventEmitter, Output, Inject } from '@angular/core';
 import { MatAutocompleteTrigger, MatInput, MatDialog, DateAdapter, MAT_DIALOG_DATA } from '@angular/material';
 import { Router } from '@angular/router';
+import { DialogAlert } from 'src/app/components/shares/dialog/DialogAlert.component';
 import { AuthenManager, ObservableManager, AssetFacade, ProfileFacade, SeoService } from '../../../../services/services';
 import { AbstractPage } from '../../AbstractPage';
+import jwt_decode from "jwt-decode";
 
 const DEFAULT_USER_ICON: string = '../../../../assets/img/profile.svg';
 const REDIRECT_PATH: string = '/home';
@@ -51,7 +53,7 @@ export class SettingAccount extends AbstractPage implements OnInit {
         {
             link: "",
             icon: "security",
-            label: "ผูกสมาชิกพรรค",
+            label: "การเชื่อมต่อ",
         },
         // {
         //     link: "",
@@ -79,6 +81,12 @@ export class SettingAccount extends AbstractPage implements OnInit {
         this.authenManager = authenManager;
         this.assetFacade = assetFacade;
         this.seoService = seoService;
+
+        const navigation = this.router.getCurrentNavigation();
+        const state = navigation.extras.state;
+        if (state) {
+            this.selected = state.focus;
+        }
     }
 
     public ngOnInit(): void {
@@ -112,18 +120,35 @@ export class SettingAccount extends AbstractPage implements OnInit {
     }
 
     public binding() {
-        this.profileFacade.updateMember(this.data.id).then((res) => {
-            if (res) {
-                let token = res;
-                let url: string = 'https://auth.moveforwardparty.org/sso?';
-                if (token !== undefined) {
-                    url += `client_id=5&process_type=binding&token=${token}`;
-                }
-                localStorage.setItem('methodMFP', 'binding');
-                window.open(url, '_blank').focus();
+        this.profileFacade.updateMember(this.data.id, true).then((res) => {
+            let token = res;
+            let url: string = 'https://auth.moveforwardparty.org/sso?';
+            if (token !== undefined) {
+                url += `client_id=5&process_type=binding&token=${token}`;
             }
+            localStorage.setItem('methodMFP', 'binding');
+            window.open(url, '_blank').focus();
         }).catch((err) => {
             if (err) console.log("err", err);
+        });
+    }
+
+    public unbind() {
+        let dialog = this.dialog.open(DialogAlert, {
+            disableClose: false,
+            data: {
+                text: 'คุณต้องการยกเลิกผูกสมาชิกใช่หรือไม่',
+            }
+        });
+        dialog.afterClosed().subscribe((res) => {
+            if (res) {
+                this.profileFacade.updateMember(this.data.id, false).then((res) => {
+                    this.isMember = false;
+                    localStorage.setItem('membership', String(false));
+                }).catch((err) => {
+                    if (err) console.log("err", err);
+                });
+            }
         });
     }
 }

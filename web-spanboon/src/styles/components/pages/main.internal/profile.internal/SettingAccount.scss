@@ -104,6 +104,35 @@
           width: 100%;
         }
 
+        > .wrapper-right {
+          width: 90%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          position: relative;
+          margin: 25px 0 0 10px;
+
+          > img {
+            @media (max-width: $small) {
+              width: 40px;
+            }
+          }
+
+          > span {
+            @include font-size-9($font-head-500);
+            color: #757575;
+
+            @media (max-width: $small) {
+              @include font-size-10($font-head-500);
+            }
+          }
+
+          > mat-slide-toggle {
+            right: 0;
+            position: absolute;
+          }
+        }
+
         > .settings-wrapper {
           padding: 20px 20px 0 20px;
 
