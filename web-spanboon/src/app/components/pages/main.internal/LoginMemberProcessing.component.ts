@@ -72,37 +72,36 @@ export class LoginMemberProcessing extends AbstractPageImageLoader implements On
     if (methodMFP === 'binding') {
       this.bindingMemberFacade.binding(this.decodedData, userid ? userid : this.getIdUser(), mode, token).then((res: any) => {
         if (res === 'APPROVED') {
-          window.open('/process/success', '_blank');
+          this.router.navigateByUrl('/process/success');
           this.isLoading = false;
         }
       }).catch((err) => {
         if (err) {
           console.log("err", err);
+          let message;
           if (err.error.message === 'PENDING_PAYMENT') {
-            window.open('/process/reject', '_blank');
-            // this.showAlertRedirectDialog('รอการชำระเงิน', '', '/process/reject');
+            message = 'รอการชำระเงิน';
           } else if (err.error.message === 'PENDING_APPROVAL') {
-            window.open('/process/reject', '_blank');
-            // this.showAlertRedirectDialog('รอการตรวจสอบ', '', '/process/reject');
+            message = 'รอการตรวจสอบ';
           } else if (err.error.message === 'REJECTED') {
-            window.open('/process/reject', '_blank');
-            // this.showAlertRedirectDialog('ไม่ผ่านการตรวจสอบ', '', '/process/reject');
+            message = 'ไม่ผ่านการตรวจสอบ';
           } else if (err.error.message === 'PROFILE_RECHECKED') {
-            window.open('/process/reject', '_blank');
-            // this.showAlertRedirectDialog('สมาชิกรอจัดเก็บ', '', '/process/reject');
+            message = 'สมาชิกรอจัดเก็บ';
           } else if (err.error.message === 'ARCHIVED') {
-            window.open('/process/reject', '_blank');
-            // this.showAlertRedirectDialog('สมาชิกที่จัดเก็บแล้ว', '', '/process/reject');
+            message = 'สมาชิกที่จัดเก็บแล้ว';
           } else if (err.error.message === 'You have ever binded this user.') {
-            window.open('/process/reject', '_blank');
-            // this.showAlertRedirectDialog('คุณเคยผูกสมาชิกไปแล้ว', '', '/process/reject');
+            message = 'คุณเคยผูกสมาชิกไปแล้ว';
           } else if (err.error.message === 'Cannot Update Status Membership User.') {
-            window.open('/process/reject', '_blank');
-            // this.showAlertRedirectDialog('ไม่สามารถผูกสมาชิกได้', '', '/process/reject');
+            message = 'ไม่สามารถผูกสมาชิกได้';
           } else if (err.error.message === 'User Not Found') {
-            window.open('/process/reject', '_blank');
-            // this.showAlertRedirectDialog('ไม่พบบัญชีผู้ใช้', '', '/process/reject');
+            message = 'ไม่พบบัญชีผู้ใช้';
           }
+          let navigationExtras: NavigationExtras = {
+            state: {
+              message: message,
+            },
+          }
+          this.router.navigate(['/process/reject'], navigationExtras);
           this.isLoading = false;
         }
       });

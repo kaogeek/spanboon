@@ -17,11 +17,12 @@
     padding: 40px 20px;
 
     > span {
-      @include font-size-6($font-head-500);
+      @include font-size-9($font-head-500);
       color: black;
 
       &:first-of-type {
         margin-top: 25px;
+        @include font-size-6($font-head-500);
       }
 
       &:last-child {
