@@ -578,13 +578,29 @@ export class UserProfileController {
     @Post('/:id')
     @Authorized('user')
     public async bindingUserMFPProcess(@Param('id') id: string, @Body({ validate: true }) users: UpdateUserProfileRequest, @Res() res: any, @Req() req: any): Promise<any> {
-        const token = await jwt.sign({ redirect_uri: process.env.WEB_MFP_REDIRECT_URI }, process.env.CLIENT_SECRET, { algorithm: 'HS256' });
-        if (token) {
-            const successResponseMFP = ResponseUtil.getSuccessResponse('Grant Client Credential MFP is successful.', token);
-            return res.status(200).send(successResponseMFP);
+        const userObj = new ObjectID(id);
+        const membership = userObj.membership;
+        if(membership === true){
+            const token = await jwt.sign({ redirect_uri: process.env.WEB_MFP_REDIRECT_URI }, process.env.CLIENT_SECRET, { algorithm: 'HS256' });
+            if (token) {
+                const successResponseMFP = ResponseUtil.getSuccessResponse('Grant Client Credential MFP is successful.', token);
+                return res.status(200).send(successResponseMFP);
+            } else {
+                const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'axios error.' };
+                return res.status(400).send(errorUserNameResponse);
+            }
         } else {
-            const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'axios error.' };
-            return res.status(400).send(errorUserNameResponse);
+            // delete mfp authentication
+            const query = {_id:userObj};
+            const newValue = {$set:{membership:false}};
+            const update = await this.userService.update(query,newValue);
+            if(update){
+                const deleteAuthen = await this.authenIdService.delete({user:userObj,providerName: PROVIDER.MFP});
+                if(deleteAuthen){
+                    const successResponseMFP = ResponseUtil.getSuccessResponse('Binding MFP is successful.', undefined);
+                    return res.status(200).send(successResponseMFP);
+                }
+            }
         }
     }
 

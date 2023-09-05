@@ -1436,7 +1436,7 @@ export class GuestController {
                             if (authIdCreate) {
                                 // update status user membership = true
                                 const query = { _id: user.id };
-                                const newValues = { $set: { banned: false, membership: true } };
+                                const newValues = { $set: { membership: true } };
                                 const update = await this.userService.update(query, newValues);
                                 if (update) {
                                     const userObj: User = await this.userService.findOne({ where: { username: userEmail } });
