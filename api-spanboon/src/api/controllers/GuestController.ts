@@ -1057,7 +1057,16 @@ export class GuestController {
                 }
             }
         } else if (mode === PROVIDER.MFP) {
-            const token = await jwt.sign({ redirect_uri: process.env.WEB_MFP_REDIRECT_URI }, process.env.CLIENT_SECRET, { algorithm: 'HS256' });
+            const userName: string = loginUsername.toLocaleLowerCase();
+            const userLogin: any = await this.userService.findOne({ where: { username: userName } });
+
+            const token = await jwt.sign(
+                {
+                    redirect_uri: process.env.WEB_MFP_REDIRECT_URI,
+                    uid: userLogin.id,
+                }, process.env.CLIENT_SECRET, {
+                    algorithm: 'HS256'
+            });
 
             if (token) {
                 const successResponseMFP = ResponseUtil.getSuccessResponse('Grant Client Credential MFP is successful.', token);
