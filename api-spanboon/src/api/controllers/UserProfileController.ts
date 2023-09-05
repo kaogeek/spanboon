@@ -579,7 +579,7 @@ export class UserProfileController {
     @Authorized('user')
     public async bindingUserMFPProcess(@Param('id') id: string, @Body({ validate: true }) users: UpdateUserProfileRequest, @Res() res: any, @Req() req: any): Promise<any> {
         const userObj = new ObjectID(id);
-        const membership = userObj.membership;
+        const membership = users.membership;
         if(membership === true){
             const token = await jwt.sign({ redirect_uri: process.env.WEB_MFP_REDIRECT_URI }, process.env.CLIENT_SECRET, { algorithm: 'HS256' });
             if (token) {
