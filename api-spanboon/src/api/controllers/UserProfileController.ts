@@ -582,7 +582,7 @@ export class UserProfileController {
         const membership = users.membership;
         if (membership === true) {
             const token = await jwt.sign({
-                redirect_uri: process.env.WEB_MFP_REDIRECT_URI,
+                redirect_uri: process.env.WEB_MFP_REDIRECT_URI + '?uid=' + userObj,
                 uid: userObj,
             }, process.env.CLIENT_SECRET, { algorithm: 'HS256' });
             if (token) {

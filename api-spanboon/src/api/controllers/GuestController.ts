@@ -1062,10 +1062,10 @@ export class GuestController {
 
             const token = await jwt.sign(
                 {
-                    redirect_uri: process.env.WEB_MFP_REDIRECT_URI,
+                    redirect_uri: process.env.WEB_MFP_REDIRECT_URI + '?uid=' + userLogin.id,
                     uid: userLogin.id,
                 }, process.env.CLIENT_SECRET, {
-                    algorithm: 'HS256'
+                algorithm: 'HS256'
             });
 
             if (token) {
