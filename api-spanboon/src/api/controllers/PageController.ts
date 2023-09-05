@@ -355,6 +355,7 @@ export class PageController {
     }
 
     // autoSyncPageTW
+    /* 
     @Post('/sync/tw')
     @Authorized('user')
     public async autoSyncPageTW(@Body({ validate: true }) socialBinding: PageSocialTWBindingRequest, @Res() res: any, @Req() req: any): Promise<any> {
@@ -472,13 +473,14 @@ export class PageController {
             }
         }
     }
+    */
     // autoSyncPageFB
     @Post('/sync/fb')
     @Authorized('user')
     public async autoSyncPageFB(@Body({ validate: true }) socialBinding: PageSocialFBBindingRequest, @Res() res: any, @Req() req: any): Promise<any> {
         const userId = new ObjectID(req.user.id);
         let found = undefined;
-        const getUser = await this.userService.findOne({ _id: userId });
+        // const getUser = await this.userService.findOne({ _id: userId });
         const query = { _id: userId };
         const newValue = { $set: { isSyncPage: true } };
         const regex = /[ก-ฮ]/g;
@@ -547,7 +549,7 @@ export class PageController {
             pageCreate.coverPosition = null;
             pageCreate.color = null;
             pageCreate.backgroundStory = pageCreate.backgroundStory;
-            pageCreate.email = getUser.email;
+            // pageCreate.email = getUser.email;
             pageCreate.category = checkPageCate ? checkPageCate.id : createCate.id;
             pageCreate.isOfficial = false;
             pageCreate.banned = false;
@@ -643,6 +645,7 @@ export class PageController {
             return res.status(400).send(errorResponse);
         }
     }
+
     @Get('/check/fb_token')
     @Authorized('user')
     public async checkRefreshToken(@QueryParam('limit') limit: number, @QueryParam('offset') offset: number, @Req() req: any, @Res() res: any): Promise<any> {
