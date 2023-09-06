@@ -19,6 +19,7 @@ import './../../../../../assets/script/canvas';
 import { E } from '@angular/cdk/keycodes';
 import { Meta } from '@angular/platform-browser';
 import { DialogShare } from 'src/app/components/shares/dialog/DialogShare.component';
+import { DialogAlert } from 'src/app/components/shares/dialog/DialogAlert.component';
 
 const PAGE_NAME: string = 'emergencyevent';
 
@@ -76,11 +77,12 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
     public hidebar: boolean = true;
     public isRes: boolean = false;
     public windowWidth: any;
-    public paramToken: string;
-    public paramUserId: string;
-    public paramMode: string;
+    public paramToken: string = undefined;
+    public paramUserId: string = undefined;
+    public paramMode: string = undefined;
     public currentUrl: any;
     public checkLike: boolean = false;
+    public tokenMode: boolean;
 
     public apiBaseURL = environment.apiBaseURL;
     private routeActivated: ActivatedRoute;
@@ -149,18 +151,28 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
                 sessionStorage.setItem('mode', this.paramMode);
             }
             if (tokens && mode) {
-                this.authenManager.checkAccountStatus(tokens, mode, { updateUser: true });
+                this.tokenMode = true;
+                this.authenManager.checkAccountStatus(tokens, mode, { updateUser: true }).then((res) => {
+                    this.isLoginUser = this.isLogin();
+                });
             }
         });
     }
 
     public async ngOnInit(): Promise<void> {
-        this.isLoginUser = this.isLogin();
+        if (!this.tokenMode) {
+            this.isLoginUser = this.isLogin();
+        }
         this.routeActivated.params.subscribe((params) => {
             this.objectiveId = params['id'];
         })
+        let dataMobile = {
+            token: this.paramToken,
+            mode: this.paramMode,
+            userid: this.paramUserId
+        }
         this.currentDate = new Date();
-        this.emergencyEventFacade.getEmergencyTimeline(this.objectiveId).then((res) => {
+        await this.emergencyEventFacade.getEmergencyTimeline(this.objectiveId, dataMobile).then((res) => {
             if (res) {
                 this.objectiveData = res;
                 let emer = this.objectiveData.emergencyEvent;
@@ -296,7 +308,7 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
     }
 
     public postLike(data: any, index?: number, i?: number) {
-        let check = data.userLike.length > 0 ? true : false;
+        let check = data && data.userLike && data.userLike.length > 0 ? true : false;
         if (!this.checkLike) {
             if (!this.isLogin()) {
                 this.showAlertDialog('กรุณาเข้าสู่ระบบ');
@@ -323,7 +335,20 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
                         if (err.error.message === 'You cannot like this post type MFP.') {
                             data.userLike.splice(0, 1);
                             data.likeCount--;
-                            this.showAlertDialog('กดไลค์สำหรับสมาชิกพรรคเท่านั้น');
+                            let dialog = this.dialog.open(DialogAlert, {
+                                disableClose: true,
+                                data: {
+                                    text: 'กดไลค์สำหรับสมาชิกพรรคเท่านั้น',
+                                    bottomText2: 'ตกลง',
+                                    bottomColorText2: "black",
+                                    btDisplay1: "none",
+                                    options: 'mfp'
+                                },
+                            });
+                            dialog.afterClosed().subscribe((res) => {
+                                if (res) {
+                                }
+                            });
                         }
                     });
                 }

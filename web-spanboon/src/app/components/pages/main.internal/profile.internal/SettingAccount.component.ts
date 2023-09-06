@@ -86,6 +86,7 @@ export class SettingAccount extends AbstractPage implements OnInit {
         const state = navigation.extras.state;
         if (state) {
             this.selected = state.focus;
+            this.isMember = true;
         }
     }
 

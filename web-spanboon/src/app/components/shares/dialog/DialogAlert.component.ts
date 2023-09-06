@@ -10,6 +10,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { DialogData } from '../../../models/models';
 import { environment } from '../../../../environments/environment';
 import { DeviceDetectorService } from 'ngx-device-detector';
+import { NavigationExtras, Router } from '@angular/router';
 
 @Component({
   selector: 'dialog-alert',
@@ -21,10 +22,12 @@ export class DialogAlert {
   deviceInfo = null;
 
   private isbottom: boolean
+  public router: Router;
   public apiBaseURL = environment.apiBaseURL;
 
   constructor(public dialogRef: MatDialogRef<DialogAlert>,
-    @Inject(MAT_DIALOG_DATA) public data: DialogData, private deviceService: DeviceDetectorService) {
+    @Inject(MAT_DIALOG_DATA) public data: DialogData, private deviceService: DeviceDetectorService, router: Router) {
+    this.router = router;
 
   }
 
@@ -62,9 +65,26 @@ export class DialogAlert {
   }
 
   public cancel() {
-    let date = Date.now();
-    localStorage.setItem('timeStampAppEx', JSON.stringify(date));
+    if (this.data.options === 'ios' || this.data.options === 'Mac') {
+      let date = Date.now();
+      localStorage.setItem('timeStampAppEx', JSON.stringify(date));
+    }
     this.isbottom = false
+    this.dialogRef.close(this.isbottom);
+  }
+
+  public register() {
+    window.open('https://accounts.moveforwardparty.org/account/register', "_blank");
+    this.dialogRef.close(this.isbottom);
+  }
+
+  public binding() {
+    let navigationExtras: NavigationExtras = {
+      state: {
+        focus: 'การเชื่อมต่อ'
+      },
+    }
+    this.router.navigate(['/account/settings'], navigationExtras);
     this.dialogRef.close(this.isbottom);
   }
 }
