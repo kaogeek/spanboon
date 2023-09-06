@@ -207,6 +207,10 @@
   max-width: 420pt;
   width: 90vw;
 
+  &.binding {
+    background-color: #f0f5f6;
+  }
+
   @media (max-width: $small) {
     width: 100vw;
   }
@@ -241,6 +245,10 @@
       flex-direction: column;
       text-align: center;
 
+      &.binding {
+        color: #113154;
+      }
+
       > span {
         @include font-size-8($font-head-500);
 
@@ -262,7 +270,6 @@
       align-items: center;
 
       > .butt {
-        border: 2px solid $brandcolor2;
         border-radius: 20px;
         width: 70%;
         height: 35px;
@@ -272,15 +279,41 @@
         cursor: pointer;
         @include font-size-8($font-head-500);
 
+        @media (max-width: $small) {
+          width: 90%;
+          @include font-size-9($font-head-500);
+        }
+
         &.but-submit {
           color: #fff;
           background-color: $brandcolor2;
+          border: 2px solid $brandcolor2;
         }
 
         &.but-cancel {
           color: $brandcolor2;
+          border: 2px solid $brandcolor2;
+        }
+
+        &.but-binding {
+          border: 1px solid #e5e5e5;
+          border-radius: 60px;
+          background: #fff;
+          color: black;
         }
       }
+    }
+  }
+
+  > .warning-binding {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    > .choice {
+      width: 100%;
     }
   }
 }

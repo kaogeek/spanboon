@@ -126,11 +126,6 @@
               @include font-size-10($font-head-500);
             }
           }
-
-          > mat-slide-toggle {
-            right: 0;
-            position: absolute;
-          }
         }
 
         > .settings-wrapper {

@@ -5,7 +5,7 @@
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
 
-<div class="dialog customize-alert" *ngIf="data.options !== 'download'">
+<div class="dialog customize-alert" *ngIf="data.options !== 'download' && data.options !== 'mfp'">
     <div class="newcon-alert-dialog">
         <div class="edit-h">
             <span class="edit-head-one">{{data.title}}</span>
@@ -49,6 +49,24 @@
                 (debounceClick)="downloadApp() ">{{data.bottomText2 ? data.bottomText2 : "ยืนยัน"}}</div>
             <div class="butt but-cancel" [ngStyle]="{'display': data.btDisplay1}" (click)="cancel() ">
                 {{data.bottomText1 ? data.bottomText1 : "ปิด"}}</div>
+        </div>
+    </div>
+</div>
+<div class="box-download binding" *ngIf="data.options === 'mfp'">
+    <div class="wrapper-download warning-binding">
+        <div class="header">
+        </div>
+        <div class="text binding">
+            <span>คุณเป็นสมาชิกของพรรคก้าวไกลใช่หรือไม่?</span>
+            <span>เพื่อเชื่อมต่อระบบสมาชิกพรรคก้าวไกลเข้ากับ MFP Today</span>
+        </div>
+        <div class="bottom choice">
+            <div class="butt but-submit" appDebounceClick (debounceClick)="binding() ">
+                {{"ใช่...ฉันเป็นสมาชิกพรรคก้าวไกล"}}</div>
+            <div class="butt but-binding" (click)="cancel()">
+                {{"ฉันไม่ได้เป็นสมาชิกพรรค"}}</div>
+            <div class="butt but-binding" (click)="register()">
+                {{"ฉันต้องการสมัครสมาชิกพรรค"}}</div>
         </div>
     </div>
 </div>

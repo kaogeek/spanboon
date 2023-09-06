@@ -988,7 +988,7 @@ export class PostsController {
             // like user post membership MFP
             // check authenticate membership MFP 
             const postObject = await this.postsService.findOne({ _id: postObjId });
-            const authenticateMFP = await this.authenticationIdService.findOne({ providerName: PROVIDER.MFP, user: userObjId});
+            const authenticateMFP = await this.authenticationIdService.findOne({ providerName: PROVIDER.MFP, user: userObjId });
             if (postObject.type === 'MEMBERSHIP') {
                 if (authenticateMFP === undefined) {
                     const errorResponse = ResponseUtil.getErrorResponse('You cannot like this post type MFP.', undefined);
@@ -1013,15 +1013,18 @@ export class PostsController {
                 }
             });
             const tokenCredential = response.data.access_token;
-            const getMembershipById = await axios.get(
-                process.env.API_MFP_GET_ID + authenticateMFP.providerUserId,
-                {
-                    headers: {
-                        Authorization: `Bearer ${tokenCredential}`
+            let getMembershipById = undefined;
+            if (authenticateMFP !== undefined) {
+                getMembershipById = await axios.get(
+                    process.env.API_MFP_GET_ID + authenticateMFP.providerUserId,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${tokenCredential}`
+                        }
                     }
-                }
-            );
-            if (getMembershipById.data.data.state !== 'APPROVED') {
+                );
+            }
+            if (getMembershipById !== undefined && getMembershipById.data.data.state !== 'APPROVED') {
                 const errorResponse = ResponseUtil.getErrorResponse('Your status have not approved.', undefined);
                 return res.status(400).send(errorResponse);
             }

@@ -618,22 +618,23 @@ export class UserProfileController {
         let authIdCreate: AuthenticationId;
         // PENDING_PAYMENT 400
         if (userObject.membership.state === 'PENDING_PAYMENT' && userObject.membership.membership_type === 'UNKNOWN') {
-            return res.status(400).send(ResponseUtil.getSuccessResponse('PENDING_PAYMENT', undefined));
+            return res.status(400).send(ResponseUtil.getErrorResponse('PENDING_PAYMENT', undefined));
         }
         // PENDING_APPROVAL 400
         if (userObject.membership.state === 'PENDING_APPROVAL') {
-            return res.status(400).send(ResponseUtil.getSuccessResponse('PENDING_APPROVAL', undefined));
+            return res.status(400).send(ResponseUtil.getErrorResponse('PENDING_APPROVAL', undefined));
         }
         // REJECTED 400
         if (userObject.membership.state === 'REJECTED') {
-            return res.status(400).send(ResponseUtil.getSuccessResponse('REJECTED', undefined));
+            return res.status(400).send(ResponseUtil.getErrorResponse('REJECTED', undefined));
         }
         // PROFILE_RECHECKED 400
         if (userObject.membership.state === 'PROFILE_RECHECKED') {
-            return res.status(400).send(ResponseUtil.getSuccessResponse('PROFILE_RECHECKED', undefined));
+            return res.status(400).send(ResponseUtil.getErrorResponse('PROFILE_RECHECKED', undefined));
         }
         if (userObject.membership.state === 'ARCHIVED') {
-            return res.status(400).send(ResponseUtil.getSuccessResponse('ARCHIVED', undefined));
+            return res.status(400).send(ResponseUtil.getErrorResponse('ARCHIVED', undefined));
+
         }
 
         if (userObject.membership.state === 'APPROVED'
@@ -647,7 +648,7 @@ export class UserProfileController {
                 const encryptIdentification = await bcrypt.hash(userObject.membership.identification_number, 10);
                 const checkAuthentication = await this.authenIdService.findOne({ providerUserId: userObject.membership.id, providerName: PROVIDER.MFP });
                 if (checkAuthentication !== undefined && checkAuthentication !== null) {
-                    return res.status(400).send(ResponseUtil.getSuccessResponse('You have ever binded this user.', undefined));
+                    return res.status(400).send(ResponseUtil.getErrorResponse('You have ever binded this user.', undefined));
 
                 }
                 // import * as bcrypt from 'bcrypt';
@@ -675,15 +676,15 @@ export class UserProfileController {
                         const successResponseMFP = ResponseUtil.getSuccessResponse('Binding User Is Successful.', 'APPROVED');
                         return res.status(200).send(successResponseMFP);
                     } else {
-                        return res.status(400).send(ResponseUtil.getSuccessResponse('Cannot Update Status Membership User.', undefined));
+                        return res.status(400).send(ResponseUtil.getErrorResponse('Cannot Update Status Membership User.', undefined));
                     }
                 }
             } else {
-                return res.status(400).send(ResponseUtil.getSuccessResponse('User Not Found', undefined));
+                return res.status(400).send(ResponseUtil.getErrorResponse('User Not Found', undefined));
             }
         }
         else {
-            return res.status(400).send(ResponseUtil.getSuccessResponse('User Not Found', undefined));
+            return res.status(400).send(ResponseUtil.getErrorResponse('User Not Found', undefined));
         }
     }
 

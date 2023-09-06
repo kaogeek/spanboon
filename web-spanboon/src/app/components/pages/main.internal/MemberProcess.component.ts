@@ -32,6 +32,7 @@ export class MemberProcess extends AbstractPageImageLoader implements OnInit {
   public decodedData: any;
   public status: any;
   public param: any;
+  public messageError: any;
 
   public isLoading: boolean = true;
   constructor(
@@ -51,6 +52,12 @@ export class MemberProcess extends AbstractPageImageLoader implements OnInit {
     }
     if (url[0] === 'reject') {
       this.status = 'reject';
+    }
+
+    const navigation = this.router.getCurrentNavigation();
+    const state = navigation.extras.state;
+    if (state) {
+      this.messageError = state.message;
     }
   }
 

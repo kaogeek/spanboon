@@ -31,7 +31,7 @@
                     <!-- <mat-slide-toggle [ngModelOptions]="{standalone: true}" [(ngModel)]="isMember" [checked]="isMember"
                         (click)="binding($event)"></mat-slide-toggle> -->
                     <spanboon-button *ngIf="isMember" style="margin-left: 20px;" [height]="'30pt'" [width]="'160px'"
-                        [text]="'ผูกสมาชิกพรรคแล้ว'" (click)="unbind()">
+                        [bgColor]="'#0C3455'" [text]="'ผูกสมาชิกพรรคแล้ว'" (click)="unbind()">
                     </spanboon-button>
 
                     <spanboon-button *ngIf="!isMember" style="margin-left: 20px;" [height]="'30pt'" [width]="'160px'"

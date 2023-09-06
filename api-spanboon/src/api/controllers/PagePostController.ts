@@ -506,15 +506,18 @@ export class PagePostController {
             }
         });
         const tokenCredential = response.data.access_token;
-        const getMembershipById = await axios.get(
-            process.env.API_MFP_GET_ID + authMemberShip.providerUserId,
-            {
-                headers: {
-                    Authorization: `Bearer ${tokenCredential}`
+        let getMembershipById = undefined;
+        if (authMemberShip !== undefined) {
+            getMembershipById = await axios.get(
+                process.env.API_MFP_GET_ID + authMemberShip.providerUserId,
+                {
+                    headers: {
+                        Authorization: `Bearer ${tokenCredential}`
+                    }
                 }
-            }
-        );
-        if (getMembershipById.data.data.state !== 'APPROVED') {
+            );
+        }
+        if (getMembershipById !== undefined && getMembershipById.data.data.state !== 'APPROVED') {
             const errorResponse = ResponseUtil.getErrorResponse('Your status have not approved.', undefined);
             return res.status(400).send(errorResponse);
         }
