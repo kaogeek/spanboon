@@ -15,6 +15,7 @@ import { FileHandle } from '../directive/DragAndDrop.directive';
 import { RePost } from '../../../models/RePost';
 import { CommentPosts } from '../../../models/CommentPosts';
 import { DialogShare } from './DialogShare.component';
+import { DialogAlert } from './DialogAlert.component';
 
 const PAGE_NAME: string = 'postcard';
 const SEARCH_LIMIT: number = 10;
@@ -151,7 +152,7 @@ export class DialogPostCrad extends AbstractPage {
     }).catch((err: any) => {
       console.log(err)
       if (err.error.message === 'You cannot like this post type MFP.') {
-        this.showAlertDialog('กดไลค์สำหรับสมาชิกพรรคเท่านั้น');
+        this.showDialogEngagementMember();
       }
     });
   }

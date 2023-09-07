@@ -416,6 +416,25 @@ export class PostData {
     this.action.emit({ mod: 'POST', pageId: post._id });
   }
 
+  public showDialogEngagementMember(text?: any): void {
+    let user: any = JSON.parse(localStorage.getItem('pageUser'));
+    let dialog = this.dialog.open(DialogAlert, {
+      disableClose: true,
+      data: {
+        text: text ? text : 'กดไลค์สำหรับสมาชิกพรรคเท่านั้น',
+        bottomText2: 'ตกลง',
+        bottomColorText2: "black",
+        btDisplay1: "none",
+        options: 'mfp',
+        userId: user.id,
+      },
+    });
+    dialog.afterClosed().subscribe((res) => {
+      if (res) {
+      }
+    });
+  }
+
   public commentAction(data: any) {
     if (!this.isLogin()) {
       this.showAlertDialog();
@@ -432,6 +451,10 @@ export class PostData {
           this.commentpost[data.index].likeCount = res.likeCount
           this.commentpost[data.index].isLike = res.isLike
         }).catch((err: any) => {
+          console.log("err", err)
+          if (err.error.message === 'You cannot like comment this post type MFP.') {
+            this.showDialogEngagementMember();
+          }
         })
       }
     } else if (data.action === "DELETE") {

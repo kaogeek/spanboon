@@ -1225,7 +1225,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
             console.log(err)
             this.resDataPost[index].isLike = false;
             if (err.error.message === 'You cannot like this post type MFP.') {
-              this.showAlertDialog('กดไลค์สำหรับสมาชิกพรรคเท่านั้น');
+              this.showDialogEngagementMember();
               this.checkLike = false;
             }
           });
@@ -1250,7 +1250,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
             console.log(err)
             this.resPost.posts[index].isLike = false;
             if (err.error.message === 'You cannot like this post type MFP.') {
-              this.showAlertDialog('กดไลค์สำหรับสมาชิกพรรคเท่านั้น');
+              this.showDialogEngagementMember();
               this.checkLike = false;
             }
           });

@@ -322,6 +322,7 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
                     data.likeCount++;
                 }
                 if (!this.isLogin()) {
+                    this.showAlertDialog('กรุณาเข้าสู่ระบบ');
                 } else {
                     this.postFacade.like(data._id).then((res: any) => {
                         if (res.isLike) {
@@ -335,20 +336,7 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
                         if (err.error.message === 'You cannot like this post type MFP.') {
                             data.userLike.splice(0, 1);
                             data.likeCount--;
-                            let dialog = this.dialog.open(DialogAlert, {
-                                disableClose: true,
-                                data: {
-                                    text: 'กดไลค์สำหรับสมาชิกพรรคเท่านั้น',
-                                    bottomText2: 'ตกลง',
-                                    bottomColorText2: "black",
-                                    btDisplay1: "none",
-                                    options: 'mfp'
-                                },
-                            });
-                            dialog.afterClosed().subscribe((res) => {
-                                if (res) {
-                                }
-                            });
+                            this.showDialogEngagementMember();
                         }
                     });
                 }

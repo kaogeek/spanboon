@@ -443,7 +443,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
           console.log(err)
           this.resPost.posts[index].isLike = false;
           if (err.error.message === 'You cannot like this post type MFP.') {
-            this.showAlertDialog('กดไลค์สำหรับสมาชิกพรรคเท่านั้น');
+            this.showDialogEngagementMember();
             this.checkLike = false;
           }
         });
@@ -1045,9 +1045,9 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
       //repost
       if (res && res.type === "NOTOPIC") {
         this.resPost.posts = res.posts;
-      } else if (res.type === "TOPIC") {
+      } else if (res && res.type === "TOPIC") {
         this.resPost.posts = res.posts;
-      } else if (res.type === "UNDOTOPIC") {
+      } else if (res && res.type === "UNDOTOPIC") {
         for (let [i, data] of this.resPost.posts.entries()) {
           if (data.referencePostObject !== null && data.referencePostObject !== undefined && data.referencePostObject !== '') {
             if (data.referencePostObject._id === action.post._id) {
@@ -1056,7 +1056,7 @@ export class ProfilePage extends AbstractPageImageLoader implements OnInit {
             }
           }
         }
-      } else if (res.type === "POST") {
+      } else if (res && res.type === "POST") {
         this.router.navigateByUrl('/post/' + action.pageId);
       } else if (action.mod === 'LIKE') {
         this.isLoginCh();

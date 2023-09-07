@@ -11,6 +11,7 @@ import { DialogData } from '../../../models/models';
 import { environment } from '../../../../environments/environment';
 import { DeviceDetectorService } from 'ngx-device-detector';
 import { NavigationExtras, Router } from '@angular/router';
+import { ProfileFacade } from 'src/app/services/facade/ProfileFacade.service';
 
 @Component({
   selector: 'dialog-alert',
@@ -22,12 +23,17 @@ export class DialogAlert {
   deviceInfo = null;
 
   private isbottom: boolean
+  private profileFacade: ProfileFacade;
   public router: Router;
   public apiBaseURL = environment.apiBaseURL;
 
   constructor(public dialogRef: MatDialogRef<DialogAlert>,
-    @Inject(MAT_DIALOG_DATA) public data: DialogData, private deviceService: DeviceDetectorService, router: Router) {
+    @Inject(MAT_DIALOG_DATA) public data: DialogData,
+    private deviceService: DeviceDetectorService,
+    profileFacade: ProfileFacade,
+    router: Router) {
     this.router = router;
+    this.profileFacade = profileFacade;
 
   }
 
@@ -79,12 +85,17 @@ export class DialogAlert {
   }
 
   public binding() {
-    let navigationExtras: NavigationExtras = {
-      state: {
-        focus: 'การเชื่อมต่อ'
-      },
-    }
-    this.router.navigate(['/account/settings'], navigationExtras);
-    this.dialogRef.close(this.isbottom);
+    this.profileFacade.updateMember(this.data.userId, true).then((res) => {
+      let token = res;
+      let url: string = 'https://auth.moveforwardparty.org/sso?';
+      if (token !== undefined) {
+        url += `client_id=5&process_type=binding&token=${token}`;
+      }
+      localStorage.setItem('methodMFP', 'binding');
+      this.dialogRef.close(this.isbottom);
+      window.open(url, '_blank').focus();
+    }).catch((err) => {
+      if (err) console.log("err", err);
+    });
   }
 }
