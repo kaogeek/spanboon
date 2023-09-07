@@ -636,7 +636,11 @@ export class UserProfileController {
             return res.status(400).send(ResponseUtil.getErrorResponse('ARCHIVED', undefined));
 
         }
-
+        // Check the authen have ever binded ?
+        const checkAuthenBinded= await this.authenIdService.findOne({ providerUserId: userObject.membership.id, providerName: PROVIDER.MFP });
+        if (checkAuthenBinded !== undefined && checkAuthenBinded.membership === true) {
+            return res.status(400).send(ResponseUtil.getErrorResponse('You have ever binded this user.', undefined));
+        }
         if (userObject.membership.state === 'APPROVED'
             &&
             (userObject.membership.membership_type === 'MEMBERSHIP_YEARLY' ||
