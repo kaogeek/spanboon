@@ -935,8 +935,13 @@ export class HomePageV3 extends AbstractPage implements OnInit {
 
   private _bindingMember() {
     let isMember = this.authenManager.getUserMember();
-    if (this.isLogin() && !isMember) {
-      this.showDialogEngagementMember();
+    let askBinding = localStorage.getItem('notShowMemberDialog');
+    if (askBinding === null) {
+      localStorage.setItem('notShowMemberDialog', String(false));
+      askBinding = String(false);
+    }
+    if (this.isLogin() && !isMember && askBinding === 'false') {
+      this.showDialogMember();
     }
   }
 

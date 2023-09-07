@@ -119,11 +119,27 @@
           }
 
           > span {
+            margin-left: 15px;
+            width: 340px;
             @include font-size-9($font-head-500);
             color: #757575;
 
             @media (max-width: $small) {
+              margin-left: 0px;
               @include font-size-10($font-head-500);
+            }
+          }
+
+          > .binding {
+            opacity: 0.5;
+            width: 80%;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            @include font-size-10($font-head-500);
+
+            @media (max-width: $small) {
+              font-size: 8pt;
             }
           }
         }

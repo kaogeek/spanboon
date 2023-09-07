@@ -103,6 +103,8 @@ export class BoxPost extends AbstractPage implements OnInit {
   @Input()
   public isMobileButton: boolean = false;
   @Input()
+  public isNoneGeneral: boolean = false;
+  @Input()
   public selectedPage: string = "แชร์เข้าไทมไลน์ของฉัน"
   @Input()
   public repostPage: string = "";
@@ -177,7 +179,7 @@ export class BoxPost extends AbstractPage implements OnInit {
   public isShowText: boolean;
   public isTypeNeed: boolean = true;
   public typeStroy: any = 'GENERAL';
-  public typePost: any = 'ทั่วไป';
+  public typePost: string = 'ทั่วไป';
   public dataAutoComp: any; // 2: click, 1: totic, 0: content
   public dataObjective: any; // 2: click, 1: totic, 0: content
   public names: string;
@@ -446,6 +448,12 @@ export class BoxPost extends AbstractPage implements OnInit {
 
         if (this.isEdit) {
           this.selected1 = "แก้ไขโพสต์";
+          if (this.isNoneGeneral) {
+            if (this.content.type === 'MEMBERSHIP') {
+              this.typePost = 'สมาชิกพรรค';
+            }
+            this.typeStroy = this.content.type;
+          }
           if (this.content && this.content.gallery && this.content.gallery.length > 0) {
             this.isLoading = true;
             for (let image of this.content.gallery) {
@@ -468,7 +476,7 @@ export class BoxPost extends AbstractPage implements OnInit {
               index++;
             }
           } else {
-            this.selected = this.PLATFORM_GENERAL_TEXT
+            this.selected = this.PLATFORM_GENERAL_TEXT;
           }
           if (this.content && this.content.pageId !== '' && this.content.pageId !== undefined && this.content.pageId !== null) {
             this.modeShowDoing = true;
@@ -1697,6 +1705,7 @@ export class BoxPost extends AbstractPage implements OnInit {
         Object.assign(dataPost, { asPage: this.content.asPage, fulfillCaseId: this.content.fulfillCaseId });
         return this.createFullfillPost.emit(dataPost);
       } else {
+        this.typePost = this.PLATFORM_GENERAL_TEXT;
         return this.createPost.emit(dataPost);
       }
     }

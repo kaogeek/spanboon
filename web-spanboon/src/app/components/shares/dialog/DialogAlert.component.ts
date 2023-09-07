@@ -26,6 +26,7 @@ export class DialogAlert {
   private profileFacade: ProfileFacade;
   public router: Router;
   public apiBaseURL = environment.apiBaseURL;
+  public isRemindMe: boolean = false;
 
   constructor(public dialogRef: MatDialogRef<DialogAlert>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -71,16 +72,18 @@ export class DialogAlert {
   }
 
   public cancel() {
-    if (this.data.options === 'ios' || this.data.options === 'Mac') {
+    if (this.data.type === 'ios' || this.data.type === 'Mac' || this.data.type === 'android') {
       let date = Date.now();
       localStorage.setItem('timeStampAppEx', JSON.stringify(date));
     }
     this.isbottom = false
+    this._donotAskAgain();
     this.dialogRef.close(this.isbottom);
   }
 
   public register() {
     window.open('https://accounts.moveforwardparty.org/account/register', "_blank");
+    this._donotAskAgain();
     this.dialogRef.close(this.isbottom);
   }
 
@@ -92,10 +95,17 @@ export class DialogAlert {
         url += `client_id=5&process_type=binding&token=${token}`;
       }
       localStorage.setItem('methodMFP', 'binding');
+      this._donotAskAgain();
       this.dialogRef.close(this.isbottom);
       window.open(url, '_blank').focus();
     }).catch((err) => {
       if (err) console.log("err", err);
     });
+  }
+
+  private _donotAskAgain() {
+    if (this.isRemindMe) {
+      localStorage.setItem('notShowMemberDialog', String(true));
+    }
   }
 }
