@@ -601,8 +601,8 @@ export class UserProfileController {
             const newValue = { $set: { membership: false } };
             const update = await this.userService.update(query, newValue);
             if (update) {
-                const deleteAuthen = await this.authenIdService.update({ user: userObj, providerName: PROVIDER.MFP }, { $set: { membership: false } });
-                if (deleteAuthen) {
+                const UpdateAuthen = await this.authenIdService.update({ user: userObj, providerName: PROVIDER.MFP }, { $set: { membership: false } });
+                if (UpdateAuthen) {
                     const successResponseMFP = ResponseUtil.getSuccessResponse('Binding MFP is successful.', undefined);
                     return res.status(200).send(successResponseMFP);
                 }
@@ -652,7 +652,7 @@ export class UserProfileController {
 
                 }
                 // import * as bcrypt from 'bcrypt';
-                if(checkAuthentication === undefined){
+                if (checkAuthentication === undefined) {
                     const authenId = new AuthenticationId();
                     authenId.user = user.id;
                     authenId.lastAuthenTime = moment().toDate();
@@ -678,6 +678,15 @@ export class UserProfileController {
                         } else {
                             return res.status(400).send(ResponseUtil.getErrorResponse('Cannot Update Status Membership User.', undefined));
                         }
+                    }
+                } else {
+                    const query = { _id: userObjId };
+                    const newValues = { $set: { banned: false, membership: true } };
+                    const update = await this.userService.update(query, newValues);
+                    const UpdateAuthen = await this.authenIdService.update({ user: userObjId, providerName: PROVIDER.MFP }, { $set: { membership: false } });
+                    if (update && UpdateAuthen) {
+                        const successResponseMFP = ResponseUtil.getSuccessResponse('Binding User Is Successful.', 'APPROVED');
+                        return res.status(200).send(successResponseMFP);
                     }
                 }
             } else {
