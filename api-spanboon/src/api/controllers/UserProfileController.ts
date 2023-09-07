@@ -646,8 +646,8 @@ export class UserProfileController {
             if (user) {
                 // check authentication MFP Is existing ?
                 const encryptIdentification = await bcrypt.hash(userObject.membership.identification_number, 10);
-                const checkAuthentication = await this.authenIdService.findOne({ providerUserId: userObject.membership.id, providerName: PROVIDER.MFP });
-                if (checkAuthentication !== undefined && checkAuthentication !== null && checkAuthentication.membership === true) {
+                const checkAuthentication = await this.authenIdService.findOne({ user: user.id, providerUserId: userObject.membership.id, providerName: PROVIDER.MFP });
+                if (checkAuthentication !== undefined && checkAuthentication.membership === true) {
                     return res.status(400).send(ResponseUtil.getErrorResponse('You have ever binded this user.', undefined));
 
                 }
@@ -683,7 +683,7 @@ export class UserProfileController {
                     const query = { _id: userObjId };
                     const newValues = { $set: { banned: false, membership: true } };
                     const update = await this.userService.update(query, newValues);
-                    const UpdateAuthen = await this.authenIdService.update({ user: userObjId, providerName: PROVIDER.MFP }, { $set: { membership: false } });
+                    const UpdateAuthen = await this.authenIdService.update({ user: userObjId, providerName: PROVIDER.MFP }, { $set: { membership: true } });
                     if (update && UpdateAuthen) {
                         const successResponseMFP = ResponseUtil.getSuccessResponse('Binding User Is Successful.', 'APPROVED');
                         return res.status(200).send(successResponseMFP);
