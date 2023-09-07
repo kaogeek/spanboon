@@ -6,7 +6,7 @@
  */
 
 import { Injectable } from "@angular/core";
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthenManager } from '../AuthenManager.service';
 import { AbstractFacade } from "./AbstractFacade";
 import { SearchFilter } from "../../models/SearchFilter";
@@ -36,11 +36,22 @@ export class EmergencyEventFacade extends AbstractFacade {
     });
   }
 
-  public getEmergencyTimeline(emergencyId: string): Promise<any> {
+  public getEmergencyTimeline(emergencyId: string, dataMobile?: any): Promise<any> {
     return new Promise((resolve, reject) => {
 
       let url: string = this.baseURL + '/emergency/' + emergencyId + '/timeline';
-      let options = this.authMgr.getDefaultOptions();
+      let options;
+      if (!!dataMobile.token && !!dataMobile.mode && !!dataMobile.userid) {
+        let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+        headers = headers.set('Authorization', 'Bearer ' + dataMobile.token);
+        headers = headers.set('mode', dataMobile.mode);
+        headers = headers.set('userid', dataMobile.userid);
+
+        options = { headers };
+      } else {
+        options = this.authMgr.getDefaultOptions();
+      }
 
       this.http.get(url, options).toPromise().then((response: any) => {
         resolve(response.data);
