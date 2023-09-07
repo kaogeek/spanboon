@@ -159,7 +159,7 @@ export class EventSearch extends AbstractPageImageLoader implements OnInit {
           console.log(err)
           // this.isLoading = false;
           if (err.error.message === 'You cannot like this post type MFP.') {
-            this.showAlertDialog('กดไลค์สำหรับสมาชิกพรรคเท่านั้น');
+            this.showDialogEngagementMember();
             this.checkLike = false;
           }
         });

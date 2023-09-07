@@ -87,12 +87,13 @@ export class SettingAccount extends AbstractPage implements OnInit {
         if (state) {
             this.selected = state.focus;
             this.isMember = true;
+        } else {
+            this.isMember = this.authenManager.getUserMember();
         }
     }
 
     public ngOnInit(): void {
         this.seoService.updateTitle("จัดการบัญชี - " + this.getUser());
-        this.isMember = this.authenManager.getUserMember();
     }
     public ngOnDestroy(): void {
         super.ngOnDestroy();
@@ -121,20 +122,23 @@ export class SettingAccount extends AbstractPage implements OnInit {
     }
 
     public binding() {
-        this.profileFacade.updateMember(this.data.id, true).then((res) => {
+        let user: any = JSON.parse(localStorage.getItem('pageUser'));
+        this.profileFacade.updateMember(this.data.id !== undefined ? this.data.id : user.id, true).then((res) => {
             let token = res;
             let url: string = 'https://auth.moveforwardparty.org/sso?';
             if (token !== undefined) {
                 url += `client_id=5&process_type=binding&token=${token}`;
             }
             localStorage.setItem('methodMFP', 'binding');
-            window.open(url, '_blank').focus();
+            window.open(url, '_self').focus();
+            window.close();
         }).catch((err) => {
             if (err) console.log("err", err);
         });
     }
 
     public unbind() {
+        let user: any = JSON.parse(localStorage.getItem('pageUser'));
         let dialog = this.dialog.open(DialogAlert, {
             disableClose: false,
             data: {
@@ -143,7 +147,7 @@ export class SettingAccount extends AbstractPage implements OnInit {
         });
         dialog.afterClosed().subscribe((res) => {
             if (res) {
-                this.profileFacade.updateMember(this.data.id, false).then((res) => {
+                this.profileFacade.updateMember(this.data.id !== undefined ? this.data.id : user.id, false).then((res) => {
                     this.isMember = false;
                     localStorage.setItem('membership', String(false));
                 }).catch((err) => {

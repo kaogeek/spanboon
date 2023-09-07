@@ -71,6 +71,7 @@ export class MemberProcess extends AbstractPageImageLoader implements OnInit {
               focus: 'การเชื่อมต่อ'
             },
           }
+          localStorage.setItem('membership', String(true));
           this.router.navigate(['/account/settings'], navigationExtras);
         } else {
           this.router.navigateByUrl('/home');

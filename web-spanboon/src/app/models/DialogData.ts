@@ -27,6 +27,7 @@ export class DialogData extends BaseModel {
   type: string;
   isProvince: boolean;
   isGroup: boolean;
+  userId: string;
 
   //bottom
   bottomText1: string;

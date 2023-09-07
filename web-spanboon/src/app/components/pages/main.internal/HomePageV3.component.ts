@@ -198,6 +198,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     this.getScreenSize();
     this.getDateFilter();
     this._downloadApp();
+    this._bindingMember();
     super.ngOnInit();
   }
 
@@ -929,6 +930,13 @@ export class HomePageV3 extends AbstractPage implements OnInit {
           position: this.isRes1 ? { bottom: '0' } : { top: '' },
         });
       }
+    }
+  }
+
+  private _bindingMember() {
+    let isMember = this.authenManager.getUserMember();
+    if (this.isLogin() && !isMember) {
+      this.showDialogEngagementMember();
     }
   }
 
