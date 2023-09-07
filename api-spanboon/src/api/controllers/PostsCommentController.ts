@@ -928,7 +928,7 @@ export class PostsCommentController {
 
                     postCommentLists.map((result) => {
                         const commentId = result.id;
-
+                        result.typePost = posts.type;
                         if (userLikeMap[commentId]) {
                             result.isLike = true;
                         } else {
