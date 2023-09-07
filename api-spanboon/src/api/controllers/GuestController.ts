@@ -1065,7 +1065,7 @@ export class GuestController {
                     redirect_uri: process.env.WEB_MFP_REDIRECT_URI,
                     uid: userLogin.id,
                 }, process.env.CLIENT_SECRET, {
-                    algorithm: 'HS256'
+                algorithm: 'HS256'
             });
 
             if (token) {
@@ -2934,15 +2934,52 @@ export class GuestController {
         const userFollowers = await this.userFollowService.find({ where: { subjectId: user.id, subjectType: SUBJECT_TYPE.USER } });
         const userAuthList: AuthenticationId[] = await this.authenticationIdService.find({ where: { user: user.id } });
         const authProviderList: string[] = [];
-
+        let mfpProvider = undefined;
         if (userAuthList !== null && userAuthList !== undefined && userAuthList.length > 0) {
             for (const userAuth of userAuthList) {
+                if (userAuth.providerName !== undefined && userAuth.providerName === 'MFP') {
+                    mfpProvider = userAuth;
+                }
                 authProviderList.push(userAuth.providerName);
             }
         }
+        const requestBody = {
+            'grant_type': process.env.GRANT_TYPE,
+            'client_id': process.env.CLIENT_ID,
+            'client_secret': process.env.CLIENT_SECRET,
+            'scope': process.env.SCOPE
+        };
+        const formattedData = qs.stringify(requestBody);
+
+        const responseMFP = await axios.post(
+            process.env.APP_MFP_API_OAUTH,
+            formattedData, {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                Accept: 'application/json'
+            }
+        });
+        const tokenCredential = responseMFP.data.access_token;
+        let getMembershipById = undefined;
+        if (mfpProvider !== undefined) {
+            getMembershipById = await axios.get(
+                process.env.API_MFP_GET_ID + mfpProvider.providerUserId,
+                {
+                    headers: {
+                        Authorization: `Bearer ${tokenCredential}`
+                    }
+                }
+            );
+        }
+
         user.followings = userFollowings.length;
         user.followers = userFollowers.length;
         user.authUser = authProviderList;
+        user.providerUserId = getMembershipById ? getMembershipById.data.data.id : undefined;
+        user.expired_at = getMembershipById ? getMembershipById.data.data.expired_at : undefined;
+        user.state = getMembershipById ? getMembershipById.data.data.state : undefined;
+        user.identification = getMembershipById ? getMembershipById.data.data.identification_number.slice(0, getMembershipById.data.data.identification_number.length - 4) + 'XXXX' : undefined;
+        user.mobile = getMembershipById ? getMembershipById.data.data.mobile_number.slice(0, getMembershipById.data.data.mobile_number.length - 4) + 'XXXX' : undefined;
 
         delete user.fbUserId;
         delete user.fbToken;
