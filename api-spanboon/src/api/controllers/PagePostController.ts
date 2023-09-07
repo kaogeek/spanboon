@@ -461,15 +461,14 @@ export class PagePostController {
             const pageObjIds = new ObjectID(pageObjId);
             pageIds = await this.pageService.findOne({ _id: pageObjIds });
         }
-
-        if (pageIds !== undefined && pageIds.official === false) {
+        if (pageIds !== undefined && pageIds.isOfficial === false) {
             if (membership !== undefined && membership !== null && membership !== '' && membership === 'MEMBERSHIP') {
                 const userMemberShip = await this.userService.findOne({ _id: userObjId });
                 authMemberShip = await this.authenticationIdService.findOne({ providerName: PROVIDER.MFP, user: userObjId });
                 if (
                     (userMemberShip.membership === undefined || userMemberShip.membership === false)
                     &&
-                    authMemberShip === undefined) {
+                    authMemberShip === undefined || authMemberShip.membership === false) {
                     return res.status(400).send(ResponseUtil.getErrorResponse('You cannot post type memberShip.', undefined));
                 }
             }
@@ -481,8 +480,8 @@ export class PagePostController {
                 authMemberShip = await this.authenticationIdService.findOne({ providerName: PROVIDER.MFP, user: userObjId });
                 if (
                     (userMemberShip.membership === undefined || userMemberShip.membership === false)
-                    &&
-                    authMemberShip === undefined) {
+                    ||
+                    authMemberShip === undefined || authMemberShip.membership === false) {
                     return res.status(400).send(ResponseUtil.getErrorResponse('You cannot post type memberShip.', undefined));
                 }
             }
