@@ -183,11 +183,15 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                 } else {
                     if (userId !== undefined && userId !== null && userId !== '') {
                         for (const post of searchResult) {
-                            content.push(post);
+                            const results: any = {};
+                            results.post = post;
+                            content.push(results);
                         }
                     } else {
                         for (const post of searchResult) {
-                            content.push(post);
+                            const results: any = {};
+                            results.post = post;
+                            content.push(results);
                         }
                     }
                 }
