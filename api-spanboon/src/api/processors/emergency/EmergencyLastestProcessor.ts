@@ -9,14 +9,15 @@ import { AbstractTypeSectionProcessor } from '../AbstractTypeSectionProcessor';
 import { PostsService } from '../../services/PostsService';
 import moment from 'moment';
 import { ObjectID } from 'mongodb';
-
 // import { MONTHS } from '../../../constants/MonthsType';
 
 export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
 
     public static TYPE = 'EMERGENCY_LASTEST';
 
-    constructor(private postsService: PostsService) {
+    constructor(
+        private postsService: PostsService,
+    ) {
         super();
         this.type = EmergencyLastestProcessor.TYPE;
     }
@@ -31,6 +32,7 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                 let startDateTime = undefined;
                 let endDateTime = undefined;
                 let postAgg = undefined;
+                let pages = undefined;
                 if (this.data !== undefined && this.data !== null) {
                     emergencyEventId = this.data.emergencyEventId;
                     limit = this.data.limit;
@@ -38,8 +40,9 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                     userId = this.data.userId;
                     startDateTime = this.data.startDateTime;
                     endDateTime = this.data.endDateTime;
+                    pages = this.data.emergencyPageList;
                 }
-                
+
                 if (emergencyEventId === undefined || emergencyEventId === null || emergencyEventId === '') {
                     resolve(undefined);
                     return;
@@ -52,11 +55,20 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                 if (offset === undefined || offset === null || offset === '') {
                     offset = 0;
                 }
-                console.log('limit',limit);
+
                 // search first post of emergencyEvent and join gallery
-                
+                const pageObjIds = [];
+                if (pages !== undefined && pages.length > 0) {
+                    const pageList = pages.split(',');
+                    if (pageList.length > 0) {
+                        for (let i = 0; i < pageList.length; i++) {
+                            pageObjIds.push(new ObjectID(pageList[i]));
+                        }
+                    }
+                }
+                let query: any = { emergencyEvent: emergencyEventId, deleted: false, createdDate: { $lte: startDateTime, $gte: endDateTime } };
                 postAgg = [
-                    { $match: { emergencyEvent: emergencyEventId, deleted: false, createdDate: { $lte: startDateTime, $gte: endDateTime } } },
+                    { $match: query },
                     { $sort: { startDateTime: -1 } },
                     { $skip: offset },
                     { $limit: limit },
@@ -88,6 +100,48 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                         }
                     }
                 ];
+                if (pageObjIds.length > 0) {
+                    query = {
+                        pageId: { $in: pageObjIds },
+                        emergencyEvent: emergencyEventId,
+                        deleted: false,
+                        createdDate: { $lte: startDateTime, $gte: endDateTime }
+                    };
+                    postAgg = [
+                        { $match: query },
+                        { $sample: { size: 1 } },
+                        { $skip: offset },
+                        { $limit: limit },
+                        {
+                            $lookup: {
+                                from: 'SocialPost',
+                                localField: '_id',
+                                foreignField: 'postId',
+                                as: 'socialPosts'
+                            }
+                        },
+                        {
+                            $project: {
+                                'socialPosts': {
+                                    '_id': 0,
+                                    'pageId': 0,
+                                    'postId': 0,
+                                    'postBy': 0,
+                                    'postByType': 0
+                                }
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'PostsGallery',
+                                localField: '_id',
+                                foreignField: 'post',
+                                as: 'postGallery'
+                            }
+                        }
+                    ];
+                }
+
                 if (userId !== undefined && userId !== null && userId !== '') {
                     const userObjIds = new ObjectID(userId);
                     postAgg.push(

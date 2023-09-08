@@ -35,7 +35,6 @@ import { EmergencyNeedsProcessor } from '../processors/emergency/EmergencyNeedsP
 import { EmergencyLastestProcessor } from '../processors/emergency/EmergencyLastestProcessor';
 // import { EmergencyShareProcessor } from '../processors/emergency/EmergencyShareProcessor';
 // import { EmergencyPostLikedProcessor } from '../processors/emergency/EmergencyPostLikedProcessor';
-
 @JsonController('/emergency')
 export class EmergencyEventController {
     constructor(private emergencyEventService: EmergencyEventService, private hashTagService: HashTagService, private userFollowService: UserFollowService,
@@ -334,10 +333,13 @@ export class EmergencyEventController {
             emergencyEvent = await this.emergencyEventService.findOne({ $or: [{ _id: objId }, { title: id }] });
         }
         emergencyEvent = await this.emergencyMapFields(emergencyEvent);
+        let emergencyMode: string = undefined;
+        let emergencyPageList: any = undefined;
         if (emergencyEvent) {
             // generate timeline
             const followingUsers = await this.userFollowService.sampleUserFollow(objId, SUBJECT_TYPE.EMERGENCY_EVENT, 5);
-
+            emergencyMode = emergencyEvent.mode;
+            emergencyPageList = emergencyEvent.pageList;
             const emergencyEventTimeline = new EmergencyEventTimelineResponse();
             emergencyEventTimeline.emergencyEvent = emergencyEvent;
             emergencyEventTimeline.followedUser = followingUsers.followers;
@@ -476,6 +478,8 @@ export class EmergencyEventController {
                 userId,
                 startDateTime: today,
                 endDateTime: threeMonth,
+                emergencyMode,
+                emergencyPageList
             });
             const lastestProcsResult = await lastestPostProcessor.process();
             if (lastestProcsResult !== undefined && lastestProcsResult.length > 0) {
@@ -495,7 +499,7 @@ export class EmergencyEventController {
         }
     }
 
-    private async emergencyMapFields(emergencyObject:any): Promise<any>{
+    private async emergencyMapFields(emergencyObject: any): Promise<any> {
         const result: any = {};
         result.createdDate = emergencyObject.createdDate;
         result.id = emergencyObject.id;
@@ -508,6 +512,7 @@ export class EmergencyEventController {
         result.s3CoverPageURL = emergencyObject.s3CoverPageURL;
         result.ordering = emergencyObject.ordering;
         result.mode = emergencyObject.mode ? emergencyObject.mode : undefined;
+        result.pageList = emergencyObject.pageList ? emergencyObject.pageList : undefined;
         result.hashTagName = emergencyObject.hashTagName;
         return result;
     }
