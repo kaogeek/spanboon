@@ -333,8 +333,7 @@ export class EmergencyEventController {
         const isPin = emergencyEvents.isPin;
         const assetData = emergencyEvents.asset;
         const ordering = emergencyEvents.ordering;
-        const emerMode = emergencyEvents.mode;
-        const pageLists = emergencyEvents.pageList;
+
         const emergencyUpdate: EmergencyEvent = await this.emergencyEventService.findOne({ where: { _id: objId } });
         if (!emergencyUpdate) {
             return res.status(400).send(ResponseUtil.getSuccessResponse('Invalid EmergencyEvent Id', undefined));
