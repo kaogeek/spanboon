@@ -146,6 +146,45 @@ export abstract class AbstractPage implements OnInit {
     });
   }
 
+  public showDialogEngagementMember(text?: any): void {
+    let user: any = JSON.parse(localStorage.getItem('pageUser'));
+    let dialog = this.dialog.open(DialogAlert, {
+      disableClose: true,
+      data: {
+        text: text ? text : 'กดไลค์สำหรับสมาชิกพรรคเท่านั้น',
+        bottomText2: 'ตกลง',
+        bottomColorText2: "black",
+        btDisplay1: "none",
+        options: 'mfp',
+        type: 'engage',
+        userId: user.id,
+      },
+    });
+    dialog.afterClosed().subscribe((res) => {
+      if (res) {
+      }
+    });
+  }
+
+  public showDialogMember(text?: any): void {
+    let user: any = JSON.parse(localStorage.getItem('pageUser'));
+    let dialog = this.dialog.open(DialogAlert, {
+      disableClose: true,
+      data: {
+        bottomText2: 'ตกลง',
+        bottomColorText2: "black",
+        btDisplay1: "none",
+        options: 'mfp',
+        type: 'binding',
+        userId: user.id,
+      },
+    });
+    dialog.afterClosed().subscribe((res) => {
+      if (res) {
+      }
+    });
+  }
+
   public showAlertRedirectDialog(text: any, cancelText?: string, redirect?: any): void {
     let dialog = this.dialog.open(DialogAlert, {
       disableClose: true,

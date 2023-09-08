@@ -467,11 +467,15 @@
       > .box-left {
         flex: 0 0 auto;
         display: flex;
-        width: calc(25% - #{$padding-side-wrapper-tool-post});
+        width: calc(30% - #{$padding-side-wrapper-tool-post});
         // padding: 0 $padding-side-wrapper-tool-post;
         justify-content: center;
         align-items: center;
         border-right: $width-border solid $border-color;
+
+        @media (max-width: $large) {
+          width: calc(25% - #{$padding-side-wrapper-tool-post});
+        }
 
         > .mat-form-field {
           > .mat-form-field-wrapper {
@@ -800,7 +804,7 @@
       }
 
       > .looking {
-        background-color: $brandcolor3;
+        background-color: $brandcolor2;
       }
 
       > .lookingWhite {

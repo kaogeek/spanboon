@@ -101,3 +101,6 @@ export const DEFAULT_ADMIN_EMAIL = 'example@hotmail.com';
 export const ADMIN_EMAIL = 'admin.email';
 
 export const VOTE_DASHBOARD ='vote.dashboard';
+
+export const DEFAULT_EMERGENCYEVENT_MODE = 'normal';
+export const EMERGENCYEVENT_MODE = 'emergencyEvent.mode';

@@ -36,6 +36,8 @@ import { HidePostService } from '../services/HidePostService';
 import jwt from 'jsonwebtoken';
 import { PROVIDER } from '../../constants/LoginProvider';
 import * as bcrypt from 'bcrypt';
+import axios from 'axios';
+import qs from 'qs';
 @JsonController('/profile')
 export class UserProfileController {
     constructor(
@@ -136,16 +138,56 @@ export class UserProfileController {
             const userFollowing = await this.userFollowService.find({ where: { userId: usrObjId, subjectType: SUBJECT_TYPE.USER } });
             const userFollower = await this.userFollowService.find({ where: { subjectId: usrObjId, subjectType: SUBJECT_TYPE.USER } });
             const authProviderList: string[] = [];
-
+            let mfpProvider = undefined;
             if (userAuthList !== null && userAuthList !== undefined && userAuthList.length > 0) {
                 for (const userAuth of userAuthList) {
+                    if (userAuth.providerName !== undefined && userAuth.providerName === 'MFP') {
+                        mfpProvider = userAuth;
+                    }
                     authProviderList.push(userAuth.providerName);
                 }
             }
-
+            const requestBody = {
+                'grant_type': process.env.GRANT_TYPE,
+                'client_id': process.env.CLIENT_ID,
+                'client_secret': process.env.CLIENT_SECRET,
+                'scope': process.env.SCOPE
+            };
+            const formattedData = qs.stringify(requestBody);
+    
+            const responseMFP = await axios.post(
+                process.env.APP_MFP_API_OAUTH,
+                formattedData, {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    Accept: 'application/json'
+                }
+            });
+            const tokenCredential = responseMFP.data.access_token;
+            let getMembershipById = undefined;
+            if (mfpProvider !== undefined) {
+                getMembershipById = await axios.get(
+                    process.env.API_MFP_GET_ID + mfpProvider.providerUserId,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${tokenCredential}`
+                        }
+                    }
+                );
+            }
             result.authUser = authProviderList;
             result.following = userFollowing.length;
             result.followers = userFollower.length;
+            result.mfpUser = {
+                id: getMembershipById ? getMembershipById.data.data.id : undefined,
+                expiredAt: getMembershipById ? getMembershipById.data.data.expired_at : undefined,
+                firstName: getMembershipById ? getMembershipById.data.data.first_name : undefined,
+                lastName: getMembershipById ? getMembershipById.data.data.last_name : undefined,
+                email: getMembershipById ? getMembershipById.data.data.email : undefined,
+                state: getMembershipById ? getMembershipById.data.data.state : undefined,
+                identification: getMembershipById ? getMembershipById.data.data.identification_number.slice(0, getMembershipById.data.data.identification_number.length - 4) + 'XXXX' : undefined,
+                mobile: getMembershipById ? getMembershipById.data.data.mobile_number.slice(0, getMembershipById.data.data.mobile_number.length - 4) + 'XXXX' : undefined,
+            };
 
             if (isUserFollow !== null && isUserFollow !== undefined) {
                 result.isFollow = true;
@@ -601,8 +643,8 @@ export class UserProfileController {
             const newValue = { $set: { membership: false } };
             const update = await this.userService.update(query, newValue);
             if (update) {
-                const deleteAuthen = await this.authenIdService.delete({ user: userObj, providerName: PROVIDER.MFP });
-                if (deleteAuthen) {
+                const UpdateAuthen = await this.authenIdService.update({ user: userObj, providerName: PROVIDER.MFP }, { $set: { membership: false } });
+                if (UpdateAuthen) {
                     const successResponseMFP = ResponseUtil.getSuccessResponse('Binding MFP is successful.', undefined);
                     return res.status(200).send(successResponseMFP);
                 }
@@ -636,7 +678,11 @@ export class UserProfileController {
             return res.status(400).send(ResponseUtil.getErrorResponse('ARCHIVED', undefined));
 
         }
-
+        // Check the authen have ever binded ?
+        const checkAuthenBinded= await this.authenIdService.findOne({ providerUserId: userObject.membership.id, providerName: PROVIDER.MFP });
+        if (checkAuthenBinded !== undefined && checkAuthenBinded.membership === true) {
+            return res.status(400).send(ResponseUtil.getErrorResponse('You have ever binded this user.', undefined));
+        }
         if (userObject.membership.state === 'APPROVED'
             &&
             (userObject.membership.membership_type === 'MEMBERSHIP_YEARLY' ||
@@ -646,37 +692,47 @@ export class UserProfileController {
             if (user) {
                 // check authentication MFP Is existing ?
                 const encryptIdentification = await bcrypt.hash(userObject.membership.identification_number, 10);
-                const checkAuthentication = await this.authenIdService.findOne({ providerUserId: userObject.membership.id, providerName: PROVIDER.MFP });
-                if (checkAuthentication !== undefined && checkAuthentication !== null) {
+                const checkAuthentication = await this.authenIdService.findOne({ user: user.id, providerUserId: userObject.membership.id, providerName: PROVIDER.MFP });
+                if (checkAuthentication !== undefined && checkAuthentication.membership === true) {
                     return res.status(400).send(ResponseUtil.getErrorResponse('You have ever binded this user.', undefined));
 
                 }
                 // import * as bcrypt from 'bcrypt';
-
-                const authenId = new AuthenticationId();
-                authenId.user = user.id;
-                authenId.lastAuthenTime = moment().toDate();
-                authenId.providerUserId = userObject.membership.id;
-                authenId.providerName = PROVIDER.MFP;
-                authenId.properties = userObject.membership;
-                authenId.expirationDate = userObject.membership.expired_at;
-                authenId.expirationDate_law_expired = userObject.membership.law_expired_at;
-                authenId.identificationNumber = encryptIdentification;
-                authenId.mobileNumber = userObject.membership.mobile_number;
-                authenId.membershipState = userObject.membership.state;
-                authenId.membershipType = userObject.membership.membership_type;
-                authenId.membership = true;
-                authIdCreate = await this.authenIdService.create(authenId);
-                if (authIdCreate) {
-                    // update status user membership = true
+                if (checkAuthentication === undefined) {
+                    const authenId = new AuthenticationId();
+                    authenId.user = user.id;
+                    authenId.lastAuthenTime = moment().toDate();
+                    authenId.providerUserId = userObject.membership.id;
+                    authenId.providerName = PROVIDER.MFP;
+                    authenId.properties = userObject.membership;
+                    authenId.expirationDate = userObject.membership.expired_at;
+                    authenId.expirationDate_law_expired = userObject.membership.law_expired_at;
+                    authenId.identificationNumber = encryptIdentification;
+                    authenId.mobileNumber = userObject.membership.mobile_number;
+                    authenId.membershipState = userObject.membership.state;
+                    authenId.membershipType = userObject.membership.membership_type;
+                    authenId.membership = true;
+                    authIdCreate = await this.authenIdService.create(authenId);
+                    if (authIdCreate) {
+                        // update status user membership = true
+                        const query = { _id: userObjId };
+                        const newValues = { $set: { banned: false, membership: true } };
+                        const update = await this.userService.update(query, newValues);
+                        if (update) {
+                            const successResponseMFP = ResponseUtil.getSuccessResponse('Binding User Is Successful.', 'APPROVED');
+                            return res.status(200).send(successResponseMFP);
+                        } else {
+                            return res.status(400).send(ResponseUtil.getErrorResponse('Cannot Update Status Membership User.', undefined));
+                        }
+                    }
+                } else {
                     const query = { _id: userObjId };
                     const newValues = { $set: { banned: false, membership: true } };
                     const update = await this.userService.update(query, newValues);
-                    if (update) {
+                    const UpdateAuthen = await this.authenIdService.update({ user: userObjId, providerName: PROVIDER.MFP }, { $set: { membership: true } });
+                    if (update && UpdateAuthen) {
                         const successResponseMFP = ResponseUtil.getSuccessResponse('Binding User Is Successful.', 'APPROVED');
                         return res.status(200).send(successResponseMFP);
-                    } else {
-                        return res.status(400).send(ResponseUtil.getErrorResponse('Cannot Update Status Membership User.', undefined));
                     }
                 }
             } else {

@@ -314,6 +314,18 @@
 
     > .choice {
       width: 100%;
+
+      > .checkbox {
+        margin-top: 10px;
+        width: 70%;
+        display: flex;
+        justify-content: flex-start;
+
+        > span {
+          margin-left: 20px;
+          @include font-size-10($font-head-100);
+        }
+      }
     }
   }
 }

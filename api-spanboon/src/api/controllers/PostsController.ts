@@ -990,7 +990,7 @@ export class PostsController {
             const postObject = await this.postsService.findOne({ _id: postObjId });
             const authenticateMFP = await this.authenticationIdService.findOne({ providerName: PROVIDER.MFP, user: userObjId });
             if (postObject.type === 'MEMBERSHIP') {
-                if (authenticateMFP === undefined) {
+                if (authenticateMFP === undefined || authenticateMFP.membership === false) {
                     const errorResponse = ResponseUtil.getErrorResponse('You cannot like this post type MFP.', undefined);
                     return res.status(400).send(errorResponse);
                 }

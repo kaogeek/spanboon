@@ -35,6 +35,11 @@ import { EmergencyNeedsProcessor } from '../processors/emergency/EmergencyNeedsP
 import { EmergencyLastestProcessor } from '../processors/emergency/EmergencyLastestProcessor';
 // import { EmergencyShareProcessor } from '../processors/emergency/EmergencyShareProcessor';
 // import { EmergencyPostLikedProcessor } from '../processors/emergency/EmergencyPostLikedProcessor';
+/* 
+import {
+    DEFAULT_EMERGENCYEVENT_MODE,
+    EMERGENCYEVENT_MODE
+} from '../../constants/SystemConfig'; */
 @JsonController('/emergency')
 export class EmergencyEventController {
     constructor(private emergencyEventService: EmergencyEventService, private hashTagService: HashTagService, private userFollowService: UserFollowService,
@@ -472,7 +477,7 @@ export class EmergencyEventController {
                 offset,
                 userId,
                 startDateTime: today,
-                endDateTime: threeMonth
+                endDateTime: threeMonth,
             });
             const lastestProcsResult = await lastestPostProcessor.process();
             if (lastestProcsResult !== undefined && lastestProcsResult.length > 0) {

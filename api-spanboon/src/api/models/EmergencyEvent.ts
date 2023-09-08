@@ -48,6 +48,9 @@ export class EmergencyEvent extends BaseModel {
 
     @Column({ name: 'endDateTime' })
     public endDateTime: Date;
+
+    @Column({ name: 'mode'})
+    public mode: string;
     
     @BeforeInsert()
     public createDetails(): any {

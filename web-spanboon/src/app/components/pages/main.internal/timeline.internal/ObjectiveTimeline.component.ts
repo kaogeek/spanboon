@@ -283,7 +283,7 @@ export class ObjectiveTimeline extends AbstractPage implements OnInit {
             }).catch((err: any) => {
                 console.log(err)
                 if (err.error.message === 'You cannot like this post type MFP.') {
-                    this.showAlertDialog('กดไลค์สำหรับสมาชิกพรรคเท่านั้น');
+                    this.showDialogEngagementMember();
                 }
             });
         }

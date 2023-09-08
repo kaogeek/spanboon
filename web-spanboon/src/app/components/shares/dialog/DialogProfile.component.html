@@ -1,0 +1,63 @@
+<!--
+    @license Spanboon Platform v0.1
+    (c) 2020-2021 KaoGeek. http://kaogeek.dev
+    License: MIT. https://opensource.org/licenses/MIT
+    Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
+-->
+
+<div class="profile-membership">
+    <div class="wrapper-profile">
+        <div class="header">
+            <div class="image">
+                <img src="../../../../assets/img/logo/mfp.svg" alt="">
+            </div>
+        </div>
+        <div class="username">
+            <span>{{data.user.firstName + ' ' + data.user.lastName}}</span>
+        </div>
+        <div class="detail-user">
+            <div class="name detail">
+                <span>ชื่อ</span>
+                <span>{{data.user.mfpUser.firstName + ' ' + data.user.mfpUser.lastName}}</span>
+            </div>
+            <div class="email detail">
+                <span>อีเมล</span>
+                <span>{{data.user.mfpUser.email}}</span>
+            </div>
+            <div class="id detail">
+                <span>รหัสสมาชิก</span>
+                <span>{{data.user.mfpUser.id}}</span>
+            </div>
+            <div class="idcard detail">
+                <span>บัตรประชาชน</span>
+                <span>{{data.user.mfpUser.identification}}</span>
+            </div>
+            <div class="mobile detail">
+                <span>เบอร์โทร</span>
+                <span>{{data.user.mfpUser.mobile}}</span>
+            </div>
+            <div class="state detail">
+                <span>สถานะ</span>
+                <span *ngIf="data.user.mfpUser.state === 'APPROVED'">ผ่านการตรวจสอบแล้ว</span>
+                <span *ngIf="data.user.mfpUser.state === 'PENDING_PAYMENT'">รอการชำระเงิน</span>
+                <span *ngIf="data.user.mfpUser.state === 'PENDING_APPROVAL'">รอการตรวจสอบ</span>
+                <span *ngIf="data.user.mfpUser.state === 'REJECTED'">ไม่ผ่านการตรวจสอบ</span>
+                <span *ngIf="data.user.mfpUser.state === 'PROFILE_RECHECKED'">สมาชิกรอจัดเก็บ</span>
+                <span *ngIf="data.user.mfpUser.state === 'ARCHIVED'">สมาชิกที่จัดเก็บแล้ว</span>
+            </div>
+            <div class="expired detail">
+                <span>วันหมดอายุ</span>
+                <span>{{data.user.mfpUser.expiredAt}}</span>
+            </div>
+        </div>
+        <div class="bottom" *ngIf="!isUnbind">
+            <button class="button-unbind" (click)="acceptUnbind()">{{'ยกเลิกการเชื่อมบัญชี'}}</button>
+        </div>
+        <div class="bottom choice" style="gap: 20px" *ngIf="isUnbind">
+            <button class="button-unbind cancel" (click)="cancel()">{{'ยกเลิก'}}</button>
+            <button class="button-unbind confirm" (click)="unbind()">{{'ยืนยันการยกเลิกเชื่อมบัญชี'}}</button>
+        </div>
+    </div>
+</div>
+
+<loading *ngIf="isLoading"></loading>

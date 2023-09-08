@@ -48,19 +48,19 @@ import { UserLikeService } from '../services/UserLikeService';
 import { LIKE_TYPE } from '../../constants/LikeType';
 import { PageObjective } from '../models/PageObjective';
 import { PageNotificationService } from '../services/PageNotificationService';
-import { NotificationService } from '../services/NotificationService';
+// import { NotificationService } from '../services/NotificationService';
 import { PageObjectiveService } from '../services/PageObjectiveService';
 import { EmergencyEventService } from '../services/EmergencyEventService';
 import { EmergencyEvent } from '../models/EmergencyEvent';
 import { HashTag } from '../models/HashTag';
-import { USER_TYPE, NOTIFICATION_TYPE } from '../../constants/NotificationType';
+import { NOTIFICATION_TYPE } from '../../constants/NotificationType';
 import { PAGE_ACCESS_LEVEL } from '../../constants/PageAccessLevel';
 import { PageAccessLevelService } from '../services/PageAccessLevelService';
 import { SearchFilter } from './requests/SearchFilterRequest';
 import { PageSocialAccountService } from '../services/PageSocialAccountService';
 import { PostUtil } from '../../utils/PostUtil';
-import { DeviceTokenService } from '../services/DeviceToken';
-import { UserFollowService } from '../services/UserFollowService';
+// import { DeviceTokenService } from '../services/DeviceToken';
+// import { UserFollowService } from '../services/UserFollowService';
 import { HidePostService } from '../services/HidePostService';
 import { AuthenticationIdService } from '../services/AuthenticationIdService';
 import { PROVIDER } from '../../constants/LoginProvider';
@@ -87,11 +87,11 @@ export class PagePostController {
         private userLikeService: UserLikeService,
         private pageNotificationService: PageNotificationService,
         private pageAccessLevelService: PageAccessLevelService,
-        private notificationService: NotificationService,
+        // private notificationService: NotificationService,
         private pageSocialAccountService: PageSocialAccountService,
         private s3Service: S3Service,
-        private deviceToken: DeviceTokenService,
-        private userFollowService: UserFollowService,
+        // private deviceToken: DeviceTokenService,
+        // private userFollowService: UserFollowService,
         private hidePostService: HidePostService,
         private authenticationIdService: AuthenticationIdService
     ) { }
@@ -339,11 +339,11 @@ export class PagePostController {
         let needNotiTxt = '';
         let isPostTwitter = false;
         let isPostFacebook = false;
-        const space = ' ';
-        const now = new Date();
-        const hours = now.getHours();
-        const minutes = now.getMinutes();
-        const interval = 30;
+        // const space = ' ';
+        // const now = new Date();
+        // const hours = now.getHours();
+        // const minutes = now.getMinutes();
+        // const interval = 30;
         if (options !== undefined) {
             if (options.twitterPost !== undefined && typeof options.twitterPost === 'string') {
                 if ('TRUE' === options.twitterPost.toUpperCase()) {
@@ -461,15 +461,14 @@ export class PagePostController {
             const pageObjIds = new ObjectID(pageObjId);
             pageIds = await this.pageService.findOne({ _id: pageObjIds });
         }
-
-        if (pageIds !== undefined && pageIds.official === false) {
+        if (pageIds !== undefined && pageIds.isOfficial === false) {
             if (membership !== undefined && membership !== null && membership !== '' && membership === 'MEMBERSHIP') {
                 const userMemberShip = await this.userService.findOne({ _id: userObjId });
                 authMemberShip = await this.authenticationIdService.findOne({ providerName: PROVIDER.MFP, user: userObjId });
                 if (
                     (userMemberShip.membership === undefined || userMemberShip.membership === false)
                     &&
-                    authMemberShip === undefined) {
+                    authMemberShip === undefined || authMemberShip.membership === false) {
                     return res.status(400).send(ResponseUtil.getErrorResponse('You cannot post type memberShip.', undefined));
                 }
             }
@@ -481,8 +480,8 @@ export class PagePostController {
                 authMemberShip = await this.authenticationIdService.findOne({ providerName: PROVIDER.MFP, user: userObjId });
                 if (
                     (userMemberShip.membership === undefined || userMemberShip.membership === false)
-                    &&
-                    authMemberShip === undefined) {
+                    ||
+                    authMemberShip === undefined || authMemberShip.membership === false) {
                     return res.status(400).send(ResponseUtil.getErrorResponse('You cannot post type memberShip.', undefined));
                 }
             }
@@ -688,13 +687,15 @@ export class PagePostController {
                 engagement.isFirst = true;
                 await this.userEngagementService.create(engagement);
                 // page to user /// 
-                let tokenFCMId = undefined;
-                let notificationTextPOST = undefined;
-                let link = undefined;
-                const pagePostId = await this.pageService.findOne({ _id: createPostPageData.pageId });
+                // let tokenFCMId = undefined;
+                // let notificationTextPOST = undefined;
+                // let link = undefined;
+                // const pagePostId = await this.pageService.findOne({ _id: createPostPageData.pageId });
                 if (createPostPageData.pageId !== null) {
-                    notificationTextPOST = 'มีโพสต์ใหม่จากเพจ' + space + pagePostId.name;
-                    const userFollow = await this.userFollowService.find({ subjectType: 'PAGE', subjectId: createPostPageData.pageId });
+                    // notificationTextPOST = 'มีโพสต์ใหม่จากเพจ' + space + pagePostId.name;
+                    // const userFollow = await this.userFollowService.find({ subjectType: 'PAGE', subjectId: createPostPageData.pageId });
+                    // console.log('userFollow',userFollow.length);
+                    /* 
                     for (let i = 0; i < userFollow.length; i++) {
                         tokenFCMId = await this.deviceToken.find({ userId: userFollow[i].userId });
                         link = `/page/${pagePostId.id}/post/` + createPostPageData.id;
@@ -793,11 +794,12 @@ export class PagePostController {
                             }
                         }
                     }
-
+                    */
                 }
                 else {
                     // type post membership MFP. (user post)
                     // user to user
+                    /* 
                     const userPost = await this.userService.findOne({ _id: createPostPageData.ownerUser });
                     notificationTextPOST = 'มีโพสต์ใหม่จาก' + space + userPost.displayName;
                     const userFollow = await this.userFollowService.find({ subjectType: 'USER', subjectId: createPostPageData.ownerUser });
@@ -899,6 +901,7 @@ export class PagePostController {
                             }
                         }
                     }
+                    */
                 }
                 let needsCreate: Needs;
                 const needsCreated: Needs[] = [];

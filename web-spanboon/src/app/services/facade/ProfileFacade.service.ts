@@ -120,7 +120,7 @@ export class ProfileFacade extends AbstractFacade {
     });
   }
 
-  public updateMember(userId: string, status?: boolean): Promise<any> {
+  public updateMember(userId: any, status?: boolean): Promise<any> {
     return new Promise(async (resolve, reject) => {
       let url: string = this.baseURL + '/profile/' + userId;
 

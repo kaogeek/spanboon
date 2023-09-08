@@ -245,7 +245,6 @@ export class NotificationService {
         notification.type = notificationType;
         notification.deleted = false;
         notification.imageURL = image;
-        console.log('title',title);
         if (String(notification.toUser) !== String(notification.fromUser)) {
             return await this.create(notification);
         } else {

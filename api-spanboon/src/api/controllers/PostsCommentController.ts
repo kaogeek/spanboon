@@ -136,7 +136,7 @@ export class PostsCommentController {
         // check authenticate membership MFP 
         const postObject = await this.postsService.findOne({ _id: postObjId });
         const authenticateMFP = await this.authenticationIdService.findOne({ providerName: PROVIDER.MFP, user: userObjId });
-        if (postObject.type === 'MEMBERSHIP') {
+        if (postObject.type === 'MEMBERSHIP' || authenticateMFP.membership === false ) {
             if (authenticateMFP === undefined) {
                 const errorResponse = ResponseUtil.getErrorResponse('You cannot comment this post type MFP.', undefined);
                 return res.status(400).send(errorResponse);
@@ -928,7 +928,7 @@ export class PostsCommentController {
 
                     postCommentLists.map((result) => {
                         const commentId = result.id;
-
+                        result.typePost = posts.type;
                         if (userLikeMap[commentId]) {
                             result.isLike = true;
                         } else {
@@ -1126,7 +1126,7 @@ export class PostsCommentController {
         // check authenticate membership MFP 
         const postObject = await this.postsService.findOne({ _id: postObjId });
         const authenticateMFP = await this.authenticationIdService.findOne({ providerName: PROVIDER.MFP, user: userObjId, membership: true });
-        if (postObject.type === 'MEMBERSHIP') {
+        if (postObject.type === 'MEMBERSHIP' || authenticateMFP.membership === false) {
             if (authenticateMFP === undefined) {
                 const errorResponse = ResponseUtil.getErrorResponse('You cannot like comment this post type MFP.', undefined);
                 return res.status(400).send(errorResponse);

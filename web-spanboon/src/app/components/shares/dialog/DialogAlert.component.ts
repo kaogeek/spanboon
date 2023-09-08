@@ -11,6 +11,7 @@ import { DialogData } from '../../../models/models';
 import { environment } from '../../../../environments/environment';
 import { DeviceDetectorService } from 'ngx-device-detector';
 import { NavigationExtras, Router } from '@angular/router';
+import { ProfileFacade } from 'src/app/services/facade/ProfileFacade.service';
 
 @Component({
   selector: 'dialog-alert',
@@ -22,12 +23,18 @@ export class DialogAlert {
   deviceInfo = null;
 
   private isbottom: boolean
+  private profileFacade: ProfileFacade;
   public router: Router;
   public apiBaseURL = environment.apiBaseURL;
+  public isRemindMe: boolean = false;
 
   constructor(public dialogRef: MatDialogRef<DialogAlert>,
-    @Inject(MAT_DIALOG_DATA) public data: DialogData, private deviceService: DeviceDetectorService, router: Router) {
+    @Inject(MAT_DIALOG_DATA) public data: DialogData,
+    private deviceService: DeviceDetectorService,
+    profileFacade: ProfileFacade,
+    router: Router) {
     this.router = router;
+    this.profileFacade = profileFacade;
 
   }
 
@@ -65,26 +72,40 @@ export class DialogAlert {
   }
 
   public cancel() {
-    if (this.data.options === 'ios' || this.data.options === 'Mac') {
+    if (this.data.type === 'ios' || this.data.type === 'Mac' || this.data.type === 'android') {
       let date = Date.now();
       localStorage.setItem('timeStampAppEx', JSON.stringify(date));
     }
     this.isbottom = false
+    this._donotAskAgain();
     this.dialogRef.close(this.isbottom);
   }
 
   public register() {
     window.open('https://accounts.moveforwardparty.org/account/register', "_blank");
+    this._donotAskAgain();
     this.dialogRef.close(this.isbottom);
   }
 
   public binding() {
-    let navigationExtras: NavigationExtras = {
-      state: {
-        focus: 'การเชื่อมต่อ'
-      },
+    this.profileFacade.updateMember(this.data.userId, true).then((res) => {
+      let token = res;
+      let url: string = 'https://auth.moveforwardparty.org/sso?';
+      if (token !== undefined) {
+        url += `client_id=5&process_type=binding&token=${token}`;
+      }
+      localStorage.setItem('methodMFP', 'binding');
+      this._donotAskAgain();
+      this.dialogRef.close(this.isbottom);
+      window.open(url, '_blank').focus();
+    }).catch((err) => {
+      if (err) console.log("err", err);
+    });
+  }
+
+  private _donotAskAgain() {
+    if (this.isRemindMe) {
+      localStorage.setItem('notShowMemberDialog', String(true));
     }
-    this.router.navigate(['/account/settings'], navigationExtras);
-    this.dialogRef.close(this.isbottom);
   }
 }
