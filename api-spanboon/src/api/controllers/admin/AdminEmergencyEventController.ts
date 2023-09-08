@@ -107,7 +107,7 @@ export class EmergencyEventController {
         const isPin = emergencyEvents.isPin;
         const orderingSequence = emergencyEvents.ordering;
         const emerMode = emergencyEvents.mode;
-        const pageLists = emergencyEvents;
+        const pageLists = emergencyEvents.pageLists;
         const fileName = userId + FileUtil.renameFile();
         const today = moment().toDate();
         const data = await this.checkEmergencyDuplicate(title, emergencyHashTag);
@@ -337,7 +337,7 @@ export class EmergencyEventController {
         const assetData = emergencyEvents.asset;
         const ordering = emergencyEvents.ordering;
         const emerMode = emergencyEvents.mode;
-        const pageLists = emergencyEvents;
+        const pageLists = emergencyEvents.pageLists;
         const emergencyUpdate: EmergencyEvent = await this.emergencyEventService.findOne({ where: { _id: objId } });
         if (!emergencyUpdate) {
             return res.status(400).send(ResponseUtil.getSuccessResponse('Invalid EmergencyEvent Id', undefined));
