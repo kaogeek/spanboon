@@ -58,8 +58,8 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                 postAgg = [
                     { $match: { emergencyEvent: emergencyEventId, deleted: false, createdDate: { $lte: startDateTime, $gte: endDateTime } } },
                     { $sort: { startDateTime: -1 } },
-                    { $limit: limit },
                     { $skip: offset },
+                    { $limit: limit },
                     {
                         $lookup: {
                             from: 'SocialPost',
