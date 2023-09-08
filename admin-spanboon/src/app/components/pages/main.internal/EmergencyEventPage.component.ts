@@ -300,10 +300,6 @@ export class EmergencyEventPage extends AbstractPage implements OnInit {
                 this.isSave = false;
                 return;
             }
-            if (this.dataForm.mode === "") {
-                this.isSave = false;
-                return;
-            }
             if (this.orinalDataForm.title !== "" && this.orinalDataForm.title !== undefined) {
                 if (this.fileToUpload !== undefined && this.fileToUpload !== null) {
                     this.dataForm.asset = { size: this.fileToUpload[0].size, data: this.imageSrc, mimeType: this.fileToUpload[0].type }

@@ -5,7 +5,8 @@
     Author:  p-nattawadee <nattawdee.l@absolute.co.th>, Chanachai-Pansailom <chanachai.p@absolute.co.th>, Americaso <treerayuth.o@absolute.co.th>
 -->
 <script src="../../../../../assets/script/canvas.js"></script>
-<div id="canvas-wrap">
+<div id="canvas-wrap" infinite-scroll [infiniteScrollDistance]="scrollDistance" [alwaysCallback]="true"
+    (scrolled)="onScrollDown($event)">
     <canvas id="canvas"></canvas>
     <div *ngIf="objectiveData" class="objective-timeline-body" id="body">
         <!-- <svg class="img_objective" xmlns="http://www.w3.org/2000/svg" width="700.899" height="700.899"
@@ -129,9 +130,16 @@
                     <div class="head">
                         <div class="line"></div>
                         <div class="strat-point">
-                            <span class="title" id="point">{{index === 0 ? 'จุดเริ่มต้น' :
-                                item.posts[0].post[0].createdDate|
-                                thdatetime}}</span>
+                            <ng-container
+                                *ngIf="pageObjective.mode && pageObjective.mode === 'random'; else elseMonthStart">
+                                <span class="title" id="point">{{index === 0 ? 'จุดเริ่มต้น' :
+                                    'เรื่องราวในขณะนี้'}}</span>
+                            </ng-container>
+                            <ng-template #elseMonthStart>
+                                <span class="title" id="point">{{index === 0 ? 'จุดเริ่มต้น' :
+                                    item.posts[0].post[0].createdDate|
+                                    thdatetime}}</span>
+                            </ng-template>
                         </div>
                     </div>
                     <div class="card">
@@ -1217,7 +1225,8 @@
                         <div *ngIf="item.type === 'EMERGENCY_LASTEST'" class="objective_lastest_card">
                             <div class="body">
                                 <ng-container *ngFor="let posts of item.posts; let indexa = index; let odd = odd;">
-                                    <div class="head" *ngIf="item.posts.length > 1 && indexa > 0">
+                                    <div class="head"
+                                        *ngIf="item.posts.length > 1 && indexa > 0 && pageObjective.mode && pageObjective.mode !== 'random'">
                                         <div class="line"></div>
                                         <div class="strat-point">
                                             <span class="title" id="point">{{item.posts[indexa].post[0].createdDate
