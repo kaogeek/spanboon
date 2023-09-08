@@ -55,7 +55,8 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                 if (offset === undefined || offset === null || offset === '') {
                     offset = 0;
                 }
-
+                console.log('limit', parseInt(limit, 10));
+                console.log('offset', parseInt(offset, 10));
                 // search first post of emergencyEvent and join gallery
                 const pageObjIds = [];
                 if (pages !== undefined && pages.length > 0) {
@@ -66,7 +67,17 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                         }
                     }
                 }
+                console.log('pageObjIds',pageObjIds);
                 let query: any = { emergencyEvent: emergencyEventId, deleted: false, createdDate: { $lte: startDateTime, $gte: endDateTime } };
+                if (pageObjIds.length > 0) {
+                    console.log('pass1');
+                    query = {
+                        pageId: { $in: pageObjIds },
+                        emergencyEvent: emergencyEventId,
+                        deleted: false,
+                        createdDate: { $lte: startDateTime, $gte: endDateTime }
+                    };
+                }
                 postAgg = [
                     { $match: query },
                     { $sort: { startDateTime: -1 } },
@@ -100,48 +111,6 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                         }
                     }
                 ];
-                if (pageObjIds.length > 0) {
-                    query = {
-                        pageId: { $in: pageObjIds },
-                        emergencyEvent: emergencyEventId,
-                        deleted: false,
-                        createdDate: { $lte: startDateTime, $gte: endDateTime }
-                    };
-                    postAgg = [
-                        { $match: query },
-                        { $sample: { size: 1 } },
-                        { $skip: offset },
-                        { $limit: limit + offset },
-                        {
-                            $lookup: {
-                                from: 'SocialPost',
-                                localField: '_id',
-                                foreignField: 'postId',
-                                as: 'socialPosts'
-                            }
-                        },
-                        {
-                            $project: {
-                                'socialPosts': {
-                                    '_id': 0,
-                                    'pageId': 0,
-                                    'postId': 0,
-                                    'postBy': 0,
-                                    'postByType': 0
-                                }
-                            }
-                        },
-                        {
-                            $lookup: {
-                                from: 'PostsGallery',
-                                localField: '_id',
-                                foreignField: 'post',
-                                as: 'postGallery'
-                            }
-                        }
-                    ];
-                }
-
                 if (userId !== undefined && userId !== null && userId !== '') {
                     const userObjIds = new ObjectID(userId);
                     postAgg.push(
