@@ -32,6 +32,7 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                 let startDateTime = undefined;
                 let endDateTime = undefined;
                 let postAgg = undefined;
+                let mode = undefined;
                 let pages = undefined;
                 if (this.data !== undefined && this.data !== null) {
                     emergencyEventId = this.data.emergencyEventId;
@@ -40,6 +41,7 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                     userId = this.data.userId;
                     startDateTime = this.data.startDateTime;
                     endDateTime = this.data.endDateTime;
+                    mode = this.data.emergencyMode;
                     pages = this.data.emergencyPageList;
                 }
 
@@ -67,7 +69,7 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                         }
                     }
                 }
-                console.log('pageObjIds',pageObjIds);
+                console.log('pageObjIds', pageObjIds);
                 let query: any = { emergencyEvent: emergencyEventId, deleted: false, createdDate: { $lte: startDateTime, $gte: endDateTime } };
                 if (pageObjIds.length > 0) {
                     console.log('pass1');
@@ -138,41 +140,50 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                 const searchResult = await this.postsService.aggregate(postAgg);
                 let result = undefined;
                 const content: any = [];
-                if (searchResult !== undefined && searchResult.length > 0) {
-                    // insert isLike Action
-                    if (userId !== undefined && userId !== null && userId !== '') {
-                        for (const post of searchResult) {
-                            const results: any = {};
-                            const parsedTimestamp = moment(post.createdDate);
-                            const monthString = parsedTimestamp.format('MMMM'); // Output: "months"
-                            results.month = String(monthString);
-                            results.post = post;
-                            content.push(results);
+                if (mode !== 'random') {
+                    if (searchResult !== undefined && searchResult.length > 0) {
+                        // insert isLike Action
+                        if (userId !== undefined && userId !== null && userId !== '') {
+                            for (const post of searchResult) {
+                                const results: any = {};
+                                const parsedTimestamp = moment(post.createdDate);
+                                const monthString = parsedTimestamp.format('MMMM'); // Output: "months"
+                                results.month = String(monthString);
+                                results.post = post;
+                                content.push(results);
+                            }
+                        } else {
+                            for (const post of searchResult) {
+                                const results: any = {};
+                                const parsedTimestamp = moment(post.createdDate);
+                                const monthString = parsedTimestamp.format('MMMM'); // Output: "months"
+                                results.month = String(monthString);
+                                results.post = post;
+                                content.push(results);
+                            }
                         }
-                    } else {
-                        for (const post of searchResult) {
-                            const results: any = {};
-                            const parsedTimestamp = moment(post.createdDate);
-                            const monthString = parsedTimestamp.format('MMMM'); // Output: "months"
-                            results.month = String(monthString);
-                            results.post = post;
-                            content.push(results);
-                        }
+                    }
+                } else {
+                    for (const post of searchResult) {
+                        content.push(post);
                     }
                 }
+                let groupedData: any = undefined;
+                if (mode !== 'random') {
+                    groupedData = content.reduce((accumulator, current) => {
+                        const existingMonthEntry = accumulator.find(entry => entry.month === current.month);
 
-                const groupedData = content.reduce((accumulator, current) => {
-                    const existingMonthEntry = accumulator.find(entry => entry.month === current.month);
+                        if (existingMonthEntry) {
+                            existingMonthEntry.post.push(current.post);
+                        } else {
+                            accumulator.push({ month: current.month, post: [current.post] });
+                        }
 
-                    if (existingMonthEntry) {
-                        existingMonthEntry.post.push(current.post);
-                    } else {
-                        accumulator.push({ month: current.month, post: [current.post] });
-                    }
-
-                    return accumulator;
-                }, []);
-
+                        return accumulator;
+                    }, []);
+                } else {
+                    groupedData = [{ post: content }];
+                }
                 if (content.length > 0) {
                     result = {
                         title: 'โพสต์ต่างๆ ในช่วงนี้', // as a emergencyEvent name
