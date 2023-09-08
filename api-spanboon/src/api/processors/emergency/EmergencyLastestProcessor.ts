@@ -52,7 +52,7 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                 if (offset === undefined || offset === null || offset === '') {
                     offset = 0;
                 }
-
+                console.log('limit',limit);
                 // search first post of emergencyEvent and join gallery
                 
                 postAgg = [

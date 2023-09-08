@@ -106,8 +106,7 @@ export class EmergencyEventController {
         const emergencyHashTag = emergencyEvents.hashTag;
         const isPin = emergencyEvents.isPin;
         const orderingSequence = emergencyEvents.ordering;
-        const emerMode = emergencyEvents.mode;
-        const pageLists = emergencyEvents.pageList;
+
         const fileName = userId + FileUtil.renameFile();
         const today = moment().toDate();
         const data = await this.checkEmergencyDuplicate(title, emergencyHashTag);
@@ -169,8 +168,6 @@ export class EmergencyEventController {
         emergencyEvent.coverPageURL = assetCreate ? ASSET_PATH + assetCreate.id : '';
         emergencyEvent.s3CoverPageURL = assetCreate ? assetCreate.s3FilePath : '';
         emergencyEvent.ordering = orderingSequence;
-        emergencyEvent.mode = emerMode;
-        emergencyEvent.pageList = pageLists;
 
         const CheckOrdering = await this.emergencyEventService.findOne({ ordering: orderingSequence });
         if (CheckOrdering !== undefined) {
@@ -422,8 +419,7 @@ export class EmergencyEventController {
                     isClose,
                     isPin,
                     s3CoverPageURL,
-                    mode: emerMode,
-                    pageList: pageLists
+
                 }
             };
             const queryHash = { _id: emergencyUpdate.hashTag };
