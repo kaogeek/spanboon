@@ -19,5 +19,5 @@ export class CreateEmergencyEventRequest {
     public isPin: boolean;
     public ordering: number;
     public mode:string;
-    public pageLists:any;
+    public pageList:any;
 }

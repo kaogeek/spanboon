@@ -35,8 +35,6 @@ import { EmergencyNeedsProcessor } from '../processors/emergency/EmergencyNeedsP
 import { EmergencyLastestProcessor } from '../processors/emergency/EmergencyLastestProcessor';
 // import { EmergencyShareProcessor } from '../processors/emergency/EmergencyShareProcessor';
 // import { EmergencyPostLikedProcessor } from '../processors/emergency/EmergencyPostLikedProcessor';
-import { PageService } from '../services/PageService';
-import { UserService } from '../services/UserService';
 @JsonController('/emergency')
 export class EmergencyEventController {
     constructor(private emergencyEventService: EmergencyEventService, private hashTagService: HashTagService, private userFollowService: UserFollowService,
@@ -45,8 +43,6 @@ export class EmergencyEventController {
         // private socialPostService: SocialPostService, 
         // private fulfillmentCaseService: FulfillmentCaseService, 
         private userLikeService: UserLikeService,
-        private pageService: PageService,
-        private userService: UserService
 
     ) { }
 
@@ -474,7 +470,7 @@ export class EmergencyEventController {
             // current post section
             let countShare = 0;
 
-            const lastestPostProcessor = new EmergencyLastestProcessor(this.postsService, this.pageService, this.userService);
+            const lastestPostProcessor = new EmergencyLastestProcessor(this.postsService);
             lastestPostProcessor.setData({
                 emergencyEventId: objId,
                 limit,
@@ -484,7 +480,6 @@ export class EmergencyEventController {
                 endDateTime: threeMonth,
                 emergencyMode,
                 emergencyPageList
-
             });
             const lastestProcsResult = await lastestPostProcessor.process();
             if (lastestProcsResult !== undefined && lastestProcsResult.length > 0) {
@@ -504,21 +499,21 @@ export class EmergencyEventController {
         }
     }
 
-    private async emergencyMapFields(emergency: any): Promise<any> {
+    private async emergencyMapFields(emergencyObject: any): Promise<any> {
         const result: any = {};
-        result.createdDate = emergency.createdDate;
-        result.id = emergency.id;
-        result.title = emergency.title;
-        result.detail = emergency.detail;
-        result.coverPageURL = emergency.coverPageURL;
-        result.hashTag = emergency.hashTag;
-        result.isClose = emergency.isClose;
-        result.isPin = emergency.isPin;
-        result.s3CoverPageURL = emergency.s3CoverPageURL;
-        result.ordering = emergency.ordering;
-        result.mode = emergency.mode ? emergency.mode : undefined;
-        result.hashTagName = emergency.hashTagName;
+        result.createdDate = emergencyObject.createdDate;
+        result.id = emergencyObject.id;
+        result.title = emergencyObject.title;
+        result.detail = emergencyObject.detail;
+        result.coverPageURL = emergencyObject.coverPageURL;
+        result.hashTag = emergencyObject.hashTag;
+        result.isClose = emergencyObject.isClose;
+        result.isPin = emergencyObject.isPin;
+        result.s3CoverPageURL = emergencyObject.s3CoverPageURL;
+        result.ordering = emergencyObject.ordering;
+        result.mode = emergencyObject.mode ? emergencyObject.mode : undefined;
+        result.pageList = emergencyObject.pageList ? emergencyObject.pageList : undefined;
+        result.hashTagName = emergencyObject.hashTagName;
         return result;
-
     }
 }

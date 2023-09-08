@@ -13,8 +13,8 @@ export class EmergencyEvent extends BaseModel {
     public detail: string;
     public coverPageURL: string;
     public hashTag: string;
-    public modeEmer: string;
-    public pageLists: string;
+    public mode: string;
+    public pageList: string;
     public isPin: boolean;
     public asset: any;
     public ordering: number;

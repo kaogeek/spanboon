@@ -9,8 +9,6 @@ import { AbstractTypeSectionProcessor } from '../AbstractTypeSectionProcessor';
 import { PostsService } from '../../services/PostsService';
 import moment from 'moment';
 import { ObjectID } from 'mongodb';
-import { PageService } from '../../services/PageService';
-import { UserService } from '../../services/UserService';
 // import { MONTHS } from '../../../constants/MonthsType';
 
 export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
@@ -19,8 +17,6 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
 
     constructor(
         private postsService: PostsService,
-        private pageService: PageService,
-        private userService: UserService
     ) {
         super();
         this.type = EmergencyLastestProcessor.TYPE;
@@ -36,7 +32,6 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                 let startDateTime = undefined;
                 let endDateTime = undefined;
                 let postAgg = undefined;
-                let emergencyEventMode = undefined;
                 let pages = undefined;
                 if (this.data !== undefined && this.data !== null) {
                     emergencyEventId = this.data.emergencyEventId;
@@ -45,7 +40,6 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                     userId = this.data.userId;
                     startDateTime = this.data.startDateTime;
                     endDateTime = this.data.endDateTime;
-                    emergencyEventMode = this.data.emergencyMode;
                     pages = this.data.emergencyPageList;
                 }
 
@@ -62,45 +56,22 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                     offset = 0;
                 }
 
-                const pageString = [];
-                const userObjId = [];
+                // search first post of emergencyEvent and join gallery
                 const pageObjIds = [];
                 if (pages !== undefined && pages.length > 0) {
                     const pageList = pages.split(',');
                     if (pageList.length > 0) {
                         for (let i = 0; i < pageList.length; i++) {
-                            pageString.push(String(pageList[i]));
-                        }
-                    }
-                    const userLists = await this.userService.aggregate([{ $match: { email: { $in: pageString } } }]);
-                    if (userLists.length > 0) {
-                        for (const user of userLists) {
-                            userObjId.push(new ObjectID(user._id));
-                        }
-                    }
-                    const pageMarked: any = await this.pageService.aggregate([{ $match: { ownerUser: { $in: userObjId } } }]);
-                    if (pageMarked.length > 0) {
-                        for (const page of pageMarked) {
-                            pageObjIds.push(new ObjectID(page._id));
+                            pageObjIds.push(new ObjectID(pageList[i]));
                         }
                     }
                 }
-                // search first post of emergencyEvent and join gallery
-                let sortEmer: any = undefined;
-                let matchPost: any = undefined;
-                matchPost = { emergencyEvent: emergencyEventId, deleted: false, createdDate: { $lte: startDateTime, $gte: endDateTime } };
-                if (pageObjIds.length > 0) {
-                    matchPost = { emergencyEvent: emergencyEventId, deleted: false, createdDate: { $lte: startDateTime, $gte: endDateTime }, pageId: { $in: pageObjIds } };
-                }
-                if (emergencyEventMode === 'random') {
-                    sortEmer = { $sample: { size: 10 } };
-                } else {
-                    sortEmer = { $sort: { startDateTime: -1 } };
-                }
+                let query: any = { emergencyEvent: emergencyEventId, deleted: false, createdDate: { $lte: startDateTime, $gte: endDateTime } };
                 postAgg = [
-                    { $match: matchPost },
-                    { $limit: limit },
+                    { $match: query },
+                    { $sort: { startDateTime: -1 } },
                     { $skip: offset },
+                    { $limit: limit },
                     {
                         $lookup: {
                             from: 'SocialPost',
@@ -129,7 +100,48 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                         }
                     }
                 ];
-                postAgg.push(sortEmer);
+                if (pageObjIds.length > 0) {
+                    query = {
+                        pageId: { $in: pageObjIds },
+                        emergencyEvent: emergencyEventId,
+                        deleted: false,
+                        createdDate: { $lte: startDateTime, $gte: endDateTime }
+                    };
+                    postAgg = [
+                        { $match: query },
+                        { $sample: { size: 1 } },
+                        { $skip: offset },
+                        { $limit: limit },
+                        {
+                            $lookup: {
+                                from: 'SocialPost',
+                                localField: '_id',
+                                foreignField: 'postId',
+                                as: 'socialPosts'
+                            }
+                        },
+                        {
+                            $project: {
+                                'socialPosts': {
+                                    '_id': 0,
+                                    'pageId': 0,
+                                    'postId': 0,
+                                    'postBy': 0,
+                                    'postByType': 0
+                                }
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'PostsGallery',
+                                localField: '_id',
+                                foreignField: 'post',
+                                as: 'postGallery'
+                            }
+                        }
+                    ];
+                }
+
                 if (userId !== undefined && userId !== null && userId !== '') {
                     const userObjIds = new ObjectID(userId);
                     postAgg.push(
@@ -157,56 +169,41 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                 const searchResult = await this.postsService.aggregate(postAgg);
                 let result = undefined;
                 const content: any = [];
-                if (String(emergencyEventMode) !== 'random') {
-                    if (searchResult !== undefined && searchResult.length > 0) {
-                        // insert isLike Action
-                        if (userId !== undefined && userId !== null && userId !== '') {
-                            for (const post of searchResult) {
-                                const results: any = {};
-                                const parsedTimestamp = moment(post.createdDate);
-                                const monthString = parsedTimestamp.format('MMMM'); // Output: "months"
-                                results.month = String(monthString);
-                                results.post = post;
-                                content.push(results);
-                            }
-                        } else {
-                            for (const post of searchResult) {
-                                const results: any = {};
-                                const parsedTimestamp = moment(post.createdDate);
-                                const monthString = parsedTimestamp.format('MMMM'); // Output: "months"
-                                results.month = String(monthString);
-                                results.post = post;
-                                content.push(results);
-                            }
-                        }
-                    }
-                } else {
+                if (searchResult !== undefined && searchResult.length > 0) {
+                    // insert isLike Action
                     if (userId !== undefined && userId !== null && userId !== '') {
                         for (const post of searchResult) {
-                            content.push(post);
+                            const results: any = {};
+                            const parsedTimestamp = moment(post.createdDate);
+                            const monthString = parsedTimestamp.format('MMMM'); // Output: "months"
+                            results.month = String(monthString);
+                            results.post = post;
+                            content.push(results);
                         }
                     } else {
                         for (const post of searchResult) {
-                            content.push(post);
+                            const results: any = {};
+                            const parsedTimestamp = moment(post.createdDate);
+                            const monthString = parsedTimestamp.format('MMMM'); // Output: "months"
+                            results.month = String(monthString);
+                            results.post = post;
+                            content.push(results);
                         }
                     }
                 }
-                let groupedData = undefined;
-                if (String(emergencyEventMode) !== 'random') {
-                    groupedData = content.reduce((accumulator, current) => {
-                        const existingMonthEntry = accumulator.find(entry => entry.month === current.month);
 
-                        if (existingMonthEntry) {
-                            existingMonthEntry.post.push(current.post);
-                        } else {
-                            accumulator.push({ month: current.month, post: [current.post] });
-                        }
+                const groupedData = content.reduce((accumulator, current) => {
+                    const existingMonthEntry = accumulator.find(entry => entry.month === current.month);
 
-                        return accumulator;
-                    }, []);
-                } else {
-                    groupedData = [{ post: content }];
-                }
+                    if (existingMonthEntry) {
+                        existingMonthEntry.post.push(current.post);
+                    } else {
+                        accumulator.push({ month: current.month, post: [current.post] });
+                    }
+
+                    return accumulator;
+                }, []);
+
                 if (content.length > 0) {
                     result = {
                         title: 'โพสต์ต่างๆ ในช่วงนี้', // as a emergencyEvent name
