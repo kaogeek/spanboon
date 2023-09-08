@@ -45,8 +45,8 @@ export class EmergencyEventController {
         // private socialPostService: SocialPostService, 
         // private fulfillmentCaseService: FulfillmentCaseService, 
         private userLikeService: UserLikeService,
-        private pageService:PageService,
-        private userService:UserService
+        private pageService: PageService,
+        private userService: UserService
 
     ) { }
 
@@ -336,8 +336,9 @@ export class EmergencyEventController {
         } finally {
             emergencyEvent = await this.emergencyEventService.findOne({ $or: [{ _id: objId }, { title: id }] });
         }
-        let emergencyMode:string = undefined;
-        let emergencyPageList:any = undefined;
+        emergencyEvent = await this.emergencyMapFields(emergencyEvent);
+        let emergencyMode: string = undefined;
+        let emergencyPageList: any = undefined;
         if (emergencyEvent) {
             // generate timeline
             const followingUsers = await this.userFollowService.sampleUserFollow(objId, SUBJECT_TYPE.EMERGENCY_EVENT, 5);
@@ -472,8 +473,8 @@ export class EmergencyEventController {
             }
             // current post section
             let countShare = 0;
-            
-            const lastestPostProcessor = new EmergencyLastestProcessor(this.postsService,this.pageService,this.userService);
+
+            const lastestPostProcessor = new EmergencyLastestProcessor(this.postsService, this.pageService, this.userService);
             lastestPostProcessor.setData({
                 emergencyEventId: objId,
                 limit,
@@ -483,7 +484,7 @@ export class EmergencyEventController {
                 endDateTime: threeMonth,
                 emergencyMode,
                 emergencyPageList
-                
+
             });
             const lastestProcsResult = await lastestPostProcessor.process();
             if (lastestProcsResult !== undefined && lastestProcsResult.length > 0) {
@@ -501,5 +502,23 @@ export class EmergencyEventController {
             const errorResponse = ResponseUtil.getErrorResponse('Unable got EmergencyEvent', undefined);
             return res.status(400).send(errorResponse);
         }
+    }
+
+    private async emergencyMapFields(emergency: any): Promise<any> {
+        const result: any = {};
+        result.createdDate = emergency.createdDate;
+        result.id = emergency.id;
+        result.title = emergency.title;
+        result.detail = emergency.detail;
+        result.coverPageURL = emergency.coverPageURL;
+        result.hashTag = emergency.hashTag;
+        result.isClose = emergency.isClose;
+        result.isPin = emergency.isPin;
+        result.s3CoverPageURL = emergency.s3CoverPageURL;
+        result.ordering = emergency.ordering;
+        result.mode = emergency.mode ? emergency.mode : undefined;
+        result.hashTagName = emergency.hashTagName;
+        return result;
+
     }
 }

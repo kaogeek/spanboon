@@ -130,7 +130,6 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                     }
                 ];
                 postAgg.push(sortEmer);
-                console.log('postAgg', postAgg);
                 if (userId !== undefined && userId !== null && userId !== '') {
                     const userObjIds = new ObjectID(userId);
                     postAgg.push(
