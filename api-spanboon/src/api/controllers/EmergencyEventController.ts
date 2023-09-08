@@ -36,7 +36,7 @@ import { EmergencyLastestProcessor } from '../processors/emergency/EmergencyLast
 // import { EmergencyShareProcessor } from '../processors/emergency/EmergencyShareProcessor';
 // import { EmergencyPostLikedProcessor } from '../processors/emergency/EmergencyPostLikedProcessor';
 import { PageService } from '../services/PageService';
-
+import { UserService } from '../services/UserService';
 @JsonController('/emergency')
 export class EmergencyEventController {
     constructor(private emergencyEventService: EmergencyEventService, private hashTagService: HashTagService, private userFollowService: UserFollowService,
@@ -46,6 +46,7 @@ export class EmergencyEventController {
         // private fulfillmentCaseService: FulfillmentCaseService, 
         private userLikeService: UserLikeService,
         private pageService:PageService,
+        private userService:UserService
 
     ) { }
 
@@ -472,7 +473,7 @@ export class EmergencyEventController {
             // current post section
             let countShare = 0;
             
-            const lastestPostProcessor = new EmergencyLastestProcessor(this.postsService,this.pageService);
+            const lastestPostProcessor = new EmergencyLastestProcessor(this.postsService,this.pageService,this.userService);
             lastestPostProcessor.setData({
                 emergencyEventId: objId,
                 limit,

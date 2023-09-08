@@ -9,8 +9,8 @@ import { AbstractTypeSectionProcessor } from '../AbstractTypeSectionProcessor';
 import { PostsService } from '../../services/PostsService';
 import moment from 'moment';
 import { ObjectID } from 'mongodb';
-import { PageService } from 'src/api/services/PageService';
-
+import { PageService } from '../../services/PageService';
+import { UserService } from '../../services/UserService';
 // import { MONTHS } from '../../../constants/MonthsType';
 
 export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
@@ -19,7 +19,8 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
 
     constructor(
         private postsService: PostsService,
-        private pageService: PageService
+        private pageService: PageService,
+        private userService: UserService
     ) {
         super();
         this.type = EmergencyLastestProcessor.TYPE;
@@ -60,29 +61,36 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                 if (offset === undefined || offset === null || offset === '') {
                     offset = 0;
                 }
-                const pageStacks: any = [];
-                const pageObjIds: any = [];
-                let pageMaked: any = undefined;
-                if (pages.length > 0) {
-                    const splitComma = pages.split(',');
-                    for (const page of splitComma) {
-                        pageStacks.push(String(page));
+
+                const pageString = [];
+                const userObjId = [];
+                const pageObjIds = [];
+                if (pages !== undefined && pages.length > 0) {
+                    const pageList = pages.split(',');
+                    if (pageList.length > 0) {
+                        for (let i = 0; i < pageList.length; i++) {
+                            pageString.push(String(pageList[i]));
+                        }
                     }
-                }
-                if (pageStacks.length > 0) {
-                    pageMaked = await this.pageService.aggregate({ email: { $in: { pageStacks } } });
-                }
-                if (pageMaked.length > 0) {
-                    for (const pageId of pageMaked) {
-                        pageObjIds.push(new ObjectID(pageId._id));
+                    const userLists = await this.userService.aggregate([{ $match: { email: { $in: pageString } } }]);
+                    if (userLists.length > 0) {
+                        for (const user of userLists) {
+                            userObjId.push(new ObjectID(user._id));
+                        }
+                    }
+                    const pageMarked: any = await this.pageService.aggregate([{ $match: { ownerUser: { $in: userObjId } } }]);
+                    if (pageMarked.length > 0) {
+                        for (const page of pageMarked) {
+                            pageObjIds.push(new ObjectID(page._id));
+                        }
                     }
                 }
                 // search first post of emergencyEvent and join gallery
                 let sortEmer: any = undefined;
                 let matchPost: any = undefined;
                 matchPost = { emergencyEvent: emergencyEventId, deleted: false, createdDate: { $lte: startDateTime, $gte: endDateTime } };
-                if (pages.length > 0) {
-                    matchPost = { pageId: { $in: { pageObjIds } } };
+                if (pageObjIds.length > 0) {
+                    matchPost = { emergencyEvent: emergencyEventId, deleted: false, createdDate: { $lte: startDateTime, $gte: endDateTime }, pageId: { $in: pageObjIds } };
                 }
                 if (emergencyEventMode === 'random') {
                     sortEmer = { $sample: { size: 10 } };
@@ -121,8 +129,8 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                         }
                     }
                 ];
-                console.log('matchPost', matchPost);
                 postAgg.push(sortEmer);
+                console.log('postAgg', postAgg);
                 if (userId !== undefined && userId !== null && userId !== '') {
                     const userObjIds = new ObjectID(userId);
                     postAgg.push(
@@ -185,7 +193,7 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                     }
                 }
                 let groupedData = undefined;
-                if (emergencyEventMode === 'random') {
+                if (String(emergencyEventMode) !== 'random') {
                     groupedData = content.reduce((accumulator, current) => {
                         const existingMonthEntry = accumulator.find(entry => entry.month === current.month);
 
@@ -197,8 +205,9 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
 
                         return accumulator;
                     }, []);
+                } else {
+                    groupedData = content;
                 }
-
                 if (content.length > 0) {
                     result = {
                         title: 'โพสต์ต่างๆ ในช่วงนี้', // as a emergencyEvent name
