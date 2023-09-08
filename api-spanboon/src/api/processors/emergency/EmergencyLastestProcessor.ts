@@ -183,15 +183,11 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                 } else {
                     if (userId !== undefined && userId !== null && userId !== '') {
                         for (const post of searchResult) {
-                            const results: any = {};
-                            results.post = post;
-                            content.push(results);
+                            content.push(post);
                         }
                     } else {
                         for (const post of searchResult) {
-                            const results: any = {};
-                            results.post = post;
-                            content.push(results);
+                            content.push(post);
                         }
                     }
                 }
@@ -209,7 +205,7 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                         return accumulator;
                     }, []);
                 } else {
-                    groupedData = content;
+                    groupedData = [{ post: content }];
                 }
                 if (content.length > 0) {
                     result = {
