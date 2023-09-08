@@ -125,7 +125,25 @@ export class EmergencyEventPage extends AbstractPage implements OnInit {
                 link: [],
                 formatDate: false,
                 formatId: false,
-                align: "left"
+                align: "center"
+            }, {
+                name: "mode",
+                label: "ลำดับเหตุการณ์ด่วน",
+                width: "40pt",
+                class: "", formatColor: false, formatImage: false,
+                link: [],
+                formatDate: false,
+                formatId: false,
+                align: "center"
+            }, {
+                name: "pageList",
+                label: "ลำดับเหตุการณ์ด่วน",
+                width: "40pt",
+                class: "", formatColor: false, formatImage: false,
+                link: [],
+                formatDate: false,
+                formatId: false,
+                align: "center"
             }
         ];
         this.actions = {
@@ -192,8 +210,8 @@ export class EmergencyEventPage extends AbstractPage implements OnInit {
         this.dataForm.detail = "";
         this.dataForm.coverPageURL = "";
         this.dataForm.hashTag = "";
-        this.dataForm.modeEmer = "";
-        this.dataForm.pageLists = "";
+        this.dataForm.mode = "";
+        this.dataForm.pageList = "";
         this.imageName = false;
         this.dataForm.ordering = undefined;
         this.fileToUpload = null
@@ -233,10 +251,10 @@ export class EmergencyEventPage extends AbstractPage implements OnInit {
 
     public clickEditForm(data: any): void {
         this.setFields();
-        this.drawer.toggle();
         this.myInputVariable.nativeElement.value = "";
         this.dataForm = JSON.parse(JSON.stringify(data));
         this.orinalDataForm = JSON.parse(JSON.stringify(data));
+        this.drawer.toggle();
     }
 
     public handleFileInput(files: FileList) {
@@ -282,7 +300,7 @@ export class EmergencyEventPage extends AbstractPage implements OnInit {
                 this.isSave = false;
                 return;
             }
-            if (this.dataForm.modeEmer === "") {
+            if (this.dataForm.mode === "") {
                 this.isSave = false;
                 return;
             }
