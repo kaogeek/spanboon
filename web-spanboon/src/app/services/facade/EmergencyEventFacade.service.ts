@@ -36,10 +36,14 @@ export class EmergencyEventFacade extends AbstractFacade {
     });
   }
 
-  public getEmergencyTimeline(emergencyId: string, dataMobile?: any): Promise<any> {
+  public getEmergencyTimeline(emergencyId: string, dataMobile?: any, limit?: number, offset?: number): Promise<any> {
     return new Promise((resolve, reject) => {
 
       let url: string = this.baseURL + '/emergency/' + emergencyId + '/timeline';
+      if (limit !== null && limit !== undefined) {
+        url += `?limit=${limit}&offset=${offset}`;
+      }
+
       let options;
       if (!!dataMobile.token && !!dataMobile.mode && !!dataMobile.userid) {
         let headers = new HttpHeaders({ 'Content-Type': 'application/json' });

@@ -136,15 +136,9 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label>อีเมล *</label>
-                                        <ng-container>
-                                            <textarea class="form-control" [(ngModel)]="dataForm.pageList"
-                                                [ngModelOptions]="{standalone: true}"></textarea>
-                                        </ng-container>
-                                        <div class="alert alert-danger" style="margin-top: 5pt;"
-                                            *ngIf="submitted && dataForm.pageList === ''">
-                                            กรุณาใส่ อีเมล
-                                        </div>
+                                        <label>ไอดีเพจ *</label>
+                                        <textarea class="form-control" [(ngModel)]="dataForm.pageList"
+                                            [ngModelOptions]="{standalone: true}"></textarea>
                                     </div>
                                 </div>
                             </div>

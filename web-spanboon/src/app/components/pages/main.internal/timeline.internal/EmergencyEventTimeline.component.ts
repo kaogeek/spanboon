@@ -81,6 +81,10 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
     public currentUrl: any;
     public checkLike: boolean = false;
     public tokenMode: boolean;
+    public limit: number = 2;
+    public offset: number = 0;
+    public scrollDistance = 2;
+    public isOnload: boolean = false;
 
     public apiBaseURL = environment.apiBaseURL;
     private routeActivated: ActivatedRoute;
@@ -169,19 +173,30 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
             mode: this.paramMode,
             userid: this.paramUserId
         }
-        this.currentDate = new Date();
-        await this.emergencyEventFacade.getEmergencyTimeline(this.objectiveId, dataMobile).then((res) => {
+        this._getTimeline(dataMobile, false);
+    }
+
+    private async _getTimeline(dataMobile?: any, isScroll?: boolean) {
+        if (isScroll) {
+            this.offset += this.limit;
+        }
+        await this.emergencyEventFacade.getEmergencyTimeline(this.objectiveId, dataMobile, this.limit, this.offset).then((res) => {
             if (res) {
-                this.objectiveData = res;
-                let emer = this.objectiveData.emergencyEvent;
+                if (!isScroll) {
+                    this.objectiveData = res;
+                }
+                if (isScroll && res.emergencyEvent.mode && res.emergencyEvent.mode === 'random') {
+                    let postList = res.timelines[1].posts[0].post;
+                    for (const post of postList) {
+                        this.objectiveData.timelines[1].posts[0].post.push(post);
+                    }
+                    this.isOnload = false;
+                }
                 let hashTags = [];
                 for (let hashtag of res.relatedHashTags) {
                     hashTags.push("#" + hashtag.name + " ")
                 }
-                this.seoService.updateTitle("#" + emer.title);
-                this.meta.updateTag({ name: 'title', content: "#" + emer.title });
-                this.meta.updateTag({ name: 'keywords', content: (res.relatedHashTags.length > 0 ? hashTags.toString() : '') });
-                this.meta.updateTag({ name: 'description', content: "#" + emer.title + (emer.detail ? (" - " + emer.detail) : '') });
+                this._setMeta(res, hashTags);
                 const pageType = { type: "PAGE" };
                 const origin = this.objectiveData.page;
                 const dataPageTypeAssign = Object.assign(pageType, origin);
@@ -193,8 +208,17 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
             if (error) {
                 // this.router.navigate(['home']);
                 console.log("error", error);
+                this.isOnload = true;
             }
         });
+    }
+
+    private _setMeta(res: any, hashTags: any) {
+        let emer = this.objectiveData.emergencyEvent;
+        this.seoService.updateTitle("#" + emer.title);
+        this.meta.updateTag({ name: 'title', content: "#" + emer.title });
+        this.meta.updateTag({ name: 'keywords', content: (res.relatedHashTags.length > 0 ? hashTags.toString() : '') });
+        this.meta.updateTag({ name: 'description', content: "#" + emer.title + (emer.detail ? (" - " + emer.detail) : '') });
     }
 
     private _groupData(): void {
@@ -381,6 +405,18 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
             }
 
         }, 400);
+    }
+
+    public async onScrollDown(ev) {
+        if (!this.isOnload) {
+            this.isOnload = true;
+            let dataMobile = {
+                token: this.paramToken,
+                mode: this.paramMode,
+                userid: this.paramUserId
+            }
+            this._getTimeline(dataMobile, true);
+        }
     }
 
     @HostListener('window:resize', ['$event'])
