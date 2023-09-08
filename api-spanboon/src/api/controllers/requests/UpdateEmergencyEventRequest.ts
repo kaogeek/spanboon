@@ -23,5 +23,5 @@ export class UpdateEmergencyEventRequest {
     public modeEmer:string;
     public drag:string;
     public mode:string;
-    public pageList:any;
+    public pageLists:any;
 }

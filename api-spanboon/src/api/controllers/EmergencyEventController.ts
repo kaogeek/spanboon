@@ -333,7 +333,7 @@ export class EmergencyEventController {
         } finally {
             emergencyEvent = await this.emergencyEventService.findOne({ $or: [{ _id: objId }, { title: id }] });
         }
-
+        emergencyEvent = await this.emergencyMapFields(emergencyEvent);
         if (emergencyEvent) {
             // generate timeline
             const followingUsers = await this.userFollowService.sampleUserFollow(objId, SUBJECT_TYPE.EMERGENCY_EVENT, 5);
@@ -493,5 +493,22 @@ export class EmergencyEventController {
             const errorResponse = ResponseUtil.getErrorResponse('Unable got EmergencyEvent', undefined);
             return res.status(400).send(errorResponse);
         }
+    }
+
+    private async emergencyMapFields(emergencyObject:any): Promise<any>{
+        const result: any = {};
+        result.createdDate = emergencyObject.createdDate;
+        result.id = emergencyObject.id;
+        result.title = emergencyObject.title;
+        result.detail = emergencyObject.detail;
+        result.coverPageURL = emergencyObject.coverPageURL;
+        result.hashTag = emergencyObject.hashTag;
+        result.isClose = emergencyObject.isClose;
+        result.isPin = emergencyObject.isPin;
+        result.s3CoverPageURL = emergencyObject.s3CoverPageURL;
+        result.ordering = emergencyObject.ordering;
+        result.mode = emergencyObject.mode ? emergencyObject.mode : undefined;
+        result.hashTagName = emergencyObject.hashTagName;
+        return result;
     }
 }
