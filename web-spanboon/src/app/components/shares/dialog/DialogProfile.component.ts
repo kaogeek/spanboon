@@ -10,7 +10,6 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { DialogData } from '../../../models/models';
 import { environment } from '../../../../environments/environment';
 import { Router } from '@angular/router';
-import { DialogAlert } from './DialogAlert.component';
 import { ProfileFacade } from 'src/app/services/facade/ProfileFacade.service';
 
 @Component({
@@ -27,6 +26,7 @@ export class DialogProfile {
   public isMember: boolean;
   public isUnbind: boolean = false;
   public isLoading: boolean = false;
+  public date: any;
 
   constructor(public dialogRef: MatDialogRef<DialogProfile>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -48,6 +48,13 @@ export class DialogProfile {
   }
 
   public ngOnInit(): void {
+    let date = new Date('2567-09-01');
+    let time = this.data.user.mfpUser.expiredAt.split(' ')[1].split(':');
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    let formattedDate = `${day}/${month}/${year} ${time[0]}:${time[1]}`;
+    this.date = formattedDate;
   }
 
   public unbind() {

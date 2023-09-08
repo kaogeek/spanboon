@@ -18,4 +18,6 @@ export class CreateEmergencyEventRequest {
     public hashTag: string;
     public isPin: boolean;
     public ordering: number;
+    public mode:string;
+    public pageLists:any;
 }

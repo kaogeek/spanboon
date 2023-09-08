@@ -22,4 +22,6 @@ export class UpdateEmergencyEventRequest {
     public filteredData:any;
     public modeEmer:string;
     public drag:string;
+    public mode:string;
+    public pageLists:any;
 }

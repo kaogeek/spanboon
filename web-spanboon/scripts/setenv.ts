@@ -3,11 +3,12 @@ const { argv } = require('yargs');
 
 // read the command line arguments passed with yargs
 const environment = argv.environment;
+const isStaging = environment === 'staging';
 const isProduction = environment === 'production';
 
-const targetPath = isProduction ? './src/environments/environment.prod.ts' : './src/environments/environment.ts';
+const targetPath = isProduction ? './src/environments/environment.prod.ts' : isStaging ? './src/environments/environment.stg.ts' : './src/environments/environment.ts';
 const firebasePath = './src/firebase-messaging-sw.js';
-const envPath = isProduction ? './.env.production' : './.env';
+const envPath = isProduction ? './.env.production' : isStaging ? '.env.staging' : './.env';
 
 // read environment variables from .env file
 require('dotenv').config({ path: envPath });
@@ -87,5 +88,5 @@ writeFile(firebasePath, firebaseFileContent, function (err) {
         console.log(err);
     }
 
-    console.log(`Wrote Firebase to ${targetPath}`);
+    console.log(`Wrote Firebase to ${firebasePath}`);
 });

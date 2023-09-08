@@ -106,6 +106,8 @@ export class EmergencyEventController {
         const emergencyHashTag = emergencyEvents.hashTag;
         const isPin = emergencyEvents.isPin;
         const orderingSequence = emergencyEvents.ordering;
+        const emerMode = emergencyEvents.mode;
+        const pageLists = emergencyEvents.pageLists;
         const fileName = userId + FileUtil.renameFile();
         const today = moment().toDate();
         const data = await this.checkEmergencyDuplicate(title, emergencyHashTag);
@@ -167,6 +169,8 @@ export class EmergencyEventController {
         emergencyEvent.coverPageURL = assetCreate ? ASSET_PATH + assetCreate.id : '';
         emergencyEvent.s3CoverPageURL = assetCreate ? assetCreate.s3FilePath : '';
         emergencyEvent.ordering = orderingSequence;
+        emergencyEvent.mode = emerMode;
+        emergencyEvent.pageList = pageLists;
 
         const CheckOrdering = await this.emergencyEventService.findOne({ ordering: orderingSequence });
         if (CheckOrdering !== undefined) {
@@ -332,6 +336,8 @@ export class EmergencyEventController {
         const isPin = emergencyEvents.isPin;
         const assetData = emergencyEvents.asset;
         const ordering = emergencyEvents.ordering;
+        const emerMode = emergencyEvents.mode;
+        const pageLists = emergencyEvents.pageLists;
         const emergencyUpdate: EmergencyEvent = await this.emergencyEventService.findOne({ where: { _id: objId } });
         if (!emergencyUpdate) {
             return res.status(400).send(ResponseUtil.getSuccessResponse('Invalid EmergencyEvent Id', undefined));
@@ -407,7 +413,19 @@ export class EmergencyEventController {
                 hashTag = createHashTag ? new ObjectID(createHashTag.id) : null;
             }
             const updateQuery = { _id: objId };
-            const newValue = { $set: { title: emergencyTitle, detail: emergencyDetail, coverPageURL, hashTag, isClose, isPin, s3CoverPageURL } };
+            const newValue = {
+                $set: {
+                    title: emergencyTitle,
+                    detail: emergencyDetail,
+                    coverPageURL,
+                    hashTag,
+                    isClose,
+                    isPin,
+                    s3CoverPageURL,
+                    mode: emerMode,
+                    pageList: pageLists
+                }
+            };
             const queryHash = { _id: emergencyUpdate.hashTag };
             const newValuesHashTag = { $set: { name: emergencyHashTag } };
 
@@ -424,7 +442,7 @@ export class EmergencyEventController {
                 };
                 await this.postsService.updateMany(queryPost, newValuesPost);
             }
-            
+
             // update back
             await this.postsService.updateMany
                 (
