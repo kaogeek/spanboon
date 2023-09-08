@@ -5,16 +5,13 @@
  * Author:  p-nattawadee <nattawdee.l@absolute.co.th>,  Chanachai-Pansailom <chanachai.p@absolute.co.th> , Americaso <treerayuth.o@absolute.co.th >
  */
 
-import { Component, OnInit, ViewChild, ElementRef, Input, EventEmitter, Output, Inject } from '@angular/core';
-import { MatAutocompleteTrigger, MatInput, MatDialog, DateAdapter, MAT_DIALOG_DATA } from '@angular/material';
+import { Component, OnInit, ViewChild, ElementRef, EventEmitter, Inject } from '@angular/core';
+import { MatDialog, DateAdapter, MAT_DIALOG_DATA } from '@angular/material';
 import { Router } from '@angular/router';
+import { DialogProfile } from 'src/app/components/components';
 import { DialogAlert } from 'src/app/components/shares/dialog/DialogAlert.component';
 import { AuthenManager, ObservableManager, AssetFacade, ProfileFacade, SeoService } from '../../../../services/services';
 import { AbstractPage } from '../../AbstractPage';
-import jwt_decode from "jwt-decode";
-
-const DEFAULT_USER_ICON: string = '../../../../assets/img/profile.svg';
-const REDIRECT_PATH: string = '/home';
 const PAGE_NAME: string = 'account';
 
 @Component({
@@ -94,6 +91,7 @@ export class SettingAccount extends AbstractPage implements OnInit {
 
     public ngOnInit(): void {
         this.seoService.updateTitle("จัดการบัญชี - " + this.getUser());
+        this.dataUser = localStorage.getItem('pageUser');
     }
     public ngOnDestroy(): void {
         super.ngOnDestroy();
@@ -139,20 +137,16 @@ export class SettingAccount extends AbstractPage implements OnInit {
 
     public unbind() {
         let user: any = JSON.parse(localStorage.getItem('pageUser'));
-        let dialog = this.dialog.open(DialogAlert, {
+        let dialog = this.dialog.open(DialogProfile, {
             disableClose: false,
             data: {
-                text: 'คุณต้องการยกเลิกผูกสมาชิกใช่หรือไม่',
+                userId: this.data.id,
+                user: user,
             }
         });
         dialog.afterClosed().subscribe((res) => {
-            if (res) {
-                this.profileFacade.updateMember(this.data.id !== undefined ? this.data.id : user.id, false).then((res) => {
-                    this.isMember = false;
-                    localStorage.setItem('membership', String(false));
-                }).catch((err) => {
-                    if (err) console.log("err", err);
-                });
+            if (res === false) {
+                this.isMember = false;
             }
         });
     }

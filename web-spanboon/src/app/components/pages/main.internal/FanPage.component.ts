@@ -846,6 +846,7 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
             }
             this.boxPost.clearDataAll();
             this.stopLoading();
+            this.isPostLoading = false;
             this.isClickPostPreLoad = false;
           }
         }

@@ -107,39 +107,46 @@
         > .wrapper-right {
           width: 90%;
           height: 100%;
+          margin: 25px 0 0 10px;
           display: flex;
           align-items: center;
-          position: relative;
-          margin: 25px 0 0 10px;
 
-          > img {
-            @media (max-width: $small) {
-              width: 40px;
-            }
-          }
-
-          > span {
-            margin-left: 15px;
-            width: 340px;
-            @include font-size-9($font-head-500);
-            color: #757575;
-
-            @media (max-width: $small) {
-              margin-left: 0px;
-              @include font-size-10($font-head-500);
-            }
-          }
-
-          > .binding {
-            opacity: 0.5;
-            width: 80%;
+          > .mfp-binding {
             display: flex;
-            justify-content: flex-end;
             align-items: center;
-            @include font-size-10($font-head-500);
+            position: relative;
+            width: 100%;
 
-            @media (max-width: $small) {
-              font-size: 8pt;
+            > img {
+              @media (max-width: $small) {
+                width: 40px;
+              }
+            }
+
+            > span {
+              margin-left: 15px;
+              width: 340px;
+              @include font-size-9($font-head-500);
+              color: #757575;
+
+              @media (max-width: $small) {
+                margin-left: 0px;
+                @include font-size-10($font-head-500);
+              }
+            }
+
+            > .binding {
+              cursor: pointer;
+              opacity: 0.5;
+              width: 80%;
+              display: flex;
+              justify-content: flex-end;
+              align-items: center;
+              @include font-size-10($font-head-500);
+
+              @media (max-width: $small) {
+                font-size: 8pt;
+              }
             }
           }
         }

@@ -26,18 +26,16 @@
             </div>
             <div class="settings-right" style="align-items: center; display: flex;" *ngIf="selected === 'การเชื่อมต่อ'">
                 <div class="wrapper-right">
-                    <img src="../../../../assets/img/logo/mfp.svg" alt="">
-                    <span>Move Forward Party</span>
+                    <div class="mfp-binding">
+                        <img src="../../../../assets/img/logo/mfp.svg" alt="">
+                        <span>Move Forward Party</span>
 
-                    <!-- <spanboon-button *ngIf="!isMember" style="margin-left: 20px;" [height]="'30pt'" [width]="'160px'"
-                        [text]="'ผูกสมาชิกพรรค'" (click)="binding()">
-                    </spanboon-button> -->
-
-                    <div class="binding" (click)="!isMember ? binding() : unbind()">
-                        <span [innerHTML]="!isMember ? 'ยังไม่ได้เชื่อมต่อ' : 'เชื่อมต่อแล้ว'"></span>
-                        <mat-icon>
-                            navigate_next
-                        </mat-icon>
+                        <div class="binding" (click)="!isMember ? binding() : unbind()">
+                            <span [innerHTML]="!isMember ? 'ยังไม่ได้เชื่อมต่อ' : 'เชื่อมต่อแล้ว'"></span>
+                            <mat-icon>
+                                navigate_next
+                            </mat-icon>
+                        </div>
                     </div>
                 </div>
             </div>
