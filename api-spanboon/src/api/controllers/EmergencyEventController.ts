@@ -35,11 +35,8 @@ import { EmergencyNeedsProcessor } from '../processors/emergency/EmergencyNeedsP
 import { EmergencyLastestProcessor } from '../processors/emergency/EmergencyLastestProcessor';
 // import { EmergencyShareProcessor } from '../processors/emergency/EmergencyShareProcessor';
 // import { EmergencyPostLikedProcessor } from '../processors/emergency/EmergencyPostLikedProcessor';
-/* 
-import {
-    DEFAULT_EMERGENCYEVENT_MODE,
-    EMERGENCYEVENT_MODE
-} from '../../constants/SystemConfig'; */
+import { PageService } from '../services/PageService';
+
 @JsonController('/emergency')
 export class EmergencyEventController {
     constructor(private emergencyEventService: EmergencyEventService, private hashTagService: HashTagService, private userFollowService: UserFollowService,
@@ -47,7 +44,9 @@ export class EmergencyEventController {
         // private postsCommentService: PostsCommentService,
         // private socialPostService: SocialPostService, 
         // private fulfillmentCaseService: FulfillmentCaseService, 
-        private userLikeService: UserLikeService
+        private userLikeService: UserLikeService,
+        private pageService:PageService,
+
     ) { }
 
     // Find EmergencyEvent API
@@ -336,11 +335,13 @@ export class EmergencyEventController {
         } finally {
             emergencyEvent = await this.emergencyEventService.findOne({ $or: [{ _id: objId }, { title: id }] });
         }
-
+        let emergencyMode:string = undefined;
+        let emergencyPageList:any = undefined;
         if (emergencyEvent) {
             // generate timeline
             const followingUsers = await this.userFollowService.sampleUserFollow(objId, SUBJECT_TYPE.EMERGENCY_EVENT, 5);
-
+            emergencyMode = emergencyEvent.mode;
+            emergencyPageList = emergencyEvent.pageList;
             const emergencyEventTimeline = new EmergencyEventTimelineResponse();
             emergencyEventTimeline.emergencyEvent = emergencyEvent;
             emergencyEventTimeline.followedUser = followingUsers.followers;
@@ -470,7 +471,8 @@ export class EmergencyEventController {
             }
             // current post section
             let countShare = 0;
-            const lastestPostProcessor = new EmergencyLastestProcessor(this.postsService);
+            
+            const lastestPostProcessor = new EmergencyLastestProcessor(this.postsService,this.pageService);
             lastestPostProcessor.setData({
                 emergencyEventId: objId,
                 limit,
@@ -478,6 +480,9 @@ export class EmergencyEventController {
                 userId,
                 startDateTime: today,
                 endDateTime: threeMonth,
+                emergencyMode,
+                emergencyPageList
+                
             });
             const lastestProcsResult = await lastestPostProcessor.process();
             if (lastestProcsResult !== undefined && lastestProcsResult.length > 0) {

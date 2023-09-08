@@ -2836,6 +2836,45 @@ export class GuestController {
             return response.status(400).send(errorResponse);
         }
 
+        const userAuthList: AuthenticationId[] = await this.authenticationIdService.find({ where: { user: user.id } });
+        const authProviderList: string[] = [];
+        let mfpProvider = undefined;
+        if (userAuthList !== null && userAuthList !== undefined && userAuthList.length > 0) {
+            for (const userAuth of userAuthList) {
+                if (userAuth.providerName !== undefined && userAuth.providerName === 'MFP') {
+                    mfpProvider = userAuth;
+                }
+                authProviderList.push(userAuth.providerName);
+            }
+        }
+        const requestBody = {
+            'grant_type': process.env.GRANT_TYPE,
+            'client_id': process.env.CLIENT_ID,
+            'client_secret': process.env.CLIENT_SECRET,
+            'scope': process.env.SCOPE
+        };
+        const formattedData = qs.stringify(requestBody);
+
+        const responseMFP = await axios.post(
+            process.env.APP_MFP_API_OAUTH,
+            formattedData, {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                Accept: 'application/json'
+            }
+        });
+        const tokenCredential = responseMFP.data.access_token;
+        let getMembershipById = undefined;
+        if (mfpProvider !== undefined) {
+            getMembershipById = await axios.get(
+                process.env.API_MFP_GET_ID + mfpProvider.providerUserId,
+                {
+                    headers: {
+                        Authorization: `Bearer ${tokenCredential}`
+                    }
+                }
+            );
+        }
         // check expire token
         const today = moment().toDate();
         if (isMode !== undefined && isMode === 'FB') {
@@ -2901,6 +2940,19 @@ export class GuestController {
             if (authenId.membershipType === 'MEMBERSHIP_YEARLY') {
                 if (expiresAt !== undefined && expiresAt !== null && expiresAt.getTime() <= today.getTime()) {
                     const errorUserNameResponse: any = { status: 0, message: 'Membership has expired.' };
+                    const query = { _id: user.id };
+                    const queryAuthen = { user: user.id, providerName: PROVIDER.MFP };
+                    const newValues = {
+                        $set: {
+                            membership: false,
+                            membershipState: getMembershipById.data.data.membershipState,
+                            membershipType: getMembershipById.data.data.membershipType
+                        }
+                    };
+                    const newValuesAuthentificaiotn = { $set: { membership: false } };
+
+                    await this.userService.update(query, newValues);
+                    await this.authenticationIdService.update(queryAuthen, newValuesAuthentificaiotn);
                     await this.deviceToken.delete({ userId: authenId.user });
                     return response.status(400).send(errorUserNameResponse);
                 }
@@ -2932,51 +2984,12 @@ export class GuestController {
 
         const userFollowings = await this.userFollowService.find({ where: { userId: user.id, subjectType: SUBJECT_TYPE.USER } });
         const userFollowers = await this.userFollowService.find({ where: { subjectId: user.id, subjectType: SUBJECT_TYPE.USER } });
-        const userAuthList: AuthenticationId[] = await this.authenticationIdService.find({ where: { user: user.id } });
-        const authProviderList: string[] = [];
-        let mfpProvider = undefined;
-        if (userAuthList !== null && userAuthList !== undefined && userAuthList.length > 0) {
-            for (const userAuth of userAuthList) {
-                if (userAuth.providerName !== undefined && userAuth.providerName === 'MFP') {
-                    mfpProvider = userAuth;
-                }
-                authProviderList.push(userAuth.providerName);
-            }
-        }
-        const requestBody = {
-            'grant_type': process.env.GRANT_TYPE,
-            'client_id': process.env.CLIENT_ID,
-            'client_secret': process.env.CLIENT_SECRET,
-            'scope': process.env.SCOPE
-        };
-        const formattedData = qs.stringify(requestBody);
-
-        const responseMFP = await axios.post(
-            process.env.APP_MFP_API_OAUTH,
-            formattedData, {
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                Accept: 'application/json'
-            }
-        });
-        const tokenCredential = responseMFP.data.access_token;
-        let getMembershipById = undefined;
-        if (mfpProvider !== undefined) {
-            getMembershipById = await axios.get(
-                process.env.API_MFP_GET_ID + mfpProvider.providerUserId,
-                {
-                    headers: {
-                        Authorization: `Bearer ${tokenCredential}`
-                    }
-                }
-            );
-        }
 
         user.followings = userFollowings.length;
         user.followers = userFollowers.length;
         user.authUser = authProviderList;
         user.mfpUser = {
-            id: getMembershipById ? getMembershipById.data.data.id : undefined,
+            // id: getMembershipById ? getMembershipById.data.data.id : undefined,
             expiredAt: getMembershipById ? getMembershipById.data.data.expired_at : undefined,
             firstName: getMembershipById ? getMembershipById.data.data.first_name : undefined,
             lastName: getMembershipById ? getMembershipById.data.data.last_name : undefined,

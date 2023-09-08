@@ -51,6 +51,9 @@ export class EmergencyEvent extends BaseModel {
 
     @Column({ name: 'mode'})
     public mode: string;
+
+    @Column({ name: 'pageList'})
+    public pageList:any;
     
     @BeforeInsert()
     public createDetails(): any {
