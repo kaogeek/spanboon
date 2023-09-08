@@ -2975,11 +2975,16 @@ export class GuestController {
         user.followings = userFollowings.length;
         user.followers = userFollowers.length;
         user.authUser = authProviderList;
-        user.providerUserId = getMembershipById ? getMembershipById.data.data.id : undefined;
-        user.expired_at = getMembershipById ? getMembershipById.data.data.expired_at : undefined;
-        user.state = getMembershipById ? getMembershipById.data.data.state : undefined;
-        user.identification = getMembershipById ? getMembershipById.data.data.identification_number.slice(0, getMembershipById.data.data.identification_number.length - 4) + 'XXXX' : undefined;
-        user.mobile = getMembershipById ? getMembershipById.data.data.mobile_number.slice(0, getMembershipById.data.data.mobile_number.length - 4) + 'XXXX' : undefined;
+        user.mfpUser = {
+            id: getMembershipById ? getMembershipById.data.data.id : undefined,
+            expiredAt: getMembershipById ? getMembershipById.data.data.expired_at : undefined,
+            firstName: getMembershipById ? getMembershipById.data.data.first_name : undefined,
+            lastName: getMembershipById ? getMembershipById.data.data.last_name : undefined,
+            email: getMembershipById ? getMembershipById.data.data.email : undefined,
+            state: getMembershipById ? getMembershipById.data.data.state : undefined,
+            identification: getMembershipById ? getMembershipById.data.data.identification_number.slice(0, getMembershipById.data.data.identification_number.length - 4) + 'XXXX' : undefined,
+            mobile: getMembershipById ? getMembershipById.data.data.mobile_number.slice(0, getMembershipById.data.data.mobile_number.length - 4) + 'XXXX' : undefined,
+        };
 
         delete user.fbUserId;
         delete user.fbToken;
