@@ -110,8 +110,8 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                     postAgg = [
                         { $match: query },
                         { $sample: { size: 1 } },
-                        { $skip: offset + limit},
-                        { $limit: limit },
+                        { $skip: offset },
+                        { $limit: limit + offset },
                         {
                             $lookup: {
                                 from: 'SocialPost',
