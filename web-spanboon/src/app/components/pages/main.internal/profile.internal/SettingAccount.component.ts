@@ -8,8 +8,7 @@
 import { Component, OnInit, ViewChild, ElementRef, EventEmitter, Inject } from '@angular/core';
 import { MatDialog, DateAdapter, MAT_DIALOG_DATA } from '@angular/material';
 import { Router } from '@angular/router';
-import { DialogProfile } from 'src/app/components/components';
-import { DialogAlert } from 'src/app/components/shares/dialog/DialogAlert.component';
+import { DialogProfile } from 'src/app/components/shares/dialog/DialogProfile.component';
 import { AuthenManager, ObservableManager, AssetFacade, ProfileFacade, SeoService } from '../../../../services/services';
 import { AbstractPage } from '../../AbstractPage';
 const PAGE_NAME: string = 'account';

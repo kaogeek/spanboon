@@ -125,4 +125,20 @@ export class EmergencyEventFacade extends AbstractFacade {
       });
     });
   }
+
+  public getConfigEmer(searchFilter: SearchFilter): Promise<EmergencyEvent> {
+    return new Promise((resolve, reject) => {
+      let body: any = {};
+      if (searchFilter !== null && searchFilter !== undefined) {
+        body = Object.assign(searchFilter)
+      }
+      let url: string = this.baseURL + '/admin/config/search';
+      let options = this.getDefaultOptions();
+      this.http.post(url, body, options).toPromise().then((response: any) => {
+        resolve(response.data);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
 }

@@ -71,6 +71,31 @@
           &:last-child {
             @include font-size-10($font-head-100);
             opacity: 0.6;
+
+            &.approved {
+              color: #4caf50;
+              opacity: 1;
+            }
+            &.pending-payment {
+              color: #fb8c00;
+              opacity: 1;
+            }
+            &.pending-approval {
+              color: #fb8c00;
+              opacity: 1;
+            }
+            &.reject {
+              color: #f44336;
+              opacity: 1;
+            }
+            &.recheck {
+              color: #ffeb3b;
+              opacity: 1;
+            }
+            &.achived {
+              color: #ffeb3b;
+              opacity: 1;
+            }
           }
         }
       }

@@ -55,6 +55,8 @@ export class EmergencyEventPage extends AbstractPage implements OnInit {
     public imageName: any;
     public ordering: number;
     public isSave: boolean = false;
+    public modeList: any[] = [];
+    public modeEmer: any;
 
     constructor(emergencyEventFacade: EmergencyEventFacade, hashTagFacade: HashTagFacade, router: Router, dialog: MatDialog, authenManager: AuthenManager) {
         super(PAGE_NAME, dialog);
@@ -145,6 +147,7 @@ export class EmergencyEventPage extends AbstractPage implements OnInit {
     public ngOnInit() {
         this.table.isEmer = true;
         this.getHashtag();
+        this._getConfig();
     }
 
     public getHashtag() {
@@ -161,12 +164,36 @@ export class EmergencyEventPage extends AbstractPage implements OnInit {
         })
     }
 
+    private _getConfig() {
+        let filter = new SearchFilter();
+        filter.limit = SEARCH_LIMIT;
+        filter.offset = SEARCH_OFFSET;
+        filter.relation = [],
+            filter.whereConditions = {
+                name: 'emergencyEvent.mode'
+            },
+            filter.count = false;
+        filter.orderBy = {}
+        this.emergencyEventFacade.getConfigEmer(filter).then((res) => {
+            if (res) {
+                let array = res[0].value.split(',');
+                if (!!array) {
+                    for (const data of array) {
+                        this.modeList.push(data);
+                    }
+                }
+            }
+        })
+    }
+
     private setFields(): void {
         this.dataForm = new EmergencyEvent();
         this.dataForm.title = "";
         this.dataForm.detail = "";
         this.dataForm.coverPageURL = "";
         this.dataForm.hashTag = "";
+        this.dataForm.modeEmer = "";
+        this.dataForm.pageLists = "";
         this.imageName = false;
         this.dataForm.ordering = undefined;
         this.fileToUpload = null
@@ -189,6 +216,7 @@ export class EmergencyEventPage extends AbstractPage implements OnInit {
             dialogRef.afterClosed().subscribe(result => {
                 if (result) {
                     this.submitted = false;
+                    this.isSave = false;
                     this.drawer.toggle();
                 }
             });
@@ -251,6 +279,10 @@ export class EmergencyEventPage extends AbstractPage implements OnInit {
                 return;
             }
             if (this.dataForm.hashTag === "") {
+                this.isSave = false;
+                return;
+            }
+            if (this.dataForm.modeEmer === "") {
                 this.isSave = false;
                 return;
             }

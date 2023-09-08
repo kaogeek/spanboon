@@ -16,10 +16,8 @@ import { MenuContextualService } from 'src/app/services/services';
 import AOS from 'aos';
 import 'aos/dist/aos.css'; // You can also use <link> for styles
 import './../../../../../assets/script/canvas';
-import { E } from '@angular/cdk/keycodes';
 import { Meta } from '@angular/platform-browser';
 import { DialogShare } from 'src/app/components/shares/dialog/DialogShare.component';
-import { DialogAlert } from 'src/app/components/shares/dialog/DialogAlert.component';
 
 const PAGE_NAME: string = 'emergencyevent';
 

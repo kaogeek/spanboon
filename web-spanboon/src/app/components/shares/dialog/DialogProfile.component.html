@@ -13,47 +13,57 @@
             </div>
         </div>
         <div class="username">
-            <span>{{data.user.firstName + ' ' + data.user.lastName}}</span>
+            <span>{{data.user.mfpUser.firstName + ' ' + data.user.mfpUser.lastName}}</span>
         </div>
         <div class="detail-user">
-            <div class="name detail">
+            <div class="firstname detail">
                 <span>ชื่อ</span>
-                <span>{{data.user.mfpUser.firstName + ' ' + data.user.mfpUser.lastName}}</span>
+                <span>{{data.user.mfpUser.firstName}}</span>
+            </div>
+            <div class="lastname detail">
+                <span>นามสกุล</span>
+                <span>{{data.user.mfpUser.lastName}}</span>
             </div>
             <div class="email detail">
                 <span>อีเมล</span>
                 <span>{{data.user.mfpUser.email}}</span>
             </div>
-            <div class="id detail">
+            <!-- <div class="id detail">
                 <span>รหัสสมาชิก</span>
                 <span>{{data.user.mfpUser.id}}</span>
-            </div>
+            </div> -->
             <div class="idcard detail">
                 <span>บัตรประชาชน</span>
                 <span>{{data.user.mfpUser.identification}}</span>
             </div>
             <div class="mobile detail">
-                <span>เบอร์โทร</span>
+                <span>เบอร์มือถือ</span>
                 <span>{{data.user.mfpUser.mobile}}</span>
             </div>
             <div class="state detail">
                 <span>สถานะ</span>
-                <span *ngIf="data.user.mfpUser.state === 'APPROVED'">ผ่านการตรวจสอบแล้ว</span>
-                <span *ngIf="data.user.mfpUser.state === 'PENDING_PAYMENT'">รอการชำระเงิน</span>
-                <span *ngIf="data.user.mfpUser.state === 'PENDING_APPROVAL'">รอการตรวจสอบ</span>
-                <span *ngIf="data.user.mfpUser.state === 'REJECTED'">ไม่ผ่านการตรวจสอบ</span>
-                <span *ngIf="data.user.mfpUser.state === 'PROFILE_RECHECKED'">สมาชิกรอจัดเก็บ</span>
-                <span *ngIf="data.user.mfpUser.state === 'ARCHIVED'">สมาชิกที่จัดเก็บแล้ว</span>
+                <span *ngIf="data.user.mfpUser.state === 'APPROVED'"
+                    [ngClass]="{'approved': data.user.mfpUser.state === 'APPROVED'}">ผ่านการตรวจสอบแล้ว</span>
+                <span *ngIf="data.user.mfpUser.state === 'PENDING_PAYMENT'"
+                    [ngClass]="{'pending-payment': data.user.mfpUser.state === 'PENDING_PAYMENT'}">รอการชำระเงิน</span>
+                <span *ngIf="data.user.mfpUser.state === 'PENDING_APPROVAL'"
+                    [ngClass]="{'pending-approval': data.user.mfpUser.state === 'PENDING_APPROVAL'}">รอการตรวจสอบ</span>
+                <span *ngIf="data.user.mfpUser.state === 'REJECTED'"
+                    [ngClass]="{'reject': data.user.mfpUser.state === 'REJECTED'}">ไม่ผ่านการตรวจสอบ</span>
+                <span *ngIf="data.user.mfpUser.state === 'PROFILE_RECHECKED'"
+                    [ngClass]="{'recheck': data.user.mfpUser.state === 'PROFILE_RECHECKED'}">สมาชิกรอจัดเก็บ</span>
+                <span *ngIf="data.user.mfpUser.state === 'ARCHIVED'"
+                    [ngClass]="{'achived': data.user.mfpUser.state === 'ARCHIVED'}">สมาชิกที่จัดเก็บแล้ว</span>
             </div>
             <div class="expired detail">
                 <span>วันหมดอายุ</span>
-                <span>{{data.user.mfpUser.expiredAt}}</span>
+                <span>{{date}}</span>
             </div>
         </div>
         <div class="bottom" *ngIf="!isUnbind">
             <button class="button-unbind" (click)="acceptUnbind()">{{'ยกเลิกการเชื่อมบัญชี'}}</button>
         </div>
-        <div class="bottom choice" style="gap: 20px" *ngIf="isUnbind">
+        <div class="bottom choice" *ngIf="isUnbind">
             <button class="button-unbind cancel" (click)="cancel()">{{'ยกเลิก'}}</button>
             <button class="button-unbind confirm" (click)="unbind()">{{'ยืนยันการยกเลิกเชื่อมบัญชี'}}</button>
         </div>

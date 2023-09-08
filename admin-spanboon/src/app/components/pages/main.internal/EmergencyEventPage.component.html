@@ -118,7 +118,32 @@
                                                 *ngIf="submitted && (dataForm.ordering === null || dataForm.ordering === undefined)">
                                                 กรุณาใส่ ลำดับ
                                             </div>
+
+                                            <mat-form-field appearance="none" class="input-post-page">
+                                                <mat-select [(ngModel)]="dataForm.modeEmer" name="group"
+                                                    style="border-bottom: 1px solid;padding-bottom: 8px;"
+                                                    placeholder='กรุณาเลือกโหมด' required>
+                                                    <mat-option *ngFor="let mode of modeList" [value]="mode">
+                                                        {{mode}}
+                                                    </mat-option>
+                                                </mat-select>
+                                            </mat-form-field>
                                             <!-- <label style="color: white;padding: 10px;background-color: #fd545a;border-radius: 8px;margin-top:15px;" for="file">Choose File</label> -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>อีเมล *</label>
+                                        <ng-container>
+                                            <textarea class="form-control" [(ngModel)]="dataForm.pageLists"
+                                                [ngModelOptions]="{standalone: true}"></textarea>
+                                        </ng-container>
+                                        <div class="alert alert-danger" style="margin-top: 5pt;"
+                                            *ngIf="submitted && dataForm.email === ''">
+                                            กรุณาใส่ อีเมล
                                         </div>
                                     </div>
                                 </div>
