@@ -110,7 +110,7 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                     postAgg = [
                         { $match: query },
                         { $sample: { size: 1 } },
-                        { $skip: offset },
+                        { $skip: offset + limit},
                         { $limit: limit },
                         {
                             $lookup: {
