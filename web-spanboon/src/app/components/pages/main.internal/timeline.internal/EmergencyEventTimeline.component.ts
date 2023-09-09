@@ -81,7 +81,7 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
     public currentUrl: any;
     public checkLike: boolean = false;
     public tokenMode: boolean;
-    public limit: number = 2;
+    public limit: number = 10;
     public offset: number = 0;
     public scrollDistance = 2;
     public isOnload: boolean = false;
