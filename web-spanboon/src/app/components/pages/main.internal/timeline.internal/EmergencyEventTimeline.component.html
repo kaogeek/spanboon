@@ -56,13 +56,21 @@
                                         <span class="disiption">ติดตาม</span>
                                     </div>
                                     <div class="score-type">
-                                        <ng-container *ngIf="objectiveData.timelines[1]; else elseTimeLine">
+                                        <ng-container
+                                            *ngIf="pageObjective.mode && pageObjective.mode === 'random'; else elseNoneRandom">
                                             <span class="title">{{objectiveData.timelines[0] ?
-                                                objectiveData.timelines[1].posts.length : '0'}}</span>
+                                                objectiveData.timelines[1].posts[0].post.length : '0'}}</span>
                                         </ng-container>
-                                        <ng-template #elseTimeLine>
-                                            <span class="title">{{1}}</span>
+                                        <ng-template #elseNoneRandom>
+                                            <ng-container *ngIf="objectiveData.timelines[1]; else elseTimeLine">
+                                                <span class="title">{{objectiveData.timelines[0] ?
+                                                    objectiveData.timelines[1].posts.length : '0'}}</span>
+                                            </ng-container>
+                                            <ng-template #elseTimeLine>
+                                                <span class="title">{{1}}</span>
+                                            </ng-template>
                                         </ng-template>
+
                                         <span class="disiption">การพูดถึง</span>
                                     </div>
                                     <div class="score-type">
