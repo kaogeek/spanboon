@@ -86,7 +86,7 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                         deleted: false,
                     };
                     postAgg.push({ $match: query });
-                    postAgg.push({ $sample: { size: limit } });
+                    postAgg.push({ $sample: { size: limit + offset } });
                 }
 
                 if (mode !== 'random') {
@@ -99,7 +99,8 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                     postAgg.push({ $sort: { startDateTime: -1 } });
                 }
 
-                postAgg.push({ $skip: offset },
+                postAgg.push(
+                    { $skip: offset },
                     { $limit: limit },
                     {
                         $lookup: {
