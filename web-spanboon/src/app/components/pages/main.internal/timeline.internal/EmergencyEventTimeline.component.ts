@@ -79,6 +79,7 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
     public paramUserId: string = undefined;
     public paramMode: string = undefined;
     public currentUrl: any;
+    public url;
     public checkLike: boolean = false;
     public tokenMode: boolean;
     public limit: number = 10;
@@ -129,6 +130,7 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
             anchorPlacement: 'top-bottom', // defines which position of the element regarding to window should trigger the animation
 
         });
+        this.url = this.router.url;
         this.hidebar = this.authenManager.getHidebar();
         const url = this.router.url.split('/');
         if (!this.hidebar) {
@@ -340,7 +342,7 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
         let check = data && data.userLike && data.userLike.length > 0 ? true : false;
         if (!this.checkLike) {
             if (!this.isLogin()) {
-                this.showAlertDialog('กรุณาเข้าสู่ระบบ');
+                this.showAlertLoginDialog(this.url);
             } else {
                 this.checkLike = true;
                 if (check) {
@@ -351,7 +353,7 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
                     data.likeCount++;
                 }
                 if (!this.isLogin()) {
-                    this.showAlertDialog('กรุณาเข้าสู่ระบบ');
+                    this.showAlertLoginDialog(this.url);
                 } else {
                     this.postFacade.like(data._id).then((res: any) => {
                         if (res.isLike) {
