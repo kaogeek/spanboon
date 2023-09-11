@@ -714,7 +714,7 @@ export class UserProfileController {
                     const newValues = { $set: { membership: true } };
                     const update = await this.userService.update(query, newValues);
                     if (update) {
-                        const successResponseMFP = ResponseUtil.getSuccessResponse('Binding User Is Successful.', undefined);
+                        const successResponseMFP = ResponseUtil.getSuccessResponse('Binding User Is Successful.', 'APPROVED');
                         return res.status(200).send(successResponseMFP);
                     } else {
                         return res.status(400).send(ResponseUtil.getSuccessResponse('Cannot Update Status Membership User.', undefined));
