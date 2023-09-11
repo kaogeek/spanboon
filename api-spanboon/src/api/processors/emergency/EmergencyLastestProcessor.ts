@@ -75,7 +75,7 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                         }
                     }
                 }
-                const postTotalCounts = await this.postsService.find({deleted: false, emergencyEvent: emergencyEventId });
+                const postTotalCounts = await this.postsService.find({ deleted: false, emergencyEvent: emergencyEventId });
                 let query: any = { emergencyEvent: emergencyEventId, deleted: false, createdDate: { $lte: startDateTime, $gte: endDateTime } };
                 if (pageObjIds.length > 0) {
                     query = {
@@ -86,7 +86,6 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                         deleted: false,
                     };
                     postAgg.push({ $match: query });
-                    postAgg.push({ $sample: { size: limit + offset } });
                 }
 
                 if (mode !== 'random') {
@@ -97,10 +96,12 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                     };
                     postAgg.push({ $match: query });
                     postAgg.push({ $sort: { startDateTime: -1 } });
+                    postAgg.push({ $skip: offset });
+                } else {
+                    postAgg.push({ $sample: { size: offset + limit } });
                 }
 
                 postAgg.push(
-                    { $skip: offset },
                     { $limit: limit },
                     {
                         $lookup: {
@@ -153,6 +154,7 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                         },
                     );
                 }
+
                 const searchResult = await this.postsService.aggregate(postAgg);
                 let result = undefined;
                 const content: any = [];
