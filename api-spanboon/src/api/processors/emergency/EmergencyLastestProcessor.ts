@@ -98,7 +98,7 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                     postAgg.push({ $sort: { startDateTime: -1 } });
                     postAgg.push({ $skip: offset });
                 } else {
-                    postAgg.push({ $sample: { size: offset + limit } });
+                    postAgg.push({ $sample: { size: limit } });
                 }
 
                 postAgg.push(
@@ -154,7 +154,6 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                         },
                     );
                 }
-
                 const searchResult = await this.postsService.aggregate(postAgg);
                 let result = undefined;
                 const content: any = [];
