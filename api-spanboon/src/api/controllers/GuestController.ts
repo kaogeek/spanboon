@@ -1085,7 +1085,6 @@ export class GuestController {
             } catch (err) {
                 console.log(err);
             }
-
             if (fbUser === null || fbUser === undefined) {
                 const errorUserNameResponse: any = { status: 0, code: 'E3000001', message: 'User was not found.' };
                 return res.status(400).send(errorUserNameResponse);
@@ -1215,7 +1214,45 @@ export class GuestController {
                 }
             }
         }
+        const userAuthList: AuthenticationId[] = await this.authenticationIdService.find({ where: { user: loginUser.id } });
+        const authProviderList: string[] = [];
+        let mfpProvider = undefined;
+        if (userAuthList !== null && userAuthList !== undefined && userAuthList.length > 0) {
+            for (const userAuth of userAuthList) {
+                if (userAuth.providerName !== undefined && userAuth.providerName === 'MFP') {
+                    mfpProvider = userAuth;
+                }
+                authProviderList.push(userAuth.providerName);
+            }
+        }
+        const requestBody = {
+            'grant_type': process.env.GRANT_TYPE,
+            'client_id': process.env.CLIENT_ID,
+            'client_secret': process.env.CLIENT_SECRET,
+            'scope': process.env.SCOPE
+        };
+        const formattedData = qs.stringify(requestBody);
 
+        const responseMFP = await axios.post(
+            process.env.APP_MFP_API_OAUTH,
+            formattedData, {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                Accept: 'application/json'
+            }
+        });
+        const tokenCredential = responseMFP.data.access_token;
+        let getMembershipById = undefined;
+        if (mfpProvider !== undefined) {
+            getMembershipById = await axios.get(
+                process.env.API_MFP_GET_ID + mfpProvider.providerUserId,
+                {
+                    headers: {
+                        Authorization: `Bearer ${tokenCredential}`
+                    }
+                }
+            );
+        }
         if (loginUser === undefined) {
             const errorResponse: any = { status: 0, message: 'Cannot login please try again.' };
             return res.status(400).send(errorResponse);
@@ -1232,6 +1269,17 @@ export class GuestController {
         loginUser = await this.userService.cleanUserField(loginUser);
         loginUser.followings = userFollowings.length;
         loginUser.followers = userFollowers.length;
+        loginUser.authUser = authProviderList;
+        loginUser.mfpUser = {
+            // id: getMembershipById ? getMembershipById.data.data.id : undefined,
+            expiredAt: getMembershipById ? getMembershipById.data.data.expired_at : undefined,
+            firstName: getMembershipById ? getMembershipById.data.data.first_name : undefined,
+            lastName: getMembershipById ? getMembershipById.data.data.last_name : undefined,
+            email: getMembershipById ? getMembershipById.data.data.email : undefined,
+            state: getMembershipById ? getMembershipById.data.data.state : undefined,
+            identification: getMembershipById ? getMembershipById.data.data.identification_number.slice(0, getMembershipById.data.data.identification_number.length - 4) + 'XXXX' : undefined,
+            mobile: getMembershipById ? getMembershipById.data.data.mobile_number.slice(0, getMembershipById.data.data.mobile_number.length - 4) + 'XXXX' : undefined,
+        };
         const result = { token: loginToken, user: loginUser };
 
         const successResponse = ResponseUtil.getSuccessResponse('Loggedin successful', result);

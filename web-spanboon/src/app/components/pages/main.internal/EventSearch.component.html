@@ -63,8 +63,10 @@
 
                                 <span>{{'#' + params['emertag']}}</span>
                             </div>
-                            <div class="header-bottom">
-                                <span>#{{params['hashtag']}}</span>
+                            <div [ngStyle]="{'padding': params['hashtag'] === undefined ? '15px 0 10px 15px' : '25px 0 10px 15px'}"
+                                class="header-bottom">
+                                <span
+                                    [ngStyle]="{'display': params['hashtag'] === undefined ? 'none' : 'flex'}">#{{params['hashtag']}}</span>
                             </div>
                         </div>
                         <div class="feed-body">

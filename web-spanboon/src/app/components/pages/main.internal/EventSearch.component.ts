@@ -94,8 +94,8 @@ export class EventSearch extends AbstractPageImageLoader implements OnInit {
 
   private _getContent(id) {
     const keywordFilter: any = {
-      keyword: [this.params['hashtag']],
-      hashtag: [this.params['hashtag']],
+      keyword: [this.params['hashtag'] ? this.params['hashtag'] : ''],
+      hashtag: [this.params['hashtag'] ? this.params['hashtag'] : ''],
       type: '',
       emergencyEventTag: this.params['emertag'],
       emergencyEvent: id,

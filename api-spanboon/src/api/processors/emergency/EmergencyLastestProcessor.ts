@@ -31,7 +31,9 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                 let userId = undefined;
                 let startDateTime = undefined;
                 let endDateTime = undefined;
-                let postAgg = undefined;
+                const postAgg = [];
+                let postObj = [];
+                const postObjIds = [];
                 let mode = undefined;
                 let pages = undefined;
                 if (this.data !== undefined && this.data !== null) {
@@ -43,6 +45,7 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                     endDateTime = this.data.endDateTime;
                     mode = this.data.emergencyMode;
                     pages = this.data.emergencyPageList;
+                    postObj = this.data.objIds;
                 }
 
                 if (emergencyEventId === undefined || emergencyEventId === null || emergencyEventId === '') {
@@ -57,7 +60,11 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                 if (offset === undefined || offset === null || offset === '') {
                     offset = 0;
                 }
-
+                if (postObj !== undefined && postObj.length > 0) {
+                    for (const postId of postObj) {
+                        postObjIds.push(new ObjectID(postId));
+                    }
+                }
                 // search first post of emergencyEvent and join gallery
                 const pageObjIds = [];
                 if (pages !== undefined && pages.length > 0) {
@@ -68,19 +75,33 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                         }
                     }
                 }
+                const postTotalCounts = await this.postsService.find({ deleted: false, emergencyEvent: emergencyEventId });
                 let query: any = { emergencyEvent: emergencyEventId, deleted: false, createdDate: { $lte: startDateTime, $gte: endDateTime } };
                 if (pageObjIds.length > 0) {
                     query = {
+                        _id: { $nin: postObjIds },
                         pageId: { $in: pageObjIds },
+                        createdDate: { $lte: startDateTime, $gte: endDateTime },
+                        emergencyEvent: emergencyEventId,
+                        deleted: false,
+                    };
+                    postAgg.push({ $match: query });
+                }
+
+                if (mode !== 'random') {
+                    query = {
                         emergencyEvent: emergencyEventId,
                         deleted: false,
                         createdDate: { $lte: startDateTime, $gte: endDateTime }
                     };
+                    postAgg.push({ $match: query });
+                    postAgg.push({ $sort: { startDateTime: -1 } });
+                    postAgg.push({ $skip: offset });
+                } else {
+                    postAgg.push({ $sample: { size: limit } });
                 }
-                postAgg = [
-                    { $match: query },
-                    { $sort: { startDateTime: -1 } },
-                    { $skip: offset },
+
+                postAgg.push(
                     { $limit: limit },
                     {
                         $lookup: {
@@ -108,8 +129,7 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                             foreignField: 'post',
                             as: 'postGallery'
                         }
-                    }
-                ];
+                    });
                 if (userId !== undefined && userId !== null && userId !== '') {
                     const userObjIds = new ObjectID(userId);
                     postAgg.push(
@@ -187,7 +207,8 @@ export class EmergencyLastestProcessor extends AbstractTypeSectionProcessor {
                         subTitle: '',
                         detail: '',
                         posts: groupedData,
-                        type: this.type
+                        type: this.type,
+                        totalPosts: postTotalCounts.length,
                     };
                 }
 

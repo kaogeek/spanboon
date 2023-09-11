@@ -36,10 +36,13 @@ export class EmergencyEventFacade extends AbstractFacade {
     });
   }
 
-  public getEmergencyTimeline(emergencyId: string, dataMobile?: any, limit?: number, offset?: number): Promise<any> {
+  public getEmergencyTimeline(emergencyId: string, dataMobile?: any, limit?: number, offset?: number, postObj?: any): Promise<any> {
     return new Promise((resolve, reject) => {
 
       let url: string = this.baseURL + '/emergency/' + emergencyId + '/timeline';
+      let body: any = {
+        postObjIds: postObj
+      };
       if (limit !== null && limit !== undefined) {
         url += `?limit=${limit}&offset=${offset}`;
       }
@@ -57,7 +60,7 @@ export class EmergencyEventFacade extends AbstractFacade {
         options = this.authMgr.getDefaultOptions();
       }
 
-      this.http.get(url, options).toPromise().then((response: any) => {
+      this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response.data);
       }).catch((error: any) => {
         reject(error);

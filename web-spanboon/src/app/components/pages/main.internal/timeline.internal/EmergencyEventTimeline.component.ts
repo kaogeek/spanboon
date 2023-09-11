@@ -85,6 +85,7 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
     public offset: number = 0;
     public scrollDistance = 2;
     public isOnload: boolean = false;
+    public postOjbId: any[] = [];
 
     public apiBaseURL = environment.apiBaseURL;
     private routeActivated: ActivatedRoute;
@@ -180,7 +181,7 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
         if (isScroll) {
             this.offset += this.limit;
         }
-        await this.emergencyEventFacade.getEmergencyTimeline(this.objectiveId, dataMobile, this.limit, this.offset).then((res) => {
+        await this.emergencyEventFacade.getEmergencyTimeline(this.objectiveId, dataMobile, this.limit, this.offset, this.postOjbId).then((res) => {
             if (res) {
                 if (!isScroll) {
                     this.objectiveData = res;
@@ -203,6 +204,12 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
                 this.objectiveData.page = { owner: dataPageTypeAssign };
                 this._groupData();
                 this.setData();
+                if (res.timelines[1].posts[0].post) {
+                    let postList = res.timelines[1].posts[0].post;
+                    for (const post of postList) {
+                        this.postOjbId.push(post._id);
+                    }
+                }
             }
         }).catch((error) => {
             if (error) {
