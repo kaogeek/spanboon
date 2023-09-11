@@ -311,6 +311,7 @@ export class EmergencyEventController {
     @Get('/:id/timeline')
     public async getEmergencyEventTimeline(@QueryParam('limit') limit: number, @QueryParam('offset') offset: number, @Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
         // ????? >>>> look after 3 months timeline.
+        const objIds:any = req.body.postObjIds;
         const today = moment().toDate(); // now
         const threeMonth = moment(today).clone().utcOffset(0).set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(3, 'months').toDate();// look after 3 months
         const userId = req.headers.userid;
@@ -479,7 +480,8 @@ export class EmergencyEventController {
                 startDateTime: today,
                 endDateTime: threeMonth,
                 emergencyMode,
-                emergencyPageList
+                emergencyPageList,
+                objIds
             });
             const lastestProcsResult = await lastestPostProcessor.process();
             if (lastestProcsResult !== undefined && lastestProcsResult.length > 0) {
