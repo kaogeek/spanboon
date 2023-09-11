@@ -308,7 +308,7 @@ export class EmergencyEventController {
      * @apiErrorExample {json} EmergencyEvent error
      * HTTP/1.1 500 Internal Server Error
      */
-    @Get('/:id/timeline')
+    @Post('/:id/timeline')
     public async getEmergencyEventTimeline(@QueryParam('limit') limit: number, @QueryParam('offset') offset: number, @Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
         // ????? >>>> look after 3 months timeline.
         const objIds:any = req.body.postObjIds;
