@@ -59,7 +59,7 @@
                                         <ng-container
                                             *ngIf="pageObjective.mode && pageObjective.mode === 'random'; else elseNoneRandom">
                                             <span class="title">{{objectiveData.timelines[0] ?
-                                                objectiveData.timelines[1].posts[0].post.length : '0'}}</span>
+                                                objectiveData.timelines[1].totalPosts : '0'}}</span>
                                         </ng-container>
                                         <ng-template #elseNoneRandom>
                                             <ng-container *ngIf="objectiveData.timelines[1]; else elseTimeLine">
