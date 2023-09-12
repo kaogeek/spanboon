@@ -1598,6 +1598,8 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
         this.isLoading = false;
         if (err.error.message === 'You cannot like this post type MFP.') {
           this.showDialogEngagementMember();
+        } else if (err.error.message === 'Page cannot like this post type MFP.') {
+          this.showAlertDialog('เพจไม่สามารถกดไลค์ได้');
         }
       });
     }
