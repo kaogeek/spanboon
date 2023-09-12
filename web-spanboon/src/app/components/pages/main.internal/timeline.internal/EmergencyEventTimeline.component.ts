@@ -347,7 +347,9 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
                 this.checkLike = true;
                 if (check) {
                     data.userLike.splice(0, 1);
-                    data.likeCount--;
+                    if (data.likeCount > 0) {
+                        data.likeCount--;
+                    }
                 } else {
                     data.userLike.push(true);
                     data.likeCount++;

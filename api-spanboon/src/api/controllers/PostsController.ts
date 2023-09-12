@@ -1062,11 +1062,13 @@ export class PostsController {
                     if (post_who.pageId !== null && post_who.pageId !== undefined) {
                         if (likePosts.length > 0 && likePosts.length <= 5) {
                             firstPerson = await this.pageService.findOne({ _id: new ObjectID(likePosts[likePosts.length - 1].likeAsPage) });
+                            const ownerPosts = await this.postsService.findOne({ _id: postObjId });
+                            const ownerPages = await this.pageService.findOne({ _id: ownerPosts.pageId });
                             const tokenFCMId = await this.deviceTokenService.find({ userId: post_who.ownerUser });
-                            const notificationText = firstPerson.name + space + 'กดถูกใจโพสต์ของเพจ' + space + page.name;
-                            const link = `/page/${page.id}/post/` + post_who.id;
+                            const notificationText = firstPerson.name + space + 'กดถูกใจโพสต์ของเพจ' + space + ownerPages.name;
+                            const link = `/page/${ownerPages.id}/post/` + post_who.id;
                             await this.pageNotificationService.notifyToPageUserFcm(
-                                page.id,
+                                ownerPages.id,
                                 undefined,
                                 req.user.id + '',
                                 USER_TYPE.PAGE,
@@ -1265,7 +1267,7 @@ export class PostsController {
                         const ownerPages = await this.pageService.findOne({ _id: ownerPosts.pageId });
                         const tokenFCMId = await this.deviceTokenService.find({ userId: ownerPages.ownerUser });
                         firstPerson = await this.userService.findOne({ _id: userObjId });
-                        notificationText = firstPerson.displayName + space + 'กดถูกใจโพสต์ของเพจ' + space + page.name;
+                        notificationText = firstPerson.displayName + space + 'กดถูกใจโพสต์ของเพจ' + space + ownerPages.name;
                         const link = `/page/${ownerPages.id}/post/` + ownerPosts.id;
                         if (likePosts.length > 0 && likePosts.length <= 5) {
                             await this.pageNotificationService.notifyToPageUserFcm
