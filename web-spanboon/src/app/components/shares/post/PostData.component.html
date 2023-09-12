@@ -57,7 +57,8 @@
     <div class="header-post" [class.active]="itemPost.referencePostObject && itemPost.referencePostObject.ownerUser">
         <div class="left" [ngStyle]="{'margin-right': !!itemPost.referencePostObject ? '15pt' : 'unset'}">
             <ng-container *ngIf="isShowProfile">
-                <div class="wrapper-profile-page" *ngIf="itemPost.type === 'NEEDS' || itemPost.type === 'GENERAL' ">
+                <div class="wrapper-profile-page"
+                    *ngIf="itemPost.type === 'NEEDS' || itemPost.type === 'GENERAL' || itemPost.type === 'MEMBERSHIP'">
                     <div class="page-img">
                         <ng-container *ngIf="itemPost.page; else elseImage">
                             <a target="_blank"
@@ -104,17 +105,25 @@
                             </ng-template>
 
                             <div class="post-data-createdBy">
-                                <ng-container *ngIf="itemPost.type === 'GENERAL'; else elseTemplateGeneral">
+                                <ng-container *ngIf="itemPost.type === 'GENERAL'; else elseMember">
                                     <div class="icon-feed"></div>
                                     <span>
                                         {{PLATFORM_GENERAL_TEXT}}
                                     </span>
                                 </ng-container>
-                                <ng-template #elseTemplateGeneral>
-                                    <div class="icon-feed looking"></div>
-                                    <span>
-                                        {{PLATFORM_NEEDS_TEXT}}
-                                    </span>
+                                <ng-template #elseMember>
+                                    <ng-container *ngIf="itemPost.type === 'MEMBERSHIP'; else elseTemplateGeneral">
+                                        <div class="icon-feed member"></div>
+                                        <span>
+                                            {{PLATFORM_MEMBERSHIP_TEXT}}
+                                        </span>
+                                    </ng-container>
+                                    <ng-template #elseTemplateGeneral>
+                                        <div class="icon-feed looking"></div>
+                                        <span>
+                                            {{PLATFORM_NEEDS_TEXT}}
+                                        </span>
+                                    </ng-template>
                                 </ng-template>
                                 <div class="post-to">
                                     <a href={{linkPost}} target="_blank"

@@ -40,9 +40,10 @@ export class EmergencyEventFacade extends AbstractFacade {
     return new Promise((resolve, reject) => {
 
       let url: string = this.baseURL + '/emergency/' + emergencyId + '/timeline';
-      let body: any = {
-        postObjIds: postObj
-      };
+      let body: any = {};
+      if (postObj !== null && postObj !== undefined) {
+        body = { postObjIds: postObj };
+      }
       if (limit !== null && limit !== undefined) {
         url += `?limit=${limit}&offset=${offset}`;
       }
