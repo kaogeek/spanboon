@@ -411,6 +411,10 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
         }
     }
 
+    public openPost(data?: any, index?: number) {
+        this.router.navigateByUrl('/post/' + data._id);
+    }
+
     public TooltipClose($event) {
 
         setTimeout(() => {
