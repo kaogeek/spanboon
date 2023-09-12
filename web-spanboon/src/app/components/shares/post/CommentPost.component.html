@@ -9,9 +9,20 @@
         <div class="comment-img" (click)="clickToUser(comment.page ? comment.page : comment.user)" *ngIf="!isImgSing">
             <ng-container *ngIf="!!comment!.user!.signURL || !!comment!.user!.imageURL; else elseImage">
                 <div class="menu-user" (click)="menuProfile(comment.page ? comment.page : comment.user);">
-                    <img class="image-profile-comment"
-                        src="{{testIimageURL(comment.user.signURL ? comment.user.signURL : comment.user.imageURL)}}"
-                        alt="">
+                    <ng-container *ngIf="!!comment.commentAsPage; else elsePageImg">
+                        <ng-container *ngIf="!!comment.page.imageURL; else elseImagePage">
+                            <img class="image-profile-comment"
+                                src="{{testIimageURL(apiBaseURL + comment.page.imageURL + '/image')}}" alt="">
+                        </ng-container>
+                        <ng-template #elseImagePage>
+                            <span class="image-profile displayName">{{comment.page.name | slice:0:1}}</span>
+                        </ng-template>
+                    </ng-container>
+                    <ng-template #elsePageImg>
+                        <img class="image-profile-comment"
+                            src="{{testIimageURL(comment.user.signURL ? comment.user.signURL : comment.user.imageURL)}}"
+                            alt="">
+                    </ng-template>
                 </div>
             </ng-container>
             <ng-template #elseImage>

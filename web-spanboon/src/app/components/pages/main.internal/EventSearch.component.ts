@@ -161,6 +161,9 @@ export class EventSearch extends AbstractPageImageLoader implements OnInit {
           if (err.error.message === 'You cannot like this post type MFP.') {
             this.showDialogEngagementMember();
             this.checkLike = false;
+          } else if (err.error.message === 'Page cannot like this post type MFP.') {
+            this.showAlertDialog('เพจไม่สามารถกดไลค์ได้');
+            this.checkLike = false;
           }
         });
       }

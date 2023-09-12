@@ -574,6 +574,8 @@ export class PostPage extends AbstractPage implements OnInit {
         console.log(err)
         if (err.error.message === 'You cannot like this post type MFP.') {
           this.showDialogEngagementMember();
+        } else if (err.error.message === 'Page cannot like this post type MFP.') {
+          this.showAlertDialog('เพจไม่สามารถกดไลค์ได้');
         }
       });
     }
