@@ -370,6 +370,10 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
                             data.userLike.splice(0, 1);
                             data.likeCount--;
                             this.showDialogEngagementMember();
+                        } else if (err.error.message === 'Page cannot like this post type MFP.') {
+                            data.userLike.splice(0, 1);
+                            data.likeCount--;
+                            this.showAlertDialog('เพจไม่สามารถกดไลค์ได้');
                         }
                     });
                 }

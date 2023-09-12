@@ -1228,6 +1228,9 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
             if (err.error.message === 'You cannot like this post type MFP.') {
               this.showDialogEngagementMember();
               this.checkLike = false;
+            } else if (err.error.message === 'Page cannot like this post type MFP.') {
+              this.showAlertDialog('เพจไม่สามารถกดไลค์ได้');
+              this.checkLike = false;
             }
           });
         } else {
@@ -1252,6 +1255,9 @@ export class FanPage extends AbstractPageImageLoader implements OnInit, OnDestro
             this.resPost.posts[index].isLike = false;
             if (err.error.message === 'You cannot like this post type MFP.') {
               this.showDialogEngagementMember();
+              this.checkLike = false;
+            } else if (err.error.message === 'Page cannot like this post type MFP.') {
+              this.showAlertDialog('เพจไม่สามารถกดไลค์ได้');
               this.checkLike = false;
             }
           });

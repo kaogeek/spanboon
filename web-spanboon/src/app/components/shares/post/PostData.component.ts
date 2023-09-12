@@ -454,6 +454,13 @@ export class PostData {
           console.log("err", err)
           if (err.error.message === 'You cannot like comment this post type MFP.') {
             this.showDialogEngagementMember();
+          } else if (err.error.message === 'Page cannot like this post type MFP.') {
+            this.dialog.open(DialogAlert, {
+              disableClose: true,
+              data: {
+                text: 'เพจไม่สามารถกดไลค์ได้',
+              }
+            });
           }
         })
       }
