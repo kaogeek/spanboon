@@ -746,7 +746,7 @@
                                         </ng-template>
                                     </ng-template>
                                     <div class="detail"
-                                        [ngStyle]="{'width': model && model.pageRoundRobin.contents.length === 1 ? '100%' : '50%'}"
+                                        [ngStyle]="{'width': model && model.pageRoundRobin.contents.length === 1 || model && model.pageRoundRobin.contents.length >= 3 ? '100%' : '50%'}"
                                         [ngClass]="{'post-wid': !isRes && model && model.pageRoundRobin.contents.length < 3}">
                                         <ng-container
                                             *ngIf="model && model.pageRoundRobin.contents === 2; else elseDetail2">
