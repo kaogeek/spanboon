@@ -995,6 +995,12 @@ export class PostsController {
                     return res.status(400).send(errorResponse);
                 }
             }
+
+            if (postObject.type === 'MEMBERSHIP' &&
+                like.likeAsPage !== undefined) {
+                const errorResponse = ResponseUtil.getErrorResponse('Page cannot like this post type MFP.', undefined);
+                return res.status(400).send(errorResponse);
+            }
             // check client credential
             const requestBody = {
                 'grant_type': process.env.GRANT_TYPE,
