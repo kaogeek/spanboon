@@ -1265,7 +1265,7 @@ export class PostsController {
                         const ownerPages = await this.pageService.findOne({ _id: ownerPosts.pageId });
                         const tokenFCMId = await this.deviceTokenService.find({ userId: ownerPages.ownerUser });
                         firstPerson = await this.userService.findOne({ _id: userObjId });
-                        notificationText = firstPerson.displayName + space + 'กดถูกใจโพสต์ของเพจ' + space + page.name;
+                        notificationText = firstPerson.displayName + space + 'กดถูกใจโพสต์ของเพจ' + space + ownerPages.name;
                         const link = `/page/${ownerPages.id}/post/` + ownerPosts.id;
                         if (likePosts.length > 0 && likePosts.length <= 5) {
                             await this.pageNotificationService.notifyToPageUserFcm
