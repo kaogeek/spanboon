@@ -49,6 +49,10 @@
         max-width: unset;
         background-color: #fafafa;
 
+        &.header-annouce {
+          background-color: #0c3455;
+        }
+
         > .header-announcement {
           height: 50px;
           display: flex;
@@ -62,6 +66,10 @@
             align-items: center;
             width: 75%;
             background-color: #0c3455;
+
+            &.head {
+              width: 100% !important;
+            }
 
             @media (max-width: $xxlarge) {
               width: 70%;

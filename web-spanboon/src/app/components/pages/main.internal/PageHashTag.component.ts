@@ -1596,6 +1596,9 @@ export class PageHashTag extends AbstractPageImageLoader implements OnInit {
       }).catch((err: any) => {
         console.log(err)
         this.isLoading = false;
+        if (err.error.message === 'You cannot like this post type MFP.') {
+          this.showDialogEngagementMember();
+        }
       });
     }
   }

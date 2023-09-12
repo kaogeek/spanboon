@@ -5,6 +5,30 @@
 
 <div class="home-page" infinite-scroll [infiniteScrollDistance]="scrollDistance" [alwaysCallback]="true"
     (scrolled)="onScrollDown($event)">
+    <section class="section-0" *ngIf="!showLoading && isAnnounce">
+        <div class="container header-annouce">
+            <div class="header-announcement">
+                <div class="announce head">
+                    <ng-container *ngIf="linkAnnounce; else elseLink">
+                        <a target="_blank" [href]="linkAnnounce">
+                            <marquee direction="left" id="scroll_news" loop=""
+                                onMouseOver="document.getElementById('scroll_news').stop();"
+                                onMouseOut="document.getElementById('scroll_news').start();">
+                                {{announcement}}
+                            </marquee>
+                        </a>
+                    </ng-container>
+                    <ng-template #elseLink>
+                        <marquee direction="left" id="scroll_news" loop=""
+                            onMouseOver="document.getElementById('scroll_news').stop();"
+                            onMouseOut="document.getElementById('scroll_news').start();">
+                            {{announcement}}
+                        </marquee>
+                    </ng-template>
+                </div>
+            </div>
+        </div>
+    </section>
     <section class="section-0" *ngIf="!showLoading">
         <div class="container">
             <div class="header-announcement">
