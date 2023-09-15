@@ -21,7 +21,7 @@ import {
   PageHashTag,
   PageRecommended,
   SettingsFanPage, forgotPasswordPage, ObjectiveTimeline,
-  EmergencyEventTimeline, Redirect, SettingAccount, AboutPage, SettingsAdminRoles, SecurityInfo, HomePageV3, PolicyPage, TermsOfServicePage, EventSearch, LoginMemberProcessing, MemberProcess,
+  EmergencyEventTimeline, Redirect, SettingAccount, AboutPage, SettingsAdminRoles, SecurityInfo, HomePageV3, PolicyPage, TermsOfServicePage, EventSearch, LoginMemberProcessing, MemberProcess, MobileProcessing,
 } from './components/components';
 
 import { TestComponent } from './components/TestComponent.component';
@@ -49,6 +49,10 @@ export const APP_ROUTES: Routes = [
   {
     path: LoginMemberProcessing.PAGE_NAME,
     component: LoginMemberProcessing,
+  },
+  {
+    path: "process/" + MobileProcessing.PAGE_NAME,
+    component: MobileProcessing,
   },
   {
     path: MemberProcess.PAGE_NAME,

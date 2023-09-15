@@ -264,24 +264,18 @@ export class AuthenManager {
 
   public getSSOAuth(token?: any) {
     return new Promise((resolve, reject) => {
-      let url: string = 'https://auth.moveforwardparty.org/sso?';
+      let url: string = `${environment.memberShip.bindingBaseURL}sso?`;
       if (token !== undefined) {
         url += `client_id=${environment.memberShip.clientId}`;
-      }
-      if (token !== undefined) {
-        url += `&process_type=login`;
-      }
-      if (token !== undefined) {
+        url += `&process_type=${environment.memberShip.grantType}`;
         url += `&token=${token}`;
       }
 
       let body: any = {};
 
       this.http.get(url, body).toPromise().then((response: any) => {
-        console.log('>>>>>>>> ss0', response);
         resolve(response.data);
       }).catch((error: any) => {
-        console.log('>>>>>>>> ss1', error);
         reject(error);
       });
     });

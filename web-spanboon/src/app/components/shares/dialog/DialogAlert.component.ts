@@ -90,12 +90,15 @@ export class DialogAlert {
   public binding() {
     this.profileFacade.updateMember(this.data.userId, true).then((res) => {
       let token = res;
-      let url: string = 'https://auth.moveforwardparty.org/sso?';
+      let url: string = `${environment.memberShip.bindingBaseURL}sso?`;
       if (token !== undefined) {
-        url += `client_id=5&process_type=binding&token=${token}`;
+        url += `client_id=${environment.memberShip.clientId}`;
+        url += `&process_type=${environment.memberShip.grantType}`;
+        url += `&token=${token}`;
       }
       localStorage.setItem('methodMFP', 'binding');
       this._donotAskAgain();
+      this.isbottom = false
       this.dialogRef.close(this.isbottom);
       window.open(url, '_blank').focus();
     }).catch((err) => {

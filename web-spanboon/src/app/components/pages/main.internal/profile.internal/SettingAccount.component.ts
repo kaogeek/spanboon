@@ -11,6 +11,7 @@ import { Router } from '@angular/router';
 import { DialogProfile } from 'src/app/components/shares/dialog/DialogProfile.component';
 import { AuthenManager, ObservableManager, AssetFacade, ProfileFacade, SeoService } from '../../../../services/services';
 import { AbstractPage } from '../../AbstractPage';
+import { environment } from '../../../../../environments/environment';
 const PAGE_NAME: string = 'account';
 
 @Component({
@@ -122,9 +123,11 @@ export class SettingAccount extends AbstractPage implements OnInit {
         let user: any = JSON.parse(localStorage.getItem('pageUser'));
         this.profileFacade.updateMember(this.data.id !== undefined ? this.data.id : user.id, true).then((res) => {
             let token = res;
-            let url: string = 'https://auth.moveforwardparty.org/sso?';
+            let url: string = `${environment.memberShip.bindingBaseURL}sso?`;
             if (token !== undefined) {
-                url += `client_id=5&process_type=binding&token=${token}`;
+                url += `client_id=${environment.memberShip.clientId}`;
+                url += `&process_type=${environment.memberShip.grantType}`;
+                url += `&token=${token}`;
             }
             localStorage.setItem('methodMFP', 'binding');
             window.open(url, '_self').focus();
