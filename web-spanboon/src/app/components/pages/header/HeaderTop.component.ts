@@ -426,7 +426,7 @@ export class HeaderTop extends AbstractPage implements OnInit {
     this.authenManager.logout(body).then(() => {
       this.router.navigateByUrl(REDIRECT_PATH);
     }).catch((err) => {
-      alert(err.error.message);
+      // alert(err.error.message);
     });
   }
 

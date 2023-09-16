@@ -18,6 +18,12 @@ import 'aos/dist/aos.css'; // You can also use <link> for styles
 import './../../../../../assets/script/canvas';
 import { Meta } from '@angular/platform-browser';
 import { DialogShare } from 'src/app/components/shares/dialog/DialogShare.component';
+import {
+    getSupportedInputTypes,
+    Platform,
+    supportsPassiveEventListeners,
+    supportsScrollBehavior,
+} from '@angular/cdk/platform';
 
 const PAGE_NAME: string = 'emergencyevent';
 
@@ -27,6 +33,9 @@ const PAGE_NAME: string = 'emergencyevent';
 })
 
 export class EmergencyEventTimeline extends AbstractPage implements OnInit {
+    supportedInputTypes = Array.from(getSupportedInputTypes()).join(', ');
+    supportsPassiveEventListeners = supportsPassiveEventListeners();
+    supportsScrollBehavior = supportsScrollBehavior();
 
     public static readonly PAGE_NAME: string = PAGE_NAME;
 
@@ -79,7 +88,7 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
     public paramUserId: string = undefined;
     public paramMode: string = undefined;
     public currentUrl: any;
-    public url;
+    public url: any;
     public checkLike: boolean = false;
     public tokenMode: boolean;
     public limit: number = 10;
@@ -93,7 +102,7 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
     private seoService: SeoService;
 
     constructor(router: Router, authenManager: AuthenManager, assetFacade: AssetFacade, postActionService: PostActionService, postFacade: PostFacade, private popupService: MenuContextualService, private viewContainerRef: ViewContainerRef, emergencyEventFacade: EmergencyEventFacade, hashTagFacade: HashTagFacade, observManager: ObservableManager, routeActivated: ActivatedRoute,
-        dialog: MatDialog, seoService: SeoService, private meta: Meta) {
+        dialog: MatDialog, seoService: SeoService, private meta: Meta, public platform: Platform) {
         super(PAGE_NAME, authenManager, dialog, router);
         this.router = router;
         this.authenManager = authenManager;
@@ -369,7 +378,11 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
                         if (err.error.message === 'You cannot like this post type MFP.') {
                             data.userLike.splice(0, 1);
                             data.likeCount--;
-                            this.showDialogEngagementMember();
+                            if (this.platform.ANDROID || this.platform.IOS) {
+                                window.open('/process/mobile');
+                            } else {
+                                this.showDialogEngagementMember();
+                            }
                         } else if (err.error.message === 'Page cannot like this post type MFP.') {
                             data.userLike.splice(0, 1);
                             data.likeCount--;

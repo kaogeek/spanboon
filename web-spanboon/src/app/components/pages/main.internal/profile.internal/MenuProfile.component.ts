@@ -144,7 +144,6 @@ export class MenuProfile extends AbstractPage implements OnInit {
                     }
                 }
             }).catch((err: any) => {
-                alert(err.error.message);
                 this.authenManager.clearStorage();
                 this.router.navigateByUrl(REDIRECT_PATH);
             })

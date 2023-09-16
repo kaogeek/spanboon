@@ -553,9 +553,11 @@ export class LoginPage extends AbstractPage implements OnInit {
     this.authenManager.loginMember('MFP').then((res) => {
       if (res) {
         let token = res.data;
-        let url: string = 'https://auth.moveforwardparty.org/sso?';
+        let url: string = `${environment.memberShip.bindingBaseURL}sso?`;
         if (token !== undefined) {
-          url += `client_id=5&process_type=binding&token=${token}`;
+          url += `client_id=${environment.memberShip.clientId}`;
+          url += `&process_type=${environment.memberShip.grantType}`;
+          url += `&token=${token}`;
         }
         localStorage.setItem('methodMFP', 'login');
         window.open(url, '_blank').focus();
