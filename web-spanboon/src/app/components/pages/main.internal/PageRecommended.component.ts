@@ -147,11 +147,6 @@ export class PageRecommended extends AbstractPage implements OnInit {
       console.log('err ', err)
     });
   }
-
-  public clickEmer() {
-    this.router.navigateByUrl('/emergencyevent/64fa7d15c140da029fe74930');
-  }
-
   public clickLoadmore() {
 
   }
