@@ -52,6 +52,7 @@ export const environment = {
     clientSecret: "${process.env["CLIENT_SECRET"]}",
     scope: "${process.env["SCOPE"]}",
     webBaseURL: "${process.env["WEB_BASE_URL"]}",
+    bindingBaseURL: "${process.env["APP_MFP_API"]}",
  }
 };
 `;
