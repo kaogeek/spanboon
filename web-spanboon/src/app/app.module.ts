@@ -116,6 +116,7 @@ import {
   PolicyV2,
   TermsOfServiceV1,
   TermsOfServiceV2,
+  KnowledgeCenter,
   // timeline 
   ObjectiveTimeline,
   EmergencyEventTimeline,
@@ -335,6 +336,7 @@ const COMPONENTS: any[] = [
   PolicyV2,
   TermsOfServiceV1,
   TermsOfServiceV2,
+  KnowledgeCenter,
   SettingsInfo,
   SettingsAdminRoles,
   SecurityInfo,
