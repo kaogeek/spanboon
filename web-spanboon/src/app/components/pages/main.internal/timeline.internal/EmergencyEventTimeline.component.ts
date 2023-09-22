@@ -273,8 +273,9 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
     }
 
     public clickDataSearch(post: any): void {
+        let idpost = !!post._id ? post._id : post.post._id;
         this.router.navigate([]).then(() => {
-            window.open('/post/' + post.post._id, '_blank');
+            window.open('/post/' + idpost, '_blank');
         });
     }
 
@@ -298,7 +299,6 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
         //     }
         //     this.router.navigate(['/search'], navigationExtras);
         // }
-
         if (this.hidebar) {
             let navigationExtras: NavigationExtras = {
                 queryParams: { hashtag: data.name, emertag: this.pageObjective.hashTagName }
@@ -378,8 +378,10 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
                         if (err.error.message === 'You cannot like this post type MFP.') {
                             data.userLike.splice(0, 1);
                             data.likeCount--;
-                            if (this.platform.ANDROID || this.platform.IOS) {
-                                window.open('/process/mobile');
+                            if (!this.hidebar) {
+                                this.router.navigate([]).then(() => {
+                                    window.open('/process/mobile', '_blank');
+                                });
                             } else {
                                 this.showDialogEngagementMember();
                             }
@@ -422,10 +424,6 @@ export class EmergencyEventTimeline extends AbstractPage implements OnInit {
             let dataHashTag = post.trim();
             return dataHashTag.split('#' + tag)[1];
         }
-    }
-
-    public openPost(data?: any, index?: number) {
-        this.router.navigateByUrl('/post/' + data._id);
     }
 
     public TooltipClose($event) {

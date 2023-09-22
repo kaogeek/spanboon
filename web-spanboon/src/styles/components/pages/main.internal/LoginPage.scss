@@ -69,7 +69,8 @@
           border-radius: 25px;
           @include font-size-10($font-content-light);
           box-shadow: 0px 1px 9px 0 #00000020;
-          transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+          transition: border-color 0.15s ease-in-out,
+            box-shadow 0.15s ease-in-out;
           margin-bottom: 10pt;
         }
       }
@@ -135,6 +136,21 @@
           color: $brandcolor2;
           @include font-size-9($font-head-500);
           @include pointer();
+
+          &:hover {
+            color: rgba($brandcolor2, 0.95);
+          }
+        }
+      }
+
+      > .support {
+        text-align: center;
+        font-weight: 300;
+        padding-top: 10px;
+
+        > span {
+          @include pointer();
+          @include font-size-9($font-content-light);
 
           &:hover {
             color: rgba($brandcolor2, 0.95);
