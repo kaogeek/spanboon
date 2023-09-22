@@ -103,10 +103,9 @@ export const mail = {
 };
 
 export const mail2 = {
-    SERVICE: getOsEnv('MAIL_DRIVER2'),
-    HOST: getOsEnv('MAIL_HOST2'),
-    PORT: getOsEnv('MAIL_PORT2'),
-    SECURE: getOsEnv('MAIL_SECURE2'),
+    HOST: getOsEnv('MAIL_HOST'),
+    PORT: getOsEnv('MAIL_PORT'),
+    SECURE: getOsEnv('MAIL_SECURE'),
     FROM: getOsEnv('MAIL_FROM2'),
     AUTH: {
         user: getOsEnv('MAIL_USERNAME2'),

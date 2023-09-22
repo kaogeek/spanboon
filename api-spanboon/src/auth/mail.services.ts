@@ -197,9 +197,9 @@ export class MAILService {
         const emailData = undefined;
         const transporter = nodemailer.createTransport(smtpTransport({
             pool: true,
-            host: mail2.HOST,
-            port: mail2.PORT,
-            secure: mail2.SECURE,
+            host: mail.HOST,
+            port: mail.PORT,
+            secure: mail.SECURE,
             auth: {
                 user: mail2.AUTH.user,
                 pass: mail2.AUTH.pass,
@@ -210,7 +210,7 @@ export class MAILService {
                 console.log(err);
             } else {
                 const mailOptions = {
-                    from: '"' + process.env.MAIL_FROM_NAME + '" <' + mail.FROM + '>',
+                    from: '"' + process.env.MAIL_FROM2 + '" <' + mail.FROM + '>',
                     to: email,
                     subject: Subject,
                     html: data,
