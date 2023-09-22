@@ -1234,7 +1234,7 @@ export class MainPageController {
             } else {
                 if (historyRows !== null && historyRows !== undefined && historyRows > 0) {
                     for (const history of histories) {
-                        searchResults.push({ historyId: history._id, value: history.keyword, label: history.keyword, type: history.resultType });
+                        searchResults.push({ historyId: history._id, value: history.keyword, label: history.keyword, type: history.resultType, historyIds: history.resultId, });
                         if (history.resultType === SEARCH_TYPE.PAGE) {
                             pageResultStmt.push(new ObjectID(history.resultId));
                         } else if (history.resultType === SEARCH_TYPE.USER) {
@@ -1731,7 +1731,6 @@ export class MainPageController {
                             },
                             { $project: { email: 0 } }
                         ],
-                        
                     },
                 },
                 {
