@@ -8,6 +8,7 @@ import ejs from 'ejs';
 import nodemailer from 'nodemailer';
 import smtpTransport from 'nodemailer-smtp-transport';
 import { mail } from '../env';
+import { mail2 } from '../env';
 
 export class MAILService {
     // for add customer API
@@ -110,8 +111,37 @@ export class MAILService {
                     };
                     transporter.sendMail(mailOptions, (error, info) => {
                         if (error) {
-                            reject(error);
-                            console.log(error);
+                            const transporter2 = nodemailer.createTransport(smtpTransport({
+                                pool: true,
+                                host: mail2.HOST,
+                                port: mail2.PORT,
+                                secure: mail2.SECURE,
+                                auth: {
+                                    user: mail2.AUTH.user,
+                                    pass: mail2.AUTH.pass,
+                                },
+                            }));
+                            ejs.renderFile('./views/emailTemplate.ejs', { emailContent, emailData }, (err2, data2) => {
+                                if (err2) {
+                                    console.log(err2);
+                                } else {
+                                    const mailOptions2 = {
+                                        from: '"' + process.env.MAIL_FROM_NAME2 + '" <' + mail2.FROM + '>',
+                                        to: email,
+                                        subject: Subject,
+                                        html: data2,
+                                    };
+                                    transporter2.sendMail(mailOptions2, (error2, info2) => {
+                                        if (error2) {
+                                            reject(error2);
+                                            console.log(error2);
+                                        } else {
+                                            console.log('Email sent: ' + info2.response);
+                                            resolve(info2);
+                                        }
+                                    });
+                                }
+                            });
                         } else {
                             console.log('Email sent: ' + info.response);
                             resolve(info);
