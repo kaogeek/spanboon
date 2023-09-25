@@ -470,7 +470,7 @@ export class HeaderSearch extends AbstractPage implements OnInit {
       }
     } else {
       isPass = data.type;
-      dataList = data.value;
+      dataList = data.type === 'HASHTAG' ? data.label : data.value;
       result = {
         resultType: data.type,
         resultId: data.value,
