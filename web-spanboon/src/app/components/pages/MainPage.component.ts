@@ -16,6 +16,12 @@ import { UserAccessFacade } from '../../services/facade/UserAccessFacade.service
 import { filter } from 'rxjs/internal/operators/filter';
 import { DialogPost } from '../shares/dialog/DialogPost.component';
 import { DialogPoliciesAndTerms } from '../shares/dialog/DialogPoliciesAndTerms.component';
+import {
+  getSupportedInputTypes,
+  Platform,
+  supportsPassiveEventListeners,
+  supportsScrollBehavior,
+} from '@angular/cdk/platform';
 
 const PAGE_USER: string = 'pageUser';
 declare var $: any;
@@ -26,6 +32,9 @@ const PAGE_NAME: string = '';
   templateUrl: './MainPage.component.html',
 })
 export class MainPage extends AbstractPage implements OnInit {
+  supportedInputTypes = Array.from(getSupportedInputTypes()).join(', ');
+  supportsPassiveEventListeners = supportsPassiveEventListeners();
+  supportsScrollBehavior = supportsScrollBehavior();
 
   public static readonly PAGE_NAME: string = PAGE_NAME;
 
@@ -56,7 +65,14 @@ export class MainPage extends AbstractPage implements OnInit {
 
   @ViewChild("mainpage", { static: true }) mainpage: ElementRef;
 
-  constructor(observManager: ObservableManager, router: Router, private route: ActivatedRoute, routeActivated: ActivatedRoute, authenManager: AuthenManager, dialog: MatDialog, userAccessFacade: UserAccessFacade) {
+  constructor(observManager: ObservableManager,
+    router: Router,
+    private route: ActivatedRoute,
+    routeActivated: ActivatedRoute,
+    authenManager: AuthenManager,
+    dialog: MatDialog,
+    userAccessFacade: UserAccessFacade,
+    public platform: Platform) {
     super(PAGE_NAME, authenManager, dialog, router);
     this.observManager = observManager;
     this.authenManager = authenManager;
@@ -85,6 +101,12 @@ export class MainPage extends AbstractPage implements OnInit {
 
     this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(async (event: NavigationEnd) => {
       if (event instanceof NavigationEnd) {
+        let mobileDevice = this.isMobileDevice();
+        if (mobileDevice) {
+          if (this.platform.IOS) {
+            this.router.navigateByUrl('/.well-known/apple-app-site-association');
+          }
+        }
         this.hidebar = this.authenManager.getHidebar();
         const url: string = decodeURI(this.router.url);
         const path = url.split('/')[1];
@@ -202,6 +224,17 @@ export class MainPage extends AbstractPage implements OnInit {
 
   public isShowFooter(): boolean {
     return !this.router.url.includes('profile') && !this.router.url.includes('page');
+  }
+
+  public isMobileDevice(): boolean {
+    let isMobile;
+    if (this.platform.IOS || this.platform.ANDROID) {
+      isMobile = true;
+    } else {
+      isMobile = false;
+    }
+
+    return isMobile;
   }
 
   public scrollTop(event?) {
