@@ -27,7 +27,9 @@ export class AppleAppSite extends AbstractPage implements OnInit {
         this.router = router;
         this.authenManager = authenManager;
         this.dialog = dialog;
+    }
 
+    ngOnInit(): void {
         const json = this.data.default;
         const newFingerprints = environment.sha256_cert_fingerprints;
 
@@ -36,9 +38,6 @@ export class AppleAppSite extends AbstractPage implements OnInit {
             window.open(environment.apple_app_link);
             this.router.navigateByUrl('/home');
         }
-    }
-
-    ngOnInit(): void {
     }
 
     isPageDirty(): boolean {

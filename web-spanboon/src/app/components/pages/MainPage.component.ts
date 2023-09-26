@@ -101,12 +101,6 @@ export class MainPage extends AbstractPage implements OnInit {
 
     this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(async (event: NavigationEnd) => {
       if (event instanceof NavigationEnd) {
-        let mobileDevice = this.isMobileDevice();
-        if (mobileDevice) {
-          if (this.platform.IOS) {
-            this.router.navigateByUrl('/.well-known/apple-app-site-association');
-          }
-        }
         this.hidebar = this.authenManager.getHidebar();
         const url: string = decodeURI(this.router.url);
         const path = url.split('/')[1];
@@ -157,6 +151,19 @@ export class MainPage extends AbstractPage implements OnInit {
 
   public ngOnInit(): void {
     const isLogin: boolean = this.isLogin();
+
+    // const url: string = decodeURI(this.router.url);
+    // const path = url.split('/')[1];
+    // console.log("url", url)
+    // console.log("path", path)
+    // let mobileDevice = this.isMobileDevice();
+    // if (mobileDevice && path === "home") {
+    //   if (this.platform.ANDROID) {
+    //     setTimeout(() => {
+    //       this.router.navigateByUrl('/.well-known/apple-app-site-association');
+    //     }, 8000);
+    //   }
+    // }
 
     // if (isLogin) {
     //   this.searchAccessPage();
