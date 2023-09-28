@@ -173,7 +173,7 @@ export class MainPageController {
         if (toDate) {
             const checkSnapshot = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: toDate });
             if (checkSnapshot !== undefined && checkSnapshot !== null) {
-                const successResponseS = ResponseUtil.getSuccessResponse('Successfully Main Page Data', checkSnapshot.data);
+                const successResponseS = ResponseUtil.getSuccessResponse('Successfully Main Page Data', checkSnapshot);
                 return res.status(200).send(successResponseS);
             }
         }
@@ -640,13 +640,43 @@ export class MainPageController {
             return res.status(400).send(errorResponse);
         }
     }
+
+    // API main page for mobile 
+    @Get('/content/mobile')
+    public async getContentMobile(@Body({ validate: true }) filter: SearchFilter, @Res() res: any, @Req() req: any): Promise<any> {
+        const limit: number = filter.limit;
+        const offset: number = filter.offset;
+        let assetTodayDate = DEFAULT_TODAY_DATETIME_GAP;
+
+        console.log('filter',filter);
+        const filterDate:any = filter.whereConditions;
+        let convert = undefined;
+        const assetTodayDateGap = await this.configService.getConfig(TODAY_DATETIME_GAP);
+        console.log('filterDate', filterDate);
+        if (assetTodayDateGap) {
+            assetTodayDate = parseInt(assetTodayDateGap.value, 10);
+        }
+        const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), assetTodayDate);
+
+        const checkCreate = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: monthRange[1] });
+        if (checkCreate !== undefined && checkCreate !== null) {
+            if (typeof (JSON.stringify(checkCreate)) === 'string') {
+                const result: any = {};
+                const stringObj = JSON.stringify(checkCreate);
+                convert = JSON.parse(stringObj);
+                return convert;
+            }
+        }
+
+    }
+
     @Post('/hot')
     public async hotnews(@Res() res: any, @Req() req: any): Promise<any> {
         const newsObjectId = req.body.newsObj;
         const objIds = new ObjectID(newsObjectId);
         if (objIds) {
             // check objIds is existing in the database.
-            const newsObject:any = await this.kaokaiTodaySnapShotService.findOne({ _id: objIds });
+            const newsObject: any = await this.kaokaiTodaySnapShotService.findOne({ _id: objIds });
             if (newsObject) {
                 const query = { _id: newsObject.id };
                 const newValue = { $set: { count: newsObject.count + 1 } };

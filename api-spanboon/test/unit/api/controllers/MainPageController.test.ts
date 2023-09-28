@@ -36,5 +36,5 @@ describe('Main hot update Snapshot', () => {
         };
         const response = await request('http://localhost:9000/api').post('/main/hot').send(requestBody);
         expect(response.statusCode).toBe(200);
-    })
+    }); 
 });
