@@ -717,6 +717,48 @@ export class MainPageController {
         const successResponse = ResponseUtil.getSuccessResponse('Successfully Main Page Data Mobile', content);
         return res.status(200).send(successResponse);
     }
+    // API main page for mobile the bottom content
+    @Get('/content/mobile/bottom')
+    public async getBottomContentMobile(@Body({ validate: true }) filter: SearchFilter, @Res() res: any, @Req() req: any): Promise<any> {
+        let limit: number = 10;
+        let offset: number = 0;
+
+        if (filter.limit !== undefined) {
+            limit = filter.limit;
+        }
+
+        if (filter.offset !== undefined) {
+            offset = filter.offset;
+        }
+        const kaikaoSnapShot = await this.kaokaiTodaySnapShotService.aggregate(
+            [
+                {
+                    $sort: {
+                        count: -1
+                    }
+                },
+                {
+                    $skip: offset
+                },
+                {
+                    $limit: limit
+                }
+            ]
+        );
+        if (kaikaoSnapShot.length === 0) {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot find KaokaiTodaySnapShot.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+        const content = await this.parseKaokaiTodaySnapshot(kaikaoSnapShot);
+
+        if (content.length === 0) {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot find Content.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+        const successResponse = ResponseUtil.getSuccessResponse('Successfully Main Page Data Mobile for bottom content.', content);
+        return res.status(200).send(successResponse);
+    }
+
 
     @Post('/hot')
     public async hotnews(@Res() res: any, @Req() req: any): Promise<any> {

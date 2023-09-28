@@ -49,6 +49,7 @@ describe('Main page home for the mobile', () => {
             .expect(400)
     });
 
+
     it('Should return a 200 status code if the date filter is only endDate.', async done => {
         const requestBody = {
             "limit": 10,
@@ -61,9 +62,9 @@ describe('Main page home for the mobile', () => {
             .get('/main/content/mobile')
             .send(requestBody)
             .expect(200)
-            .end(function(err,res){
-                if(err) return done(err)
-                expect(res.body).toMatchObject({'message':'Successfully Main Page Data Mobile'})
+            .end(function (err, res) {
+                if (err) return done(err)
+                expect(res.body).toMatchObject({ 'message': 'Successfully Main Page Data Mobile' })
                 done()
             })
     });
@@ -80,10 +81,46 @@ describe('Main page home for the mobile', () => {
             .get('/main/content/mobile')
             .send(requestBody)
             .expect(200)
-            .end(function(err,res){
-                if(err) return done(err)
-                expect(res.body).toMatchObject({'message':'Successfully Main Page Data Mobile'})
+            .end(function (err, res) {
+                if (err) return done(err)
+                expect(res.body).toMatchObject({ 'message': 'Successfully Main Page Data Mobile' })
                 done()
-            })
+            });
+    });
+});
+
+describe('Main page home for mobile the bottom content', () => {
+    it('Should return a 200 status code if the limit and 0.', async done => {
+        const requestBody = {
+            "limit": 0,
+            "offset": 0
+        };
+        request(process.env.APP_SCHEMA + '://' + process.env.APP_HOST + process.env.APP_PORT + process.env.APP_ROUTE_PREFIX)
+            .get('/main/content/mobile/bottom')
+            .send(requestBody)
+            .expect(200)
+            done()
+    });
+
+    it('Should return a 200 status code if the limit empty.', async done => {
+        const requestBody = {
+
+        };
+        request(process.env.APP_SCHEMA + '://' + process.env.APP_HOST + process.env.APP_PORT + process.env.APP_ROUTE_PREFIX)
+            .get('/main/content/mobile/bottom')
+            .send(requestBody)
+            .expect(200)
+            done()    
+    });
+    it('Should return a 200 status code with the normal case.', async done => {
+        const requestBody = {
+            "limit": 2,
+            "offset": 10
+        };
+        request(process.env.APP_SCHEMA + '://' + process.env.APP_HOST + process.env.APP_PORT + process.env.APP_ROUTE_PREFIX)
+            .get('/main/content/mobile/bottom')
+            .send(requestBody)
+            .expect(200)
+            done()    
     });
 });
