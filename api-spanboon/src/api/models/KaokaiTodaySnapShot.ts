@@ -23,6 +23,10 @@ export class KaokaiTodaySnapShot extends BaseModel {
 
     @Column({ name: 'userId'})
     public userId:ObjectID;
+
+    @Column({ name: 'count'})
+    public count: number;
+    
     @BeforeInsert()
     public createDetails(): any {
         this.createdDate = moment().toDate();
