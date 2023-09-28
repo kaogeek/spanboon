@@ -129,8 +129,6 @@ export class MainPageController {
     @Get('/content/v3')
     public async getContentListV2(@QueryParam('offset') offset: number, @QueryParam('section') section: string, @QueryParam('date') date: any, @Res() res: any, @Req() req: any): Promise<any> {
         const jobscheduler = req.headers.jobscheduler;
-        console.log('jobscheduler', jobscheduler);
-        console.log('date', typeof (date));
         const dateFormat = new Date(date);
         const dateReal = dateFormat.setDate(dateFormat.getDate() + 1);
         const toDate = new Date(dateReal);
@@ -645,8 +643,16 @@ export class MainPageController {
     // API main page for mobile 
     @Get('/content/mobile')
     public async getContentMobile(@Body({ validate: true }) filter: SearchFilter, @Res() res: any, @Req() req: any): Promise<any> {
-        const limit: number = filter.limit;
-        const offset: number = filter.offset;
+        let limit: number = 10;
+        let offset: number = 0;
+
+        if (filter.limit !== undefined) {
+            limit = filter.limit;
+        }
+
+        if (filter.offset !== undefined) {
+            offset = filter.offset;
+        }
 
         const filterDate: any = filter.whereConditions;
 
@@ -3960,7 +3966,7 @@ export class MainPageController {
         }
         return image;
     }
-    
+
     // for customer range days
 
     private async parseKaokaiTodayRangeDays(data: any): Promise<any> {
@@ -3986,7 +3992,7 @@ export class MainPageController {
         }
         return result;
     }
-    
+
     // for customer range days
 
     private async parseKaokaiTodayPictureRange(data: any): Promise<any> {
@@ -3994,7 +4000,7 @@ export class MainPageController {
         for (let i = 0; i < data.data.pageRoundRobin.contents.length; i++) {
             image = data.data.pageRoundRobin.contents[i].coverPageSignUrl ? data.data.pageRoundRobin.contents[i].coverPageSignUrl : 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png';
         }
-        if (image === undefined){
+        if (image === undefined) {
             for (let i = 0; i < data.data.majorTrend.contents.length; i++) {
                 image = data.data.majorTrend.contents[i].coverPageSignUrl ? data.data.majorTrend.contents[i].coverPageSignUrl : 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png';
             }
