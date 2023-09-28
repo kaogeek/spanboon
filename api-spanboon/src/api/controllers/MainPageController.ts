@@ -643,8 +643,8 @@ export class MainPageController {
     // API main page for mobile 
     @Get('/content/mobile')
     public async getContentMobile(@Body({ validate: true }) filter: SearchFilter, @Res() res: any, @Req() req: any): Promise<any> {
-        let limit: number = 10;
-        let offset: number = 0;
+        let limit = 10;
+        let offset = 0;
 
         if (filter.limit !== undefined) {
             limit = filter.limit;
@@ -720,8 +720,8 @@ export class MainPageController {
     // API main page for mobile the bottom content
     @Get('/content/mobile/bottom')
     public async getBottomContentMobile(@Body({ validate: true }) filter: SearchFilter, @Res() res: any, @Req() req: any): Promise<any> {
-        let limit: number = 10;
-        let offset: number = 0;
+        let limit = 10;
+        let offset = 0;
 
         if (filter.limit !== undefined) {
             limit = filter.limit;
@@ -758,7 +758,6 @@ export class MainPageController {
         const successResponse = ResponseUtil.getSuccessResponse('Successfully Main Page Data Mobile for bottom content.', content);
         return res.status(200).send(successResponse);
     }
-
 
     @Post('/hot')
     public async hotnews(@Res() res: any, @Req() req: any): Promise<any> {
