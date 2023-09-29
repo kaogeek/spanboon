@@ -23,18 +23,104 @@ describe('Main hot update Snapshot', () => {
     });
 
     it('Should return a 400 status code if objIds empty.', async () => {
-        const requestBody = {
-            'newsObj': ''
-        };
+        const requestBody = {};
         const response = await request('http://localhost:9000/api').post('/main/hot').send(requestBody);
-        expect(response.statusCode).toBe(404);
+        expect(response.statusCode).toBe(400);
     })
 
-    it('Should return a 200 status code if everything just fine.', async () =>{
+    it('Should return a 200 status code if everything just fine.', async () => {
         const requestBody = {
             'newsObj': '6515085df542d8dbd70defb0',
         };
         const response = await request('http://localhost:9000/api').post('/main/hot').send(requestBody);
         expect(response.statusCode).toBe(200);
-    }); 
+    });
+});
+
+describe('Main page home for the mobile', () => {
+    it('Should return a 400 status code if the date filter empty.', async () => {
+        const requestBody = {
+            "whereConditions": {
+            }
+        };
+        request('http://localhost:9000/api')
+            .get('/main/content/mobile')
+            .send(requestBody)
+            .expect(400)
+    });
+
+
+    it('Should return a 200 status code if the date filter is only endDate.', async done => {
+        const requestBody = {
+            "limit": 10,
+            "offset": 0,
+            "whereConditions": {
+                'endDate': '1695834000000'
+            }
+        };
+        request('http://localhost:9000/api')
+            .get('/main/content/mobile')
+            .send(requestBody)
+            .expect(200)
+            .end(function (err, res) {
+                if (err) return done(err)
+                expect(res.body).toMatchObject({ 'message': 'Successfully Main Page Data Mobile' })
+                done()
+            })
+    });
+    it('Should return a 200 status code if the date filter are both endDate and startDate.', async done => {
+        const requestBody = {
+            "limit": 10,
+            "offset": 0,
+            "whereConditions": {
+                'startDate': '1693501200000',
+                'endDate': '1695834000000'
+            }
+        };
+        request('http://localhost:9000/api')
+            .get('/main/content/mobile')
+            .send(requestBody)
+            .expect(200)
+            .end(function (err, res) {
+                if (err) return done(err)
+                expect(res.body).toMatchObject({ 'message': 'Successfully Main Page Data Mobile' })
+                done()
+            });
+    });
+});
+
+describe('Main page home for mobile the bottom content', () => {
+    it('Should return a 200 status code if the limit and 0.', async done => {
+        const requestBody = {
+            "limit": 0,
+            "offset": 0
+        };
+        request(process.env.APP_SCHEMA + '://' + process.env.APP_HOST + process.env.APP_PORT + process.env.APP_ROUTE_PREFIX)
+            .get('/main/content/mobile/bottom')
+            .send(requestBody)
+            .expect(200)
+            done()
+    });
+
+    it('Should return a 200 status code if the limit empty.', async done => {
+        const requestBody = {
+
+        };
+        request(process.env.APP_SCHEMA + '://' + process.env.APP_HOST + process.env.APP_PORT + process.env.APP_ROUTE_PREFIX)
+            .get('/main/content/mobile/bottom')
+            .send(requestBody)
+            .expect(200)
+            done()    
+    });
+    it('Should return a 200 status code with the normal case.', async done => {
+        const requestBody = {
+            "limit": 2,
+            "offset": 10
+        };
+        request(process.env.APP_SCHEMA + '://' + process.env.APP_HOST + process.env.APP_PORT + process.env.APP_ROUTE_PREFIX)
+            .get('/main/content/mobile/bottom')
+            .send(requestBody)
+            .expect(200)
+            done()    
+    });
 });

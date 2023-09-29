@@ -129,7 +129,6 @@ export class MainPageController {
     @Get('/content/v3')
     public async getContentListV2(@QueryParam('offset') offset: number, @QueryParam('section') section: string, @QueryParam('date') date: any, @Res() res: any, @Req() req: any): Promise<any> {
         const jobscheduler = req.headers.jobscheduler;
-        console.log('jobscheduler', jobscheduler);
         const dateFormat = new Date(date);
         const dateReal = dateFormat.setDate(dateFormat.getDate() + 1);
         const toDate = new Date(dateReal);
@@ -644,30 +643,120 @@ export class MainPageController {
     // API main page for mobile 
     @Get('/content/mobile')
     public async getContentMobile(@Body({ validate: true }) filter: SearchFilter, @Res() res: any, @Req() req: any): Promise<any> {
-        const limit: number = filter.limit;
-        const offset: number = filter.offset;
-        let assetTodayDate = DEFAULT_TODAY_DATETIME_GAP;
+        let limit = 10;
+        let offset = 0;
 
-        console.log('filter',filter);
-        const filterDate:any = filter.whereConditions;
-        let convert = undefined;
-        const assetTodayDateGap = await this.configService.getConfig(TODAY_DATETIME_GAP);
-        console.log('filterDate', filterDate);
-        if (assetTodayDateGap) {
-            assetTodayDate = parseInt(assetTodayDateGap.value, 10);
+        if (filter.limit !== undefined) {
+            limit = filter.limit;
         }
-        const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), assetTodayDate);
 
-        const checkCreate = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: monthRange[1] });
-        if (checkCreate !== undefined && checkCreate !== null) {
-            if (typeof (JSON.stringify(checkCreate)) === 'string') {
-                const result: any = {};
-                const stringObj = JSON.stringify(checkCreate);
-                convert = JSON.parse(stringObj);
-                return convert;
+        if (filter.offset !== undefined) {
+            offset = filter.offset;
+        }
+
+        const filterDate: any = filter.whereConditions;
+
+        let starttoDate = undefined;
+        let endtoDate = undefined;
+        if (filterDate.startDate !== undefined && filterDate.startDate !== null) {
+            const startDate = new Date(parseInt(filterDate.startDate, 10));
+            const startdateReal = startDate.setDate(startDate.getDate() + 1);
+            starttoDate = new Date(startdateReal);
+        }
+        if (filterDate.endDate !== undefined && filterDate.endDate !== null) {
+            const endDate = new Date(parseInt(filterDate.endDate, 10));
+            const endDateReal = endDate.setDate(endDate.getDate() + 1);
+            endtoDate = new Date(endDateReal);
+        }
+        let kaikaoSnapShot = undefined;
+        let content = undefined;
+        if (endtoDate !== undefined && starttoDate === undefined) {
+            kaikaoSnapShot = await this.kaokaiTodaySnapShotService.aggregate(
+                [
+                    {
+                        $match: {
+                            endDateTime: endtoDate
+                        }
+                    },
+                    {
+                        $skip: offset
+                    },
+                    {
+                        $limit: limit
+                    }
+                ]
+            );
+            if (kaikaoSnapShot.length > 0) {
+                content = await this.parseKaokaiTodaySnapshot(kaikaoSnapShot);
             }
         }
+        if (starttoDate !== undefined && endtoDate !== undefined) {
+            kaikaoSnapShot = await this.kaokaiTodaySnapShotService.aggregate(
+                [
+                    {
+                        $match: {
+                            endDateTime: { $gte: starttoDate, $lte: endtoDate }
+                        }
+                    },
+                    {
+                        $skip: offset
+                    },
+                    {
+                        $limit: limit
+                    }
+                ]
+            );
+            if (kaikaoSnapShot.length > 0) {
+                content = await this.parseKaokaiTodayRangeDays(kaikaoSnapShot);
+            }
+        }
+        if (content.length === 0) {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot find KaokaiTodaySnapShot.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+        const successResponse = ResponseUtil.getSuccessResponse('Successfully Main Page Data Mobile', content);
+        return res.status(200).send(successResponse);
+    }
+    // API main page for mobile the bottom content
+    @Get('/content/mobile/bottom')
+    public async getBottomContentMobile(@Body({ validate: true }) filter: SearchFilter, @Res() res: any, @Req() req: any): Promise<any> {
+        let limit = 10;
+        let offset = 0;
 
+        if (filter.limit !== undefined) {
+            limit = filter.limit;
+        }
+
+        if (filter.offset !== undefined) {
+            offset = filter.offset;
+        }
+        const kaikaoSnapShot = await this.kaokaiTodaySnapShotService.aggregate(
+            [
+                {
+                    $sort: {
+                        count: -1
+                    }
+                },
+                {
+                    $skip: offset
+                },
+                {
+                    $limit: limit
+                }
+            ]
+        );
+        if (kaikaoSnapShot.length === 0) {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot find KaokaiTodaySnapShot.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+        const content = await this.parseKaokaiTodaySnapshot(kaikaoSnapShot);
+
+        if (content.length === 0) {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot find Content.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+        const successResponse = ResponseUtil.getSuccessResponse('Successfully Main Page Data Mobile for bottom content.', content);
+        return res.status(200).send(successResponse);
     }
 
     @Post('/hot')
@@ -3877,5 +3966,86 @@ export class MainPageController {
         }
 
         return userResult;
+    }
+    // for today 
+    private async parseKaokaiTodaySnapshot(data: any): Promise<any> {
+        const result: any = [];
+        let imageFilter = undefined;
+        for (const content of data) {
+            const thaiDate = content.endDateTime.getTime();
+            const oneDay = 24 * 60 * 60 * 1000; // one day in milliseconds
+            const timeStamp = new Date(content.endDateTime.getTime() - oneDay).toLocaleDateString('th-TH', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+            });
+
+            imageFilter = await this.parseKaokaiTodayPicture(content);
+            const payload = {
+                title: 'ก้าวไกลหน้าหนึ่ง',
+                image: imageFilter,
+                link: process.env.APP_HOME + `?date=${thaiDate}`,
+                titleBottom: 'ฉบับวันที่ ' + '' + timeStamp
+            };
+            result.push(payload);
+        }
+        return result;
+    }
+    // for today
+    private async parseKaokaiTodayPicture(data: any): Promise<any> {
+        let image = undefined;
+        for (let i = 0; i < data.data.pageRoundRobin.contents.length; i++) {
+            image = data.data.pageRoundRobin.contents[i].coverPageSignUrl ? data.data.pageRoundRobin.contents[i].coverPageSignUrl : 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png';
+            if (image !== undefined) {
+                break;
+            } else {
+                continue;
+            }
+        }
+        if (image === undefined) {
+            image = data.data.majorTrend.contents[0].coverPageSignUrl ? data.data.majorTrend.contents[0].coverPageSignUrl : 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png';
+        }
+        return image;
+    }
+
+    // for customer range days
+
+    private async parseKaokaiTodayRangeDays(data: any): Promise<any> {
+        const result: any = [];
+        let imageFilter = undefined;
+        for (const content of data) {
+            const thaiDate = content.endDateTime.getTime();
+            const oneDay = 24 * 60 * 60 * 1000; // one day in milliseconds
+            const timeStamp = new Date(content.endDateTime.getTime() - oneDay).toLocaleDateString('th-TH', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+            });
+
+            imageFilter = await this.parseKaokaiTodayPictureRange(content);
+            const payload = {
+                title: 'ก้าวไกลหน้าหนึ่ง',
+                image: imageFilter,
+                link: process.env.APP_HOME + `?date=${thaiDate}`,
+                titleBottom: 'ฉบับวันที่ ' + '' + timeStamp
+            };
+            result.push(payload);
+        }
+        return result;
+    }
+
+    // for customer range days
+
+    private async parseKaokaiTodayPictureRange(data: any): Promise<any> {
+        let image = undefined;
+        for (let i = 0; i < data.data.pageRoundRobin.contents.length; i++) {
+            image = data.data.pageRoundRobin.contents[i].coverPageSignUrl ? data.data.pageRoundRobin.contents[i].coverPageSignUrl : 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png';
+        }
+        if (image === undefined) {
+            for (let i = 0; i < data.data.majorTrend.contents.length; i++) {
+                image = data.data.majorTrend.contents[i].coverPageSignUrl ? data.data.majorTrend.contents[i].coverPageSignUrl : 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png';
+            }
+        }
+        return image;
     }
 }
