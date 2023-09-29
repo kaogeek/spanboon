@@ -6,7 +6,6 @@
  */
 
 import { Application } from 'express';
-import express from 'express';
 import spdy from 'spdy';
 import * as fs from 'fs';
 import * as bodyParser from 'body-parser';
@@ -19,10 +18,11 @@ import cors from 'cors';
 import compression from 'compression';
 import { rateLimiterMiddleware } from '../api/middlewares/RateLimitPersecMiddleware';
 import requestIp from 'request-ip';
+import createServer from '../utils/server';
 export const expressLoader: MicroframeworkLoader = async (settings: MicroframeworkSettings | undefined) => {
     if (settings) {
         const connection = settings.getData('connection');
-        const app = express();
+        const app = createServer();
         app.use(cors());
         app.use(requestIp.mw());
         app.use(compression());

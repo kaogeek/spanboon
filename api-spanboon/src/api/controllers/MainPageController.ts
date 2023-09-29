@@ -173,7 +173,7 @@ export class MainPageController {
         if (toDate) {
             const checkSnapshot = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: toDate });
             if (checkSnapshot !== undefined && checkSnapshot !== null) {
-                const successResponseS = ResponseUtil.getSuccessResponse('Successfully Main Page Data', checkSnapshot.data);
+                const successResponseS = ResponseUtil.getSuccessResponse('Successfully Main Page Data', checkSnapshot);
                 return res.status(200).send(successResponseS);
             }
         }
@@ -637,6 +637,60 @@ export class MainPageController {
             return res.status(200).send(successResponse);
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Error cannot find the dashboard.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+
+    // API main page for mobile 
+    @Get('/content/mobile')
+    public async getContentMobile(@Body({ validate: true }) filter: SearchFilter, @Res() res: any, @Req() req: any): Promise<any> {
+        const limit: number = filter.limit;
+        const offset: number = filter.offset;
+        let assetTodayDate = DEFAULT_TODAY_DATETIME_GAP;
+
+        console.log('filter',filter);
+        const filterDate:any = filter.whereConditions;
+        let convert = undefined;
+        const assetTodayDateGap = await this.configService.getConfig(TODAY_DATETIME_GAP);
+        console.log('filterDate', filterDate);
+        if (assetTodayDateGap) {
+            assetTodayDate = parseInt(assetTodayDateGap.value, 10);
+        }
+        const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), assetTodayDate);
+
+        const checkCreate = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: monthRange[1] });
+        if (checkCreate !== undefined && checkCreate !== null) {
+            if (typeof (JSON.stringify(checkCreate)) === 'string') {
+                const result: any = {};
+                const stringObj = JSON.stringify(checkCreate);
+                convert = JSON.parse(stringObj);
+                return convert;
+            }
+        }
+
+    }
+
+    @Post('/hot')
+    public async hotnews(@Res() res: any, @Req() req: any): Promise<any> {
+        const newsObjectId = req.body.newsObj;
+        const objIds = new ObjectID(newsObjectId);
+        if (objIds) {
+            // check objIds is existing in the database.
+            const newsObject: any = await this.kaokaiTodaySnapShotService.findOne({ _id: objIds });
+            if (newsObject) {
+                const query = { _id: newsObject.id };
+                const newValue = { $set: { count: newsObject.count + 1 } };
+                const update = await this.kaokaiTodaySnapShotService.update(query, newValue);
+                if (update) {
+                    const successResponse = ResponseUtil.getSuccessResponse('Update hot news count is successfully.', undefined);
+                    return res.status(200).send(successResponse);
+                }
+            } else {
+                const errorResponse = ResponseUtil.getErrorResponse('Cannot find newsObject in the database.', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot find newsObj id.', undefined);
             return res.status(400).send(errorResponse);
         }
     }
@@ -1234,8 +1288,7 @@ export class MainPageController {
             } else {
                 if (historyRows !== null && historyRows !== undefined && historyRows > 0) {
                     for (const history of histories) {
-                        // searchResults.push({ historyId: history._id, value: history.keyword, label: history.keyword, type: history.resultType, historyIds: history.resultId, });
-                        searchResults.push({ historyId: history._id, value: history.resultId, label: history.keyword, type: history.resultType });
+                        searchResults.push({ historyId: history._id, value: history.keyword, label: history.keyword, type: history.resultType });
                         if (history.resultType === SEARCH_TYPE.PAGE) {
                             pageResultStmt.push(new ObjectID(history.resultId));
                         } else if (history.resultType === SEARCH_TYPE.USER) {
@@ -1732,6 +1785,7 @@ export class MainPageController {
                             },
                             { $project: { email: 0 } }
                         ],
+
                     },
                 },
                 {
@@ -2197,6 +2251,7 @@ export class MainPageController {
             result.data = data;
             result.startDateTime = startDateRange;
             result.endDateTime = endDateTimeToday;
+            result.count = 0;
             const snapshot = await this.kaokaiTodaySnapShotService.create(result);
             if (String(switchSendEm) === 'true' && snapshot) {
                 let user = undefined;

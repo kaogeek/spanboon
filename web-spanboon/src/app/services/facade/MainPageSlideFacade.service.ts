@@ -44,6 +44,24 @@ export class MainPageSlideFacade extends AbstractFacade {
         });
       }
       this.http.get(url, httpOptions).toPromise().then((response: any) => {
+        resolve(response);
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
+  }
+
+  public snapshot(dataId: any, date: any): Promise<any[]> {
+    return new Promise((resolve, reject) => {
+      let url: string = this.baseURL + '/main/hot';
+      let body: any = {
+        newsObj: dataId,
+        createdDate: date
+      };
+
+      let options = this.authMgr.getDefaultOptions();
+
+      this.http.post(url, body, options).toPromise().then((response: any) => {
         resolve(response.data);
       }).catch((error: any) => {
         reject(error);

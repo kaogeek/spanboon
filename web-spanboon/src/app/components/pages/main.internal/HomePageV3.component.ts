@@ -39,6 +39,8 @@ declare var $: any;
 
 const PAGE_NAME: string = 'home';
 const ANNOUNCE_DEFAULT: string = 'ต้องก้าวไกลให้ไทยก้าวหน้า เปลี่ยนรัฐบาลไม่พอ ต้องเปลี่ยนประเทศ';
+const TIMESTAMP_SNAPSHOT: string = 'snapshotTimestamp';
+const SNAPSHOT_ID: string = 'listSnapshotId';
 
 @Component({
   selector: 'home-page-v3',
@@ -183,11 +185,11 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     let user = this.authenManager.getCurrentUser();
     this.userCloneDatas = JSON.parse(JSON.stringify(user));
     if (this.userCloneDatas !== undefined && this.userCloneDatas !== null) {
-      this.getMainPageModelV3(this.userCloneDatas.id);
       this.searchPageInUser(this.userCloneDatas.id);
+      this.getMainPageModelV3(this.userCloneDatas.id);
     } else {
-      this.getMainPageModelV3();
       this.searchPageInUser();
+      this.getMainPageModelV3();
     }
     if (this.isLogin()) {
       this._getReadPost();
@@ -228,39 +230,48 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     const year = date.getFullYear();
     let formattedDate = `${day}-${month}-${year}`;
     this.mainPageModelFacade.getMainPageModelV3(this.user, this.startDateLong).then((res) => {
-      this.model = res;
-      if (!!res.announcement) {
-        this.announcement = res.announcement;
-      }
-      if (!!res.linkAnnounceMent) {
-        this.linkAnnounce = res.linkAnnounceMent;
-      }
-      const dateFormat = new Date(date);
-      const dateReal = dateFormat.setDate(dateFormat.getDate());
-      this.dateValues = new Date(dateReal).toISOString(); // convert to ISO string
-      localStorage.setItem('datetime', JSON.stringify(this.dateValues));
-      this.isLoading = false;
-    }).catch((err) => {
-      const thaiDay = new Date(this.queryParamsUrl).toLocaleDateString('th-TH', {
-        day: 'numeric',
-      });
-      const thaiMonth = new Date(this.queryParamsUrl).toLocaleDateString('th-TH', {
-        month: 'long',
-      });
-      const thaiYear = new Date(this.queryParamsUrl).toLocaleDateString('th-TH', {
-        year: 'numeric',
-      });
-      const dateNow = thaiDay + ' ' + thaiMonth + ' ' + thaiYear;
-      this.isLoading = false;
-      this.dateValues = new Date();
-      this.dialog.open(DialogAlert, {
-        disableClose: true,
-        data: {
-          text: 'ไม่พบหน้าหนึ่งฉบับวันที่ ' + dateNow,
-          bottomText1: 'ตกลง',
-          btDisplay1: "none"
+      if (res) {
+        this.model = res.data.data;
+        if (!!res.announcement) {
+          this.announcement = res.announcement;
         }
-      });
+        if (!!res.linkAnnounceMent) {
+          this.linkAnnounce = res.linkAnnounceMent;
+        }
+        this._engageSnapshot(res.data.id ? res.data.id : res.data._id ? res.data._id : res._id ? res._id : res.id);
+        const dateFormat = new Date(date);
+        const dateReal = dateFormat.setDate(dateFormat.getDate());
+        this.dateValues = new Date(dateReal).toISOString(); // convert to ISO string
+        this.isLoading = false;
+      }
+    }).catch((err) => {
+      if (err) {
+        const thaiDay = new Date(this.queryParamsUrl).toLocaleDateString('th-TH', {
+          day: 'numeric',
+        });
+        const thaiMonth = new Date(this.queryParamsUrl).toLocaleDateString('th-TH', {
+          month: 'long',
+        });
+        const thaiYear = new Date(this.queryParamsUrl).toLocaleDateString('th-TH', {
+          year: 'numeric',
+        });
+        const dateNow = thaiDay + ' ' + thaiMonth + ' ' + thaiYear;
+        this.isLoading = false;
+        this.dateValues = new Date();
+        let dialog = this.dialog.open(DialogAlert, {
+          disableClose: true,
+          data: {
+            text: 'ไม่พบหน้าหนึ่งฉบับวันที่ ' + dateNow,
+            bottomText1: 'ตกลง',
+            btDisplay1: "none"
+          }
+        });
+        dialog.afterClosed().subscribe((res) => {
+          if (res) {
+            this.router.navigate(['/home']);
+          }
+        });
+      }
       localStorage.removeItem('datetime')
     });
     if (!!this.paramToken && !!this.paramUserId && !!this.paramMode) {
@@ -406,65 +417,76 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     }
     if (!!this.queryParamsUrl) {
       this.mainPageModelFacade.getMainPageModelV3(userId, (this.queryParamsUrl ? this.queryParamsUrl : null)).then((res) => {
-        this.dateValues = new Date(this.queryParamsUrl).toISOString();
-        this.model = res;
-        if (!!res.announcement) {
-          this.announcement = res.announcement;
-        }
-        if (!!res.linkAnnounceMent) {
-          this.linkAnnounce = res.linkAnnounceMent;
-        }
-        if (!this.isConfirmTosUa) {
-          this._selectProvince();
-        }
-        for (let index = 0; index < this.model.postSectionModel.contents.length; index++) {
-          if (this.model.postSectionModel.contents[index].post.type === "FULFILLMENT") {
-            this.model.postSectionModel.contents.splice(index, 1);
-          } else if (this.model.postSectionModel.contents[index].coverPageUrl === undefined) {
-            this.model.postSectionModel.contents.splice(index, 1);
+        if (res) {
+          this.dateValues = new Date(this.queryParamsUrl).toISOString();
+          this.model = res.data.data;
+          if (!!res.announcement) {
+            this.announcement = res.announcement;
+          }
+          if (!!res.linkAnnounceMent) {
+            this.linkAnnounce = res.linkAnnounceMent;
+          }
+          if (!this.isConfirmTosUa) {
+            this._selectProvince();
+          }
+          this._engageSnapshot(res.data.id ? res.data.id : res.data._id ? res.data._id : res._id ? res._id : res.id);
+          for (let index = 0; index < this.model.postSectionModel.contents.length; index++) {
+            if (this.model.postSectionModel.contents[index].post.type === "FULFILLMENT") {
+              this.model.postSectionModel.contents.splice(index, 1);
+            } else if (this.model.postSectionModel.contents[index].coverPageUrl === undefined) {
+              this.model.postSectionModel.contents.splice(index, 1);
+            }
           }
         }
       }).catch((err) => {
-        const thaiDay = new Date(this.queryParamsUrl).toLocaleDateString('th-TH', {
-          day: 'numeric',
-        });
-        const thaiMonth = new Date(this.queryParamsUrl).toLocaleDateString('th-TH', {
-          month: 'long',
-        });
-        const thaiYear = new Date(this.queryParamsUrl).toLocaleDateString('th-TH', {
-          year: 'numeric',
-        });
-        const dateNow = thaiDay + ' ' + thaiMonth + ' ' + thaiYear;
-        this.isLoading = false;
-        this.dateValues = new Date();
-        this.dialog.open(DialogAlert, {
-          disableClose: true,
-          data: {
-            text: 'ไม่พบหน้าหนึ่งฉบับวันที่',
-            text2: dateNow,
-            bottomText1: 'ตกลง',
-            btDisplay1: "none"
-          }
-        });
-        localStorage.removeItem('datetime')
-        this.router.navigate(['/home']);
-      })
+        if (err) {
+          const thaiDay = new Date(this.queryParamsUrl).toLocaleDateString('th-TH', {
+            day: 'numeric',
+          });
+          const thaiMonth = new Date(this.queryParamsUrl).toLocaleDateString('th-TH', {
+            month: 'long',
+          });
+          const thaiYear = new Date(this.queryParamsUrl).toLocaleDateString('th-TH', {
+            year: 'numeric',
+          });
+          const dateNow = thaiDay + ' ' + thaiMonth + ' ' + thaiYear;
+          this.isLoading = false;
+          this.dateValues = new Date();
+          let dialog = this.dialog.open(DialogAlert, {
+            disableClose: true,
+            data: {
+              text: 'ไม่พบหน้าหนึ่งฉบับวันที่',
+              text2: dateNow,
+              bottomText1: 'ตกลง',
+              btDisplay1: "none"
+            }
+          });
+          dialog.afterClosed().subscribe((res) => {
+            if (res) {
+              this.router.navigate(['/home']);
+            }
+          });
+          localStorage.removeItem('datetime')
+          this.router.navigate(['/home']);
+        }
+      });
     } else {
       if (!this.queryParamsUrl) {
         this.user = userId;
         this.isLoading = true;
         await this.mainPageModelFacade.getMainPageModelV3(userId, this.startDateLong).then((res) => {
           if (res) {
-            this.model = res.data ? res.data : res;
-            if (!!res.announcement || !!res.data.announcement) {
-              this.announcement = res.announcement ? res.announcement : res.data.announcement;
+            this.model = res.data.data ? res.data.data : res.data;
+            if (!!res.announcement || !!res.data.announcement || !!res.data.data.announcement) {
+              this.announcement = res.announcement ? res.announcement : res.data.announcement ? res.data.announcement : res.data.data.announcement;
             }
-            if (!!res.linkAnnounceMent || !!res.data.linkAnnounceMent) {
-              this.linkAnnounce = res.linkAnnounceMent ? res.linkAnnounceMent : res.data.linkAnnounceMent;
+            if (!!res.linkAnnounceMent || !!res.data.linkAnnounceMent || !!res.data.data.linkAnnounceMent) {
+              this.linkAnnounce = res.linkAnnounceMent ? res.linkAnnounceMent : res.data.linkAnnounceMent ? res.data.linkAnnounceMent : res.data.data.linkAnnounceMent;
             }
             if (!this.isConfirmTosUa) {
               this._selectProvince();
             }
+            this._engageSnapshot(res.data.id ? res.data.id : res.data._id ? res.data._id : res._id ? res._id : res.id);
             const dateFormat = new Date();
             const dateReal = dateFormat.setDate(dateFormat.getDate());
             this.dateValues = new Date(dateReal).toISOString(); // convert to ISO string
@@ -479,7 +501,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
           }
         }).catch((err) => {
           console.log('err', err);
-        })
+        });
       }
     }
 
@@ -490,7 +512,6 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     // if (this.isLogin()) {
     //   this.getBottomContent(this.userCloneDatas.id);
     // }
-
     this.showLoading = false;
     this.seoService.updateTitle(PLATFORM_NAME_TH);
     let filter: SearchFilter = new SearchFilter();
@@ -510,10 +531,21 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     });
   }
 
+  private _engageSnapshot(snapshot) {
+    const dateFormat = new Date();
+    const dateReal = dateFormat.setDate(dateFormat.getDate());
+    const dates = new Date(dateReal).toISOString(); // convert to ISO string
+    this.mainPageModelFacade.snapshot(snapshot, dates).then((res) => {
+
+    }).catch((err) => {
+      if (err) { }
+    })
+  }
+
   private _selectProvince() {
     let pageUser = JSON.parse(localStorage.getItem('pageUser'));
     if (this.isLogin() && this.hidebar) {
-      if (!!pageUser.tosVersion && !!pageUser.uaVersion && !this.isConfirmTosUa) {
+      if (!!pageUser && pageUser!!.tosVersion && pageUser!!.uaVersion && !this.isConfirmTosUa) {
         this._getProvince();
         let array = [];
         for (let page of this.pageUser) {
@@ -551,30 +583,30 @@ export class HomePageV3 extends AbstractPage implements OnInit {
     }
   }
 
-  public async searchPageInUser(userId?) {
+  public searchPageInUser(userId?) {
     if (userId) {
       let search: SearchFilter = new SearchFilter();
       search.limit = 2;
       search.count = false;
       search.whereConditions = { ownerUser: userId };
-      await this.pageFacade.search(search).then((pages: any) => {
+      this.pageFacade.search(search).then((pages: any) => {
         this.pageUser = pages;
         this.pageUser.push(this.userCloneDatas);
         this.pageUser.reverse();
+        if (this.pageUser.length > 0) {
+          for (let p of this.pageUser) {
+            if (!p.signURL) {
+              this.assetFacade.getPathFile(p.imageURL).then((res: any) => {
+                p.img64 = res.data;
+              }).catch((err: any) => {
+                console.log("err", err);
+              });
+            }
+          }
+        }
       }).catch((err: any) => {
         console.log("err", err);
       });
-      if (this.pageUser.length > 0) {
-        for (let p of this.pageUser) {
-          if (!p.signURL) {
-            await this.assetFacade.getPathFile(p.imageURL).then((res: any) => {
-              p.img64 = res.data;
-            }).catch((err: any) => {
-              console.log("err", err);
-            });
-          }
-        }
-      }
     }
   }
 
@@ -940,7 +972,7 @@ export class HomePageV3 extends AbstractPage implements OnInit {
       localStorage.setItem('notShowMemberDialog', String(false));
       askBinding = String(false);
     }
-    if (this.isLogin() && !isMember && askBinding === 'false') {
+    if (this.isLogin() && this.hidebar && !isMember && askBinding === 'false') {
       this.showDialogMember();
     }
   }
