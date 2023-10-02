@@ -766,7 +766,7 @@ export class MainPageController {
     @Post('/hot')
     public async hotnews(@Res() res: any, @Req() req: any): Promise<any> {
         const userId = req.headers['userid'];
-        const uid = new ObjectID(userId);
+        const uid = userId ? new ObjectID(userId) : undefined; // new ObjectID(userId);
         // const clientId = req.headers['client-id'];
         const ipAddr = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress).split(',')[0];
         const dateTimes = new Date(req.body.createdDate);
