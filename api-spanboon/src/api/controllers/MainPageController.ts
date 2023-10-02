@@ -100,6 +100,9 @@ import pm2 from 'pm2';
 import { FollowingContentsModelProcessor } from '../processors/FollowingContentsModelProcessor';
 import moment from 'moment';
 import { HidePostService } from '../services/HidePostService';
+import { NewsClickService } from '../services/NewsClickService';
+import { NewsClickModel } from '../models/NewsClickModel';
+
 @JsonController('/main')
 export class MainPageController {
     constructor(
@@ -123,7 +126,8 @@ export class MainPageController {
         private deviceTokenService: DeviceTokenService,
         private notificationService: NotificationService,
         private notificationNewsService: NotificationNewsService,
-        private hidePostService: HidePostService
+        private hidePostService: HidePostService,
+        private newsClickService: NewsClickService
     ) { }
     // Home page content V2
     @Get('/content/v3')
@@ -761,22 +765,90 @@ export class MainPageController {
 
     @Post('/hot')
     public async hotnews(@Res() res: any, @Req() req: any): Promise<any> {
+        const userId = req.headers['userid'];
+        const uid = new ObjectID(userId);
+        // const clientId = req.headers['client-id'];
+        const ipAddr = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress).split(',')[0];
+        const dateTimes = new Date(req.body.createdDate);
         const newsObjectId = req.body.newsObj;
         const objIds = new ObjectID(newsObjectId);
+        let create = undefined;
+        const startDate = moment(new Date()).clone().utcOffset(0).set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(2, 'days').toDate();
+        const endDateRange = moment(new Date()).clone().utcOffset(0).set({ hour: 24, minute: 59, second: 59, millisecond: 59 }).toDate();
         if (objIds) {
             // check objIds is existing in the database.
             const newsObject: any = await this.kaokaiTodaySnapShotService.findOne({ _id: objIds });
-            if (newsObject) {
+
+            if (newsObject === undefined) {
+                const errorResponse = ResponseUtil.getErrorResponse('Cannot find newsObject in the database.', undefined);
+                return res.status(400).send(errorResponse);
+            }
+
+            if (ipAddr !== undefined && uid === undefined) {
+                // check count exists ?
+
+                const checkCountExist = await this.newsClickService.aggregate(
+                    [
+                        {
+                            $match: {
+                                ipAddress: ipAddr,
+                                createdDate: { $gte: startDate, $lte: endDateRange }
+                            }
+                        },
+                        {
+                            $limit: 1
+                        }
+                    ]
+                );
+
+                if (checkCountExist.length > 0) {
+                    const errorResponse = ResponseUtil.getErrorResponse('You have done this before.', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+
+                const newsClick: NewsClickModel = new NewsClickModel();
+                newsClick.kaokaiTodaySnapShotId = objIds;
+                newsClick.userId = uid;
+                newsClick.ipAddress = ipAddr;
+                newsClick.onClickDate = dateTimes;
+                newsClick.count = 0 + checkCountExist.length ? parseInt(checkCountExist[0].count, 10) : 1;
+                create = await this.newsClickService.create(newsClick);
+            }
+
+            if (ipAddr !== undefined && uid !== undefined) {
+                const checkCountExist = await this.newsClickService.aggregate(
+                    [
+                        {
+                            $match: {
+                                ipAddress: ipAddr,
+                                userId: uid,
+                                createdDate: { $gte: startDate, $lte: endDateRange }
+                            }
+                        },
+                    ]
+                );
+                if (checkCountExist.length > 0) {
+                    const errorResponse = ResponseUtil.getErrorResponse('You have done this before.', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+
+                const newsClick: NewsClickModel = new NewsClickModel();
+                newsClick.kaokaiTodaySnapShotId = objIds;
+                newsClick.userId = uid;
+                newsClick.ipAddress = ipAddr;
+                newsClick.onClickDate = dateTimes;
+                newsClick.count = 0 + checkCountExist.length ? parseInt(checkCountExist[0].count, 10) : 1;
+                create = await this.newsClickService.create(newsClick);
+            }
+
+            if (newsObject && create) {
                 const query = { _id: newsObject.id };
                 const newValue = { $set: { count: newsObject.count + 1 } };
                 const update = await this.kaokaiTodaySnapShotService.update(query, newValue);
                 if (update) {
-                    const successResponse = ResponseUtil.getSuccessResponse('Update hot news count is successfully.', undefined);
+                    const successResponse = ResponseUtil.getSuccessResponse('Update and Create hot news count is successfully.', undefined);
                     return res.status(200).send(successResponse);
                 }
-            } else {
-                const errorResponse = ResponseUtil.getErrorResponse('Cannot find newsObject in the database.', undefined);
-                return res.status(400).send(errorResponse);
             }
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find newsObj id.', undefined);
@@ -2435,6 +2507,7 @@ export class MainPageController {
                         }
                     }
                 }
+                // if config kaokaiToday.case.send.noti.available === false that means send noti the the people.
             } else {
                 const deviceToken = await this.deviceTokenService.aggregate(
                     [
