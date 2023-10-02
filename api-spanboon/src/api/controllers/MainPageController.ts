@@ -100,6 +100,9 @@ import pm2 from 'pm2';
 import { FollowingContentsModelProcessor } from '../processors/FollowingContentsModelProcessor';
 import moment from 'moment';
 import { HidePostService } from '../services/HidePostService';
+import { NewsClickService } from '../services/NewsClickService';
+import { NewsClickModel } from '../models/NewsClickModel';
+
 @JsonController('/main')
 export class MainPageController {
     constructor(
@@ -123,13 +126,13 @@ export class MainPageController {
         private deviceTokenService: DeviceTokenService,
         private notificationService: NotificationService,
         private notificationNewsService: NotificationNewsService,
-        private hidePostService: HidePostService
+        private hidePostService: HidePostService,
+        private newsClickService: NewsClickService
     ) { }
     // Home page content V2
     @Get('/content/v3')
     public async getContentListV2(@QueryParam('offset') offset: number, @QueryParam('section') section: string, @QueryParam('date') date: any, @Res() res: any, @Req() req: any): Promise<any> {
         const jobscheduler = req.headers.jobscheduler;
-        console.log('jobscheduler', jobscheduler);
         const dateFormat = new Date(date);
         const dateReal = dateFormat.setDate(dateFormat.getDate() + 1);
         const toDate = new Date(dateReal);
@@ -644,50 +647,208 @@ export class MainPageController {
     // API main page for mobile 
     @Get('/content/mobile')
     public async getContentMobile(@Body({ validate: true }) filter: SearchFilter, @Res() res: any, @Req() req: any): Promise<any> {
-        const limit: number = filter.limit;
-        const offset: number = filter.offset;
-        let assetTodayDate = DEFAULT_TODAY_DATETIME_GAP;
+        let limit = 10;
+        let offset = 0;
 
-        console.log('filter',filter);
-        const filterDate:any = filter.whereConditions;
-        let convert = undefined;
-        const assetTodayDateGap = await this.configService.getConfig(TODAY_DATETIME_GAP);
-        console.log('filterDate', filterDate);
-        if (assetTodayDateGap) {
-            assetTodayDate = parseInt(assetTodayDateGap.value, 10);
+        if (filter.limit !== undefined) {
+            limit = filter.limit;
         }
-        const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), assetTodayDate);
 
-        const checkCreate = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: monthRange[1] });
-        if (checkCreate !== undefined && checkCreate !== null) {
-            if (typeof (JSON.stringify(checkCreate)) === 'string') {
-                const result: any = {};
-                const stringObj = JSON.stringify(checkCreate);
-                convert = JSON.parse(stringObj);
-                return convert;
+        if (filter.offset !== undefined) {
+            offset = filter.offset;
+        }
+
+        const filterDate: any = filter.whereConditions;
+
+        let starttoDate = undefined;
+        let endtoDate = undefined;
+        if (filterDate.startDate !== undefined && filterDate.startDate !== null) {
+            const startDate = new Date(parseInt(filterDate.startDate, 10));
+            const startdateReal = startDate.setDate(startDate.getDate() + 1);
+            starttoDate = new Date(startdateReal);
+        }
+        if (filterDate.endDate !== undefined && filterDate.endDate !== null) {
+            const endDate = new Date(parseInt(filterDate.endDate, 10));
+            const endDateReal = endDate.setDate(endDate.getDate() + 1);
+            endtoDate = new Date(endDateReal);
+        }
+        let kaikaoSnapShot = undefined;
+        let content = undefined;
+        if (endtoDate !== undefined && starttoDate === undefined) {
+            kaikaoSnapShot = await this.kaokaiTodaySnapShotService.aggregate(
+                [
+                    {
+                        $match: {
+                            endDateTime: endtoDate
+                        }
+                    },
+                    {
+                        $skip: offset
+                    },
+                    {
+                        $limit: limit
+                    }
+                ]
+            );
+            if (kaikaoSnapShot.length > 0) {
+                content = await this.parseKaokaiTodaySnapshot(kaikaoSnapShot);
             }
         }
+        if (starttoDate !== undefined && endtoDate !== undefined) {
+            kaikaoSnapShot = await this.kaokaiTodaySnapShotService.aggregate(
+                [
+                    {
+                        $match: {
+                            endDateTime: { $gte: starttoDate, $lte: endtoDate }
+                        }
+                    },
+                    {
+                        $skip: offset
+                    },
+                    {
+                        $limit: limit
+                    }
+                ]
+            );
+            if (kaikaoSnapShot.length > 0) {
+                content = await this.parseKaokaiTodayRangeDays(kaikaoSnapShot);
+            }
+        }
+        if (content.length === 0) {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot find KaokaiTodaySnapShot.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+        const successResponse = ResponseUtil.getSuccessResponse('Successfully Main Page Data Mobile', content);
+        return res.status(200).send(successResponse);
+    }
+    // API main page for mobile the bottom content
+    @Get('/content/mobile/bottom')
+    public async getBottomContentMobile(@Body({ validate: true }) filter: SearchFilter, @Res() res: any, @Req() req: any): Promise<any> {
+        let limit = 10;
+        let offset = 0;
 
+        if (filter.limit !== undefined) {
+            limit = filter.limit;
+        }
+
+        if (filter.offset !== undefined) {
+            offset = filter.offset;
+        }
+        const kaikaoSnapShot = await this.kaokaiTodaySnapShotService.aggregate(
+            [
+                {
+                    $sort: {
+                        count: -1
+                    }
+                },
+                {
+                    $skip: offset
+                },
+                {
+                    $limit: limit
+                }
+            ]
+        );
+        if (kaikaoSnapShot.length === 0) {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot find KaokaiTodaySnapShot.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+        const content = await this.parseKaokaiTodaySnapshot(kaikaoSnapShot);
+
+        if (content.length === 0) {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot find Content.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+        const successResponse = ResponseUtil.getSuccessResponse('Successfully Main Page Data Mobile for bottom content.', content);
+        return res.status(200).send(successResponse);
     }
 
     @Post('/hot')
     public async hotnews(@Res() res: any, @Req() req: any): Promise<any> {
+        const userId = req.headers['userid'];
+        const uid = new ObjectID(userId);
+        // const clientId = req.headers['client-id'];
+        const ipAddr = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress).split(',')[0];
+        const dateTimes = new Date(req.body.createdDate);
         const newsObjectId = req.body.newsObj;
         const objIds = new ObjectID(newsObjectId);
+        let create = undefined;
+        const startDate = moment(new Date()).clone().utcOffset(0).set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).subtract(2, 'days').toDate();
+        const endDateRange = moment(new Date()).clone().utcOffset(0).set({ hour: 24, minute: 59, second: 59, millisecond: 59 }).toDate();
         if (objIds) {
             // check objIds is existing in the database.
             const newsObject: any = await this.kaokaiTodaySnapShotService.findOne({ _id: objIds });
-            if (newsObject) {
+
+            if (newsObject === undefined) {
+                const errorResponse = ResponseUtil.getErrorResponse('Cannot find newsObject in the database.', undefined);
+                return res.status(400).send(errorResponse);
+            }
+
+            if (ipAddr !== undefined && uid === undefined) {
+                // check count exists ?
+
+                const checkCountExist = await this.newsClickService.aggregate(
+                    [
+                        {
+                            $match: {
+                                ipAddress: ipAddr,
+                                createdDate: { $gte: startDate, $lte: endDateRange }
+                            }
+                        },
+                        {
+                            $limit: 1
+                        }
+                    ]
+                );
+
+                if (checkCountExist.length > 0) {
+                    const errorResponse = ResponseUtil.getErrorResponse('You have done this before.', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+
+                const newsClick: NewsClickModel = new NewsClickModel();
+                newsClick.kaokaiTodaySnapShotId = objIds;
+                newsClick.userId = uid;
+                newsClick.ipAddress = ipAddr;
+                newsClick.onClickDate = dateTimes;
+                newsClick.count = 0 + checkCountExist.length ? parseInt(checkCountExist[0].count, 10) : 1;
+                create = await this.newsClickService.create(newsClick);
+            }
+
+            if (ipAddr !== undefined && uid !== undefined) {
+                const checkCountExist = await this.newsClickService.aggregate(
+                    [
+                        {
+                            $match: {
+                                ipAddress: ipAddr,
+                                userId: uid,
+                                createdDate: { $gte: startDate, $lte: endDateRange }
+                            }
+                        },
+                    ]
+                );
+                if (checkCountExist.length > 0) {
+                    const errorResponse = ResponseUtil.getErrorResponse('You have done this before.', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+
+                const newsClick: NewsClickModel = new NewsClickModel();
+                newsClick.kaokaiTodaySnapShotId = objIds;
+                newsClick.userId = uid;
+                newsClick.ipAddress = ipAddr;
+                newsClick.onClickDate = dateTimes;
+                newsClick.count = 0 + checkCountExist.length ? parseInt(checkCountExist[0].count, 10) : 1;
+                create = await this.newsClickService.create(newsClick);
+            }
+
+            if (newsObject && create) {
                 const query = { _id: newsObject.id };
                 const newValue = { $set: { count: newsObject.count + 1 } };
                 const update = await this.kaokaiTodaySnapShotService.update(query, newValue);
                 if (update) {
-                    const successResponse = ResponseUtil.getSuccessResponse('Update hot news count is successfully.', undefined);
+                    const successResponse = ResponseUtil.getSuccessResponse('Update and Create hot news count is successfully.', undefined);
                     return res.status(200).send(successResponse);
                 }
-            } else {
-                const errorResponse = ResponseUtil.getErrorResponse('Cannot find newsObject in the database.', undefined);
-                return res.status(400).send(errorResponse);
             }
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find newsObj id.', undefined);
@@ -2346,6 +2507,7 @@ export class MainPageController {
                         }
                     }
                 }
+                // if config kaokaiToday.case.send.noti.available === false that means send noti the the people.
             } else {
                 const deviceToken = await this.deviceTokenService.aggregate(
                     [
@@ -3877,5 +4039,86 @@ export class MainPageController {
         }
 
         return userResult;
+    }
+    // for today 
+    private async parseKaokaiTodaySnapshot(data: any): Promise<any> {
+        const result: any = [];
+        let imageFilter = undefined;
+        for (const content of data) {
+            const thaiDate = content.endDateTime.getTime();
+            const oneDay = 24 * 60 * 60 * 1000; // one day in milliseconds
+            const timeStamp = new Date(content.endDateTime.getTime() - oneDay).toLocaleDateString('th-TH', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+            });
+
+            imageFilter = await this.parseKaokaiTodayPicture(content);
+            const payload = {
+                title: 'ก้าวไกลหน้าหนึ่ง',
+                image: imageFilter,
+                link: process.env.APP_HOME + `?date=${thaiDate}`,
+                titleBottom: 'ฉบับวันที่ ' + '' + timeStamp
+            };
+            result.push(payload);
+        }
+        return result;
+    }
+    // for today
+    private async parseKaokaiTodayPicture(data: any): Promise<any> {
+        let image = undefined;
+        for (let i = 0; i < data.data.pageRoundRobin.contents.length; i++) {
+            image = data.data.pageRoundRobin.contents[i].coverPageSignUrl ? data.data.pageRoundRobin.contents[i].coverPageSignUrl : 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png';
+            if (image !== undefined) {
+                break;
+            } else {
+                continue;
+            }
+        }
+        if (image === undefined) {
+            image = data.data.majorTrend.contents[0].coverPageSignUrl ? data.data.majorTrend.contents[0].coverPageSignUrl : 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png';
+        }
+        return image;
+    }
+
+    // for customer range days
+
+    private async parseKaokaiTodayRangeDays(data: any): Promise<any> {
+        const result: any = [];
+        let imageFilter = undefined;
+        for (const content of data) {
+            const thaiDate = content.endDateTime.getTime();
+            const oneDay = 24 * 60 * 60 * 1000; // one day in milliseconds
+            const timeStamp = new Date(content.endDateTime.getTime() - oneDay).toLocaleDateString('th-TH', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+            });
+
+            imageFilter = await this.parseKaokaiTodayPictureRange(content);
+            const payload = {
+                title: 'ก้าวไกลหน้าหนึ่ง',
+                image: imageFilter,
+                link: process.env.APP_HOME + `?date=${thaiDate}`,
+                titleBottom: 'ฉบับวันที่ ' + '' + timeStamp
+            };
+            result.push(payload);
+        }
+        return result;
+    }
+
+    // for customer range days
+
+    private async parseKaokaiTodayPictureRange(data: any): Promise<any> {
+        let image = undefined;
+        for (let i = 0; i < data.data.pageRoundRobin.contents.length; i++) {
+            image = data.data.pageRoundRobin.contents[i].coverPageSignUrl ? data.data.pageRoundRobin.contents[i].coverPageSignUrl : 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png';
+        }
+        if (image === undefined) {
+            for (let i = 0; i < data.data.majorTrend.contents.length; i++) {
+                image = data.data.majorTrend.contents[i].coverPageSignUrl ? data.data.majorTrend.contents[i].coverPageSignUrl : 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Move_Forward_Party_Logo.svg/180px-Move_Forward_Party_Logo.svg.png';
+            }
+        }
+        return image;
     }
 }
