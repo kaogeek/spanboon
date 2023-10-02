@@ -792,6 +792,7 @@ export class MainPageController {
                         {
                             $match: {
                                 ipAddress: ipAddr,
+                                userId: null,
                                 createdDate: { $gte: startDate, $lte: endDateRange }
                             }
                         },
