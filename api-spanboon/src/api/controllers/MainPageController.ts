@@ -843,10 +843,45 @@ export class MainPageController {
                 newsClick.count = 0 + checkCountExist.length ? parseInt(checkCountExist[0].count, 10) : 1;
                 create = await this.newsClickService.create(newsClick);
             }
+            let summationCount = 0;
+            if (newsObject !== undefined) {
+                if (newsObject.data.pageRoundRobin.contents.length > 0) {
+                    for (const post of newsObject.data.pageRoundRobin.contents) {
+                        summationCount += post.post.summationScore;
+                    }
+                }
+                if (newsObject.data.majorTrend.contents.length > 0) {
+                    for (const post of newsObject.data.majorTrend.contents) {
+                        summationCount += post.post.summationScore;
+                    }
+                }
+                if (newsObject.data.kaokaiProvince.contents.length > 0) {
+                    for (const post of newsObject.data.kaokaiProvince.contents) {
+                        summationCount += post.post.summationScore;
+                    }
+                }
+                if (newsObject.data.kaokaiHashTag.contents.length > 0) {
+                    for (const post of newsObject.data.kaokaiHashTag.contents) {
+                        summationCount += post.post.summationScore;
+                    }
+                }
+                if (newsObject.data.kaokaiContent.contents.length > 0) {
+                    for (const post of newsObject.data.kaokaiContent.contents) {
+                        summationCount += post.post.summationScore;
+                    }
+                }
 
+            }
             if (newsObject && create) {
                 const query = { _id: newsObject.id };
-                const newValue = { $set: { count: newsObject.count + 1 } };
+                const newValue = {
+                    $set:
+                    {
+                        count: newsObject.count + 1,
+                        sumCount: summationCount
+
+                    }
+                };
                 const update = await this.kaokaiTodaySnapShotService.update(query, newValue);
                 if (update) {
                     const successResponse = ResponseUtil.getSuccessResponse('Update and Create hot news count is successfully.', undefined);
@@ -2416,6 +2451,7 @@ export class MainPageController {
             result.startDateTime = startDateRange;
             result.endDateTime = endDateTimeToday;
             result.count = 0;
+            result.sumCount = 0;
             const snapshot = await this.kaokaiTodaySnapShotService.create(result);
             if (String(switchSendEm) === 'true' && snapshot) {
                 let user = undefined;

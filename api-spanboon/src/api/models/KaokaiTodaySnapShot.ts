@@ -26,6 +26,9 @@ export class KaokaiTodaySnapShot extends BaseModel {
 
     @Column({ name: 'count'})
     public count: number;
+
+    @Column({ name: 'sumCount'})
+    public sumCount: number;
     
     @BeforeInsert()
     public createDetails(): any {
