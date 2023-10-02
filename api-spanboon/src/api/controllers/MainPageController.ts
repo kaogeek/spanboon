@@ -791,6 +791,7 @@ export class MainPageController {
                     [
                         {
                             $match: {
+                                kaokaiTodaySnapShotId: objIds,
                                 ipAddress: ipAddr,
                                 userId: null,
                                 createdDate: { $gte: startDate, $lte: endDateRange }
@@ -821,6 +822,7 @@ export class MainPageController {
                     [
                         {
                             $match: {
+                                kaokaiTodaySnapShotId: objIds,
                                 ipAddress: ipAddr,
                                 userId: uid,
                                 createdDate: { $gte: startDate, $lte: endDateRange }
