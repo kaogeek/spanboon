@@ -64,6 +64,7 @@ import { EmergencyFollowingPostSectionModelProcessor } from '../processors/Emerg
 import { ObjectiveFollowingPostSectionModelProcessor } from '../processors/ObjectiveFollowingPostSectionModelProcessor';
 import { UserFollowingPostSectionModelProcessor } from '../processors/UserFollowingPostSectionModelProcessor';
 import { FollowingProvinceSectionModelProcessor } from '../processors/FollowingProvinceSectionModelProcessor';
+import { PostsGalleryService } from '../services/PostsGalleryService';
 import {
     TODAY_DATETIME_GAP,
     DEFAULT_TODAY_DATETIME_GAP,
@@ -127,7 +128,8 @@ export class MainPageController {
         private notificationService: NotificationService,
         private notificationNewsService: NotificationNewsService,
         private hidePostService: HidePostService,
-        private newsClickService: NewsClickService
+        private newsClickService: NewsClickService,
+        private postsGalleryService: PostsGalleryService
     ) { }
     // Home page content V2
     @Get('/content/v3')
@@ -892,6 +894,17 @@ export class MainPageController {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find newsObj id.', undefined);
             return res.status(400).send(errorResponse);
         }
+    }
+
+    // test s3 AWS_CLOUDFRONT_PREFIX
+    @Post('/s3')
+    public async testS3(@Res() res: any, @Req() req: any): Promise<any> {
+        const galleryObjIds = new ObjectID(req.body.galleryId);
+        const findGallery = await this.postsGalleryService.findOne({ post: galleryObjIds });
+        const signUrl = await this.s3Service.getConfigedSignedUrl(findGallery.s3ImageURL);
+        console.log('signUrl', signUrl);
+        const successResponse = ResponseUtil.getSuccessResponse('return gallery.', findGallery);
+        return res.status(200).send(successResponse);
     }
 
     @Post('/is/read')
