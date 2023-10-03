@@ -4,32 +4,29 @@ import { ObjectID } from 'mongodb';
 import { BaseModel } from './BaseModel';
 import moment from 'moment';
 
-@Entity('KaokaiTodaySnapShot')
-export class KaokaiTodaySnapShot extends BaseModel {
+@Entity('NewsClickModel')
+export class NewsClickModel extends BaseModel {
 
     @ObjectIdColumn({ name: '_id' })
     @IsNotEmpty()
     @IsMongoId()
     public id: ObjectID;
 
-    @Column({ name: 'data'})
-    public data: any;
+    @Column({ name: 'kaokaiTodaySnapShotId' })
+    public kaokaiTodaySnapShotId: ObjectID;
 
-    @Column({ name: 'startDateTime'})
-    public startDateTime:Date;
+    @Column({ name: 'userId' })
+    public userId: ObjectID;
 
-    @Column({ name: 'endDateTime'})
-    public endDateTime:Date;
+    @Column({ name: 'ipAddress' })
+    public ipAddress: string;
 
-    @Column({ name: 'userId'})
-    public userId:ObjectID;
+    @Column({ name: 'onClickDate' })
+    public onClickDate: Date;
 
     @Column({ name: 'count'})
     public count: number;
 
-    @Column({ name: 'sumCount'})
-    public sumCount: number;
-    
     @BeforeInsert()
     public createDetails(): any {
         this.createdDate = moment().toDate();
