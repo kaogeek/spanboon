@@ -18,7 +18,11 @@ import { ConfigService } from '../services/ConfigService';
 import { aws_setup } from '../../env';
 import { ASSET_SCOPE } from '../../constants/AssetScope';
 import { ObjectID } from 'mongodb';
-
+import { parseUrl } from '@aws-sdk/url-parser';
+import axios from 'axios';
+import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import AWS from 'aws-sdk';
 @Service()
 export class AssetService {
 
@@ -35,8 +39,8 @@ export class AssetService {
     }
 
     // deleteMany
-    public async deleteMany(query:any,options?:any): Promise<any>{
-        return this.assetRepository.deleteMany(query,options);
+    public async deleteMany(query: any, options?: any): Promise<any> {
+        return this.assetRepository.deleteMany(query, options);
     }
 
     // create asset
@@ -127,6 +131,41 @@ export class AssetService {
         } else {
             return this.assetRepository.find(condition);
         }
+    }
+
+    // s3 sign cloudfront
+    public async s3SignCloudFront(assert: any): Promise<any> {
+        // use AWS SDK for JavaScript (v3).
+        const bucketS3 = process.env.AWS_BUCKET;
+        const regionS3 = process.env.AWS_DEFAULT_REGION;
+        const s3ObjectUrl = parseUrl(`https://${bucketS3}.s3.${regionS3}.amazonaws.com/${assert.fileName}`);
+        const s3 = new S3Client({ region: regionS3 });
+        const getObjectParams = { url: process.env.AWS_CLOUDFRONT_PREFIX, Bucket: bucketS3, Key: `${s3ObjectUrl.path}` };
+        const command = new GetObjectCommand(getObjectParams);
+        const signedUrl = await getSignedUrl(s3, command, { expiresIn: 300 });
+        console.log('signedUrl', signedUrl);
+
+        const s3Bucket = new AWS.S3({
+            signatureVersion: 'v4',
+            accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+            region: regionS3
+        });
+
+        const sginedUrlCloudFront = await s3Bucket.getSignedUrl('putObject', {
+            Bucket: bucketS3,
+            Key: `${assert.s3FilePath}`,
+            ContentType: `image/${assert.mimeType}`,
+            Expires: 300
+        });
+        console.log('sginedUrlCloudFront',sginedUrlCloudFront);
+        const Bodyss = assert.data;
+        await axios.put(sginedUrlCloudFront, Bodyss, {
+            headers: {
+                'Content-Type': `image/${assert.mimeType}`
+            }
+        });
+        return `https://${process.env.AWS_CLOUDFRONT_PREFIX}/${assert.s3FilePath}`;
     }
 
     public async getAssetSignedUrl(findCondition: any): Promise<any> {

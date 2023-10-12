@@ -13,6 +13,12 @@ import { aws_setup } from '../../env';
 import * as fs from 'fs';
 import { DEFAULT_ASSET_CONFIG_VALUE, ASSET_CONFIG_NAME } from '../../constants/SystemConfig';
 import { ConfigService } from '../services/ConfigService';
+import axios from 'axios';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
+import { parseUrl } from '@aws-sdk/url-parser';
+import { ObjectID } from 'mongodb';
+
 const s3 = new AWS.S3();
 
 @Service()
@@ -205,6 +211,58 @@ export class S3Service {
                 return resolve({ path: locationPath });
             });
         });
+    }
+
+    // s3 signCloudFront
+    public async s3signCloudFront(assert: any, userid: string): Promise<any> {
+        // use AWS SDK for JavaScript (v3).
+        const signExpireConfig = await this.configService.getConfig(ASSET_CONFIG_NAME.EXPIRE_MINUTE);
+        let expireSecond = DEFAULT_ASSET_CONFIG_VALUE.EXPIRE_MINUTE;
+
+        if (signExpireConfig && signExpireConfig.value) {
+            try {
+                if (typeof signExpireConfig.value === 'number') {
+                    expireSecond = signExpireConfig.value;
+                } else if (typeof signExpireConfig.value === 'string') {
+                    expireSecond = parseFloat(signExpireConfig.value);
+                }
+            } catch (error) {
+                console.log(ASSET_CONFIG_NAME.EXPIRE_MINUTE + ' value was wrong.');
+            }
+        }
+        const objIds = new ObjectID(userid);
+        const bucketS3 = process.env.AWS_BUCKET;
+        const regionS3 = process.env.AWS_DEFAULT_REGION;
+        const s3ObjectUrl = parseUrl(`https://${bucketS3}.s3.${regionS3}.amazonaws.com/${assert.fileName}`);
+        const s3Client = new S3Client({ region: regionS3 });
+        const getObjectParams = { url: process.env.AWS_CLOUDFRONT_PREFIX, Bucket: bucketS3, Key: `${assert.s3FilePath}` };
+        const command = new GetObjectCommand(getObjectParams);
+        await getSignedUrl(s3Client, command, { expiresIn: expireSecond });
+        const s3Bucket = new AWS.S3({
+            signatureVersion: 'v4',
+            accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+            region: regionS3
+        });
+        const signedUrlCloudFront = await s3Bucket.getSignedUrl('putObject', {
+            Bucket: bucketS3,
+            Key: `${objIds}${s3ObjectUrl.path}`,
+            ContentType: `image/${assert.mimeType}`,
+            Expires: expireSecond
+        });
+        const Bodyss = assert.data;
+        await axios.put(signedUrlCloudFront, Bodyss, {
+            headers: {
+                'Content-Type': `image/${assert.mimeType}`
+            }
+        });
+        /*
+        console.log(`Try access this file via:
+            Direct S3 URL: https://${bucketS3}.s3-${regionS3}.amazonaws.com/${assert.s3FilePath}
+            CloudFront URL: https://${process.env.AWS_CLOUDFRONT_PREFIX}/${assert.s3FilePath}
+        `);
+        */
+        return `https://${process.env.AWS_CLOUDFRONT_PREFIX}/${assert.s3FilePath}`;
     }
 
     // search folder

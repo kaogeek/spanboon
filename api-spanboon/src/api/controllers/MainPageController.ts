@@ -64,7 +64,8 @@ import { EmergencyFollowingPostSectionModelProcessor } from '../processors/Emerg
 import { ObjectiveFollowingPostSectionModelProcessor } from '../processors/ObjectiveFollowingPostSectionModelProcessor';
 import { UserFollowingPostSectionModelProcessor } from '../processors/UserFollowingPostSectionModelProcessor';
 import { FollowingProvinceSectionModelProcessor } from '../processors/FollowingProvinceSectionModelProcessor';
-import { PostsGalleryService } from '../services/PostsGalleryService';
+// import { PostsGalleryService } from '../services/PostsGalleryService';
+import axios from 'axios';
 import {
     TODAY_DATETIME_GAP,
     DEFAULT_TODAY_DATETIME_GAP,
@@ -103,7 +104,12 @@ import moment from 'moment';
 import { HidePostService } from '../services/HidePostService';
 import { NewsClickService } from '../services/NewsClickService';
 import { NewsClickModel } from '../models/NewsClickModel';
-
+import { FileUtil } from '../../utils/FileUtil';
+import { AssetRequest } from './requests/AssetRequest';
+import { ASSET_CONFIG_NAME, DEFAULT_ASSET_CONFIG_VALUE } from '../../constants/SystemConfig';
+import { ASSET_SCOPE } from '../../constants/AssetScope';
+import { Asset } from '../models/Asset';
+import * as AWS from 'aws-sdk'; // Load the SDK for JavaScript
 @JsonController('/main')
 export class MainPageController {
     constructor(
@@ -129,7 +135,7 @@ export class MainPageController {
         private notificationNewsService: NotificationNewsService,
         private hidePostService: HidePostService,
         private newsClickService: NewsClickService,
-        private postsGalleryService: PostsGalleryService
+        // private postsGalleryService: PostsGalleryService
     ) { }
     // Home page content V2
     @Get('/content/v3')
@@ -898,12 +904,131 @@ export class MainPageController {
 
     // test s3 AWS_CLOUDFRONT_PREFIX
     @Post('/s3')
-    public async testS3(@Res() res: any, @Req() req: any): Promise<any> {
-        const galleryObjIds = new ObjectID(req.body.galleryId);
-        const findGallery = await this.postsGalleryService.findOne({ post: galleryObjIds });
-        const signUrl = await this.s3Service.getConfigedSignedUrl(findGallery.s3ImageURL);
-        console.log('signUrl', signUrl);
-        const successResponse = ResponseUtil.getSuccessResponse('return gallery.', findGallery);
+    public async testS3(@Body({ validate: true }) tempFile: AssetRequest, @Res() res: any, @Req() req: any): Promise<any> {
+        try {
+            const assetExpTimeCfg = await this.configService.getConfig(ASSET_CONFIG_NAME.EXPIRE_MINUTE);
+            let assetExpTime = DEFAULT_ASSET_CONFIG_VALUE.EXPIRE_MINUTE;
+
+            if (assetExpTimeCfg && assetExpTimeCfg.value) {
+                assetExpTime = assetExpTimeCfg.value;
+            }
+            const userId = req.headers.userid;
+            const userObjId = new ObjectID(userId);
+            const assets = tempFile.asset;
+            const fileName = FileUtil.renameFile();
+
+            const asset = new Asset();
+            asset.userId = userObjId;
+            asset.scope = ASSET_SCOPE.PUBLIC;
+            asset.data = assets.data;
+            asset.fileName = fileName;
+            asset.mimeType = assets.mimeType;
+            asset.size = assets.size;
+
+            if (assets.expirationDate !== null && assets.expirationDate !== undefined) {
+                asset.expirationDate = assets.expirationDate;
+            } else {
+                asset.expirationDate = moment().add(assetExpTime, 'minutes').toDate();
+            }
+            const assetCreate: Asset = await this.assetService.create(asset);
+            if (assetCreate) {
+                // const s3CloudFront = await this.s3Service.s3signCloudFront(assetCreate, userObjId);
+                const successResponse = ResponseUtil.getSuccessResponse('Sign s3 CloudFront is sucessfully.', assetCreate);
+                return res.status(200).send(successResponse);
+            }
+        } catch (error) {
+            console.log('Cannot Store to S3: ', error);
+            return error;
+        }
+    }
+
+    // presigned url 
+    @Post('/presigned')
+    public async presignCloudFront(@Res() res: any, @Req() req: any): Promise<any> {
+        const bucketS3 = process.env.AWS_BUCKET;
+        const regionS3 = process.env.AWS_DEFAULT_REGION;
+
+        const s3 = new AWS.S3({
+            signatureVersion: 'v4',
+            accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+            region: regionS3
+        });
+        const signExpireConfig = await this.configService.getConfig(ASSET_CONFIG_NAME.EXPIRE_MINUTE);
+        let expireSecond = DEFAULT_ASSET_CONFIG_VALUE.EXPIRE_MINUTE;
+
+        if (signExpireConfig && signExpireConfig.value) {
+            try {
+                if (typeof signExpireConfig.value === 'number') {
+                    expireSecond = signExpireConfig.value;
+                } else if (typeof signExpireConfig.value === 'string') {
+                    expireSecond = parseFloat(signExpireConfig.value);
+                }
+            } catch (error) {
+                console.log(ASSET_CONFIG_NAME.EXPIRE_MINUTE + ' value was wrong.');
+            }
+        }
+        let name = undefined;
+        const listObjectKaokaiSnapshot = await this.kaokaiTodaySnapShotService.find({});
+        if (listObjectKaokaiSnapshot.length > 0) {
+            for (let i = 0; i < listObjectKaokaiSnapshot.length; i++) {
+                if (listObjectKaokaiSnapshot[i].data.emergencyEvents !== undefined) {
+                    name = 'emergencyEvents';
+                    await this.presignedS3(name, listObjectKaokaiSnapshot[i].data, listObjectKaokaiSnapshot[i].id);
+                }
+                if (listObjectKaokaiSnapshot[i].data.postSectionModel !== undefined) {
+                    name = 'postSectionModel';
+                    await this.presignedS3(name, listObjectKaokaiSnapshot[i].data, listObjectKaokaiSnapshot[i].id);
+                }
+                if (listObjectKaokaiSnapshot[i].data.pageRoundRobin !== undefined) {
+                    name = 'pageRoundRobin';
+                    await this.presignedS3(name, listObjectKaokaiSnapshot[i].data, listObjectKaokaiSnapshot[i].id);
+                }
+                if (listObjectKaokaiSnapshot[i].data.majorTrend !== undefined) {
+                    name = 'majorTrend';
+                    await this.presignedS3(name, listObjectKaokaiSnapshot[i].data, listObjectKaokaiSnapshot[i].id);
+                }
+                if (listObjectKaokaiSnapshot[i].data.kaokaiProvince !== undefined) {
+                    name = 'kaokaiProvince';
+                    await this.presignedS3(name, listObjectKaokaiSnapshot[i].data, listObjectKaokaiSnapshot[i].id);
+                }
+                if (listObjectKaokaiSnapshot[i].data.kaokaiHashTag !== undefined) {
+                    name = 'kaokaiHashTag';
+                    await this.presignedS3(name, listObjectKaokaiSnapshot[i].data, listObjectKaokaiSnapshot[i].id);
+                }
+                if (listObjectKaokaiSnapshot[i].data.kaokaiContent !== undefined) {
+                    name = 'kaokaiContent';
+                    await this.presignedS3(name, listObjectKaokaiSnapshot[i].data, listObjectKaokaiSnapshot[i].id);
+                }
+            }
+        }
+
+        s3.listObjects({ Bucket: bucketS3 }, (err, data) => {
+            if (err) {
+                console.error('Error listing objects:', err);
+                return;
+            }
+            // 604b35cb78d6c04e3dacb86c/gio8xajyabc1627976695223a5s1kcpytb4.jpg
+            data.Contents.forEach((object) => {
+                const params = { Bucket: bucketS3, Key: object.Key, Expires: expireSecond };
+                s3.getSignedUrl('getObject', params, (error, url) => {
+                    if (error) {
+                        console.error('Error generating Presigned URL:', error);
+                        return;
+                    }
+                    const signedUrlCloudFront = s3.getSignedUrl('putObject', {
+                        Bucket: bucketS3,
+                        Key: `${object.Key}`,
+                        Expires: expireSecond
+                    });
+                    axios.put(signedUrlCloudFront, {
+                        headers: {
+                        }
+                    });
+                });
+            });
+        });
+        const successResponse = ResponseUtil.getSuccessResponse('Presigned s3 CloudFront is sucessfully.', listObjectKaokaiSnapshot);
         return res.status(200).send(successResponse);
     }
 
@@ -979,7 +1104,7 @@ export class MainPageController {
      * @apiSuccessExample {json} Success
      * HTTP/1.1 200 OK
      * {
-     *      "message": "Successfully get Page"
+     *      'message": "Successfully get Page"
      *      "data":"{}"
      *      "status": "1"
      * }
@@ -1744,23 +1869,23 @@ export class MainPageController {
                 const matchHashTagTitleStmtList: any[] = [];
                 const matchHashTagDetailStmtList: any[] = [];
                 const matchHashTagStmtResult: any[] = [];
-
+            
                 for (const tag of hashTag) {
                     matchHashTagTitleStmt = {};
                     matchHashTagDetailStmt = {};
-
+            
                     matchHashTagTitleStmt = { title: { $regex: '.*' + tag + '.*', $options: 'si' } };
                     matchHashTagDetailStmt = { detail: { $regex: '.*' + tag + '.*', $options: 'si' } };
-
+            
                     matchHashTagTitleStmtList.push(matchHashTagTitleStmt);
                     matchHashTagDetailStmtList.push(matchHashTagDetailStmt);
-
+            
                     matchHashTagTitleStmtResult = { $and: matchHashTagTitleStmtList };
                     matchHashTagDetailStmtResult = { $and: matchHashTagDetailStmtList };
                 }
-
+            
                 matchHashTagStmtResult.push(matchHashTagTitleStmtResult, matchHashTagDetailStmtResult);
-
+            
                 if (matchHashTagStmtResult !== null && matchHashTagStmtResult !== undefined && matchHashTagStmtResult.length > 0) {
                     postStmt.push({ $match: { $or: matchHashTagStmtResult } });
                 }*/
@@ -2471,7 +2596,7 @@ export class MainPageController {
                 for (const userEmail of emailStack) {
                     user = await this.userService.findOne({ email: userEmail.toString() });
                     if (user.subscribeEmail === true) {
-                        await this.sendEmail(user, user.email, snapshot.data, 'ก้าวไกลวันนี้', endDateTimeToday);
+                        // await this.sendEmail(user, user.email, snapshot.data, 'ก้าวไกลวันนี้', endDateTimeToday);
                     } else {
                         continue;
                     }
@@ -2481,7 +2606,7 @@ export class MainPageController {
                 if (snapshot) {
                     for (const user of users) {
                         if (user.subscribeEmail === true) {
-                            await this.sendEmail(user, user.email, snapshot.data, 'ก้าวไกลหน้าหนึ่ง', endDateTimeToday);
+                            // await this.sendEmail(user, user.email, snapshot.data, 'ก้าวไกลหน้าหนึ่ง', endDateTimeToday);
                         } else {
                             continue;
                         }
@@ -4172,5 +4297,133 @@ export class MainPageController {
             }
         }
         return image;
+    }
+
+    // presigned s3
+    private async presignedS3(name: string, data: any, objId: string): Promise<any> {
+        let s3SignUrlPath = undefined;
+        const cloudFrontReplaced = 'https://' + process.env.AWS_CLOUDFRONT_PREFIX_REPLACED;
+        const snapShotObjIds = new ObjectID(objId);
+        if (String(name) === 'emergencyEvents' && data.emergencyEvents !== undefined) {
+            for (let i = 0; i < data.emergencyEvents.contents.length; i++) {
+                s3SignUrlPath = data.emergencyEvents.contents[i] ? data.emergencyEvents.contents[i].coverPageSignUrl : undefined;
+                // for each contents
+                if (s3SignUrlPath !== undefined && s3SignUrlPath !== null) {
+                    const specifi = s3SignUrlPath.indexOf('?');
+                    const trimSignedUrl = s3SignUrlPath.slice(cloudFrontReplaced.length, specifi);
+                    const replace = 'https://' + process.env.AWS_CLOUDFRONT_PREFIX + trimSignedUrl;
+                    const query = { _id: snapShotObjIds };
+                    const newValues = {
+                        $set: {
+                            [`data.emergencyEvents.contents.${i}.coverPageSignUrl`]: replace
+                        }
+                    };
+                    await this.kaokaiTodaySnapShotService.update(query, newValues);
+                }
+            }
+        }
+        if (String(name) === 'postSectionModel' && data.postSectionModel !== undefined) {
+            for (let i = 0; i < data.postSectionModel.contents.length; i++) {
+                s3SignUrlPath = data.postSectionModel.contents[i] ? data.postSectionModel.contents[i].coverPageSignUrl : undefined;
+                if (s3SignUrlPath !== undefined && s3SignUrlPath !== null) {
+                    const specifi = s3SignUrlPath.indexOf('?');
+                    const trimSignedUrl = s3SignUrlPath.slice(cloudFrontReplaced.length, specifi);
+                    const replace = 'https://' + process.env.AWS_CLOUDFRONT_PREFIX + trimSignedUrl;
+                    const query = { _id: snapShotObjIds };
+                    const newValues = {
+                        $set: {
+                            [`data.postSectionModel.contents.${i}.coverPageSignUrl`]: replace
+                        }
+                    };
+                    await this.kaokaiTodaySnapShotService.update(query, newValues);
+                }
+            }
+
+        }
+        if (String(name) === 'pageRoundRobin' && data.pageRoundRobin !== undefined) {
+            for (let i = 0; i < data.pageRoundRobin.contents.length; i++) {
+                s3SignUrlPath = data.pageRoundRobin.contents[i] ? data.pageRoundRobin.contents[i].coverPageSignUrl : undefined;
+                if (s3SignUrlPath !== undefined && s3SignUrlPath !== null) {
+                    const specifi = s3SignUrlPath.indexOf('?');
+                    const trimSignedUrl = s3SignUrlPath.slice(cloudFrontReplaced.length, specifi);
+                    const replace = 'https://' + process.env.AWS_CLOUDFRONT_PREFIX + trimSignedUrl;
+                    const query = { _id: snapShotObjIds };
+                    const newValues = {
+                        $set: {
+                            [`data.pageRoundRobin.contents.${i}.coverPageSignUrl`]: replace
+                        }
+                    };
+                    await this.kaokaiTodaySnapShotService.update(query, newValues);
+                }
+            }
+        }
+        if (String(name) === 'majorTrend' && data.majorTrend !== undefined) {
+            for (let i = 0; i < data.majorTrend.contents.length; i++) {
+                s3SignUrlPath = data.majorTrend.contents[i] ? data.majorTrend.contents[i].coverPageSignUrl : undefined;
+                if (s3SignUrlPath !== undefined && s3SignUrlPath !== null) {
+                    const specifi = s3SignUrlPath.indexOf('?');
+                    const trimSignedUrl = s3SignUrlPath.slice(cloudFrontReplaced.length, specifi);
+                    const replace = 'https://' + process.env.AWS_CLOUDFRONT_PREFIX + trimSignedUrl;
+                    const query = { _id: snapShotObjIds };
+                    const newValues = {
+                        $set: {
+                            [`data.majorTrend.contents.${i}.coverPageSignUrl`]: replace
+                        }
+                    };
+                    await this.kaokaiTodaySnapShotService.update(query, newValues);
+                }
+            }
+        }
+        if (String(name) === 'kaokaiProvince' && data.kaokaiProvince !== undefined) {
+            for (let i = 0; i < data.kaokaiProvince.contents.length; i++) {
+                s3SignUrlPath = data.kaokaiProvince.contents[i] ? data.kaokaiProvince.contents[i].coverPageSignUrl : undefined;
+                if (s3SignUrlPath !== undefined && s3SignUrlPath !== null) {
+                    const specifi = s3SignUrlPath.indexOf('?');
+                    const trimSignedUrl = s3SignUrlPath.slice(cloudFrontReplaced.length, specifi);
+                    const replace = 'https://' + process.env.AWS_CLOUDFRONT_PREFIX + trimSignedUrl;
+                    const query = { _id: snapShotObjIds };
+                    const newValues = {
+                        $set: {
+                            [`data.kaokaiProvince.contents.${i}.coverPageSignUrl`]: replace
+                        }
+                    };
+                    await this.kaokaiTodaySnapShotService.update(query, newValues);
+                }
+            }
+        }
+        if (String(name) === 'kaokaiHashTag' && data.kaokaiHashTag !== undefined) {
+            for (let i = 0; i < data.kaokaiHashTag.contents.length; i++) {
+                s3SignUrlPath = data.kaokaiHashTag.contents[i] ? data.kaokaiHashTag.contents[i].coverPageSignUrl : undefined;
+                if (s3SignUrlPath !== undefined && s3SignUrlPath !== null) {
+                    const specifi = s3SignUrlPath.indexOf('?');
+                    const trimSignedUrl = s3SignUrlPath.slice(cloudFrontReplaced.length, specifi);
+                    const replace = 'https://' + process.env.AWS_CLOUDFRONT_PREFIX + trimSignedUrl;
+                    const query = { _id: snapShotObjIds };
+                    const newValues = {
+                        $set: {
+                            [`data.kaokaiHashTag.contents.${i}.coverPageSignUrl`]: replace
+                        }
+                    };
+                    await this.kaokaiTodaySnapShotService.update(query, newValues);
+                }
+            }
+        }
+        if (String(name) === 'kaokaiContent' && data.kaokaiContent !== undefined) {
+            for (let i = 0; i < data.kaokaiContent.contents.length; i++) {
+                s3SignUrlPath = data.kaokaiContent.contents[i] ? data.kaokaiContent.contents[i].coverPageSignUrl : undefined;
+                if (s3SignUrlPath !== undefined && s3SignUrlPath !== null) {
+                    const specifi = s3SignUrlPath.indexOf('?');
+                    const trimSignedUrl = s3SignUrlPath.slice(cloudFrontReplaced.length, specifi);
+                    const replace = 'https://' + process.env.AWS_CLOUDFRONT_PREFIX + trimSignedUrl;
+                    const query = { _id: snapShotObjIds };
+                    const newValues = {
+                        $set: {
+                            [`data.kaokaiContent.contents.${i}.coverPageSignUrl`]: replace
+                        }
+                    };
+                    await this.kaokaiTodaySnapShotService.update(query, newValues);
+                }
+            }
+        }
     }
 }
