@@ -2596,7 +2596,7 @@ export class MainPageController {
                 for (const userEmail of emailStack) {
                     user = await this.userService.findOne({ email: userEmail.toString() });
                     if (user.subscribeEmail === true) {
-                        // await this.sendEmail(user, user.email, snapshot.data, 'ก้าวไกลวันนี้', endDateTimeToday);
+                        await this.sendEmail(user, user.email, snapshot.data, 'ก้าวไกลวันนี้', endDateTimeToday);
                     } else {
                         continue;
                     }
@@ -2606,7 +2606,7 @@ export class MainPageController {
                 if (snapshot) {
                     for (const user of users) {
                         if (user.subscribeEmail === true) {
-                            // await this.sendEmail(user, user.email, snapshot.data, 'ก้าวไกลหน้าหนึ่ง', endDateTimeToday);
+                            await this.sendEmail(user, user.email, snapshot.data, 'ก้าวไกลหน้าหนึ่ง', endDateTimeToday);
                         } else {
                             continue;
                         }
