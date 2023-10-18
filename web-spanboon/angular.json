@@ -25,9 +25,9 @@
             "aot": false,
             "assets": [
               {
-                "glob": "**/*",
-                "input": "src/.well-known",
-                "output": ".well-known/"
+                "glob": "apple-app-site-association",
+                "input": "src/.well-known/",
+                "output": "/"
               },
               "src/assets/img/favicon.png",
               "src/assets",

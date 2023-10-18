@@ -22,9 +22,10 @@ import { CheckMergeUserFacade, NotificationManager, SeoService } from 'src/app/s
 import { CountdownConfig, CountdownEvent } from "ngx-countdown";
 import { NgOtpInputComponent } from "ng-otp-input/lib/components/ng-otp-input/ng-otp-input.component";
 import { DialogConfirmInput } from '../../shares/dialog/DialogConfirmInput.component';
+import { initializeApp } from 'firebase/app';
+import { fetchAndActivate, getAll, getRemoteConfig, getString, getValue } from "firebase/remote-config";
 
 const PAGE_NAME: string = 'login';
-
 @Component({
   selector: 'login-page',
   templateUrl: './LoginPage.component.html',
@@ -92,6 +93,11 @@ export class LoginPage extends AbstractPage implements OnInit {
   public social: any = {
     socialLogin: undefined,
   };
+  public socialButton: any = {
+    FB: false,
+    GG: false,
+    TW: false,
+  };
 
   public mockDataMergeSocial: any = {
     social: undefined,
@@ -140,7 +146,8 @@ export class LoginPage extends AbstractPage implements OnInit {
     });
   }
 
-  public ngOnInit() {
+  public async ngOnInit() {
+    await this._getConfigButton();
     this.seoService.updateTitle("เข้าสู่ระบบหรือสมัครสมาชิก");
     this.observManager.subscribe(this.regis_merge, (res: any) => {
       if (res) {
@@ -190,6 +197,23 @@ export class LoginPage extends AbstractPage implements OnInit {
   onDirtyDialogCancelButtonClick(): EventEmitter<any> {
     // throw new Error('Method not implemented.');
     return;
+  }
+
+  private async _getConfigButton() {
+    try {
+      initializeApp(environment.firebase);
+      const remoteConfig = getRemoteConfig();
+      remoteConfig.settings.minimumFetchIntervalMillis = 3600000;
+      const isFect = await fetchAndActivate(remoteConfig);
+      const social = JSON.parse(getString(remoteConfig, "LOGIN_WITH_SOCIAL"));
+      if (!!social) {
+        if (social.web.facebook) this.socialButton.FB = true;
+        if (social.web.google) this.socialButton.GG = true;
+        if (social.web.twitter) this.socialButton.TW = true;
+      }
+    } catch (err) {
+      console.log("err", err)
+    }
   }
 
   private checkLoginAndRedirection(): void {
