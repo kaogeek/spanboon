@@ -226,15 +226,15 @@ export class VotingController {
         }};
         const update = await this.voteItemService.update(query,newValues);
         if(update){
-            const successResponse = ResponseUtil.getSuccessResponse('Update vote event is success.', undefined);
+            const successResponse = ResponseUtil.getSuccessResponse('Update vote item is success.', undefined);
             return res.status(200).send(successResponse);
         }else{
-            const errorResponse = ResponseUtil.getErrorResponse('Cannot update a VoteEvent.', undefined);
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot update a Vote item.', undefined);
             return res.status(400).send(errorResponse);
         }
     }
 
-    @Put('/own/item/:votingId/:voteItemId/:voteChoiceId')
+    @Put('/own/choice/:votingId/:voteItemId/:voteChoiceId')
     @Authorized('user')
     public async updateVoteChoiceOwner(@Body({ validate: true }) voteItemRequest: VoteItemRequest,@Param('votingId') votingId: string, @Param('voteItemId') voteItemId: string,@Param('voteChoiceId') voteChoiceId: string, @Res() res: any, @Req() req: any): Promise<any> {
         const userObjId = new ObjectID(req.user.id);
@@ -272,14 +272,14 @@ export class VotingController {
                 },
                 {$set:{title:voteItemRequest.title}});
             if(updateVoted){
-                const successResponse = ResponseUtil.getSuccessResponse('Update vote event is success.', undefined);
+                const successResponse = ResponseUtil.getSuccessResponse('Update vote choice event is success.', undefined);
                 return res.status(200).send(successResponse);
             }else{
-                const errorResponse = ResponseUtil.getErrorResponse('Cannot update a VoteEvent.', undefined);
+                const errorResponse = ResponseUtil.getErrorResponse('Cannot update a Vote choice.', undefined);
                 return res.status(400).send(errorResponse);
             }
         }else{
-            const errorResponse = ResponseUtil.getErrorResponse('Cannot update a VoteEvent.', undefined);
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot update a Vote choice.', undefined);
             return res.status(400).send(errorResponse);
         }
     }
@@ -326,7 +326,7 @@ export class VotingController {
         }
     }
 
-    @Delete('/own/:votingId/:voteItem')
+    @Delete('/own/item/:votingId/:voteItem')
     @Authorized('user')
     public async deleteVoteItemtOwner(@Param('votingId') votingId: string,@Param('voteItem') voteItem: string, @Res() res: any, @Req() req: any): Promise<any> {
         const userObjId = new ObjectID(req.user.id);
@@ -355,14 +355,14 @@ export class VotingController {
             deleteVoteChoice  
             )
         {
-            const successResponse = ResponseUtil.getSuccessResponse('delete vote event is success.', undefined);
+            const successResponse = ResponseUtil.getSuccessResponse('Delete vote item is success.', undefined);
             return res.status(200).send(successResponse);
         }else{
-            const errorResponse = ResponseUtil.getErrorResponse('Cannot delete a VoteEvent.', undefined);
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot delete a Vote imte.', undefined);
             return res.status(400).send(errorResponse);
         }
     }
-    @Delete('/own/:voteItem/:voteChoice')
+    @Delete('/own/choice/:voteItem/:voteChoice')
     @Authorized('user')
     public async deleteVoteChoiceOwner(@Param('voteItem') voteItem: string,@Param('voteChoice') voteChoice: string, @Res() res: any, @Req() req: any): Promise<any> {
         const voteChoiceObjId = new ObjectID(voteChoice);
@@ -385,10 +385,10 @@ export class VotingController {
             deleteVoteChoice  
             )
         {
-            const successResponse = ResponseUtil.getSuccessResponse('delete vote event is success.', undefined);
+            const successResponse = ResponseUtil.getSuccessResponse('delete vote choice is success.', undefined);
             return res.status(200).send(successResponse);
         }else{
-            const errorResponse = ResponseUtil.getErrorResponse('Cannot delete a VoteEvent.', undefined);
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot delete a Vote choice.', undefined);
             return res.status(400).send(errorResponse);
         }
     }
