@@ -653,12 +653,17 @@ export class VotingController {
         const userObjId = new ObjectID(req.user.id);
         const voteItemObjId = new ObjectID(votedRequest.voteItemId);
         const voteChoiceObjId = new ObjectID(votedRequest.voteChoiceId);
-
-        const voteEventObj = await this.votedService.findOne({_id:votingObjId});
-        if(voteEventObj === undefined && voteEventObj === null){
+        const voteEventObj = await this.votingEventService.findOne({_id:votingObjId});
+        const voteObj = await this.votedService.findOne({_id:votingObjId});
+        if(voteObj === undefined && voteObj === null){
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find the VoteEvent.', undefined);
             return res.status(400).send(errorResponse);
         }
+        if(voteEventObj !== undefined && voteEventObj !== null && voteEventObj.approved === false){
+            const errorResponse = ResponseUtil.getErrorResponse('Status approve is false.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
         const voteItemObj = await this.voteItemService.findOne({_id:voteItemObjId});
         if(voteItemObj === undefined && voteItemObj === null){
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find the VoteItem.', undefined);
