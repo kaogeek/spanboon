@@ -308,12 +308,13 @@ export class VotingController {
 
         const deleteVoteEvent = await this.votingEventService.delete({_id:voteObjId,userId:userObjId});
         const deleteVoteItem = await this.voteItemService.deleteMany({votingId:voteObj.id});
-        const deleteVoteChoice = await this.voteChoiceService.deleteMany({voteItemId:voteItemObj.id});
+        if(voteItemObj !== undefined && voteItemObj !== null){
+            await this.voteChoiceService.deleteMany({voteItemId:voteItemObj.id});
+        }
         const deleteVoted = await this.votedService.deleteMany({votingId:voteObj.id});
         const deleteUserSupport = await this.userSupportService.deleteMany({votingId:voteObj.id});
         if(deleteVoteEvent &&  
             deleteVoteItem && 
-            deleteVoteChoice && 
             deleteVoted && 
             deleteUserSupport
             )
@@ -348,9 +349,11 @@ export class VotingController {
             }
         }
 
-        const deleteAsset = await this.assetService.delete({_id:voteItemObj.assetId});
-        const deleteVoteChoice = await this.voteChoiceService.deleteMany({voteItemId:voteItemObj.id});
+        const deleteAsset = await this.assetService.delete({_id: voteItemObj.assetId});
+        const deleteVoteItem = await this.voteItemService.delete({_id: voteItemObjId});
+        const deleteVoteChoice = await this.voteChoiceService.deleteMany({voteItemId: voteItemObj.id});
         if(
+            deleteVoteItem &&
             deleteAsset && 
             deleteVoteChoice  
             )
@@ -638,8 +641,16 @@ export class VotingController {
 
         const create = await this.userSupportService.create(userSupport);
         if (create) {
-            const successResponse = ResponseUtil.getSuccessResponse('Successfully create User Support.', create);
-            return res.status(200).send(successResponse);
+            const query = {_id:votingObjId};
+            const newValue = {$set:{count_support: votingObj.count_support + 1 }};
+            const update = await this.votingEventService.update(query,newValue);
+            if(update){
+                const successResponse = ResponseUtil.getSuccessResponse('Successfully create User Support.', create);
+                return res.status(200).send(successResponse);
+            } else {
+                const errorResponse = ResponseUtil.getErrorResponse('Cannot create a user support.', undefined);
+                return res.status(400).send(errorResponse);
+            }
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot create a user support.', undefined);
             return res.status(400).send(errorResponse);

@@ -166,16 +166,19 @@ export class AdminVotedController {
         }
 
         const deleteVoteEvent = await this.votingEventService.delete({_id:voteObjId});
-        const deleteAsset = await this.assetService.delete({_id:voteItemObj.assetId});
+        if(voteItemObj !== undefined && voteItemObj !== null){
+            await this.assetService.delete({_id:voteItemObj.assetId});
+        }
         const deleteVoteItem = await this.voteItemService.deleteMany({votingId:voteObj.id});
-        const deleteVoteChoice = await this.voteChoiceService.deleteMany({voteItemId:voteItemObj.id});
+        if(voteItemObj !== undefined && voteItemObj !== null){
+            await this.voteChoiceService.deleteMany({voteItemId:voteItemObj.id});
+        }
         const deleteVoted = await this.votedService.deleteMany({votingId:voteObj.id});
         const deleteUserSupport = await this.userSupportService.deleteMany({votingId:voteObj.id});
 
-        if(deleteVoteEvent && 
-            deleteAsset && 
+        if(
+            deleteVoteEvent && 
             deleteVoteItem && 
-            deleteVoteChoice && 
             deleteVoted && 
             deleteUserSupport
             )
