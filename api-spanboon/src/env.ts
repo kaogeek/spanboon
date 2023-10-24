@@ -102,17 +102,6 @@ export const mail = {
     
 };
 
-export const mail2 = {
-    HOST: getOsEnv('MAIL_HOST'),
-    PORT: getOsEnv('MAIL_PORT'),
-    SECURE: getOsEnv('MAIL_SECURE'),
-    FROM: getOsEnv('MAIL_FROM2'),
-    AUTH: {
-        user: getOsEnv('MAIL_USERNAME2'),
-        pass: getOsEnv('MAIL_PASSWORD2'),
-    },
-};
-
 // AWS S3 Access Key
 export const aws_setup = {
     AWS_ACCESS_KEY_ID: getOsEnv('AWS_ACCESS_KEY_ID'),
