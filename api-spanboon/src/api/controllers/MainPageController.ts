@@ -2875,7 +2875,7 @@ export class MainPageController {
             result.count = 0;
             result.sumCount = 0;
             const snapshot = await this.kaokaiTodaySnapShotService.create(result);
-            /* 
+            
             if (String(switchSendEm) === 'true' && snapshot) {
                 let user = undefined;
                 for (const userEmail of emailStack) {
@@ -3037,7 +3037,7 @@ export class MainPageController {
                         }
                     }
                 }
-            } */
+            } 
             return snapshot;
         } else {
             const maxDate = await this.kaokaiTodaySnapShotService.aggregate([{ $sort: { endDateTime: -1 } }, { $limit: 1 }]);
