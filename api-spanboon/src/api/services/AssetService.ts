@@ -15,10 +15,14 @@ import { FileUtil } from '../../utils/FileUtil';
 import { ASSET_CONFIG_NAME, DEFAULT_ASSET_CONFIG_VALUE } from '../../constants/SystemConfig';
 import { S3Service } from '../services/S3Service';
 import { ConfigService } from '../services/ConfigService';
-import { aws_setup } from '../../env';
+// import { aws_setup } from '../../env';
 import { ASSET_SCOPE } from '../../constants/AssetScope';
 import { ObjectID } from 'mongodb';
-
+import { parseUrl } from '@aws-sdk/url-parser';
+import axios from 'axios';
+import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import AWS from 'aws-sdk';
 @Service()
 export class AssetService {
 
@@ -35,8 +39,8 @@ export class AssetService {
     }
 
     // deleteMany
-    public async deleteMany(query:any,options?:any): Promise<any>{
-        return this.assetRepository.deleteMany(query,options);
+    public async deleteMany(query: any, options?: any): Promise<any> {
+        return this.assetRepository.deleteMany(query, options);
     }
 
     // create asset
@@ -129,32 +133,68 @@ export class AssetService {
         }
     }
 
+    // s3 sign cloudfront
+    public async s3SignCloudFront(assert: any): Promise<any> {
+        // use AWS SDK for JavaScript (v3).
+        const bucketS3 = process.env.AWS_BUCKET;
+        const regionS3 = process.env.AWS_DEFAULT_REGION;
+        const s3ObjectUrl = parseUrl(`https://${bucketS3}.s3.${regionS3}.amazonaws.com/${assert.fileName}`);
+        const s3 = new S3Client({ region: regionS3 });
+        const getObjectParams = { url: process.env.AWS_CLOUDFRONT_PREFIX, Bucket: bucketS3, Key: `${s3ObjectUrl.path}` };
+        const command = new GetObjectCommand(getObjectParams);
+        const signedUrl = await getSignedUrl(s3, command, { expiresIn: 300 });
+        console.log('signedUrl', signedUrl);
+
+        const s3Bucket = new AWS.S3({
+            signatureVersion: 'v4',
+            accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+            region: regionS3
+        });
+
+        const sginedUrlCloudFront = await s3Bucket.getSignedUrl('putObject', {
+            Bucket: bucketS3,
+            Key: `${assert.s3FilePath}`,
+            ContentType: `image/${assert.mimeType}`,
+            Expires: 300
+        });
+        console.log('sginedUrlCloudFront',sginedUrlCloudFront);
+        const Bodyss = assert.data;
+        await axios.put(sginedUrlCloudFront, Bodyss, {
+            headers: {
+                'Content-Type': `image/${assert.mimeType}`
+            }
+        });
+        return `https://${process.env.AWS_CLOUDFRONT_PREFIX}/${assert.s3FilePath}`;
+    }
+
     public async getAssetSignedUrl(findCondition: any): Promise<any> {
         const asset = await this.findOne(findCondition);
 
         if (asset !== undefined && asset.s3FilePath !== undefined && asset.s3FilePath !== '' && asset.s3FilePath !== null) {
             // s3 upload by cofig
             const signExpireConfig = await this.configService.getConfig(ASSET_CONFIG_NAME.EXPIRE_MINUTE);
-            let expireSecond = DEFAULT_ASSET_CONFIG_VALUE.EXPIRE_MINUTE;
+            // let expireSecond = DEFAULT_ASSET_CONFIG_VALUE.EXPIRE_MINUTE;
 
             if (signExpireConfig && signExpireConfig.value) {
                 try {
                     if (typeof signExpireConfig.value === 'number') {
-                        expireSecond = signExpireConfig.value;
+                        // expireSecond = signExpireConfig.value;
                     } else if (typeof signExpireConfig.value === 'string') {
-                        expireSecond = parseFloat(signExpireConfig.value);
+                        // expireSecond = parseFloat(signExpireConfig.value);
                     }
                 } catch (error) {
                     console.log(ASSET_CONFIG_NAME.EXPIRE_MINUTE + ' value was wrong.');
                 }
             }
 
-            let signURL = await this.s3Service.getSignedUrl(asset.s3FilePath, expireSecond);
+            const signURL = await this.s3Service.s3signCloudFront(asset.s3FilePath);
+            /* 
             if (signURL !== undefined) {
                 for (const prefix of this.s3Service.getPrefixBucketURL()) {
                     signURL = signURL.replace(prefix, aws_setup.AWS_CLOUDFRONT_PREFIX);
                 }
-            }
+            } */
             asset.signURL = signURL;
             delete asset.s3FilePath;
             delete asset.data;

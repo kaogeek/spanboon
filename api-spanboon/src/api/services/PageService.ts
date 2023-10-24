@@ -68,7 +68,7 @@ export class PageService {
                 if (result && options && options.signURL) {
                     if (result.s3ImageURL && result.s3ImageURL !== '') {
                         try {
-                            const signUrl = await this.s3Service.getConfigedSignedUrl(result.s3ImageURL);
+                            const signUrl = await this.s3Service.s3signCloudFront(result.s3ImageURL);
                             Object.assign(result, { signURL: (signUrl ? signUrl : '') });
                         } catch (error) {
                             console.log('Page Find one Error: ', error);
@@ -76,7 +76,7 @@ export class PageService {
                     }
                     if (result.s3CoverURL && result.s3CoverURL !== '') {
                         try {
-                            const signUrl = await this.s3Service.getConfigedSignedUrl(result.s3CoverURL);
+                            const signUrl = await this.s3Service.s3signCloudFront(result.s3CoverURL);
                             Object.assign(result, { coverSignURL: (signUrl ? signUrl : '') });
                         } catch (error) {
                             console.log('Page Find one Error: ', error);

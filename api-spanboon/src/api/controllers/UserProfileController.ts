@@ -154,7 +154,7 @@ export class UserProfileController {
                 'scope': process.env.SCOPE
             };
             const formattedData = qs.stringify(requestBody);
-    
+
             const responseMFP = await axios.post(
                 process.env.APP_MFP_API_OAUTH,
                 formattedData, {
@@ -233,8 +233,10 @@ export class UserProfileController {
             if (isHideStory === null || isHideStory === undefined) {
                 isHideStory = true;
             }
-
-            const objIdsUser = new ObjectID(req.headers.userid);
+            let objIdsUser = undefined;
+            if (req.headers.userid !== undefined && req.headers.userid !== null && req.headers.userid !== '') {
+                objIdsUser = new ObjectID(req.headers.userid);
+            }
             const postType = search.type;
             let userObjId;
             const result: any = {};
@@ -639,12 +641,12 @@ export class UserProfileController {
             }
         } else {
             // delete mfp authentication
-            const query = {_id:userObj};
-            const newValue = {$set:{membership:false}};
-            const update = await this.userService.update(query,newValue);
-            if(update){
-                const deleteAuthen = await this.authenIdService.delete({user:userObj,providerName: PROVIDER.MFP});
-                if(deleteAuthen){
+            const query = { _id: userObj };
+            const newValue = { $set: { membership: false } };
+            const update = await this.userService.update(query, newValue);
+            if (update) {
+                const deleteAuthen = await this.authenIdService.delete({ user: userObj, providerName: PROVIDER.MFP });
+                if (deleteAuthen) {
                     const successResponseMFP = ResponseUtil.getSuccessResponse('Binding MFP is successful.', undefined);
                     return res.status(200).send(successResponseMFP);
                 }

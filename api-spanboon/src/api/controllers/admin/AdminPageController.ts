@@ -548,7 +548,7 @@ export class AdminPageController {
             return res.status(400).send(errorResponse);
         }
     }
-
+    // update bucket
     @Put('/:id/processor')
     @Authorized()
     public async updateKaokaiToday(@Body({ validate: true }) createKaokaiTodayRequest: CreateKaokaiTodayRequest, @Param('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
