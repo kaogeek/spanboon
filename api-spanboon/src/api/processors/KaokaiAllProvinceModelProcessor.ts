@@ -246,9 +246,8 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                             contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
                             if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
                                 try {
-                                    // const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
-                                    const s3CloudFront = await this.s3Service.s3signCloudFront(firstImage.s3ImageURL, user._id);
-                                    contents.coverPageSignUrl = s3CloudFront;
+                                    const signUrl = await this.s3Service.s3signCloudFront(firstImage.s3ImageURL);
+                                    contents.coverPageSignUrl = signUrl;
                                 } catch (error) {
                                     console.log('PostSectionProcessor: ' + error);
                                 }
@@ -284,7 +283,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                                 contents.coverPageUrl = row.gallery[0].imageURL;
                                 if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
                                     try {
-                                        const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
+                                        const signUrl = await this.s3Service.s3signCloudFront(firstImage.s3ImageURL);
                                         contents.coverPageSignUrl = signUrl;
                                     } catch (error) {
                                         console.log('PostSectionProcessor: ' + error);
@@ -498,9 +497,8 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                             contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
                             if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
                                 try {
-                                    // const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
-                                    const s3CloudFront = await this.s3Service.s3signCloudFront(firstImage.s3ImageURL, user._id);
-                                    contents.coverPageSignUrl = s3CloudFront;
+                                    const signUrl = await this.s3Service.s3signCloudFront(firstImage.s3ImageURL);
+                                    contents.coverPageSignUrl = signUrl;
                                 } catch (error) {
                                     console.log('PostSectionProcessor: ' + error);
                                 }
@@ -536,7 +534,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                                 contents.coverPageUrl = row.gallery[0].imageURL;
                                 if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
                                     try {
-                                        const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
+                                        const signUrl = await this.s3Service.s3signCloudFront(firstImage.s3ImageURL);
                                         contents.coverPageSignUrl = signUrl;
                                     } catch (error) {
                                         console.log('PostSectionProcessor: ' + error);
@@ -751,9 +749,8 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                             contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
                             if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
                                 try {
-                                    // const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
-                                    const s3CloudFront = await this.s3Service.s3signCloudFront(firstImage.s3ImageURL, user._id);
-                                    contents.coverPageSignUrl = s3CloudFront;
+                                    const signUrl = await this.s3Service.s3signCloudFront(firstImage.s3ImageURL);
+                                    contents.coverPageSignUrl = signUrl;
                                 } catch (error) {
                                     console.log('PostSectionProcessor: ' + error);
                                 }
@@ -789,7 +786,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                                 contents.coverPageUrl = row.gallery[0].imageURL;
                                 if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
                                     try {
-                                        const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
+                                        const signUrl = await this.s3Service.s3signCloudFront(firstImage.s3ImageURL);
                                         contents.coverPageSignUrl = signUrl;
                                     } catch (error) {
                                         console.log('PostSectionProcessor: ' + error);
@@ -1018,8 +1015,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                             contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
                             if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
                                 try {
-                                    // const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
-                                    const s3CloudFront = await this.s3Service.s3signCloudFront(firstImage.s3ImageURL, user._id);
+                                    const s3CloudFront = await this.s3Service.s3signCloudFront(firstImage.s3ImageURL);
                                     contents.coverPageSignUrl = s3CloudFront;
                                 } catch (error) {
                                     console.log('PostSectionProcessor: ' + error);
@@ -1056,7 +1052,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                                 contents.coverPageUrl = row.gallery[0].imageURL;
                                 if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
                                     try {
-                                        const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
+                                        const signUrl = await this.s3Service.s3signCloudFront(firstImage.s3ImageURL);
                                         contents.coverPageSignUrl = signUrl;
                                     } catch (error) {
                                         console.log('PostSectionProcessor: ' + error);
@@ -1213,8 +1209,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                             contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
                             if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
                                 try {
-                                    // const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
-                                    const s3CloudFront = await this.s3Service.s3signCloudFront(firstImage.s3ImageURL, user._id);
+                                    const s3CloudFront = await this.s3Service.s3signCloudFront(firstImage.s3ImageURL);
                                     contents.coverPageSignUrl = s3CloudFront;
                                 } catch (error) {
                                     console.log('PostSectionProcessor: ' + error);
@@ -1251,7 +1246,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                                 contents.coverPageUrl = row.gallery[0].imageURL;
                                 if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
                                     try {
-                                        const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
+                                        const signUrl = await this.s3Service.s3signCloudFront(firstImage.s3ImageURL);
                                         contents.coverPageSignUrl = signUrl;
                                     } catch (error) {
                                         console.log('PostSectionProcessor: ' + error);
@@ -1480,8 +1475,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                             contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
                             if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
                                 try {
-                                    // const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
-                                    const s3CloudFront = await this.s3Service.s3signCloudFront(firstImage.s3ImageURL, user._id);
+                                    const s3CloudFront = await this.s3Service.s3signCloudFront(firstImage.s3ImageURL);
                                     contents.coverPageSignUrl = s3CloudFront;
                                 } catch (error) {
                                     console.log('PostSectionProcessor: ' + error);
@@ -1518,7 +1512,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                                 contents.coverPageUrl = row.gallery[0].imageURL;
                                 if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
                                     try {
-                                        const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
+                                        const signUrl = await this.s3Service.s3signCloudFront(firstImage.s3ImageURL);
                                         contents.coverPageSignUrl = signUrl;
                                     } catch (error) {
                                         console.log('PostSectionProcessor: ' + error);
@@ -1756,8 +1750,8 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                             contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
                             if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
                                 try {
-                                    // const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
-                                    const s3CloudFront = await this.s3Service.s3signCloudFront(firstImage.s3ImageURL, user._id);
+                                    // const signUrl = await this.s3Service.s3signCloudFront(firstImage.s3ImageURL);
+                                    const s3CloudFront = await this.s3Service.s3signCloudFront(firstImage.s3ImageURL);
                                     contents.coverPageSignUrl = s3CloudFront;
                                 } catch (error) {
                                     console.log('PostSectionProcessor: ' + error);
@@ -1794,7 +1788,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                                 contents.coverPageUrl = row.gallery[0].imageURL;
                                 if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
                                     try {
-                                        const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
+                                        const signUrl = await this.s3Service.s3signCloudFront(firstImage.s3ImageURL);
                                         contents.coverPageSignUrl = signUrl;
                                     } catch (error) {
                                         console.log('PostSectionProcessor: ' + error);
@@ -2011,8 +2005,8 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                             contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
                             if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
                                 try {
-                                    // const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
-                                    const s3CloudFront = await this.s3Service.s3signCloudFront(firstImage.s3ImageURL, user._id);
+                                    // const signUrl = await this.s3Service.s3signCloudFront(firstImage.s3ImageURL);
+                                    const s3CloudFront = await this.s3Service.s3signCloudFront(firstImage.s3ImageURL);
                                     contents.coverPageSignUrl = s3CloudFront;
                                 } catch (error) {
                                     console.log('PostSectionProcessor: ' + error);
@@ -2049,7 +2043,7 @@ export class KaokaiAllProvinceModelProcessor extends AbstractSeparateSectionProc
                                 contents.coverPageUrl = row.gallery[0].imageURL;
                                 if (firstImage !== undefined && firstImage.s3ImageURL !== undefined && firstImage.s3ImageURL !== '') {
                                     try {
-                                        const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3ImageURL);
+                                        const signUrl = await this.s3Service.s3signCloudFront(firstImage.s3ImageURL);
                                         contents.coverPageSignUrl = signUrl;
                                     } catch (error) {
                                         console.log('PostSectionProcessor: ' + error);

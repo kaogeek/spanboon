@@ -65,7 +65,6 @@ import { ObjectiveFollowingPostSectionModelProcessor } from '../processors/Objec
 import { UserFollowingPostSectionModelProcessor } from '../processors/UserFollowingPostSectionModelProcessor';
 import { FollowingProvinceSectionModelProcessor } from '../processors/FollowingProvinceSectionModelProcessor';
 // import { PostsGalleryService } from '../services/PostsGalleryService';
-import axios from 'axios';
 import {
     TODAY_DATETIME_GAP,
     DEFAULT_TODAY_DATETIME_GAP,
@@ -110,6 +109,7 @@ import { ASSET_CONFIG_NAME, DEFAULT_ASSET_CONFIG_VALUE } from '../../constants/S
 import { ASSET_SCOPE } from '../../constants/AssetScope';
 import { Asset } from '../models/Asset';
 import * as AWS from 'aws-sdk'; // Load the SDK for JavaScript
+
 @JsonController('/main')
 export class MainPageController {
     constructor(
@@ -932,7 +932,6 @@ export class MainPageController {
             }
             const assetCreate: Asset = await this.assetService.create(asset);
             if (assetCreate) {
-                // const s3CloudFront = await this.s3Service.s3signCloudFront(assetCreate, userObjId);
                 const successResponse = ResponseUtil.getSuccessResponse('Sign s3 CloudFront is sucessfully.', assetCreate);
                 return res.status(200).send(successResponse);
             }
@@ -942,32 +941,31 @@ export class MainPageController {
         }
     }
 
-    // presigned url 
     @Post('/presigned')
-    public async presignCloudFront(@Res() res: any, @Req() req: any): Promise<any> {
-        const bucketS3 = process.env.AWS_BUCKET;
-        const regionS3 = process.env.AWS_DEFAULT_REGION;
-
-        const s3 = new AWS.S3({
-            signatureVersion: 'v4',
+    public async reSignUrl(@Res() res: any, @Req() req: any): Promise<any> {
+        AWS.config.update({
             accessKeyId: process.env.AWS_ACCESS_KEY_ID,
             secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-            region: regionS3
+            region: process.env.AWS_DEFAULT_REGION
         });
-        const signExpireConfig = await this.configService.getConfig(ASSET_CONFIG_NAME.EXPIRE_MINUTE);
-        let expireSecond = DEFAULT_ASSET_CONFIG_VALUE.EXPIRE_MINUTE;
 
-        if (signExpireConfig && signExpireConfig.value) {
-            try {
-                if (typeof signExpireConfig.value === 'number') {
-                    expireSecond = signExpireConfig.value;
-                } else if (typeof signExpireConfig.value === 'string') {
-                    expireSecond = parseFloat(signExpireConfig.value);
-                }
-            } catch (error) {
-                console.log(ASSET_CONFIG_NAME.EXPIRE_MINUTE + ' value was wrong.');
+        const s3 = new AWS.S3();
+        const bucket = { Bucket: process.env.AWS_BUCKET };
+        const getObjectKey = await s3.listObjectsV2(bucket).promise();
+        const stack = [];
+        if (getObjectKey) {
+            for (const keyObject of getObjectKey.Contents) {
+                const cloudFront = await this.s3Service.s3signCloudFront(keyObject.Key);
+                stack.push(cloudFront);
             }
+            const successResponse = ResponseUtil.getSuccessResponse('Sign s3 CloudFront is sucessfully.', stack);
+            return res.status(200).send(successResponse);
         }
+    }
+    // presigned url 
+    @Post('/presigned/reurl')
+    public async presignCloudFront(@Res() res: any, @Req() req: any): Promise<any> {
+
         let name = undefined;
         const listObjectKaokaiSnapshot = await this.kaokaiTodaySnapShotService.find({});
         if (listObjectKaokaiSnapshot.length > 0) {
@@ -984,10 +982,12 @@ export class MainPageController {
                     name = 'pageRoundRobin';
                     await this.presignedS3(name, listObjectKaokaiSnapshot[i].data, listObjectKaokaiSnapshot[i].id);
                 }
+
                 if (listObjectKaokaiSnapshot[i].data.majorTrend !== undefined) {
                     name = 'majorTrend';
                     await this.presignedS3(name, listObjectKaokaiSnapshot[i].data, listObjectKaokaiSnapshot[i].id);
                 }
+
                 if (listObjectKaokaiSnapshot[i].data.kaokaiProvince !== undefined) {
                     name = 'kaokaiProvince';
                     await this.presignedS3(name, listObjectKaokaiSnapshot[i].data, listObjectKaokaiSnapshot[i].id);
@@ -1000,38 +1000,322 @@ export class MainPageController {
                     name = 'kaokaiContent';
                     await this.presignedS3(name, listObjectKaokaiSnapshot[i].data, listObjectKaokaiSnapshot[i].id);
                 }
+
             }
+            const successResponse = ResponseUtil.getSuccessResponse('Sign s3 CloudFront is sucessfully. ???? 1234', undefined);
+            return res.status(200).send(successResponse);
+        }
+    }
+    // test presigned snapshot 
+    @Post('/presigned/snapshot')
+    public async presignCloudFrontPage(@QueryParam('offset') offset: number, @QueryParam('section') section: string, @QueryParam('date') date: any, @Res() res: any, @Req() req: any): Promise<any> {
+        // const jobscheduler = req.headers.jobscheduler;
+        const dateFormat = new Date(date);
+        const dateReal = dateFormat.setDate(dateFormat.getDate() + 1);
+        const toDate = new Date(dateReal);
+        // let content = undefined;
+        const userId = req.headers.userid;
+        const mainPageSearchConfig = await this.pageService.searchPageOfficialConfig();
+        const searchOfficialOnly = mainPageSearchConfig.searchOfficialOnly;
+        const assetTodayDateGap = await this.configService.getConfig(TODAY_DATETIME_GAP);
+        const assetTodayRangeDate = await this.configService.getConfig(KAOKAITODAY_RANGE_DATE_EMERGENCY);
+        const announcement = await this.configService.getConfig(KAOKAITODAY_ANNOUNCEMENT);
+        const linkAnnounceMent = await this.configService.getConfig(KAOKAITODAY_LINK_ANNOUNCEMENT);
+        const rangeHashtag = await this.configService.getConfig(KAOKAITODAY_RANGE_OF_POPULAR_HASHTAGS);
+        const rateLimit = await this.configService.getConfig(SEARCH_CONFIG_VALUES);
+        let announcements = DEFAULT_KAOKAITODAY_ANNOUNCEMENT;
+        let linkAnnouncements = DEFAULT_KAOKAITODAY_LINK_ANNOUNCEMENT;
+        let assetEmergenDays = DEFAULT_KAOKAITODAY_RANGE_DATE_EMERGENY;
+        let assetTodayDate = DEFAULT_TODAY_DATETIME_GAP;
+        let rangeHashtags = DEFAULT_KAOKAITODAY_RANGE_OF_POPULAR_HASHTAGS;
+        let configLimit = DEFAULT_SEARCH_CONFIG_VALUE.LIMIT;
+        if (assetTodayDateGap) {
+            assetTodayDate = parseInt(assetTodayDateGap.value, 10);
         }
 
-        s3.listObjects({ Bucket: bucketS3 }, (err, data) => {
-            if (err) {
-                console.error('Error listing objects:', err);
-                return;
+        if (assetTodayRangeDate) {
+            assetEmergenDays = parseInt(assetTodayRangeDate.value, 10);
+        }
+        if (announcement) {
+            announcements = announcement.value;
+        }
+        if (linkAnnounceMent) {
+            linkAnnouncements = linkAnnounceMent.value;
+        }
+        if (rangeHashtag) {
+            rangeHashtags = rangeHashtag.value;
+        }
+        if (rateLimit) {
+            configLimit = parseInt(rateLimit.value, 10);
+        }
+        const emergencyCheckEndDate = assetTodayRangeDate.endDateTime;
+        const monthRange: Date[] = DateTimeUtil.generatePreviousDaysPeriods(new Date(), assetTodayDate);
+        if (toDate) {
+            const checkSnapshot = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: toDate });
+            if (checkSnapshot !== undefined && checkSnapshot !== null) {
+                const successResponseS = ResponseUtil.getSuccessResponse('Successfully Main Page Data', checkSnapshot);
+                return res.status(200).send(successResponseS);
             }
-            // 604b35cb78d6c04e3dacb86c/gio8xajyabc1627976695223a5s1kcpytb4.jpg
-            data.Contents.forEach((object) => {
-                const params = { Bucket: bucketS3, Key: object.Key, Expires: expireSecond };
-                s3.getSignedUrl('getObject', params, (error, url) => {
-                    if (error) {
-                        console.error('Error generating Presigned URL:', error);
-                        return;
-                    }
-                    const signedUrlCloudFront = s3.getSignedUrl('putObject', {
-                        Bucket: bucketS3,
-                        Key: `${object.Key}`,
-                        Expires: expireSecond
-                    });
-                    axios.put(signedUrlCloudFront, {
-                        headers: {
-                        }
-                    });
-                });
-            });
+        }
+        // convert object to string then json !!!!
+        // {endDateTime:-1};
+        let convert = undefined;
+
+        const checkCreate = await this.kaokaiTodaySnapShotService.findOne({ endDateTime: monthRange[1] });
+        if (checkCreate !== undefined && checkCreate !== null) {
+            if (typeof (JSON.stringify(checkCreate)) === 'string') {
+                const stringObj = JSON.stringify(checkCreate);
+                convert = JSON.parse(stringObj);
+                return convert;
+            }
+        }
+        // ordering
+        const emerProcessor: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service, this.hashTagService);
+        emerProcessor.setData({
+            userId,
+            emergencyCheckEndDate,
+            rangeHashtags,
+            endDateTime: monthRange[1]
         });
-        const successResponse = ResponseUtil.getSuccessResponse('Presigned s3 CloudFront is sucessfully.', listObjectKaokaiSnapshot);
+
+        const emerSectionModel = await emerProcessor.process2();
+        // summation
+        const postSectionObjectiveProcessor: PostSectionObjectiveProcessor = new PostSectionObjectiveProcessor(this.postsService, this.s3Service, this.userLikeService);
+        postSectionObjectiveProcessor.setData({
+            userId,
+            startDateTime: monthRange[0],
+            endDateTime: monthRange[1]
+        });
+        postSectionObjectiveProcessor.setConfig({
+            searchOfficialOnly
+        });
+
+        const postSectionModel = await postSectionObjectiveProcessor.process();
+        // roundRobin
+        const pageProcessor: PageRoundRobinProcessor = new PageRoundRobinProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService, this.pageService);
+        pageProcessor.setData({
+            userId,
+            startDateTime: monthRange[0],
+            endDateTime: monthRange[1],
+            configLimit
+        });
+
+        pageProcessor.setConfig({
+            searchOfficialOnly
+        });
+        // party executive committee
+        // deputy leader
+        // deputy secretary of the party
+        const pageRoundRobin = await pageProcessor.process();
+        let checkPosition1 = undefined;
+        const filterContentsRobin = pageRoundRobin.contents;
+        if (pageRoundRobin.position !== undefined && pageRoundRobin.position !== null) {
+            checkPosition1 = pageRoundRobin.position;
+        }
+        // เกาะกระแส
+        const majorTrendProcessor: MajorTrendSectionModelProcessor = new MajorTrendSectionModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService, this.pageService);
+        majorTrendProcessor.setData({
+            userId,
+            startDateTime: monthRange[0],
+            endDateTime: monthRange[1],
+            filterContentsRobin,
+            checkPosition1,
+            configLimit
+        });
+
+        majorTrendProcessor.setConfig({
+            searchOfficialOnly
+        });
+        const majorTrend = await majorTrendProcessor.process();
+        const filterContentsMajor = majorTrend.contents;
+        let checkPosition2 = undefined;
+        if (majorTrend.position !== undefined && majorTrend.position !== null) {
+            checkPosition2 = majorTrend.position;
+        }
+        // ก้าวไกลสภา #hashTag
+        // ก้าวไกลทุกจังหวัด
+        const kaokaiProvinceProcessor: KaokaiAllProvinceModelProcessor = new KaokaiAllProvinceModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService, this.pageService);
+        kaokaiProvinceProcessor.setData({
+            userId,
+            startDateTime: monthRange[0],
+            endDateTime: monthRange[1],
+            filterContentsRobin,
+            filterContentsMajor,
+            checkPosition1,
+            checkPosition2,
+            configLimit
+
+        });
+
+        kaokaiProvinceProcessor.setConfig({
+            searchOfficialOnly
+        });
+        const kaokaiProvince = await kaokaiProvinceProcessor.process();
+        const filterContentsProvince = kaokaiProvince.contents;
+        let checkPosition3 = undefined;
+        // kaokaiProvince.position;
+        if (kaokaiProvince.position !== undefined && kaokaiProvince.position !== null) {
+            checkPosition3 = kaokaiProvince.position;
+        }
+        const kaokaiHashTagProcessor: KaoKaiHashTagModelProcessor = new KaoKaiHashTagModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService, this.pageService);
+        kaokaiHashTagProcessor.setData({
+            userId,
+            startDateTime: monthRange[0],
+            endDateTime: monthRange[1],
+            filterContentsRobin,
+            filterContentsMajor,
+            filterContentsProvince,
+            checkPosition1,
+            checkPosition2,
+            checkPosition3,
+            configLimit
+        });
+
+        kaokaiHashTagProcessor.setConfig({
+            searchOfficialOnly
+        });
+        const kaokaiHashTag = await kaokaiHashTagProcessor.process();
+        const filterContentsHashTag = kaokaiHashTag.contents;
+        let checkPosition4 = undefined;
+        // kaokaiHashTag.position;
+        if (kaokaiHashTag.position !== undefined && kaokaiHashTag.position !== null) {
+            checkPosition4 = kaokaiHashTag.position;
+        }
+
+        const kaokaiContentProcessor: KaokaiContentModelProcessor = new KaokaiContentModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService, this.pageService);
+        kaokaiContentProcessor.setData({
+            userId,
+            startDateTime: monthRange[0],
+            endDateTime: monthRange[1],
+            filterContentsRobin,
+            filterContentsMajor,
+            filterContentsProvince,
+            filterContentsHashTag,
+            checkPosition1,
+            checkPosition2,
+            checkPosition3,
+            checkPosition4,
+            configLimit
+        });
+
+        kaokaiContentProcessor.setConfig({
+            searchOfficialOnly
+        });
+        const kaokaiContent = await kaokaiContentProcessor.process();
+        // pipeline: [{ $match: { $expr: { $in: ['$_id', bucketF] }, isOfficial: true } }],
+        // hashTag
+        const hashTagSumma = await this.hashTagService.aggregate([{ $sort: { count: -1 } }, { $limit: 3 }]);
+        if (
+            pageRoundRobin.contents.length === 0 &&
+            majorTrend.contents.length === 0 &&
+            kaokaiProvince.contents.length === 0 &&
+            kaokaiHashTag.contents.length === 0 &&
+            kaokaiContent.contents.length === 0
+        ) {
+            const emerProcessorUn: EmergencyEventSectionProcessor = new EmergencyEventSectionProcessor(this.emergencyEventService, this.postsService, this.s3Service, this.hashTagService);
+            emerProcessorUn.setData({
+                assetEmergenDays,
+                emergencyCheckEndDate
+            });
+            const emerSectionModelUn = await emerProcessorUn.process2();
+            const postProcessorUn: PostSectionProcessor = new PostSectionProcessor(this.postsService, this.s3Service, this.userLikeService);
+            postProcessorUn.setData({
+                userId,
+                startDateTime: monthRange[0],
+                endDateTime: monthRange[1]
+            });
+            postProcessorUn.setConfig({
+                searchOfficialOnly
+            });
+            const postSectionModelUn = await postProcessorUn.process();
+            const pageProcessorUn: PageRoundRobinProcessor = new PageRoundRobinProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService, this.pageService);
+            pageProcessorUn.setData({
+                userId,
+                startDateTime: monthRange[0],
+                endDateTime: monthRange[1]
+            });
+
+            pageProcessorUn.setConfig({
+                searchOfficialOnly
+            });
+            // party executive committee
+            // deputy leader
+            // deputy secretary of the party
+            const pageRoundRobinUn = await pageProcessorUn.processV2();
+            // เกาะกระแส
+            const majorTrendProcessorUn: MajorTrendSectionModelProcessor = new MajorTrendSectionModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService, this.pageService);
+            majorTrendProcessorUn.setData({
+                userId,
+                startDateTime: monthRange[0],
+                endDateTime: monthRange[1],
+            });
+
+            majorTrendProcessorUn.setConfig({
+                searchOfficialOnly
+            });
+            const majorTrendUn = await majorTrendProcessorUn.processV2();
+            const kaokaiHashTagProcessorUn: KaoKaiHashTagModelProcessor = new KaoKaiHashTagModelProcessor(this.postsService, this.s3Service, this.userLikeService, this.kaokaiTodayService, this.hashTagService, this.pageService);
+            kaokaiHashTagProcessorUn.setData({
+                userId,
+                startDateTime: monthRange[0],
+                endDateTime: monthRange[1],
+            });
+
+            kaokaiHashTagProcessorUn.setConfig({
+                searchOfficialOnly
+            });
+
+            const kaokaiHashTagUn = await kaokaiHashTagProcessorUn.processV2();
+
+            // pipeline: [{ $match: { $expr: { $in: ['$_id', bucketF] }, isOfficial: true } }],
+            // hashTag
+            const hashTagSummaUn = await this.hashTagService.aggregate([{ $sort: { count: -1 } }, { $limit: 3 }]);
+            const resultUn: any = {};
+            resultUn.emergencyEvents = emerSectionModelUn;
+            resultUn.hashTagSumma = hashTagSummaUn;
+            resultUn.postSectionModel = postSectionModelUn;
+            resultUn.pageRoundRobin = pageRoundRobinUn;
+            resultUn.majorTrend = majorTrendUn;
+            resultUn.kaokaiHashTag = kaokaiHashTagUn;
+            resultUn.announcement = announcements;
+            resultUn.linkAnnounceMent = linkAnnouncements;
+            const successResponseUn = ResponseUtil.getSuccessResponse('Successfully Main Page Data', resultUn);
+            return res.status(200).send(successResponseUn);
+        }
+        const result: any = {};
+        result.emergencyEvents = emerSectionModel;
+        result.hashTagSumma = hashTagSumma;
+        result.postSectionModel = postSectionModel;
+        result.pageRoundRobin = pageRoundRobin;
+        result.majorTrend = majorTrend;
+        result.kaokaiProvince = kaokaiProvince;
+        result.kaokaiHashTag = kaokaiHashTag;
+        result.kaokaiContent = kaokaiContent;
+        result.announcement = announcements;
+        result.linkAnnounceMent = linkAnnouncements;
+        const successResponse = ResponseUtil.getSuccessResponse('test test ....', result);
         return res.status(200).send(successResponse);
     }
-
+    // Presigned S3 for Page profile
+    @Post('/presigned/page')
+    public async testS3CloudFront(@Res() res: any, @Req() req: any): Promise<any> {
+        const emergencyEvent = await this.emergencyEventService.findOne({ _id: new ObjectID('63cf856d204f1f728cf5ff11') });
+        const s3CloudFront = await this.s3Service.getS3Object(emergencyEvent.s3CoverPageURL);
+        if (s3CloudFront) {
+            const cloudFront = 'https://' + process.env.AWS_CLOUDFRONT_PREFIX + '/' + emergencyEvent.s3CoverPageURL;
+            const successResponse = ResponseUtil.getSuccessResponse('test test ....', cloudFront);
+            return res.status(200).send(successResponse);
+        }
+    }
+    /*
+    // Presigned S3 for User profile
+    @Post('/presigned/user')
+    public async presignCloudFrontUser(@Res() res: any, @Req() req: any): Promise<any> {
+        const users = await this.userService.find({});
+        // s3ImageURL
+        // s3CoverURL
+    }
+    */
     @Post('/is/read')
     public async isRead(@Body({ validate: true }) data: IsRead, @Res() res: any, @Req() req: any): Promise<any> {
         const userId = req.headers.userid;
@@ -2591,6 +2875,7 @@ export class MainPageController {
             result.count = 0;
             result.sumCount = 0;
             const snapshot = await this.kaokaiTodaySnapShotService.create(result);
+            /* 
             if (String(switchSendEm) === 'true' && snapshot) {
                 let user = undefined;
                 for (const userEmail of emailStack) {
@@ -2752,7 +3037,7 @@ export class MainPageController {
                         }
                     }
                 }
-            }
+            } */
             return snapshot;
         } else {
             const maxDate = await this.kaokaiTodaySnapShotService.aggregate([{ $sort: { endDateTime: -1 } }, { $limit: 1 }]);
@@ -4302,20 +4587,21 @@ export class MainPageController {
     // presigned s3
     private async presignedS3(name: string, data: any, objId: string): Promise<any> {
         let s3SignUrlPath = undefined;
-        const cloudFrontReplaced = 'https://' + process.env.AWS_CLOUDFRONT_PREFIX_REPLACED;
         const snapShotObjIds = new ObjectID(objId);
         if (String(name) === 'emergencyEvents' && data.emergencyEvents !== undefined) {
             for (let i = 0; i < data.emergencyEvents.contents.length; i++) {
                 s3SignUrlPath = data.emergencyEvents.contents[i] ? data.emergencyEvents.contents[i].coverPageSignUrl : undefined;
                 // for each contents
                 if (s3SignUrlPath !== undefined && s3SignUrlPath !== null) {
-                    const specifi = s3SignUrlPath.indexOf('?');
-                    const trimSignedUrl = s3SignUrlPath.slice(cloudFrontReplaced.length, specifi);
-                    const replace = 'https://' + process.env.AWS_CLOUDFRONT_PREFIX + trimSignedUrl;
+                    const match = s3SignUrlPath.match(/([^/]+\/[^?]+)/);
+                    const extractedPart = match[1];
+                    const result = extractedPart.replace(/^https:\/\/[^/]+\//, '');
+                    // signCloudFront 
+                    const getSingedUrl = await this.s3Service.s3signCloudFront(result);
                     const query = { _id: snapShotObjIds };
                     const newValues = {
                         $set: {
-                            [`data.emergencyEvents.contents.${i}.coverPageSignUrl`]: replace
+                            [`data.emergencyEvents.contents.${i}.coverPageSignUrl`]: getSingedUrl
                         }
                     };
                     await this.kaokaiTodaySnapShotService.update(query, newValues);
@@ -4326,13 +4612,14 @@ export class MainPageController {
             for (let i = 0; i < data.postSectionModel.contents.length; i++) {
                 s3SignUrlPath = data.postSectionModel.contents[i] ? data.postSectionModel.contents[i].coverPageSignUrl : undefined;
                 if (s3SignUrlPath !== undefined && s3SignUrlPath !== null) {
-                    const specifi = s3SignUrlPath.indexOf('?');
-                    const trimSignedUrl = s3SignUrlPath.slice(cloudFrontReplaced.length, specifi);
-                    const replace = 'https://' + process.env.AWS_CLOUDFRONT_PREFIX + trimSignedUrl;
+                    const match = s3SignUrlPath.match(/([^/]+\/[^?]+)/);
+                    const extractedPart = match[1];
+                    const result = extractedPart.replace(/^https:\/\/[^/]+\//, '');
+                    const getSingedUrl = await this.s3Service.s3signCloudFront(result);
                     const query = { _id: snapShotObjIds };
                     const newValues = {
                         $set: {
-                            [`data.postSectionModel.contents.${i}.coverPageSignUrl`]: replace
+                            [`data.postSectionModel.contents.${i}.coverPageSignUrl`]: getSingedUrl
                         }
                     };
                     await this.kaokaiTodaySnapShotService.update(query, newValues);
@@ -4344,13 +4631,14 @@ export class MainPageController {
             for (let i = 0; i < data.pageRoundRobin.contents.length; i++) {
                 s3SignUrlPath = data.pageRoundRobin.contents[i] ? data.pageRoundRobin.contents[i].coverPageSignUrl : undefined;
                 if (s3SignUrlPath !== undefined && s3SignUrlPath !== null) {
-                    const specifi = s3SignUrlPath.indexOf('?');
-                    const trimSignedUrl = s3SignUrlPath.slice(cloudFrontReplaced.length, specifi);
-                    const replace = 'https://' + process.env.AWS_CLOUDFRONT_PREFIX + trimSignedUrl;
+                    const match = s3SignUrlPath.match(/([^/]+\/[^?]+)/);
+                    const extractedPart = match[1];
+                    const result = extractedPart.replace(/^https:\/\/[^/]+\//, '');
+                    const getSingedUrl = await this.s3Service.s3signCloudFront(result);
                     const query = { _id: snapShotObjIds };
                     const newValues = {
                         $set: {
-                            [`data.pageRoundRobin.contents.${i}.coverPageSignUrl`]: replace
+                            [`data.pageRoundRobin.contents.${i}.coverPageSignUrl`]: getSingedUrl
                         }
                     };
                     await this.kaokaiTodaySnapShotService.update(query, newValues);
@@ -4361,13 +4649,14 @@ export class MainPageController {
             for (let i = 0; i < data.majorTrend.contents.length; i++) {
                 s3SignUrlPath = data.majorTrend.contents[i] ? data.majorTrend.contents[i].coverPageSignUrl : undefined;
                 if (s3SignUrlPath !== undefined && s3SignUrlPath !== null) {
-                    const specifi = s3SignUrlPath.indexOf('?');
-                    const trimSignedUrl = s3SignUrlPath.slice(cloudFrontReplaced.length, specifi);
-                    const replace = 'https://' + process.env.AWS_CLOUDFRONT_PREFIX + trimSignedUrl;
+                    const match = s3SignUrlPath.match(/([^/]+\/[^?]+)/);
+                    const extractedPart = match[1];
+                    const result = extractedPart.replace(/^https:\/\/[^/]+\//, '');
+                    const getSingedUrl = await this.s3Service.s3signCloudFront(result);
                     const query = { _id: snapShotObjIds };
                     const newValues = {
                         $set: {
-                            [`data.majorTrend.contents.${i}.coverPageSignUrl`]: replace
+                            [`data.majorTrend.contents.${i}.coverPageSignUrl`]: getSingedUrl
                         }
                     };
                     await this.kaokaiTodaySnapShotService.update(query, newValues);
@@ -4378,13 +4667,14 @@ export class MainPageController {
             for (let i = 0; i < data.kaokaiProvince.contents.length; i++) {
                 s3SignUrlPath = data.kaokaiProvince.contents[i] ? data.kaokaiProvince.contents[i].coverPageSignUrl : undefined;
                 if (s3SignUrlPath !== undefined && s3SignUrlPath !== null) {
-                    const specifi = s3SignUrlPath.indexOf('?');
-                    const trimSignedUrl = s3SignUrlPath.slice(cloudFrontReplaced.length, specifi);
-                    const replace = 'https://' + process.env.AWS_CLOUDFRONT_PREFIX + trimSignedUrl;
+                    const match = s3SignUrlPath.match(/([^/]+\/[^?]+)/);
+                    const extractedPart = match[1];
+                    const result = extractedPart.replace(/^https:\/\/[^/]+\//, '');
+                    const getSingedUrl = await this.s3Service.s3signCloudFront(result);
                     const query = { _id: snapShotObjIds };
                     const newValues = {
                         $set: {
-                            [`data.kaokaiProvince.contents.${i}.coverPageSignUrl`]: replace
+                            [`data.kaokaiProvince.contents.${i}.coverPageSignUrl`]: getSingedUrl
                         }
                     };
                     await this.kaokaiTodaySnapShotService.update(query, newValues);
@@ -4395,13 +4685,14 @@ export class MainPageController {
             for (let i = 0; i < data.kaokaiHashTag.contents.length; i++) {
                 s3SignUrlPath = data.kaokaiHashTag.contents[i] ? data.kaokaiHashTag.contents[i].coverPageSignUrl : undefined;
                 if (s3SignUrlPath !== undefined && s3SignUrlPath !== null) {
-                    const specifi = s3SignUrlPath.indexOf('?');
-                    const trimSignedUrl = s3SignUrlPath.slice(cloudFrontReplaced.length, specifi);
-                    const replace = 'https://' + process.env.AWS_CLOUDFRONT_PREFIX + trimSignedUrl;
+                    const match = s3SignUrlPath.match(/([^/]+\/[^?]+)/);
+                    const extractedPart = match[1];
+                    const result = extractedPart.replace(/^https:\/\/[^/]+\//, '');
+                    const getSingedUrl = await this.s3Service.s3signCloudFront(result);
                     const query = { _id: snapShotObjIds };
                     const newValues = {
                         $set: {
-                            [`data.kaokaiHashTag.contents.${i}.coverPageSignUrl`]: replace
+                            [`data.kaokaiHashTag.contents.${i}.coverPageSignUrl`]: getSingedUrl
                         }
                     };
                     await this.kaokaiTodaySnapShotService.update(query, newValues);
@@ -4412,13 +4703,14 @@ export class MainPageController {
             for (let i = 0; i < data.kaokaiContent.contents.length; i++) {
                 s3SignUrlPath = data.kaokaiContent.contents[i] ? data.kaokaiContent.contents[i].coverPageSignUrl : undefined;
                 if (s3SignUrlPath !== undefined && s3SignUrlPath !== null) {
-                    const specifi = s3SignUrlPath.indexOf('?');
-                    const trimSignedUrl = s3SignUrlPath.slice(cloudFrontReplaced.length, specifi);
-                    const replace = 'https://' + process.env.AWS_CLOUDFRONT_PREFIX + trimSignedUrl;
+                    const match = s3SignUrlPath.match(/([^/]+\/[^?]+)/);
+                    const extractedPart = match[1];
+                    const result = extractedPart.replace(/^https:\/\/[^/]+\//, '');
+                    const getSingedUrl = await this.s3Service.s3signCloudFront(result);
                     const query = { _id: snapShotObjIds };
                     const newValues = {
                         $set: {
-                            [`data.kaokaiContent.contents.${i}.coverPageSignUrl`]: replace
+                            [`data.kaokaiContent.contents.${i}.coverPageSignUrl`]: getSingedUrl
                         }
                     };
                     await this.kaokaiTodaySnapShotService.update(query, newValues);

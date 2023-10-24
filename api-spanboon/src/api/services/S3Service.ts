@@ -13,12 +13,8 @@ import { aws_setup } from '../../env';
 import * as fs from 'fs';
 import { DEFAULT_ASSET_CONFIG_VALUE, ASSET_CONFIG_NAME } from '../../constants/SystemConfig';
 import { ConfigService } from '../services/ConfigService';
-import axios from 'axios';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
-import { parseUrl } from '@aws-sdk/url-parser';
-import { ObjectID } from 'mongodb';
-
+import * as path from 'path';
+import { getSignedUrl } from '@aws-sdk/cloudfront-signer';
 const s3 = new AWS.S3();
 
 @Service()
@@ -214,55 +210,21 @@ export class S3Service {
     }
 
     // s3 signCloudFront
-    public async s3signCloudFront(assert: any, userid: string): Promise<any> {
-        // use AWS SDK for JavaScript (v3).
-        const signExpireConfig = await this.configService.getConfig(ASSET_CONFIG_NAME.EXPIRE_MINUTE);
-        let expireSecond = DEFAULT_ASSET_CONFIG_VALUE.EXPIRE_MINUTE;
+    public async s3signCloudFront(keyObject: any): Promise<any> {
+        const cloudfrontDistributionDomain = 'https://' + process.env.AWS_CLOUDFRONT_PREFIX;
+        const filePath = path.join(__dirname, '../../../pk-APKA2ETX3SHA62PN6BX4.pem'); // Construct an absolute file path
+        const readfile = fs.readFileSync(filePath, { encoding: 'utf8' });
+        const url = `${cloudfrontDistributionDomain}/${keyObject}`;
+        const privateKey = readfile;
+        const keyPairId = process.env.CLOUFRONT_KEY_PAIR_ID;
+        const signedUrl = getSignedUrl({
+            url,
+            keyPairId,
+            dateLessThan: '2100-12-31',
+            privateKey
+        });
 
-        if (signExpireConfig && signExpireConfig.value) {
-            try {
-                if (typeof signExpireConfig.value === 'number') {
-                    expireSecond = signExpireConfig.value;
-                } else if (typeof signExpireConfig.value === 'string') {
-                    expireSecond = parseFloat(signExpireConfig.value);
-                }
-            } catch (error) {
-                console.log(ASSET_CONFIG_NAME.EXPIRE_MINUTE + ' value was wrong.');
-            }
-        }
-        const objIds = new ObjectID(userid);
-        const bucketS3 = process.env.AWS_BUCKET;
-        const regionS3 = process.env.AWS_DEFAULT_REGION;
-        const s3ObjectUrl = parseUrl(`https://${bucketS3}.s3.${regionS3}.amazonaws.com/${assert.fileName}`);
-        const s3Client = new S3Client({ region: regionS3 });
-        const getObjectParams = { url: process.env.AWS_CLOUDFRONT_PREFIX, Bucket: bucketS3, Key: `${assert.s3FilePath}` };
-        const command = new GetObjectCommand(getObjectParams);
-        await getSignedUrl(s3Client, command, { expiresIn: expireSecond });
-        const s3Bucket = new AWS.S3({
-            signatureVersion: 'v4',
-            accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-            region: regionS3
-        });
-        const signedUrlCloudFront = await s3Bucket.getSignedUrl('putObject', {
-            Bucket: bucketS3,
-            Key: `${objIds}${s3ObjectUrl.path}`,
-            ContentType: `image/${assert.mimeType}`,
-            Expires: expireSecond
-        });
-        const Bodyss = assert.data;
-        await axios.put(signedUrlCloudFront, Bodyss, {
-            headers: {
-                'Content-Type': `image/${assert.mimeType}`
-            }
-        });
-        /*
-        console.log(`Try access this file via:
-            Direct S3 URL: https://${bucketS3}.s3-${regionS3}.amazonaws.com/${assert.s3FilePath}
-            CloudFront URL: https://${process.env.AWS_CLOUDFRONT_PREFIX}/${assert.s3FilePath}
-        `);
-        */
-        return `https://${process.env.AWS_CLOUDFRONT_PREFIX}/${assert.s3FilePath}`;
+        return signedUrl;
     }
 
     // search folder
@@ -343,7 +305,81 @@ export class S3Service {
             });
         });
     }
+    public getS3Object(keyObject: any): Promise<any> {
+        return new Promise((resolve, reject) => {
+            AWS.config.update({
+                accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+                secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+                region: process.env.AWS_DEFAULT_REGION,
+                signatureVersion: 'v4'
+            });
+            const s3Config = new AWS.S3();
+            const myBucket = process.env.AWS_BUCKET;
+            const myKey = keyObject;
+            let signedUrlExpireSeconds = DEFAULT_ASSET_CONFIG_VALUE.EXPIRE_MINUTE;
+            this.configService.getConfig(ASSET_CONFIG_NAME.EXPIRE_MINUTE).then((data) => {
 
+                if (data && data.value) {
+                    try {
+                        if (typeof data.value === 'number') {
+                            signedUrlExpireSeconds = data.value;
+                        } else if (typeof data.value === 'string') {
+                            signedUrlExpireSeconds = parseFloat(data.value);
+                        }
+                    } catch (error) {
+                        console.log(ASSET_CONFIG_NAME.EXPIRE_MINUTE + ' value was wrong.');
+                    }
+                }
+            });
+            const url = s3Config.getSignedUrl('getObject', {
+                Bucket: myBucket,
+                Key: myKey,
+                Expires: signedUrlExpireSeconds
+            });
+            return resolve(url);
+        });
+    }
+    // aws cli v3 signed s3 url
+    /* 
+    public getS3Object(keyObject: any): Promise<any> {
+        return new Promise((resolve, reject) => {
+            const s3Param = new AWS.S3(
+                {
+                    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+                    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+                    region: process.env.AWS_DEFAULT_REGION,
+                    signatureVersion: 'v4'
+                }
+            );
+            const myBucket = process.env.AWS_BUCKET;
+            const myKey = keyObject;
+            let expireSecond = DEFAULT_ASSET_CONFIG_VALUE.EXPIRE_MINUTE;
+            this.configService.getConfig(ASSET_CONFIG_NAME.EXPIRE_MINUTE).then((data) => {
+                
+                if (data && data.value) {
+                    try {
+                        if (typeof data.value === 'number') {
+                            expireSecond = data.value;
+                        } else if (typeof data.value === 'string') {
+                            expireSecond = parseFloat(data.value);
+                        }
+                    } catch (error) {
+                        console.log(ASSET_CONFIG_NAME.EXPIRE_MINUTE + ' value was wrong.');
+                    }
+                }
+            });
+
+            const params = { Bucket: myBucket, Key: myKey, Expires: expireSecond };
+            s3Param.getSignedUrl('getObject', params, (error, url) => {
+                if (error) {
+                    console.error('Error generating Presigned URL:', error);
+                    return reject(error);
+                }
+                return resolve(url);
+            });
+        });
+    }
+    */
     public async getConfigedSignedUrl(folderName: string = ''): Promise<string> {
         const signExpireConfig = await this.configService.getConfig(ASSET_CONFIG_NAME.EXPIRE_MINUTE);
         let expireSecond = DEFAULT_ASSET_CONFIG_VALUE.EXPIRE_MINUTE;

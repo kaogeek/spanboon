@@ -188,12 +188,13 @@ export class AssetService {
                 }
             }
 
-            let signURL = await this.s3Service.getSignedUrl(asset.s3FilePath, expireSecond);
+            const signURL = await this.s3Service.s3signCloudFront(asset.s3FilePath);
+            /* 
             if (signURL !== undefined) {
                 for (const prefix of this.s3Service.getPrefixBucketURL()) {
                     signURL = signURL.replace(prefix, aws_setup.AWS_CLOUDFRONT_PREFIX);
                 }
-            }
+            } */
             asset.signURL = signURL;
             delete asset.s3FilePath;
             delete asset.data;

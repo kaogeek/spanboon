@@ -200,7 +200,7 @@ export class PostSectionObjectiveProcessor extends AbstractSeparateSectionProces
                     contents.coverPageUrl = (row.gallery.length > 0) ? row.gallery[0].imageURL : undefined;
                     if (firstImage !== undefined && firstImage.s3FilePath !== undefined && firstImage.s3FilePath !== '') {
                         try {
-                            const signUrl = await this.s3Service.getConfigedSignedUrl(firstImage.s3FilePath);
+                            const signUrl = await this.s3Service.s3signCloudFront(firstImage.s3FilePath);
                             contents.coverPageSignUrl = signUrl;
                         } catch (error) {
                             console.log('PostSectionProcessor: ' + error);
