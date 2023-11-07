@@ -126,7 +126,7 @@ export class AdminVotedController {
         let voteClosed = votingEventRequest.closed;
         let voteApproved = votingEventRequest.approved;
         let votePin = votingEventRequest.pin;
-        let voteShowed = votingEventRequest.showed;
+        let voteShowed = votingEventRequest.showVoterName;
         let voteStatus = votingEventRequest.status;
 
         if (voteClosed === null || voteClosed === undefined) {
@@ -151,8 +151,8 @@ export class AdminVotedController {
         const query = {_id:voteObjId};
         const newValues = {
             $set:{
-                approve_name:user.displayName,
-                approve_datetime:today,
+                approveUsername:user.displayName,
+                approveDatetime:today,
                 closed:voteClosed,
                 approved:voteApproved,
                 pin:votePin,

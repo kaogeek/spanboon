@@ -43,6 +43,9 @@ export class PageObjective extends BaseModel {
     @Column({ name: 'personal' })
     public personal: boolean;
 
+    @Column({ name: 'timeStamps' })
+    public timeStamps: Date;
+
     @BeforeInsert()
     public createDetails(): any {
         this.createdDate = moment().toDate();

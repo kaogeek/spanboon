@@ -109,6 +109,7 @@ import { ASSET_CONFIG_NAME, DEFAULT_ASSET_CONFIG_VALUE } from '../../constants/S
 import { ASSET_SCOPE } from '../../constants/AssetScope';
 import { Asset } from '../models/Asset';
 import * as AWS from 'aws-sdk'; // Load the SDK for JavaScript
+import { S3 } from '@aws-sdk/client-s3';
 
 @JsonController('/main')
 export class MainPageController {
@@ -943,15 +944,25 @@ export class MainPageController {
 
     @Post('/presigned')
     public async reSignUrl(@Res() res: any, @Req() req: any): Promise<any> {
+        // JS SDK v3 does not support global configuration.
+        // Codemod has attempted to pass values to each service client in this file.
+        // You may need to update clients outside of this file, if they use global config.
         AWS.config.update({
             accessKeyId: process.env.AWS_ACCESS_KEY_ID,
             secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
             region: process.env.AWS_DEFAULT_REGION
         });
 
-        const s3 = new AWS.S3();
+        const s3 = new S3({
+            credentials: {
+                accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+                secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+            },
+
+            region: process.env.AWS_DEFAULT_REGION
+        });
         const bucket = { Bucket: process.env.AWS_BUCKET };
-        const getObjectKey = await s3.listObjectsV2(bucket).promise();
+        const getObjectKey = await s3.listObjectsV2(bucket);
         const stack = [];
         if (getObjectKey) {
             for (const keyObject of getObjectKey.Contents) {

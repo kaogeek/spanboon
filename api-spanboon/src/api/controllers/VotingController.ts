@@ -60,19 +60,20 @@ export class VotingController {
         const exp = { $regex: '.*' + keywords + '.*', $options: 'si' };
         const take = filter.limit ? filter.limit: 10;
         const offset = filter.offset ? filter.offset: 0;
-
+        const match: any = 
+        {                        
+            approved:whereConditions.approved,
+            closed:whereConditions.closed,
+            status:whereConditions.status,
+            type:whereConditions.type,
+            pin:whereConditions.pin,
+            showed:whereConditions.showed,
+            title:exp
+        };
         const voteEventAggr = await this.votingEventService.aggregate(
             [
                 {
-                    $match:{
-                        approved:whereConditions.approved,
-                        closed:whereConditions.closed,
-                        status:whereConditions.status,
-                        type:whereConditions.type,
-                        pin:whereConditions.pin,
-                        showed:whereConditions.showed,
-                        title:exp
-                    }
+                    $match:match
                 },
                 {
                     $sort:{
@@ -112,20 +113,21 @@ export class VotingController {
         const exp = { $regex: '.*' + keywords + '.*', $options: 'si' };
         const take = filter.limit ? filter.limit: 10;
         const offset = filter.offset ? filter.offset: 0;
-
+        const match: any = 
+        {
+            approved:whereConditions.approved,
+            closed:whereConditions.closed,
+            status:whereConditions.status,
+            type:whereConditions.type,
+            pin:whereConditions.pin,
+            showed:whereConditions.showed,
+            userId:userObjId,
+            title:exp
+        };
         const voteEventAggr = await this.votingEventService.aggregate(
             [
                 {
-                    $match:{
-                        approved:whereConditions.approved,
-                        closed:whereConditions.closed,
-                        status:whereConditions.status,
-                        type:whereConditions.type,
-                        pin:whereConditions.pin,
-                        showed:whereConditions.showed,
-                        userId:userObjId,
-                        title:exp
-                    }
+                    $match:match
                 },
                 {
                     $sort:{
@@ -178,13 +180,13 @@ export class VotingController {
                 detail:votingEventRequest.detail,
                 coverPageURL:votingEventRequest.coverPageURL,
                 s3CoverPageURL:votingEventRequest.s3CoverPageURL,
-                min_support:votingEventRequest.min_support,
-                update_datetime:today,
-                end_vote_datetime:votingEventRequest.end_vote_datetime,
+                minSupport:votingEventRequest.minSupport,
+                updateDatetime:today,
+                endVoteDatetime:votingEventRequest.endVoteDatetime,
                 status:votingEventRequest.status,
                 type:votingEventRequest.type,
                 closed:votingEventRequest.closed,
-                showed:votingEventRequest.showed
+                showed:votingEventRequest.showVoterName
             }};
         const update = await this.votingEventService.update(query,newValues);
         if(update){
@@ -418,10 +420,10 @@ export class VotingController {
         const coverImage = votingEventRequest.coverPageURL;
         const approve = votingEventRequest.approved ? votingEventRequest.approved : false;
         const close = votingEventRequest.closed ? votingEventRequest.closed : false;
-        const minSupport = votingEventRequest.min_support ? votingEventRequest.min_support : minSupportValue;
-        const startVoteDateTime = moment(votingEventRequest.start_vote_datetime).toDate();
-        const endVoteDateTime = moment(votingEventRequest.end_vote_datetime).toDate();
-        const showed = votingEventRequest.showed ? votingEventRequest.showed : false;
+        const minSupport = votingEventRequest.minSupport ? votingEventRequest.minSupport : minSupportValue;
+        const startVoteDateTime = moment(votingEventRequest.startVoteDatetime).toDate();
+        const endVoteDateTime = moment(votingEventRequest.endVoteDatetime).toDate();
+        const showed = votingEventRequest.showVoterName ? votingEventRequest.showVoterName : false;
 
         // check ban 
 
@@ -509,19 +511,20 @@ export class VotingController {
         votingEvent.userId = userObjId;
         votingEvent.approved = approve;
         votingEvent.closed = close;
-        votingEvent.min_support = minSupport;
-        votingEvent.count_support = votingEventRequest.count_support;
-        votingEvent.start_vote_datetime = startVoteDateTime;
-        votingEvent.end_vote_datetime = endVoteDateTime;
-        votingEvent.approve_datetime = votingEventRequest.approve_datetime;
-        votingEvent.approve_name = votingEventRequest.approve_name;
-        votingEvent.update_datetime = today;
+        votingEvent.minSupport = minSupport;
+        votingEvent.countSupport = 0;
+        votingEvent.startVoteDatetime = startVoteDateTime;
+        votingEvent.endVoteDatetime = endVoteDateTime;
+        votingEvent.approveDatetime = votingEventRequest.approveDatetime;
+        votingEvent.approveUsername = votingEventRequest.approveUsername;
+        votingEvent.updateDatetime = today;
         // votingEvent.create_user = new ObjectID(votingEventRequest.create_user);
         votingEvent.status = status;
-        votingEvent.create_as_page = pageObjId;
+        votingEvent.createAsPage = pageObjId;
         votingEvent.type = type;
         votingEvent.pin = pin;
-        votingEvent.showed = showed;
+        votingEvent.showVoterName = showed;
+        votingEvent.showVoteResult = votingEventRequest.showVoteResult;
 
         const result = await this.votingEventService.create(votingEvent);
         if (result) {
@@ -665,10 +668,10 @@ export class VotingController {
         const voteItemObjId = new ObjectID(votedRequest.voteItemId);
         const voteChoiceObjId = new ObjectID(votedRequest.voteChoiceId);
         const voteEventObj = await this.votingEventService.findOne({_id:votingObjId});
-        const voteObj = await this.votedService.findOne({_id:votingObjId});
-        if(voteObj === undefined && voteObj === null){
-            const errorResponse = ResponseUtil.getErrorResponse('Cannot find the VoteEvent.', undefined);
-            return res.status(400).send(errorResponse);
+        const voteObj = await this.votedService.findOne({votingId:votingObjId,userId:userObjId });
+        
+        if(voteObj !== undefined && voteObj !== null){
+            await this.votedService.delete({votingId:votingObjId,userId:userObjId});
         }
         if(voteEventObj !== undefined && voteEventObj !== null && voteEventObj.approved === false){
             const errorResponse = ResponseUtil.getErrorResponse('Status approve is false.', undefined);
