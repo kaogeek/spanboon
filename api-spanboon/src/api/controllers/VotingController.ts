@@ -46,7 +46,7 @@ export class VotingController {
         private assetService:AssetService
     ) { }
 
-    @Post('/search/vote')
+    @Post('/vote/search/')
     public async searchVoted(@Body({ validate: true }) search: FindVoteRequest, @Res() res: any, @Req() req: any): Promise<any> {
         if (ObjectUtil.isObjectEmpty(search)) {
             return res.status(200).send([]);
@@ -238,7 +238,7 @@ export class VotingController {
         }
     }
 
-    @Post('/search/own/vote')
+    @Post('/own/search/')
     @Authorized('user')
     public async searchVotedOwner(@Body({ validate: true }) search: FindVoteRequest, @Res() res: any, @Req() req: any): Promise<any> {
         const userObjId = new ObjectID(req.user.id);
