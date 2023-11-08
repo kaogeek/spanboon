@@ -46,7 +46,7 @@ export class VotingController {
         private assetService:AssetService
     ) { }
 
-    @Post('/search')
+    @Post('/search/vote')
     public async searchVoted(@Body({ validate: true }) search: FindVoteRequest, @Res() res: any, @Req() req: any): Promise<any> {
         if (ObjectUtil.isObjectEmpty(search)) {
             return res.status(200).send([]);
@@ -60,21 +60,162 @@ export class VotingController {
         const exp = { $regex: '.*' + keywords + '.*', $options: 'si' };
         const take = filter.limit ? filter.limit: 10;
         const offset = filter.offset ? filter.offset: 0;
-        const match: any = 
-        {                        
-            approved:whereConditions.approved,
-            closed:whereConditions.closed,
-            status:whereConditions.status,
-            type:whereConditions.type,
-            pin:whereConditions.pin,
-            showed:whereConditions.showed,
-            title:exp
-        };
-        const voteEventAggr = await this.votingEventService.aggregate(
+        const matchVoteEvent: any = {};
+
+        if(whereConditions.approved !== undefined && whereConditions.approved !== null){
+            matchVoteEvent.approved = whereConditions.approved;
+        }
+
+        if(whereConditions.closed !== undefined && whereConditions.closed !== null){
+            matchVoteEvent.closed = whereConditions.closed;
+        }
+
+        if(whereConditions.status !== undefined && whereConditions.status !== null){
+            matchVoteEvent.status = whereConditions.status;
+        }
+
+        if(whereConditions.type !== undefined && whereConditions.type !== null){
+            matchVoteEvent.type = whereConditions.type;
+        }
+
+        if(whereConditions.pin !== undefined && whereConditions.pin !== null) {
+            matchVoteEvent.pin = whereConditions.pin;
+        }
+
+        if(whereConditions.showed !== undefined && whereConditions.showed !== null){
+            matchVoteEvent.showVoteResult = whereConditions.showVoteResult;
+        }
+
+        if(keywords !== undefined && keywords !== null && keywords !== ''){
+            matchVoteEvent.title = exp;
+        }
+        const voteEventAggr:any = await this.votingEventService.aggregate(
             [
                 {
-                    $match:match
+                    $project: {
+                        _id:1,
+                        createdDate:1,
+                        title:1,
+                        detail:1,
+                        assertId:1,
+                        coverPageURL:1,
+                        s3CoverPageURL:1,
+                        userId:1,
+                        approved:1,
+                        closed:1,
+                        minSupport:1,
+                        countSupport:1,
+                        startVoteDatetime:1,
+                        endVoteDatetime:1,
+                        approveDatetime:1,
+                        approveUsername:1,
+                        updateDatetime:1,
+                        status:1,
+                        createAsPage:1,
+                        type:1,
+                        public:1,
+                        pin:1,
+                        showVoterName:1,
+                        showVoteResult:1,
+                        checkListName: {
+                            $cond: [
+                                {
+                                    $eq: ['$showVoterName', true]  // Check if 'showVoterName' is true
+                                },
+                                'Yes',
+                                'No'
+                            ]
+                        }
+                    }
                 },
+                {
+                    $facet:{
+                        showVoterName:[
+                            {
+                                $match:{
+                                    checkListName: 'Yes'
+                                }
+                            },
+                            {
+                                $lookup:{
+                                    from:'Voted',
+                                    let:{'id':'$_id'},
+                                    pipeline:[
+                                        {
+                                            $match:{
+                                                $expr:{
+                                                    $eq:['$$id','$votingId']
+                                                }
+                                            },
+                                            
+                                        },
+                                        {
+                                            $lookup:{
+                                                from:'User',
+                                                let:{'userId':'$userId'},
+                                                pipeline:[
+                                                    {
+                                                        $match:{
+                                                            $expr:{
+                                                                $eq:['$$userId','$_id']
+                                                            }
+                                                        },
+                                                    },
+                                                    {
+                                                        $project:{
+                                                            _id:1,
+                                                            username:1,
+                                                            firstName:1,
+                                                            lastName:1,
+                                                            imageURL:1,
+                                                            s3ImageURL:1
+                                                        }
+                                                    }
+                                                ],
+                                                as:'user'
+                                            }
+                                        },
+                                        {
+                                            $unwind:{
+                                                path:'$user'
+                                            }
+                                        }
+                                    ],
+                                    as:'voted'
+                                }
+                            },
+                            {
+                                $unwind:{
+                                    path:'$voted'
+                                }
+                            }
+                        ],
+                        notShowVoterName:[
+                            {
+                                $match:{
+                                    checkListName: 'No'
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    $addFields:{
+                        combinedResults:{
+                            $concatArrays:['$showVoterName', '$notShowVoterName'],
+                        }
+                    }
+                },
+                {
+                    $unwind: {
+                      path: '$combinedResults',
+                    },
+                  },
+                  {
+                    $replaceRoot: {
+                      newRoot: '$combinedResults',
+                    },
+                  },
                 {
                     $sort:{
                         createdDate:-1
@@ -89,7 +230,7 @@ export class VotingController {
             ]
         );
         if (voteEventAggr.length > 0) {
-            const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', voteEventAggr);
+            const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.',voteEventAggr);
             return res.status(200).send(successResponse);
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find any lists vote.', undefined);
@@ -97,7 +238,7 @@ export class VotingController {
         }
     }
 
-    @Post('/search/own')
+    @Post('/search/own/vote')
     @Authorized('user')
     public async searchVotedOwner(@Body({ validate: true }) search: FindVoteRequest, @Res() res: any, @Req() req: any): Promise<any> {
         const userObjId = new ObjectID(req.user.id);
@@ -113,21 +254,43 @@ export class VotingController {
         const exp = { $regex: '.*' + keywords + '.*', $options: 'si' };
         const take = filter.limit ? filter.limit: 10;
         const offset = filter.offset ? filter.offset: 0;
-        const match: any = 
-        {
-            approved:whereConditions.approved,
-            closed:whereConditions.closed,
-            status:whereConditions.status,
-            type:whereConditions.type,
-            pin:whereConditions.pin,
-            showed:whereConditions.showed,
-            userId:userObjId,
-            title:exp
-        };
+        const matchVoteEvent: any = {};
+        if(whereConditions.approved !== undefined && whereConditions.approved !== null){
+            matchVoteEvent.approved = whereConditions.approved;
+        }
+
+        if(whereConditions.closed !== undefined && whereConditions.closed !== null){
+            matchVoteEvent.closed = whereConditions.closed;
+        }
+
+        if(whereConditions.status !== undefined && whereConditions.status !== null){
+            matchVoteEvent.status = whereConditions.status;
+        }
+
+        if(whereConditions.type !== undefined && whereConditions.type !== null){
+            matchVoteEvent.type = whereConditions.type;
+        }
+
+        if(whereConditions.pin !== undefined && whereConditions.pin !== null) {
+            matchVoteEvent.pin = whereConditions.pin;
+        }
+
+        if(whereConditions.showed !== undefined && whereConditions.showed !== null){
+            matchVoteEvent.showVoteResult = whereConditions.showVoteResult;
+        }
+        
+        if(userObjId !== undefined && userObjId !== null){
+            matchVoteEvent.userId = userObjId;
+        }
+
+        if(keywords !== undefined && keywords !== null && keywords !== ''){
+            matchVoteEvent.title = exp;
+        }
+
         const voteEventAggr = await this.votingEventService.aggregate(
             [
                 {
-                    $match:match
+                    $match:matchVoteEvent
                 },
                 {
                     $sort:{
@@ -180,13 +343,10 @@ export class VotingController {
                 detail:votingEventRequest.detail,
                 coverPageURL:votingEventRequest.coverPageURL,
                 s3CoverPageURL:votingEventRequest.s3CoverPageURL,
-                minSupport:votingEventRequest.minSupport,
                 updateDatetime:today,
-                endVoteDatetime:votingEventRequest.endVoteDatetime,
-                status:votingEventRequest.status,
                 type:votingEventRequest.type,
-                closed:votingEventRequest.closed,
-                showed:votingEventRequest.showVoterName
+                showVoteResult:votingEventRequest.showVoteResult,
+                showVoterName:votingEventRequest.showVoterName
             }};
         const update = await this.votingEventService.update(query,newValues);
         if(update){
@@ -424,7 +584,24 @@ export class VotingController {
         const startVoteDateTime = moment(votingEventRequest.startVoteDatetime).toDate();
         const endVoteDateTime = moment(votingEventRequest.endVoteDatetime).toDate();
         const showed = votingEventRequest.showVoterName ? votingEventRequest.showVoterName : false;
+        if(approve === true){
+            const errorResponse = ResponseUtil.getErrorResponse('You are trying to do something badly cannot manual the API to approve TRUE! By yourself', undefined);
+            return res.status(400).send(errorResponse);
+        }
+        if(close === true){
+            const errorResponse = ResponseUtil.getErrorResponse('The default Close vote should be false!', undefined);
+            return res.status(400).send(errorResponse);
+        }
 
+        if(votingEventRequest.approveDatetime !== null && votingEventRequest.approveDatetime !== undefined){
+            const errorResponse = ResponseUtil.getErrorResponse('ApproveDatetime should be NULL!', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if(votingEventRequest.approveUsername !== null && votingEventRequest.approveUsername !== undefined){
+            const errorResponse = ResponseUtil.getErrorResponse('ApproveUsername should be null', undefined);
+            return res.status(400).send(errorResponse);
+        }
         // check ban 
 
         if (pageId === 'null' || pageId === null || pageId === 'undefined' || pageId === undefined) {
@@ -515,8 +692,8 @@ export class VotingController {
         votingEvent.countSupport = 0;
         votingEvent.startVoteDatetime = startVoteDateTime;
         votingEvent.endVoteDatetime = endVoteDateTime;
-        votingEvent.approveDatetime = votingEventRequest.approveDatetime;
-        votingEvent.approveUsername = votingEventRequest.approveUsername;
+        // votingEvent.approveDatetime = votingEventRequest.approveDatetime;
+        // votingEvent.approveUsername = votingEventRequest.approveUsername;
         votingEvent.updateDatetime = today;
         // votingEvent.create_user = new ObjectID(votingEventRequest.create_user);
         votingEvent.status = status;
@@ -668,11 +845,13 @@ export class VotingController {
         const voteItemObjId = new ObjectID(votedRequest.voteItemId);
         const voteChoiceObjId = new ObjectID(votedRequest.voteChoiceId);
         const voteEventObj = await this.votingEventService.findOne({_id:votingObjId});
-        const voteObj = await this.votedService.findOne({votingId:votingObjId,userId:userObjId });
-        
-        if(voteObj !== undefined && voteObj !== null){
-            await this.votedService.delete({votingId:votingObjId,userId:userObjId});
+        const votedObj = await this.votedService.findOne({votingId:votingObjId,userId:userObjId});
+
+        if(votedObj !== undefined && votedObj !== null){
+            const errorResponse = ResponseUtil.getErrorResponse('You have been already voted.', undefined);
+            return res.status(400).send(errorResponse);
         }
+
         if(voteEventObj !== undefined && voteEventObj !== null && voteEventObj.approved === false){
             const errorResponse = ResponseUtil.getErrorResponse('Status approve is false.', undefined);
             return res.status(400).send(errorResponse);
@@ -699,10 +878,52 @@ export class VotingController {
 
         const create = await this.votedService.create(voted);
         if(create){
+            const query = {_id:votingObjId};
+            const newValues = {$set:{countSupport:voteEventObj.countSupport + 1}};
+            await this.votingEventService.update(query,newValues);
             const successResponse = ResponseUtil.getSuccessResponse('Create vote is success.', create);
             return res.status(200).send(successResponse);
         }else{
             const errorResponse = ResponseUtil.getErrorResponse('Cannot create vote.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+    // Unvote
+    @Post('/unvoted/:votingId')
+    @Authorized('user')
+    public async Unvoted(@Body({ validate: true }) votedRequest: VotedRequest, @Param('votingId') votingId: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const votingObjId = new ObjectID(votingId);
+        const userObjId = new ObjectID(req.user.id);
+        const voteItemObjId = new ObjectID(votedRequest.voteItemId);
+        const voteEventObj = await this.votingEventService.findOne({_id:votingObjId});
+
+        if(voteEventObj !== undefined && voteEventObj !== null && voteEventObj.approved === false){
+            const errorResponse = ResponseUtil.getErrorResponse('Status approve is false.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        const voteItemObj = await this.voteItemService.findOne({_id:voteItemObjId});
+        if(voteItemObj === undefined && voteItemObj === null){
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot find the VoteItem.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+        // check ban 
+        const user = await this.userService.findOne({_id:userObjId});
+        if(user !== undefined && user !== null && user.banned === true){
+            const errorResponse = ResponseUtil.getErrorResponse('You have been banned.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+        const deleteVoted = await this.votedService.delete({votingId:votingObjId,userId:userObjId});
+        if(deleteVoted){
+            const query = {_id:voteEventObj.id};
+            const newValues = {$set:{countSupport:voteEventObj.countSupport - 1}};
+            const update = await this.votingEventService.update(query,newValues);
+            if(update){
+                const successResponse = ResponseUtil.getSuccessResponse('Update Unvote is successfully.', undefined);
+                return res.status(200).send(successResponse);
+            }
+        }else{
+            const errorResponse = ResponseUtil.getErrorResponse('Update Unvote is not success.', undefined);
             return res.status(400).send(errorResponse);
         }
     }

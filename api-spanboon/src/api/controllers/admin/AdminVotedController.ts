@@ -123,15 +123,9 @@ export class AdminVotedController {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find a vote.', undefined);
             return res.status(400).send(errorResponse);
         }
-        let voteClosed = votingEventRequest.closed;
         let voteApproved = votingEventRequest.approved;
         let votePin = votingEventRequest.pin;
-        let voteShowed = votingEventRequest.showVoterName;
-        let voteStatus = votingEventRequest.status;
-
-        if (voteClosed === null || voteClosed === undefined) {
-            voteClosed = voteObj.closed;
-        }
+        let voteShowed = votingEventRequest.showVoteResult;
 
         if (voteApproved === null || voteApproved === undefined) {
             voteApproved = voteObj.approved;
@@ -141,11 +135,8 @@ export class AdminVotedController {
             votePin = voteObj.pin;
         }
         if (voteShowed === null || voteShowed === undefined) {
-            voteShowed = voteObj.showed;
+            voteShowed = voteObj.showVoteResult;
 
-        }
-        if (voteStatus === null && voteStatus === undefined) {
-            voteStatus = voteObj.status;
         }
 
         const query = {_id:voteObjId};
@@ -153,11 +144,10 @@ export class AdminVotedController {
             $set:{
                 approveUsername:user.displayName,
                 approveDatetime:today,
-                closed:voteClosed,
                 approved:voteApproved,
                 pin:votePin,
-                showed:voteShowed,
-                status:voteStatus
+                showVoteResult:voteShowed,
+                status:'voted'
             }};
         const update = await this.votingEventService.update(query,newValues);
         if(update){

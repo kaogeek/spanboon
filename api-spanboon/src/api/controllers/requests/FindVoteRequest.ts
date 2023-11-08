@@ -15,7 +15,7 @@ export class FindVoteRequest {
     public approved:boolean;
     public closed:boolean;
     public pin:boolean;
-    public showed:boolean;
+    public showVoteResult:boolean;
     public status:any;
     public type:any;
 }
