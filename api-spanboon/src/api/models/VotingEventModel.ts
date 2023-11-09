@@ -58,6 +58,9 @@ export class VotingEventModel extends BaseModel {
     @Column({ name: 'approveDatetime' })
     public approveDatetime: Date;
 
+    @Column({ name: 'closeDate' })
+    public closeDate: Date;
+
     @Column({ name: 'approveUsername' })
     public approveUsername: string;
 

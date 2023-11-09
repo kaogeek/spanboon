@@ -560,7 +560,7 @@ export class VotingController {
 
     @Post('/:pageId')
     @Authorized('user')
-    public async createVotingEvent(@Body({ validate: true }) votingEventRequest: VotingEventRequest, @Param('pageId') pageId: string, @Res() res: any, @Req() req: any): Promise<any> {
+    public async CreateVotingEvent(@Body({ validate: true }) votingEventRequest: VotingEventRequest, @Param('pageId') pageId: string, @Res() res: any, @Req() req: any): Promise<any> {
         const userObjId = new ObjectID(req.user.id);
         let pageObjId = null;
         let pageData: Page[];
@@ -692,8 +692,8 @@ export class VotingController {
         votingEvent.countSupport = 0;
         votingEvent.startVoteDatetime = startVoteDateTime;
         votingEvent.endVoteDatetime = endVoteDateTime;
-        // votingEvent.approveDatetime = votingEventRequest.approveDatetime;
-        // votingEvent.approveUsername = votingEventRequest.approveUsername;
+        votingEvent.approveDatetime = null;
+        votingEvent.approveUsername = null;
         votingEvent.updateDatetime = today;
         // votingEvent.create_user = new ObjectID(votingEventRequest.create_user);
         votingEvent.status = status;

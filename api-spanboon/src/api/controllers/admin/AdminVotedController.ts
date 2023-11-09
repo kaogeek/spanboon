@@ -28,7 +28,7 @@ export class AdminVotedController {
         private assetService:AssetService
     ) { }
 
-    @Post('/search/all')
+    @Post('/all/search/')
     @Authorized('')
     public async searchVoteEvents(@Body({ validate: true }) search: FindVoteRequest,@Res() res: any, @Req() req: any): Promise<any> {
         if (ObjectUtil.isObjectEmpty(search)) {
@@ -139,14 +139,24 @@ export class AdminVotedController {
 
         }
 
+        if(votingEventRequest.closed === true){
+            const errorResponse = ResponseUtil.getErrorResponse('Close vote should be false.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if(voteApproved === false){
+            const errorResponse = ResponseUtil.getErrorResponse('Approve vote should be true', undefined);
+            return res.status(400).send(errorResponse);
+        }
         const query = {_id:voteObjId};
         const newValues = {
             $set:{
+                closed:votingEventRequest.closed,
+                closeDate: null,
+                approved:voteApproved,
                 approveUsername:user.displayName,
                 approveDatetime:today,
-                approved:voteApproved,
                 pin:votePin,
-                showVoteResult:voteShowed,
                 status:'voted'
             }};
         const update = await this.votingEventService.update(query,newValues);
@@ -205,4 +215,144 @@ export class AdminVotedController {
             return res.status(400).send(errorResponse);
         }
     }
+
+    // reject
+    @Post('/reject/')
+    @Authorized('')
+    public async RejectVoted(@Body({ validate: true }) votingEventRequest: VotingEventRequest, @Param('id') id: string,@Res() res: any, @Req() req: any): Promise<any> {
+        const voteObjId = new ObjectID(id);
+        const today = moment().toDate();
+        // check exist?
+
+        const voteObj = await this.votingEventService.findOne({_id:voteObjId});
+        if(voteObj === undefined && voteObj === null){
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot find a vote.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+        let voteApproved = votingEventRequest.approved;
+        let votePin = votingEventRequest.pin;
+        let voteShowed = votingEventRequest.showVoteResult;
+
+        if (voteApproved === null || voteApproved === undefined) {
+            voteApproved = voteObj.approved;
+        }
+
+        if (votePin === null || votePin === undefined) {
+            votePin = voteObj.pin;
+        }
+        if (voteShowed === null || voteShowed === undefined) {
+            voteShowed = voteObj.showVoteResult;
+        }
+
+        if(votingEventRequest.closed === false){
+            const errorResponse = ResponseUtil.getErrorResponse('Close vote should be true.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if(votingEventRequest.endVoteDatetime > today){
+            const errorResponse = ResponseUtil.getErrorResponse('Close Data should be null or today.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if(voteApproved === true){
+            const errorResponse = ResponseUtil.getErrorResponse('Approve vote should be false', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if(votingEventRequest.status !== 'closed'){
+            const errorResponse = ResponseUtil.getErrorResponse('Reject vote Status should be closed.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        const query = {_id:voteObjId};
+        const newValues = {
+            $set:{
+                closed:votingEventRequest.closed,
+                closeDate: today,
+                approved:voteApproved,              
+                approveUsername:null,
+                approveDatetime:null,
+                pin:false,
+                status:votingEventRequest.status
+            }};
+
+        const update = await this.votingEventService.update(query,newValues);
+        if(update){
+                const successResponse = ResponseUtil.getSuccessResponse('Reject VoteEvent is Successful.', undefined);
+                return res.status(200).send(successResponse);
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Error Cannot Reject a VoteEvent.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+    // unreject
+    @Post('/cancel/')
+    @Authorized('')
+    public async CancelVote(@Body({ validate: true }) votingEventRequest: VotingEventRequest, @Param('id') id: string,@Res() res: any, @Req() req: any): Promise<any> {
+        const voteObjId = new ObjectID(id);
+        const today = moment().toDate();
+        // check exist?
+
+        const voteObj = await this.votingEventService.findOne({_id:voteObjId});
+        if(voteObj === undefined && voteObj === null){
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot find a vote.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+        let voteApproved = votingEventRequest.approved;
+        let votePin = votingEventRequest.pin;
+        let voteShowed = votingEventRequest.showVoteResult;
+
+        if (voteApproved === null || voteApproved === undefined) {
+            voteApproved = voteObj.approved;
+        }
+
+        if (votePin === null || votePin === undefined) {
+            votePin = voteObj.pin;
+        }
+        if (voteShowed === null || voteShowed === undefined) {
+            voteShowed = voteObj.showVoteResult;
+        }
+
+        if(votingEventRequest.closed === true){
+            const errorResponse = ResponseUtil.getErrorResponse('Close vote should be false.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if(votingEventRequest.endVoteDatetime > today){
+            const errorResponse = ResponseUtil.getErrorResponse('Close Data should be null or today.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if(voteApproved === true){
+            const errorResponse = ResponseUtil.getErrorResponse('Approve vote should be false', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if(votingEventRequest.status !== 'support'){
+            const errorResponse = ResponseUtil.getErrorResponse('Reject vote Status should be closed.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        const query = {_id:voteObjId};
+        const newValues = {
+            $set:{
+                closed:votingEventRequest.closed,
+                closeDate: null,
+                approved:voteApproved,              
+                approveUsername:null,
+                approveDatetime:null,
+                pin:votePin,
+                status:votingEventRequest.status
+            }};
+
+        const update = await this.votingEventService.update(query,newValues);
+        if(update){
+                const successResponse = ResponseUtil.getSuccessResponse('Reject VoteEvent is Successful.', undefined);
+                return res.status(200).send(successResponse);
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Error Cannot Reject a VoteEvent.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+    // auto approve
 }
