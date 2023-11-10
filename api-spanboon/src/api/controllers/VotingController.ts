@@ -2,6 +2,7 @@ import { JsonController, Res, Post, Body, Req, Authorized, Param,Delete, Put } f
 import { VotingEventRequest } from './requests/VotingEventRequest';
 import { VoteItemRequest } from './requests/VoteItemRequest';
 import { UserSupportRequest } from './requests/UserSupportRequest';
+import { SupportRequest } from './requests/SupportRequest';
 import { FindVoteRequest } from './requests/FindVoteRequest';
 import { VotedRequest } from './requests/VotedRequest';
 import { VotingEventService } from '../services/VotingEventService';
@@ -11,11 +12,13 @@ import { AssetService } from '../services/AssetService';
 import { UserService } from '../services/UserService';
 import { UserSupportService } from '../services/UserSupportService';
 import { VotingEventModel } from '../models/VotingEventModel';
+import { RetrieveVotingOptionsModel } from '../models/RetrieveVotingOptionsModel';
 import { UserSupport as UserSupportModel } from '../models/UserSupportModel';
 import { ResponseUtil } from '../../utils/ResponseUtil';
 import { ObjectID } from 'mongodb';
 import { PageService } from '../services/PageService';
 import moment from 'moment';
+import { RetrieveVoteService } from '../services/RetrieveVotingOptionService';
 import { Page } from '../models/Page';
 import { ObjectUtil } from '../../utils/ObjectUtil';
 import { SearchFilter } from './requests/SearchFilterRequest';
@@ -43,7 +46,8 @@ export class VotingController {
         private userService:UserService,
         private pageService:PageService,
         private pageAccessLevelService:PageAccessLevelService,
-        private assetService:AssetService
+        private assetService:AssetService,
+        private retrieveVoteService:RetrieveVoteService
     ) { }
 
     @Post('/vote/search/')
@@ -1098,6 +1102,17 @@ export class VotingController {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find the VoteItem.', undefined);
             return res.status(400).send(errorResponse);
         }
+
+        if(voteEventObj.status === 'support') {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot Vote this vote status is support.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if(voteEventObj.status === 'close') {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot Vote this vote status is close.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
         // check ban 
         const user = await this.userService.findOne({_id:userObjId});
         if(user !== undefined && user !== null && user.banned === true){
@@ -1114,9 +1129,6 @@ export class VotingController {
 
         const create = await this.votedService.create(voted);
         if(create){
-            const query = {_id:votingObjId};
-            const newValues = {$set:{countSupport:voteEventObj.countSupport + 1}};
-            await this.votingEventService.update(query,newValues);
             const successResponse = ResponseUtil.getSuccessResponse('Create vote is success.', create);
             return res.status(200).send(successResponse);
         }else{
@@ -1160,6 +1172,87 @@ export class VotingController {
             }
         }else{
             const errorResponse = ResponseUtil.getErrorResponse('Update Unvote is not success.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+
+    // RetrieveVotingOptions  ## Create support
+    /* 
+    const query = {_id:votingObjId};
+    const newValues = {$set:{countSupport:voteEventObj.countSupport + 1}};
+    await this.votingEventService.update(query,newValues);
+    */
+
+    @Post('/support/')
+    @Authorized('user')
+    public async Support(@Body({ validate: true }) supportRequest: SupportRequest,@Res() res: any, @Req() req: any): Promise<any> {
+        const votingObjId = new ObjectID(supportRequest.votingId);
+        const userObjId = new ObjectID(req.user.id);
+
+        const voteEventObj = await this.votingEventService.findOne({_id:votingObjId});
+
+        if(votingObjId !== undefined && votingObjId !== null && votingObjId.approved === false){
+            const errorResponse = ResponseUtil.getErrorResponse('VotingEvent Id is undefined.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if(voteEventObj !== 'vote' || voteEventObj !== 'close' ){
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot support this vote the status vote isn`t support.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        const retrieveVote = new RetrieveVotingOptionsModel();
+        retrieveVote.votingId = votingObjId;
+        retrieveVote.userId = userObjId;
+
+        const create = await this.retrieveVoteService.create(retrieveVote);
+        if(create){
+            const query = {_id:votingObjId};
+            const newValues = {$set:{countSupport:voteEventObj.countSupport + 1}};
+            await this.votingEventService.update(query,newValues);
+            const successResponse = ResponseUtil.getSuccessResponse('Create support is success.', create);
+            return res.status(200).send(successResponse);
+        }else{
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot support vote.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+
+    // RetrieveVotingOptions ## Unsupport
+    /*
+    const query = {_id:votingObjId};
+    const newValues = {$set:{countSupport:voteEventObj.countSupport + 1}};
+    await this.votingEventService.update(query,newValues);
+    */
+
+    @Post('/unsupport/:retrivoteId')
+    @Authorized('user')
+    public async Unsupport(@Body({ validate: true }) supportRequest: SupportRequest, @Param('retrivoteId') retrivoteId: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const retrieveVoteObjId = new ObjectID(retrivoteId);
+        const votingObjId = new ObjectID(supportRequest.votingId);
+        const userObjId = new ObjectID(req.user.id);
+
+        const voteEventObj = await this.votingEventService.findOne({_id:votingObjId});
+
+        if(votingObjId !== undefined && votingObjId !== null && votingObjId.approved === false){
+            const errorResponse = ResponseUtil.getErrorResponse('VotingEvent Id is undefined.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if(voteEventObj !== 'vote' || voteEventObj !== 'close' ){
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot unsupport this vote the status vote isn`t support.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+        
+        const create = await this.retrieveVoteService.delete({_id:retrieveVoteObjId,votingId:votingObjId,userId:userObjId});
+        if(create){
+            const query = {_id:votingObjId};
+            const newValues = {$set:{countSupport:voteEventObj.countSupport - 1}};
+            await this.votingEventService.update(query,newValues);
+            const successResponse = ResponseUtil.getSuccessResponse('Create support is success.', create);
+            return res.status(200).send(successResponse);
+        }else{
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot support vote.', undefined);
             return res.status(400).send(errorResponse);
         }
     }
