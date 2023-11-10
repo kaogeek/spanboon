@@ -32,4 +32,12 @@ export class VotingEventRequest {
     public voteItem: string;
     public showVoterName: boolean;
     public showVoteResult: boolean;
+    
+    public ordering: number;
+    public typeChoice: any;
+    public titleItem: string;
+    public assetIdItem: string;
+    public coverPageURLItem: string;
+    public s3CoverPageURLItem: string;
+    public voteChoice:any[];
 }

@@ -558,6 +558,190 @@ export class VotingController {
         }
     }
 
+    @Post('/own')
+    @Authorized('user')
+    public async CreateVotingEventOwn(@Body({ validate: true }) votingEventRequest: VotingEventRequest,@Res() res: any, @Req() req: any): Promise<any> {
+        const userObjId = new ObjectID(req.user.id);
+        const today = moment().toDate();
+        let minSupportValue = DEFAULT_MIN_SUPPORT;
+        const configMinSupport = await this.configService.getConfig(MIN_SUPPORT);
+        if (configMinSupport) {
+            minSupportValue = parseInt(configMinSupport.value, 10);
+        }
+        // const adminIn = new ObjectID(votingEventRequest.adminId);
+        // const needed = votingEventRequest.needed;
+        const pin = votingEventRequest.pin ? votingEventRequest.pin : false;
+        const status = votingEventRequest.status;
+        const type = votingEventRequest.type;
+        const title = votingEventRequest.title;
+        const detail = votingEventRequest.detail;
+        const coverImage = votingEventRequest.coverPageURL;
+        const approve = votingEventRequest.approved ? votingEventRequest.approved : false;
+        const close = votingEventRequest.closed ? votingEventRequest.closed : false;
+        const minSupport = votingEventRequest.minSupport ? votingEventRequest.minSupport : minSupportValue;
+        const startVoteDateTime = moment(votingEventRequest.startVoteDatetime).toDate();
+        const endVoteDateTime = moment(votingEventRequest.endVoteDatetime).toDate();
+        const showed = votingEventRequest.showVoterName ? votingEventRequest.showVoterName : false;
+        if(approve === true){
+            const errorResponse = ResponseUtil.getErrorResponse('You are trying to do something badly cannot manual the API to approve TRUE! By yourself', undefined);
+            return res.status(400).send(errorResponse);
+        }
+        if(close === true){
+            const errorResponse = ResponseUtil.getErrorResponse('The default Close vote should be false!', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if(votingEventRequest.approveDatetime !== null && votingEventRequest.approveDatetime !== undefined){
+            const errorResponse = ResponseUtil.getErrorResponse('ApproveDatetime should be NULL!', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if(votingEventRequest.approveUsername !== null && votingEventRequest.approveUsername !== undefined){
+            const errorResponse = ResponseUtil.getErrorResponse('ApproveUsername should be null', undefined);
+            return res.status(400).send(errorResponse);
+        }
+        // check ban 
+        const user = await this.userService.findOne({_id:userObjId});
+        if(user !== undefined && user !== null && user.banned === true){
+            const errorResponse = ResponseUtil.getErrorResponse('You have been banned.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if (title === undefined && title === null) {
+            const errorResponse = ResponseUtil.getErrorResponse('Title is required.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if (detail === undefined && detail === null) {
+            const errorResponse = ResponseUtil.getErrorResponse('Detail is required.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if (coverImage === undefined && coverImage === null) {
+            const errorResponse = ResponseUtil.getErrorResponse('coverImage is required.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if (status === undefined && status === null) {
+            const errorResponse = ResponseUtil.getErrorResponse('Status is undefined.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if (type === undefined && type === null) {
+            const errorResponse = ResponseUtil.getErrorResponse('Type is undefined.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if (minSupport === undefined && minSupport === null) {
+            const errorResponse = ResponseUtil.getErrorResponse('minSupport is null or undefined.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if (startVoteDateTime === undefined && startVoteDateTime === null) {
+            const errorResponse = ResponseUtil.getErrorResponse('Start Vote Datetime is null or undefined.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if (endVoteDateTime === undefined && endVoteDateTime === null) {
+            const errorResponse = ResponseUtil.getErrorResponse('End Vote Datetime is null or undefined.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        const votingEvent = new VotingEventModel();
+        votingEvent.title = title;
+        votingEvent.detail = detail;
+        votingEvent.assetId = votingEventRequest.assetId;
+        votingEvent.coverPageURL = coverImage;
+        votingEvent.s3CoverPageURL = votingEventRequest.s3CoverPageURL;
+        // votingEvent.needed = needed;
+        votingEvent.userId = userObjId;
+        votingEvent.approved = approve;
+        votingEvent.closed = close;
+        votingEvent.minSupport = minSupport;
+        votingEvent.countSupport = 0;
+        votingEvent.startVoteDatetime = startVoteDateTime;
+        votingEvent.endVoteDatetime = endVoteDateTime;
+        votingEvent.approveDatetime = null;
+        votingEvent.approveUsername = null;
+        votingEvent.updateDatetime = today;
+        // votingEvent.create_user = new ObjectID(votingEventRequest.create_user);
+        votingEvent.status = status;
+        votingEvent.createAsPage = null;
+        votingEvent.type = type;
+        votingEvent.pin = pin;
+        votingEvent.showVoterName = showed;
+        votingEvent.showVoteResult = votingEventRequest.showVoteResult;
+
+        const result = await this.votingEventService.create(votingEvent);
+        if (result) {
+            const voteItem = new VoteItemModel();
+            voteItem.votingId = result.id;
+            voteItem.ordering = votingEventRequest.ordering;
+            voteItem.type = votingEventRequest.typeChoice;
+            voteItem.title = votingEventRequest.titleItem;
+            voteItem.assetId = votingEventRequest.assetIdItem;
+            voteItem.coverPageURL = votingEventRequest.coverPageURLItem;
+            voteItem.s3CoverPageURL = votingEventRequest.s3CoverPageURLItem;
+            const createItem = await this.voteItemService.create(voteItem);
+            if (createItem) {
+                const voteChoiceObj = votingEventRequest.voteChoice;
+                if (voteChoiceObj.length > 0) {
+                    for (const voteChoicePiece of voteChoiceObj) {
+                        const voteChoice = new VoteChoiceModel();
+                        voteChoice.voteItemId = new ObjectID(result.id);
+                        voteChoice.coverPageURL = voteChoicePiece.coverPageURL;
+                        voteChoice.s3coverPageURL = voteChoicePiece.s3CoverPageURL;
+                        voteChoice.title = voteChoicePiece.title;
+                        voteChoice.assetId = voteChoicePiece.assetId;
+                        await this.voteChoiceService.create(voteChoice);
+                    }
+                    const response:any = {};
+                    response.votingId = result.id;
+                    response.title = result.title;
+                    response.detail = result.detail;
+                    response.assetId = result.assetId;
+                    response.coverPageURL = result.coverPageURL;
+                    response.s3CoverPageURL = result.s3CoverPageURL;
+                    response.userId = result.userId;
+                    response.approved = result.approved;
+                    response.closed = result.closed;
+                    response.minSupport = result.minSupport;
+                    response.countSupport = result.countSupport;
+                    response.startVoteDatetime = result.startVoteDatetime;
+                    response.endVoteDatetime = result.endVoteDatetime;
+                    response.approveDatetime = result.approveDatetime;
+                    response.approveUsername = result.approveUsername;
+                    response.updateDatetime = result.updateDatetime;
+                    response.status = result.status;
+                    response.createAsPage = result.createAsPage;
+                    response.type = result.type;
+                    response.pin = result.pin;
+                    response.showVoterName = result.showVoterName;
+                    response.showVoteResult = result.showVoteResult;
+                    response.ordering = createItem.ordering;
+                    response.typeItem = createItem.type;
+                    response.titleItem = createItem.title;
+                    response.assetIdItem = createItem.assetId;
+                    response.coverPageURLItem = createItem.coverPageURL;
+                    response.s3CoverPageURLItem = createItem.s3CoverPageURL;
+                    response.voteChoice = voteChoiceObj;
+
+                    const successResponse = ResponseUtil.getSuccessResponse('Successfully create Voting Event.', response);
+                    return res.status(200).send(successResponse);
+                } else {
+                    const errorResponse = ResponseUtil.getErrorResponse('Cannot create a voting Item, Vote Choice is empty.', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+            } else {
+                const errorResponse = ResponseUtil.getErrorResponse('Cannot create a voting Item.', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot create a voting event.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+
     @Post('/:pageId')
     @Authorized('user')
     public async CreateVotingEvent(@Body({ validate: true }) votingEventRequest: VotingEventRequest, @Param('pageId') pageId: string, @Res() res: any, @Req() req: any): Promise<any> {
@@ -641,17 +825,6 @@ export class VotingController {
             const errorResponse = ResponseUtil.getErrorResponse('coverImage is required.', undefined);
             return res.status(400).send(errorResponse);
         }
-        /* 
-        if (adminIn === undefined && adminIn === null) {
-            const errorResponse = ResponseUtil.getErrorResponse('Provider is undefined.', undefined);
-            return res.status(400).send(errorResponse);
-        }
-
-        if (needed === undefined && needed === null) {
-            const errorResponse = ResponseUtil.getErrorResponse('Maximun support is undefined.', undefined);
-            return res.status(400).send(errorResponse);
-        }
-        */
 
         if (status === undefined && status === null) {
             const errorResponse = ResponseUtil.getErrorResponse('Status is undefined.', undefined);
@@ -705,14 +878,76 @@ export class VotingController {
 
         const result = await this.votingEventService.create(votingEvent);
         if (result) {
-            const successResponse = ResponseUtil.getSuccessResponse('Successfully create Voting Event.', result);
-            return res.status(200).send(successResponse);
+            const voteItem = new VoteItemModel();
+            voteItem.votingId = result.id;
+            voteItem.ordering = votingEventRequest.ordering;
+            voteItem.type = votingEventRequest.typeChoice;
+            voteItem.title = votingEventRequest.titleItem;
+            voteItem.assetId = votingEventRequest.assetIdItem;
+            voteItem.coverPageURL = votingEventRequest.coverPageURLItem;
+            voteItem.s3CoverPageURL = votingEventRequest.s3CoverPageURLItem;
+            const createItem = await this.voteItemService.create(voteItem);
+            if (createItem) {
+                const voteChoiceObj = votingEventRequest.voteChoice;
+                if (voteChoiceObj.length > 0) {
+                    for (const voteChoicePiece of voteChoiceObj) {
+                        const voteChoice = new VoteChoiceModel();
+                        voteChoice.voteItemId = new ObjectID(result.id);
+                        voteChoice.coverPageURL = voteChoicePiece.coverPageURL;
+                        voteChoice.s3coverPageURL = voteChoicePiece.s3CoverPageURL;
+                        voteChoice.title = voteChoicePiece.title;
+                        voteChoice.assetId = voteChoicePiece.assetId;
+                        await this.voteChoiceService.create(voteChoice);
+                    }
+                    
+                    const response:any = {};
+                    response.votingId = result.id;
+                    response.title = result.title;
+                    response.detail = result.detail;
+                    response.assetId = result.assetId;
+                    response.coverPageURL = result.coverPageURL;
+                    response.s3CoverPageURL = result.s3CoverPageURL;
+                    response.userId = result.userId;
+                    response.approved = result.approved;
+                    response.closed = result.closed;
+                    response.minSupport = result.minSupport;
+                    response.countSupport = result.countSupport;
+                    response.startVoteDatetime = result.startVoteDatetime;
+                    response.endVoteDatetime = result.endVoteDatetime;
+                    response.approveDatetime = result.approveDatetime;
+                    response.approveUsername = result.approveUsername;
+                    response.updateDatetime = result.updateDatetime;
+                    response.status = result.status;
+                    response.createAsPage = result.createAsPage;
+                    response.type = result.type;
+                    response.pin = result.pin;
+                    response.showVoterName = result.showVoterName;
+                    response.showVoteResult = result.showVoteResult;
+                    response.ordering = createItem.ordering;
+                    response.typeItem = createItem.type;
+                    response.titleItem = createItem.title;
+                    response.assetIdItem = createItem.assetId;
+                    response.coverPageURLItem = createItem.coverPageURL;
+                    response.s3CoverPageURLItem = createItem.s3CoverPageURL;
+                    response.voteChoice = voteChoiceObj;
+
+                    const successResponse = ResponseUtil.getSuccessResponse('Successfully create Voting Event.', response);
+                    return res.status(200).send(successResponse);
+                } else {
+                    const errorResponse = ResponseUtil.getErrorResponse('Cannot create a voting Item, Vote Choice is empty.', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+            } else {
+                const errorResponse = ResponseUtil.getErrorResponse('Cannot create a voting Item.', undefined);
+                return res.status(400).send(errorResponse);
+            }
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot create a voting event.', undefined);
             return res.status(400).send(errorResponse);
         }
     }
 
+    /* 
     @Post('/item/:votingId')
     @Authorized('user')
     public async voteItem(@Body({ validate: true }) voteItemRequest: VoteItemRequest, @Param('votingId') votingId: string, @Res() res: any, @Req() req: any): Promise<any> {
@@ -788,6 +1023,7 @@ export class VotingController {
                 if (deleteVoteItem) {
                     const errorResponse = ResponseUtil.getErrorResponse('Cannot create a voting Item, Vote Choice is empty.', undefined);
                     return res.status(400).send(errorResponse);
+            
                 }
             }
         } else {
@@ -795,7 +1031,7 @@ export class VotingController {
             return res.status(400).send(errorResponse);
         }
     }
-
+    */
     @Post('/support/:votingId')
     @Authorized('user')
     public async userSupport(@Body({ validate: true }) userSupportRequest: UserSupportRequest, @Param('votingId') votingId: string, @Res() res: any, @Req() req: any): Promise<any> {
