@@ -427,6 +427,7 @@ export class VotingController {
         const userObjId = new ObjectID(req.user.id);
         const voteObjId = new ObjectID(votingId);
         const voteItemObjId = new ObjectID(voteItemId);
+        const voteItemObj = await this.voteItemService.findOne({_id:voteItemObjId});
         // check exist?
         const user = await this.userService.findOne({ _id: userObjId });
         if (user !== undefined && user !== null && user.banned === true) {
@@ -442,6 +443,12 @@ export class VotingController {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find a vote.', undefined);
             return res.status(400).send(errorResponse);
         }
+
+        if(voteItemObj.type !== voteItemRequest.type){
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot chance the type VoteChoice.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
         const query = { _id: voteItemObjId, votingId: voteObjId };
         const newValues = {
             $set: {
@@ -483,6 +490,20 @@ export class VotingController {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find a vote.', undefined);
             return res.status(400).send(errorResponse);
         }
+
+        // check item
+        const voteItemObj = await this.voteItemService.findOne({_id:voteItemObjId});
+        if(voteItemObj === undefined){
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot find a voteItem.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+        // check voteChoice
+        const voteChoiceItem = await this.voteChoiceService.findOne({_id:voteChoice});
+        if(voteChoiceItem === undefined){
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot find a voteItem.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
         const query = { _id: voteChoice, voteItemId: voteItemObjId };
         const newValues = {
             $set: {
@@ -579,7 +600,7 @@ export class VotingController {
 
         const deleteAsset = await this.assetService.delete({ _id: voteItemObj.assetId });
         const deleteVoteItem = await this.voteItemService.delete({ _id: voteItemObjId });
-        const deleteVoteChoice = await this.voteChoiceService.deleteMany({ voteItemId: voteItemObj.id });
+        const deleteVoteChoice = await this.voteChoiceService.deleteMany({ voteItemId: voteItemObjId });
         if (
             deleteVoteItem &&
             deleteAsset &&
@@ -1055,7 +1076,7 @@ export class VotingController {
         const voteItemObjId = new ObjectID(votedRequest.voteItemId);
         const voteChoiceObjId = new ObjectID(votedRequest.voteChoiceId);
         const voteEventObj = await this.votingEventService.findOne({ _id: votingObjId });
-        const votedObj = await this.votedService.findOne({ votingId: votingObjId, userId: userObjId });
+        const votedObj = await this.votedService.findOne({ votingId: votingObjId, userId: userObjId,voteItemId:voteItemObjId,voteChoiceId:voteChoiceObjId });
 
         if (votedObj !== undefined && votedObj !== null) {
             const errorResponse = ResponseUtil.getErrorResponse('You have been already voted.', undefined);
@@ -1126,6 +1147,17 @@ export class VotingController {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find the VoteItem.', undefined);
             return res.status(400).send(errorResponse);
         }
+
+        if (voteEventObj.status === 'support') {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot Vote this vote status is support.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if (voteEventObj.status === 'close') {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot Vote this vote status is close.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
         // check ban 
         const user = await this.userService.findOne({ _id: userObjId });
         if (user !== undefined && user !== null && user.banned === true) {
@@ -1134,13 +1166,8 @@ export class VotingController {
         }
         const deleteVoted = await this.votedService.delete({ votingId: votingObjId, userId: userObjId });
         if (deleteVoted) {
-            const query = { _id: voteEventObj.id };
-            const newValues = { $set: { countSupport: voteEventObj.countSupport - 1 } };
-            const update = await this.votingEventService.update(query, newValues);
-            if (update) {
-                const successResponse = ResponseUtil.getSuccessResponse('Update Unvote is successfully.', undefined);
-                return res.status(200).send(successResponse);
-            }
+            const successResponse = ResponseUtil.getSuccessResponse('Update Unvote is successfully.', undefined);
+            return res.status(200).send(successResponse);
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Update Unvote is not success.', undefined);
             return res.status(400).send(errorResponse);

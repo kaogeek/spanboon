@@ -218,7 +218,7 @@ export class AdminVotedController {
     }
 
     // reject
-    @Post('/reject/')
+    @Post('/reject/:id')
     @Authorized('')
     public async RejectVoted(@Body({ validate: true }) votingEventRequest: VotingEventRequest, @Param('id') id: string,@Res() res: any, @Req() req: any): Promise<any> {
         const voteObjId = new ObjectID(id);
@@ -260,8 +260,13 @@ export class AdminVotedController {
             return res.status(400).send(errorResponse);
         }
 
-        if(votingEventRequest.status !== 'closed'){
+        if(votingEventRequest.status !== 'close'){
             const errorResponse = ResponseUtil.getErrorResponse('Reject vote Status should be closed.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if(votePin !== false){
+            const errorResponse = ResponseUtil.getErrorResponse('Pin should be false.', undefined);
             return res.status(400).send(errorResponse);
         }
 
@@ -287,7 +292,7 @@ export class AdminVotedController {
         }
     }
     // unreject
-    @Post('/cancel/')
+    @Post('/cancel/:id')
     @Authorized('')
     public async CancelVote(@Body({ validate: true }) votingEventRequest: VotingEventRequest, @Param('id') id: string,@Res() res: any, @Req() req: any): Promise<any> {
         const voteObjId = new ObjectID(id);
@@ -334,6 +339,10 @@ export class AdminVotedController {
             return res.status(400).send(errorResponse);
         }
 
+        if(votePin !== false){
+            const errorResponse = ResponseUtil.getErrorResponse('Pin should be false.', undefined);
+            return res.status(400).send(errorResponse);
+        }
         const query = {_id:voteObjId};
         const newValues = {
             $set:{
@@ -355,5 +364,47 @@ export class AdminVotedController {
             return res.status(400).send(errorResponse);
         }
     }
+
     // auto approve
+    @Post('/auto/approve')
+    @Authorized('')
+    public async AutoApprove(@Res() res: any, @Req() req: any): Promise<any> {
+        const userObjId = new ObjectID(req.user.id);
+        const user = await this.userService.findOne({_id:userObjId});
+        const today = moment().toDate();
+
+        const voteAggs = await this.votingEventService.aggregate(
+            [
+                {
+                    $match:{
+                        approved:false,
+                        status:'support'
+                    }
+                }
+            ]
+        );
+        if(voteAggs.length > 0){
+            for(const vote of voteAggs){
+                if(vote.countSupport >= vote.minSupport){
+                    // auto approve
+                    const query = {_id: new ObjectID(vote._id)};
+                    const newValues = {
+                        $set:{
+                            closed:false,
+                            closeDate: null,
+                            approved:true,
+                            approveUsername:user.displayName,
+                            approveDatetime:today,
+                            pin:true,
+                            showVoteResult:true,
+                            status: 'vote'
+                        }};  
+                    await this.votingEventService.update(query,newValues);              
+                }
+            }
+        }
+        const successResponse = ResponseUtil.getSuccessResponse('Auto approve.', undefined);
+        return res.status(200).send(successResponse);
+    }
+
 }
