@@ -197,15 +197,19 @@ export class S3Service {
         };
 
         return new Promise((resolve, reject) => {
-            return s3.upload(params, (err, data) => {
-                if (err) {
-                    return reject(err);
-                }
-                const locationArray = data.Location.split('/');
-                locationArray.pop();
-                const locationPath = locationArray.join('/');
-                return resolve({ path: locationPath });
-            });
+            return (
+                // S3 ManagedUpload with callbacks are not supported in AWS SDK for JavaScript (v3).
+                // Please convert to 'await client.upload(params, options).promise()', and re-run aws-sdk-js-codemod.
+                s3.upload(params, (err, data) => {
+                    if (err) {
+                        return reject(err);
+                    }
+                    const locationArray = data.Location.split('/');
+                    locationArray.pop();
+                    const locationPath = locationArray.join('/');
+                    return resolve({ path: locationPath });
+                })
+            );
         });
     }
 
@@ -259,15 +263,19 @@ export class S3Service {
         };
 
         return new Promise((resolve, reject) => {
-            return s3.upload(params, (err, data) => {
-                if (err) {
-                    return reject(err);
-                }
-                const locationArray = data.Location.split('/');
-                locationArray.pop();
-                const locationPath = locationArray.join('/');
-                return resolve({ path: locationPath });
-            });
+            return (
+                // S3 ManagedUpload with callbacks are not supported in AWS SDK for JavaScript (v3).
+                // Please convert to 'await client.upload(params, options).promise()', and re-run aws-sdk-js-codemod.
+                s3.upload(params, (err, data) => {
+                    if (err) {
+                        return reject(err);
+                    }
+                    const locationArray = data.Location.split('/');
+                    locationArray.pop();
+                    const locationPath = locationArray.join('/');
+                    return resolve({ path: locationPath });
+                })
+            );
         });
     }
 
@@ -297,6 +305,8 @@ export class S3Service {
         };
 
         return new Promise((resolve, reject) => {
+            // S3 getSignedUrl with callbacks are not supported in AWS SDK for JavaScript (v3).
+            // Please convert to 'client.getSignedUrl(apiName, options)', and re-run aws-sdk-js-codemod.
             s3.getSignedUrl('putObject', params, (err, data: any) => {
                 if (err) {
                     return reject(err);

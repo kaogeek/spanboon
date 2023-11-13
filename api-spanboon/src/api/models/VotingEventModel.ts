@@ -43,35 +43,35 @@ export class VotingEventModel extends BaseModel {
     @Column({ name: 'closed' })
     public closed: boolean;
 
-    @Column({ name: 'min_support' })
-    public min_support: number;
+    @Column({ name: 'minSupport' })
+    public minSupport: number;
 
-    @Column({ name: 'count_support' })
-    public count_support: number;
+    @Column({ name: 'countSupport'})
+    public countSupport: number;
 
-    @Column({ name: 'start_vote_datetime' })
-    public start_vote_datetime: Date;
+    @Column({ name: 'startVoteDatetime' })
+    public startVoteDatetime: Date;
 
-    @Column({ name: 'end_vote_datetime' })
-    public end_vote_datetime: Date;
+    @Column({ name: 'endVoteDatetime' })
+    public endVoteDatetime: Date;
 
-    @Column({ name: 'approve_datetime' })
-    public approve_datetime: Date;
+    @Column({ name: 'approveDatetime' })
+    public approveDatetime: Date;
 
-    @Column({ name: 'approve_name' })
-    public approve_name: string;
+    @Column({ name: 'closeDate' })
+    public closeDate: Date;
 
-    @Column({ name: 'update_datetime' })
-    public update_datetime: Date;
+    @Column({ name: 'approveUsername' })
+    public approveUsername: string;
 
-    @Column({ name: 'create_user' })
-    public create_user: ObjectID;
+    @Column({ name: 'updateDatetime' })
+    public updateDatetime: Date;
 
     @Column({ name: 'status' })
     public status: any;
 
-    @Column({ name: 'create_as_page' })
-    public create_as_page: ObjectID;
+    @Column({ name: 'createAsPage' })
+    public createAsPage: ObjectID;
 
     @Column({ name: 'type' })
     public type: any;
@@ -82,8 +82,11 @@ export class VotingEventModel extends BaseModel {
     @Column({ name: 'pin' })
     public pin: boolean;
 
-    @Column({ name: 'showed' })
-    public showed: boolean;
+    @Column({ name: 'showVoterName' })
+    public showVoterName: boolean;
+
+    @Column({ name: 'showVoteResult' })
+    public showVoteResult: boolean;
 
     @BeforeInsert()
     public createDetails(): any {

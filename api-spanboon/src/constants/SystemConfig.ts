@@ -107,3 +107,9 @@ export const VOTE_DASHBOARD ='vote.dashboard';
 
 export const DEFAULT_EMERGENCYEVENT_MODE = 'normal';
 export const EMERGENCYEVENT_MODE = 'emergencyEvent.mode';
+
+export const DEFAULT_OBJECTIVE_AUTO_TAGS_VALUE = 5;
+export const OBJECTIVE_AUTO_TAGS_VALUE = 'objective.auto.tags.value';
+
+export const DEFAULT_OBJECTIVE_TRIGGER_AUTO_TAGS = false;
+export const OBJECTIVE_TRIGGER_AUTO_TAGS = 'objective.trigger.auto.tags.value';

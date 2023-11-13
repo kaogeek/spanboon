@@ -42,28 +42,40 @@ export const jobSchedulerLoader: MicroframeworkLoader = (settings: Microframewor
         });
     });
 
-    // Run Every 1 min 
-    
-    // schedule.scheduleJob('*/1 * * * *', async () => {
-        // axios.get(process.env.APP_API_PROCESSV3, {
-            // headers: {
-                // Origin: process.env.APP_API_PROCESSV3,
-                // Referer: process.env.APP_API_PROCESSV3,
-                // jobScheduler:'processor'
-            // }
-        // }).then((res) => {
-            // console.log(`Main Contents : ${res.status}`);
-        // }).catch((err) => {
-            // console.log('err:' + err);
-        // });
-    // });
-
-    // fetch feed twitter
-    // schedule.scheduleJob('*/30 * * * *', () => {
-    // axios.get(process.env.APP_TWITTER).then((res) => {
-    // console.log(`Fetch Twitter : ${res.status}`);
-    // }).catch((err) => {
-    // console.log('err: ' + err);
-    // });
-    // });
+    // Run Every 1 hour
+    schedule.scheduleJob('0 */1 * * *', () => {
+        const data = {
+            username: process.env.ADMIN_USERNAME,
+            password: process.env.ADMIN_PASSWORD
+        };
+        const options = {
+            headers: {
+                'Content-Type': 'application/json',
+                'Origin': 'http://localhost:4300',
+                'Referer': 'http://localhost:4300',
+                'mode': 'EMAIL'
+            },
+        };
+        axios.post(process.env.APP_LOGIN,data,options)
+        .then((res) => {
+            const underOption = {
+                headers:{
+                    'Authorization': 'Bearer'+' '+res.data.data.token,
+                    'Content-Type': 'application/json',
+                    'Origin': 'http://localhost:4300',
+                    'Referer': 'http://localhost:4300',
+                }
+            };
+            axios.post(process.env.APP_AUTO_APPROVE,{},underOption)
+            .then((response) => {
+                console.log('RESPONSE ==== : ', response.data);
+            })
+            .catch((error) => {
+                console.log('ERROR: ====', error);
+            });
+        })
+        .catch((err) => {
+            console.log('ERROR: ====', err);
+        });
+    });
 };

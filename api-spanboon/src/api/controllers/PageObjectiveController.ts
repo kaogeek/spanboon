@@ -183,9 +183,6 @@ export class ObjectiveController {
                 return res.status(400).send(ResponseUtil.getSuccessResponse('Title is missing.', undefined));
             }
 
-            if (detail === undefined) {
-                return res.status(400).send(ResponseUtil.getSuccessResponse('Detail is missing.', undefined));
-            }
             if (masterHashTag !== null && masterHashTag !== undefined) {
                 hashTag = new ObjectID(masterHashTag.id);
             } else {
@@ -296,10 +293,6 @@ export class ObjectiveController {
                 return res.status(400).send(ResponseUtil.getSuccessResponse('Title is missing.', undefined));
             }
 
-            if (detail === undefined) {
-                return res.status(400).send(ResponseUtil.getSuccessResponse('Detail is missing.', undefined));
-
-            }
             const newHashTag: HashTag = new HashTag();
             newHashTag.name = name;
             newHashTag.lastActiveDate = today;
