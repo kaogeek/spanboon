@@ -25,7 +25,6 @@ export class RetrieveVotingOptionsModel extends BaseModel {
     @Column({ name: 'userId' })
     public userId: ObjectID;
 
-
     @BeforeInsert()
     public createDetails(): any {
         this.createdDate = moment().toDate();

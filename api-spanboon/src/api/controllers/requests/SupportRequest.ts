@@ -9,5 +9,4 @@ import 'reflect-metadata';
 
 export class SupportRequest {
     public votingId: string;
-    public userId: string;
 }
