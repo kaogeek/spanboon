@@ -157,7 +157,8 @@ export class AdminVotedController {
                 approveUsername:user.displayName,
                 approveDatetime:today,
                 pin:votePin,
-                status:'voted'
+                showVoteResult:votingEventRequest.showVoteResult,
+                status: votingEventRequest.status
             }};
         const update = await this.votingEventService.update(query,newValues);
         if(update){

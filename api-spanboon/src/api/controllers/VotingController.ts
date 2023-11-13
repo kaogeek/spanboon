@@ -18,7 +18,7 @@ import { ResponseUtil } from '../../utils/ResponseUtil';
 import { ObjectID } from 'mongodb';
 import { PageService } from '../services/PageService';
 import moment from 'moment';
-import { RetrieveVoteService } from '../services/RetrieveVotingOptionService';
+// import { RetrieveVoteService } from '../services/RetrieveVotingOptionService';
 import { Page } from '../models/Page';
 import { ObjectUtil } from '../../utils/ObjectUtil';
 import { SearchFilter } from './requests/SearchFilterRequest';
@@ -47,7 +47,7 @@ export class VotingController {
         private pageService: PageService,
         private pageAccessLevelService: PageAccessLevelService,
         private assetService: AssetService,
-        private retrieveVoteService: RetrieveVoteService
+        // private retrieveVoteService: RetrieveVoteService
     ) { }
 
     @Post('/vote/search/')
@@ -362,7 +362,9 @@ export class VotingController {
             },
           },
           {
-            ordering: -1
+            $sort:{
+                ordering:-1
+            }
           }
         ]);
         if (voteItem.length>0) {
@@ -395,7 +397,7 @@ export class VotingController {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find a vote.', undefined);
             return res.status(400).send(errorResponse);
         }
-
+        
         const query = { _id: voteObjId, userId: userObjId };
         const newValues = {
             $set: {
