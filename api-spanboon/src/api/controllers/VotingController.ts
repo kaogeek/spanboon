@@ -979,19 +979,9 @@ export class VotingController {
     // get Item
     @Get('/item/vote/:votingId')
     public async getItemVote(@Param('votingId') votingId: string, @Res() res: any, @Req() req: any): Promise<any> {
-        const userObjId = new ObjectID(req.user.id);
         const voteObjId = new ObjectID(votingId);
-        // check exist?
-        const user = await this.userService.findOne({ _id: userObjId });
-        if (user !== undefined && user !== null && user.banned === true) {
-            const errorResponse = ResponseUtil.getErrorResponse('You have been banned.', undefined);
-            return res.status(400).send(errorResponse);
-        }
-        if (user === undefined && user === null) {
-            const errorResponse = ResponseUtil.getErrorResponse('Not found the user.', undefined);
-            return res.status(400).send(errorResponse);
-        }
-        const voteObj = await this.votingEventService.findOne({ _id: voteObjId, userId: userObjId });
+
+        const voteObj = await this.votingEventService.findOne({ _id: voteObjId });
         if (voteObj === undefined && voteObj === null) {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find a vote.', undefined);
             return res.status(400).send(errorResponse);
