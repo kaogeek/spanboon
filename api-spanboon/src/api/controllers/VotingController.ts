@@ -978,7 +978,6 @@ export class VotingController {
 
     // get Item
     @Get('/item/vote/:votingId')
-    @Authorized('user')
     public async getItemVote(@Param('votingId') votingId: string, @Res() res: any, @Req() req: any): Promise<any> {
         const userObjId = new ObjectID(req.user.id);
         const voteObjId = new ObjectID(votingId);
