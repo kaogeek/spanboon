@@ -1424,66 +1424,49 @@ export class VotingController {
 
         const result = await this.votingEventService.create(votingEvent);
         if (result) {
-            const voteItem = new VoteItemModel();
-            voteItem.votingId = result.id;
-            voteItem.ordering = votingEventRequest.ordering;
-            voteItem.type = votingEventRequest.typeChoice;
-            voteItem.title = votingEventRequest.titleItem;
-            voteItem.assetId = votingEventRequest.assetIdItem;
-            voteItem.coverPageURL = votingEventRequest.coverPageURLItem;
-            voteItem.s3CoverPageURL = votingEventRequest.s3CoverPageURLItem;
-            const createItem = await this.voteItemService.create(voteItem);
-            if (createItem) {
-                const voteChoiceObj = votingEventRequest.voteChoice;
-                if (voteChoiceObj.length > 0) {
-                    for (const voteChoicePiece of voteChoiceObj) {
-                        const voteChoice = new VoteChoiceModel();
-                        voteChoice.voteItemId = new ObjectID(createItem.id);
-                        voteChoice.coverPageURL = voteChoicePiece.coverPageURL;
-                        voteChoice.s3coverPageURL = voteChoicePiece.s3CoverPageURL;
-                        voteChoice.title = voteChoicePiece.title;
-                        voteChoice.assetId = voteChoicePiece.assetId;
-                        await this.voteChoiceService.create(voteChoice);
+            if(votingEventRequest.voteItem.length> 0){
+                for(const voteItems of votingEventRequest.voteItem){
+                    const voteItem = new VoteItemModel();
+                    voteItem.votingId = result.id;
+                    voteItem.ordering = voteItems.ordering;
+                    voteItem.type = voteItems.typeChoice;
+                    voteItem.title = voteItems.titleItem;
+                    voteItem.assetId = voteItems.assetIdItem;
+                    voteItem.coverPageURL = voteItems.coverPageURLItem;
+                    voteItem.s3CoverPageURL = voteItems.s3CoverPageURLItem;
+                    const createVoteItem = await this.voteItemService.create(voteItem);
+                    if(createVoteItem){
+                        await this.CreateVoteChoice(createVoteItem,voteItems);
                     }
-                    const response: any = {};
-                    response.id = result.id;
-                    response.title = result.title;
-                    response.detail = result.detail;
-                    response.assetId = result.assetId;
-                    response.coverPageURL = result.coverPageURL;
-                    response.s3CoverPageURL = result.s3CoverPageURL;
-                    response.userId = result.userId;
-                    response.approved = result.approved;
-                    response.closed = result.closed;
-                    response.minSupport = result.minSupport;
-                    response.countSupport = result.countSupport;
-                    response.startVoteDatetime = result.startVoteDatetime;
-                    response.endVoteDatetime = result.endVoteDatetime;
-                    response.approveDatetime = result.approveDatetime;
-                    response.approveUsername = result.approveUsername;
-                    response.updateDatetime = result.updateDatetime;
-                    response.status = result.status;
-                    response.createAsPage = result.createAsPage;
-                    response.type = result.type;
-                    response.pin = result.pin;
-                    response.showVoterName = result.showVoterName;
-                    response.showVoteResult = result.showVoteResult;
-                    response.ordering = createItem.ordering;
-                    response.typeItem = createItem.type;
-                    response.titleItem = createItem.title;
-                    response.assetIdItem = createItem.assetId;
-                    response.coverPageURLItem = createItem.coverPageURL;
-                    response.s3CoverPageURLItem = createItem.s3CoverPageURL;
-                    response.voteChoice = voteChoiceObj;
-
-                    const successResponse = ResponseUtil.getSuccessResponse('Successfully create Voting Event.', response);
-                    return res.status(200).send(successResponse);
-                } else {
-                    const errorResponse = ResponseUtil.getErrorResponse('Cannot create a voting Item, Vote Choice is empty.', undefined);
-                    return res.status(400).send(errorResponse);
                 }
+                const response: any = {};
+                response.id = result.id;
+                response.title = result.title;
+                response.detail = result.detail;
+                response.assetId = result.assetId;
+                response.coverPageURL = result.coverPageURL;
+                response.s3CoverPageURL = result.s3CoverPageURL;
+                response.userId = result.userId;
+                response.approved = result.approved;
+                response.closed = result.closed;
+                response.minSupport = result.minSupport;
+                response.countSupport = result.countSupport;
+                response.startVoteDatetime = result.startVoteDatetime;
+                response.endVoteDatetime = result.endVoteDatetime;
+                response.approveDatetime = result.approveDatetime;
+                response.approveUsername = result.approveUsername;
+                response.updateDatetime = result.updateDatetime;
+                response.status = result.status;
+                response.createAsPage = result.createAsPage;
+                response.type = result.type;
+                response.pin = result.pin;
+                response.showVoterName = result.showVoterName;
+                response.showVoteResult = result.showVoteResult;
+                response.voteItems = votingEventRequest.voteItem;
+                const successResponse = ResponseUtil.getSuccessResponse('Successfully create Voting Event.', response);
+                return res.status(200).send(successResponse);
             } else {
-                const errorResponse = ResponseUtil.getErrorResponse('Cannot create a voting Item.', undefined);
+                const errorResponse = ResponseUtil.getErrorResponse('Cannot create a voting Item, Vote Choice is empty.', undefined);
                 return res.status(400).send(errorResponse);
             }
         } else {
@@ -1645,67 +1628,49 @@ export class VotingController {
 
         const result = await this.votingEventService.create(votingEvent);
         if (result) {
-            const voteItem = new VoteItemModel();
-            voteItem.votingId = result.id;
-            voteItem.ordering = votingEventRequest.ordering;
-            voteItem.type = votingEventRequest.typeChoice;
-            voteItem.title = votingEventRequest.titleItem;
-            voteItem.assetId = votingEventRequest.assetIdItem;
-            voteItem.coverPageURL = votingEventRequest.coverPageURLItem;
-            voteItem.s3CoverPageURL = votingEventRequest.s3CoverPageURLItem;
-            const createItem = await this.voteItemService.create(voteItem);
-            if (createItem) {
-                const voteChoiceObj = votingEventRequest.voteChoice;
-                if (voteChoiceObj.length > 0) {
-                    for (const voteChoicePiece of voteChoiceObj) {
-                        const voteChoice = new VoteChoiceModel();
-                        voteChoice.voteItemId = new ObjectID(createItem.id);
-                        voteChoice.coverPageURL = voteChoicePiece.coverPageURL;
-                        voteChoice.s3coverPageURL = voteChoicePiece.s3CoverPageURL;
-                        voteChoice.title = voteChoicePiece.title;
-                        voteChoice.assetId = voteChoicePiece.assetId;
-                        await this.voteChoiceService.create(voteChoice);
+            if(votingEventRequest.voteItem.length> 0){
+                for(const voteItems of votingEventRequest.voteItem){
+                    const voteItem = new VoteItemModel();
+                    voteItem.votingId = result.id;
+                    voteItem.ordering = voteItems.ordering;
+                    voteItem.type = voteItems.typeChoice;
+                    voteItem.title = voteItems.titleItem;
+                    voteItem.assetId = voteItems.assetIdItem;
+                    voteItem.coverPageURL = voteItems.coverPageURLItem;
+                    voteItem.s3CoverPageURL = voteItems.s3CoverPageURLItem;
+                    const createVoteItem = await this.voteItemService.create(voteItem);
+                    if(createVoteItem){
+                        await this.CreateVoteChoice(createVoteItem,voteItems);
                     }
-
-                    const response: any = {};
-                    response.id = result.id;
-                    response.title = result.title;
-                    response.detail = result.detail;
-                    response.assetId = result.assetId;
-                    response.coverPageURL = result.coverPageURL;
-                    response.s3CoverPageURL = result.s3CoverPageURL;
-                    response.userId = result.userId;
-                    response.approved = result.approved;
-                    response.closed = result.closed;
-                    response.minSupport = result.minSupport;
-                    response.countSupport = result.countSupport;
-                    response.startVoteDatetime = result.startVoteDatetime;
-                    response.endVoteDatetime = result.endVoteDatetime;
-                    response.approveDatetime = result.approveDatetime;
-                    response.approveUsername = result.approveUsername;
-                    response.updateDatetime = result.updateDatetime;
-                    response.status = result.status;
-                    response.createAsPage = result.createAsPage;
-                    response.type = result.type;
-                    response.pin = result.pin;
-                    response.showVoterName = result.showVoterName;
-                    response.showVoteResult = result.showVoteResult;
-                    response.ordering = createItem.ordering;
-                    response.typeItem = createItem.type;
-                    response.titleItem = createItem.title;
-                    response.assetIdItem = createItem.assetId;
-                    response.coverPageURLItem = createItem.coverPageURL;
-                    response.s3CoverPageURLItem = createItem.s3CoverPageURL;
-                    response.voteChoice = voteChoiceObj;
-
-                    const successResponse = ResponseUtil.getSuccessResponse('Successfully create Voting Event.', response);
-                    return res.status(200).send(successResponse);
-                } else {
-                    const errorResponse = ResponseUtil.getErrorResponse('Cannot create a voting Item, Vote Choice is empty.', undefined);
-                    return res.status(400).send(errorResponse);
                 }
+                const response: any = {};
+                response.id = result.id;
+                response.title = result.title;
+                response.detail = result.detail;
+                response.assetId = result.assetId;
+                response.coverPageURL = result.coverPageURL;
+                response.s3CoverPageURL = result.s3CoverPageURL;
+                response.userId = result.userId;
+                response.approved = result.approved;
+                response.closed = result.closed;
+                response.minSupport = result.minSupport;
+                response.countSupport = result.countSupport;
+                response.startVoteDatetime = result.startVoteDatetime;
+                response.endVoteDatetime = result.endVoteDatetime;
+                response.approveDatetime = result.approveDatetime;
+                response.approveUsername = result.approveUsername;
+                response.updateDatetime = result.updateDatetime;
+                response.status = result.status;
+                response.createAsPage = result.createAsPage;
+                response.type = result.type;
+                response.pin = result.pin;
+                response.showVoterName = result.showVoterName;
+                response.showVoteResult = result.showVoteResult;
+                response.voteItems = votingEventRequest.voteItem;
+                const successResponse = ResponseUtil.getSuccessResponse('Successfully create Voting Event.', response);
+                return res.status(200).send(successResponse);
             } else {
-                const errorResponse = ResponseUtil.getErrorResponse('Cannot create a voting Item.', undefined);
+                const errorResponse = ResponseUtil.getErrorResponse('Cannot create a voting Item, Vote Choice is empty.', undefined);
                 return res.status(400).send(errorResponse);
             }
         } else {
@@ -1916,5 +1881,22 @@ export class VotingController {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot support vote.', undefined);
             return res.status(400).send(errorResponse);
         }
+    }
+
+    private async CreateVoteChoice(createVoteItem:any,voteItems: any): Promise<any>{
+        if (voteItems ) {
+            const voteChoiceObj = voteItems.voteChoice;
+            if (voteChoiceObj.length > 0) {
+                for (const voteChoicePiece of voteChoiceObj) {
+                    const voteChoice = new VoteChoiceModel();
+                    voteChoice.voteItemId = new ObjectID(createVoteItem.id);
+                    voteChoice.coverPageURL = voteChoicePiece.coverPageURL;
+                    voteChoice.s3coverPageURL = voteChoicePiece.s3CoverPageURL;
+                    voteChoice.title = voteChoicePiece.title;
+                    voteChoice.assetId = voteChoicePiece.assetId;
+                    await this.voteChoiceService.create(voteChoice);
+                }
+            }
+        } 
     }
 }
