@@ -30,6 +30,7 @@ import { ConfigService } from '../services/ConfigService';
 import { VoteItem as VoteItemModel } from '../models/VoteItemModel';
 import { VoteChoice as VoteChoiceModel } from '../models/VoteChoiceModel';
 import { VotedService } from '../services/VotedService';
+import { AuthenticationIdService } from '../services/AuthenticationIdService';
 import { Voted as VotedModel } from '../models/VotedModel';
 import { PageAccessLevelService } from '../services/PageAccessLevelService';
 import { PAGE_ACCESS_LEVEL } from '../../constants/PageAccessLevel';
@@ -47,6 +48,7 @@ export class VotingController {
         private pageService: PageService,
         private pageAccessLevelService: PageAccessLevelService,
         private assetService: AssetService,
+        private authenticationIdService:AuthenticationIdService,
         // private retrieveVoteService: RetrieveVoteService
     ) { }
 
@@ -1689,6 +1691,17 @@ export class VotingController {
         const voteChoiceObjId = new ObjectID(votedRequest.voteChoiceId);
         const voteEventObj = await this.votingEventService.findOne({ _id: votingObjId });
         const votedObj = await this.votedService.findOne({ votingId: votingObjId, userId: userObjId,voteItemId:voteItemObjId,voteChoiceId:voteChoiceObjId });
+
+        const authUser = await this.authenticationIdService.findOne({user:userObjId,providerName:'MFP', membershipState:'APPROVED'});
+        // status public, private, member
+        if( 
+            voteEventObj.type === 'member' && 
+            authUser === undefined
+        )
+        {
+            const errorResponse = ResponseUtil.getErrorResponse('This vote only for membershipMFP, You are not membership.', undefined);
+            return res.status(400).send(errorResponse);
+        }
 
         if (votedObj !== undefined && votedObj !== null) {
             const errorResponse = ResponseUtil.getErrorResponse('You have been already voted.', undefined);
