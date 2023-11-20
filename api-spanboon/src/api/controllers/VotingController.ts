@@ -1995,7 +1995,7 @@ export class VotingController {
             return res.status(400).send(errorResponse);
         }
 
-        const unsupport = await this.userSupportService.delete({_id:userObjId ,votingId: votingObjId, userId: userObjId });
+        const unsupport = await this.userSupportService.delete({votingId: votingObjId, userId: userObjId });
         if (unsupport) {
             const query = { _id: votingObjId };
             const newValues = { $set: { countSupport: voteEventObj.countSupport - 1 } };
