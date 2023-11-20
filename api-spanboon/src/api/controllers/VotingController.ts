@@ -377,7 +377,8 @@ export class VotingController {
                         showVoteResult:1,
                         voted:1,
                         page:1,
-                        user:1
+                        user:1,
+                        service:1
                     }
                 },
                 {
@@ -713,6 +714,32 @@ export class VotingController {
                     $replaceRoot: {
                         newRoot: '$combinedResults',
                     },
+                },
+                {
+                    $project:{
+                        _id:1,
+                        createdDate:1,
+                        title:1,
+                        detail:1,
+                        coverPageURL:1,
+                        s3CoverPageURL:1,
+                        userId:1,
+                        approved:1,
+                        closed:1,
+                        minSupport:1,
+                        countSupport:1,
+                        startVoteDatetime:1,
+                        endVoteDatetime:1,
+                        status:1,
+                        type:1,
+                        pin:1,
+                        showVoterName:1,
+                        showVoteResult:1,
+                        voted:1,
+                        page:1,
+                        user:1,
+                        service:1
+                    }
                 },
                 {
                     $match: matchVoteEvent
