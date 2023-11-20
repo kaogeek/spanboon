@@ -1788,7 +1788,84 @@ export class VotingController {
             return res.status(400).send(errorResponse);
         }
     }
+    
+    // Multi Answers
+    @Post('/multi/voted/:votingId')
+    @Authorized('user')
+    public async MultiVoted(@Body({ validate: true }) votedRequest: VotedRequest, @Param('votingId') votingId: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const votingObjId = new ObjectID(votingId);
+        const userObjId = new ObjectID(req.user.id);
+        const voteItemObjId = new ObjectID(votedRequest.voteItemId);
+        const voteChoiceObjId = new ObjectID(votedRequest.voteChoiceId);
+        const voteEventObj = await this.votingEventService.findOne({ _id: votingObjId });
+        const votedObj = await this.votedService.findOne({ votingId: votingObjId, userId: userObjId,voteItemId:voteItemObjId,voteChoiceId:voteChoiceObjId });
 
+        const authUser = await this.authenticationIdService.findOne({user:userObjId,providerName:'MFP', membershipState:'APPROVED'});
+        // status public, private, member
+        if( 
+            voteEventObj.type === 'member' && 
+            authUser === undefined
+        )
+        {
+            const errorResponse = ResponseUtil.getErrorResponse('This vote only for membershipMFP, You are not membership.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if (votedObj !== undefined && votedObj !== null) {
+            const errorResponse = ResponseUtil.getErrorResponse('You have been already voted.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if (voteEventObj !== undefined && voteEventObj !== null && voteEventObj.approved === false) {
+            const errorResponse = ResponseUtil.getErrorResponse('Status approve is false.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        const voteItemObj = await this.voteItemService.findOne({ _id: voteItemObjId });
+        if (voteItemObj === undefined && voteItemObj === null) {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot find the VoteItem.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if (voteEventObj.status === 'support') {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot Vote this vote status is support.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if (voteEventObj.status === 'close') {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot Vote this vote status is close.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        // check ban 
+        const user = await this.userService.findOne({ _id: userObjId });
+        if (user !== undefined && user !== null && user.banned === true) {
+            const errorResponse = ResponseUtil.getErrorResponse('You have been banned.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+        const response: any = [];
+        if(votedRequest.voteItem.length >0){
+            for(const item of votedRequest.voteItem){
+                const voted = new VotedModel();
+                voted.votingId = votingObjId;
+                voted.userId = userObjId;
+                voted.answer = item.answer;
+                voted.voteItemId = voteItemObjId;
+                voted.voteChoiceId = item.voteChoiceId;
+                const create = await this.votedService.create(voted);
+                response.push(create);
+            }
+        }
+
+        if (response.length > 0) {
+            const successResponse = ResponseUtil.getSuccessResponse('Create vote is success.', response);
+            return res.status(200).send(successResponse);
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot create vote.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+    
     // Unvote
     @Post('/unvoted/:votingId')
     @Authorized('user')
