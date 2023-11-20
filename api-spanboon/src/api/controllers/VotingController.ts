@@ -1423,6 +1423,7 @@ export class VotingController {
         votingEvent.pin = pin;
         votingEvent.showVoterName = showed;
         votingEvent.showVoteResult = votingEventRequest.showVoteResult;
+        votingEvent.service = votingEventRequest.service;
 
         const result = await this.votingEventService.create(votingEvent);
         if (result) {
@@ -1465,6 +1466,7 @@ export class VotingController {
                 response.showVoterName = result.showVoterName;
                 response.showVoteResult = result.showVoteResult;
                 response.voteItems = votingEventRequest.voteItem;
+                response.service = votingEventRequest.service;
                 const successResponse = ResponseUtil.getSuccessResponse('Successfully create Voting Event.', response);
                 return res.status(200).send(successResponse);
             } else {
@@ -1627,6 +1629,7 @@ export class VotingController {
         votingEvent.pin = pin;
         votingEvent.showVoterName = showed;
         votingEvent.showVoteResult = votingEventRequest.showVoteResult;
+        votingEvent.service = votingEventRequest.service;
 
         const result = await this.votingEventService.create(votingEvent);
         if (result) {
@@ -1669,6 +1672,8 @@ export class VotingController {
                 response.showVoterName = result.showVoterName;
                 response.showVoteResult = result.showVoteResult;
                 response.voteItems = votingEventRequest.voteItem;
+                response.service = votingEventRequest.service;
+
                 const successResponse = ResponseUtil.getSuccessResponse('Successfully create Voting Event.', response);
                 return res.status(200).send(successResponse);
             } else {

@@ -31,6 +31,7 @@ export class VotingEventRequest {
     public pin: boolean;
     public showVoterName: boolean;
     public showVoteResult: boolean;
-    public voteItem:any[];
-    public voteChoice:any[];
+    public voteItem: any[];
+    public voteChoice: any[];
+    public service: string;
 }
