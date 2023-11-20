@@ -1984,7 +1984,7 @@ export class VotingController {
             const errorResponse = ResponseUtil.getErrorResponse('VotingEvent Id is undefined.', undefined);
             return res.status(400).send(errorResponse);
         }
-        const userSupportObj = await this.userSupportService.findOne({_id:userObjId ,votingId: votingObjId, userId: userObjId });
+        const userSupportObj = await this.userSupportService.findOne({votingId: votingObjId, userId: userObjId });
         if(userSupportObj === undefined) {
             const errorResponse = ResponseUtil.getErrorResponse('Not found user support.', undefined);
             return res.status(400).send(errorResponse);
