@@ -123,6 +123,7 @@ export class VotingController {
                         pin: 1,
                         showVoterName: 1,
                         showVoteResult: 1,
+                        service:1,
                         checkListName: {
                             $cond: [
                                 {
@@ -244,6 +245,7 @@ export class VotingController {
                         showVoterName: 1,
                         showVoteResult: 1,
                         voted:1,
+                        service:1,
                         createPage: {
                             $cond: [
                                 {
@@ -483,6 +485,7 @@ export class VotingController {
                         pin: 1,
                         showVoterName: 1,
                         showVoteResult: 1,
+                        service:1,
                         checkListName: {
                             $cond: [
                                 {
@@ -604,6 +607,7 @@ export class VotingController {
                         showVoterName: 1,
                         showVoteResult: 1,
                         voted:1,
+                        service:1,
                         createPage: {
                             $cond: [
                                 {

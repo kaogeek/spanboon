@@ -89,7 +89,7 @@ export class VotingEventModel extends BaseModel {
     public showVoteResult: boolean;
 
     @Column({ name: 'service' })
-    public service: string
+    public service: string;
 
     @BeforeInsert()
     public createDetails(): any {
