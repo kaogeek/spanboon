@@ -1951,7 +1951,7 @@ export class VotingController {
         if (create) {
             const userSupports = await this.userSupportService.find({ votingId: votingObjId });
             const query = { _id: votingObjId };
-            const newValue = { $set: { countSupport: userSupports.length + 1 } };
+            const newValue = { $set: { countSupport: userSupports.length  } };
             const update = await this.votingEventService.update(query, newValue);
             if (update) {
                 const successResponse = ResponseUtil.getSuccessResponse('Successfully create User Support.', create);
