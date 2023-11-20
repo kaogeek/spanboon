@@ -1972,10 +1972,9 @@ export class VotingController {
     await this.votingEventService.update(query,newValues);
     */
 
-    @Post('/unsupport/:userSupportId/')
+    @Post('/unsupport/')
     @Authorized('user')
-    public async Unsupport(@Body({ validate: true }) supportRequest: SupportRequest, @Param('userSupportId') userSupportId: string, @Res() res: any, @Req() req: any): Promise<any> {
-        const userSupportObjId = new ObjectID(userSupportId);
+    public async Unsupport(@Body({ validate: true }) supportRequest: SupportRequest, @Res() res: any, @Req() req: any): Promise<any> {
         const votingObjId = new ObjectID(supportRequest.votingId);
         const userObjId = new ObjectID(req.user.id);
 
@@ -1985,7 +1984,7 @@ export class VotingController {
             const errorResponse = ResponseUtil.getErrorResponse('VotingEvent Id is undefined.', undefined);
             return res.status(400).send(errorResponse);
         }
-        const userSupportObj = await this.userSupportService.findOne({_id:userSupportObjId ,votingId: votingObjId, userId: userObjId });
+        const userSupportObj = await this.userSupportService.findOne({_id:userObjId ,votingId: votingObjId, userId: userObjId });
         if(userSupportObj === undefined) {
             const errorResponse = ResponseUtil.getErrorResponse('Not found user support.', undefined);
             return res.status(400).send(errorResponse);
@@ -1996,7 +1995,7 @@ export class VotingController {
             return res.status(400).send(errorResponse);
         }
 
-        const unsupport = await this.userSupportService.delete({_id:userSupportObjId ,votingId: votingObjId, userId: userObjId });
+        const unsupport = await this.userSupportService.delete({_id:userObjId ,votingId: votingObjId, userId: userObjId });
         if (unsupport) {
             const query = { _id: votingObjId };
             const newValues = { $set: { countSupport: voteEventObj.countSupport - 1 } };
