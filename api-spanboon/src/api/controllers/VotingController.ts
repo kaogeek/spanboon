@@ -5,6 +5,7 @@ import { VoteItemRequest } from './requests/VoteItemRequest';
 import { SupportRequest } from './requests/SupportRequest';
 import { FindVoteRequest } from './requests/FindVoteRequest';
 import { VotedRequest } from './requests/VotedRequest';
+import { InviteVoteRequest } from './requests/InviteVoteRequest';
 import { VotingEventService } from '../services/VotingEventService';
 import { VoteItemService } from '../services/VoteItemService';
 import { VoteChoiceService } from '../services/VoteChoiceService';
@@ -29,7 +30,9 @@ import {
 import { ConfigService } from '../services/ConfigService';
 import { VoteItem as VoteItemModel } from '../models/VoteItemModel';
 import { VoteChoice as VoteChoiceModel } from '../models/VoteChoiceModel';
+import { InviteVote as InviteVoteModel } from '../models/InviteVoteModel';
 import { VotedService } from '../services/VotedService';
+import { InviteVoteService } from '../services/InviteVoteService';
 import { AuthenticationIdService } from '../services/AuthenticationIdService';
 import { Voted as VotedModel } from '../models/VotedModel';
 import { PageAccessLevelService } from '../services/PageAccessLevelService';
@@ -49,6 +52,7 @@ export class VotingController {
         private pageAccessLevelService: PageAccessLevelService,
         private assetService: AssetService,
         private authenticationIdService:AuthenticationIdService,
+        private inviteVoteService:InviteVoteService,
         // private retrieveVoteService: RetrieveVoteService
     ) { }
 
@@ -770,7 +774,127 @@ export class VotingController {
         }
     }
 
-    // Voted.
+    // search this voteEvent, voteItems, voteChoices
+    @Post('/item/search/')
+    public async searchVoteItem(@Body({ validate: true }) search: FindVoteRequest, @Res() res: any, @Req() req: any): Promise<any> {
+        const whereConditions = search.whereConditions;
+        let filter: any = search.filter;
+        if (filter === undefined) {
+            filter = new SearchFilter();
+        }
+        const keywords = search.keyword;
+        const exp = { $regex: '.*' + keywords + '.*', $options: 'si' };
+        const take = filter.limit ? filter.limit : 10;
+        const offset = filter.offset ? filter.offset : 0;
+        const matchVoteEvent: any = {};
+        if (whereConditions.approved !== undefined && whereConditions.approved !== null) {
+            matchVoteEvent.approved = whereConditions.approved;
+        }
+
+        if (whereConditions.closed !== undefined && whereConditions.closed !== null) {
+            matchVoteEvent.closed = whereConditions.closed;
+        }
+
+        if (whereConditions.status !== undefined && whereConditions.status !== null) {
+            matchVoteEvent.status = whereConditions.status;
+        }
+
+        if (whereConditions.type !== undefined && whereConditions.type !== null) {
+            matchVoteEvent.type = whereConditions.type;
+        }
+
+        if (whereConditions.pin !== undefined && whereConditions.pin !== null) {
+            matchVoteEvent.pin = whereConditions.pin;
+        }
+
+        if (whereConditions.showed !== undefined && whereConditions.showed !== null) {
+            matchVoteEvent.showVoteResult = whereConditions.showVoteResult;
+        }
+
+        if (keywords !== undefined && keywords !== null && keywords !== '') {
+            matchVoteEvent.title = exp;
+        }
+        const voteEventObjIds = new ObjectID(whereConditions._id);
+        const voteEventAggr = await this.votingEventService.aggregate([
+            {
+                $match:{
+                    _id:voteEventObjIds
+                }
+            },
+            {
+                $lookup:{
+                    from:'VoteItem',
+                    let:{'id':'$_id'},
+                    pipeline:[
+                        {
+                            $match:{
+                                $expr:
+                                {
+                                    $eq:['$$id','$votingId']
+                                }
+                            }
+                        },
+                        {
+                            $lookup:{
+                                from:'VoteChoice',
+                                let:{'id':'$_id'},
+                                pipeline:[
+                                    {
+                                        $match:{
+                                            $expr:
+                                            {
+                                                $eq:['$$id','$voteItemId']
+                                            }
+                                        }
+                                    },
+                                    {
+                                        $lookup:{
+                                            from:'Voted',
+                                            let:{'id':'$_id'},
+                                            pipeline:[
+                                                {
+                                                    $match:{
+                                                        $expr:{
+                                                            $eq:['$$id','$voteChoiceId']
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    $project:{
+                                                        _id:1,
+                                                        voteChoiceId:1
+                                                    }
+                                                }
+                                            ],
+                                            as:'voted'
+                                        }
+                                    }
+                                ],
+                                as:'voteChoice'
+                            }
+                        }
+                    ],
+                    as:'voteItem'
+                }
+            },
+            {
+                $limit: take
+            },
+            {
+                $skip: offset
+            }
+        ]);
+        if (voteEventAggr.length > 0) {
+            const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', voteEventAggr);
+            return res.status(200).send(successResponse);
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot find any lists vote.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+        
+    }
+    
+    // ดูว่าใครมากด vote .
     @Post('/votes/cast/search')
     @Authorized('user')
     public async searchVoteAction(@Body({ validate: true }) search: FindVoteRequest,@Res() res: any, @Req() req: any): Promise<any> {
@@ -1555,15 +1679,18 @@ export class VotingController {
             return res.status(400).send(errorResponse);
         }
         // check ban 
-
-        if (pageId === 'null' || pageId === null || pageId === 'undefined' || pageId === undefined) {
-            pageData = await this.pageService.find({ where: { pageId: null, ownerUser: userObjId } });
-        } else {
+        if (pageId !== undefined && pageId !== null) {
             pageObjId = new ObjectID(pageId);
-            pageData = await this.pageService.find({ where: { _id: pageObjId } });
+            pageData = await this.pageService.find({ where: { _id: pageObjId } }); // ??????? WTF
 
             if (pageData === undefined) {
                 return res.status(400).send(ResponseUtil.getErrorResponse('Page was not found.', undefined));
+            }
+
+            const pageObj = await this.pageService.findOne({_id:pageObjId });
+            if (pageObj !== undefined && pageObj.banned === true) {
+                const errorResponse = ResponseUtil.getErrorResponse('Page was banned.', undefined);
+                return res.status(400).send(errorResponse);
             }
 
             // Check PageAccess
@@ -1572,7 +1699,8 @@ export class VotingController {
             if (!canAccess) {
                 return res.status(401).send(ResponseUtil.getErrorResponse('You cannot edit vote event of this page.', undefined));
             }
-        }
+            
+        } 
         const user = await this.userService.findOne({ _id: userObjId });
         if (user !== undefined && user !== null && user.banned === true) {
             const errorResponse = ResponseUtil.getErrorResponse('You have been banned.', undefined);
@@ -1717,35 +1845,53 @@ export class VotingController {
         }
     }
 
-    // Multi Answers
+    // User vote
     @Post('/voted/:votingId')
     @Authorized('user')
     public async Voted(@Body({ validate: true }) votedRequest: VotedRequest, @Param('votingId') votingId: string, @Res() res: any, @Req() req: any): Promise<any> {
         const votingObjId = new ObjectID(votingId);
         const userObjId = new ObjectID(req.user.id);
-        const voteItemObjId = new ObjectID(votedRequest.voteItemId);
-        const voteChoiceObjId = new ObjectID(votedRequest.voteChoiceId);
+        const pageObjId = new ObjectID(votedRequest.pageId);
         const voteEventObj = await this.votingEventService.findOne({ _id: votingObjId });
 
-        const authUser = await this.authenticationIdService.findOne({user:userObjId,providerName:'MFP', membershipState:'APPROVED'});
         // status public, private, member
-        if( 
-            voteEventObj.type === 'member' && 
-            authUser === undefined
-        )
-        {
-            const errorResponse = ResponseUtil.getErrorResponse('This vote only for membershipMFP, You are not membership.', undefined);
-            return res.status(400).send(errorResponse);
+        if(voteEventObj.type === 'member'){
+            const authUser = await this.authenticationIdService.findOne({user:userObjId,providerName:'MFP', membershipState:'APPROVED'});
+            if( 
+                voteEventObj.type === 'member' && 
+                authUser === undefined
+            )
+            {
+                const errorResponse = ResponseUtil.getErrorResponse('This vote only for membershipMFP, You are not membership.', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        }
+
+        // if private vote check you are in vote
+        if(voteEventObj.type === 'private'){
+            // user 
+            // vote by user
+            if(votedRequest.pageId === undefined){
+                const userInvited = await this.inviteVoteService.findOne({votingId: votingObjId, userId:userObjId});
+                if (userInvited === undefined ) {
+                    const errorResponse = ResponseUtil.getErrorResponse('This vote is private and user not invited to vote. ', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+            }
+
+            // page
+            // vote by page
+            if(votedRequest.pageId !== undefined){
+                const pageInvited = await this.inviteVoteService.findOne({votingId: votingObjId, pageId: pageObjId});
+                if (pageInvited === undefined ) {
+                    const errorResponse = ResponseUtil.getErrorResponse('This vote is private and page not invited to vote. ', undefined);
+                    return res.status(400).send(errorResponse);
+                }
+            }
         }
 
         if (voteEventObj !== undefined && voteEventObj !== null && voteEventObj.approved === false) {
             const errorResponse = ResponseUtil.getErrorResponse('Status approve is false.', undefined);
-            return res.status(400).send(errorResponse);
-        }
-
-        const voteItemObj = await this.voteItemService.findOne({ _id: voteItemObjId });
-        if (voteItemObj === undefined && voteItemObj === null) {
-            const errorResponse = ResponseUtil.getErrorResponse('Cannot find the VoteItem.', undefined);
             return res.status(400).send(errorResponse);
         }
 
@@ -1768,26 +1914,71 @@ export class VotingController {
         const response: any = [];
         if(votedRequest.voteItem.length >0){
             for(const item of votedRequest.voteItem){
-                const votedObj = await this.votedService.findOne
-                ({ 
-                    votingId: votingObjId, 
-                    userId: userObjId,
-                    voteItemId:new ObjectID(item.voteItemId),
-                    voteChoiceId:voteChoiceObjId 
-                });
 
-                if (votedObj !== undefined && votedObj !== null) {
-                    const errorResponse = ResponseUtil.getErrorResponse('You have been already voted.', undefined);
-                    return res.status(400).send(errorResponse);
-                }
-                if(item.voteChoice.length > 0){
-                    const create = await this.VoteChoice(item.voteItemId,item,votingObjId,userObjId);
-                    response.push(create);
+                const voted = await this.CheckSpamVote(item,votingObjId,votedRequest.pageId,userObjId);
+
+                if(voted === undefined){
+                    const voteItemObj = await this.voteItemService.findOne({ _id: new ObjectID(item.voteItemId) });
+                    if (voteItemObj === undefined && voteItemObj === null) {
+                        const errorResponse = ResponseUtil.getErrorResponse('Cannot find the VoteItem.', undefined);
+                        return res.status(400).send(errorResponse);
+                    }
+
+                    if(item.voteChoice.length > 0){
+                        const create = await this.VoteChoice(item.voteItemId,item,votingObjId,userObjId,votedRequest.pageId);
+                        response.push(create);
+                    } else {
+                        const errorResponse = ResponseUtil.getErrorResponse('Select Vote Choice is empty.', undefined);
+                        return res.status(400).send(errorResponse);
+                    }
                 } else {
-                    const errorResponse = ResponseUtil.getErrorResponse('Select Vote Choice is empty.', undefined);
+                    const aggsVote = await this.voteItemService.aggregate(
+                        [
+                            {
+                                $match:{
+                                    votingId:votingObjId
+                                }
+                            },
+                            {
+                                $lookup:{
+                                    from:'VoteChoice',
+                                    let:{'id':'$_id'},
+                                    pipeline:[
+                                        {
+                                            $match:{
+                                                $expr:
+                                                {
+                                                    $eq:['$$id','$voteItemId']
+                                                }
+                                            }
+                                        },
+                                        {
+                                            $project:{
+                                                _id:1,
+                                                title:1
+                                            }
+                                        }
+                                    ],
+                                    as:'voteChoice'
+                                }
+                            },
+                            {
+                                $project:{
+                                    _id:1,
+                                    type:1,
+                                    ordering:1,
+                                    title:1,
+                                    voteChoice:1
+                                }
+                            }
+                        ]
+                    );
+                    const errorResponse = ResponseUtil.getErrorResponse('You have been voted.', aggsVote);
                     return res.status(400).send(errorResponse);
                 }
+
             }
+            // check spam vote
 
             if (response.length > 0 && response !== undefined) {
                 const successResponse = ResponseUtil.getSuccessResponse('Create vote is success.', response);
@@ -1802,6 +1993,99 @@ export class VotingController {
         }
     }
     
+    // Invite Vote
+    @Post('/invite/vote/:votingId')
+    @Authorized('user')
+    public async InviteVote(@Body({ validate: true }) inviteVoteRequest: InviteVoteRequest, @Param('votingId') votingId: string, @Res() res: any, @Req() req: any): Promise<any> {
+        const votingObjId = new ObjectID(votingId);
+        const userObjId = new ObjectID(req.user.id);
+        let pageObjId: any = undefined;
+        const voteEventObj = await this.votingEventService.findOne({ _id: votingObjId });
+
+        if(voteEventObj === undefined && voteEventObj === null) {
+            const errorResponse = ResponseUtil.getErrorResponse('The vote was not found.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if (voteEventObj.status === 'close') {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot invite to vote the status was closed.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+        const owner = await this.userService.findOne({ _id: new ObjectID(userObjId) });
+        if (owner !== undefined && owner !== null && owner.banned === true) {
+            const errorResponse = ResponseUtil.getErrorResponse('You have been banned.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        const response:any = [];
+        if(voteEventObj.type === 'private') {
+            if(inviteVoteRequest.InviteVote.length >0){
+                for(const inviteObject of inviteVoteRequest.InviteVote){
+                    // check ban 
+                    if (inviteObject.pageId !== undefined && inviteObject.pageId !== null) {
+                        pageObjId = new ObjectID(inviteObject.pageId);
+                        const pageData = await this.pageService.find({ where: { _id: pageObjId } }); // ??????? WTF
+                    
+                        if (pageData === undefined) {
+                            return res.status(400).send(ResponseUtil.getErrorResponse('Page was not found.', undefined));
+                        }
+                    
+                        const pageObj = await this.pageService.findOne({_id:pageObjId });
+                        if (pageObj !== undefined && pageObj.banned === true) {
+                            const errorResponse = ResponseUtil.getErrorResponse('This page was banned.', pageObj.name);
+                            return res.status(400).send(errorResponse);
+                        }
+                    
+                        // Check PageAccess
+                        const accessLevels = [PAGE_ACCESS_LEVEL.OWNER, PAGE_ACCESS_LEVEL.ADMIN, PAGE_ACCESS_LEVEL.MODERATOR, PAGE_ACCESS_LEVEL.POST_MODERATOR];
+                        const canAccess: boolean = await this.pageAccessLevelService.isUserHasAccessPage(req.user.id + '', pageObjId, accessLevels);
+                        if (!canAccess) {
+                            return res.status(401).send(ResponseUtil.getErrorResponse('You cannot edit vote event of this page.', undefined));
+                        }
+                    } 
+                    // check ban 
+                    const user = await this.userService.findOne({ _id: new ObjectID(inviteObject.userId) });
+                    if (user !== undefined && user !== null && user.banned === true) {
+                        const errorResponse = ResponseUtil.getErrorResponse('This user was banned.', user.displayName);
+                        return res.status(400).send(errorResponse);
+                    }
+                    // check spam user
+                    const  userInvited = await this.inviteVoteService.findOne({votingId: votingObjId, userId: new ObjectID(inviteObject.userId)});
+                    if (userInvited !== undefined && userInvited !== null) {
+                        const errorResponse = ResponseUtil.getErrorResponse('This user was been invited.', userInvited.displayName);
+                        return res.status(400).send(errorResponse);
+                    }
+
+                    // check spam page
+                    const pageInvited = await this.inviteVoteService.findOne({votingId: votingObjId, pageId: pageObjId});
+                    if (userInvited !== undefined && userInvited !== null) {
+                        const errorResponse = ResponseUtil.getErrorResponse('This user was been invited.', pageInvited.name);
+                        return res.status(400).send(errorResponse);
+
+                    }
+
+                    const inviteVote = new InviteVoteModel();
+                    inviteVote.votingId = votingObjId;
+                    inviteVote.owner = voteEventObj.userId;
+                    inviteVote.userId = inviteObject.userId ? new ObjectID(inviteObject.userId) : null;
+                    inviteVote.pageId = pageObjId;
+                    const create = await this.inviteVoteService.create(inviteVote);
+                    response.push(create);
+                }
+            }
+            if(response.length > 0){
+                const successResponse = ResponseUtil.getSuccessResponse('Successfully create Invite Vote.', response);
+                return res.status(200).send(successResponse);
+            } else {
+                const errorResponse = ResponseUtil.getErrorResponse('Cannot Create Invite Vote.', undefined);
+                return res.status(400).send(errorResponse);
+            }
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot Invite to vote the type of vote event isn`t private.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+
     // Unvote
     @Post('/unvoted/:votingId')
     @Authorized('user')
@@ -1944,14 +2228,15 @@ export class VotingController {
         }
     }
 
-    private async VoteChoice(voteItemId:string, voteItem:any, votingId: string,userId:string): Promise<any>{
+    private async VoteChoice(voteItemId:string, voteItem:any, votingId: string,userId:string, pageId:string): Promise<any>{
         for(const item of voteItem.voteChoice){            
             const voted = new VotedModel();
             voted.votingId = new ObjectID(votingId);
             voted.userId = new ObjectID(userId);
+            voted.pageId = pageId ? new ObjectID(pageId) : null;
             voted.answer = item.answer;
             voted.voteItemId = new ObjectID(voteItemId);
-            voted.voteChoiceId = item.voteChoiceId;
+            voted.voteChoiceId = new ObjectID(item.voteChoiceId);
             const create = await this.votedService.create(voted);
             return create;
         }
@@ -1972,5 +2257,42 @@ export class VotingController {
                 }
             }
         } 
+    }
+
+    // check spam vote
+
+    private async CheckSpamVote(voteObject:any,voteEventId:string,pageId:string,userId:string): Promise<any>{
+        let voted:any = undefined;
+        for(const choice of voteObject.voteChoice) {
+            if(pageId === undefined){
+                voted = await this.votedService.findOne(
+                    {
+                        votingId: new ObjectID(voteEventId),
+                        userId: new ObjectID(userId),
+                        voteItemId: new ObjectID(voteObject.voteItemId),
+                        voteChoiceId: new ObjectID(choice.voteChoiceId)
+                    }
+                );
+                if(voted !== undefined) {
+                    return voted;
+                } else {
+                    return undefined;
+                }
+            } else {
+                voted = await this.votedService.findOne(
+                    {
+                        votingId: new ObjectID(voteEventId),
+                        pageId: new ObjectID(pageId),
+                        voteItemId: new ObjectID(voteObject.voteItemId),
+                        voteChoiceId: new ObjectID(choice.voteChoiceId)
+                    }
+                );
+                if(voted !== undefined) {
+                    return voted;
+                } else {
+                    return undefined;
+                }
+            }
+        }
     }
 }

@@ -5,8 +5,8 @@
  * Author:  shiorin <junsuda.s@absolute.co.th>, chalucks <chaluck.s@absolute.co.th>
  */
 
-import { EntityRepository, MongoRepository } from 'typeorm';
-import { IsReadPost } from '../models/IsRead';
+import 'reflect-metadata';
 
-@EntityRepository(IsReadPost)
-export class IsReadPostRepository extends MongoRepository<IsReadPost> {}
+export class InviteVoteRequest {
+    public InviteVote: any;
+}
