@@ -417,15 +417,7 @@ export class AdminVotedController {
         const user = await this.userService.findOne({_id:userObjId});
         const today = moment().toDate();
 
-        const voteAggs = await this.votingEventService.aggregate(
-            [
-                {
-                    $match:{
-                        approved:false,
-                    }
-                }
-            ]
-        );
+        const voteAggs = await this.votingEventService.aggregate([]);
         if(voteAggs.length > 0){
             for(const vote of voteAggs){
                 if(today.getTime() > vote.endVoteDatetime.getTime()) {
