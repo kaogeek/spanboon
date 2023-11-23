@@ -88,6 +88,9 @@ export class VotingEventModel extends BaseModel {
     @Column({ name: 'showVoteResult' })
     public showVoteResult: boolean;
 
+    @Column({ name: 'service' })
+    public service: string;
+
     @BeforeInsert()
     public createDetails(): any {
         this.createdDate = moment().toDate();

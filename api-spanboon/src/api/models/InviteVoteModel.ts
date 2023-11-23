@@ -11,8 +11,8 @@ import { BeforeInsert, BeforeUpdate, Column, Entity, ObjectIdColumn } from 'type
 import { BaseModel } from './BaseModel';
 import moment from 'moment';
 
-@Entity('Voted')
-export class Voted extends BaseModel {
+@Entity('InviteVote')
+export class InviteVote extends BaseModel {
 
     @ObjectIdColumn({ name: '_id' })
     @IsNotEmpty()
@@ -22,20 +22,14 @@ export class Voted extends BaseModel {
     @Column({ name: 'votingId' })
     public votingId: ObjectID;
 
+    @Column({ name: 'owner' })
+    public owner: ObjectID;
+
     @Column({ name: 'userId' })
     public userId: ObjectID;
 
     @Column({ name: 'pageId' })
     public pageId: ObjectID;
-
-    @Column({ name: 'answer' })
-    public answer: any;
-
-    @Column({ name: 'voteItemId' })
-    public voteItemId: ObjectID;
-
-    @Column({ name: 'voteChoiceId' })
-    public voteChoiceId: ObjectID;
 
     @BeforeInsert()
     public createDetails(): any {

@@ -6,7 +6,7 @@
  */
 
 import { EntityRepository, MongoRepository } from 'typeorm';
-import { IsReadPost } from '../models/IsRead';
+import { InviteVote } from '../models/InviteVoteModel';
 
-@EntityRepository(IsReadPost)
-export class IsReadPostRepository extends MongoRepository<IsReadPost> {}
+@EntityRepository(InviteVote)
+export class InviteVoteModelRepository extends MongoRepository<InviteVote> {}

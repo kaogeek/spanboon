@@ -8,8 +8,10 @@
 import 'reflect-metadata';
 
 export class VotedRequest {
+    public voteItem: any;
     public votingId: string;
     public userId: string;
+    public pageId: string;
     public answer: any;
     public voteItemId: string;
     public voteChoiceId: string;
