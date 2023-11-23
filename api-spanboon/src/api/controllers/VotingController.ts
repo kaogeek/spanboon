@@ -815,66 +815,59 @@ export class VotingController {
             matchVoteEvent.title = exp;
         }
         const voteEventObjIds = new ObjectID(whereConditions._id);
-        const voteEventAggr = await this.votingEventService.aggregate([
+        const voteEventAggr = await this.voteItemService.aggregate([
             {
                 $match:{
                     _id:voteEventObjIds
                 }
             },
             {
-                $lookup:{
-                    from:'VoteItem',
+                $lookup :{
+                    from:'VoteChoice',
                     let:{'id':'$_id'},
                     pipeline:[
                         {
                             $match:{
                                 $expr:
                                 {
-                                    $eq:['$$id','$votingId']
+                                    $eq:['$$id','$voteItemId']
                                 }
                             }
                         },
                         {
                             $lookup:{
-                                from:'VoteChoice',
+                                from:'Voted',
                                 let:{'id':'$_id'},
                                 pipeline:[
                                     {
                                         $match:{
                                             $expr:
                                             {
-                                                $eq:['$$id','$voteItemId']
+                                                $eq:['$$id','$voteChoiceId']
                                             }
                                         }
                                     },
-                                    {
-                                        $lookup:{
-                                            from:'Voted',
-                                            let:{'id':'$_id'},
-                                            pipeline:[
-                                                {
-                                                    $match:{
-                                                        $expr:{
-                                                            $eq:['$$id','$voteChoiceId']
-                                                        }
-                                                    }
-                                                },
-                                                {
-                                                    $project:{
-                                                        _id:1,
-                                                        voteChoiceId:1
-                                                    }
-                                                }
-                                            ],
-                                            as:'voted'
-                                        }
-                                    }
                                 ],
-                                as:'voteChoice'
+                                as:'voted'
+                            }
+                        },
+                        {
+                            $addFields:{
+                                votedCount: { $size: '$voted' }
+                            }
+                        },
+                        {
+                            $project:{
+                                _id:1,
+                                voteItemId:1,
+                                coverPageURL:1,
+                                s3coverPageURL:1,
+                                title:1,
+                                votedCount:1
                             }
                         }
                     ],
-                    as:'voteItem'
+                    as:'voteChoice'
                 }
             },
             {
@@ -884,8 +877,9 @@ export class VotingController {
                 $skip: offset
             }
         ]);
-        if (voteEventAggr.length > 0) {
-            const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', voteEventAggr);
+        const voteItemObj = voteEventAggr.shift();
+        if (voteItemObj !== undefined && voteItemObj.voteChoice.length>0) {
+            const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', voteItemObj);
             return res.status(200).send(successResponse);
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find any lists vote.', undefined);
@@ -2295,4 +2289,5 @@ export class VotingController {
             }
         }
     }
+
 }
