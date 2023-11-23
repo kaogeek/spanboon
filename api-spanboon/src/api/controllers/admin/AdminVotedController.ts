@@ -400,10 +400,54 @@ export class AdminVotedController {
                             status: 'vote'
                         }};  
                     await this.votingEventService.update(query,newValues);              
+                } else {
+                    continue;
                 }
             }
         }
         const successResponse = ResponseUtil.getSuccessResponse('Auto approve.', undefined);
+        return res.status(200).send(successResponse);
+    }
+
+    // auto close
+    @Post('/auto/close')
+    @Authorized('')
+    public async AutoClose(@Res() res: any, @Req() req: any): Promise<any> {
+        const userObjId = new ObjectID(req.user.id);
+        const user = await this.userService.findOne({_id:userObjId});
+        const today = moment().toDate();
+
+        const voteAggs = await this.votingEventService.aggregate(
+            [
+                {
+                    $match:{
+                        approved:false,
+                    }
+                }
+            ]
+        );
+        if(voteAggs.length > 0){
+            for(const vote of voteAggs){
+                if(today.getTime() > vote.endVoteDatetime.getTime()) {
+                    const query = {_id: new ObjectID(vote._id)};
+                    const newValues = {
+                        $set:{
+                            closed:true,
+                            closeDate: today,
+                            approved:true,
+                            approveUsername:user.displayName,
+                            approveDatetime:today,
+                            pin:false,
+                            showVoteResult:true,
+                            status: 'close'
+                        }};  
+                    await this.votingEventService.update(query,newValues);   
+                } else {
+                    continue;
+                }
+            }
+        }
+        const successResponse = ResponseUtil.getSuccessResponse('Auto Closed.', undefined);
         return res.status(200).send(successResponse);
     }
 
