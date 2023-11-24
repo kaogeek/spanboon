@@ -76,8 +76,8 @@ export class VotingEventModel extends BaseModel {
     @Column({ name: 'type' })
     public type: any;
 
-    @Column({ name: 'public' })
-    public public: any;
+    @Column({ name: 'hashTag' })
+    public hashTag: ObjectID;
 
     @Column({ name: 'pin' })
     public pin: boolean;

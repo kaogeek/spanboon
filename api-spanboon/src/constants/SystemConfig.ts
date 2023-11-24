@@ -91,9 +91,6 @@ export const DEFAULT_KAOKAITODAY_RANGE_OF_POPULAR_HASHTAGS=5;
 export const DEFAULT_SEND_NOTIFICATION_NEWS = 5000;
 export const SEND_NOTIFICATION_NEWS = 'send.notification.news';
 
-export const DEFAULT_MIN_SUPPORT = 500;
-export const MIN_SUPPORT = 'min.support';
-
 export const DEFAULT_RETROSPECT = 7;
 export const RETROSPECT = 'RETROSPECT';
 
@@ -113,3 +110,9 @@ export const OBJECTIVE_AUTO_TAGS_VALUE = 'objective.auto.tags.value';
 
 export const DEFAULT_OBJECTIVE_TRIGGER_AUTO_TAGS = false;
 export const OBJECTIVE_TRIGGER_AUTO_TAGS = 'objective.trigger.auto.tags.value';
+
+export const DEFAULT_MIN_SUPPORT = 500;
+export const MIN_SUPPORT = 'min.support';
+
+export const DEFAULT_CLOSET_VOTE = 5;
+export const CLOSET_VOTE = 'closet.vote';

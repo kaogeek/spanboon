@@ -11,6 +11,7 @@ import { VoteItemService } from '../services/VoteItemService';
 import { VoteChoiceService } from '../services/VoteChoiceService';
 import { AssetService } from '../services/AssetService';
 import { UserService } from '../services/UserService';
+import { HashTagService } from '../services/HashTagService';
 import { UserSupportService } from '../services/UserSupportService';
 import { VotingEventModel } from '../models/VotingEventModel';
 // import { RetrieveVotingOptionsModel } from '../models/RetrieveVotingOptionsModel';
@@ -25,7 +26,9 @@ import { ObjectUtil } from '../../utils/ObjectUtil';
 import { SearchFilter } from './requests/SearchFilterRequest';
 import {
     DEFAULT_MIN_SUPPORT,
-    MIN_SUPPORT
+    MIN_SUPPORT,
+    DEFAULT_CLOSET_VOTE,
+    CLOSET_VOTE,
 } from '../../constants/SystemConfig';
 import { ConfigService } from '../services/ConfigService';
 import { VoteItem as VoteItemModel } from '../models/VoteItemModel';
@@ -37,6 +40,7 @@ import { AuthenticationIdService } from '../services/AuthenticationIdService';
 import { Voted as VotedModel } from '../models/VotedModel';
 import { PageAccessLevelService } from '../services/PageAccessLevelService';
 import { PAGE_ACCESS_LEVEL } from '../../constants/PageAccessLevel';
+import { HashTag } from '../models/HashTag';
 
 @JsonController('/voting')
 export class VotingController {
@@ -53,6 +57,7 @@ export class VotingController {
         private assetService: AssetService,
         private authenticationIdService:AuthenticationIdService,
         private inviteVoteService:InviteVoteService,
+        private hashTagService:HashTagService,
         // private retrieveVoteService: RetrieveVoteService
     ) { }
 
@@ -124,6 +129,7 @@ export class VotingController {
                         createAsPage: 1,
                         type: 1,
                         public: 1,
+                        hashTag:1,
                         pin: 1,
                         showVoterName: 1,
                         showVoteResult: 1,
@@ -245,6 +251,7 @@ export class VotingController {
                         createAsPage: 1,
                         type: 1,
                         public: 1,
+                        hashTag:1,
                         pin: 1,
                         showVoterName: 1,
                         showVoteResult: 1,
@@ -378,6 +385,7 @@ export class VotingController {
                         endVoteDatetime:1,
                         status:1,
                         type:1,
+                        hashTag:1,
                         pin:1,
                         showVoterName:1,
                         showVoteResult:1,
@@ -502,7 +510,7 @@ export class VotingController {
                         status: 1,
                         createAsPage: 1,
                         type: 1,
-                        public: 1,
+                        hashTag:1,
                         pin: 1,
                         showVoterName: 1,
                         showVoteResult: 1,
@@ -623,7 +631,7 @@ export class VotingController {
                         status: 1,
                         createAsPage: 1,
                         type: 1,
-                        public: 1,
+                        hashTag:1,
                         pin: 1,
                         showVoterName: 1,
                         showVoteResult: 1,
@@ -757,6 +765,7 @@ export class VotingController {
                         endVoteDatetime:1,
                         status:1,
                         type:1,
+                        hashTag:1,
                         pin:1,
                         showVoterName:1,
                         showVoteResult:1,
@@ -792,8 +801,8 @@ export class VotingController {
     }
 
     // search this voteEvent, voteItems, voteChoices
-    @Post('/item/search/')
-    public async searchVoteItem(@Body({ validate: true }) search: FindVoteRequest, @Res() res: any, @Req() req: any): Promise<any> {
+    @Post('/item/mobile/search/')
+    public async searchVoteItemMobile(@Body({ validate: true }) search: FindVoteRequest, @Res() res: any, @Req() req: any): Promise<any> {
         const whereConditions = search.whereConditions;
         let filter: any = search.filter;
         if (filter === undefined) {
@@ -903,6 +912,126 @@ export class VotingController {
             return res.status(400).send(errorResponse);
         }
     }
+
+    // search this voteEvent, voteItems, voteChoices
+    @Post('/item/web/search/')
+    public async searchVoteItemWeb(@Body({ validate: true }) search: FindVoteRequest, @Res() res: any, @Req() req: any): Promise<any> {
+        const whereConditions = search.whereConditions;
+        let filter: any = search.filter;
+        if (filter === undefined) {
+            filter = new SearchFilter();
+        }
+        const keywords = search.keyword;
+        const exp = { $regex: '.*' + keywords + '.*', $options: 'si' };
+        const take = filter.limit ? filter.limit : 10;
+        const offset = filter.offset ? filter.offset : 0;
+        const matchVoteEvent: any = {};
+        if (whereConditions.approved !== undefined && whereConditions.approved !== null) {
+            matchVoteEvent.approved = whereConditions.approved;
+        }
+
+        if (whereConditions.closed !== undefined && whereConditions.closed !== null) {
+            matchVoteEvent.closed = whereConditions.closed;
+        }
+
+        if (whereConditions.status !== undefined && whereConditions.status !== null) {
+            matchVoteEvent.status = whereConditions.status;
+        }
+
+        if (whereConditions.type !== undefined && whereConditions.type !== null) {
+            matchVoteEvent.type = whereConditions.type;
+        }
+
+        if (whereConditions.pin !== undefined && whereConditions.pin !== null) {
+            matchVoteEvent.pin = whereConditions.pin;
+        }
+
+        if (whereConditions.showed !== undefined && whereConditions.showed !== null) {
+            matchVoteEvent.showVoteResult = whereConditions.showVoteResult;
+        }
+
+        if (keywords !== undefined && keywords !== null && keywords !== '') {
+            matchVoteEvent.title = exp;
+        }
+        const objIds = [];
+        const voteEventObjIds = whereConditions._id;
+        if (voteEventObjIds.length >0) {
+            for(const ids of voteEventObjIds){
+                objIds.push(new ObjectID(ids));
+            }
+        }
+
+        const voteEventAggr = await this.voteItemService.aggregate([
+            {
+                $match:{
+                    _id:{$in:objIds}
+                }
+            },
+            {
+                $lookup :{
+                    from:'VoteChoice',
+                    let:{'id':'$_id'},
+                    pipeline:[
+                        {
+                            $match:{
+                                $expr:
+                                {
+                                    $eq:['$$id','$voteItemId']
+                                }
+                            }
+                        },
+                        {
+                            $lookup:{
+                                from:'Voted',
+                                let:{'id':'$_id'},
+                                pipeline:[
+                                    {
+                                        $match:{
+                                            $expr:
+                                            {
+                                                $eq:['$$id','$voteChoiceId']
+                                            }
+                                        }
+                                    },
+                                ],
+                                as:'voted'
+                            }
+                        },
+                        {
+                            $addFields:{
+                                votedCount: { $size: '$voted' }
+                            }
+                        },
+                        {
+                            $project:{
+                                _id:1,
+                                voteItemId:1,
+                                coverPageURL:1,
+                                s3coverPageURL:1,
+                                title:1,
+                                votedCount:1
+                            }
+                        }
+                    ],
+                    as:'voteChoice'
+                }
+            },
+            {
+                $limit: take
+            },
+            {
+                $skip: offset
+            }
+        ]);
+        if (voteEventAggr.length >0) {
+            const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', voteEventAggr);
+            return res.status(200).send(successResponse);
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot find any lists vote.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+
     // ใกล้ปิด vote
     @Post('/closet/search')
     public async ClosetEndVote(@Body({ validate: true }) search: FindVoteRequest,@Res() res: any, @Req() req: any): Promise<any> {
@@ -1252,8 +1381,29 @@ export class VotingController {
                 }
             ]
         );
-        if (voteEventAggr.length > 0) {
-            const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', voteEventAggr);
+
+        let closetVoteValue = DEFAULT_CLOSET_VOTE;
+        const configClosetVote = await this.configService.getConfig(CLOSET_VOTE);
+        if (configClosetVote) {
+            closetVoteValue = parseInt(configClosetVote.value, 10);
+        }
+
+        const response:any = [];
+        const today = moment().toDate();
+        const closetValue = (24 * closetVoteValue) * 60 * 60 * 1000; // one day in milliseconds
+        const dateNow = new Date(today.getTime() + closetValue);
+        for(const closetVote of voteEventAggr) {
+            if (dateNow.getTime() > closetVote.endVoteDatetime.getTime() 
+                && closetVote.closed === false
+            ) {
+                response.push(closetVote);
+            } else {
+                continue;
+            }
+        }
+
+        if (response.length > 0) {
+            const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', response);
             return res.status(200).send(successResponse);
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find any lists vote.', undefined);
@@ -1824,6 +1974,23 @@ export class VotingController {
         if (configMinSupport) {
             minSupportValue = parseInt(configMinSupport.value, 10);
         }
+        let hashTagObjId:any = undefined;
+        let createHashTag:any = undefined;
+        const hashTag = votingEventRequest.hashTag;
+        if (hashTag !== undefined && hashTag !== null) {
+            hashTagObjId = await this.hashTagService.findOne({name:hashTag,personal:true});
+            if (hashTagObjId === undefined) {
+                const newHashTag: HashTag = new HashTag();
+                newHashTag.name = hashTag;
+                newHashTag.lastActiveDate = today;
+                newHashTag.count = 0;
+                newHashTag.iconURL = '';
+                newHashTag.personal = false;
+                createHashTag = await this.hashTagService.create(newHashTag);
+            } else {
+                createHashTag = hashTagObjId.name;
+            }
+        }
         // const adminIn = new ObjectID(votingEventRequest.adminId);
         // const needed = votingEventRequest.needed;
         const pin = votingEventRequest.pin ? votingEventRequest.pin : false;
@@ -1939,6 +2106,7 @@ export class VotingController {
         votingEvent.approveUsername = null;
         votingEvent.updateDatetime = today;
         // votingEvent.create_user = new ObjectID(votingEventRequest.create_user);
+        votingEvent.hashTag = createHashTag;
         votingEvent.status = status;
         votingEvent.createAsPage = null;
         votingEvent.type = type;
@@ -2012,6 +2180,23 @@ export class VotingController {
         const configMinSupport = await this.configService.getConfig(MIN_SUPPORT);
         if (configMinSupport) {
             minSupportValue = parseInt(configMinSupport.value, 10);
+        }
+        let hashTagObjId:any = undefined;
+        let createHashTag:any = undefined;
+        const hashTag = votingEventRequest.hashTag;
+        if (hashTag !== undefined && hashTag !== null) {
+            hashTagObjId = await this.hashTagService.findOne({name:hashTag,personal:true});
+            if (hashTagObjId === undefined) {
+                const newHashTag: HashTag = new HashTag();
+                newHashTag.name = hashTag;
+                newHashTag.lastActiveDate = today;
+                newHashTag.count = 0;
+                newHashTag.iconURL = '';
+                newHashTag.personal = false;
+                createHashTag = await this.hashTagService.create(newHashTag);
+            } else {
+                createHashTag = hashTagObjId.name;
+            }
         }
         // const adminIn = new ObjectID(votingEventRequest.adminId);
         // const needed = votingEventRequest.needed;
@@ -2148,6 +2333,7 @@ export class VotingController {
         votingEvent.approveDatetime = null;
         votingEvent.approveUsername = null;
         votingEvent.updateDatetime = today;
+        votingEvent.hashTag = createHashTag.name;
         // votingEvent.create_user = new ObjectID(votingEventRequest.create_user);
         votingEvent.status = status;
         votingEvent.createAsPage = pageObjId;
@@ -2191,6 +2377,7 @@ export class VotingController {
                 response.approveDatetime = result.approveDatetime;
                 response.approveUsername = result.approveUsername;
                 response.updateDatetime = result.updateDatetime;
+                response.hashTag = result.hashTag;
                 response.status = result.status;
                 response.createAsPage = result.createAsPage;
                 response.type = result.type;
@@ -2340,7 +2527,7 @@ export class VotingController {
                             }
                         ]
                     );
-                    const errorResponse = ResponseUtil.getErrorResponse('You have been voted.', aggsVote);
+                    const errorResponse = ResponseUtil.getErrorResponse('You have been already voted.', aggsVote);
                     return res.status(400).send(errorResponse);
                 }
 

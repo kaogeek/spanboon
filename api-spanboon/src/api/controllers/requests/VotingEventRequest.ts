@@ -23,6 +23,7 @@ export class VotingEventRequest {
     public approveDatetime: Date;
     public approveUsername: string;
     public updateDatetime: Date;
+    public hashTag: string;
     // public create_user: string;
     public status: any;
     public createAsPage: string;
