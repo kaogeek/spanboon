@@ -1987,6 +1987,9 @@ export class VotingController {
                 newHashTag.iconURL = '';
                 newHashTag.personal = false;
                 createHashTag = await this.hashTagService.create(newHashTag);
+                if (createHashTag) {
+                    createHashTag = hashTag;
+                }
             } else {
                 createHashTag = hashTagObjId.name;
             }
@@ -2152,6 +2155,7 @@ export class VotingController {
                 response.status = result.status;
                 response.createAsPage = result.createAsPage;
                 response.type = result.type;
+                response.hashTag = result.hashTag;
                 response.pin = result.pin;
                 response.showVoterName = result.showVoterName;
                 response.showVoteResult = result.showVoteResult;
