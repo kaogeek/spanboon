@@ -116,3 +116,5 @@ export const MIN_SUPPORT = 'min.support';
 
 export const DEFAULT_CLOSET_VOTE = 5;
 export const CLOSET_VOTE = 'closet.vote';
+
+export const MFPHASHTAG = 'mfp.hashtag';

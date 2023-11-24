@@ -100,6 +100,15 @@ export class VotingController {
         if (whereConditions.showed !== undefined && whereConditions.showed !== null) {
             matchVoteEvent.showVoteResult = whereConditions.showVoteResult;
         }
+        const hashTags:any = [];
+        if(whereConditions.hashTag !== undefined && whereConditions.hashTag.length > 0) {
+            for(const hashTag of whereConditions.hashTag){
+                hashTags.push(String(hashTag));
+            }
+        }
+        if(hashTags.length >0) {
+            matchVoteEvent.hashTag = {$in:hashTags};
+        }
 
         if (keywords !== undefined && keywords !== null && keywords !== '') {
             matchVoteEvent.title = exp;
