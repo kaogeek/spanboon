@@ -2491,13 +2491,23 @@ export class VotingController {
                         return res.status(400).send(errorResponse);
                     }
 
-                    if(item.voteChoice.length > 0){
+                    if(item.voteChoice.length === 0 && item.answer !== undefined) {
+                        const create = await this.VoteChoice(item.voteItemId,item,votingObjId,userObjId,votedRequest.pageId);
+                        response.push(create);
+                    }
+                    if(item.voteChoice.length === 0 && item.answer === undefined) {
+                        const errorResponse = ResponseUtil.getErrorResponse('Answer is empty.', undefined);
+                        return res.status(400).send(errorResponse);
+                    }
+
+                    if(item.voteChoice.length > 0 && item.answer === undefined){
                         const create = await this.VoteChoice(item.voteItemId,item,votingObjId,userObjId,votedRequest.pageId);
                         response.push(create);
                     } else {
                         const errorResponse = ResponseUtil.getErrorResponse('Select Vote Choice is empty.', undefined);
                         return res.status(400).send(errorResponse);
                     }
+                    
                 } else {
                     const aggsVote = await this.voteItemService.aggregate(
                         [
