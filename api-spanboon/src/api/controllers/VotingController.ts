@@ -2494,6 +2494,10 @@ export class VotingController {
                     if(item.voteChoice.length === 0 && item.answer !== undefined) {
                         const create = await this.VoteChoice(item.voteItemId,item,votingObjId,userObjId,votedRequest.pageId);
                         response.push(create);
+                        if (response.length > 0 && response !== undefined) {
+                            const successResponse = ResponseUtil.getSuccessResponse('Create vote is success.', response);
+                            return res.status(200).send(successResponse);
+                        }
                     }
                     if(item.voteChoice.length === 0 && item.answer === undefined) {
                         const errorResponse = ResponseUtil.getErrorResponse('Answer is empty.', undefined);
