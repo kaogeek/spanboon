@@ -451,7 +451,8 @@ export class VotingController {
             closetVoteValue = parseInt(configClosetVote.value, 10);
         }
 
-        const response:any = {'closetVote': [],'ownerVote': undefined};
+        const response:any = {'voteEvent':undefined,'closetVote': [],'ownerVote': undefined};
+        response['voteEvent'] = voteEventAggr;
         const today = moment().toDate();
         const closetValue = (24 * closetVoteValue) * 60 * 60 * 1000; // one day in milliseconds
         const dateNow = new Date(today.getTime() + closetValue);
@@ -793,9 +794,8 @@ export class VotingController {
             );
         }
         response['ownerVote'] = ownerVote ? ownerVote : undefined;
-        const concat = voteEventAggr.concat(response);
-        if (concat.length > 0) {
-            const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', concat);
+        if (response['voteEvent'].length > 0) {
+            const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', response);
             return res.status(200).send(successResponse);
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find any lists vote.', undefined);
