@@ -445,6 +445,7 @@ export class VotingController {
                 }
             ]
         );
+        /* 
         let closetVoteValue = DEFAULT_CLOSET_VOTE;
         const configClosetVote = await this.configService.getConfig(CLOSET_VOTE);
         if (configClosetVote) {
@@ -465,6 +466,7 @@ export class VotingController {
                 continue;
             }
         }
+
         let ownerVote:any = undefined;
         if(userId !== undefined && userId !== null) {
             matchVoteEvent.userId = userId;
@@ -794,8 +796,9 @@ export class VotingController {
             );
         }
         response['ownerVote'] = ownerVote ? ownerVote : undefined;
-        if (response['voteEvent'].length > 0) {
-            const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', response);
+        */
+        if (voteEventAggr.length > 0) {
+            const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', voteEventAggr);
             return res.status(200).send(successResponse);
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find any lists vote.', undefined);
