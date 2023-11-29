@@ -86,7 +86,10 @@ export class VotingController {
             matchVoteEvent.closed = whereConditions.closed;
         }
 
-        if (whereConditions.status.vote !== undefined && whereConditions.status.support !== undefined) {
+        if (whereConditions.status !== undefined && 
+            whereConditions.status.vote !== undefined && 
+            whereConditions.status.support !== undefined) 
+        {
             matchVoteEvent.status = 
             { $in: ['support','vote']};
         }
@@ -141,6 +144,7 @@ export class VotingController {
                         approveDatetime: 1,
                         approveUsername: 1,
                         updateDatetime: 1,
+                        closeDate:1,
                         status: 1,
                         createAsPage: 1,
                         type: 1,
@@ -263,6 +267,7 @@ export class VotingController {
                         approveDatetime: 1,
                         approveUsername: 1,
                         updateDatetime: 1,
+                        closeDate:1,
                         status: 1,
                         createAsPage: 1,
                         type: 1,
@@ -399,6 +404,7 @@ export class VotingController {
                         countSupport:1,
                         startVoteDatetime:1,
                         endVoteDatetime:1,
+                        closeDate:1,
                         status:1,
                         type:1,
                         hashTag:1,
