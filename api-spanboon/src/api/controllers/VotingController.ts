@@ -122,7 +122,7 @@ export class VotingController {
         if (keywords !== undefined && keywords !== null && keywords !== '') {
             matchVoteEvent.title = exp;
         }
-
+        const userObjId = req.headers.userid ? ObjectID(req.headers.userid) : undefined;
         const voteEventAggr: any = await this.votingEventService.aggregate(
             [
                 {
@@ -278,6 +278,7 @@ export class VotingController {
                         showVoteResult: 1,
                         voted:1,
                         service:1,
+                        passing_scores:1,
                         createPage: {
                             $cond: [
                                 {
@@ -414,7 +415,7 @@ export class VotingController {
                         voted:1,
                         page:1,
                         user:1,
-                        service:1
+                        service:1,
                     }
                 },
                 {
@@ -438,6 +439,26 @@ export class VotingController {
                     }
                 },
                 {
+                    $lookup:{
+                        from:'UserSupport',
+                        let:{'id':'$_id'},
+                        pipeline:[
+                            {
+                                $match:{
+                                    $expr:
+                                    {
+                                        $eq:['$$id','$votingId']
+                                    }
+                                }
+                            },
+                            {
+                                $match: { userId: userObjId }
+                            }
+                        ],
+                        as:'userSupport'
+                    }
+                },
+                {
                     $sort: {
                         createdDate: -1
                     }
@@ -447,9 +468,17 @@ export class VotingController {
                 },
                 {
                     $skip: offset
-                }
+                },
             ]
         );
+        const countRows = await this.votingEventService.aggregate(
+            [
+                {
+                    $count: 'passing_scores'
+                },
+            ]
+        );
+        const concat = voteEventAggr.concat(countRows);
         /* 
         let closetVoteValue = DEFAULT_CLOSET_VOTE;
         const configClosetVote = await this.configService.getConfig(CLOSET_VOTE);
@@ -802,11 +831,83 @@ export class VotingController {
         }
         response['ownerVote'] = ownerVote ? ownerVote : undefined;
         */
-        if (voteEventAggr.length > 0) {
-            const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', voteEventAggr);
+        if (concat.length > 0) {
+            const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', concat);
             return res.status(200).send(successResponse);
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find any lists vote.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
+
+    // voteChoice -> who votes
+    @Post('/user/vote/:voteChoiceId')
+    public async userVoteChoice(@Body({ validate: true }) search: FindVoteRequest,@Param ('voteChoiceId') voteChoiceId: string, @Res() res: any, @Req() req: any): Promise<any> {
+        if (ObjectUtil.isObjectEmpty(search)) {
+            return res.status(200).send([]);
+        }
+        let filter: any = search.filter;
+        if (filter === undefined) {
+            filter = new SearchFilter();
+        }
+        const take = filter.limit ? filter.limit : 10;
+        const offset = filter.offset ? filter.offset : 0;
+        const objIds = ObjectID(voteChoiceId);
+        if(objIds === undefined && objIds === null) {
+            const errorResponse = ResponseUtil.getErrorResponse('Vote Choice Id is undefined.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        const voteChoice = await this.votedService.aggregate(
+            [
+                {
+                    $match:{
+                        voteChoiceId:objIds
+                    }
+                },
+                {
+                    $lookup:{
+                        from: 'User',
+                        let: {'userId':'$userId'},
+                        pipeline:[
+                            {
+                                $match:{
+                                    $expr:
+                                    {
+                                        $eq:['$$userId','$_id']
+                                    }
+                                }
+                            },
+                            {
+                                $project:{
+                                    _id:1,
+                                    username:1,
+                                    firstName:1,
+                                    lastName:1,
+                                    displayName:1,
+                                    uniqueId:1,
+                                    imageURL:1,
+                                    s3ImageURL:1
+                                }
+                            },
+                            {
+                                $limit: take
+                            },
+                            {
+                                $skip: offset
+                            }
+                        ],
+                        as:'user'
+                    }
+                }
+            ]
+        );
+
+        if(voteChoice.length > 0) {
+            const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', voteChoice);
+            return res.status(200).send(successResponse);
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot find any lists user.', undefined);
             return res.status(400).send(errorResponse);
         }
     }
@@ -889,6 +990,7 @@ export class VotingController {
                         showVoterName: 1,
                         showVoteResult: 1,
                         service:1,
+                        votedCount:1,
                         checkListName: {
                             $cond: [
                                 {
@@ -1011,6 +1113,7 @@ export class VotingController {
                         showVoteResult: 1,
                         voted:1,
                         service:1,
+                        votedCount:1,
                         createPage: {
                             $cond: [
                                 {
@@ -1146,7 +1249,8 @@ export class VotingController {
                         voted:1,
                         page:1,
                         user:1,
-                        service:1
+                        service:1,
+                        votedCount:1,
                     }
                 },
                 {
@@ -1165,8 +1269,17 @@ export class VotingController {
                 }
             ]
         );
-        if (voteEventAggr.length > 0) {
-            const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', voteEventAggr);
+        const countRows = await this.votingEventService.aggregate(
+            [
+                {
+                    $count: 'passing_scores'
+                },
+            ]
+        );
+        const concat = voteEventAggr.concat(countRows);
+
+        if (concat.length > 0) {
+            const successResponse = ResponseUtil.getSuccessResponse('Search lists any vote is succesful.', concat);
             return res.status(200).send(successResponse);
         } else {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find any lists vote.', undefined);
