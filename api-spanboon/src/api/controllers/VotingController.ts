@@ -67,7 +67,6 @@ export class VotingController {
             return res.status(200).send([]);
         }
 
-        const userId = req.headers.userid ? ObjectID(req.headers.userid) : undefined;
         const whereConditions = search.whereConditions;
         let filter: any = search.filter;
         if (filter === undefined) {
