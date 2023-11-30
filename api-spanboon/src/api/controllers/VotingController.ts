@@ -417,7 +417,7 @@ export class VotingController {
         }
         const take = filter.limit ? filter.limit : 10;
         const offset = filter.offset ? filter.offset : 0;
-        const objIds = ObjectID(voteChoiceId);
+        const objIds = new ObjectID(voteChoiceId);
         if(objIds === undefined && objIds === null) {
             const errorResponse = ResponseUtil.getErrorResponse('Vote Choice Id is undefined.', undefined);
             return res.status(400).send(errorResponse);
@@ -965,6 +965,33 @@ export class VotingController {
         }
     }
 
+    // supported ???
+    @Post('/supported/:id')
+    @Authorized('user')
+    public async userSupportVote(@Body({ validate: true}) search: FindVoteRequest,@Param ('id') id: string, @Res() res: any, @Req() req: any): Promise<any> {
+        if (ObjectUtil.isObjectEmpty(search)) {
+            return res.status(200).send([]);
+        }
+        let filter: any = search.filter;
+        if (filter === undefined) {
+            filter = new SearchFilter();
+        }
+        const userObjId = new ObjectID(req.user.id);
+        const objIds = new ObjectID(id);
+        if(objIds === undefined && objIds === null) {
+            const errorResponse = ResponseUtil.getErrorResponse('Vote Id is undefined.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        const userSupport = await this.userSupportService.findOne({userId:userObjId, votingId:objIds});
+        if (userSupport !== undefined && userSupport !== null) {
+            const successResponse = ResponseUtil.getSuccessResponse('Search user support is success.', userSupport);
+            return res.status(200).send(successResponse);
+        } else {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot find user support.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+    }
     // search this voteEvent, voteItems, voteChoices
     @Post('/item/web/search/')
     public async searchVoteItemWeb(@Body({ validate: true }) search: FindVoteRequest, @Res() res: any, @Req() req: any): Promise<any> {
