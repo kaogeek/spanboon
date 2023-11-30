@@ -1762,6 +1762,38 @@ export class VotingController {
                     },
                   },
                 },
+                {
+                    $lookup:{
+                        from:'Voted',
+                        let:{'id':'$_id'},
+                        pipeline:[
+                            {
+                                $match:{
+                                    $expr:
+                                    {
+                                        $eq:['$$id','$voteChoiceId']
+                                    }
+                                }
+                            },
+                        ],
+                        as:'voted'
+                    }
+                },
+                {
+                    $addFields:{
+                        votedCount: { $size: '$voted' }
+                    }
+                },
+                {
+                    $project:{
+                        _id:1,
+                        voteItemId:1,
+                        coverPageURL:1,
+                        s3coverPageURL:1,
+                        title:1,
+                        votedCount:1
+                    }
+                }
               ],
               as: 'voteChoice',
             },
