@@ -415,6 +415,12 @@ export class VotingController {
         if (filter === undefined) {
             filter = new SearchFilter();
         }
+        const whereConditions:any = search.whereConditions;
+        if( whereConditions.showVoterName === false) {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot get any users name.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
         const take = filter.limit ? filter.limit : 10;
         const offset = filter.offset ? filter.offset : 0;
         const objIds = new ObjectID(voteChoiceId);
