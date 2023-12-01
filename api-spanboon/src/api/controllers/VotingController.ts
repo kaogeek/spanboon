@@ -1577,6 +1577,7 @@ export class VotingController {
         }
     }
 
+    // First
     @Put('/own/:votingId')
     @Authorized('user')
     public async updateVoteingEventOwner(@Body({ validate: true }) votingEventRequest: VotingEventRequest, @Param('votingId') votingId: string, @Res() res: any, @Req() req: any): Promise<any> {
@@ -1596,6 +1597,11 @@ export class VotingController {
         const voteObj = await this.votingEventService.findOne({ _id: voteObjId, userId: userObjId });
         if (voteObj === undefined && voteObj === null) {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find a vote.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if(voteObj.closed === true) {
+            const errorResponse = ResponseUtil.getErrorResponse('The vote was closed.', undefined);
             return res.status(400).send(errorResponse);
         }
         
@@ -1622,6 +1628,7 @@ export class VotingController {
         }
     }
 
+    // Second
     @Put('/own/item/:votingId/:voteItemId')
     @Authorized('user')
     public async updateVoteItemOwner(@Body({ validate: true }) voteItemRequest: VoteItemRequest, @Param('votingId') votingId: string, @Param('voteItemId') voteItemId: string, @Res() res: any, @Req() req: any): Promise<any> {
@@ -1642,6 +1649,11 @@ export class VotingController {
         const voteObj = await this.votingEventService.findOne({ _id: voteObjId, userId: userObjId });
         if (voteObj === undefined && voteObj === null) {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find a vote.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if(voteObj.closed === true) {
+            const errorResponse = ResponseUtil.getErrorResponse('The vote was closed.', undefined);
             return res.status(400).send(errorResponse);
         }
 
@@ -1669,6 +1681,7 @@ export class VotingController {
         }
     }
 
+    // Third
     @Put('/own/choice/:votingId/:voteItemId/:voteChoiceId')
     @Authorized('user')
     public async updateVoteChoiceOwner(@Body({ validate: true }) voteItemRequest: VoteItemRequest, @Param('votingId') votingId: string, @Param('voteItemId') voteItemId: string, @Param('voteChoiceId') voteChoiceId: string, @Res() res: any, @Req() req: any): Promise<any> {
@@ -1689,6 +1702,11 @@ export class VotingController {
         const voteObj = await this.votingEventService.findOne({ _id: voteIngObjId, userId: userObjId });
         if (voteObj === undefined && voteObj === null) {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find a vote.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if(voteObj.closed === true) {
+            const errorResponse = ResponseUtil.getErrorResponse('The vote was closed.', undefined);
             return res.status(400).send(errorResponse);
         }
 
