@@ -1506,7 +1506,7 @@ export class VotingController {
 
     // get Item
     @Get('/item/vote/:votingId')
-    public async getItemVote(@Param('votingId') votingId: string, @Res() res: any, @Req() req: any): Promise<any> {
+    public async getItemVote(@Body({ validate: true}) search: FindVoteRequest, @Param('votingId') votingId: string, @Res() res: any, @Req() req: any): Promise<any> {
         const voteObjId = new ObjectID(votingId);
 
         const voteObj = await this.votingEventService.findOne({ _id: voteObjId });
@@ -1514,65 +1514,78 @@ export class VotingController {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find a vote.', undefined);
             return res.status(400).send(errorResponse);
         }
+        let filter: any = search.filter;
+        if (filter === undefined) {
+            filter = new SearchFilter();
+        }
+        const take = filter.limit ? filter.limit : 10;
+        const offset = filter.offset ? filter.offset : 0;
+
         const voteItem = await this.voteItemService.aggregate([
-          {
-            $match: {
-              votingId: voteObjId,
-            },
-          },
-          {
-            $sort:{
-                ordering: 1
-            }
-          },
-          {
-            $lookup: {
-              from: 'VoteChoice',
-              let: { id: '$_id' },
-              pipeline: [
-                {
-                  $match: {
-                    $expr: {
-                      $eq: ['$$id', '$voteItemId'],
-                    },
-                  },
+            {
+                $match: {
+                votingId: voteObjId,
                 },
-                {
-                    $lookup:{
-                        from:'Voted',
-                        let:{'id':'$_id'},
-                        pipeline:[
-                            {
-                                $match:{
-                                    $expr:
-                                    {
-                                        $eq:['$$id','$voteChoiceId']
+            },
+            {
+                $sort:{
+                    ordering: 1
+                }
+            },
+            {
+                $lookup: {
+                from: 'VoteChoice',
+                let: { id: '$_id' },
+                pipeline: [
+                    {
+                    $match: {
+                        $expr: {
+                        $eq: ['$$id', '$voteItemId'],
+                        },
+                    },
+                    },
+                    {
+                        $lookup:{
+                            from:'Voted',
+                            let:{'id':'$_id'},
+                            pipeline:[
+                                {
+                                    $match:{
+                                        $expr:
+                                        {
+                                            $eq:['$$id','$voteChoiceId']
+                                        }
                                     }
                                 }
-                            },
-                        ],
-                        as:'voted'
+                            ],
+                            as:'voted'
+                        }
+                    },
+                    {
+                        $addFields:{
+                            votedCount: { $size: '$voted' }
+                        }
+                    },
+                    {
+                        $project:{
+                            _id:1,
+                            voteItemId:1,
+                            coverPageURL:1,
+                            s3coverPageURL:1,
+                            title:1,
+                            votedCount:1
+                        }
                     }
+                ],
+                as: 'voteChoice',
                 },
-                {
-                    $addFields:{
-                        votedCount: { $size: '$voted' }
-                    }
-                },
-                {
-                    $project:{
-                        _id:1,
-                        voteItemId:1,
-                        coverPageURL:1,
-                        s3coverPageURL:1,
-                        title:1,
-                        votedCount:1
-                    }
-                }
-              ],
-              as: 'voteChoice',
             },
-          }
+            {
+                $limit: take
+            },
+            {
+                $skip: offset
+            }
         ]);
         if (voteItem.length>0) {
             const successResponse = ResponseUtil.getSuccessResponse('Get VoteItem is success.', voteItem);
