@@ -1533,51 +1533,119 @@ export class VotingController {
                 }
             },
             {
-                $lookup: {
-                from: 'VoteChoice',
-                let: { id: '$_id' },
-                pipeline: [
-                    {
-                    $match: {
-                        $expr: {
-                        $eq: ['$$id', '$voteItemId'],
-                        },
-                    },
-                    },
-                    {
-                        $lookup:{
-                            from:'Voted',
-                            let:{'id':'$_id'},
-                            pipeline:[
-                                {
-                                    $match:{
-                                        $expr:
-                                        {
-                                            $eq:['$$id','$voteChoiceId']
-                                        }
-                                    }
-                                }
-                            ],
-                            as:'voted'
-                        }
-                    },
-                    {
-                        $addFields:{
-                            votedCount: { $size: '$voted' }
-                        }
-                    },
-                    {
-                        $project:{
-                            _id:1,
-                            voteItemId:1,
-                            coverPageURL:1,
-                            s3coverPageURL:1,
-                            title:1,
-                            votedCount:1
-                        }
+                $project:{
+                    _id: 1,
+                    createdDate: 1,
+                    createdTime: 1,
+                    votingId: 1,
+                    assetId: 1,
+                    ordering: 1,
+                    type: 1,
+                    title: 1,
+                    coverPageURL: 1,
+                    s3CoverPageURL: 1,
+                    checkType: {
+                        $cond:[
+                            {
+                                $or:[
+                                {$eq:['$type','single']},
+                                {$eq:['$type','multi']}
+                            ]
+                            },
+                            'Yes',
+                            'No'
+                        ]
                     }
-                ],
-                as: 'voteChoice',
+                }
+            },
+            {
+                $facet: {
+                    type: [
+                        {
+                            $match: {
+                                checkType: 'Yes'
+                            }, 
+                        },
+                        {
+                            $lookup: {
+                            from: 'VoteChoice',
+                            let: { id: '$_id' },
+                            pipeline: [
+                                {
+                                $match: {
+                                    $expr: {
+                                    $eq: ['$$id', '$voteItemId'],
+                                    },
+                                },
+                                },
+                                {
+                                    $lookup:{
+                                        from:'Voted',
+                                        let:{'id':'$_id'},
+                                        pipeline:[
+                                            {
+                                                $match:{
+                                                    $expr:
+                                                    {
+                                                        $eq:['$$id','$voteChoiceId']
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                $count:'passing_scores'
+                                            }
+                                        ],
+                                        as:'voted'
+                                    }
+                                },
+                            ],
+                            as: 'voteChoice',
+                            },
+                        },
+                    ],
+                    noType: [
+                        {
+                            $match: {
+                                checkType: 'No'
+                            }
+                        },
+                        {
+                            $lookup:{
+                                from:'Voted',
+                                let:{ id:'$_id'},
+                                pipeline:[
+                                    {
+                                        $match:{
+                                            $expr:{
+                                                $eq:['$$id','$voteItemId']
+                                            }
+                                        }
+                                    },
+                                    {
+                                        $count:'passing_scores'
+                                    }
+                                ],
+                                as:'voted'
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                $addFields: {
+                    combinedResults: {
+                        $concatArrays: ['$type', '$noType'],
+                    }
+                }
+            },
+            {
+                $unwind: {
+                    path: '$combinedResults',
+                },
+            },
+            {
+                $replaceRoot: {
+                    newRoot: '$combinedResults',
                 },
             },
             {
@@ -1616,6 +1684,16 @@ export class VotingController {
         const voteObj = await this.votingEventService.findOne({ _id: voteObjId, userId: userObjId });
         if (voteObj === undefined && voteObj === null) {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find a vote.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if (voteObj.status === 'vote') {
+            const errorResponse = ResponseUtil.getErrorResponse('The vote was approved.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if(voteObj.approved === true) {
+            const errorResponse = ResponseUtil.getErrorResponse('The vote was approved.', undefined);
             return res.status(400).send(errorResponse);
         }
 
@@ -1671,6 +1749,11 @@ export class VotingController {
             return res.status(400).send(errorResponse);
         }
 
+        if(voteObj.approved === true) {
+            const errorResponse = ResponseUtil.getErrorResponse('The vote was approved.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
         if(voteObj.closed === true) {
             const errorResponse = ResponseUtil.getErrorResponse('The vote was closed.', undefined);
             return res.status(400).send(errorResponse);
@@ -1721,6 +1804,11 @@ export class VotingController {
         const voteObj = await this.votingEventService.findOne({ _id: voteIngObjId, userId: userObjId });
         if (voteObj === undefined && voteObj === null) {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find a vote.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if(voteObj.approved === true) {
+            const errorResponse = ResponseUtil.getErrorResponse('The vote was approved.', undefined);
             return res.status(400).send(errorResponse);
         }
 
@@ -1780,17 +1868,22 @@ export class VotingController {
         // check exist?
 
         const voteObj = await this.votingEventService.findOne({ _id: voteObjId, userId: userObjId });
-        if (voteObj === undefined && voteObj === null) {
+        if (voteObj === undefined) {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find a vote.', undefined);
             return res.status(400).send(errorResponse);
         }
+
         const voteItemObj = await this.voteItemService.findOne({ votingId: voteObj.id });
         const voteItems = await this.voteItemService.find({ votingId: voteObj.id });
         if (voteItems.length > 0) {
             for (const voteItem of voteItems) {
-                await this.assetService.delete({ _id: voteItem.assetId });
+                if (voteItem !== undefined && voteItem.assetId !== undefined){
+                    await this.assetService.delete({ _id: voteItem.assetId });
+                }
                 const voteChoiceList = await this.voteChoiceService.findOne({ voteItemId: voteItem.id });
-                await this.assetService.delete({ _id: voteChoiceList.assetId });
+                if(voteChoiceList !== undefined && voteChoiceList.assetId) {
+                    await this.assetService.delete({ _id: voteChoiceList.assetId });
+                }
             }
         }
 
@@ -1827,6 +1920,17 @@ export class VotingController {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find a vote.', undefined);
             return res.status(400).send(errorResponse);
         }
+
+        if (voteObj.approved === true ) {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot Delete Item, the status is approved.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if (voteObj.closed === true ) {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot Delete Item, the status is closed.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
         const voteItemObj = await this.voteItemService.findOne({ _id: voteItemObjId, votingId: voteObj.id });
         const voteChoices = await this.voteChoiceService.find({ voteItemId: voteItemObj.id });
         if (voteChoices.length > 0) {
@@ -1863,6 +1967,19 @@ export class VotingController {
             const errorResponse = ResponseUtil.getErrorResponse('Cannot find a vote.', undefined);
             return res.status(400).send(errorResponse);
         }
+
+        const voteEvent = await this.votingEventService.findOne({_id: voteItemObj.votingId});
+
+        if (voteEvent.approved === true ) {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot Delete Item, the status is approved.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
+        if (voteEvent.closed === true ) {
+            const errorResponse = ResponseUtil.getErrorResponse('Cannot Delete Item, the status is closed.', undefined);
+            return res.status(400).send(errorResponse);
+        }
+
         const voteChoiceObj = await this.voteChoiceService.findOne({ _id: voteChoiceObjId, voteItemId: voteItemObjId });
         await this.assetService.delete({ _id: voteChoiceObj.assetId });
         await this.votedService.delete({ votingId: voteItemObj.votingId, voteItemId: voteItemObj.id, voteChoiceId: voteChoiceObjId });
@@ -2328,7 +2445,6 @@ export class VotingController {
         const userObjId = new ObjectID(req.user.id);
         const pageObjId = new ObjectID(votedRequest.pageId);
         const voteEventObj = await this.votingEventService.findOne({ _id: votingObjId });
-
         // status public, private, member
         if(voteEventObj.type === 'member'){
             const authUser = await this.authenticationIdService.findOne({user:userObjId,providerName:'MFP', membershipState:'APPROVED'});
@@ -2391,7 +2507,6 @@ export class VotingController {
             for(const item of votedRequest.voteItem){
 
                 const voted = await this.CheckSpamVote(item,votingObjId,votedRequest.pageId,userObjId);
-
                 if(voted === undefined){
                     const voteItemObj = await this.voteItemService.findOne({ _id: new ObjectID(item.voteItemId) });
                     if (voteItemObj === undefined && voteItemObj === null) {
@@ -2399,27 +2514,14 @@ export class VotingController {
                         return res.status(400).send(errorResponse);
                     }
 
-                    if(item.voteChoice.length === 0 && item.answer !== undefined) {
+                    if(item.voteItemId !== undefined){
                         const create = await this.VoteChoice(item.voteItemId,item,votingObjId,userObjId,votedRequest.pageId);
-                        response.push(create);
-                        if (response.length > 0 && response !== undefined) {
-                            const successResponse = ResponseUtil.getSuccessResponse('Create vote is success.', response);
-                            return res.status(200).send(successResponse);
+                        if(create === 'Select Vote Choice is empty.'){
+                            const errorResponse = ResponseUtil.getErrorResponse('Select Vote Choice is empty.', response);
+                            return res.status(400).send(errorResponse);
                         }
-                    }
-                    if(item.voteChoice.length === 0 && item.answer === undefined) {
-                        const errorResponse = ResponseUtil.getErrorResponse('Answer is empty.', undefined);
-                        return res.status(400).send(errorResponse);
-                    }
-
-                    if(item.voteChoice.length > 0 && item.answer === undefined){
-                        const create = await this.VoteChoice(item.voteItemId,item,votingObjId,userObjId,votedRequest.pageId);
                         response.push(create);
-                    } else {
-                        const errorResponse = ResponseUtil.getErrorResponse('Select Vote Choice is empty.', undefined);
-                        return res.status(400).send(errorResponse);
                     }
-                    
                 } else {
                     const aggsVote = await this.voteItemService.aggregate(
                         [
@@ -2719,17 +2821,34 @@ export class VotingController {
     }
 
     private async VoteChoice(voteItemId:string, voteItem:any, votingId: string,userId:string, pageId:string): Promise<any>{
-        for(const item of voteItem.voteChoice){            
+        const created:any = [];
+        if(voteItem.voteItemId !== undefined && voteItem.answer === undefined){
+            if (voteItem.voteChoice.length === 0) {
+                return 'Select Vote Choice is empty.';
+            }
+            for(const item of voteItem.voteChoice){ 
+                const voted = new VotedModel();
+                voted.votingId = new ObjectID(votingId);
+                voted.userId = new ObjectID(userId);
+                voted.pageId = pageId ? new ObjectID(pageId) : null;
+                voted.answer = item.answer;
+                voted.voteItemId = new ObjectID(voteItemId);
+                voted.voteChoiceId = new ObjectID(item.voteChoiceId);
+                const create = await this.votedService.create(voted);
+                created.push(create);
+            }
+        } else {
             const voted = new VotedModel();
             voted.votingId = new ObjectID(votingId);
             voted.userId = new ObjectID(userId);
             voted.pageId = pageId ? new ObjectID(pageId) : null;
-            voted.answer = item.answer;
-            voted.voteItemId = new ObjectID(voteItemId);
-            voted.voteChoiceId = new ObjectID(item.voteChoiceId);
+            voted.answer = voteItem.answer;
+            voted.voteItemId = new ObjectID(voteItem.voteItemId);
+            voted.voteChoiceId = null;
             const create = await this.votedService.create(voted);
-            return create;
+            created.push(create);
         }
+        return created;
     }
 
     private async CreateVoteChoice(createVoteItem:any,voteItems: any): Promise<any>{
@@ -2754,29 +2873,51 @@ export class VotingController {
     private async CheckSpamVote(voteObject:any,voteEventId:string,pageId:string,userId:string): Promise<any>{
         let voted:any = undefined;
         for(const choice of voteObject.voteChoice) {
-            if(pageId === undefined){
-                voted = await this.votedService.findOne(
-                    {
-                        votingId: new ObjectID(voteEventId),
-                        userId: new ObjectID(userId),
-                        voteItemId: new ObjectID(voteObject.voteItemId),
-                        voteChoiceId: new ObjectID(choice.voteChoiceId)
-                    }
-                );
+            if(pageId !== undefined){
+                if(choice.voteChoiceId !== undefined){
+                    voted = await this.votedService.findOne(
+                        {
+                            votingId: new ObjectID(voteEventId),
+                            pageId: new ObjectID(pageId),
+                            voteItemId: new ObjectID(voteObject.voteItemId),
+                            voteChoiceId: new ObjectID(choice.voteChoiceId)
+                        }
+                    );
+                } else {
+                    voted = await this.votedService.findOne(
+                        {
+                            votingId: new ObjectID(voteEventId),
+                            pageId: new ObjectID(pageId),
+                            voteItemId: new ObjectID(voteObject.voteItemId)
+                        }
+                    );
+                }
                 if(voted !== undefined) {
                     return voted;
                 } else {
                     return undefined;
                 }
             } else {
-                voted = await this.votedService.findOne(
-                    {
-                        votingId: new ObjectID(voteEventId),
-                        pageId: new ObjectID(pageId),
-                        voteItemId: new ObjectID(voteObject.voteItemId),
-                        voteChoiceId: new ObjectID(choice.voteChoiceId)
-                    }
-                );
+                // type single, multi
+                // type text
+                if(choice.voteChoiceId !== undefined){
+                    voted = await this.votedService.findOne(
+                        {
+                            votingId: new ObjectID(voteEventId),
+                            userId: new ObjectID(userId),
+                            voteItemId: new ObjectID(voteObject.voteItemId),
+                            voteChoiceId: new ObjectID(choice.voteChoiceId)
+                        }
+                    );
+                } else {
+                    voted = await this.votedService.findOne(
+                        {
+                            votingId: new ObjectID(voteEventId),
+                            userId: new ObjectID(userId),
+                            voteItemId: new ObjectID(voteObject.voteItemId)
+                        }
+                    );
+                }
                 if(voted !== undefined) {
                     return voted;
                 } else {
